@@ -1,0 +1,47 @@
+{
+  "schema": "hepta-derived-git-full-readback-ledger-v1",
+  "scope": "Exact two new getter definitions and seven mechanism call renames only; no source activation, compiler, QA, collector or H.",
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 2777,
+      "sha256": "a3002f663580b8ed7dafa734206d54815a7c2cb9237f6edd4dd27a975706553f",
+      "git_blob": "8846963f793638f9b00e629de9b42966ec20fef3",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-getter-name-independent-peer-v1/REVIEW.json",
+      "path": "coordinator-getter-name-independent-peer-v1/REVIEW.json"
+    },
+    {
+      "name": "FROZEN_RENAME_PROOF.json",
+      "bytes": 6523,
+      "sha256": "9f3e2dc6b33adcc0492349c25559a385bbb62a2d3646694668148d25eed4c8de",
+      "git_blob": "23bb2c225d769e00fc667e8f8926696268cea2e2",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-getter-name-independent-peer-v1/FROZEN_RENAME_PROOF.json",
+      "path": "coordinator-getter-name-independent-peer-v1/FROZEN_RENAME_PROOF.json"
+    },
+    {
+      "name": "review_fixed_rename.py",
+      "bytes": 5622,
+      "sha256": "f5c6ef7daa25b41b501e2368fce6c58daaf94d6b8a22c8773d77d80b8bd9f0ce",
+      "git_blob": "a91da34a5e5ecb15b78589f06bee92af1f573ffc",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-getter-name-independent-peer-v1/review_fixed_rename.py",
+      "path": "coordinator-getter-name-independent-peer-v1/review_fixed_rename.py"
+    },
+    {
+      "name": "INPUT_PACKET.FULL_GET.original.json",
+      "bytes": 149755,
+      "sha256": "81ea73ea6d07d9658e2477768b71ed41e33b82567d21fcbc55e4e14198e875ec",
+      "git_blob": "878f1e7d37b2ebbd9df851505fb1110eb333fac4",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-getter-name-independent-peer-v1/INPUT_PACKET.FULL_GET.original.json",
+      "path": "coordinator-getter-name-independent-peer-v1/INPUT_PACKET.FULL_GET.original.json"
+    }
+  ],
+  "original_sdk_retention": "Complete original create/GET payloads saved as local sidecars; no claim that those later sidecars are themselves part of this ledger's archived set."
+}

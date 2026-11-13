@@ -1,0 +1,62 @@
+--- 6d1537/driver.HOLD.py
++++ d256-a489/driver.HOLD.py
+@@ -9,25 +9,25 @@
+ import shutil, signal, stat, struct, subprocess, sys, time, traceback, types, zlib
+ 
+ SOURCE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1')
+-TARGET = pathlib.Path('/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1')
+-CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-isolated-materialization-v1')
+-STAGING_PREFIX = '/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1'
++TARGET = pathlib.Path('/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1')
++CONTROL = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1')
++STAGING_PREFIX = '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1'
+ OUT = CONTROL / 'run'
+ CONFIG = CONTROL / 'APPROVED_CONFIG.json'
+ PACKET = CONTROL / 'MATERIALIZATION_PACKET.json'
+ INVENTORY_MODULE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/inventory-driver-v2.py')
+ COORDINATION = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock')
+ GIT = '/usr/bin/git'
+-HEAD = '0c59aaca0b4932507f068c723f73da2f96729b3d'
+-TREE = '4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09'
++HEAD = 'd25675445c39f76db69a7bd8e71a1a72e1cd5b9f'
++TREE = 'a489b394666b8141840275128a780605b024cde0'
+ PARENT = 'cc57c7198db6293ccca562253c42fffbe2a04633'
+-LEAVES = 15237
++LEAVES = 15243
+ DONOR_HEAD = 'cc57c7198db6293ccca562253c42fffbe2a04633'
+ DONOR_TREE = 'b7b357c07b5539769a068c6b9b009629f5612d1e'
+ DONOR_LEAVES = 15188
+ ACTION_SECONDS = 600
+ RECORD_SECONDS = 180
+-PACKET_PIN = {'bytes': 14331, 'sha256': 'b733baa29e1b70c6fa57582d61dfe47e360e9d3de4d0ef482193be30057914c6', 'git_blob': '728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c'}
++PACKET_PIN = {'bytes': 14404, 'sha256': 'd1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b', 'git_blob': 'b05c78c478bbd55219fea7869b1c7871617509c7'}
+ INVENTORY_MODULE_PIN = {'bytes':22946,'sha256':'20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2','git_blob':'51181866cbbb6e0176aab04117efffa8b6792b31'}
+ GIT_PIN = {'bytes':4066232,'sha256':'eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201'}
+ artifacts = []
+@@ -497,7 +497,7 @@
+         changed += before is not None and before != after
+         unchanged += before == after
+         rows[path] = after
+-    check(len(covered) == packet['overlay']['covered_paths'] == 110 and added == packet['overlay']['new_paths'] == 49 and changed == packet['overlay']['modified_paths'] == 60 and unchanged == packet['overlay']['unchanged_covered_paths'] == 1, 'exact complete reviewed 110-path overlay')
++    check(len(covered) == packet['overlay']['covered_paths'] == 119 and added == packet['overlay']['new_paths'] == 55 and changed == packet['overlay']['modified_paths'] == 63 and unchanged == packet['overlay']['unchanged_covered_paths'] == 1, 'exact complete reviewed 119-path overlay')
+     check(original_paths <= set(rows) and len(rows) == LEAVES, 'complete donor membership plus approved new paths')
+     complete = {'files': sorted(rows.values(), key=lambda row: os.fsencode(row['path'])), 'filesystem_entries': LEAVES, 'schema': donor_complete['schema'], 'source': {'head': HEAD, 'status': '', 'tree': TREE}, 'tracked_entries': LEAVES}
+     raw = pin(encoded(complete), packet['current']['inventory'], 'expected complete candidate inventory from the exact donor and overlay')
+@@ -566,7 +566,7 @@
+     check(base_input['format'] == 'hepta-c0f-format-base-provided-objects-v1' and base_input['base'] == {k: packet['format_base'][k] for k in ('commit', 'tree', 'parents', 'inventory', 'leaves')}, 'exact immutable original format-base input')
+     check(base_input['provided_count'] == 83 and base_input['required_existing_count'] == 16011, 'original format-base counts')
+     base_provided = add_provided(base_input, 83)
+-    candidate_provided = add_provided(candidate_input, 120)
++    candidate_provided = add_provided(candidate_input, 129)
+     check(sorted(base_provided & candidate_provided) == packet['object_scope']['provided_base_candidate_overlap'] == [], 'actual base and candidate provided sets disjoint')
+     target_keys = add_snapshot(complete['files'], packet['current'], LEAVES)
+     target_keys.add(HEAD)
+@@ -609,7 +609,7 @@
+         check(expected['commit'] in raw_commits and raw_commit_fields(raw_commits[expected['commit']]) == (expected['tree'], expected['parents']), 'four authentic raw commits with exact original parent references')
+     check(set(raw_commits) == set(packet['object_scope']['complete_snapshot_commits']), 'only four declared raw commits')
+     counts = {kind: sum(x['type'] == kind for x in object_index.values()) for kind in ('blob', 'tree', 'commit')}
+-    check(len(object_index) == packet['object_scope']['union_objects'] == 16652 and counts == packet['object_scope']['counts'] == {'blob': 14796, 'tree': 1852, 'commit': 4}, 'complete exact four-snapshot union, not ancestry')
++    check(len(object_index) == packet['object_scope']['union_objects'] == 16661 and counts == packet['object_scope']['counts'] == {'blob': 14805, 'tree': 1852, 'commit': 4}, 'complete exact four-snapshot union, not ancestry')
+     check(set(object_index) == donor_object_keys | base_seen | target_keys, 'no undeclared object outside the four complete snapshots')
+     result['object_scope'] = {**packet['object_scope'], 'complete_ancestry': False, 'format_base_leaf_identities_verified': True, 'donor_objects_must_be_read_from_git_bodies': len(donor_object_keys)}
+     gzrecord('EXPECTED_OBJECTS.json', encoded([{'sha': key, **object_index[key]} for key in sorted(object_index)]))

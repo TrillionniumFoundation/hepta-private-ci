@@ -1,0 +1,50 @@
+{
+  "schema": "hepta-independent-review-manifest-v1",
+  "evidence_leaf": "qa/evidence/utility-evaluation-20261112-36fa",
+  "prefix": "normal-root-custody-wiring-independent-review-v1",
+  "files": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 18279,
+      "sha256": "11fbd66a526ce061922e97f28796185163912a56b968757fe5922862afac0ff6",
+      "git_blob": "301ac7b630d378729010ddef119a29c5b8865e1c",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "SOURCE_AND_ENTRY_PROOF.json",
+      "bytes": 26327,
+      "sha256": "bcbabdd80738a03e67511336beab1eecf8803cd537bf329363498e0b8c15a252",
+      "git_blob": "ce666415ef00dfba3fe43513561e6ff736c1fa74",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "verify_source_and_entry.py",
+      "bytes": 7372,
+      "sha256": "c0f408dc58b9812b95fc2df45bed592df58d971bcf41fea49855b242cb8f64b0",
+      "git_blob": "ff9b1ab23c7c8249b8b2f481989d990790aff25f",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "SOURCE_FULL_GET_OBSERVATIONS.json",
+      "bytes": 16717,
+      "sha256": "8f30cec683d4b825cb746ed82133bc26ed9ac96ab604012290419b40210432aa",
+      "git_blob": "5830d353749d9deac7d5557387c52f14cc5b438e",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "ACTUAL_GIT_FULL_READBACK.json",
+      "bytes": 1506,
+      "sha256": "48c710aa789e15a7f76486d516aefb97dc560a3fa1618ed8b02805875db30fa2",
+      "git_blob": "7396ec9d8b2cdbf4a516a00048271b8e1eabeeff",
+      "actual_create": true,
+      "full_get_equal": true
+    }
+  ],
+  "source_or_ref_changes": 0,
+  "qualification": false,
+  "notes": "All listed files have completed actual Git create and full UTF-8 GET equality. Original SDKs are preserved locally; no source code or runtime result is fabricated."
+}

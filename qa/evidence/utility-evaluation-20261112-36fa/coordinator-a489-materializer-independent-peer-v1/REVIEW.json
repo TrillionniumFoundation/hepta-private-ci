@@ -1,0 +1,126 @@
+{
+  "schema": "hepta-a489-materializer-independent-control-review-v1",
+  "created_utc": "2026-11-13 10:04:29 UTC",
+  "status": "NO_CONCRETE_NEW_STATIC_BLOCKER_EXACT_FIXED_SUCCESSOR_ONLY",
+  "authorization": "Independent source/control review only. No H dispatch is authorized by this report; final exact approval remains Root's decision.",
+  "reviewed_inputs": {
+    "driver": {
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "bytes": 70596,
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    },
+    "predecessor_driver": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+    "packet": "b05c78c478bbd55219fea7869b1c7871617509c7",
+    "exact_request": {
+      "git_blob": "a5a3f6b6bcc0bdbfb4c36261d4c2d31f6fb5cefa",
+      "bytes": 128224,
+      "sha256": "9bc592eaf52602d71df0aa77995fb5b28124507db7f02359fdfb14e4a3cebda9"
+    },
+    "bootstrap": "b4b8ade499b3102ed450407fd9f05de44529cc39",
+    "stdin": "e4e971cde74ede142a8ef044a516652e35fbacb2",
+    "config": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+    "predecessor_request": "a34c8779fca77cbf1dd7e26e5516efcfb654c191",
+    "seven_input_full_gets": "Seven primary/predessor inputs were independently fetched in full from Git, saved as exact own review copies, and their typed Git blob identities checked by the pure verifier.",
+    "source_commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "source_tree": "a489b394666b8141840275128a780605b024cde0",
+    "sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "destination_leaves": 15243,
+    "clean_donor_head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "clean_donor_leaves": 15188
+  },
+  "findings": [
+    {
+      "id": "M01",
+      "result": "Exact adaptation; no implementation rewrite.",
+      "evidence": "The verifier reverses exactly seven fixed global assignments plus three complete count-check replacements and obtains the entire 70,560-byte original 6d1537 driver. All 56 original top-level definitions remain; 54 are byte/AST equal. Only derive_candidate_inventory and expected_graphs change fixed candidate/union counts.",
+      "unchanged_semantics": "Original scopes, global process guard, lock, command execution, object reader, mutation journal, source reads, create-only destination, full import, index, final inventories, retention and final result logic remain byte-identical."
+    },
+    {
+      "id": "M02",
+      "result": "Historical donor proof is kept distinct from the new expected destination.",
+      "evidence": "SOURCE remains /home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1. Packet donor, donor_git, donor_proof, original_inventory, parent_snapshot, seed raw commits, Git tool and original format-base objects are recursively equal to the predecessor packet. The original complete six-file Git metadata and nine stat fields remain required; no seven-missing-path bypass exists.",
+      "new_source": "Only a fresh /home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1 may be created. No replacement/reuse/repair of the old 0c59/f905 source or clean donor is introduced. New inventory bytes remain explicitly expected until a future actual materialization observes them."
+    },
+    {
+      "id": "M03",
+      "result": "New graph checks remain exact and bounded.",
+      "evidence": "The source overlay check is exactly 119 covered = 55 added + 63 modified + 1 unchanged, no canonical deletions, complete old membership retained and 15,243 destination leaves. Candidate provided count is exactly 129. The union is 16,661 objects = 14,805 blobs + 1,852 trees + 4 commits. The original cc57+246d donor union remains 16,449, the original c0f closure remains 16,094 with 83 supplied and 16,011 shared donor objects.",
+      "limits": "Four complete snapshots are not full ancestry. The declared omitted parent boundaries remain unchanged. The full 129 provided-object content/membership and joined staging package have a separate ordinary_path peer; this control review does not replace that evidence or execute the driver's graph functions."
+    },
+    {
+      "id": "M04",
+      "result": "Every reused donor body and every imported object remains mandatory.",
+      "evidence": "create_destination still reads all 16,449 reused donor objects from original Git cat-file bodies with exact type/header/size/SHA256/typed OID and derived tree/commit comparisons. Working-file bytes or batch-check availability do not substitute for those bodies. The new independent pack is fsynced, index-pack checksum/storage bytes checked and every union object fully reread in the new repository.",
+      "source_scope": "The old donor is accessed read-only. command rejects mutation unless repo==TARGET and target_created. Target source, .git store and record directory are new create-only locations; original physical files, metadata and refs are fully rechecked."
+    },
+    {
+      "id": "M05",
+      "result": "Original normal-index, full-source and source-before/after contracts are retained.",
+      "evidence": "The new index uses original read-tree, detached HEAD update, update-index --refresh and write-tree, all confined to the new target. Every actual index logical entry and stat field is checked; assume-unchanged/skip-worktree/extended/unmerged states are rejected. Original 5118 complete inventory and distinct native five-field projection must match their pinned expected bytes and all 15,243 leaves.",
+      "continuity": "The complete current source, raw Git state and full Git file metadata are captured and compared again. The old donor audit independently compares every physical leaf plus complete Git file bytes/stat and no-ref state. A successful action alone is insufficient."
+    },
+    {
+      "id": "M06",
+      "result": "Guard, ownership and budget boundaries are unchanged.",
+      "evidence": "preflight retains UID 1000, the same source-coordination path and exact dev/inode, EX|NB lock, global same-UID active/unreadable process refusal, fixed original inventory module and Git tool, no inherited Git overrides, no bytecode, non-following stable original file reads and actual disk calculation. No guard exception, polling queue or competing-process termination is added.",
+      "budgets": {
+        "action_seconds": 600,
+        "record_seconds": 180,
+        "outer_seconds": 900
+      },
+      "disk": "The original two-pack-copies plus physical source plus 384MiB record-headroom formula is unchanged. This materializer does not invent a maintenance 32GiB check or alter any later maintenance budget.",
+      "cleanup": "Only owned Git children are subject to original bounded cleanup. A cleanup timeout is retained as unknown, not assumed terminated."
+    },
+    {
+      "id": "M07",
+      "result": "Unknown and failure records remain explicit; no retry or rollback is added.",
+      "evidence": "main leaves absent baselines as unknown_not_available. It retains operation errors, tracebacks, cleanup errors, partial creation journal and pack. It declares MATERIALIZED_EXACT_CANDIDATE_FOR_MAINTENANCE_REVIEW_ONLY only if action_completed is true, no operation/cleanup/retention error exists, and all three actual final audits are verified. Otherwise it retains FAILED_CANDIDATE_MATERIALIZATION; record failure can itself leave a transport/terminal unknown and must not be represented as success.",
+      "invariants": "The original 180-second retention phase reserves ten seconds for final records. Four output record pins are bound into RESULT. The held lock is released only in original final cleanup. No source reset, removal of partial target, re-entry, gate or ref publication is introduced."
+    },
+    {
+      "id": "M08",
+      "result": "The exact bootstrap and typed request remain narrow.",
+      "evidence": "Full bootstrap inverse replacement of BASE and PINS recovers the actual a34c predecessor code. All four helper definitions are byte-equal. Its five decoded payloads equal the independently fetched driver/packet/config plus the unchanged actual donor RESULT/supervisor. The same stable nine-field readback, owned nonsymlink parents, O_EXCL records and exact execv remain. Bootstrap does not prehold a second EX lock.",
+      "typed": {
+        "fields": 7,
+        "host": "desktop",
+        "cwd": "/home/qian-qi",
+        "executable": "/usr/bin/python3",
+        "args_prefix": [
+          "-B",
+          "-c"
+        ],
+        "timeout_seconds": 900,
+        "environment_override": false,
+        "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-isolated-materialization-v1"
+      },
+      "bounds": "Exact typed input is 128,224 bytes; exact stdin is 121,937 bytes. Both remain below the original 1,048,576-byte cap. Candidate config differs from HOLD only in status and root_execution_approved; a true field in candidate bytes does not itself constitute dispatch permission."
+    },
+    {
+      "id": "M09",
+      "result": "Five pre-staged binary inputs preserve the existing partition and limits.",
+      "evidence": "The verifier checked all five exact typed request schemas, fixed external paths, expected_version=absent, host=desktop, full decoded identity and sequential offsets against the packet. Base remains two pieces; candidate remains three. Each decoded piece is at most 524,288 bytes; the maximum typed request is 699,256 bytes, below 1MiB. The driver separately checks the original 0600 mode, full joined gzip/raw identities and bounded decompression.",
+      "sequence": "Only the fixed staging paths may be reconciled after an unknown transfer; do not overwrite, change content/key, infer absence or start a replacement process. No H action was performed by this reviewer. Actual staged files and actual same-job terminal observations remain future execution evidence."
+    }
+  ],
+  "scope_separation": {
+    "engineering_prepare_only": true,
+    "qualification": false,
+    "H_calls": 0,
+    "Rust_compile_or_tests": 0,
+    "driver_or_bootstrap_execution": 0,
+    "source_or_ref_mutations": 0,
+    "performed": "Pure local byte/AST/JSON/base64/hash comparisons of fixed inputs, plus static semantic reading of new checks and original guards/main/finalizers.",
+    "original_failures": "Prior fix101, later fmt-only success, host assembly gap and missing real independent task B are not changed by a new source object graph or this review.",
+    "approval_conditions": [
+      "Root must approve this exact main typed hash and ordered fixed staging actions.",
+      "Actual donor/process/lock/disk/source conditions are rechecked by the unchanged preflight; this static result does not pre-authorize them.",
+      "Only the exact original admitted job may be reconciled if a transport result is unknown. No automatic retry or new identity is implied."
+    ]
+  },
+  "evidence": {
+    "byte_proof": "1c6eb0d0445f00f8e5ad12c9720924d6275cda4d",
+    "byte_proof_file": "FROZEN_BYTE_AND_GUARD_REVIEW.json",
+    "script": "verify_fixed_delta.py"
+  }
+}

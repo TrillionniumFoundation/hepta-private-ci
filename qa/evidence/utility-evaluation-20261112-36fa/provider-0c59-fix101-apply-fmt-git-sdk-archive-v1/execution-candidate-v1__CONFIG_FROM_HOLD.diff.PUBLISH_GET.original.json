@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "--- WAITING_CONFIG.json\n+++ APPROVED_CONFIG.candidate.json\n@@ -67,8 +67,8 @@\n     \"git_blob\": \"12a664ce2905feb8107ae66b303c4975f17a9fe3\",\n     \"sha256\": \"84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300\"\n   },\n-  \"root_execution_approved\": false,\n+  \"root_execution_approved\": true,\n   \"source_repo\": \"/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1\",\n-  \"status\": \"HOLD_ROOT_EXACT_REVIEW_REQUIRED\",\n+  \"status\": \"ROOT_APPROVED_TO_EXECUTE\",\n   \"test_commands_authorized\": false\n }\n"
+  },
+  "isError": false
+}

@@ -1,0 +1,2004 @@
+{
+  "actual_final_inventory": {
+    "bytes": 5634549,
+    "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+    "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+  },
+  "actual_fmt62_packet": {
+    "bytes": 2175219,
+    "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+    "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+  },
+  "actual_retained_witness_packet": {
+    "bytes": 36709,
+    "git_blob": "786b5872a8064d18f6d391b82c7af3813541c0c1",
+    "sha256": "f03d11da7482d4a45e1c92459001b3d3e35a375ded269fb26d634e407cb62d00"
+  },
+  "actual_updates_from_cc57": 118,
+  "actual_updates_from_f905": 16,
+  "all_other_source_graph_rows_unchanged": true,
+  "appended_layers": [
+    {
+      "changed_paths": [
+        "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+      ],
+      "name": "coordinator-actual-format-rebase",
+      "packet": {
+        "bytes": 330014,
+        "git_blob": "773d67128190fd2e1c3271c372f72e2a5537d1e8",
+        "sha256": "2f5471dd1c66d764d5d577449a0cf7db9ac6a1c0fbdb3ae462159b362369c87f"
+      },
+      "path": "/tmp/hepta-36fa-coordinator-f905-preparation-v1/SOURCE_PACKET.json",
+      "resulting_expected_leaf_count": 15243,
+      "resulting_expected_tree": "a0bd2241a3a005b68a4682a339d2be016fa3fa72"
+    },
+    {
+      "changed_paths": [
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+      ],
+      "name": "coordinator-original-metadata-getters",
+      "packet": {
+        "bytes": 74256,
+        "git_blob": "5279a43b99aa7031343578a21dba895f5eac3188",
+        "sha256": "9d114291af1408792b6c64413b216ff3c1264865c5aa560715a529e29fbe00a8"
+      },
+      "path": "/tmp/hepta-36fa-coordinator-original-metadata-getters-v1/SOURCE_PACKET.json",
+      "resulting_expected_leaf_count": 15243,
+      "resulting_expected_tree": "2b423171ef3f1057ebaa081daf3ce42b78f467d7"
+    },
+    {
+      "changed_paths": [
+        ".github/blob-size-allowlist.txt",
+        ".github/workflows/hepta-daemon-learning-native.yml",
+        "CALLERS.toml",
+        "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+        "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+        "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+        "qa/b4-no-bypass/test_resident_root_source_closure.py"
+      ],
+      "name": "actual-format-coordinator-registration",
+      "packet": {
+        "bytes": 6316265,
+        "git_blob": "e01b6c1689e1d834701a0d4565c5da662936ea80",
+        "sha256": "6c9f1ae9ea4cd4f98b6d14ef628c1121b88dc2b27775f6e5867e2cb4bf6cd7c5"
+      },
+      "path": "/tmp/hepta-36fa-coordinator-f905-registration-frozen-v1/SOURCE_PACKET.json",
+      "resulting_expected_leaf_count": 15243,
+      "resulting_expected_tree": "a489b394666b8141840275128a780605b024cde0"
+    }
+  ],
+  "base_actual_working_source": {
+    "head": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "status": "M codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs\n M codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_local_read.rs\n M codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_read_service.rs\n M codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_host.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_retained_version_state.rs\n M codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs\n M codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs\n M codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs\n M codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs\n M codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs\n M codex-rs/hepta-learning-ledger/src/snapshot_codec.rs\n M codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs\n M codex-rs/hepta-learning-ledger/src/witness.rs",
+    "tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
+  },
+  "base_actual_working_tree": "f905b18e6b05de1582024548179725a05d932536",
+  "base_overlay": {
+    "bytes": 54410,
+    "git_blob": "148e9efc242f3ee3ee4e525281ec170feecf3f19",
+    "sha256": "ba2b642c5e1014fffa1151cca87e1b516c255f8d5ef549c633ce3f73fb615e57"
+  },
+  "canonical_source_deletions": [],
+  "expected_tree": "a489b394666b8141840275128a780605b024cde0",
+  "format": "hepta-exact-complete-coordinator-registered-overlay-v1",
+  "formatter_compiler_qa_full_collector_native_executions": 0,
+  "full_repository_expected_counts": {
+    "files": 15243,
+    "kinds": {
+      "file": 15242,
+      "symlink": 1
+    },
+    "modes": {
+      "100644": 15152,
+      "100755": 90,
+      "120000": 1
+    },
+    "rust_all_repository": 6794,
+    "rust_outside_codex_rs": 122,
+    "rust_under_codex_rs": 6672,
+    "unique_blob_objects": 14665
+  },
+  "historical_candidate_only_exclusion": {
+    "canonical_deletion": false,
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_test_support.rs",
+    "present_in_cc57": false
+  },
+  "limits": [
+    "Complete file counts and mode-aware hashes are expected projections, not observations from a new materialization.",
+    "Registration peer approval and Root exact source commit/materializer/maintenance/gates remain separate.",
+    "Twelve new coordinator APIs still have no non-test caller; the new local custody mechanism is not a complete deployed Root path.",
+    "RootSession timeout or outer cancellation does not prove worker join; cold cases are same-process existing-state reopen mechanisms.",
+    "The prior fix101 failure and actual f905 bytes remain intact; no previous test result qualifies this candidate."
+  ],
+  "local_overlay_directory": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay",
+  "materializer_delete_operations": [],
+  "new_commit_identity": null,
+  "non_rust_prepared": [
+    {
+      "bytes": 13318,
+      "classification_from_cc57": "modified",
+      "git_blob": "bf6cae8fe21f249a6e055b5edd2f69a2a61cafa8",
+      "kind": "file",
+      "last_layer": "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/.github/blob-size-allowlist.txt",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80"
+      ],
+      "original_git_blob": "c3257329caece666950db2041a8e9f47acf5c129",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha256": "28d1f9a9319d4eaad3455f9d14d83e5f7cef2a7731f5b5dbfbf94ce4a428b059"
+    },
+    {
+      "bytes": 30745,
+      "classification_from_cc57": "modified",
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "kind": "file",
+      "last_layer": "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/.github/workflows/hepta-daemon-learning-native.yml",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80"
+      ],
+      "original_git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+    },
+    {
+      "bytes": 1855845,
+      "classification_from_cc57": "modified",
+      "git_blob": "1f53a53349aa18d37a0c7299f2ab9fe94b0de244",
+      "kind": "file",
+      "last_layer": "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/CALLERS.toml",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80"
+      ],
+      "original_git_blob": "db00e6d39c00e67b2454ee0bba05151aa4e1fac1",
+      "path": "CALLERS.toml",
+      "sha256": "8c32ce84deefdb06bf98728dae51e287496349fc1abda95ecc96a9ce5599ce5c"
+    },
+    {
+      "bytes": 358159,
+      "classification_from_cc57": "added",
+      "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+      "kind": "file",
+      "last_layer": "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80"
+      ],
+      "original_git_blob": null,
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7"
+    },
+    {
+      "bytes": 33555,
+      "classification_from_cc57": "modified",
+      "git_blob": "0035bb4c3abfa424bc9c6d70dc20f592c6ad34ef",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "sha256": "778128c7b402eb91c3808b0d604eaa9ce548ef17b796df4dbc391334ad3545e7"
+    },
+    {
+      "bytes": 102696,
+      "classification_from_cc57": "modified",
+      "git_blob": "03ca2b5de52c6982cfe1623885a1675fd3ed74fd",
+      "kind": "file",
+      "last_layer": "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80"
+      ],
+      "original_git_blob": "b9d8241d3ade2189b36d4122f1175c500fd8a723",
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "sha256": "caba0dc645261cb5ecb2ae8eb92e10bab92683f6fb9bb399b62a26eabe5360d3"
+    },
+    {
+      "bytes": 14428,
+      "classification_from_cc57": "modified",
+      "git_blob": "0fdee06b2c16978ba80f94a91df84cba810b4f9d",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "a8b366ff752ddd52f6bf2a06a60c0ca9b0529370",
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "sha256": "9a48ace43882afd56f255fb4935004db807dcc66db25f001fb1456e4e8d418f8"
+    },
+    {
+      "bytes": 26069,
+      "classification_from_cc57": "modified",
+      "git_blob": "235a56a06d3081f8da3816827b8c5447bd2e9dbd",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "e29b774f6a54229acf05d237c7d00b0bef5608fb",
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "sha256": "a8c94a9a186ad2f9926df48c4eb30216f5b38b0ade3199dcca435028f6c89327"
+    },
+    {
+      "bytes": 18535,
+      "classification_from_cc57": "modified",
+      "git_blob": "05c122ebb59117b72a06d38c38c707db02c8e7bb",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "63c0ab0ff9e24bc96fe77a7559940dd6467d5748",
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "sha256": "5b9864f76b899c51832dbab8cc598ba909a842a6b75796e2c9d55715a8044714"
+    },
+    {
+      "bytes": 22890,
+      "classification_from_cc57": "modified",
+      "git_blob": "3466386cedd9c100f6e69869969995b9db42ea7d",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "daf7be67eb98a2213b794e8c7d6fefee808fd322",
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "sha256": "87fddf091809d89eaaa664ed942896e9a4d84def971f2da8291f5fc3b94b759d"
+    },
+    {
+      "bytes": 14576,
+      "classification_from_cc57": "modified",
+      "git_blob": "e6910112f1008cebb8bd6091c29943f84ef6009f",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "e56bcaeea85ed4749c75898b2df3519a1cb18368",
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "sha256": "b519d4194e111a6dfbd38472ba288ae12c838dd2b10f06aa8eb0568d12cc4275"
+    },
+    {
+      "bytes": 23106,
+      "classification_from_cc57": "modified",
+      "git_blob": "1b8f48048435401286d262244b86220cb0ad591f",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "1901452c88fb7ad5df8b7950bc099c10835351e6",
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "sha256": "3f5b4940c4d9a2a47802c8882e130b7637d0c72e00bd34776de03ba223fb9e49"
+    },
+    {
+      "bytes": 17350,
+      "classification_from_cc57": "modified",
+      "git_blob": "db8d83692485ac542385405b48af77dc494e2e23",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "1e768e18b8e5471874d7a739a453cdd30f3e2346",
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "sha256": "9ecf24ab52298cde731538de4e43ef9fe3ff6c91e2955e1e8e832b3934a22c8d"
+    },
+    {
+      "bytes": 18952,
+      "classification_from_cc57": "modified",
+      "git_blob": "31cdf5702a25daca3f56a19c0985c63c4b67e1b1",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "037473646bab83b6baa296470ca402eea3f5fdbe",
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "sha256": "b453403e617921df28e85701fc0e13a6a2d387b4948af257a990ee401e6fcc06"
+    },
+    {
+      "bytes": 15081,
+      "classification_from_cc57": "modified",
+      "git_blob": "0e77e6dd786a581c0c35e4c0f65c8bb9f7fea250",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "76f0d48e9150ec50c64ad8a25b46b66bf8a4096b",
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "sha256": "0dde10e99ecdfc8a5ce02f6885980730d0fe959fc21ac6d85171a1f8bb04ff0d"
+    },
+    {
+      "bytes": 14372,
+      "classification_from_cc57": "modified",
+      "git_blob": "f25361064292d56769a69c7c8e62cb9fab20dcbc",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "d5b602ec3fd1f212b7a5fa11d7481677440efe5b",
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "sha256": "66801f8c0d1306a3858939683d3e9c140d7e57e5a235b8f62f784198ff5e393b"
+    },
+    {
+      "bytes": 20034,
+      "classification_from_cc57": "modified",
+      "git_blob": "7575a17220042c150b66cea9d06f1e7d87aa2d96",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "be8a1affafa0ee7b7180725ffc5d004b0a8f9f6b",
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "sha256": "6d0feaf2fa103a91832f5b986c7ff40cda3ad1c5ce8293448b29f62ea55672d9"
+    },
+    {
+      "bytes": 10007,
+      "classification_from_cc57": "modified",
+      "git_blob": "34e92714e309b0ffcb2fadeba4d5aa1458be6132",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "bd4f03a6fbb9741fc05ff6d02fe9646a6e035cbc",
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "sha256": "6ce179a1abab4299cd2e3418269b06d71fc880f25d41b474efcc6698a8ee80b1"
+    },
+    {
+      "bytes": 17979,
+      "classification_from_cc57": "added",
+      "git_blob": "da9574801cfd3a7ef43232a8bfffe4510099fbad",
+      "kind": "file",
+      "last_layer": "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80"
+      ],
+      "original_git_blob": null,
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "sha256": "84d899d007956d9594b1465152467ecc6ba7eff2fc152a36f3ae83355de89b41"
+    },
+    {
+      "bytes": 33253,
+      "classification_from_cc57": "modified",
+      "git_blob": "5a6f9372830e4eee584484b88e53e4ffbf5127d9",
+      "kind": "file",
+      "last_layer": "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual-format-coordinator-registration / e01b6c1689e1d834701a0d4565c5da662936ea80"
+      ],
+      "original_git_blob": "c9c4ed3e54a1c24f298d7c16a461e344828ac71f",
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "sha256": "019a8988beea067db2d71784f5cc4a8516d8830f749c6f6cf47cd7084adb2129"
+    }
+  ],
+  "original_complete_cc57_inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "prepared_source_bytes_all_locally_verified": true,
+  "prior_fix101_remains_failed": true,
+  "production_root_startup_wiring_completed": false,
+  "real_task_chain_results": 0,
+  "root_required_new_commit_sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "runtime_materialized": false,
+  "rust_files": [
+    {
+      "bytes": 7783,
+      "classification_from_cc57": "added",
+      "git_blob": "7dbd6bdc856fffcd2aa2657f72535a95886c6cc4",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "sha256": "671da3ee0159259421c5544270e52f235b672775b29c853a19584c5e1a83144b"
+    },
+    {
+      "bytes": 8197,
+      "classification_from_cc57": "modified",
+      "git_blob": "41ad5a933ad6a169b62ae216bde159e56800ed3c",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "3275b6d0de952fab371578336cba1e04215d1ee7",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "sha256": "6b9f30ad0e65aa584e6fb5bf5892edfce7cbb4dedbded013b079c2b68bdb54b2"
+    },
+    {
+      "bytes": 6810,
+      "classification_from_cc57": "added",
+      "git_blob": "232e08dda261e59032cf6ccb987e9cbd86e35e49",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "sha256": "ecdd97b0ccc3196af2a3cea155ce8ccc34edb127eb05c99fcde7d31a968158c1"
+    },
+    {
+      "bytes": 11034,
+      "classification_from_cc57": "added",
+      "git_blob": "6290425c5b4338885ce2d7637715940c4fb82d6d",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+      "sha256": "8bdf86b4eea7b9434b1c10ad0092dffd7f50c4d903d3286f399c529aa907daba"
+    },
+    {
+      "bytes": 12300,
+      "classification_from_cc57": "added",
+      "git_blob": "275790050ada76230712c4e8698df53d0e4e711a",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "sha256": "e396bea53c666cfd7cb7b48d3a309241805a2b31c139d48fc4bee8fcdb5388d6"
+    },
+    {
+      "bytes": 15083,
+      "classification_from_cc57": "modified",
+      "git_blob": "64d25ff8801f69b61de0a2433282786a82b3f15a",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "e16820f8bab3027ab74490f942a34c7ee5470739",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "sha256": "a7c598c946a5a94b3202ffc279d4b5ed244c772ffb1289c7c8eb202ee20ece49"
+    },
+    {
+      "bytes": 12686,
+      "classification_from_cc57": "modified",
+      "git_blob": "aa70d902152de9db292956e4dd996212551c7107",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "3c534c5aef813fe1e43eba0cc5e3978721e82167",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "sha256": "e5c4ac78a150daf3417dd2fd0ae29c2ec1e18a968b633cccd2f42d11c20ba1e2"
+    },
+    {
+      "bytes": 14360,
+      "classification_from_cc57": "modified",
+      "git_blob": "8239d30746a24cecdf0b469da7c45433733f1098",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "1cf1bfcfb382dbaffc5b3e33b2d20acaca06b67f",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "sha256": "1d0ae260b8349ebc744df025502e7e6462be223eeba21d291e7f682fc88b0b1f"
+    },
+    {
+      "bytes": 16041,
+      "classification_from_cc57": "modified",
+      "git_blob": "94cdad47f9564d1521a7216c8d8d62c422202b85",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "56423fc5ab8bb3d8dd1169ba3571efdecfa18c00",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "sha256": "b6ada6b2e9654f9e670a42aa099d49abb73f6f0b90a81361cedbeb0b212702ef"
+    },
+    {
+      "bytes": 3802,
+      "classification_from_cc57": "modified",
+      "git_blob": "113feddc8a4c543f7c4df15bd6450028851c5dea",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "3546571b4cb448383c76b7ff11bf14a19104e86f",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "sha256": "3a03f65d8f5fa55d3376f54cad23642917e2f7eeb4b20b74776da032008719ce"
+    },
+    {
+      "bytes": 15958,
+      "classification_from_cc57": "modified",
+      "git_blob": "af904cce49ee4b7c0486b74f6fdcef7579d489c2",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "80e37d6b6f41081cc661850ea29b9ff61a5787ef",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "sha256": "ef696ab5c1cb896e085be1bb6e4bd23d6ea1ea5eb928d78aadf3735d2e3fc535"
+    },
+    {
+      "bytes": 3236,
+      "classification_from_cc57": "modified",
+      "git_blob": "b0e4049f4f9c128ab29a5c12b0892d3a4c5bf0b9",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "034c2df36cbbbfe13e4378437ae7c4e311650dc8",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+      "sha256": "eca7cc30a25d53e14e0f5d1289dfce20899fcc42a541944c11d05c792414fcb5"
+    },
+    {
+      "bytes": 1730,
+      "classification_from_cc57": "added",
+      "git_blob": "a4eeeebfe708774cf8d2a553d031fdb17969adba",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "sha256": "36ab5af1dc36d3bb1e2cbd5ed85871357956117875957495dd82c63f858b8c65"
+    },
+    {
+      "bytes": 500,
+      "classification_from_cc57": "added",
+      "git_blob": "e4322de280617f3cec445b4b5211cc8659e18816",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_observation_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_observation_tests.rs",
+      "sha256": "ea50838ea1569f534141c72bc65cd51c9c06d1dd3c8e052d11f28250d2a2b1bb"
+    },
+    {
+      "bytes": 7557,
+      "classification_from_cc57": "added",
+      "git_blob": "cde16a60860fa5eccb1160353d6806f3f9f81477",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "sha256": "4de86df4dd59a579f00863e461277946e3f04cbcc69d8b43f50c1fc66fa3f836"
+    },
+    {
+      "bytes": 3633,
+      "classification_from_cc57": "added",
+      "git_blob": "451549f4df782233fc42e808f8eebee29f168f6e",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "sha256": "fd9011e42ef2a9dc9c99c35c33670f71a906049268e1f7afcc20ff83feb130c3"
+    },
+    {
+      "bytes": 4569,
+      "classification_from_cc57": "modified",
+      "git_blob": "5a0c37eaa9baf7b0bd48489f2714df28497d2a9f",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "3dbd154ed4558c310625f57138c41aedaa182cc7",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "sha256": "88841228a6d56149886b1a6ffc2798afeba5135cd05dbdd0bfbb97bd3d22c064"
+    },
+    {
+      "bytes": 1644,
+      "classification_from_cc57": "modified",
+      "git_blob": "9f3250fa71d7fab69edae98f684ee2204f37d21e",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "03a40cad03821f7eb80552af29c0d720c6b44446",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs",
+      "sha256": "252e9bd01ba9eb7e5dab822ed0109f14540fcf0f685fae5e445be5cc5cddb2af"
+    },
+    {
+      "bytes": 9145,
+      "classification_from_cc57": "modified",
+      "git_blob": "3b667897279c79aec9fe1b85901f70ab0eb03b16",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "2893d2cc97faef0f3352406b89f7ec190b8e629d",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "sha256": "0a6e79cbdee0084345fc5b067c110922d755eeac00c172c7befe0f442d3595fc"
+    },
+    {
+      "bytes": 4751,
+      "classification_from_cc57": "added",
+      "git_blob": "57d162f984ae7d812eb0c1de8e6033d322b3d10f",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "sha256": "76d2dc25e862d87046d8bb23366c9bad544318f08eba66d1c6fed6298887ba46"
+    },
+    {
+      "bytes": 5034,
+      "classification_from_cc57": "added",
+      "git_blob": "386c3c773866c720cfeb2ad7cb2b7b81065d21af",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "sha256": "ba41dc3a6e97225abed0361c77f424090eaea976c8c8766650d96825e5afbb7f"
+    },
+    {
+      "bytes": 865,
+      "classification_from_cc57": "added",
+      "git_blob": "8802ebe5e4b37c01126928422946142bf758c17d",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs",
+      "sha256": "ab419300ded91e1ae2dfbe5dc96c764c66b96e9a3863ca856b584fd93c2f9044"
+    },
+    {
+      "bytes": 12401,
+      "classification_from_cc57": "modified",
+      "git_blob": "f6560fe4b5989a6961c9064628441775c15baeed",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "8c034c0c4ca948983fb4471e485fa7bf55fe4172",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "sha256": "4dfd606597e1a7e4fed5a9d51773a945c6dc3655944247ea654660079dc12cab"
+    },
+    {
+      "bytes": 4659,
+      "classification_from_cc57": "modified",
+      "git_blob": "272a6aba53c515af0b5ec5c5d8d046ccc40dbe2f",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "fed5077853544aad6a725f2967ba782715555a1f",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "sha256": "405174c6cf29894569e260b2535d3ea03bf3dac5de13cd4f1804f703c9a09b27"
+    },
+    {
+      "bytes": 12185,
+      "classification_from_cc57": "modified",
+      "git_blob": "eee73f62fc021d3004638681e6b78ea462129966",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "023d44d19df5ae7eb6b566ba03d6b323d9e6eaef",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "sha256": "e39a179c370f8433162a3e8dca41f703769b12e823da3467e64957a26177fbe8"
+    },
+    {
+      "bytes": 6626,
+      "classification_from_cc57": "added",
+      "git_blob": "3970dbf29eb46dede4337aca04a0f500163ddd03",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "sha256": "cc4a94f932cde080926a8b674272adb55d1b139501cd4cd74c14d5ef54d314f3"
+    },
+    {
+      "bytes": 20380,
+      "classification_from_cc57": "added",
+      "git_blob": "83cc4158e980804b0e7bd4365e51cf88b43a2196",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "sha256": "e65ad37b6d97b3001c09bbbe2e4c219e147740a087f9a5cd9428872f30ec060e"
+    },
+    {
+      "bytes": 20451,
+      "classification_from_cc57": "added",
+      "git_blob": "ed556681b4219282ce03e229d8ce8952d0ff0e2f",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "sha256": "7dc64a0b751a74470e5a3476460b63af97d804559d73ddd70b44ecc7829c9614"
+    },
+    {
+      "bytes": 3225,
+      "classification_from_cc57": "added",
+      "git_blob": "8a91d5b0e416af513df2810d969c97434e28e5be",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "sha256": "dec854db56f3a058bda60cb67d69f1dbee8082c72952bcfe9c8dac08d370dd39"
+    },
+    {
+      "bytes": 3833,
+      "classification_from_cc57": "modified",
+      "git_blob": "d033ad95eabcc985e315d06a2fe45719e79f1eab",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "c2e4d61d3b676c1d01d4f4efff39dbd45cff09f1",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "sha256": "c70722550176741b554837aa0da43112bc3127e93c1cbc629a1c97964c1cfeb9"
+    },
+    {
+      "bytes": 9143,
+      "classification_from_cc57": "modified",
+      "git_blob": "007947db1e891643041d03e33dc9991a2698566a",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "95e6dc6fb97dadbafdcc9e13897221da6ddccb36",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "sha256": "73f0170902760c56c9273f6e5023cba0777f684fe1902902ade1e009daf61349"
+    },
+    {
+      "bytes": 3455,
+      "classification_from_cc57": "added",
+      "git_blob": "55a3240ca2398591e2c2e90ef2de81b2bfeb3360",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "sha256": "1acf86a8d800196b4ffe4c87c928a5f038fe2f58e6df70c30c854c672ea609b8"
+    },
+    {
+      "bytes": 14980,
+      "classification_from_cc57": "modified",
+      "git_blob": "49243f911ab7f7edd13e1aceb2a5f6477d161980",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "fbc73f0dc7140625e56b6e5b409e9e5469a247ea",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "sha256": "b8fc407f8dec8cd43b02faa2ee9e182dccd30ed7789aa73994975745511f03e1"
+    },
+    {
+      "bytes": 2870,
+      "classification_from_cc57": "unchanged_original",
+      "git_blob": "4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "sha256": "9487d5e9fa45f3b1d37ae0470990152741e427a812697afc08718cae9af41e33"
+    },
+    {
+      "bytes": 9753,
+      "classification_from_cc57": "modified",
+      "git_blob": "c00498c5f8c2ac1301d1dbb32e630c9efb01867a",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "dff1d4f81b87a258218c83de075de9bce884364d",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+      "sha256": "681f530fa4c92caa90eff09c76917002714ac02fca343af10c66fa58531c8419"
+    },
+    {
+      "bytes": 14821,
+      "classification_from_cc57": "added",
+      "git_blob": "444fbbb4e48743f51de91d39d77c34b37364b002",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "sha256": "9aa9a9a908790683bcab368f9d528707d9dda39c238d30e8a163a1aaa1f16e94"
+    },
+    {
+      "bytes": 3030,
+      "classification_from_cc57": "added",
+      "git_blob": "b3ae22835e388ad7ae9b3488f85896f0dcdf2fed",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "sha256": "2822d8e9b5f4ada7d0868e11705f3f18e23d49e5e2dd1e9ddece5e96183fe0f8"
+    },
+    {
+      "bytes": 27373,
+      "classification_from_cc57": "added",
+      "git_blob": "b9a4d5bda8f02c16a198efde82a7d0d589f3d18c",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "sha256": "6195fb4dd0704c4d932f33bfb8f4d4af6d966015576b477f7feeb75f5ff899f5"
+    },
+    {
+      "bytes": 7516,
+      "classification_from_cc57": "modified",
+      "git_blob": "cbf9e717bda5ba469964cff7a399763c4f4e0bb9",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "639f3d799c69a54c4583ee24ce87956ec149a07f",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "sha256": "69dc83b427aa78f1326319bd340175a73553134db0abb08b96fb72498a25cfa8"
+    },
+    {
+      "bytes": 13514,
+      "classification_from_cc57": "added",
+      "git_blob": "2dafccfb708098871d5ab4807ec185920c73c544",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "sha256": "499c240eb53e179e01b5aa589d5e0c51a1ac74eed28e2fd7499b9b72770cbf80"
+    },
+    {
+      "bytes": 24081,
+      "classification_from_cc57": "added",
+      "git_blob": "ffafea99606924aa115f6c9ba06f417a7a08618b",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "sha256": "1a9f84835d412587b76da140f7e684d4cdbffaaeb988a19ae62dce1fd793cb2b"
+    },
+    {
+      "bytes": 16457,
+      "classification_from_cc57": "modified",
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "542e4e532443ac2082bd0b8fa7649fcdb25deca9",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370"
+    },
+    {
+      "bytes": 10845,
+      "classification_from_cc57": "modified",
+      "git_blob": "fc98ce9ee4c3c51a575abed19124c1292641ac73",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "858941ba17c031bc321b5dce504672491c7e57e7",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "sha256": "85fcb670e9b0e7f0d420e1282ecc9ed4596fc941d50d169c098a157588157158"
+    },
+    {
+      "bytes": 12151,
+      "classification_from_cc57": "added",
+      "git_blob": "24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "sha256": "da9b6959af1488715c55e0aea8311fbeab1242e40741b6822025f977e52a5359"
+    },
+    {
+      "bytes": 5413,
+      "classification_from_cc57": "added",
+      "git_blob": "8b66af8f37a5d06644d18911cd0ebbc2b83da59e",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "sha256": "ab8523cbd59b225684e42ce0683eecdb181230bad7781cee2e67bd5a3d7e57b4"
+    },
+    {
+      "bytes": 10265,
+      "classification_from_cc57": "modified",
+      "git_blob": "8fd54c3fcde5ee49fb330296a8651fc08f43273d",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "4db1399444a01432f056f71e7322990750f3ce0f",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "sha256": "f6ee338a20e9ce145e629722a2c9d22cd97d1bbf751db41cf8b5cdf504e6c7f4"
+    },
+    {
+      "bytes": 12454,
+      "classification_from_cc57": "modified",
+      "git_blob": "6630261d108788169cfcad798a76e0118374baa1",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "a2b190518040968eba90448016908974e69d6e40",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "sha256": "fda54486eb6058c3910bce1b0b3519642f5b9d3fa5937d517e3586fac8a79a18"
+    },
+    {
+      "bytes": 11138,
+      "classification_from_cc57": "modified",
+      "git_blob": "94ff7bbd1cc895a3acdd1ebc827e4838ceda5d67",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "sha256": "ad426f9a1db6c16ec431a91738de97cbc650ca95a82c2a65f94e4ff8db436cee"
+    },
+    {
+      "bytes": 26575,
+      "classification_from_cc57": "modified",
+      "git_blob": "f7da75482e854f7b394b732fc5a9c01de7b7064c",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "704673bda41352c26a5f464fc0b0ab75654eef22",
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "sha256": "151a83ccbd8acaeea5edad60f4449f8f93e916b740dc3f024836eb1ea3c6b182"
+    },
+    {
+      "bytes": 26954,
+      "classification_from_cc57": "modified",
+      "git_blob": "b1179b7fda45ba5ac0340147e2e103dc795dc1a3",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "127e9731d146a8a30b2f6cfa8b563f97afe694a8",
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "sha256": "1f79bfc74852efa47e9e8a96dfd8002ddae1eaa42e15919c3f6106e27bcad25c"
+    },
+    {
+      "bytes": 10468,
+      "classification_from_cc57": "modified",
+      "git_blob": "b5131bf54f28396737fe407a4aa3b925636f241b",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "322ceb9355e6d75d98e4f2219eeef8146dfc2b0e",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "sha256": "9beee92e4ffce2a3d27386fb002a79130fee42e6693986ed0c8c9503f3afce77"
+    },
+    {
+      "bytes": 26143,
+      "classification_from_cc57": "modified",
+      "git_blob": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "d2512ef649afa6e5a723de54ecf5f579b82c150c",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "sha256": "47173c9c24edc6ad2280ed721c0d0855a12ab846bbd47eb4fdcd2d75f07776e4"
+    },
+    {
+      "bytes": 20875,
+      "classification_from_cc57": "added",
+      "git_blob": "9d31107258d2987112cdff7edc8baf247d6e467e",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "sha256": "052009f2809b1b5901617c560483ffe290334b6fc09a09583b21835bc515aca7"
+    },
+    {
+      "bytes": 15384,
+      "classification_from_cc57": "modified",
+      "git_blob": "9d6df799fb4d43473cac60e8fefabc61ea071e0b",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "sha256": "def189f2a05d319cd52a9323480da2271d2c325de54eacedee57d868fcff8844"
+    },
+    {
+      "bytes": 18949,
+      "classification_from_cc57": "modified",
+      "git_blob": "9815d57b9141661d93a876b17f358efefab43454",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "c1cf7010e8dcc20a29f821a5e6eb46715340cd6f",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "sha256": "9c6bc1e6cd6b4fe6769df8608b33dc9fc101888e26e96663b09fa82a994f7894"
+    },
+    {
+      "bytes": 20782,
+      "classification_from_cc57": "modified",
+      "git_blob": "597d4766cdea3a8f21aecb5929bb6a97249373ca",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "sha256": "224da0c6e178c547c816c878c469d5f5a2c1909e804ae2b6f595b687bec39a1b"
+    },
+    {
+      "bytes": 15934,
+      "classification_from_cc57": "modified",
+      "git_blob": "34aff1e564ea7d6c0b1c9a4cdb7ab46b4660c0dd",
+      "kind": "file",
+      "last_layer": "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8"
+      ],
+      "original_git_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "sha256": "5b991c33123276137b0ea3f76efc91cc6521ef5b6564d02ed15671e2c19bddfb"
+    },
+    {
+      "bytes": 20877,
+      "classification_from_cc57": "added",
+      "git_blob": "9ac2c5f5126db83a884089ce13043eb6a6637b96",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "sha256": "fcf8db5e0df00ecfc048dd27b2075904c2a0541637c93946c87047818203eb64"
+    },
+    {
+      "bytes": 12039,
+      "classification_from_cc57": "added",
+      "git_blob": "3a1ca23dd755c46ae852830b0a27419e58c3cb54",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "sha256": "f425edd533db1b7a2bef0d69a9e6b9598a498daad8fc7db75d61670e41e63302"
+    },
+    {
+      "bytes": 9180,
+      "classification_from_cc57": "added",
+      "git_blob": "d40c78a4f85a415a63510ee10d0c8e7ee5f175af",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs",
+      "sha256": "8b615b561e3fcc0da22ead64e39dcf4ed5f477be529ce07aa5b1a643131789ba"
+    },
+    {
+      "bytes": 20405,
+      "classification_from_cc57": "added",
+      "git_blob": "2f35bcacff40827fd96b3d4ce289455929d64a82",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "sha256": "d7860ce4fec0525b352c260eea9357b074c4cb0a9bc5103d48b9edf76940ea4c"
+    },
+    {
+      "bytes": 14368,
+      "classification_from_cc57": "added",
+      "git_blob": "ebbfa75d55760463c0aa7be190f3d1a88f46a110",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "sha256": "be5cd5bdb1678ddf8cfe75e0f869a3f6f9440895c598c1367bf3cd25680e31e3"
+    },
+    {
+      "bytes": 29319,
+      "classification_from_cc57": "added",
+      "git_blob": "491bbac2876891948de35f11ac790c2500fdfc2f",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "sha256": "f31d54f0c4ae278588e50696b93e6b2e6f237efc581caee4bb1af21d7e3c8483"
+    },
+    {
+      "bytes": 3759,
+      "classification_from_cc57": "added",
+      "git_blob": "91b0e28e905e0a7ee7d3a9399b2f22e9ec6599bb",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+      "sha256": "fadd33193614ccff9850dfe6964f53afd330c174860050385471166d5f5ab688"
+    },
+    {
+      "bytes": 15896,
+      "classification_from_cc57": "added",
+      "git_blob": "2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "sha256": "b9986ffa2fb5b676a8f3012472adc296a8fbe5bef30763887f613251851a5927"
+    },
+    {
+      "bytes": 10049,
+      "classification_from_cc57": "added",
+      "git_blob": "d3ebc7198423a48bb50c3f1f55cabe7f5dec2154",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+      "sha256": "c02f20e075afc9066731f6a2e263a7afdb0a5b5bab196b55ef60c82e455721fd"
+    },
+    {
+      "bytes": 891,
+      "classification_from_cc57": "added",
+      "git_blob": "c08d3169833ab7c657a88e4b5fd4d88e284d58fd",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "sha256": "b368d3b7edb889adeb0a8eae792a56eaa5ac4b8b6b996ed445629027da585500"
+    },
+    {
+      "bytes": 12729,
+      "classification_from_cc57": "added",
+      "git_blob": "be7f97f693eda80d2a1b3d5bff06928b707ea3ad",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "sha256": "210f14302e8c5d314424c065ceb6084cb9579009642eacda61125a7715f29f6a"
+    },
+    {
+      "bytes": 6072,
+      "classification_from_cc57": "modified",
+      "git_blob": "59fbd2f5dad223cf3a7ad661a28f45ba63bc5d95",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "e6f841ab40dbfe35f5763b726f391830a76c9b44",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "sha256": "e043f03572a4e039429448bdf53f222a96ffc6000ee254e9ea774d05a79aa188"
+    },
+    {
+      "bytes": 17756,
+      "classification_from_cc57": "modified",
+      "git_blob": "60af3543dd4ef214483fa8fd31d8e3ecf42afc56",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "d84937fc81f0a7b41c997c97b29cd06ff9cf03e4",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "sha256": "280a9829c60071aa654de75f266983fa6b338fada60a2e5de6bb08e75fdad8e4"
+    },
+    {
+      "bytes": 13856,
+      "classification_from_cc57": "added",
+      "git_blob": "2a1d69f09ba69f4234c5ebed898b6d6edecf35c5",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "sha256": "4f79cecf37d92f4c0d37f5233dbd9f1a53b393f91b564e460cd4347e7a1e3c5e"
+    },
+    {
+      "bytes": 14182,
+      "classification_from_cc57": "added",
+      "git_blob": "5256ac6a398a45a7c979c079413e0aab0ac32274",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "sha256": "8e706d7a2a07d58352ab2bcf99adbaa286b1b2c8be1dfdf500d2cf7452182aec"
+    },
+    {
+      "bytes": 6211,
+      "classification_from_cc57": "added",
+      "git_blob": "a6fa98145421623f3e700d9eb6383551f5d59480",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "sha256": "1bd04929faf7433970c4e120122c7044d1155061057e694b247df64b90f615c9"
+    },
+    {
+      "bytes": 1171,
+      "classification_from_cc57": "added",
+      "git_blob": "60628baacff9eac0e119943d2e81387f5cf18656",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+      "sha256": "66a27fc6ec9e6b0e1513794978b5a0c5c387b292e319a29ea9a29a89ad1dfa12"
+    },
+    {
+      "bytes": 13337,
+      "classification_from_cc57": "modified",
+      "git_blob": "466ede358e183096aa432ef0f26752f5b872ca89",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "a0f3c847a49c3d5a2ae4df704ed1f751b9e287f9",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "sha256": "3721fb129bbc5c87ae7719ae85842a8e2d1e09286bf1d38ced5198e1277aab01"
+    },
+    {
+      "bytes": 19478,
+      "classification_from_cc57": "modified",
+      "git_blob": "ece090eaaeed68f44fcca3e74bbcdcd1bc90857d",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "14334773c7db9d4d911da4ed7643271c8f6b1d70",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "sha256": "8ce8a88dee4313fd0070731a28319c49e0239cd135a87b383bb357d3a0f0ee06"
+    },
+    {
+      "bytes": 9850,
+      "classification_from_cc57": "modified",
+      "git_blob": "01f598a8d6747dc2c7a4438bdcd1860471c5a8eb",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "46ea741fc91046f9e6c7407949e630d45ca2ca3b",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "sha256": "5c4d2cc85158b4a076a8987c677b9c6419c2cceb5d14850d2b17441b50fa351b"
+    },
+    {
+      "bytes": 11855,
+      "classification_from_cc57": "added",
+      "git_blob": "141be7d8d99cf93c5d31f3b8dcea946ac789941a",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "sha256": "78c2238ef5190be443d1a236aa8c0d48b7696111f9f2d969625ce3224c5add2f"
+    },
+    {
+      "bytes": 5007,
+      "classification_from_cc57": "added",
+      "git_blob": "15337655a529813be1c65f5dfbfe005de10bac1e",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "sha256": "958c3e9d7f632c8cdfb13493c1f5a782997270093d7e5c9a43508cbb3d93cdf2"
+    },
+    {
+      "bytes": 29901,
+      "classification_from_cc57": "modified",
+      "git_blob": "34265101f3de32b28c6b8a872741096083b7797d",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "82dcc4191411c653b8a4f9c09ce879d918fc3601",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "sha256": "c19e1e813292843e673231a6df4ce1fb1d2a27250dd8930e9e708c7eb4ba863d"
+    },
+    {
+      "bytes": 14090,
+      "classification_from_cc57": "modified",
+      "git_blob": "55cd4763f45a1aa85ab70319352250dc803ec572",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": "443bfc37618c2ca04e0d9ef301a45f9471ca8c17",
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "sha256": "c14a998ff61b88b6cb86742274fe2c47a4d686939aedf1dcbb7e962e3d8ec5fd"
+    },
+    {
+      "bytes": 72389,
+      "classification_from_cc57": "modified",
+      "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+      "kind": "file",
+      "last_layer": "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/lib.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage",
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8"
+      ],
+      "original_git_blob": "b46baf3d8280114c937799f0430942ec3863afa8",
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+    },
+    {
+      "bytes": 13903,
+      "classification_from_cc57": "modified",
+      "git_blob": "f7a57575bccb0de9d139a070e30bc26fcb8daf8d",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "086a50cd688da7e06d4e290dabd56d68ff975e86",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "sha256": "958a313138b394ebf86f9260bf01070d38f01a7bd8ee1d8683b94ab1d4585c3e"
+    },
+    {
+      "bytes": 1546,
+      "classification_from_cc57": "added",
+      "git_blob": "dcfacc3c5b0ca1c115742986ff453fd412fce991",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "sha256": "985a1ec9b9bd0fefb522100c7d2357656f3835c2c3e9c45753065af7ca9aabe5"
+    },
+    {
+      "bytes": 9428,
+      "classification_from_cc57": "modified",
+      "git_blob": "2861558bc7f9dfe833d70c7d72c5742d4e0f5fdd",
+      "kind": "file",
+      "last_layer": "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8"
+      ],
+      "original_git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "sha256": "def4d820837b958a49b0308d4785dd97170a248d40a3fd7c94af8d3031166045"
+    },
+    {
+      "bytes": 2504,
+      "classification_from_cc57": "added",
+      "git_blob": "944a1927f2761000c206d018034b26d01a2ce0df",
+      "kind": "file",
+      "last_layer": "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "sha256": "f85bd6c3e22b917be0c77b5068d52b2e68d623c28314ea068772b96337328e17"
+    },
+    {
+      "bytes": 7974,
+      "classification_from_cc57": "added",
+      "git_blob": "4eeb2015fef5aa45775fe117903bbdb2d3ac8592",
+      "kind": "file",
+      "last_layer": "coordinator-original-metadata-getters / 5279a43b99aa7031343578a21dba895f5eac3188",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+        "coordinator-original-metadata-getters / 5279a43b99aa7031343578a21dba895f5eac3188"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+      "sha256": "50476f583779d8698223f0d1d4a9209245fee2277f2c455b0dc238536388cf60"
+    },
+    {
+      "bytes": 7843,
+      "classification_from_cc57": "added",
+      "git_blob": "31ede1a405c6469508871d672c50a4f000342985",
+      "kind": "file",
+      "last_layer": "coordinator-original-metadata-getters / 5279a43b99aa7031343578a21dba895f5eac3188",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+        "coordinator-original-metadata-getters / 5279a43b99aa7031343578a21dba895f5eac3188"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "sha256": "137c8703d605fb76c06f01a5a89e452bd2c5dc59ac1cb8403732638343a945a0"
+    },
+    {
+      "bytes": 11301,
+      "classification_from_cc57": "added",
+      "git_blob": "61b21fa07f57b750c9206f04604759535f5c65c2",
+      "kind": "file",
+      "last_layer": "coordinator-original-metadata-getters / 5279a43b99aa7031343578a21dba895f5eac3188",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+        "coordinator-original-metadata-getters / 5279a43b99aa7031343578a21dba895f5eac3188"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "sha256": "059076cfd2887eef09b5444f8bad1f875452327def9b72bff492c9cd40080a32"
+    },
+    {
+      "bytes": 8591,
+      "classification_from_cc57": "added",
+      "git_blob": "1166c82d9189461a7d8468347c6018cb4239ba40",
+      "kind": "file",
+      "last_layer": "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+      "sha256": "0f651b0c3bbf8048c3eba4c4bfc3115d8712e163517a692202c0d857d804d580"
+    },
+    {
+      "bytes": 7072,
+      "classification_from_cc57": "added",
+      "git_blob": "6cd8470ecba5b966f331fffdea86f0ffdf770c2f",
+      "kind": "file",
+      "last_layer": "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "coordinator-actual-format-rebase / 773d67128190fd2e1c3271c372f72e2a5537d1e8"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "sha256": "1e08d5dad64b56fe92ab5436be4a7217c0595a6bc90cd0dfbc1b96b559544171"
+    },
+    {
+      "bytes": 14737,
+      "classification_from_cc57": "added",
+      "git_blob": "406590d3d6537f2538a4d19615df6193eb415886",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "sha256": "9945cf398eae2373f6c6fd3a0fde1586b3d9dee097c4b663cb317368ff5e8dc6"
+    },
+    {
+      "bytes": 6820,
+      "classification_from_cc57": "added",
+      "git_blob": "844dce8fd782cef7c8270826fcc601d6fc52a9fe",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "sha256": "35d12b73833380e889986108f0f67f66c11ea55cefee1b5be13c9794c2178013"
+    },
+    {
+      "bytes": 5328,
+      "classification_from_cc57": "added",
+      "git_blob": "706b7729e8ce7326f34602670d420c7de2f07ff4",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "sha256": "fbe8e3829336784b5e0b077d51f13b8c55faab6ce35b85799803b67496240a7e"
+    },
+    {
+      "bytes": 9613,
+      "classification_from_cc57": "modified",
+      "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f"
+    },
+    {
+      "bytes": 7384,
+      "classification_from_cc57": "modified",
+      "git_blob": "c214632e288047e1aa39f67c2865f2bacaac6b6a",
+      "kind": "file",
+      "last_layer": "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-learning-ledger/src/lib.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19"
+      ],
+      "original_git_blob": "c9bfc876390e1c7e5fea4b3f3af535f2c56fd245",
+      "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+      "sha256": "083b568492a9a22853bb13558243c9528a16d4a74dd6b2ea32e77c8e3f457d1d"
+    },
+    {
+      "bytes": 7703,
+      "classification_from_cc57": "added",
+      "git_blob": "d4467b253a044afb81c146eaaa10a3379e905c47",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "sha256": "0c0f8b78891997336c04e8f8d5bea1144728e18fbba6e6c6ba103810754f83eb"
+    },
+    {
+      "bytes": 16964,
+      "classification_from_cc57": "added",
+      "git_blob": "534bd955863906f6c68f4d0a03127e645b816d6a",
+      "kind": "file",
+      "last_layer": "actual normal0 fmt900 afterimage",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "exact original 0c59 source overlay 148e9efc242f3ee3ee4e525281ec170feecf3f19",
+        "actual normal0 fmt900 afterimage"
+      ],
+      "original_git_blob": null,
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "sha256": "c2788cb47a4dc7c35162738e51c2b149579201ba5227aa1ff6fd6fac3783507a"
+    },
+    {
+      "bytes": 13300,
+      "classification_from_cc57": "modified",
+      "git_blob": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+      "kind": "file",
+      "last_layer": "actual fix101 retained witness",
+      "local_source": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/overlay/codex-rs/hepta-learning-ledger/src/witness.rs",
+      "mode": "100644",
+      "ordered_provenance": [
+        "actual fix101 retained witness"
+      ],
+      "original_git_blob": "6600b91045ebb50cb8eb1b76896000fb5ae8f54d",
+      "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "sha256": "a7903c5aca69ebda366be3a90869fc83943409c7602da86c4f7f53773eef9154"
+    }
+  ],
+  "source_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "source_commit_or_ref_created": false,
+  "source_tree": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+  "status": "PREPARED_NOT_QUALIFIED_REGISTRATION_INDEPENDENT_REVIEW_PENDING",
+  "total_covered_paths": 119
+}

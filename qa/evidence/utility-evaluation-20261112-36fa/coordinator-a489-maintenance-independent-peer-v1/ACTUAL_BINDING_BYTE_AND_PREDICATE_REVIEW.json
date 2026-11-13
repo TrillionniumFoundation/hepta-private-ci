@@ -1,0 +1,266 @@
+{
+  "format": "hepta-a489-maintenance-independent-actual-binding-review-v1",
+  "status": "ACTUAL_FIXED_PRODUCER_CONSUMER_MATCHED_MAINTENANCE_STILL_HOLD",
+  "inputs": {
+    "driver": {
+      "bytes": 68520,
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6"
+    },
+    "null_proof_HOLD": {
+      "bytes": 10895,
+      "sha256": "a67115ebbd521c5637212f22308808fac33e9efa48f60b6981a5a804dc202994",
+      "git_blob": "e9308cb6cc5e7fd949236ded84f593ec81143795"
+    },
+    "actual_bound_HOLD": {
+      "bytes": 13728,
+      "sha256": "63c1f09ffcd3e0cb97dcb0896c2831eb6ad5eb91e1091d66faf7a442c2c06ca8",
+      "git_blob": "eb322791ff64a67389b4e37b341bc01c63f3d5cb"
+    },
+    "result": {
+      "bytes": 14663,
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd",
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c"
+    },
+    "normal": {
+      "bytes": 952,
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+    },
+    "records": {
+      "command_records": {
+        "bytes": 34319,
+        "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2",
+        "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246"
+      },
+      "mutation_records": {
+        "bytes": 744,
+        "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b",
+        "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64"
+      },
+      "input_records": {
+        "bytes": 3326,
+        "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d",
+        "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687"
+      },
+      "artifact_records": {
+        "bytes": 84294,
+        "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603",
+        "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af"
+      }
+    },
+    "full_git_metadata": {
+      "bytes": 2234,
+      "sha256": "17530eef584440894d767eec9771201199e6313797bb293122eb20cb7fba6e13",
+      "git_blob": "8d6af319d99c5f9c47e5a7e761c118c5ba2c767b"
+    },
+    "full_git_metadata_gzip": {
+      "bytes": 790,
+      "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6",
+      "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a"
+    },
+    "actual_raw_index": {
+      "bytes": 2080152,
+      "sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b",
+      "git_blob": "5dfba375a9e88dc0578070f19e90bc25aee6efef"
+    },
+    "coordination": {
+      "bytes": 376,
+      "sha256": "83f683800e1d5f9684e3b636cc29de0b3a830704c209a0d616d078093bf08502",
+      "git_blob": "d445e863f1991150a99b980fc00e9ad3d7f701b3"
+    },
+    "final_inputs": {
+      "bytes": 3417,
+      "sha256": "e42682a74560a9b1b2c5e097a719ba3611082fc464d79db3f1079bf0eaecb154",
+      "git_blob": "c25a91aab99d6492594684b08ca9a5b7f24178e2"
+    }
+  },
+  "original_job_id": "1a1d468462a-392-3bb",
+  "source": {
+    "commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "tree": "a489b394666b8141840275128a780605b024cde0",
+    "parents": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633"
+    ],
+    "endpoint": {
+      "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+      "inventory": {
+        "bytes": 5631947,
+        "filesystem_entries": 15243,
+        "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+        "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0",
+        "tracked_entries": 15243
+      },
+      "native_inventory": {
+        "bytes": 3543409,
+        "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+        "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+      },
+      "parents": [
+        "cc57c7198db6293ccca562253c42fffbe2a04633"
+      ],
+      "status": "",
+      "tree": "a489b394666b8141840275128a780605b024cde0"
+    },
+    "source_before_after_equal": true,
+    "raw_git_before_after_equal": true,
+    "three_final_audits": [
+      {
+        "check": "donor_physical_source_and_git_files",
+        "status": "verified"
+      },
+      {
+        "check": "new_source_and_git",
+        "status": "verified"
+      },
+      {
+        "check": "inputs_and_coordination",
+        "status": "verified"
+      }
+    ]
+  },
+  "config_changes_only_actual_proofs_lock_and_descriptive_fields": true,
+  "original_historical_runtime_archive_environment_and_budgets_unchanged": true,
+  "original_consumer_predicate_functions": [
+    "sha256",
+    "oid",
+    "check",
+    "nodup",
+    "parse",
+    "pin_bytes",
+    "parse_supervisor",
+    "validate_materialization"
+  ],
+  "memory_only_original_validator_result_equal": true,
+  "memory_reads": [
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json",
+      "bytes": 14663,
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd",
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 952,
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/COMMANDS.json",
+      "bytes": 34319,
+      "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2",
+      "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/MUTATION_INTENTS.json",
+      "bytes": 744,
+      "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b",
+      "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/INPUT_IDENTITIES.before.json",
+      "bytes": 3326,
+      "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d",
+      "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/ARTIFACTS.json",
+      "bytes": 84294,
+      "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603",
+      "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af"
+    },
+    {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/final.git-metadata.json.gz",
+      "bytes": 790,
+      "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6",
+      "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a"
+    }
+  ],
+  "memory_writes": [
+    {
+      "name": "MATERIALIZATION_COMMANDS.json",
+      "bytes": 34319,
+      "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2",
+      "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246"
+    },
+    {
+      "name": "MATERIALIZATION_MUTATION_INTENTS.json",
+      "bytes": 744,
+      "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b",
+      "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64"
+    },
+    {
+      "name": "MATERIALIZATION_INPUT_IDENTITIES.before.json",
+      "bytes": 3326,
+      "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d",
+      "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687"
+    },
+    {
+      "name": "MATERIALIZATION_ARTIFACTS.json",
+      "bytes": 84294,
+      "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603",
+      "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af"
+    },
+    {
+      "name": "MATERIALIZATION_GIT_METADATA.original.json",
+      "bytes": 2234,
+      "sha256": "17530eef584440894d767eec9771201199e6313797bb293122eb20cb7fba6e13",
+      "git_blob": "8d6af319d99c5f9c47e5a7e761c118c5ba2c767b"
+    },
+    {
+      "name": "MATERIALIZATION_RESULT.original.json",
+      "bytes": 14663,
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd",
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c"
+    },
+    {
+      "name": "MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 952,
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+    }
+  ],
+  "live_functions_never_called": [
+    "main",
+    "initial_preflight",
+    "environment_preflight",
+    "validate_materialization_current",
+    "stage",
+    "git",
+    "run_readonly"
+  ],
+  "actual_counts": {
+    "commands": 40,
+    "mutation_records": 4,
+    "input_identities": 13,
+    "artifacts": 267,
+    "git_metadata_files": 6,
+    "materialized_leaves": 15243,
+    "new_objects": 16661,
+    "donor_objects": 16449
+  },
+  "all_original_commands_normal0_no_timeout": true,
+  "all_mutation_terminals_observed": true,
+  "all_13_input_identities_before_after_equal": true,
+  "metadata_whole_raw_gzip_and_all_nine_stat_field_types_checked": true,
+  "raw_index_check": {
+    "whole_bytes_pin_equal": true,
+    "header_signature": "DIRC",
+    "version": 2,
+    "entries": 15243,
+    "trailer_sha1_equal": true,
+    "metadata_pin_equal": true,
+    "scope": "Full retained bytes/header/trailer and producer identity checked; original producer's all-entry logical/stat checks remain bound, not independently rerun here."
+  },
+  "still_HOLD": {
+    "status": "HOLD_ACTUAL_MATERIALIZATION_AND_ROOT_EXACT_REVIEW_REQUIRED",
+    "root_execution_approved": false,
+    "formal_approved_config_created": false,
+    "exact_successor_launcher_and_typed_requests_reviewed": false
+  },
+  "qualification": false,
+  "H_calls": 0,
+  "project_gate_or_Rust_runs": 0,
+  "scope": "Offline original retained-artifact verification and original consumer predicates with fixed-memory I/O only. No current native source/Git observation, no maintenance command, no new source/ref write.",
+  "future_live_checks_required": "Original complete current source/Merkle and full Git-file/stat reconstruction, original environment/target/tool/process guard, unique inherited EX lock, exact separately approved staging/main."
+}

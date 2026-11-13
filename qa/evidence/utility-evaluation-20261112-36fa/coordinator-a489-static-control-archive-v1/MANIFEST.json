@@ -1,0 +1,89 @@
+{
+  "format": "hepta-closed-static-control-archive-manifest-v1",
+  "status": "ARCHIVED_EXACT_89_ORIGINALS_WITH_BOUNDED_LOSSLESS_REPRESENTATIONS",
+  "original_index": {
+    "bytes": 46153,
+    "sha256": "3099504b1279a1fb44984235b754bd6819ac9044baf95b6b017d1abf1480fffe",
+    "git_blob": "8817a6d9ec4a96b01da373e86c348d78f9941670"
+  },
+  "original_members": 89,
+  "primary_controls": 45,
+  "completed_original_Git_SDKs": 44,
+  "original_total_bytes": 5857575,
+  "direct_original_leaves": 83,
+  "oversized_originals": 6,
+  "derived_base64_leaves": 12,
+  "evidence_prefix": "coordinator-a489-static-control-archive-v1/",
+  "leaf_limit": 512000,
+  "maximum_payload_leaf_bytes": 409601,
+  "payload_count_before_manifest": 103,
+  "payload_count_including_manifest": 104,
+  "all_originals_exact_and_reconstructible": true,
+  "all_payloads_actual_create_full_GET": true,
+  "required_proofs": [
+    {
+      "name": "ENCODING_MANIFEST.json",
+      "path": "coordinator-a489-static-control-archive-v1/ENCODING_MANIFEST.json",
+      "bytes": 14548,
+      "sha256": "ef2af1e366a2d2bb5efb6c1c1809e25b211f0f6af08f69d33a0d4fd3242245a1",
+      "git_blob": "5d25d85ca4d7f2c20655ca9aa241c8a28a99aec9",
+      "actual_full_Git_readback": true
+    },
+    {
+      "name": "CLOSED_MEMBER_MAP.json",
+      "path": "coordinator-a489-static-control-archive-v1/CLOSED_MEMBER_MAP.json",
+      "bytes": 60097,
+      "sha256": "c32416b6d81baaee7be59037a30eae1604a4378b1c449d49fb3389f6453a8c30",
+      "git_blob": "e01371a7f61c330dcad3971b34e7a149f63e4c23",
+      "actual_full_Git_readback": true
+    },
+    {
+      "name": "PREPARATION_REVIEW.json",
+      "path": "coordinator-a489-static-control-archive-v1/PREPARATION_REVIEW.json",
+      "bytes": 6203,
+      "sha256": "1d0208a471ab3d8e8042bd18f38c4c9b24b6b2f870cc23a7339d378afc3988fa",
+      "git_blob": "0065164bf5f8f6015cfd33a1fd3a9ed8ead0cefb",
+      "actual_full_Git_readback": true
+    },
+    {
+      "name": "prepare_closed_archive.py",
+      "path": "coordinator-a489-static-control-archive-v1/prepare_closed_archive.py",
+      "bytes": 12028,
+      "sha256": "57ac119588585dc2f465f310a73c0ef171297030de2d7715b218356840e9590f",
+      "git_blob": "431e525c599d757bd5c3c47a020e822ea524db1e",
+      "actual_full_Git_readback": true
+    },
+    {
+      "name": "ARCHIVE_PAYLOAD_INDEX.json",
+      "path": "coordinator-a489-static-control-archive-v1/ARCHIVE_PAYLOAD_INDEX.json",
+      "bytes": 53168,
+      "sha256": "3ed6266a779d91d409a30b1dea352a51b260e7250ef93e3857fbaea7a168f642",
+      "git_blob": "d3e2f6608052aab75abc2419b07f3aa0f8473640",
+      "actual_full_Git_readback": true
+    },
+    {
+      "name": "ACTUAL_GIT_FULL_READBACK.json",
+      "path": "coordinator-a489-static-control-archive-v1/ACTUAL_GIT_FULL_READBACK.json",
+      "bytes": 84936,
+      "sha256": "c4f5deb6531ba5900757bea910bffa32c7e1487e571893a0801b2157489c94d4",
+      "git_blob": "146bcadbabc7d679676dfd0c88fab3c48b9f661b",
+      "actual_full_Git_readback": true
+    },
+    {
+      "name": "FINAL_ARCHIVE_REVIEW.json",
+      "path": "coordinator-a489-static-control-archive-v1/FINAL_ARCHIVE_REVIEW.json",
+      "bytes": 3414,
+      "sha256": "a087d1b72cb2333388391ea33d510489fd20c8d6f0d984287c850b0936ef79cd",
+      "git_blob": "7269a19804a4f51ffe9234ca439db5e4c85faad3",
+      "actual_full_Git_readback": true
+    }
+  ],
+  "expected_inventory_placement_reused": "88ad362796481f768cde7953c9c9485719c04591",
+  "archive_metadata_is_not_original_member": true,
+  "added_future_native_or_Git_SDK_original_members": 0,
+  "read_or_modified_native_execution_files": false,
+  "source_or_native_control_modifications": false,
+  "H_calls": 0,
+  "Git_tree_commit_ref_calls": 0,
+  "qualification_supplied": false
+}

@@ -1,0 +1,12 @@
+--- WAITING_CONFIG.ACTUAL_MATERIALIZATION.json
++++ MAINTENANCE_CONFIG.execution-candidate.json
+@@ -1,7 +1,7 @@
+ {
+   "format": "hepta-original-scoped-maintenance-approval-v1",
+-  "status": "HOLD_ACTUAL_MATERIALIZATION_AND_ROOT_EXACT_REVIEW_REQUIRED",
+-  "root_execution_approved": false,
++  "status": "ROOT_APPROVED_TO_EXECUTE",
++  "root_execution_approved": true,
+   "driver_sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+   "driver_git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+   "source_repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",

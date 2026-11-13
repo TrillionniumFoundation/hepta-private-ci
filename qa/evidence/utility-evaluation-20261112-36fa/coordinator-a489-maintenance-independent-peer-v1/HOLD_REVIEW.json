@@ -1,0 +1,148 @@
+{
+  "format": "hepta-a489-maintenance-independent-hold-semantic-review-v1",
+  "status": "NO_NEW_STATIC_BLOCKER_IN_FIXED_HOLD_DELTA_ACTUAL_BOUND_CONFIG_AND_LAUNCH_PENDING",
+  "reviewer": "evaluation_audit",
+  "scope": "Exact immutable successor driver and waiting configuration; independent byte/AST/JSON checks and source reading. This snapshot does not review or approve a maintenance dispatch.",
+  "inputs": {
+    "predecessor_driver": "3a0f6dec8127aa9587129d6e0f24bad55837ca13",
+    "predecessor_config": "d27dd8ee763c75eb5a0f195bb034fc9ca32b727e",
+    "successor_driver": {
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+      "bytes": 68520,
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+    },
+    "waiting_config": {
+      "git_blob": "e9308cb6cc5e7fd949236ded84f593ec81143795",
+      "bytes": 10895,
+      "sha256": "a67115ebbd521c5637212f22308808fac33e9efa48f60b6981a5a804dc202994"
+    },
+    "previously_reviewed_materialization_packet": "b05c78c478bbd55219fea7869b1c7871617509c7",
+    "byte_proof": "153a3e0614e5d1207f7e5e694617f595845ea88b"
+  },
+  "input_readback": "Predecessor driver/config and new driver/HOLD config independently obtained by complete Git GET, retained as original SDK. Source packet reference is the prior frozen materializer input, and remains an expected contract.",
+  "findings": [
+    {
+      "id": "M01",
+      "subject": "Exact scope",
+      "conclusion": "Eight unique substitutions, with full forward and inverse byte equality. Seven global source/record/inventory identities change; the sole function delta is expected new_objects_fully_verified 16652 to 16661. All 51 definitions are preserved; 50 are byte- and AST-identical.",
+      "evidence": [
+        "FROZEN_HOLD_BYTE_REVIEW.json/exact_replacements",
+        "FROZEN_HOLD_BYTE_REVIEW.json/definitions"
+      ]
+    },
+    {
+      "id": "M02",
+      "subject": "Expected source identity",
+      "conclusion": "d256/a489, sole parent cc57, 15243 leaves, full inventory f1e2d72f/0463522b/5631947 and compact projection 7647480c/69cab8dc/3543409 exactly agree with the frozen materializer packet. Full inventory and native projection remain different representations. Object union16661 and donor16449 are not test counts.",
+      "evidence": [
+        "driver constants HEAD/TREE/PARENTS/LEAVES/SUCCESSOR_INVENTORY/NATIVE_INVENTORY",
+        "validate_materialization"
+      ]
+    },
+    {
+      "id": "M03",
+      "subject": "Historical runtime stays historical",
+      "conclusion": "Original86dd runtime source path/seed parents, original cc57 donor identity, complete restoration record checks, source environment, tool/V8/formatter content projections remain unchanged. Separate archive-v3 proof is preserved without transplanting its historical inode into the current candidate. Only the archive supervisor copy destination changes with the new external control directory.",
+      "evidence": [
+        "validate_runtime_restoration",
+        "validate_archive_restoration",
+        "environment_preflight",
+        "configuration exact whitelist"
+      ]
+    },
+    {
+      "id": "M04",
+      "subject": "Actual proof is required",
+      "conclusion": "The unchanged materialization validator requires the complete same-job normal supervisor; exact RESULT identity, action/fsync/donor/input flags, no tests/reset/retry/qualification, all three verified audits, exact current full and compact inventories, matching current/donor Git states, full index/stat/flags and the same cooperative lock. Four pinned original records and final Git metadata raw/gzip must be read and verified. Normal0 alone is insufficient.",
+      "evidence": [
+        "parse_supervisor",
+        "validate_materialization"
+      ]
+    },
+    {
+      "id": "M05",
+      "subject": "Current physical recheck",
+      "conclusion": "Before a stage, the original inventory driver rereads the entire current source, checks15243 leaves and a489 Merkle identity, and the original maintenance metadata reader captures all Git files/directories. validate_materialization_current then rereads every actual Git file in full, matches bytes/SHA/blob and nine stat fields, reconstructs the exact producer metadata serialization, and verifies the typed commit/tree/sole-parent headers.",
+      "evidence": [
+        "initial_preflight",
+        "validate_materialization_current",
+        "metadata_inventory",
+        "actual_leaf_map",
+        "merkle"
+      ]
+    },
+    {
+      "id": "M06",
+      "subject": "Commands and budgets",
+      "conclusion": "The same single scoped fix selects eval, agentd and learning-ledger, with7200s. Only after its normal completed-review-required return and sufficient evidence budget may original fmt --base c0f run for900s. Preflight600s, record300s, outer9300s,64MiB log and existing target/32GiB free-space requirement remain unchanged. Original source executable pins and original execute_logged are retained.",
+      "evidence": [
+        "FIX/FMT/FIX_SECONDS/FMT_SECONDS/PREFLIGHT_SECONDS/RECORD_SECONDS/MAXIMUM_LOG_BYTES",
+        "validate_config",
+        "stage",
+        "main"
+      ]
+    },
+    {
+      "id": "M07",
+      "subject": "Concurrent writers and lock",
+      "conclusion": "The same same-UID active/unreadable build-process guard runs before maintenance and immediately before each command. The same cooperative lock path is required. Original maintenance main contains no flock: the future exact original launcher must be the sole holder of its inherited EX descriptor across exec. This review has not yet received that successor launcher or typed requests.",
+      "evidence": [
+        "active_build_processes",
+        "environment_preflight",
+        "stage",
+        "main",
+        "coordination_lock"
+      ]
+    },
+    {
+      "id": "M08",
+      "subject": "Failure, retention and unknown state",
+      "conclusion": "All original stage/main/finalizer bodies are identical. A failed or unknown fix prevents fmt; no automatic retry/reset/cache deletion/ref action is added. Source postimages are retained in every stage finally branch. Final full source/Git and input audits are required; audit or record failure retains failed/Unknown status, and lack of an initial complete source baseline never becomes an unchanged-source claim. Successful commands still require review and remain qualification=false.",
+      "evidence": [
+        "stage",
+        "capture_source",
+        "finalize_source",
+        "finalize_inputs",
+        "retain_terminal",
+        "main"
+      ]
+    },
+    {
+      "id": "M09",
+      "subject": "HOLD and authorization",
+      "conclusion": "The waiting configuration retains approval=false and formal_approved_config_created=false. Twelve actual proof locations are null: seven materialization top-level identity/proof fields, four record pins and lock stat. The original validate_config approval predicate rejects this snapshot before materialization/source stages. A later separately frozen actual-bound configuration and exact staging/EX-main request require Root review.",
+      "evidence": [
+        "WAITING_CONFIG.json",
+        "validate_config",
+        "FROZEN_HOLD_BYTE_REVIEW.json/actual_proof_fields_still_null"
+      ]
+    },
+    {
+      "id": "M10",
+      "subject": "Original failures remain",
+      "conclusion": "The earlier0c59 fix101 and subsequent separate fmt result are historical records. This changed-source successor does not reclassify them or assert any successful compilation, formatter outcome, source gate, Rust test or real task-chain completion.",
+      "evidence": [
+        "unchanged main/retain_terminal",
+        "HOLD status and scope",
+        "STATIC_BYTE_REVIEW historical_results_preserved"
+      ]
+    }
+  ],
+  "actual_observation_boundary": "Root/native reported the new materialization normal0 during this review. Its full original RESULT/audits/index/records have not been consumed by this HOLD review. No final maintenance readiness or execution conclusion is drawn from that report.",
+  "outstanding": [
+    "Read and compare the exact new materialization producer records against the successor consumer fields.",
+    "Review the separately frozen actual-bound configuration and its exact original approval-only delta.",
+    "Review successor create-only input staging, complete readback and the unique inheritable EX launcher, including original lock stat.",
+    "Review typed request exact argv/cwd/no extra environment/9300s and failure reconciliation policy before Root grants any maintenance H action."
+  ],
+  "validations": {
+    "pure_static_script_completed": true,
+    "reviewed_module_imported": false,
+    "reviewed_function_called": false,
+    "source_writes": 0,
+    "H_calls": 0,
+    "Rust_or_formatter_or_QA_runs": 0,
+    "ref_writes": 0,
+    "qualification": false
+  }
+}

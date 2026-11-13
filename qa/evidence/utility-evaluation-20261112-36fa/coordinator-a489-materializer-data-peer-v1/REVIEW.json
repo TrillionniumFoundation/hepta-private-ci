@@ -1,0 +1,233 @@
+{
+  "audit_artifacts": {
+    "DATA_RECONCILIATION.json": {
+      "bytes": 105612,
+      "git_blob": "8f39c45cd19557d02b1e28d9bd187ad70a10e8a4",
+      "sha256": "187b97438a143ad6e526a3eb19f92bc3b9c3f01249da33c170057461322cb614"
+    },
+    "INPUT_GIT_FULL_READBACK.json": {
+      "bytes": 3680,
+      "git_blob": "d518f1fe28acd0ee88a53e40871462069fe18c93",
+      "sha256": "f89876233866b9ce2b48790c1030635a02a732949f651467d244c750ef53184b"
+    },
+    "review_data.py": {
+      "bytes": 30495,
+      "git_blob": "3ad23068bf4800f91696814560da5f406497fb92",
+      "sha256": "aa9093d61d53fd1fa6e784b41e1c507f55f02c6440e6d8c16b0fc0295e5a5bbf"
+    }
+  },
+  "candidate": {
+    "commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "source_ref_changed_by_review": false,
+    "tree": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "candidate_object_input": {
+    "bytes": 5329161,
+    "git_blob": "a63ee09a56c9c1743a9fcc6c95c79e62c6263b94",
+    "sha256": "1deeb72b92dca082d2a558cac2c9f55476e6a6c156a65451dacd228ec26aa3d5"
+  },
+  "conclusion": "No concrete data-object, snapshot-closure, or five-request staging blocker found within the stated scope.",
+  "findings": {
+    "candidate_provided_objects": {
+      "all_bytes_SHA256_and_typed_Git_OIDs_match": true,
+      "all_raw_base64_strict_and_canonical": true,
+      "blob": 118,
+      "commit": 1,
+      "commit_raw": {
+        "bytes": 935,
+        "git_blob": "39f1402eb842b1f005dc69206f1597fc2af0d3f1",
+        "sha256": "85579383437659a5139e1c5f16d6109ad9931914ef297b4c24a897d576cb0f25"
+      },
+      "duplicate_objects": 0,
+      "exact_expected_set": true,
+      "total": 129,
+      "tree": 10
+    },
+    "closure": {
+      "ancestor_boundary_commits_not_materialized": [
+        "9c4a11f61d30e9cc352bf44d56c98909d202a55d",
+        "e8b6fe2aa55b4fdcfe8d9c15ea830e16f0144bbd",
+        "b29869e856d08db1bfb066116a9c443376ccc57d"
+      ],
+      "complete_four_snapshot_union": {
+        "complete_identities": {
+          "bytes": 2564080,
+          "git_blob": "1a6ed5b28442d83b061019957fee98780fafb569",
+          "sha256": "251fe3a7aac7affa06ea91f5387ab871ef8eb40b058b4dd72fd330a85229c846"
+        },
+        "count": 16661,
+        "counts": {
+          "blob": 14805,
+          "commit": 4,
+          "tree": 1852
+        }
+      },
+      "complete_identity_rows_equal_native_input": true,
+      "format_base": {
+        "count": 16094,
+        "counts": {
+          "blob": 14315,
+          "commit": 1,
+          "tree": 1778
+        },
+        "provided": 83,
+        "reused": 16011
+      },
+      "provided_sets_disjoint_from_donor_and_each_other": true,
+      "reused_donor_two_snapshot_objects": {
+        "complete_identities": {
+          "bytes": 2531311,
+          "git_blob": "5f8f35dca6e43575f6e801a59f8aa4169faea157",
+          "sha256": "da033493fa4a7357249a3f8c377f83f96b4fe4e262f7dd8aecb7d5015bb95237"
+        },
+        "count": 16449,
+        "counts": {
+          "blob": 14615,
+          "commit": 2,
+          "tree": 1832
+        }
+      }
+    },
+    "coverage": {
+      "canonical_source_deletions": [],
+      "complete_after_rows_equal_frozen_5118_expected": true,
+      "complete_before_rows_equal_canonical_cc57": true,
+      "covered_paths": 119,
+      "historical_helper_note": "The obsolete prepared-only _test_support filename was never in canonical cc57 and is not represented as a sha:null deletion.",
+      "modified": 63,
+      "new": 55,
+      "unchanged_original": 1,
+      "uncovered_rows_unchanged": true
+    },
+    "full_source": {
+      "all_90_executables_and_one_symlink_complete_rows_unchanged": true,
+      "expected_5118": {
+        "bytes": 5631947,
+        "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+        "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0"
+      },
+      "expected_native_five_field": {
+        "bytes": 3543409,
+        "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+        "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+      },
+      "leaves": 15243,
+      "mode_counts": {
+        "100644": 15152,
+        "100755": 90,
+        "120000": 1
+      },
+      "these_are_expected_not_native_observations": true
+    },
+    "independent_complete_snapshot_Merkle_roots": {
+      "candidate": "a489b394666b8141840275128a780605b024cde0",
+      "donor": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+      "format_base": "313ee34febc8ccc54c611ab56286e289518c63cb",
+      "parent": "d5646a6ddeb98790b7a86aa5b4fe1bc95fbb3087"
+    },
+    "input_stability": "Every complete local input used by the pure script was rehashed at audit end and remained unchanged.",
+    "reproducibility": "review_data.py implements the mode-aware Merkle construction independently; it does not import or execute the native preparer, driver, bootstrap, or project modules.",
+    "staging": {
+      "all_five_complete_typed_Git_GETs_match": true,
+      "base_part_offsets": [
+        0,
+        524288
+      ],
+      "candidate_part_offsets": [
+        0,
+        524288,
+        1048576
+      ],
+      "decoded_limit_bytes": 524288,
+      "exact_order": [
+        "STAGE_BASE_001.REQUEST.HOLD.json",
+        "STAGE_BASE_002.REQUEST.HOLD.json",
+        "STAGE_CANDIDATE_001.REQUEST.HOLD.json",
+        "STAGE_CANDIDATE_002.REQUEST.HOLD.json",
+        "STAGE_CANDIDATE_003.REQUEST.HOLD.json"
+      ],
+      "expected_version": "absent",
+      "host": "desktop",
+      "max_complete_typed_request_bytes": 699256,
+      "max_decoded_part_bytes": 524288,
+      "mode_expected": 384,
+      "no_gap_overlap_truncation_or_duplicate_destination": true,
+      "packages": {
+        "base": {
+          "gzip": {
+            "bytes": 707857,
+            "git_blob": "91b63310e61ac23156731532cba400ce9e7b998e",
+            "sha256": "4d76a6bd6afc7cfbd0b11f7d2283c3db520ad215c9b21a23f7e7df1ce460c7ae"
+          },
+          "raw": {
+            "bytes": 3095381,
+            "git_blob": "26a1d658112e58531b710ab9fb50ed93f50d1afe",
+            "sha256": "465d36f5dc99c651e59870806e8613cf2b3b5a1cecfabdce2363716c339711da"
+          }
+        },
+        "candidate": {
+          "gzip": {
+            "bytes": 1122697,
+            "git_blob": "082e4c176ede67e76ccd0c7cd5bf34b7853081b3",
+            "sha256": "89ef8698bdc17bbb4a6042edd1804bcb83145f1ff75a08033e4e203b9d4d792e"
+          },
+          "raw": {
+            "bytes": 5329161,
+            "git_blob": "a63ee09a56c9c1743a9fcc6c95c79e62c6263b94",
+            "sha256": "1deeb72b92dca082d2a558cac2c9f55476e6a6c156a65451dacd228ec26aa3d5"
+          }
+        }
+      },
+      "parent_creation_command": null,
+      "required_existing_parent": "/home/qian-qi/hepta-utility-36fa-evidence",
+      "strict_base64_and_single_complete_gzip_member": true,
+      "typed_keys": [
+        "data_base64",
+        "expected_version",
+        "host",
+        "path"
+      ],
+      "typed_limit_bytes": 1048576,
+      "unique_fixed_direct_child_paths": 5
+    }
+  },
+  "format": "hepta-coordinator-d256-materializer-data-peer-review-v1",
+  "limits": [
+    "This does not inspect or approve main driver/bootstrap execution or authority guard semantics; those have separate reviewers.",
+    "No remote staging path has been probed here. Expected absent/create-only and expected mode0600 are request contracts, not observations of path absence or resulting mode.",
+    "Reused donor blob bytes are bound to the original complete inventory and snapshot closure. This is not a fresh native full-object read; runtime must still verify the actual donor and staged payloads.",
+    "Complete snapshots include tree/blob closure and their authentic commit bodies, not recursively materialized ancestor history.",
+    "Actual source reference is not changed. These expected data do not provide maintenance, tests, source qualification or a real task-chain result.",
+    "The expected absent and expected0600 fields are future staging contracts. This review did not observe the remote paths or write them.",
+    "Root separately reviews driver/bootstrap bytes, and the authority/guard peer separately reviews those semantics. This data review does not replace either review or Root exact engineering approval.",
+    "No new H, formatter, compiler, Rust test, QA, source gate, project main, Git source tree/commit/ref operation, or source/control mutation was performed.",
+    "Old fix101 remains a failed maintenance attempt; actual prior fmt success is not transferred into a new candidate test or qualification result.",
+    "Normal Root startup/cold wiring and a real authorized A→T→independent B→C task-chain result remain unresolved by this data audit."
+  ],
+  "performed": {
+    "H_calls": 0,
+    "execution_approval": false,
+    "project_or_native_execution": false,
+    "pure_local_audit": true,
+    "qualification": false,
+    "source_or_control_edits": false,
+    "source_ref_writes": 0
+  },
+  "reviewed_packet": {
+    "bytes": 14404,
+    "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+    "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+  },
+  "reviewed_staging_manifest": {
+    "bytes": 4412,
+    "git_blob": "0b218906e689a212147853f3d2a27f69ccae4788",
+    "sha256": "9f0e335f81d5fe1b4f5539e95d7f7206365291d5c5980ce6a2d076a99a9ca4f5"
+  },
+  "scope": [
+    "Complete local data bytes of the fixed packet, candidate object input, five binary parts, and five exact typed write requests.",
+    "Independent reconstruction from the complete canonical cc57 inventory, original 246d parent delta, original c0f complete inventory, and separately frozen final a489 graph.",
+    "All 119 frozen overlay source bodies; all 118 changed blob bodies; complete raw bytes of ten mode-aware directory trees; the actual Root-created d256 commit.",
+    "Independent Git full GET of the packet, staging manifest and all five complete typed requests, hashing the complete returned content."
+  ]
+}

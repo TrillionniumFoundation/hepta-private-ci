@@ -1,0 +1,19 @@
+--- a34c8779/ACTUAL_BOOTSTRAP.py
++++ d256-a489/MATERIALIZATION_BOOTSTRAP.HOLD.py
+@@ -1,12 +1,12 @@
+ import base64, gzip, hashlib, io, json, os, pathlib, stat, sys, traceback
+ 
+-BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-isolated-materialization-v1')
++BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1')
+ PINS = {
+-    'driver.py': {'bytes': 70560, 'sha256': '2c4c8582d1940605d1b2138587ee3a73ab4b4d6eb265bfcb03ffd7d291c8b1f6', 'git_blob': '6d1537fcd58540da64c18916369f4f04d2a0dce1'},
+-    'MATERIALIZATION_PACKET.json': {'bytes': 14331, 'sha256': 'b733baa29e1b70c6fa57582d61dfe47e360e9d3de4d0ef482193be30057914c6', 'git_blob': '728a9251a3ee0e5fca4dd4cc43e8629bbfa9185c'},
++    'driver.py': {'bytes': 70596, 'sha256': 'daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf', 'git_blob': '2044db8282eb8db8d5627519a425a49f636377da'},
++    'MATERIALIZATION_PACKET.json': {'bytes': 14404, 'sha256': 'd1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b', 'git_blob': 'b05c78c478bbd55219fea7869b1c7871617509c7'},
+     'DONOR_RESULT.original.json': {'bytes': 12671, 'sha256': 'fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96', 'git_blob': '40833805111c98773ba1d046df09285357531396'},
+     'DONOR_SUPERVISOR.original.json': {'bytes': 951, 'sha256': 'a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa', 'git_blob': 'c507335b611474857eff53b738071a7a3f27dc99'},
+-    'APPROVED_CONFIG.json': {'bytes': 642, 'sha256': '58e25387f392c929a0adf798e30714ad73008f76b21b1b7d56f2c29e4b5f7980', 'git_blob': 'b760954f62dbe96b6ed337ae2cc99f4130727824'},
++    'APPROVED_CONFIG.json': None,
+ }
+ 
+ created = False

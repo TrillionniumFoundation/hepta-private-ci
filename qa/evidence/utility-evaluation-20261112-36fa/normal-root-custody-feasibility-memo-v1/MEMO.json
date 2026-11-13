@@ -1,0 +1,98 @@
+{
+  "schema": "hepta-normal-root-custody-feasibility-memo-v1",
+  "created_utc": "2026-11-13 10:11:03 UTC",
+  "status": "BOUNDED_STATIC_FEASIBILITY_NOT_IMPLEMENTATION_OR_DEPLOYMENT_APPROVAL",
+  "previous_review": "301ac7b630d378729010ddef119a29c5b8865e1c",
+  "additional_input_proof": "c7aa27f2e916aeb5ae4377b3b9d534c9469282d3",
+  "conclusion": "No inspected shipping startup/service currently keeps the new Root custody, the actual same-Arc task/Cell/Source/drain, live protected Current and the original daemon writer together. The typed library can express a single-process Root embedding, but that is not an existing deployed entry and does not authorize changing the daemon's privilege profile.",
+  "paths": [
+    {
+      "path": "Existing Root production launch -> permanent credential drop -> daemon",
+      "existing": "The original AgentdConfig and writer FD remain in the same child. Root handoff completes only for that exact non-Root UID/GID/PID and actual Root session.",
+      "refusal": "The new custody install/drain explicitly require real/effective UID0. drop_root_native_owner_credentials sets all real/effective/saved UID/GID to the dedicated non-Root identity, drops capabilities and sets no_new_privs. The protected Current store requires original Root-owned 0700 directory/0600 files and takes its actual owner lock on each load/CAS. An earlier directory FD does not exempt future openat operations from kernel permissions.",
+      "result": "Not a valid place for a post-drop Root callback or for regaining Root.",
+      "source_pins": [
+        "4b615c40566ec351d53861eb2a57d8d85da1c310",
+        "0071512a960b4e9b19b1d2897128c0d67fa59271",
+        "d220e122d8f0c66bc902a2691d68c5490cdb037c",
+        "d087d646e0162a64caabe83a4120db820346a0a9",
+        "31ede1a405c6469508871d672c50a4f000342985"
+      ]
+    },
+    {
+      "path": "Construct new custody before drop and retain it afterward",
+      "existing": "Local construction could retain the original task, Cell and current Arcs before credentials change.",
+      "refusal": "Subsequent require_root/drain still fails after drop, and each protected-store read must use the original Root-only file operations. PreparedRootAgentdConfig also pins same PID and same original writer FD; copying a config or moving it to the separate Root host does not satisfy its finish contract.",
+      "result": "Lifetime retention alone does not retain Root permissions, and a second independently opened daemon config would compete for the original writer.",
+      "source_pins": [
+        "31ede1a405c6469508871d672c50a4f000342985",
+        "6cd8470ecba5b966f331fffdea86f0ffdf770c2f",
+        "0071512a960b4e9b19b1d2897128c0d67fa59271",
+        "dcc7eba73eb6f9b7cfdfc1d538d606bae6d62ef9"
+      ]
+    },
+    {
+      "path": "Separate existing Root authority service plus current daemon",
+      "existing": "The Root host legitimately opens original issuer/lease/root custody. The daemon legitimately holds its single config/writer and non-Root device/notes consumers.",
+      "refusal": "The current handoff delivers sealed bootstrap/checkpoint and authenticated channels, not the concrete generation Artifact/FinalUse/Current/task/Cell ownership. Original task retirement checks Arc::ptr_eq with the actual Cell. A second reconstructed Cell, current digest RPC, serialized pointer or arbitrary Current callback does not meet this condition.",
+      "result": "This is the correct existing deployment split to preserve, but it needs a new narrowly typed task-service boundary; there is no existing one-line attach.",
+      "source_pins": [
+        "c00fe1fe4bde43be7285b93260778c007d8b94b2",
+        "d41e9127a9d9f982ba9ff2469de7cdd9d2631a65",
+        "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+        "d100d803ff1e44d814c155f0ef29992fe658ae9f"
+      ]
+    },
+    {
+      "path": "Explicit trusted UID0 embedding using the existing typed library",
+      "existing": "A single process can, at the inspected type/ownership boundary, keep its one valid AgentdConfig, use the real authorities/Prepared or original recovered Ready, consume into_q24_task, retain returned custody, and call the original runtime. No new Current callback or duplicate task is needed.",
+      "refusal": "No inspected main/Root CLI wires this composition. The Config/runtime paths still require the actual Starting registry record, exclusive writer, identity/fence, AuthBus trust/replay checkpoint/objective profile, real model and owners. The source-level possibility does not establish that operating the normal daemon under UID0 is an authorized or acceptable deployment.",
+      "result": "A possible explicit embedding design, not a recommendation to bypass the original dedicated non-Root production profile.",
+      "source_pins": [
+        "dcc7eba73eb6f9b7cfdfc1d538d606bae6d62ef9",
+        "2c2869dcfa739364ce50ab22c13cd079cedfc0e1",
+        "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6",
+        "6cd8470ecba5b966f331fffdea86f0ffdf770c2f"
+      ]
+    }
+  ],
+  "minimal_new_boundary_if_current_non_root_deployment_is_retained": {
+    "status": "Engineering proposal only; not implemented or authorized by this memo.",
+    "root_side": "Keep the concrete original generation Current, Artifact/FinalUse authorities, same PublishedTask, actual factory-created Cell/Source and retirement in one purpose-fixed Root task service. The service must own the actual execution/readback/retirement state, not merely monitor a parallel daemon Cell.",
+    "daemon_side": "Keep the original AgentdConfig and sole writer in the credential-dropped daemon. Install only a concrete sealed invocation/readback client bound to the original registered daemon identity and authenticated actual Root service.",
+    "required_api_change": "The current into_q24_task consumes AgentdConfig and returns local config plus custody. A new restricted separation between Root-owned actual task-service construction and daemon-side installation is necessary. Preserve the original factory result; do not expose owners or accept arbitrary trait implementations as proof. This is more than adding one main call.",
+    "protocol_minimum": [
+      "Fixed task/operation/purpose and exact binding, not arbitrary method dispatch.",
+      "Original SO_PEERCRED, pidfd, boot/start and registered identity checks.",
+      "Same actual Source/Cell/current observations and same-Arc drain remain on the owning side.",
+      "No permission from metadata; no new grantor, grant minting, replacement Current or duplicate writer.",
+      "Dispatch/ack loss remains Unknown with same-operation readback; no automatic re-dispatch."
+    ],
+    "why_current_only_rpc_is_insufficient": "It would leave the direct Cell/task ownership and Root-only drain split across processes while the original runtime constructors require the concrete local live guard and original same-Arc Cell. It does not solve the actual custody handoff."
+  },
+  "code_vs_operational_inputs": {
+    "implementable_from_existing_typed_owners": [
+      "A Root-local adapter around original prepare/recover/custody with exact operation binding.",
+      "A purpose-specific service that retains the actual original task/Cell/Source and a sealed authenticated client, subject to a separately reviewed ownership/API split.",
+      "Original cold Current/journal readback and original uncertainty handling, without initialize fallback or a new grant."
+    ],
+    "operator_must_supply_or_authorize": [
+      "Real protected Root state, existing issuer/lease policy and the intended production process/identity registration.",
+      "Real Artifact trust, writer lease, signed current head/withdrawal frontier, registry/payload files and signed selected generation.",
+      "The actual purpose-bound initial FinalUse authorization and original consumer state with external frontier; no fixture keys or default authority.",
+      "Actual model/task/source/fence/journal/independent witness inputs, plus independent B evidence and other real role providers when claiming a complete learning chain.",
+      "The deployment choice for a new service/embedding; static code review alone does not grant a Root privilege change."
+    ],
+    "scope": "Independent real task B is not required merely to parse this memo, but is required for the claimed actual learning/real-utility outcome. Mechanism tests and agent cross-checks do not supply it."
+  },
+  "limits": {
+    "H_calls": 0,
+    "source_changes": 0,
+    "refs_changed": 0,
+    "project_execution": 0,
+    "full_repository_scan": false,
+    "root_process_cold_restart_observed": false,
+    "real_utility_claim": false
+  },
+  "source_note": "Four additional source blobs were fully fetched and matched the same actual f905 inventory. Earlier 34-source review and prepared coordinator pins remain frozen and unchanged."
+}

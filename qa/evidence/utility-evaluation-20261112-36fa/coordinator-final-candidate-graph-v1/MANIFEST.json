@@ -1,0 +1,154 @@
+{
+  "bundles": [
+    {
+      "gzip": {
+        "bytes": 1174526,
+        "git_blob": "0b9d7e8b64676277dffbe39c18696769f7df0338",
+        "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/CANDIDATE_FILE_GRAPH.json.gz",
+        "sha256": "99d894c4e62a3d5b832572f5937211093f7c47a332d375c45fcae3c6fbbc47a1"
+      },
+      "name": "CANDIDATE_FILE_GRAPH.json",
+      "parts": [
+        {
+          "bytes": 409600,
+          "decoded": {
+            "bytes": 307200,
+            "git_blob": "1761902d172f6d7a15caed2e9c42e84619b8bc16",
+            "sha256": "fdfe61e385641736462a58483e09992383277e3dbdf9747c2bc84c41cb91a919"
+          },
+          "decoded_offset": 0,
+          "git_blob": "ace7f1700cfdeca4bfc1666f50d28244017b43dd",
+          "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/CANDIDATE_FILE_GRAPH.json.gz.part-001.b64",
+          "sha256": "2910c439a26a648dd344a9dce06f8f2dee8a7290625fabc32dd0d954eea8b720"
+        },
+        {
+          "bytes": 409600,
+          "decoded": {
+            "bytes": 307200,
+            "git_blob": "c1ceafd56a34fc2b535a0bb55a648b20f1ceff2d",
+            "sha256": "54a87252393842a39f9ff1b4e361e2ca28e30b7db32e7c4bfd05bc13b18126d5"
+          },
+          "decoded_offset": 307200,
+          "git_blob": "e294d11f9b0a1e11d8c70e0991fe6fe8a90b16d7",
+          "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/CANDIDATE_FILE_GRAPH.json.gz.part-002.b64",
+          "sha256": "794e00eb151ae91b335586740f32f7012f83beeca40522db083688027d3f684e"
+        },
+        {
+          "bytes": 409600,
+          "decoded": {
+            "bytes": 307200,
+            "git_blob": "f25e7d4593a07823e09077251486be97bbed2943",
+            "sha256": "9a73eebd048320dc3fe676639002e8236c13fead19f9d801a2306816b07ee7b6"
+          },
+          "decoded_offset": 614400,
+          "git_blob": "32bc7973cf20da23a4822edd6feacff27a54dd87",
+          "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/CANDIDATE_FILE_GRAPH.json.gz.part-003.b64",
+          "sha256": "49498df4fd70b376c480d2078a2a897812bfa84e3906a486cbaca4f8d14eb6b8"
+        },
+        {
+          "bytes": 337236,
+          "decoded": {
+            "bytes": 252926,
+            "git_blob": "1179f735abb9d81da7b30bb7ea33e429f7fc0729",
+            "sha256": "784b70b39b4a3d22ee64866b65fdcd74a34aa3922b624ccecb278e5e95b9c767"
+          },
+          "decoded_offset": 921600,
+          "git_blob": "e5927e50942e05a5d0f223c02c46d5d26877bb60",
+          "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/CANDIDATE_FILE_GRAPH.json.gz.part-004.b64",
+          "sha256": "be5a5e233a452c74ca6fba09f30ce21e233c4489f443f24f1e0f5345619271da"
+        }
+      ],
+      "raw": {
+        "bytes": 3818494,
+        "git_blob": "097282896b5881614498faf2231e4c8c0da393c3",
+        "sha256": "41e1924454c39e21d46f4dddde2cc61a654f462cd82e8a6b659f46fa8e3eae4a"
+      }
+    },
+    {
+      "gzip": {
+        "bytes": 104810,
+        "git_blob": "f2bef1701086b4269d62e84988afbce9388d6c7f",
+        "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/TREE_OBJECT_PLAN.json.gz",
+        "sha256": "71bc4a23af82f1d0111b68b08d5547e46b5554712cdd0fddbabc7d619ad03c67"
+      },
+      "name": "TREE_OBJECT_PLAN.json",
+      "parts": [
+        {
+          "bytes": 139748,
+          "decoded": {
+            "bytes": 104810,
+            "git_blob": "f2bef1701086b4269d62e84988afbce9388d6c7f",
+            "sha256": "71bc4a23af82f1d0111b68b08d5547e46b5554712cdd0fddbabc7d619ad03c67"
+          },
+          "decoded_offset": 0,
+          "git_blob": "e4617bf5cf378f7e1d8064387394069814c5bd43",
+          "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/TREE_OBJECT_PLAN.json.gz.part-001.b64",
+          "sha256": "4ff4725f5897d41336f080370310eca68866eb1c173d36cae555d42fc3c385f1"
+        }
+      ],
+      "raw": {
+        "bytes": 407107,
+        "git_blob": "2a4a3f3330ac032e7e3d09c74e02f4449450dde5",
+        "sha256": "74e50ce0879c24d20b894247c2c1705b2e00e1474d50e50e58e938dcf1889bd0"
+      }
+    }
+  ],
+  "expected_counts": {
+    "files": 15243,
+    "kinds": {
+      "file": 15242,
+      "symlink": 1
+    },
+    "modes": {
+      "100644": 15152,
+      "100755": 90,
+      "120000": 1
+    },
+    "rust_all_repository": 6794,
+    "rust_outside_codex_rs": 122,
+    "rust_under_codex_rs": 6672,
+    "unique_blob_objects": 14665
+  },
+  "expected_tree": "a489b394666b8141840275128a780605b024cde0",
+  "format": "hepta-final-coordinator-composition-manifest-v1",
+  "graph": {
+    "bytes": 3818494,
+    "git_blob": "097282896b5881614498faf2231e4c8c0da393c3",
+    "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/CANDIDATE_FILE_GRAPH.json",
+    "sha256": "41e1924454c39e21d46f4dddde2cc61a654f462cd82e8a6b659f46fa8e3eae4a"
+  },
+  "overlay": {
+    "bytes": 105977,
+    "git_blob": "9f6949a4b9fd6573f694ae20aa130453bebae00c",
+    "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/EXACT_COMPOSED_OVERLAY.json",
+    "sha256": "596737fbcb5029ac655b05923113376bbdc94aa4959270a5113a741bc0d176a3"
+  },
+  "parent_required_for_future_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "review": {
+    "bytes": 6700,
+    "git_blob": "a6e19929e19b21bc5c0ee6eb176e21dcab7e9d54",
+    "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/REVIEW.json",
+    "sha256": "cf0481d54554dcfd0a25f582abb6e9163317403bdb0213f31ce8f04bb8ca95a8"
+  },
+  "source_commit": null,
+  "source_commit_or_ref_created": false,
+  "status": "HOLD_NOT_QUALIFIED",
+  "tree_plan": {
+    "bytes": 407107,
+    "git_blob": "2a4a3f3330ac032e7e3d09c74e02f4449450dde5",
+    "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/TREE_OBJECT_PLAN.json",
+    "sha256": "74e50ce0879c24d20b894247c2c1705b2e00e1474d50e50e58e938dcf1889bd0"
+  },
+  "updates_cc57": {
+    "bytes": 90332,
+    "git_blob": "dcaddc42be089ef920032c09d80c735535132cbf",
+    "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/EXACT_UPDATE_ENTRIES_CC57.json",
+    "sha256": "a208af48350a2898465825f81e0e1ded13bae0508ad4594836e0245a2ed25691"
+  },
+  "updates_f905": {
+    "bytes": 12011,
+    "git_blob": "74b6a53d1276596b2dcbc541572b8ed5c2ef749c",
+    "path": "/tmp/hepta-36fa-coordinator-final-candidate-graph-v1/EXACT_UPDATE_ENTRIES_F905.json",
+    "sha256": "a8ba2c9e5e20ebff3e9f158b9bb265f6aa4b47c7999862514badb423c0bce8d1"
+  }
+}

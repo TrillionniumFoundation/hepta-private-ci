@@ -1,0 +1,79 @@
+{
+  "format": "hepta-completed-a489-staging-archive-manifest-v1",
+  "status": "ALL_FIXED_41_STAGE_ORIGINALS_ARCHIVED_WITH_FULL_GIT_READBACK",
+  "original_index": {
+    "bytes": 14899,
+    "sha256": "c1fa2ff5c84362042e699a65517fe25a121f3584d9d1eb86c7899ec4cd805187",
+    "git_blob": "0e0ad43034df0c703da61a2c800b4a77d171e5a6"
+  },
+  "original_member_count": 41,
+  "direct_original_raw_leaves": 38,
+  "oversized_original_request_aliases": 3,
+  "reused_bounded_base64_leaves": 6,
+  "all_five_requests_exact_static_aliases": true,
+  "source_static_archive_placement": "287eb242c162d757a4f57ff16d18af94f5733055",
+  "actual_external_read_scope": {
+    "stage01_chunks": 8,
+    "stage02_chunks": 3,
+    "stage03_chunks": 0,
+    "stage04_chunks": 0,
+    "stage05_chunks": 0,
+    "full_external_download_paths": 2
+  },
+  "root_verification_clarification": "8473a68b5906c4b31285749259a87158e2e8f0bf",
+  "unchanged_original_driver_full_five_input_read_and_final_audit_required": true,
+  "payload_count_including_manifest": 52,
+  "leaf_limit": 512000,
+  "maximum_leaf_bytes": 409601,
+  "required_proofs": [
+    {
+      "path": "coordinator-a489-staging-archive-v1/REQUEST_ALIAS_REUSE.json",
+      "bytes": 8759,
+      "sha256": "73f811f027c2d5c72ebe80b3592cc8b3ee69ee50af7f46fb1489a4a2aa1bd461",
+      "git_blob": "bfb98c21ad2b650a275b7960f4efb4e9e55b2924",
+      "actual_full_Git_readback": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1/CLOSED_MEMBER_MAP.json",
+      "bytes": 23725,
+      "sha256": "adb8989f7fb35e05e185412106723877d5fe227dbfe0a4f1a091f5c9d1beda8e",
+      "git_blob": "8660f67a16d196e6f3bed4c2eede91449bc4c8c1",
+      "actual_full_Git_readback": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1/REVIEW.json",
+      "bytes": 7340,
+      "sha256": "6e532c502e4e9b845fdc5351aa22bdf730121fb18e55e77990a029da8b8d8d1f",
+      "git_blob": "5ace2fbf642eb918aaa6d308285aa756ff25e79b",
+      "actual_full_Git_readback": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1/prepare_stage_archive.py",
+      "bytes": 14545,
+      "sha256": "921d68c426fa04ad1a4aea47c8741b4b752f649a077ba25153b9b2f6a3e7c312",
+      "git_blob": "274c8f652c3f536cee288b59d1d03766319da5a8",
+      "actual_full_Git_readback": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1/ARCHIVE_PAYLOAD_INDEX.json",
+      "bytes": 23632,
+      "sha256": "4984f800e77e0a4bcacc3fa06baf1bc0ac8f88753616804650251150d243ed31",
+      "git_blob": "f0b6d86c06b9185bcbea8292a12b602a15b0a2ae",
+      "actual_full_Git_readback": true
+    },
+    {
+      "path": "coordinator-a489-staging-archive-v1/ACTUAL_GIT_FULL_READBACK.json",
+      "bytes": 39995,
+      "sha256": "47e8f415b185e75d9d830423594e668fa539d4c6a097268c1e5d568a0c10bb33",
+      "git_blob": "5a88b6f964efd4efcf9032c902e79156d9350ff5",
+      "actual_full_Git_readback": true
+    }
+  ],
+  "preserved_original_scope_only": true,
+  "future_main_runtime_files_read_or_included": false,
+  "new_archival_SDKs_added_to_original41": false,
+  "new_H_calls": 0,
+  "source_or_control_modifications": false,
+  "Git_tree_commit_ref_operations": 0,
+  "qualification_supplied": false
+}

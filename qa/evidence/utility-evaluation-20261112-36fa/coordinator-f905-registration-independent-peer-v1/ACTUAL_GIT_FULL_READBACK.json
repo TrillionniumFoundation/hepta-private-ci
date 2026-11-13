@@ -1,0 +1,41 @@
+{
+  "format": "hepta-independent-review-actual-git-full-readback-v1",
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 10978,
+      "sha256": "baa235aa436c522030b9cc3049eaa25be76a4be05e81176b34055812ffe8babd",
+      "git_blob": "b90584055478ffe6d9c20f585349753b361784c7",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "FROZEN_REGISTRATION_BYTE_AND_SCOPE_REVIEW.json",
+      "bytes": 389989,
+      "sha256": "8fcea20afef2070dc83583e11807567bff29a607abe3b49f273d3b1eb999f237",
+      "git_blob": "b84c6853a31996e21df55d2f9239e4e29387e0fd",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "verify_frozen_registration.py",
+      "bytes": 29806,
+      "sha256": "7cfab37845ba2957088100391a95acb89e9614801cbc6e908a2b4dea774f6f6e",
+      "git_blob": "28638e0eb2f994c6dc4cb237bb3120b30f9486d4",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "PACKET_FULL_GET_REVIEW.json",
+      "bytes": 1912,
+      "sha256": "10e9865dd49820649e7473e0138369017e9a8272a5dc9ea25a02608c3c38cf6a",
+      "git_blob": "53a1d5575b22fc2d974c0493ae34093cdf8a339c",
+      "actual_create": true,
+      "full_get_equal": true
+    }
+  ],
+  "notes": [
+    "Every core blob was actually created and fetched in full in this turn. Full structured SDK responses are retained locally; this ledger records observed equality, not a substitute original SDK.",
+    "Raw source packet transport is described separately; no standalone large raw packet upload is claimed."
+  ]
+}

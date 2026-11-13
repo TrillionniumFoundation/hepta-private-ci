@@ -1,0 +1,1093 @@
+{
+  "format": "hepta-composed-candidate-source-blob-readback-v1",
+  "status": "COMPLETE_FIXED_SOURCE_BLOBS_READ_BACK_NOT_QUALIFICATION",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "overlay_map": "9f6949a4b9fd6573f694ae20aa130453bebae00c",
+  "expected_tree": "a489b394666b8141840275128a780605b024cde0",
+  "source_paths": 119,
+  "fresh_complete_gets": 112,
+  "same_session_create_full_get_reused": 7,
+  "local_all_complete_bytes_independently_matched_in_composition": true,
+  "entries": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "bytes": 13318,
+      "sha256": "28d1f9a9319d4eaad3455f9d14d83e5f7cef2a7731f5b5dbfbf94ce4a428b059",
+      "git_blob": "bf6cae8fe21f249a6e055b5edd2f69a2a61cafa8",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "reused_proof": "727fede63228d7fe8e059b79f673a05aaaeec832",
+      "source": "same-session exact source create+GET"
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "bytes": 30745,
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee",
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "reused_proof": "727fede63228d7fe8e059b79f673a05aaaeec832",
+      "source": "same-session exact source create+GET"
+    },
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1855845,
+      "sha256": "8c32ce84deefdb06bf98728dae51e287496349fc1abda95ecc96a9ce5599ce5c",
+      "git_blob": "1f53a53349aa18d37a0c7299f2ab9fe94b0de244",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "reused_proof": "727fede63228d7fe8e059b79f673a05aaaeec832",
+      "source": "same-session exact source create+GET"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "bytes": 7783,
+      "sha256": "671da3ee0159259421c5544270e52f235b672775b29c853a19584c5e1a83144b",
+      "git_blob": "7dbd6bdc856fffcd2aa2657f72535a95886c6cc4",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "bytes": 6810,
+      "sha256": "ecdd97b0ccc3196af2a3cea155ce8ccc34edb127eb05c99fcde7d31a968158c1",
+      "git_blob": "232e08dda261e59032cf6ccb987e9cbd86e35e49",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+      "bytes": 11034,
+      "sha256": "8bdf86b4eea7b9434b1c10ad0092dffd7f50c4d903d3286f399c529aa907daba",
+      "git_blob": "6290425c5b4338885ce2d7637715940c4fb82d6d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "bytes": 12300,
+      "sha256": "e396bea53c666cfd7cb7b48d3a309241805a2b31c139d48fc4bee8fcdb5388d6",
+      "git_blob": "275790050ada76230712c4e8698df53d0e4e711a",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs",
+      "bytes": 15083,
+      "sha256": "a7c598c946a5a94b3202ffc279d4b5ed244c772ffb1289c7c8eb202ee20ece49",
+      "git_blob": "64d25ff8801f69b61de0a2433282786a82b3f15a",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "bytes": 8197,
+      "sha256": "6b9f30ad0e65aa584e6fb5bf5892edfce7cbb4dedbded013b079c2b68bdb54b2",
+      "git_blob": "41ad5a933ad6a169b62ae216bde159e56800ed3c",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "bytes": 12686,
+      "sha256": "e5c4ac78a150daf3417dd2fd0ae29c2ec1e18a968b633cccd2f42d11c20ba1e2",
+      "git_blob": "aa70d902152de9db292956e4dd996212551c7107",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "bytes": 14360,
+      "sha256": "1d0ae260b8349ebc744df025502e7e6462be223eeba21d291e7f682fc88b0b1f",
+      "git_blob": "8239d30746a24cecdf0b469da7c45433733f1098",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "bytes": 3802,
+      "sha256": "3a03f65d8f5fa55d3376f54cad23642917e2f7eeb4b20b74776da032008719ce",
+      "git_blob": "113feddc8a4c543f7c4df15bd6450028851c5dea",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "bytes": 15958,
+      "sha256": "ef696ab5c1cb896e085be1bb6e4bd23d6ea1ea5eb928d78aadf3735d2e3fc535",
+      "git_blob": "af904cce49ee4b7c0486b74f6fdcef7579d489c2",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "bytes": 16041,
+      "sha256": "b6ada6b2e9654f9e670a42aa099d49abb73f6f0b90a81361cedbeb0b212702ef",
+      "git_blob": "94cdad47f9564d1521a7216c8d8d62c422202b85",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_readback_support_tests.rs",
+      "bytes": 3236,
+      "sha256": "eca7cc30a25d53e14e0f5d1289dfce20899fcc42a541944c11d05c792414fcb5",
+      "git_blob": "b0e4049f4f9c128ab29a5c12b0892d3a4c5bf0b9",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_observation_tests.rs",
+      "bytes": 500,
+      "sha256": "ea50838ea1569f534141c72bc65cd51c9c06d1dd3c8e052d11f28250d2a2b1bb",
+      "git_blob": "e4322de280617f3cec445b4b5211cc8659e18816",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "bytes": 7557,
+      "sha256": "4de86df4dd59a579f00863e461277946e3f04cbcc69d8b43f50c1fc66fa3f836",
+      "git_blob": "cde16a60860fa5eccb1160353d6806f3f9f81477",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "bytes": 1730,
+      "sha256": "36ab5af1dc36d3bb1e2cbd5ed85871357956117875957495dd82c63f858b8c65",
+      "git_blob": "a4eeeebfe708774cf8d2a553d031fdb17969adba",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "bytes": 3633,
+      "sha256": "fd9011e42ef2a9dc9c99c35c33670f71a906049268e1f7afcc20ff83feb130c3",
+      "git_blob": "451549f4df782233fc42e808f8eebee29f168f6e",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "bytes": 4569,
+      "sha256": "88841228a6d56149886b1a6ffc2798afeba5135cd05dbdd0bfbb97bd3d22c064",
+      "git_blob": "5a0c37eaa9baf7b0bd48489f2714df28497d2a9f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness_support_tests.rs",
+      "bytes": 1644,
+      "sha256": "252e9bd01ba9eb7e5dab822ed0109f14540fcf0f685fae5e445be5cc5cddb2af",
+      "git_blob": "9f3250fa71d7fab69edae98f684ee2204f37d21e",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "bytes": 9145,
+      "sha256": "0a6e79cbdee0084345fc5b067c110922d755eeac00c172c7befe0f442d3595fc",
+      "git_blob": "3b667897279c79aec9fe1b85901f70ab0eb03b16",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "bytes": 5034,
+      "sha256": "ba41dc3a6e97225abed0361c77f424090eaea976c8c8766650d96825e5afbb7f",
+      "git_blob": "386c3c773866c720cfeb2ad7cb2b7b81065d21af",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "bytes": 4751,
+      "sha256": "76d2dc25e862d87046d8bb23366c9bad544318f08eba66d1c6fed6298887ba46",
+      "git_blob": "57d162f984ae7d812eb0c1de8e6033d322b3d10f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_read_channel_support_tests.rs",
+      "bytes": 865,
+      "sha256": "ab419300ded91e1ae2dfbe5dc96c764c66b96e9a3863ca856b584fd93c2f9044",
+      "git_blob": "8802ebe5e4b37c01126928422946142bf758c17d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "bytes": 12401,
+      "sha256": "4dfd606597e1a7e4fed5a9d51773a945c6dc3655944247ea654660079dc12cab",
+      "git_blob": "f6560fe4b5989a6961c9064628441775c15baeed",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs",
+      "bytes": 4659,
+      "sha256": "405174c6cf29894569e260b2535d3ea03bf3dac5de13cd4f1804f703c9a09b27",
+      "git_blob": "272a6aba53c515af0b5ec5c5d8d046ccc40dbe2f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "bytes": 12185,
+      "sha256": "e39a179c370f8433162a3e8dca41f703769b12e823da3467e64957a26177fbe8",
+      "git_blob": "eee73f62fc021d3004638681e6b78ea462129966",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "bytes": 6626,
+      "sha256": "cc4a94f932cde080926a8b674272adb55d1b139501cd4cd74c14d5ef54d314f3",
+      "git_blob": "3970dbf29eb46dede4337aca04a0f500163ddd03",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "bytes": 20380,
+      "sha256": "e65ad37b6d97b3001c09bbbe2e4c219e147740a087f9a5cd9428872f30ec060e",
+      "git_blob": "83cc4158e980804b0e7bd4365e51cf88b43a2196",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "bytes": 20451,
+      "sha256": "7dc64a0b751a74470e5a3476460b63af97d804559d73ddd70b44ecc7829c9614",
+      "git_blob": "ed556681b4219282ce03e229d8ce8952d0ff0e2f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "bytes": 3225,
+      "sha256": "dec854db56f3a058bda60cb67d69f1dbee8082c72952bcfe9c8dac08d370dd39",
+      "git_blob": "8a91d5b0e416af513df2810d969c97434e28e5be",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "bytes": 3833,
+      "sha256": "c70722550176741b554837aa0da43112bc3127e93c1cbc629a1c97964c1cfeb9",
+      "git_blob": "d033ad95eabcc985e315d06a2fe45719e79f1eab",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "bytes": 9143,
+      "sha256": "73f0170902760c56c9273f6e5023cba0777f684fe1902902ade1e009daf61349",
+      "git_blob": "007947db1e891643041d03e33dc9991a2698566a",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "bytes": 3455,
+      "sha256": "1acf86a8d800196b4ffe4c87c928a5f038fe2f58e6df70c30c854c672ea609b8",
+      "git_blob": "55a3240ca2398591e2c2e90ef2de81b2bfeb3360",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "bytes": 14980,
+      "sha256": "b8fc407f8dec8cd43b02faa2ee9e182dccd30ed7789aa73994975745511f03e1",
+      "git_blob": "49243f911ab7f7edd13e1aceb2a5f6477d161980",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs",
+      "bytes": 2870,
+      "sha256": "9487d5e9fa45f3b1d37ae0470990152741e427a812697afc08718cae9af41e33",
+      "git_blob": "4af89f29fb50535fe5cde1ca55f1c6e93a7d50ee",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs",
+      "bytes": 9753,
+      "sha256": "681f530fa4c92caa90eff09c76917002714ac02fca343af10c66fa58531c8419",
+      "git_blob": "c00498c5f8c2ac1301d1dbb32e630c9efb01867a",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "bytes": 14821,
+      "sha256": "9aa9a9a908790683bcab368f9d528707d9dda39c238d30e8a163a1aaa1f16e94",
+      "git_blob": "444fbbb4e48743f51de91d39d77c34b37364b002",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "bytes": 3030,
+      "sha256": "2822d8e9b5f4ada7d0868e11705f3f18e23d49e5e2dd1e9ddece5e96183fe0f8",
+      "git_blob": "b3ae22835e388ad7ae9b3488f85896f0dcdf2fed",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "bytes": 27373,
+      "sha256": "6195fb4dd0704c4d932f33bfb8f4d4af6d966015576b477f7feeb75f5ff899f5",
+      "git_blob": "b9a4d5bda8f02c16a198efde82a7d0d589f3d18c",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs",
+      "bytes": 7516,
+      "sha256": "69dc83b427aa78f1326319bd340175a73553134db0abb08b96fb72498a25cfa8",
+      "git_blob": "cbf9e717bda5ba469964cff7a399763c4f4e0bb9",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "bytes": 13514,
+      "sha256": "499c240eb53e179e01b5aa589d5e0c51a1ac74eed28e2fd7499b9b72770cbf80",
+      "git_blob": "2dafccfb708098871d5ab4807ec185920c73c544",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "bytes": 24081,
+      "sha256": "1a9f84835d412587b76da140f7e684d4cdbffaaeb988a19ae62dce1fd793cb2b",
+      "git_blob": "ffafea99606924aa115f6c9ba06f417a7a08618b",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "bytes": 16457,
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370",
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "bytes": 10845,
+      "sha256": "85fcb670e9b0e7f0d420e1282ecc9ed4596fc941d50d169c098a157588157158",
+      "git_blob": "fc98ce9ee4c3c51a575abed19124c1292641ac73",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "bytes": 5413,
+      "sha256": "ab8523cbd59b225684e42ce0683eecdb181230bad7781cee2e67bd5a3d7e57b4",
+      "git_blob": "8b66af8f37a5d06644d18911cd0ebbc2b83da59e",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "bytes": 12151,
+      "sha256": "da9b6959af1488715c55e0aea8311fbeab1242e40741b6822025f977e52a5359",
+      "git_blob": "24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "bytes": 10265,
+      "sha256": "f6ee338a20e9ce145e629722a2c9d22cd97d1bbf751db41cf8b5cdf504e6c7f4",
+      "git_blob": "8fd54c3fcde5ee49fb330296a8651fc08f43273d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "bytes": 12454,
+      "sha256": "fda54486eb6058c3910bce1b0b3519642f5b9d3fa5937d517e3586fac8a79a18",
+      "git_blob": "6630261d108788169cfcad798a76e0118374baa1",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "bytes": 11138,
+      "sha256": "ad426f9a1db6c16ec431a91738de97cbc650ca95a82c2a65f94e4ff8db436cee",
+      "git_blob": "94ff7bbd1cc895a3acdd1ebc827e4838ceda5d67",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "bytes": 26575,
+      "sha256": "151a83ccbd8acaeea5edad60f4449f8f93e916b740dc3f024836eb1ea3c6b182",
+      "git_blob": "f7da75482e854f7b394b732fc5a9c01de7b7064c",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "bytes": 26954,
+      "sha256": "1f79bfc74852efa47e9e8a96dfd8002ddae1eaa42e15919c3f6106e27bcad25c",
+      "git_blob": "b1179b7fda45ba5ac0340147e2e103dc795dc1a3",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "bytes": 10468,
+      "sha256": "9beee92e4ffce2a3d27386fb002a79130fee42e6693986ed0c8c9503f3afce77",
+      "git_blob": "b5131bf54f28396737fe407a4aa3b925636f241b",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "bytes": 26143,
+      "sha256": "47173c9c24edc6ad2280ed721c0d0855a12ab846bbd47eb4fdcd2d75f07776e4",
+      "git_blob": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "bytes": 20875,
+      "sha256": "052009f2809b1b5901617c560483ffe290334b6fc09a09583b21835bc515aca7",
+      "git_blob": "9d31107258d2987112cdff7edc8baf247d6e467e",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "bytes": 15384,
+      "sha256": "def189f2a05d319cd52a9323480da2271d2c325de54eacedee57d868fcff8844",
+      "git_blob": "9d6df799fb4d43473cac60e8fefabc61ea071e0b",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "bytes": 18949,
+      "sha256": "9c6bc1e6cd6b4fe6769df8608b33dc9fc101888e26e96663b09fa82a994f7894",
+      "git_blob": "9815d57b9141661d93a876b17f358efefab43454",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "bytes": 20782,
+      "sha256": "224da0c6e178c547c816c878c469d5f5a2c1909e804ae2b6f595b687bec39a1b",
+      "git_blob": "597d4766cdea3a8f21aecb5929bb6a97249373ca",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "bytes": 15934,
+      "sha256": "5b991c33123276137b0ea3f76efc91cc6521ef5b6564d02ed15671e2c19bddfb",
+      "git_blob": "34aff1e564ea7d6c0b1c9a4cdb7ab46b4660c0dd",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "bytes": 20877,
+      "sha256": "fcf8db5e0df00ecfc048dd27b2075904c2a0541637c93946c87047818203eb64",
+      "git_blob": "9ac2c5f5126db83a884089ce13043eb6a6637b96",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "bytes": 12039,
+      "sha256": "f425edd533db1b7a2bef0d69a9e6b9598a498daad8fc7db75d61670e41e63302",
+      "git_blob": "3a1ca23dd755c46ae852830b0a27419e58c3cb54",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs",
+      "bytes": 9180,
+      "sha256": "8b615b561e3fcc0da22ead64e39dcf4ed5f477be529ce07aa5b1a643131789ba",
+      "git_blob": "d40c78a4f85a415a63510ee10d0c8e7ee5f175af",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "bytes": 20405,
+      "sha256": "d7860ce4fec0525b352c260eea9357b074c4cb0a9bc5103d48b9edf76940ea4c",
+      "git_blob": "2f35bcacff40827fd96b3d4ce289455929d64a82",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "bytes": 14368,
+      "sha256": "be5cd5bdb1678ddf8cfe75e0f869a3f6f9440895c598c1367bf3cd25680e31e3",
+      "git_blob": "ebbfa75d55760463c0aa7be190f3d1a88f46a110",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "bytes": 29319,
+      "sha256": "f31d54f0c4ae278588e50696b93e6b2e6f237efc581caee4bb1af21d7e3c8483",
+      "git_blob": "491bbac2876891948de35f11ac790c2500fdfc2f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+      "bytes": 3759,
+      "sha256": "fadd33193614ccff9850dfe6964f53afd330c174860050385471166d5f5ab688",
+      "git_blob": "91b0e28e905e0a7ee7d3a9399b2f22e9ec6599bb",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "bytes": 15896,
+      "sha256": "b9986ffa2fb5b676a8f3012472adc296a8fbe5bef30763887f613251851a5927",
+      "git_blob": "2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+      "bytes": 10049,
+      "sha256": "c02f20e075afc9066731f6a2e263a7afdb0a5b5bab196b55ef60c82e455721fd",
+      "git_blob": "d3ebc7198423a48bb50c3f1f55cabe7f5dec2154",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "bytes": 891,
+      "sha256": "b368d3b7edb889adeb0a8eae792a56eaa5ac4b8b6b996ed445629027da585500",
+      "git_blob": "c08d3169833ab7c657a88e4b5fd4d88e284d58fd",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "bytes": 12729,
+      "sha256": "210f14302e8c5d314424c065ceb6084cb9579009642eacda61125a7715f29f6a",
+      "git_blob": "be7f97f693eda80d2a1b3d5bff06928b707ea3ad",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "bytes": 17756,
+      "sha256": "280a9829c60071aa654de75f266983fa6b338fada60a2e5de6bb08e75fdad8e4",
+      "git_blob": "60af3543dd4ef214483fa8fd31d8e3ecf42afc56",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "bytes": 13856,
+      "sha256": "4f79cecf37d92f4c0d37f5233dbd9f1a53b393f91b564e460cd4347e7a1e3c5e",
+      "git_blob": "2a1d69f09ba69f4234c5ebed898b6d6edecf35c5",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "bytes": 14182,
+      "sha256": "8e706d7a2a07d58352ab2bcf99adbaa286b1b2c8be1dfdf500d2cf7452182aec",
+      "git_blob": "5256ac6a398a45a7c979c079413e0aab0ac32274",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+      "bytes": 1171,
+      "sha256": "66a27fc6ec9e6b0e1513794978b5a0c5c387b292e319a29ea9a29a89ad1dfa12",
+      "git_blob": "60628baacff9eac0e119943d2e81387f5cf18656",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "bytes": 6211,
+      "sha256": "1bd04929faf7433970c4e120122c7044d1155061057e694b247df64b90f615c9",
+      "git_blob": "a6fa98145421623f3e700d9eb6383551f5d59480",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "bytes": 13337,
+      "sha256": "3721fb129bbc5c87ae7719ae85842a8e2d1e09286bf1d38ced5198e1277aab01",
+      "git_blob": "466ede358e183096aa432ef0f26752f5b872ca89",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "bytes": 6072,
+      "sha256": "e043f03572a4e039429448bdf53f222a96ffc6000ee254e9ea774d05a79aa188",
+      "git_blob": "59fbd2f5dad223cf3a7ad661a28f45ba63bc5d95",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "bytes": 9850,
+      "sha256": "5c4d2cc85158b4a076a8987c677b9c6419c2cceb5d14850d2b17441b50fa351b",
+      "git_blob": "01f598a8d6747dc2c7a4438bdcd1860471c5a8eb",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "bytes": 19478,
+      "sha256": "8ce8a88dee4313fd0070731a28319c49e0239cd135a87b383bb357d3a0f0ee06",
+      "git_blob": "ece090eaaeed68f44fcca3e74bbcdcd1bc90857d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "bytes": 11855,
+      "sha256": "78c2238ef5190be443d1a236aa8c0d48b7696111f9f2d969625ce3224c5add2f",
+      "git_blob": "141be7d8d99cf93c5d31f3b8dcea946ac789941a",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "bytes": 5007,
+      "sha256": "958c3e9d7f632c8cdfb13493c1f5a782997270093d7e5c9a43508cbb3d93cdf2",
+      "git_blob": "15337655a529813be1c65f5dfbfe005de10bac1e",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "bytes": 29901,
+      "sha256": "c19e1e813292843e673231a6df4ce1fb1d2a27250dd8930e9e708c7eb4ba863d",
+      "git_blob": "34265101f3de32b28c6b8a872741096083b7797d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "bytes": 14090,
+      "sha256": "c14a998ff61b88b6cb86742274fe2c47a4d686939aedf1dcbb7e962e3d8ec5fd",
+      "git_blob": "55cd4763f45a1aa85ab70319352250dc803ec572",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 72389,
+      "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896",
+      "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "bytes": 13903,
+      "sha256": "958a313138b394ebf86f9260bf01070d38f01a7bd8ee1d8683b94ab1d4585c3e",
+      "git_blob": "f7a57575bccb0de9d139a070e30bc26fcb8daf8d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "bytes": 1546,
+      "sha256": "985a1ec9b9bd0fefb522100c7d2357656f3835c2c3e9c45753065af7ca9aabe5",
+      "git_blob": "dcfacc3c5b0ca1c115742986ff453fd412fce991",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+      "bytes": 7974,
+      "sha256": "50476f583779d8698223f0d1d4a9209245fee2277f2c455b0dc238536388cf60",
+      "git_blob": "4eeb2015fef5aa45775fe117903bbdb2d3ac8592",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "bytes": 2504,
+      "sha256": "f85bd6c3e22b917be0c77b5068d52b2e68d623c28314ea068772b96337328e17",
+      "git_blob": "944a1927f2761000c206d018034b26d01a2ce0df",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "bytes": 11301,
+      "sha256": "059076cfd2887eef09b5444f8bad1f875452327def9b72bff492c9cd40080a32",
+      "git_blob": "61b21fa07f57b750c9206f04604759535f5c65c2",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+      "bytes": 8591,
+      "sha256": "0f651b0c3bbf8048c3eba4c4bfc3115d8712e163517a692202c0d857d804d580",
+      "git_blob": "1166c82d9189461a7d8468347c6018cb4239ba40",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "bytes": 7843,
+      "sha256": "137c8703d605fb76c06f01a5a89e452bd2c5dc59ac1cb8403732638343a945a0",
+      "git_blob": "31ede1a405c6469508871d672c50a4f000342985",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "bytes": 7072,
+      "sha256": "1e08d5dad64b56fe92ab5436be4a7217c0595a6bc90cd0dfbc1b96b559544171",
+      "git_blob": "6cd8470ecba5b966f331fffdea86f0ffdf770c2f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "bytes": 9428,
+      "sha256": "def4d820837b958a49b0308d4785dd97170a248d40a3fd7c94af8d3031166045",
+      "git_blob": "2861558bc7f9dfe833d70c7d72c5742d4e0f5fdd",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "bytes": 6820,
+      "sha256": "35d12b73833380e889986108f0f67f66c11ea55cefee1b5be13c9794c2178013",
+      "git_blob": "844dce8fd782cef7c8270826fcc601d6fc52a9fe",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "bytes": 5328,
+      "sha256": "fbe8e3829336784b5e0b077d51f13b8c55faab6ce35b85799803b67496240a7e",
+      "git_blob": "706b7729e8ce7326f34602670d420c7de2f07ff4",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "bytes": 14737,
+      "sha256": "9945cf398eae2373f6c6fd3a0fde1586b3d9dee097c4b663cb317368ff5e8dc6",
+      "git_blob": "406590d3d6537f2538a4d19615df6193eb415886",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "bytes": 9613,
+      "sha256": "56f94f10e8834ad0130cbfbff643bb1305b3f42c6f5ec224a470a9724a83032f",
+      "git_blob": "f8262c22499ce6982098ebe50d652b20b4acc1de",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/lib.rs",
+      "bytes": 7384,
+      "sha256": "083b568492a9a22853bb13558243c9528a16d4a74dd6b2ea32e77c8e3f457d1d",
+      "git_blob": "c214632e288047e1aa39f67c2865f2bacaac6b6a",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "bytes": 16964,
+      "sha256": "c2788cb47a4dc7c35162738e51c2b149579201ba5227aa1ff6fd6fac3783507a",
+      "git_blob": "534bd955863906f6c68f4d0a03127e645b816d6a",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "bytes": 7703,
+      "sha256": "0c0f8b78891997336c04e8f8d5bea1144728e18fbba6e6c6ba103810754f83eb",
+      "git_blob": "d4467b253a044afb81c146eaaa10a3379e905c47",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "bytes": 13300,
+      "sha256": "a7903c5aca69ebda366be3a90869fc83943409c7602da86c4f7f53773eef9154",
+      "git_blob": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "bytes": 358159,
+      "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7",
+      "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "reused_proof": "727fede63228d7fe8e059b79f673a05aaaeec832",
+      "source": "same-session exact source create+GET"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "bytes": 33555,
+      "sha256": "778128c7b402eb91c3808b0d604eaa9ce548ef17b796df4dbc391334ad3545e7",
+      "git_blob": "0035bb4c3abfa424bc9c6d70dc20f592c6ad34ef",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "bytes": 102696,
+      "sha256": "caba0dc645261cb5ecb2ae8eb92e10bab92683f6fb9bb399b62a26eabe5360d3",
+      "git_blob": "03ca2b5de52c6982cfe1623885a1675fd3ed74fd",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "reused_proof": "727fede63228d7fe8e059b79f673a05aaaeec832",
+      "source": "same-session exact source create+GET"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "bytes": 14428,
+      "sha256": "9a48ace43882afd56f255fb4935004db807dcc66db25f001fb1456e4e8d418f8",
+      "git_blob": "0fdee06b2c16978ba80f94a91df84cba810b4f9d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "bytes": 26069,
+      "sha256": "a8c94a9a186ad2f9926df48c4eb30216f5b38b0ade3199dcca435028f6c89327",
+      "git_blob": "235a56a06d3081f8da3816827b8c5447bd2e9dbd",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "bytes": 18535,
+      "sha256": "5b9864f76b899c51832dbab8cc598ba909a842a6b75796e2c9d55715a8044714",
+      "git_blob": "05c122ebb59117b72a06d38c38c707db02c8e7bb",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "bytes": 22890,
+      "sha256": "87fddf091809d89eaaa664ed942896e9a4d84def971f2da8291f5fc3b94b759d",
+      "git_blob": "3466386cedd9c100f6e69869969995b9db42ea7d",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "bytes": 14576,
+      "sha256": "b519d4194e111a6dfbd38472ba288ae12c838dd2b10f06aa8eb0568d12cc4275",
+      "git_blob": "e6910112f1008cebb8bd6091c29943f84ef6009f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "bytes": 23106,
+      "sha256": "3f5b4940c4d9a2a47802c8882e130b7637d0c72e00bd34776de03ba223fb9e49",
+      "git_blob": "1b8f48048435401286d262244b86220cb0ad591f",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "bytes": 17350,
+      "sha256": "9ecf24ab52298cde731538de4e43ef9fe3ff6c91e2955e1e8e832b3934a22c8d",
+      "git_blob": "db8d83692485ac542385405b48af77dc494e2e23",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "bytes": 18952,
+      "sha256": "b453403e617921df28e85701fc0e13a6a2d387b4948af257a990ee401e6fcc06",
+      "git_blob": "31cdf5702a25daca3f56a19c0985c63c4b67e1b1",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "bytes": 15081,
+      "sha256": "0dde10e99ecdfc8a5ce02f6885980730d0fe959fc21ac6d85171a1f8bb04ff0d",
+      "git_blob": "0e77e6dd786a581c0c35e4c0f65c8bb9f7fea250",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "bytes": 14372,
+      "sha256": "66801f8c0d1306a3858939683d3e9c140d7e57e5a235b8f62f784198ff5e393b",
+      "git_blob": "f25361064292d56769a69c7c8e62cb9fab20dcbc",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "bytes": 20034,
+      "sha256": "6d0feaf2fa103a91832f5b986c7ff40cda3ad1c5ce8293448b29f62ea55672d9",
+      "git_blob": "7575a17220042c150b66cea9d06f1e7d87aa2d96",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "bytes": 10007,
+      "sha256": "6ce179a1abab4299cd2e3418269b06d71fc880f25d41b474efcc6698a8ee80b1",
+      "git_blob": "34e92714e309b0ffcb2fadeba4d5aa1458be6132",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "source": "fresh complete Git GET of fixed immutable source blob"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "bytes": 17979,
+      "sha256": "84d899d007956d9594b1465152467ecc6ba7eff2fc152a36f3ae83355de89b41",
+      "git_blob": "da9574801cfd3a7ef43232a8bfffe4510099fbad",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "reused_proof": "727fede63228d7fe8e059b79f673a05aaaeec832",
+      "source": "same-session exact source create+GET"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "bytes": 33253,
+      "sha256": "019a8988beea067db2d71784f5cc4a8516d8830f749c6f6cf47cd7084adb2129",
+      "git_blob": "5a6f9372830e4eee584484b88e53e4ffbf5127d9",
+      "complete_actual_git_get": true,
+      "full_identity_matches_local_verified_bytes": true,
+      "reused_proof": "727fede63228d7fe8e059b79f673a05aaaeec832",
+      "source": "same-session exact source create+GET"
+    }
+  ],
+  "source_tree_commit_ref_written": false,
+  "H_or_test_calls": 0
+}

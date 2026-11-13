@@ -1,0 +1,183 @@
+{
+  "actual_external_read_chunks": 11,
+  "actual_external_readback_paths": 2,
+  "direct_raw_leaves": 38,
+  "five_exact_request_aliases": true,
+  "format": "hepta-completed-stage-archive-review-v1",
+  "leaf_limit": 512000,
+  "limits": [
+    "Original write SDKs and two actual external fixed-version reads are preserved; the other three were explicitly not requested.",
+    "The unchanged controller obligation to fully read and audit all five inputs is separate from these eleven external transport reads.",
+    "This archiver performs no new native read/write or process launch and supplies no main materialization or qualification conclusion.",
+    "The five request originals are aliases of exact staged inputs, not additional tool responses or additional native writes."
+  ],
+  "maximum_leaf_bytes": 409601,
+  "new_Git_tree_commit_ref_operations": 0,
+  "new_H_calls": 0,
+  "observations_from_originals": [
+    {
+      "actual_write": {
+        "mode": 384,
+        "sha256": "75304773cb0552f0f469a38782d19bb18903f39865d3b2c699eefc7296a4f7c4",
+        "size": 524288,
+        "version": "2050:50007528:524288:1794564491659594174:1794564491724741315",
+        "written": 524288
+      },
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "f8fe91fff1c88ab5c1837bc18edc53b88f581073",
+        "sha256": "75304773cb0552f0f469a38782d19bb18903f39865d3b2c699eefc7296a4f7c4"
+      },
+      "external_chunk_count": 8,
+      "external_full_readback": true,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-base.json.gz.part-001",
+      "request": {
+        "bytes": 699251,
+        "git_blob": "31a228fc25d8b9fc4c94894bd3441f428ac031a5",
+        "sha256": "03054e9afa45c2b9f22aa7272d88b42a825b076c74a1ba1daef92d67c9a4b428"
+      },
+      "sequence": 1,
+      "write_sdk": {
+        "bytes": 329,
+        "git_blob": "8a8569d84d49fd0ef4c1141d50612ed09176b860",
+        "sha256": "7c70bd479984704b083ceed21614d1527da60e63e0687ad4e45b685be046e5e7"
+      }
+    },
+    {
+      "actual_write": {
+        "mode": 384,
+        "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b",
+        "size": 183569,
+        "version": "2050:50007533:183569:1794564810708638988:1794564810722048186",
+        "written": 183569
+      },
+      "decoded": {
+        "bytes": 183569,
+        "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+        "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+      },
+      "external_chunk_count": 3,
+      "external_full_readback": true,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-base.json.gz.part-002",
+      "request": {
+        "bytes": 244959,
+        "git_blob": "0657755b9332da3addfe724e6dcb622a734d03dd",
+        "sha256": "b9e39b97e77c3c1bdc7705eb0804819dc79d5dabea4d7e42c8a215c0b1718e07"
+      },
+      "sequence": 2,
+      "write_sdk": {
+        "bytes": 329,
+        "git_blob": "867dd6a19500a2f152dbf759d3f296b2613d6ab4",
+        "sha256": "91f4d7c648a007f7103d7744f630b965f80966cdfcf3034b1ddebd9c92c4ade7"
+      }
+    },
+    {
+      "actual_write": {
+        "mode": 384,
+        "sha256": "ca09b12f005d3066b4e6f088e7396489b45984123e6cc8fa482943419fe4cce8",
+        "size": 524288,
+        "version": "2050:50007538:524288:1794564882020911873:1794564882023911783",
+        "written": 524288
+      },
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "1ebd9707c2f5fcfee377c71e0b4ae6c7cc520cc0",
+        "sha256": "ca09b12f005d3066b4e6f088e7396489b45984123e6cc8fa482943419fe4cce8"
+      },
+      "external_chunk_count": 0,
+      "external_full_readback": false,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-candidate.json.gz.part-001",
+      "request": {
+        "bytes": 699256,
+        "git_blob": "b2c336cc5ab2fac26d27c796d75a806c26a8038d",
+        "sha256": "550708c126458c6e1b56aa26593231e85dd1286986cc1cef81557aa9f2f3f9f8"
+      },
+      "sequence": 3,
+      "write_sdk": {
+        "bytes": 329,
+        "git_blob": "6b67ee78d802b433fb16fa80d7fcfa9600fe685b",
+        "sha256": "10bab9c7b0c433660631ec4892a09328ee8a87e936afc20aedc93b0c5cbbd770"
+      }
+    },
+    {
+      "actual_write": {
+        "mode": 384,
+        "sha256": "d445e88e460519fbd879a31c7e88d7c60f7fd5f55aac2adf5521f9142757080a",
+        "size": 524288,
+        "version": "2050:50007540:524288:1794564896450927120:1794564896465480092",
+        "written": 524288
+      },
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "538fc7c5ab4b438967635cef59b2fd596b10f28c",
+        "sha256": "d445e88e460519fbd879a31c7e88d7c60f7fd5f55aac2adf5521f9142757080a"
+      },
+      "external_chunk_count": 0,
+      "external_full_readback": false,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-candidate.json.gz.part-002",
+      "request": {
+        "bytes": 699256,
+        "git_blob": "14ff67b57e23d4cb042e860f7da1cf0e42b80cef",
+        "sha256": "1af6ce515ad3c97aab8304b52b4c99845197dde9bf7c348fd0636d60bff1e4e3"
+      },
+      "sequence": 4,
+      "write_sdk": {
+        "bytes": 329,
+        "git_blob": "d69d0550eb3f5a76924527b48866ed725e147329",
+        "sha256": "a2a8fbd7a03dd7decfded1ecb63337859b2d9ec557bf123ecf2c0480457a8d17"
+      }
+    },
+    {
+      "actual_write": {
+        "mode": 384,
+        "sha256": "23ef5f87ebcce2dd7f51166aa45f90b334c67d6f7a6115622955c37f8a079538",
+        "size": 74121,
+        "version": "2050:50007542:74121:1794564900957345886:1794564900959345826",
+        "written": 74121
+      },
+      "decoded": {
+        "bytes": 74121,
+        "git_blob": "310a69570f358472ca0981e44fd9d9d101137be7",
+        "sha256": "23ef5f87ebcce2dd7f51166aa45f90b334c67d6f7a6115622955c37f8a079538"
+      },
+      "external_chunk_count": 0,
+      "external_full_readback": false,
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-candidate.json.gz.part-003",
+      "request": {
+        "bytes": 99032,
+        "git_blob": "2d78b4259ad1dbb442ca73e089cc7c929b3dc75e",
+        "sha256": "3fd3e30065c33fd8fb893a94328f7e5c39c3f7379f89022e15cb78a934ed3b85"
+      },
+      "sequence": 5,
+      "write_sdk": {
+        "bytes": 326,
+        "git_blob": "31b6a633a3015362a80bbe9f14b806be3039a2fe",
+        "sha256": "33de7ca49dcfe0d57881fa05ab9fad744b7714fe36629f66036769d48c542d19"
+      }
+    }
+  ],
+  "original_authorization_not_runtime_Root_authority": true,
+  "original_count": 41,
+  "oversized_request_aliases": 3,
+  "qualification": false,
+  "reused_bounded_part_leaves": 6,
+  "root_clarification": "8473a68b5906c4b31285749259a87158e2e8f0bf",
+  "scope": "Only original index41 plus derived archival metadata; no main runtime results inspected or included.",
+  "source_index": {
+    "bytes": 14899,
+    "git_blob": "0e0ad43034df0c703da61a2c800b4a77d171e5a6",
+    "sha256": "c1fa2ff5c84362042e699a65517fe25a121f3584d9d1eb86c7899ec4cd805187"
+  },
+  "source_or_control_changes": false,
+  "source_raw_bytes": 3448255,
+  "stage_external_chunk_counts": [
+    8,
+    3,
+    0,
+    0,
+    0
+  ],
+  "status": "FIXED_41_ORIGINALS_VERIFIED_PREPARED_FOR_BOUNDED_ARCHIVE",
+  "unchanged_mandatory_original_driver_full_five_input_reads_and_final_audit": true,
+  "write_receipts": 5
+}

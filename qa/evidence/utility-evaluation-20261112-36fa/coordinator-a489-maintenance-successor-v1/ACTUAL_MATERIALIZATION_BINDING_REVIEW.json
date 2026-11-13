@@ -1,0 +1,72 @@
+{
+  "format": "hepta-actual-materialization-maintenance-binding-v1",
+  "status": "ACTUAL_PROOF_BOUND_MAINTENANCE_STILL_HOLD",
+  "job_id": "1a1d468462a-392-3bb",
+  "result": {
+    "bytes": 14663,
+    "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd",
+    "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c"
+  },
+  "normal": {
+    "bytes": 952,
+    "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+    "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+  },
+  "records": {
+    "command_records": {
+      "bytes": 34319,
+      "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2",
+      "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246"
+    },
+    "mutation_records": {
+      "bytes": 744,
+      "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b",
+      "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64"
+    },
+    "input_records": {
+      "bytes": 3326,
+      "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d",
+      "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687"
+    },
+    "artifact_records": {
+      "bytes": 84294,
+      "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603",
+      "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af"
+    }
+  },
+  "observed_command_count": 40,
+  "observed_mutation_count": 4,
+  "all_commands_zero_no_timeout": true,
+  "all_mutations_observed": true,
+  "artifact_count": 267,
+  "complete_input_count": 13,
+  "input_before_after_equal": true,
+  "actual_git_metadata": {
+    "bytes": 2234,
+    "sha256": "17530eef584440894d767eec9771201199e6313797bb293122eb20cb7fba6e13",
+    "git_blob": "8d6af319d99c5f9c47e5a7e761c118c5ba2c767b"
+  },
+  "actual_raw_index": {
+    "bytes": 2080152,
+    "sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b",
+    "git_blob": "5dfba375a9e88dc0578070f19e90bc25aee6efef"
+  },
+  "config": {
+    "name": "WAITING_CONFIG.ACTUAL_MATERIALIZATION.json",
+    "bytes": 13728,
+    "sha256": "63c1f09ffcd3e0cb97dcb0896c2831eb6ad5eb91e1091d66faf7a442c2c06ca8",
+    "git_blob": "eb322791ff64a67389b4e37b341bc01c63f3d5cb"
+  },
+  "diff": {
+    "name": "CONFIG_ACTUAL_MATERIALIZATION.diff",
+    "bytes": 5784,
+    "sha256": "45c807e278da976aae386c657338de1fb2b4aa58a0d4a9e71a5a2ba6124b9f2b",
+    "git_blob": "dd1ec49dff3bb84c8aae9eccadecbbd90ebf239f"
+  },
+  "historical_holds_preserved": true,
+  "approval_false": true,
+  "formal_approved_config_created": false,
+  "no_maintenance_H_request": true,
+  "no_native_current_fs_read": true,
+  "scope": "Pure offline binding of already completed original SDK and artifact bytes; does not execute guard/preflight/main or replace future live checks."
+}

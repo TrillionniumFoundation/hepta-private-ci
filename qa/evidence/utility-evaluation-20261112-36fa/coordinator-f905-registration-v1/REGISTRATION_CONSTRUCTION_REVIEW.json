@@ -1,0 +1,491 @@
+{
+  "after_boundary_count": 633,
+  "after_protected_count": 442,
+  "all_437_original_forbidden_arrays_equal": true,
+  "all_621_original_boundary_rows_equal": true,
+  "before_boundary_count": 621,
+  "before_protected_count": 437,
+  "callers": {
+    "bytes": 1855845,
+    "git_blob": "1f53a53349aa18d37a0c7299f2ab9fe94b0de244",
+    "sha256": "8c32ce84deefdb06bf98728dae51e287496349fc1abda95ecc96a9ce5599ce5c"
+  },
+  "deployment_closed_loop_completed": false,
+  "formatted_rows_changed": 23,
+  "full_source_collector_still_required": true,
+  "getter_successor": "5279a43b99aa7031343578a21dba895f5eac3188",
+  "new_api_non_test_callers_observed": [],
+  "new_boundaries": [
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn from_original_prepared("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_from_original_prepared",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::from_original_prepared"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_final_use_binding("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_original_final_use_binding",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::original_final_use_binding"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_intent_digest("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_original_intent_digest",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::original_intent_digest"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_operation("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn publish("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_publish",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::publish"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn recover_original("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_recover_original",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::recover_original"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn into_q24_task<"
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_into_q24_task",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::into_q24_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn recover_from_original_current("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_recover_from_original_current",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::recover_from_original_current"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_operation("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+      "product_callers": [],
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn drain_completed_task("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_drain_completed_task",
+      "product_callers": [],
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::drain_completed_task"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn original_error("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "id": "root_initial_custody_original_root_initial_installation_error_v1_original_error",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialInstallationErrorV1",
+      "symbol": "OriginalRootInitialInstallationErrorV1::original_error"
+    },
+    {
+      "caller_markers": [],
+      "definition_markers": [
+        "fn read_original_operation("
+      ],
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "id": "root_initial_custody_original_root_initial_installation_error_v1_read_original_operation",
+      "product_callers": [],
+      "receiver_type": "OriginalRootInitialInstallationErrorV1",
+      "symbol": "OriginalRootInitialInstallationErrorV1::read_original_operation"
+    }
+  ],
+  "new_protected_rows": [
+    {
+      "index": 437,
+      "row": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+        "required": [
+          "#[path = \"neuron_generation_initial_root_custody.rs\"]\nmod root_custody;",
+          "#[cfg(target_os = \"linux\")]\n#[path = \"neuron_generation_initial_root_custody.rs\"]\nmod root_custody;"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_parts(",
+            "sequence": [
+              "fn ",
+              "from_parts(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        prepared: PreparedNeuronGenerationInitialV1,\n        journal: CellGenerationJournalV2<W>,\n        selected: AgentdSelectedGenerationV1,\n    ) -> Self {\n        Self {\n            current,\n            authorities,\n            prepared,\n            journal,\n            selected,\n        }\n    }"
+            ]
+          },
+          {
+            "function": "fn final_use_binding(",
+            "sequence": [
+              "fn ",
+              "final_use_binding(&self) -> &FinalUseBinding {\n        self.prepared.final_use_binding()\n    }"
+            ]
+          },
+          {
+            "function": "fn intent_digest(",
+            "sequence": [
+              "fn ",
+              "intent_digest(&self) -> Digest32 {\n        self.prepared.intent_digest()\n    }"
+            ]
+          },
+          {
+            "function": "fn publish(",
+            "sequence": [
+              "fn ",
+              "publish(\n        mut self,\n        signed: &SignedFinalUseGrant,\n    ) -> Result<ReadyAgentdGenerationInitialV1<W>, AgentdError> {\n        let expected = self.prepared.final_use_binding().clone();\n        let receipt = {\n            let mut artifacts = self.authorities.artifacts.lock().map_err(invalid)?;\n            self.current.publish_initial(\n                &self.prepared,\n                &self.journal,\n                &mut self.selected,\n                NeuronGenerationUpdatePublicationV1 {\n                    artifacts: &mut artifacts,\n                    authority: &self.authorities.final_use,\n                    signed,\n                    clock: self.authorities.clock.as_ref(),\n                },\n            )?\n        };\n        let guard = LiveGenerationCurrent::new_initial(\n            self.current,\n            self.authorities,\n            self.selected,\n            receipt.clone(),\n            expected,\n        )?;\n        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)\n    }"
+            ]
+          },
+          {
+            "function": "fn invalid(",
+            "sequence": [
+              "fn ",
+              "invalid(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::Invalid(error.to_string())\n}"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "pub struct ",
+            "PreparedAgentdGenerationInitialV1<W: AnchorWitnessStore> {\n    current: Arc<NeuronGenerationCurrentOwnerV1>,\n    authorities: AgentdGenerationUpdateAuthoritiesV1,\n    prepared: PreparedNeuronGenerationInitialV1,\n    journal: CellGenerationJournalV2<W>,\n    selected: AgentdSelectedGenerationV1,\n}"
+          ],
+          [
+            "impl<W: ",
+            "AnchorWitnessStore> PreparedAgentdGenerationInitialV1<W> {\n    pub(crate) fn from_parts(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        prepared: PreparedNeuronGenerationInitialV1,\n        journal: CellGenerationJournalV2<W>,\n        selected: AgentdSelectedGenerationV1,\n    ) -> Self {\n        Self {\n            current,\n            authorities,\n            prepared,\n            journal,\n            selected,\n        }\n    }\n\n    pub fn final_use_binding(&self) -> &FinalUseBinding {\n        self.prepared.final_use_binding()\n    }\n\n    pub fn intent_digest(&self) -> Digest32 {\n        self.prepared.intent_digest()\n    }\n\n                                                                              \n                                                                             \n    pub fn publish(\n        mut self,\n        signed: &SignedFinalUseGrant,\n    ) -> Result<ReadyAgentdGenerationInitialV1<W>, AgentdError> {\n        let expected = self.prepared.final_use_binding().clone();\n        let receipt = {\n            let mut artifacts = self.authorities.artifacts.lock().map_err(invalid)?;\n            self.current.publish_initial(\n                &self.prepared,\n                &self.journal,\n                &mut self.selected,\n                NeuronGenerationUpdatePublicationV1 {\n                    artifacts: &mut artifacts,\n                    authority: &self.authorities.final_use,\n                    signed,\n                    clock: self.authorities.clock.as_ref(),\n                },\n            )?\n        };\n        let guard = LiveGenerationCurrent::new_initial(\n            self.current,\n            self.authorities,\n            self.selected,\n            receipt.clone(),\n            expected,\n        )?;\n        ReadyAgentdGenerationInitialV1::new(self.journal, receipt, guard)\n    }\n}"
+          ],
+          [
+            "fn ",
+            "prepare_agentd_generation_initial_v1<W: AnchorWitnessStore>(\n    root: Arc<RootAuthorityDirectory>,\n    authorities: AgentdGenerationUpdateAuthoritiesV1,\n    mut selected: AgentdSelectedGenerationV1,\n    target: AgentdGenerationUpdateTargetV1<W>,\n    request: AgentdGenerationUpdateRequestV1,\n) -> Result<PreparedAgentdGenerationInitialV1<W>, AgentdError> {\n    StableId::new(&request.operation_id).map_err(invalid)?;\n    let binding = validate_initial_target(&selected, &target)?;\n    let metadata = target.file.metadata()?;\n    if !metadata.is_file()\n        || metadata.len() != 0\n        || target.witness.current().map_err(invalid)?.is_some()\n    {\n        return Err(invalid(                                             ));\n    }\n    let artifacts = authorities.artifacts.lock().map_err(invalid)?;\n    selected.revalidate(&artifacts, authorities.now()?)?;\n    let (current, prepared) = NeuronGenerationCurrentOwnerV1::prepare_initial(\n        root,\n        request.operation_id,\n        binding,\n        &selected,\n    )?;\n    let current = Arc::new(current);\n    let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();\n    let journal = CellGenerationJournalV2::open_guarded(\n        target.file,\n        target.witness,\n        target.config,\n        target.max_records,\n        guard,\n    )\n    .map_err(invalid)?;\n    journal.prepared_checkpoint().map_err(invalid)?;\n    drop(artifacts);\n    Ok(PreparedAgentdGenerationInitialV1::from_parts(\n        current,\n        authorities,\n        prepared,\n        journal,\n        selected,\n    ))\n}"
+          ],
+          [
+            "fn ",
+            "recover_agentd_generation_initial_v1<W: AnchorWitnessStore>(\n    current: Arc<NeuronGenerationCurrentOwnerV1>,\n    authorities: AgentdGenerationUpdateAuthoritiesV1,\n    mut selected: AgentdSelectedGenerationV1,\n    target: AgentdGenerationUpdateTargetV1<W>,\n    expected: AgentdGenerationUpdateRecoveryV1,\n) -> Result<ReadyAgentdGenerationInitialV1<W>, AgentdError> {\n    let prepared =\n        current.recover_initial_operation(&expected.operation_id, expected.intent_digest)?;\n    if selected.observation().digest() != prepared.selection_observation_digest()\n        || &validate_initial_target(&selected, &target)? != prepared.target()\n    {\n        return Err(invalid(                                              ));\n    }\n    let receipt = match current.read_initial_operation(&prepared)? {\n        NeuronGenerationInitialReadbackV1::Prepared => {\n            return Err(invalid(                                                   ));\n        }\n        NeuronGenerationInitialReadbackV1::Published(receipt) => receipt,\n    };\n    let metadata = target.file.metadata()?;\n    if !metadata.is_file() || metadata.len() == 0 {\n        return Err(invalid(                                      ));\n    }\n    {\n        let artifacts = authorities.artifacts.lock().map_err(invalid)?;\n        selected.revalidate(&artifacts, authorities.now()?)?;\n    }\n    let live = LiveGenerationCurrent::new_initial(\n        current.clone(),\n        authorities,\n        selected,\n        receipt.clone(),\n        prepared.final_use_binding().clone(),\n    )?;\n    let guard: Arc<dyn CellGenerationCurrentV1> = live.clone();\n    let journal = CellGenerationJournalV2::open_guarded(\n        target.file,\n        target.witness,\n        target.config,\n        target.max_records,\n        guard,\n    )\n    .map_err(invalid)?;\n    let observed = match current.read_initial_operation(&prepared)? {\n        NeuronGenerationInitialReadbackV1::Prepared => {\n            return Err(invalid(                                              ));\n        }\n        NeuronGenerationInitialReadbackV1::Published(observed) => observed,\n    };\n    if observed != receipt || journal.owner_binding() != Some(observed.target()) {\n        return Err(invalid(                                             ));\n    }\n    ReadyAgentdGenerationInitialV1::new(journal, observed, live)\n}"
+          ],
+          [
+            "fn ",
+            "validate_initial_target<W: AnchorWitnessStore>(\n    selected: &AgentdSelectedGenerationV1,\n    target: &AgentdGenerationUpdateTargetV1<W>,\n) -> Result<CellGenerationOwnerBindingV1, AgentdError> {\n    if selected.manifest() != &target.config.manifest\n        || target.config.initial.revision != 0\n        || !target.config.initial.prefix.is_empty()\n        || target.config.initial.stopped\n    {\n        return Err(invalid(                                                  ));\n    }\n    CellGenerationOwnerBindingV1::new(&target.config, target.max_records).map_err(invalid)\n}"
+          ]
+        ]
+      }
+    },
+    {
+      "index": 438,
+      "row": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+        "required": [
+          "#[path = \"neuron_generation_initial_root_task.rs\"]\nmod task;",
+          "#[path = \"neuron_generation_initial_root_cold.rs\"]\nmod cold;"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "fn ",
+              "read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self.current.recover_initial_operation(\n            &self.recovery.operation_id,\n            self.recovery.intent_digest,\n        )?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }"
+            ]
+          },
+          {
+            "function": "fn from_original_prepared(",
+            "sequence": [
+              "fn ",
+              "from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(                                                    ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }"
+            ]
+          },
+          {
+            "function": "fn original_final_use_binding(",
+            "sequence": [
+              "fn ",
+              "original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }"
+            ]
+          },
+          {
+            "function": "fn original_intent_digest(",
+            "sequence": [
+              "fn ",
+              "original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }"
+            ]
+          },
+          {
+            "function": "fn read_original_operation(",
+            "sequence": [
+              "fn ",
+              "read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }"
+            ]
+          },
+          {
+            "function": "fn publish(",
+            "sequence": [
+              "fn ",
+              "publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn recover_original(",
+            "sequence": [
+              "fn ",
+              "recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }"
+            ]
+          },
+          {
+            "function": "fn require_root(",
+            "sequence": [
+              "fn ",
+              "require_root() -> Result<(), AgentdError> {\n                                                                          \n                                                                              \n    if unsafe { libc::getuid() } != 0 || unsafe { libc::geteuid() } != 0 {\n        return Err(invalid(                                                    ));\n    }\n    Ok(())\n}"
+            ]
+          },
+          {
+            "function": "fn invalid(",
+            "sequence": [
+              "fn ",
+              "invalid(error: impl std::fmt::Display) -> AgentdError {\n    AgentdError::Invalid(error.to_string())\n}"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "enum ",
+            "InitialPhase<W: AnchorWitnessStore> {\n    Prepared(Box<PreparedAgentdGenerationInitialV1<W>>),\n    Ready(Box<ReadyAgentdGenerationInitialV1<W>>),\n    ReadbackRequired,\n}"
+          ],
+          [
+            "struct ",
+            "OriginalInitialOperation {\n    current: Arc<NeuronGenerationCurrentOwnerV1>,\n    authorities: AgentdGenerationUpdateAuthoritiesV1,\n    recovery: AgentdGenerationUpdateRecoveryV1,\n    binding: FinalUseBinding,\n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalRootInitialGenerationCustodyV1<W: AnchorWitnessStore> {\n    operation: OriginalInitialOperation,\n    phase: InitialPhase<W>,\n}"
+          ],
+          [
+            "impl ",
+            "OriginalInitialOperation {\n    fn read_original(&self) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        require_root()?;\n        let original = self.current.recover_initial_operation(\n            &self.recovery.operation_id,\n            self.recovery.intent_digest,\n        )?;\n        if original.final_use_binding() != &self.binding {\n            return Err(invalid(                                            ));\n        }\n        self.current.read_initial_operation(&original)\n    }\n}"
+          ],
+          [
+            "impl<W: ",
+            "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                              \n                                                                           \n                                                                                 \n    pub fn from_original_prepared(\n        prepared: PreparedAgentdGenerationInitialV1<W>,\n        operation_id: String,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        StableId::new(&operation_id).map_err(invalid)?;\n        let current = Arc::clone(&prepared.current);\n        let intent_digest = prepared.intent_digest();\n        let original = current.recover_initial_operation(&operation_id, intent_digest)?;\n        if original.final_use_binding() != prepared.final_use_binding()\n            || original.target() != prepared.prepared.target()\n        {\n            return Err(invalid(                                                    ));\n        }\n        let operation = OriginalInitialOperation {\n            current,\n            authorities: prepared.authorities.clone(),\n            recovery: AgentdGenerationUpdateRecoveryV1 {\n                operation_id,\n                intent_digest,\n            },\n            binding: prepared.final_use_binding().clone(),\n        };\n        operation.read_original()?;\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Prepared(Box::new(prepared)),\n        })\n    }\n\n    #[must_use]\n    pub fn original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }\n\n    #[must_use]\n    pub fn original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }\n\n                                                                                \n                                                                                 \n                                                                                 \n    pub fn read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }\n\n                                                                              \n                                                                               \n                                                                               \n    pub fn publish(&mut self, signed: &SignedFinalUseGrant) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::Prepared(_)) {\n            return Err(invalid(                                           ));\n        }\n        let phase = std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired);\n        require_root()?;\n        let InitialPhase::Prepared(prepared) = phase else {\n            return Err(invalid(                                             ));\n        };\n                                                                               \n                                                                            \n        let ready = (*prepared).publish(signed)?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n\n                                                                             \n                                                                              \n                                                                               \n    pub fn recover_original(\n        &mut self,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n    ) -> Result<(), AgentdError> {\n        if !matches!(self.phase, InitialPhase::ReadbackRequired) {\n            return Err(invalid(                                               ));\n        }\n        require_root()?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&self.operation.current),\n            self.operation.authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: self.operation.recovery.operation_id.clone(),\n                intent_digest: self.operation.recovery.intent_digest,\n            },\n        )?;\n        self.phase = InitialPhase::Ready(Box::new(ready));\n        Ok(())\n    }\n}"
+          ]
+        ]
+      }
+    },
+    {
+      "index": 439,
+      "row": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+        "required": [],
+        "required_function_order": [
+          {
+            "function": "fn drain_completed_task(",
+            "sequence": [
+              "fn ",
+              "drain_completed_task(&self) -> Result<PublishedCircuitFeatureCompletionV1, AgentdError> {\n        require_root()?;\n        self.task\n            .drain_completed_task(&self.cell, self.source.as_ref(), &self.identity)\n    }"
+            ]
+          },
+          {
+            "function": "fn original_error(",
+            "sequence": [
+              "fn ",
+              "original_error(&self) -> &AgentdError {\n        &self.error\n    }"
+            ]
+          },
+          {
+            "function": "fn source(",
+            "sequence": [
+              "fn ",
+              "source(&self) -> Option<&(dyn std::error::Error + 'static)> {\n        Some(&self.error)\n    }"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "pub struct ",
+            "OriginalRootCircuitTaskInputsV1<SW, CW> {\n    pub definition: CellDefinitionV1,\n    pub source: CircuitTaskSourceInputV1,\n    pub files: CircuitQ24TaskFilesV1<SW, CW>,\n    pub source_mode: CircuitQ24TaskOpenModeV1,\n    pub fence: TaskFlowFence,\n    pub circuit: BoundedCircuitDefinitionV2,\n    pub routes: Vec<CircuitCellRouteV1>,\n    pub bundle: CellCompatibilityBundleV1,\n    pub model: Arc<LoadedCellQ24ModelV1>,\n    pub worker_generation: u64,\n    pub maximum_cell_records: usize,\n    pub queue_capacity: usize,\n    pub clock: Arc<dyn Fn() -> CircuitCellTimeV1 + Send + Sync>,\n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalRootCircuitTaskRuntimeV1<SW: AnchorWitnessStore, CW: AnchorWitnessStore> {\n    pub config: AgentdConfig,\n    pub custody: OriginalRootCircuitTaskCustodyV1<SW, CW>,\n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalRootCircuitTaskCustodyV1<SW: AnchorWitnessStore, CW: AnchorWitnessStore> {\n    operation: OriginalInitialOperation,\n    task: PublishedCircuitFeatureTaskV1,\n    cell: PublishedCircuitCellOwnerV1<CW>,\n    source: Arc<CircuitTaskSourceReadbackV1<SW>>,\n    identity: AgentdIdentity,\n}"
+          ],
+          [
+            "pub struct ",
+            "OriginalRootInitialInstallationErrorV1 {\n    operation: OriginalInitialOperation,\n    error: AgentdError,\n}"
+          ],
+          [
+            "impl<SW: ",
+            "AnchorWitnessStore, CW: AnchorWitnessStore> OriginalRootCircuitTaskCustodyV1<SW, CW> {\n    pub fn read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }\n\n                                                                                \n                                                                                  \n                                                                                   \n    pub fn drain_completed_task(&self) -> Result<PublishedCircuitFeatureCompletionV1, AgentdError> {\n        require_root()?;\n        self.task\n            .drain_completed_task(&self.cell, self.source.as_ref(), &self.identity)\n    }\n}"
+          ],
+          [
+            "impl ",
+            "OriginalRootInitialInstallationErrorV1 {\n    pub fn original_error(&self) -> &AgentdError {\n        &self.error\n    }\n\n    pub fn read_original_operation(\n        &self,\n    ) -> Result<NeuronGenerationInitialReadbackV1, AgentdError> {\n        self.operation.read_original()\n    }\n}"
+          ],
+          [
+            "impl ",
+            "std::fmt::Debug for OriginalRootInitialInstallationErrorV1 {\n    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n        f.debug_struct(                                        )\n            .field(       , &self.error)\n            .finish_non_exhaustive()\n    }\n}"
+          ],
+          [
+            "impl ",
+            "std::fmt::Display for OriginalRootInitialInstallationErrorV1 {\n    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {\n        std::fmt::Display::fmt(&self.error, f)\n    }\n}"
+          ],
+          [
+            "impl ",
+            "std::error::Error for OriginalRootInitialInstallationErrorV1 {\n    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {\n        Some(&self.error)\n    }\n}"
+          ],
+          [
+            "impl<W: ",
+            "AnchorWitnessStore + Send + 'static> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                                 \n                                                                             \n    pub fn into_q24_task<SW, CW>(\n        self,\n        config: AgentdConfig,\n        inputs: OriginalRootCircuitTaskInputsV1<SW, CW>,\n    ) -> Result<OriginalRootCircuitTaskRuntimeV1<SW, CW>, OriginalRootInitialInstallationErrorV1>\n    where\n        SW: AnchorWitnessStore + Send + 'static,\n        CW: AnchorWitnessStore + Send + 'static,\n    {\n        let Self { operation, phase } = self;\n        let installed = (|| {\n            require_root()?;\n            let InitialPhase::Ready(ready) = phase else {\n                return Err(invalid(                                           ));\n            };\n            let task = (*ready).into_circuit_feature_task(inputs.definition, inputs.source)?;\n            let retirement = task.clone();\n            let identity = config.identity().clone();\n            let profile = CircuitQ24TaskProfileV1 {\n                files: inputs.files,\n                source_mode: inputs.source_mode,\n                published_task: task,\n                fence: inputs.fence,\n                circuit: inputs.circuit,\n                routes: inputs.routes,\n                bundle: inputs.bundle,\n                model: inputs.model,\n                worker_generation: inputs.worker_generation,\n                maximum_cell_records: inputs.maximum_cell_records,\n                queue_capacity: inputs.queue_capacity,\n                clock: inputs.clock,\n            };\n            let runtime = config.with_q24_circuit_task_profile(profile)?;\n            Ok((runtime, retirement, identity))\n        })();\n        match installed {\n            Ok((runtime, task, identity)) => Ok(OriginalRootCircuitTaskRuntimeV1 {\n                config: runtime.config,\n                custody: OriginalRootCircuitTaskCustodyV1 {\n                    operation,\n                    task,\n                    cell: runtime.cell,\n                    source: runtime.source,\n                    identity,\n                },\n            }),\n            Err(error) => Err(OriginalRootInitialInstallationErrorV1 { operation, error }),\n        }\n    }\n}"
+          ]
+        ]
+      }
+    },
+    {
+      "index": 440,
+      "row": {
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "File::open",
+          "File::create",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "Deref",
+          "into_inner",
+          "permit_all",
+          "if false",
+          "#[derive(Clone)]"
+        ],
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+        "required": [],
+        "required_function_order": [
+          {
+            "function": "fn recover_from_original_current(",
+            "sequence": [
+              "fn ",
+              "recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original = current.recover_initial_operation(\n            &recovery.operation_id,\n            recovery.intent_digest,\n        )?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(                                                           ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }"
+            ]
+          }
+        ],
+        "required_order": [
+          [
+            "impl<W: ",
+            "AnchorWitnessStore> OriginalRootInitialGenerationCustodyV1<W> {\n                                                                           \n                                                                             \n                                                                             \n                                                                                \n                                                           \n       \n                                                                             \n                                                                               \n                                                                            \n    pub fn recover_from_original_current(\n        current: Arc<NeuronGenerationCurrentOwnerV1>,\n        authorities: AgentdGenerationUpdateAuthoritiesV1,\n        selected: AgentdSelectedGenerationV1,\n        target: AgentdGenerationUpdateTargetV1<W>,\n        recovery: AgentdGenerationUpdateRecoveryV1,\n    ) -> Result<Self, AgentdError> {\n        require_root()?;\n        let original = current.recover_initial_operation(\n            &recovery.operation_id,\n            recovery.intent_digest,\n        )?;\n        let binding = original.final_use_binding().clone();\n        let before = current.read_initial_operation(&original)?;\n        let ready = recover_agentd_generation_initial_v1(\n            Arc::clone(&current),\n            authorities.clone(),\n            selected,\n            target,\n            AgentdGenerationUpdateRecoveryV1 {\n                operation_id: recovery.operation_id.clone(),\n                intent_digest: recovery.intent_digest,\n            },\n        )?;\n        let operation = OriginalInitialOperation {\n            current,\n            authorities,\n            recovery,\n            binding,\n        };\n        if operation.read_original()? != before {\n            return Err(invalid(                                                           ));\n        }\n        Ok(Self {\n            operation,\n            phase: InitialPhase::Ready(Box::new(ready)),\n        })\n    }\n}"
+          ]
+        ]
+      }
+    },
+    {
+      "index": 441,
+      "row": {
+        "forbidden": [],
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "required": [
+          "#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootCircuitTaskCustodyV1;",
+          "#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootCircuitTaskInputsV1;",
+          "#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootCircuitTaskRuntimeV1;",
+          "#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootInitialGenerationCustodyV1;",
+          "#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootInitialInstallationErrorV1;"
+        ]
+      }
+    }
+  ],
+  "original_row411_equal": true,
+  "source_roots_ignore_authority_unchanged": true,
+  "status": "STATIC_PARTIAL_SOURCE_PREPARATION_NOT_GATE_PASS"
+}

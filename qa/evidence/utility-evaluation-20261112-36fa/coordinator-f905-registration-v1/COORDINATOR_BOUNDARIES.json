@@ -1,0 +1,156 @@
+{
+  "format": "hepta-partial-coordinator-boundary-inspection-v1",
+  "full_source_scanned": false,
+  "product_view_paths": 56,
+  "changed_product_paths": [
+    "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+  ],
+  "new_boundaries": [
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_from_original_prepared",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::from_original_prepared",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "definition_markers": [
+        "fn from_original_prepared("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_original_final_use_binding",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::original_final_use_binding",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "definition_markers": [
+        "fn original_final_use_binding("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_original_intent_digest",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::original_intent_digest",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "definition_markers": [
+        "fn original_intent_digest("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_read_original_operation",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::read_original_operation",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "definition_markers": [
+        "fn read_original_operation("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_publish",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::publish",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "definition_markers": [
+        "fn publish("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_recover_original",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::recover_original",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "definition_markers": [
+        "fn recover_original("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_into_q24_task",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::into_q24_task",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "definition_markers": [
+        "fn into_q24_task<"
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_generation_custody_v1_recover_from_original_current",
+      "symbol": "OriginalRootInitialGenerationCustodyV1::recover_from_original_current",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "definition_markers": [
+        "fn recover_from_original_current("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialGenerationCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_read_original_operation",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::read_original_operation",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "definition_markers": [
+        "fn read_original_operation("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_circuit_task_custody_v1_drain_completed_task",
+      "symbol": "OriginalRootCircuitTaskCustodyV1::drain_completed_task",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "definition_markers": [
+        "fn drain_completed_task("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootCircuitTaskCustodyV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_installation_error_v1_original_error",
+      "symbol": "OriginalRootInitialInstallationErrorV1::original_error",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "definition_markers": [
+        "fn original_error("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialInstallationErrorV1"
+    },
+    {
+      "id": "root_initial_custody_original_root_initial_installation_error_v1_read_original_operation",
+      "symbol": "OriginalRootInitialInstallationErrorV1::read_original_operation",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "definition_markers": [
+        "fn read_original_operation("
+      ],
+      "product_callers": [],
+      "caller_markers": [],
+      "receiver_type": "OriginalRootInitialInstallationErrorV1"
+    }
+  ],
+  "old_boundary_additions": [],
+  "uncertainties": [],
+  "original_scanner_unchanged": true,
+  "ignored_path_fragments": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "gate_or_qa_called": false
+}

@@ -1,0 +1,63 @@
+{
+  "schema": "hepta-evidence-placement-v1",
+  "group": "coordinator-a489-materializer-independent-peer-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "scope": "Exact d256/a489 materializer successor control/launch audit relative to 6d1537 and actual a34c request; no H/control execution.",
+  "payload_count": 5,
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 10967,
+      "sha256": "29e5507f19a982f13133292d34eb9722a107bdf22c3176a6773b82a850003ac0",
+      "git_blob": "0e0891a830afdb43668158f18f6a2e5e1a606dd5",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-materializer-independent-peer-v1/REVIEW.json",
+      "path": "coordinator-a489-materializer-independent-peer-v1/REVIEW.json"
+    },
+    {
+      "name": "FROZEN_BYTE_AND_GUARD_REVIEW.json",
+      "bytes": 25332,
+      "sha256": "f7ad0decc320064477b3ed9774c6c68431f43e3b73d6a0befc598b4bb3e0a3f1",
+      "git_blob": "1c6eb0d0445f00f8e5ad12c9720924d6275cda4d",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-materializer-independent-peer-v1/FROZEN_BYTE_AND_GUARD_REVIEW.json",
+      "path": "coordinator-a489-materializer-independent-peer-v1/FROZEN_BYTE_AND_GUARD_REVIEW.json"
+    },
+    {
+      "name": "verify_fixed_delta.py",
+      "bytes": 14353,
+      "sha256": "7ab4c72c4343e409c8c4ffa45c6b0d331ec42a485b953cce5b95480975092dd4",
+      "git_blob": "2c22f071e2d1f5c4392176f3431abf5b181987ba",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-materializer-independent-peer-v1/verify_fixed_delta.py",
+      "path": "coordinator-a489-materializer-independent-peer-v1/verify_fixed_delta.py"
+    },
+    {
+      "name": "ACTUAL_GIT_FULL_READBACK.json",
+      "bytes": 1219,
+      "sha256": "e7ae8ca294094440cbd0673d718eae8a74fdc864b3bd26aaa057bf2df2385578",
+      "git_blob": "7a2eea15561931ff9b7635219b79d7e1974ca9b1",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-materializer-independent-peer-v1/ACTUAL_GIT_FULL_READBACK.json",
+      "path": "coordinator-a489-materializer-independent-peer-v1/ACTUAL_GIT_FULL_READBACK.json"
+    },
+    {
+      "name": "MANIFEST.json",
+      "bytes": 1559,
+      "sha256": "0592111fae4316aca84a7657d468837287e3b7be774e556c79810b66afd209cd",
+      "git_blob": "a0a1024ad088069614d65001df96c33737649103",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-materializer-independent-peer-v1/MANIFEST.json",
+      "path": "coordinator-a489-materializer-independent-peer-v1/MANIFEST.json"
+    }
+  ],
+  "self_included": false,
+  "self_note": "This placement is independently created and fully fetched after all listed payloads; its own identity is delivered separately, avoiding a self-hash cycle.",
+  "no_source_or_ref_changes": true,
+  "qualification": false
+}

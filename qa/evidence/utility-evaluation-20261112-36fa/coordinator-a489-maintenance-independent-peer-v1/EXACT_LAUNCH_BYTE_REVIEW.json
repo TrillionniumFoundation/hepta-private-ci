@@ -1,0 +1,354 @@
+{
+  "format": "hepta-a489-maintenance-independent-exact-launch-review-v1",
+  "status": "FIXED_CANDIDATE_REQUEST_BYTES_MATCH_ORIGINAL_CONTRACT_NO_DISPATCH",
+  "input_index": {
+    "bytes": 4201,
+    "sha256": "17ae5e9670ccea743c66e009362c5f53728d2f865d1b7c7ebbd219c312c5b80a",
+    "git_blob": "66ffc8b9969f30d149647bc83092e539aa899bd7"
+  },
+  "candidate_file_count": 17,
+  "inputs": [
+    {
+      "name": "staged-files/driver-maintenance.py",
+      "bytes": 68520,
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6"
+    },
+    {
+      "name": "staged-files/APPROVED_MAINTENANCE_CONFIG.json",
+      "bytes": 13693,
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337"
+    },
+    {
+      "name": "staged-files/inventory-driver.original.py",
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    {
+      "name": "staged-files/MAINTENANCE_STARTED.original.json",
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+    },
+    {
+      "name": "staged-files/MATERIALIZATION_SUPERVISOR.original.json",
+      "bytes": 952,
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+    },
+    {
+      "name": "staged-files/V8_RESTORATION_SUPERVISOR.original.json",
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+    },
+    {
+      "name": "MAINTENANCE_CONFIG.execution-candidate.json",
+      "bytes": 13693,
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337"
+    },
+    {
+      "name": "LAUNCHER.execution-candidate.py",
+      "bytes": 4933,
+      "sha256": "eed04ccc9167360b518d8c8fdc16f1fc4c4471edc98988185dcaf1d74e87d740",
+      "git_blob": "41a4b2cd40cad895afd944573aec29793613632f"
+    },
+    {
+      "name": "PROCESS_INPUT.execution-candidate.json",
+      "bytes": 5419,
+      "sha256": "556904e921d6bd61f991711aa9052a1e58d0867038cd00d8645225b9a85bee0e",
+      "git_blob": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d"
+    },
+    {
+      "name": "STAGING_BOOTSTRAP.execution-candidate.py",
+      "bytes": 5646,
+      "sha256": "ad95d6855c2018f2c380ac9e9f6019a575b28f6dae702da7552ab96d0561f88f",
+      "git_blob": "8329b61e228b19a5a157c546bcba654e323b9881"
+    },
+    {
+      "name": "STAGING_PAYLOAD.execution-candidate.json",
+      "bytes": 144642,
+      "sha256": "2a6a855b18213c14e8c402742bc38361c97b48d05e410aec2fd7c2ff71de5c9e",
+      "git_blob": "38af59e1726dc519fc331a52aa667c52076ecb82"
+    },
+    {
+      "name": "STAGING_REQUEST.execution-candidate.json",
+      "bytes": 150690,
+      "sha256": "8617f71ce7831737cac574d865b4b7ecbba56a9982496e5ebaf5bb1642a8c995",
+      "git_blob": "ff0f71fffd7c7ea1c67c510d0a12505d88f598be"
+    },
+    {
+      "name": "CONFIG_HOLD_TO_CANDIDATE.diff",
+      "bytes": 611,
+      "sha256": "6514bf348db751bed9a6177a0709cc233e172104590c576f4e29f01112fcfe42",
+      "git_blob": "336b3249fb4ee0b0a25294722d54faab201c0316"
+    },
+    {
+      "name": "LAUNCHER_FROM_92BE.diff",
+      "bytes": 4033,
+      "sha256": "82b499d7617b278526834396e04247f7aa2260385486d3f2534cc1703b7a8254",
+      "git_blob": "941f2c614d54167ee24abacc8cddde4631eef2e2"
+    },
+    {
+      "name": "STAGING_BOOTSTRAP_FROM_E0C5.diff",
+      "bytes": 2660,
+      "sha256": "11a7c035c24c4135d25123d672067db6bdc6806897a0e26dae7e75d813fbfb56",
+      "git_blob": "e533b031bf7da40712f2b2d15b790fb104c08cf2"
+    },
+    {
+      "name": "EXACT_CANDIDATE_REVIEW.json",
+      "bytes": 9322,
+      "sha256": "440c10e98abea57ade7f8904d2cfcf8aeceeeaecad47bd4ab8c3e9b02dbfe290",
+      "git_blob": "0d1a23144071e14e445e825e2673ffc587e0b5ac"
+    },
+    {
+      "name": "PREPARATION_SCRIPT.py",
+      "bytes": 14994,
+      "sha256": "81de014961d81ffcbfe0b2616da54ca3518e443fa9cd01c8f5ac08a05c7e248d",
+      "git_blob": "dcd4c12bc65311fb0f2945b7602c5254ee0d4739"
+    }
+  ],
+  "original_requests": {
+    "main": {
+      "bytes": 5371,
+      "sha256": "c894637387df659ab0b4caf78f2ed376a37de39be96ad2ff444d72a765a93f0a",
+      "git_blob": "c6a5a907647a97204878b5b5371eab540b778403"
+    },
+    "stage": {
+      "bytes": 150734,
+      "sha256": "a2e2c072aa175b3aaed5e9e461c7fc1bf9c198b36112523442025bcd457c9a52",
+      "git_blob": "dd593f5d41f7ecc46072f2fe60eb1047579588a2"
+    }
+  },
+  "only_config_changed_fields": [
+    "status",
+    "root_execution_approved"
+  ],
+  "config_two_field_inverse_full_bytes_equal": true,
+  "candidate_permission_values_are_not_root_execution_authorization": true,
+  "actual_materialization_proofs_unchanged_from_reviewed_eb322": true,
+  "stage": {
+    "request": {
+      "bytes": 150690,
+      "sha256": "8617f71ce7831737cac574d865b4b7ecbba56a9982496e5ebaf5bb1642a8c995",
+      "git_blob": "ff0f71fffd7c7ea1c67c510d0a12505d88f598be"
+    },
+    "key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-control-staging-v1",
+    "field_count": 7,
+    "exact_field_names": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "timeout_seconds",
+      "idempotency_key",
+      "stdin"
+    ],
+    "host": "desktop",
+    "cwd": "/home/qian-qi",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-B",
+      "-c"
+    ],
+    "seconds": 900,
+    "env_present": false,
+    "stdin": {
+      "bytes": 144642,
+      "sha256": "2a6a855b18213c14e8c402742bc38361c97b48d05e410aec2fd7c2ff71de5c9e",
+      "git_blob": "38af59e1726dc519fc331a52aa667c52076ecb82"
+    },
+    "decoded_file_count": 6,
+    "decoded_files": {
+      "driver-maintenance.py": {
+        "bytes": 68520,
+        "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+        "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6"
+      },
+      "APPROVED_MAINTENANCE_CONFIG.json": {
+        "bytes": 13693,
+        "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+        "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337"
+      },
+      "inventory-driver.original.py": {
+        "bytes": 22946,
+        "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+        "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+      },
+      "MAINTENANCE_STARTED.original.json": {
+        "bytes": 1154,
+        "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+        "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+      },
+      "MATERIALIZATION_SUPERVISOR.original.json": {
+        "bytes": 952,
+        "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+        "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+      },
+      "V8_RESTORATION_SUPERVISOR.original.json": {
+        "bytes": 950,
+        "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+        "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+      }
+    },
+    "exact_unchanged_old_files": [
+      "MAINTENANCE_STARTED.original.json",
+      "V8_RESTORATION_SUPERVISOR.original.json",
+      "inventory-driver.original.py"
+    ],
+    "four_helper_bytes_equal": true,
+    "whole_inverse_byte_and_ast_equal": true,
+    "inverse_replacements": [
+      {
+        "before": "BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1')\n",
+        "after": "BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1')\n"
+      },
+      {
+        "before": "PINS = {'driver-maintenance.py': {'bytes': 68496, 'sha256': 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', 'git_blob': '3a0f6dec8127aa9587129d6e0f24bad55837ca13'}, 'APPROVED_MAINTENANCE_CONFIG.json': {'bytes': 13768, 'sha256': 'ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf', 'git_blob': 'd27dd8ee763c75eb5a0f195bb034fc9ca32b727e'}, 'inventory-driver.original.py': {'bytes': 22946, 'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2', 'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'}, 'MAINTENANCE_STARTED.original.json': {'bytes': 1154, 'sha256': 'f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1', 'git_blob': '69a3d38ff1cf800813f1fbf1f30bca224157f223'}, 'MATERIALIZATION_SUPERVISOR.original.json': {'bytes': 952, 'sha256': 'e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa', 'git_blob': 'b726c1fa0db15e96fc46f1398b362a7ce0391f3c'}, 'V8_RESTORATION_SUPERVISOR.original.json': {'bytes': 950, 'sha256': '3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d', 'git_blob': 'b5a9b8d0c8e5f9372eac59e3720ba90c42997579'}}\n",
+        "after": "PINS = {'driver-maintenance.py': {'bytes': 68520, 'sha256': '2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed', 'git_blob': '59461030d4160f7ad6a978df5a7b6aaeb33fb2a6'}, 'APPROVED_MAINTENANCE_CONFIG.json': {'bytes': 13693, 'sha256': '3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7', 'git_blob': '7bddb6c423afbe739bc36a7df2516730911a9337'}, 'inventory-driver.original.py': {'bytes': 22946, 'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2', 'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'}, 'MAINTENANCE_STARTED.original.json': {'bytes': 1154, 'sha256': 'f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1', 'git_blob': '69a3d38ff1cf800813f1fbf1f30bca224157f223'}, 'MATERIALIZATION_SUPERVISOR.original.json': {'bytes': 952, 'sha256': 'fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30', 'git_blob': '2a11b4b9e2baa380c247b6a728f90edfbcdcd644'}, 'V8_RESTORATION_SUPERVISOR.original.json': {'bytes': 950, 'sha256': '3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d', 'git_blob': 'b5a9b8d0c8e5f9372eac59e3720ba90c42997579'}}\n"
+      }
+    ],
+    "no_lock_or_exec_or_driver_call": true,
+    "new_private_directory_create_only": true,
+    "existing_directory_rejected": true,
+    "nine_stat_readback_and_fsync_unchanged": true,
+    "failure_partial_records_preserved": true,
+    "one_mib_request_and_input_limits_unchanged": true
+  },
+  "main": {
+    "request": {
+      "bytes": 5419,
+      "sha256": "556904e921d6bd61f991711aa9052a1e58d0867038cd00d8645225b9a85bee0e",
+      "git_blob": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d"
+    },
+    "key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-v1",
+    "field_count": 6,
+    "exact_field_names": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "idempotency_key",
+      "timeout_seconds"
+    ],
+    "host": "desktop",
+    "cwd": "/home/qian-qi",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-B",
+      "-c"
+    ],
+    "seconds": 9300,
+    "env_present": false,
+    "stdin_present": false,
+    "launcher": {
+      "bytes": 4933,
+      "sha256": "eed04ccc9167360b518d8c8fdc16f1fc4c4471edc98988185dcaf1d74e87d740",
+      "git_blob": "41a4b2cd40cad895afd944573aec29793613632f"
+    },
+    "five_helper_bytes_equal": true,
+    "whole_inverse_byte_and_ast_equal": true,
+    "inverse_replacements": [
+      {
+        "before": "ROOT=Path(\"/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1\")\n",
+        "after": "ROOT=Path(\"/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1\")\n"
+      },
+      {
+        "before": "PINS={'driver-maintenance.py': (68496, 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', '3a0f6dec8127aa9587129d6e0f24bad55837ca13'), 'APPROVED_MAINTENANCE_CONFIG.json': (13768, 'ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf', 'd27dd8ee763c75eb5a0f195bb034fc9ca32b727e')}\n",
+        "after": "PINS={'driver-maintenance.py': (68520, '2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed', '59461030d4160f7ad6a978df5a7b6aaeb33fb2a6'), 'APPROVED_MAINTENANCE_CONFIG.json': (13693, '3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7', '7bddb6c423afbe739bc36a7df2516730911a9337')}\n"
+      },
+      {
+        "before": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+        "after": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1"
+      },
+      {
+        "before": "fixed_original_maintenance_0c59_launcher_verified",
+        "after": "fixed_original_maintenance_coordinator_a489_launcher_verified"
+      }
+    ],
+    "exact_two_input_pins": {
+      "driver-maintenance.py": {
+        "bytes": 68520,
+        "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+        "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6"
+      },
+      "APPROVED_MAINTENANCE_CONFIG.json": {
+        "bytes": 13693,
+        "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+        "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337"
+      }
+    },
+    "same_actual_lock": {
+      "mode": "LOCK_EX",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+      "scope": "cooperating task writers only; full source checks remain mandatory",
+      "stat": {
+        "st_ctime_ns": 1794513889031523889,
+        "st_dev": 2050,
+        "st_gid": 1000,
+        "st_ino": 50139448,
+        "st_mode": 33152,
+        "st_mtime_ns": 1794513889031523889,
+        "st_nlink": 1,
+        "st_size": 0,
+        "st_uid": 1000
+      }
+    },
+    "only_one_flock": true,
+    "lock_existing_open_only": true,
+    "lock_stat_before_EX_exact": true,
+    "inheritable_before_exec": true,
+    "original_exec_call": "os.execv('/usr/bin/python3', ['/usr/bin/python3', '-B', str(ROOT / 'driver-maintenance.py')])",
+    "ordered_guard_lock_record_exec_fragments": [
+      [
+        "need(config[\"coordination_lock\"][\"path\"]==str(LOCK)",
+        2695
+      ],
+      [
+        "==config[\"coordination_lock\"][\"stat\"]",
+        2965
+      ],
+      [
+        "fcntl.flock(lock_fd,fcntl.LOCK_EX|fcntl.LOCK_NB)",
+        3222
+      ],
+      [
+        "os.set_inheritable(lock_fd,True)",
+        3271
+      ],
+      [
+        "save(\"SOURCE_COORDINATION_EX.json\"",
+        4139
+      ],
+      [
+        "save(\"ACTUAL_LAUNCHER.py\"",
+        4371
+      ],
+      [
+        "os.execv(\"/usr/bin/python3\"",
+        4844
+      ]
+    ],
+    "driver_second_flock": false,
+    "unknown_or_failed_identity_not_overwritten_or_automatically_retried": true
+  },
+  "both_typed_request_inverse_original_full_bytes_equal": true,
+  "maintenance_budgets": {
+    "preflight": 600,
+    "fix": 7200,
+    "fmt": 900,
+    "records": 300,
+    "main_outer": 9300,
+    "stage_outer": 900
+  },
+  "dispatch_order_requirement": "Separate Root exact approval; one exact stage; actual same-job normal0, complete original staging readback and six input identities; only then one exact main. Unknown reconciles the original key/job and never advances.",
+  "authority_boundary": "This script checks static data only. Candidate status/root_execution_approved values are proposed bytes; no H or maintenance permission is issued here.",
+  "reviewed_code_executed": false,
+  "H_calls": 0,
+  "Rust_or_QA_runs": 0,
+  "source_or_ref_writes": 0,
+  "qualification": false
+}

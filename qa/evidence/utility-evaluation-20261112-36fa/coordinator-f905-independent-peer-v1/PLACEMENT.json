@@ -1,0 +1,61 @@
+{
+  "schema": "hepta-evidence-placement-v1",
+  "group": "coordinator-f905-independent-peer-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "scope": "Exact nine-file rebase on actual f905; only lib export insertion differs from the original frozen coordinator bodies. No source activation or qualification.",
+  "payload_count": 5,
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 4519,
+      "sha256": "b0b5ee7575a5eb6c33d46d1eb8ba74402b6df1d45021bf4455866118dd9ecef0",
+      "git_blob": "f7766b77fe1a7df5a0cc0b63b5a01d9b88e9d85a",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/REVIEW.json",
+      "path": "coordinator-f905-independent-peer-v1/REVIEW.json"
+    },
+    {
+      "name": "FROZEN_REBASE_PROOF.json",
+      "bytes": 7733,
+      "sha256": "e655629775e45bbea83b4c9572f45602b9ad25f81cf1192f8ba4a3d0652c854e",
+      "git_blob": "bba53e9d9e795ac7e0051a4c4f2236f748669f7a",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/FROZEN_REBASE_PROOF.json",
+      "path": "coordinator-f905-independent-peer-v1/FROZEN_REBASE_PROOF.json"
+    },
+    {
+      "name": "review_rebase.py",
+      "bytes": 6202,
+      "sha256": "4734590d8bc07453056e51942a9be1319e8cdd1a41182794d2a43aada1662ba0",
+      "git_blob": "7be9a43f5eec9a54bcaff4e83c9f3b917f77840c",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/review_rebase.py",
+      "path": "coordinator-f905-independent-peer-v1/review_rebase.py"
+    },
+    {
+      "name": "GITHUB_FULL_READBACK.json",
+      "bytes": 1765,
+      "sha256": "96e3f7fd026cdf9cf6698e0488a28039356cebaf3bf357f24c6ee438ac1206d2",
+      "git_blob": "9ea6f407785d403fa940954c00408cb478e543a0",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/GITHUB_FULL_READBACK.json",
+      "path": "coordinator-f905-independent-peer-v1/GITHUB_FULL_READBACK.json"
+    },
+    {
+      "name": "MANIFEST.json",
+      "bytes": 2099,
+      "sha256": "7eca6519e4d1a8583aa6ebd1fa8b51e05a4e9c4a45ffab38f25d96f0dbb8d7bc",
+      "git_blob": "80380040a97e7268b7647badb0953ce6ddb12576",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/MANIFEST.json",
+      "path": "coordinator-f905-independent-peer-v1/MANIFEST.json"
+    }
+  ],
+  "all_entries_actual_git_full_readback_equal": true,
+  "self_excluded_to_avoid_cycle": true
+}

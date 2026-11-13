@@ -1,0 +1,54 @@
+{
+  "schema": "hepta-evidence-placement-v1",
+  "group": "coordinator-a489-maintenance-independent-peer-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "scope": "Append-only exact execution-candidate review after the preserved driver/HOLD and actual-binding phase1. No H or maintenance execution.",
+  "preceding_placement": "63f6eac05ecf7d5f2f2f1aed9e2866f09dd19a21",
+  "payload_count": 4,
+  "entries": [
+    {
+      "name": "FINAL_EXACT_REVIEW.json",
+      "bytes": 9663,
+      "sha256": "31e1401464b0c9a945a66448090d0c83549b1fe2fea484361082bbfab6bcfa5b",
+      "git_blob": "ba522986d8d4660ed3872cb8e11f743ff96d55d0",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/FINAL_EXACT_REVIEW.json",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/FINAL_EXACT_REVIEW.json"
+    },
+    {
+      "name": "EXACT_LAUNCH_BYTE_REVIEW.json",
+      "bytes": 15538,
+      "sha256": "0f3f2586dbf4fb56cfd43aaa18a5495a682cc648108c32c8e53646c8faee863d",
+      "git_blob": "7e1a2de97a8880fe005ab358e94e14e5fa85c918",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/EXACT_LAUNCH_BYTE_REVIEW.json",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/EXACT_LAUNCH_BYTE_REVIEW.json"
+    },
+    {
+      "name": "verify_exact_launch.py",
+      "bytes": 14677,
+      "sha256": "957aa66bc5a3b9a270d3731c32d88f069e699c1e417250b44de10d26a2f764e1",
+      "git_blob": "036ec4083c38e81bc916bcbb6c153c80e0326e5c",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/verify_exact_launch.py",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/verify_exact_launch.py"
+    },
+    {
+      "name": "EXACT_LAUNCH_FULL_READBACK.json",
+      "bytes": 3177,
+      "sha256": "98b3b0e5525ef1bcd5169da653ab97f80760bc398a4d7a391f00c4d45a498e84",
+      "git_blob": "279e8dbf3dd7496a5e3d824bcf04d96d4802b020",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/EXACT_LAUNCH_FULL_READBACK.json",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/EXACT_LAUNCH_FULL_READBACK.json"
+    }
+  ],
+  "self_included": false,
+  "self_note": "This placement is independently created and fetched after all four payloads. Its identity is delivered separately; phase1 entries and placement are not overwritten.",
+  "no_source_or_ref_changes": true,
+  "qualification": false
+}

@@ -1,3 +1,76 @@
+# Hepta utility evaluation: d256 materialization and exact maintenance controls
+
+This checkpoint closes the **actual d256/a489 isolated materialization** and the immutable controls for one subsequent, ordered maintenance attempt. Maintenance execution results are outside this checkpoint; an approval record is not an outcome.
+
+**Real qualified task chains: 0. Qualification: false.** No original owner or task grant, independent task B, complete utility comparison, new consumer C, deployment, model activation, or daemon/Root process-cold recovery is supplied by these engineering records.
+
+## Actual source and original runtime result
+
+| Item | Observed identity or result |
+| --- | --- |
+| New isolated commit | `d25675445c39f76db69a7bd8e71a1a72e1cd5b9f` |
+| New complete tree | `a489b394666b8141840275128a780605b024cde0` |
+| Sole parent | `cc57c7198db6293ccca562253c42fffbe2a04633` |
+| Physical files | 15,243; complete clean inventory and native projection match the frozen complete graph |
+| Original materialization job | `1a1d468462a-392-3bb` |
+| Original terminal | Succeeded, exit 0, no timeout/cancellation/retry; complete durable output and terminal publication |
+| Actual interval | 2026-11-13 10:16:07.707110 through 10:19:05.220211 UTC |
+| Original command and mutation records | 40 commands observed exit 0; four observed mutations |
+| Inputs and final audits | All 13 input identities unchanged; all three original final audits verified |
+| Object observations | Producer fully read 16,661 new objects and 16,449 donor objects |
+| Tests dispatched by materialization | 0 |
+
+The candidate commit was actually created and completely retrieved from Git. Its canonical raw commit, complete mode-aware tree graph and sole parent are bound by the [Root commit review](coordinator-d256-root-binding-v1/ROOT_CANDIDATE_D2567544_BINDING.json) and [complete composition review](coordinator-d256-root-binding-v1/ROOT_FINAL_COORDINATOR_COMPOSITION_REVIEW.json). The [full graph and exact source overlay](coordinator-final-candidate-graph-v1/PLACEMENT.json) recover every source path and mode. The complete inventory contains 15,152 regular non-executable files, 90 executable files and one symlink.
+
+The [original runtime archive](coordinator-a489-materializer-runtime-v1/PLACEMENT.json), [original RESULT](coordinator-a489-materializer-runtime-v1/RESULT.json), [authoritative terminal](coordinator-a489-materializer-runtime-v1/STATUS_04.original.json), and [Root original-runtime closure](root-d256-materialization-closure-v1/ROOT_D256_MATERIALIZATION_RUNTIME_CLOSURE.json) preserve the same request, job, key and terminal. Three original stream reads cover all 2,095 stdout bytes and empty stderr. The producer's current source/Git states and donor source/Git states match before and after the final audit. No old worktree, index or ref was repaired.
+
+The [Root actual-index review](root-d256-materialization-closure-v1/ROOT_D256_ACTUAL_INDEX_REVIEW.json) independently reconstructs the actual 2,080,152-byte index from the original complete native gzip reads, parses all 15,243 entries, and verifies every logical path/mode/blob/size, stage and flag, footer checksum and cache-tree root. Seventeen original binary-read SDKs cover six complete artifact paths. Root did not rescan host filesystem stat fields; the original producer performed those checks. Actual native metadata is parsed with Python integers so nanosecond fields remain exact.
+
+The producer lists 267 artifacts. This checkpoint does not claim that every native artifact was separately downloaded. The actual full index was downloaded; full native source/object/stat audits remain identified as producer observations. [Expected complete inventories](coordinator-d256-expected-inventory-v1/PLACEMENT.json) were independently derived before execution and later matched the actual producer's observations. Expected bytes alone were never treated as an actual run.
+
+## Exact changed-source maintenance contract
+
+The [single ordered engineering approval](root-d256-materialization-closure-v1/ROOT_D256_ORDERED_MAINTENANCE_APPROVAL.json) is bound to the actual completed materialization, [28 frozen controls and inputs](coordinator-a489-maintenance-successor-v1/PLACEMENT.json), and the independent [HOLD/actual-proof review](coordinator-a489-maintenance-independent-peer-v1/PLACEMENT.phase1.json) and [final exact-request review](coordinator-a489-maintenance-independent-peer-v1/PLACEMENT.execution.json).
+
+Only one original staging request is authorized, followed by one original maintenance request when every actual staging condition is met. The stage must finish normally and all nine original records must be fully read back: six input files plus the actual bootstrap, argv and payload. Failure or Unknown blocks progression and permits reconciliation of the same original job/key/path/version only.
+
+The maintenance driver differs from the historical original in eight fixed source-identity/count substitutions. Fifty of its 51 top-level definitions remain byte-identical. The only changed function binds the complete new object count. The proposed approved configuration differs from the actual-bound HOLD in exactly two permission fields; no native metadata, historical proof, environment, tool identity or guard changes.
+
+| Original stage | Exact preserved scope | Budget |
+| --- | --- | --- |
+| Staging | Six exact input files; create-only fresh owned directory; original 1 MiB bound; no source writes, lock or maintenance exec | 900 seconds |
+| Preflight | Original live source/Git, process, environment, tool, disk and materialization checks | 600 seconds |
+| Scoped fix | `just fix -p codex-hepta-intelligence-eval -p codex-hepta-agentd -p codex-hepta-learning-ledger` | 7,200 seconds |
+| Formatter | `just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f`, only if the original driver permits progression | 900 seconds |
+| Records | Original shared record budget and final audits | 300 seconds |
+| Main outer budget | Original sole EX launcher retaining the same lock descriptor across exec | 9,300 seconds |
+
+The existing target remains mandatory with 32 GiB minimum free space; target creation is disabled. The actual original V8 restoration and runtime material proofs remain bound. No test dispatch, dependency installation, ref update, merge, deploy or model activation is part of this maintenance approval.
+
+The earlier `0c59` fix return 101 remains a failed, consumed attempt. The separately reviewed four repairs and later formatting success remain separate historical facts. This new changed-source contract supplies no inherited lint, source-gate or test pass.
+
+## Source registration and remaining production gap
+
+The frozen candidate contains the reviewed coordinator, task custody and cold-entry layers, then the getter-only and non-Rust registration layers. [Independent registration review](coordinator-f905-registration-independent-peer-v1/REVIEW.json) preserves the original 621 boundaries and adds 12, preserves all 437 original forbidden functions and adds five, and preserves the exact old 39 Root workflow parents before adding nine. These are static registration facts. All 48 parents must actually run under the original exact ignored-only, single-thread, no-retry and exact-JUnit checks on the final source.
+
+The [normal-host audit](normal-root-custody-wiring-independent-review-v1/REVIEW.json) inspected a bounded set of actual startup, custody and consumer files. The normal daemon drops privilege before receiving learning inputs; its existing configuration writer and same-process authorities cannot be replaced by a digest or fabricated descriptor. The twelve new public methods have mechanism callers but no normal production startup/recovery callers in the audited scope.
+
+The [feasibility memo](normal-root-custody-feasibility-memo-v1/MEMO.json) distinguishes library embedding from the shipping privilege model. Preserving that deployment requires an explicit purpose-bound execution/readback/retirement service holding actual Root Task/Cell/Source/Current/journal/drain objects, with a correctly bound daemon client. This memo is not an implementation or runtime permission. Original model/selector/version/final-use owners, model materials, independent observations and real task authorities remain required.
+
+Current mechanism cold cases reopen Current/journal in one process while fixture authorities remain alive. They do not prove a new daemon or Root process recovered the complete chain. Cancellation does not prove worker join; a fixture timeout retains Unknown.
+
+## Qualification remains evidence-dependent
+
+After actual maintenance, the final source protections must be recomputed from actual postimages, then the original final-format/canonical-source, complete source-gate and 14-phase native workflows must run under their frozen scopes and budgets. No earlier source version's pass substitutes for the exact final version.
+
+The real target remains: **authorized task A → original Training owner → independent B → Adopt or complete NoUpdate → new consumer C → daemon and Root process-cold recovery**. Missing outcome, cost, provenance, independence, authorization or material availability remains InsufficientEvidence/Unknown. A complete negative comparison is distinct from missing evidence; deterministic objective fraud requires its own reproducible proof and challenge process. Content roots identify bytes and do not establish continued availability, legal authorization or actual adoption.
+
+## Retained prior checkpoint
+
+The prior checkpoint below is retained verbatim as historical context. Its active-status statements apply to its stated earlier window.
+
+---
+
 # Hepta utility evaluation: actual repair and formatting evidence
 
 This is a fixed evidence window ending at **2026-11-13 09:29:50 UTC**. It closes the failed original maintenance attempt and the separately reviewed four-source repair plus original formatting run. It also retains explicitly unexecuted Root-custody proposals. Later source registration and execution are outside this window.

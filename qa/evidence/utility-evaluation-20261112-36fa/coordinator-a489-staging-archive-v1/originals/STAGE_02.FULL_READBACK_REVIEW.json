@@ -1,0 +1,88 @@
+{
+  "format": "hepta-fixed-staging-full-readback-v1",
+  "status": "VERIFIED_COMPLETE",
+  "sequence": 2,
+  "approval": {
+    "bytes": 7698,
+    "sha256": "624156a7a015cdde153c39450cfc6838033d7e139d5405d238395803e95cfe7a",
+    "git_blob": "a395a49b15c861be88d4e4e49f1e03557470ca55"
+  },
+  "request": {
+    "bytes": 244959,
+    "git_blob": "0657755b9332da3addfe724e6dcb622a734d03dd",
+    "sha256": "b9e39b97e77c3c1bdc7705eb0804819dc79d5dabea4d7e42c8a215c0b1718e07"
+  },
+  "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-base.json.gz.part-002",
+  "version": "2050:50007533:183569:1794564810708638988:1794564810722048186",
+  "decoded": {
+    "bytes": 183569,
+    "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b",
+    "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05"
+  },
+  "mode": 384,
+  "metadata": {
+    "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gid": 1000,
+    "link_count": 1,
+    "metadata_platform": "linux",
+    "mode": 384,
+    "uid": 1000,
+    "xattr_names": [],
+    "xattr_sha256": {}
+  },
+  "original_write_sdk": {
+    "name": "STAGE_02.WRITE.original.json",
+    "bytes": 329,
+    "sha256": "91f4d7c648a007f7103d7744f630b965f80966cdfcf3034b1ddebd9c92c4ade7",
+    "git_blob": "867dd6a19500a2f152dbf759d3f296b2613d6ab4"
+  },
+  "original_file_info_sdk": {
+    "name": "STAGE_02.FILE_INFO.original.json",
+    "bytes": 658,
+    "sha256": "ac139b9ba435457c06bfdfcee3ec9705f33a2367d148b37c39ad557ee45e53a5",
+    "git_blob": "b5e3b58d4ca91da847a5dc6bdc32ea1193b6bdf0"
+  },
+  "chunks": [
+    {
+      "name": "STAGE_02.READ_OFFSET_000000.original.json",
+      "bytes": 87879,
+      "sha256": "ece3952d7c7892b6766dbb62e3ec9682f28058bdb0a2aa40d6fc93b4ef0c1ae6",
+      "git_blob": "985f7b5b9bdc3928b6352197c1350409080794e3",
+      "offset": 0,
+      "decoded_bytes": 65536,
+      "chunk_sha256": "1e1a4e67555b961f40e27d1d6666bc7933574c9481c38acbc8fcdc2080c2a965",
+      "next_offset": 65536,
+      "eof": false
+    },
+    {
+      "name": "STAGE_02.READ_OFFSET_065536.original.json",
+      "bytes": 87884,
+      "sha256": "34aa6c8a9466935d5b6718a8673d199f182e7557dd26ade090f03180503a1054",
+      "git_blob": "cb80a9e8c0f64b317bda70ad501c515a4e9189f5",
+      "offset": 65536,
+      "decoded_bytes": 65536,
+      "chunk_sha256": "5eeacac086666a32e29a3440e00a6aba4823bcd6e84d9ec8900db5a0219bbb44",
+      "next_offset": 131072,
+      "eof": false
+    },
+    {
+      "name": "STAGE_02.READ_OFFSET_131072.original.json",
+      "bytes": 70496,
+      "sha256": "ba4fd664fb648d0f84a996890c217ce68ca8ad6cbbc240a4b19ca10be1c12ab4",
+      "git_blob": "6fbfd164e94361c1e5bbc13f9f9a7a40c309d7d7",
+      "offset": 131072,
+      "decoded_bytes": 52497,
+      "chunk_sha256": "3457d9baa34d0261261c786940086613a370f0cd3db6aeba8f1f2f3e0edafe56",
+      "next_offset": 183569,
+      "eof": true
+    }
+  ],
+  "full_bytes_equal": true,
+  "chunk_coverage": [
+    0,
+    183569
+  ],
+  "all_chunks_same_actual_version": true,
+  "native_process_dispatched_by_this_verifier": false,
+  "observation_scope": "Original h_binary_write, h_file_info and complete fixed-version h_binary_read payloads; verification is offline."
+}

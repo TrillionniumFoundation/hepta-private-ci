@@ -1,0 +1,202 @@
+{
+  "actual_test_executions": 0,
+  "all_83_original_provider_attack_specs_unchanged": true,
+  "before_qa_files": 64,
+  "changed_files": [
+    {
+      "added_methods": [],
+      "after": {
+        "bytes": 102696,
+        "git_blob": "03ca2b5de52c6982cfe1623885a1675fd3ed74fd",
+        "sha256": "caba0dc645261cb5ecb2ae8eb92e10bab92683f6fb9bb399b62a26eabe5360d3"
+      },
+      "before": {
+        "bytes": 102696,
+        "git_blob": "242798559870fc4f569f5e163cd3ac10caf90505",
+        "sha256": "6054d35837c6f63e89e8d8bf40cc18ccd318c5e7e4a8a86ec825dce549eda279"
+      },
+      "old_methods_changed": [
+        {
+          "after": "def test_new_typed_edges_and_old_boundary_inventory_are_exact(self):\n        boundaries = PROOF._boundary_rows(self.manifest)\n        PROOF._verify_privileged_inventory(self.manifest, boundaries)\n        self.assertEqual(len(boundaries), 633)\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"source_roots\"), (\"codex-rs\",))\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"ignored_path_fragments\"),\n                         (\"/tests/\", \"/examples/\", \"_tests.rs\"))\n        checked = {key: self.manifest[key] for key in (\n            \"boundary\", \"privileged_inventory\", \"authority\", \"source_roots\", \"ignored_path_fragments\")}\n        observed = hashlib.sha256(json.dumps(checked, sort_keys=True, separators=(\",\", \":\")).encode()).hexdigest()\n        self.assertEqual(observed, ORDINARY_COMPLETE_BOUNDARY_SHA256)\n        self.assertEqual(self.manifest[\"boundary\"][541:569], ORDINARY_NEW_BOUNDARIES)\n        self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))\n        for path in ORDINARY_SCOPE_GUARDS:\n            with self.subTest(actual_root_scopes=path):\n                self.actual_scopes(path, (ROOT / path).read_text())",
+          "before": "def test_new_typed_edges_and_old_boundary_inventory_are_exact(self):\n        boundaries = PROOF._boundary_rows(self.manifest)\n        PROOF._verify_privileged_inventory(self.manifest, boundaries)\n        self.assertEqual(len(boundaries), 621)\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"source_roots\"), (\"codex-rs\",))\n        self.assertEqual(PROOF._string_tuple(self.manifest, \"ignored_path_fragments\"),\n                         (\"/tests/\", \"/examples/\", \"_tests.rs\"))\n        checked = {key: self.manifest[key] for key in (\n            \"boundary\", \"privileged_inventory\", \"authority\", \"source_roots\", \"ignored_path_fragments\")}\n        observed = hashlib.sha256(json.dumps(checked, sort_keys=True, separators=(\",\", \":\")).encode()).hexdigest()\n        self.assertEqual(observed, ORDINARY_COMPLETE_BOUNDARY_SHA256)\n        self.assertEqual(self.manifest[\"boundary\"][541:569], ORDINARY_NEW_BOUNDARIES)\n        self.assertTrue(all(value is False for value in self.manifest[\"authority\"].values()))\n        for path in ORDINARY_SCOPE_GUARDS:\n            with self.subTest(actual_root_scopes=path):\n                self.actual_scopes(path, (ROOT / path).read_text())",
+          "class": "EvaluatedOrdinaryRetainedClosureTests",
+          "method": "test_new_typed_edges_and_old_boundary_inventory_are_exact"
+        }
+      ],
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "removed_methods": []
+    },
+    {
+      "added_methods": [
+        {
+          "class": "ResidentProviderLocalReadClosureTests",
+          "method": "test_root_custody_consumes_original_values_and_requires_real_root"
+        },
+        {
+          "class": "ResidentProviderLocalReadClosureTests",
+          "method": "test_root_cold_entry_rechecks_original_publication_without_reprepare"
+        },
+        {
+          "class": "ResidentProviderLocalReadClosureTests",
+          "method": "test_root_task_factory_keeps_original_task_cell_and_drain_custody"
+        }
+      ],
+      "after": {
+        "bytes": 17979,
+        "git_blob": "da9574801cfd3a7ef43232a8bfffe4510099fbad",
+        "sha256": "84d899d007956d9594b1465152467ecc6ba7eff2fc152a36f3ae83355de89b41"
+      },
+      "before": {
+        "bytes": 17569,
+        "git_blob": "1c7ea50bc954d9d930abf2d306e9e0cc0e256a14",
+        "sha256": "cbe982cc2b32b288eee829e2a4168615ae9de8070e9fcb4968beaaaa48024e29"
+      },
+      "old_methods_changed": [],
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "removed_methods": []
+    },
+    {
+      "added_methods": [],
+      "after": {
+        "bytes": 33253,
+        "git_blob": "5a6f9372830e4eee584484b88e53e4ffbf5127d9",
+        "sha256": "019a8988beea067db2d71784f5cc4a8516d8830f749c6f6cf47cd7084adb2129"
+      },
+      "before": {
+        "bytes": 30108,
+        "git_blob": "0fa4bcb8368c30966a7d89cbedebabb09a67824c",
+        "sha256": "9fd094cd8cd40acaf46e7538db8d05325a399ef932a2af223192ecb9ef69b4ba"
+      },
+      "old_methods_changed": [
+        {
+          "after": "def test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof(self):\n        workflow = (ROOT / \".github/workflows/hepta-daemon-learning-native.yml\").read_text()\n        match = re.search(r\"parents = (\\[[\\s\\S]*?\\n          \\])\", workflow)\n        self.assertIsNotNone(match)\n        parents = ast.literal_eval(match.group(1))\n        self.assertEqual(len(parents), len(set(parents)))\n        self.assertTrue(set(ROOT_CASES).issubset(parents))\n        self.assertTrue(set(ROOT_ISSUER_CASES).issubset(parents))\n        self.assertTrue(set(ROOT_CUSTODY_CASES).issubset(parents))\n        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES) + len(ROOT_CUSTODY_CASES))\n        roots = (ROOT / (AGENT + \"authority_host_learning_resident_root_tests.rs\")).read_text()\n        evaluation = (ROOT / (AGENT + \"authority_host_learning_resident_evaluation_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_evaluation_tests.rs\"]\\nmod evaluation;',\n            roots,\n        )\n        model = (ROOT / (AGENT + \"authority_host_learning_resident_model_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_model_tests.rs\"]\\nmod original_model;',\n            roots,\n        )\n        retention = (ROOT / (AGENT + \"authority_host_learning_resident_retention_auth_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_retention_auth_tests.rs\"]\\nmod retention_auth;',\n            roots,\n        )\n        provider = (ROOT / (AGENT + \"authority_host_learning_resident_provider_transport_tests.rs\")).read_text()\n        lifecycle = (ROOT / (AGENT + \"authority_host_learning_resident_provider_lifecycle_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_provider_transport_tests.rs\"]\\nmod provider_transport;',\n            roots,\n        )\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_provider_lifecycle_tests.rs\"]\\nmod lifecycle;',\n            provider,\n        )\n        for name in ROOT_CASES:\n            source = (\n                lifecycle if \"::provider_transport::lifecycle::\" in name\n                else provider if \"::provider_transport::\" in name\n                else retention if \"::retention_auth::\" in name\n                else model if \"::original_model::\" in name\n                else evaluation if \"::evaluation::\" in name\n                else roots\n            )\n            self.assertIn(\"fn \" + name.rsplit(\"::\", 1)[-1] + \"(\", source)\n        self.assertEqual(\n            roots.count('#[ignore = \"explicit actual Root')\n            + evaluation.count('#[ignore = \"explicit actual Root')\n            + model.count('#[ignore = \"explicit actual Root')\n            + retention.count('#[ignore = \"explicit actual Root')\n            + provider.count('#[ignore = \"explicit actual Root')\n            + lifecycle.count('#[ignore = \"explicit actual Root'),\n            len(ROOT_CASES),\n        )\n        task_support = (ROOT / (AGENT + \"circuit_q24_task_test_support.rs\")).read_text()\n        custody_support = (ROOT / (AGENT + \"neuron_generation_initial_root_custody_support_tests.rs\")).read_text()\n        custody = (ROOT / (AGENT + \"neuron_generation_initial_root_custody_tests.rs\")).read_text()\n        cold = (ROOT / (AGENT + \"neuron_generation_initial_root_cold_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"neuron_generation_initial_root_custody_support_tests.rs\"]\\nmod root_initial_custody;',\n            task_support,\n        )\n        self.assertIn(\n            '#[path = \"neuron_generation_initial_root_custody_tests.rs\"]\\nmod tests;',\n            custody_support,\n        )\n        self.assertIn(\n            '#[path = \"neuron_generation_initial_root_cold_tests.rs\"]\\nmod cold_tests;',\n            custody_support,\n        )\n        self.assertEqual(len(ROOT_CUSTODY_CASES), len(set(ROOT_CUSTODY_CASES)))\n        self.assertTrue(set(ROOT_CUSTODY_CASES).isdisjoint(ROOT_CASES + ROOT_ISSUER_CASES))\n        for name in ROOT_CUSTODY_CASES:\n            source = cold if \"::cold_tests::\" in name else custody\n            self.assertIn(\"async fn \" + name.rsplit(\"::\", 1)[-1] + \"(\", source)\n        self.assertEqual(\n            custody.count('#[ignore = \"requires actual RootAuthorityDirectory and original signed owner fixtures\"]')\n            + cold.count('#[ignore = \"requires actual RootAuthorityDirectory and original signed owner fixtures\"]'),\n            len(ROOT_CUSTODY_CASES),\n        )\n        for marker in (\n            '\"codex-rs/hepta-neuron/**\"', '\"-p\", \"codex-hepta-neuron\"',\n            '\"codex-rs/hepta-neuron/\"', \"  caller-proof:\",\n            '(\"self-test\", 300), (\"verify\", 4800)',\n            'command = [\"python3\", \"scripts/verify_hepta_callers.py\", phase]',\n            'result[\"returncode\"] or result[\"timed_out\"] or result[\"output_limit_exceeded\"]',\n            'if after != before:', \"daemon-learning-caller-proof\",\n        ):\n            self.assertIn(marker, workflow)",
+          "before": "def test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof(self):\n        workflow = (ROOT / \".github/workflows/hepta-daemon-learning-native.yml\").read_text()\n        match = re.search(r\"parents = (\\[[\\s\\S]*?\\n          \\])\", workflow)\n        self.assertIsNotNone(match)\n        parents = ast.literal_eval(match.group(1))\n        self.assertEqual(len(parents), len(set(parents)))\n        self.assertTrue(set(ROOT_CASES).issubset(parents))\n        self.assertTrue(set(ROOT_ISSUER_CASES).issubset(parents))\n        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES))\n        roots = (ROOT / (AGENT + \"authority_host_learning_resident_root_tests.rs\")).read_text()\n        evaluation = (ROOT / (AGENT + \"authority_host_learning_resident_evaluation_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_evaluation_tests.rs\"]\\nmod evaluation;',\n            roots,\n        )\n        model = (ROOT / (AGENT + \"authority_host_learning_resident_model_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_model_tests.rs\"]\\nmod original_model;',\n            roots,\n        )\n        retention = (ROOT / (AGENT + \"authority_host_learning_resident_retention_auth_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_retention_auth_tests.rs\"]\\nmod retention_auth;',\n            roots,\n        )\n        provider = (ROOT / (AGENT + \"authority_host_learning_resident_provider_transport_tests.rs\")).read_text()\n        lifecycle = (ROOT / (AGENT + \"authority_host_learning_resident_provider_lifecycle_tests.rs\")).read_text()\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_provider_transport_tests.rs\"]\\nmod provider_transport;',\n            roots,\n        )\n        self.assertIn(\n            '#[path = \"authority_host_learning_resident_provider_lifecycle_tests.rs\"]\\nmod lifecycle;',\n            provider,\n        )\n        for name in ROOT_CASES:\n            source = (\n                lifecycle if \"::provider_transport::lifecycle::\" in name\n                else provider if \"::provider_transport::\" in name\n                else retention if \"::retention_auth::\" in name\n                else model if \"::original_model::\" in name\n                else evaluation if \"::evaluation::\" in name\n                else roots\n            )\n            self.assertIn(\"fn \" + name.rsplit(\"::\", 1)[-1] + \"(\", source)\n        self.assertEqual(\n            roots.count('#[ignore = \"explicit actual Root')\n            + evaluation.count('#[ignore = \"explicit actual Root')\n            + model.count('#[ignore = \"explicit actual Root')\n            + retention.count('#[ignore = \"explicit actual Root')\n            + provider.count('#[ignore = \"explicit actual Root')\n            + lifecycle.count('#[ignore = \"explicit actual Root'),\n            len(ROOT_CASES),\n        )\n        for marker in (\n            '\"codex-rs/hepta-neuron/**\"', '\"-p\", \"codex-hepta-neuron\"',\n            '\"codex-rs/hepta-neuron/\"', \"  caller-proof:\",\n            '(\"self-test\", 300), (\"verify\", 4800)',\n            'command = [\"python3\", \"scripts/verify_hepta_callers.py\", phase]',\n            'result[\"returncode\"] or result[\"timed_out\"] or result[\"output_limit_exceeded\"]',\n            'if after != before:', \"daemon-learning-caller-proof\",\n        ):\n            self.assertIn(marker, workflow)",
+          "class": "ResidentRootSourceClosureTests",
+          "method": "test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof"
+        }
+      ],
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "removed_methods": []
+    }
+  ],
+  "deleted_methods": 0,
+  "driver_phase_count_or_filters_semantics_changed": false,
+  "lifecycle_limit": "RootSession finish timeout or outer cancellation is Unknown; an elapsed 5s await is not proof the worker joined. Nine mechanism cases are not a real deployment or independent task chain.",
+  "new_attack_specs": 24,
+  "new_qa_methods": 3,
+  "new_root_parents": [
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error"
+  ],
+  "new_total_test_methods": 607,
+  "old_28_boundary_slice_541_569_equal": true,
+  "old_methods_byte_equal": 602,
+  "ordinary_observer_coverage_module": "scripts/hepta_c_observer_coverage.py / 49a99d7093dbabe467b2dc5053a597f4df320078 has ordinary owner requirements, no Root parent registry. It remains unchanged; the original b92 separate Root exact-JUnit comparison consumes the final workflow list.",
+  "ordinary_scope_updates": [],
+  "original39_order_and_bytes_preserved": true,
+  "original_test_methods": 604,
+  "provider_extended_slice_569_end_exact": true,
+  "retries": 0,
+  "root_phase_timeout_seconds": 7200,
+  "root_test_threads": 1,
+  "run_ignored": "only",
+  "status": "STATIC_PREPARATION_NOT_QUALIFICATION",
+  "workflow_original_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+    "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+    "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+    "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+    "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+    "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+    "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins"
+  ],
+  "workflow_proposed_parents": [
+    "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+    "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+    "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+    "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+    "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+    "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+    "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+    "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+    "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+    "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+    "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+    "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+    "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+    "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+    "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+    "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+    "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+    "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+    "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error"
+  ]
+}

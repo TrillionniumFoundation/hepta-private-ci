@@ -1,0 +1,71 @@
+{
+  "schema": "hepta-evidence-placement-v1",
+  "group": "coordinator-f905-registration-independent-peer-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "scope": "Frozen seven nonRust registration files, actual f905 and exact 773d/5279 Rust input chain; static only. No QA/collector/Rust/formatter/H/source/ref action.",
+  "payload_count": 6,
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 10978,
+      "sha256": "baa235aa436c522030b9cc3049eaa25be76a4be05e81176b34055812ffe8babd",
+      "git_blob": "b90584055478ffe6d9c20f585349753b361784c7",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-registration-independent-peer-v1/REVIEW.json",
+      "path": "coordinator-f905-registration-independent-peer-v1/REVIEW.json"
+    },
+    {
+      "name": "FROZEN_REGISTRATION_BYTE_AND_SCOPE_REVIEW.json",
+      "bytes": 389989,
+      "sha256": "8fcea20afef2070dc83583e11807567bff29a607abe3b49f273d3b1eb999f237",
+      "git_blob": "b84c6853a31996e21df55d2f9239e4e29387e0fd",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-registration-independent-peer-v1/FROZEN_REGISTRATION_BYTE_AND_SCOPE_REVIEW.json",
+      "path": "coordinator-f905-registration-independent-peer-v1/FROZEN_REGISTRATION_BYTE_AND_SCOPE_REVIEW.json"
+    },
+    {
+      "name": "verify_frozen_registration.py",
+      "bytes": 29806,
+      "sha256": "7cfab37845ba2957088100391a95acb89e9614801cbc6e908a2b4dea774f6f6e",
+      "git_blob": "28638e0eb2f994c6dc4cb237bb3120b30f9486d4",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-registration-independent-peer-v1/verify_frozen_registration.py",
+      "path": "coordinator-f905-registration-independent-peer-v1/verify_frozen_registration.py"
+    },
+    {
+      "name": "PACKET_FULL_GET_REVIEW.json",
+      "bytes": 1912,
+      "sha256": "10e9865dd49820649e7473e0138369017e9a8272a5dc9ea25a02608c3c38cf6a",
+      "git_blob": "53a1d5575b22fc2d974c0493ae34093cdf8a339c",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-registration-independent-peer-v1/PACKET_FULL_GET_REVIEW.json",
+      "path": "coordinator-f905-registration-independent-peer-v1/PACKET_FULL_GET_REVIEW.json"
+    },
+    {
+      "name": "ACTUAL_GIT_FULL_READBACK.json",
+      "bytes": 1558,
+      "sha256": "1437bb492865bddb1f94418f109e6bd74628877bd72570f6d132aaaa6ac01a77",
+      "git_blob": "49a1594528820c17af83e0c9a9f9eba091709051",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-registration-independent-peer-v1/ACTUAL_GIT_FULL_READBACK.json",
+      "path": "coordinator-f905-registration-independent-peer-v1/ACTUAL_GIT_FULL_READBACK.json"
+    },
+    {
+      "name": "MANIFEST.json",
+      "bytes": 1647,
+      "sha256": "ab19077878036bc67fae7abb1c7ccc01c57deb011cd1664f6f4b687ceec6b582",
+      "git_blob": "b200a0bf39ad1cc667e576c2e1b668316ef58625",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-registration-independent-peer-v1/MANIFEST.json",
+      "path": "coordinator-f905-registration-independent-peer-v1/MANIFEST.json"
+    }
+  ],
+  "all_entries_actual_git_full_readback_equal": true,
+  "self_excluded_to_avoid_cycle": true
+}

@@ -1,0 +1,1459 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      332,
+      332
+    ],
+    "after_range": [
+      337,
+      338
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ", streams , protocol , baseline ) } . map_err ( | error | AgentdError :: Protocol ( format ! ( \"original resident role admission: {error}\" ) ) ) ? ; let",
+    "after_context": "streams , protocol , baseline , ) } . map_err ( | error | { AgentdError :: Protocol ( format ! ( \"original resident role admission: {error}\" ) ) } ) ? ;"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      342,
+      342
+    ],
+    "after_range": [
+      348,
+      349
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "( | error | AgentdError :: Protocol ( format ! ( \"original resident role admission: {error}\" ) ) ) ? ; let stages = OriginalCellQ24CandidateStageOwnersV1 :: restrict_original_handoff_deadline ( stages , end )",
+    "after_context": "| error | { AgentdError :: Protocol ( format ! ( \"original resident role admission: {error}\" ) ) } ) ? ; let stages = OriginalCellQ24CandidateStageOwnersV1 :: restrict_original_handoff_deadline ( stages , end )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      362,
+      362
+    ],
+    "after_range": [
+      369,
+      370
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "OriginalCellQ24CandidateStageOwnersV1 :: restrict_original_handoff_deadline ( stages , end ) . map_err ( | error | AgentdError :: Protocol ( format ! ( \"original handoff deadline: {error}\" ) ) ) ? ; ResidentRootAuthorityV3",
+    "after_context": "OriginalCellQ24CandidateStageOwnersV1 :: restrict_original_handoff_deadline ( stages , end ) . map_err ( | error | { AgentdError :: Protocol ( format ! ( \"original handoff deadline: {error}\" ) ) } ) ? ;"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      372,
+      372
+    ],
+    "after_range": [
+      380,
+      381
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "( | error | AgentdError :: Protocol ( format ! ( \"original handoff deadline: {error}\" ) ) ) ? ; ResidentRootAuthorityV3 :: perform ( & self . owner . authority ,",
+    "after_context": "| error | { AgentdError :: Protocol ( format ! ( \"original handoff deadline: {error}\" ) ) } ) ? ; ResidentRootAuthorityV3 :: perform ( & self . owner . authority ,"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      537,
+      537
+    ],
+    "after_range": [
+      550,
+      551
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "| duration | ! duration . is_zero ( ) ) . ok_or_else ( || AgentdError :: GenerationFenced ( \"original resident service expired\" . into ( ) ) ) ? ; let",
+    "after_context": "| duration | ! duration . is_zero ( ) ) . ok_or_else ( || { AgentdError :: GenerationFenced ( \"original resident service expired\" . into ( ) ) } ) ? ;"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      547,
+      547
+    ],
+    "after_range": [
+      561,
+      562
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": ". ok_or_else ( || AgentdError :: GenerationFenced ( \"original resident service expired\" . into ( ) ) ) ? ; let cancellation = root_cancellation . child_token ( ) ; let _cancel_on_drop",
+    "after_context": "ok_or_else ( || { AgentdError :: GenerationFenced ( \"original resident service expired\" . into ( ) ) } ) ? ; let cancellation = root_cancellation . child_token ( ) ; let _cancel_on_drop"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      698,
+      698
+    ],
+    "after_range": [
+      714,
+      715
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "format ! ( \"resident server join: {error}\" ) ) ) ? . map_err ( | error | AgentdError :: Protocol ( format ! ( \"original resident server: {error}\" ) ) ) } ; tokio",
+    "after_context": "format ! ( \"resident server join: {error}\" ) ) ) ? . map_err ( | error | { AgentdError :: Protocol ( format ! ( \"original resident server: {error}\" ) ) } ) } ;"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+    "op": "insert",
+    "before_range": [
+      708,
+      708
+    ],
+    "after_range": [
+      725,
+      726
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "( | error | AgentdError :: Protocol ( format ! ( \"original resident server: {error}\" ) ) ) } ; tokio :: pin ! ( work ) ; tokio :: select",
+    "after_context": "| error | { AgentdError :: Protocol ( format ! ( \"original resident server: {error}\" ) ) } ) } ; tokio :: pin ! ( work ) ; tokio :: select"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1709,
+      1709
+    ],
+    "after_range": [
+      1715,
+      1716
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "io :: ErrorKind :: WouldBlock && Instant :: now ( ) < end => std :: thread :: sleep ( Duration :: from_millis ( 1 ) ) ,",
+    "after_context": "io :: ErrorKind :: WouldBlock && Instant :: now ( ) < end => { std :: thread :: sleep ( Duration :: from_millis ( 1 ) ) }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+    "op": "replace",
+    "before_range": [
+      1722,
+      1723
+    ],
+    "after_range": [
+      1729,
+      1730
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "=> std :: thread :: sleep ( Duration :: from_millis ( 1 ) ) , Err ( error ) => return Err ( error . into ( ) )",
+    "after_context": "{ std :: thread :: sleep ( Duration :: from_millis ( 1 ) ) } Err ( error ) => return Err ( error . into ( ) )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1515,
+      1515
+    ],
+    "after_range": [
+      1526,
+      1527
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "pin ( std :: process :: id ( ) ) ? , \"process-start\" => streams . model . peer . process_start_ticks = streams . model . peer .",
+    "after_context": "pin ( std :: process :: id ( ) ) ? , \"process-start\" => { streams . model . peer . process_start_ticks = streams . model . peer ."
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+    "op": "replace",
+    "before_range": [
+      1548,
+      1549
+    ],
+    "after_range": [
+      1560,
+      1561
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": ") . ok_or_else ( || anyhow :: anyhow ! ( \"fixture process start overflow\" ) ) ? , _ => unreachable ! ( ) , } let ( handoff , _ )",
+    "after_context": ") . ok_or_else ( || anyhow :: anyhow ! ( \"fixture process start overflow\" ) ) ? } _ => unreachable ! ( ) , } let ( handoff , _ )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+    "op": "delete",
+    "before_range": [
+      2114,
+      2121
+    ],
+    "after_range": [
+      2114,
+      2114
+    ],
+    "before": [
+      "codex_hepta_intelligence_eval",
+      "::",
+      "ProductEvaluationExecutionStoreErrorV1",
+      "as",
+      "Store",
+      ";",
+      "use"
+    ],
+    "after": [],
+    "before_context": "-> Result < Option < OriginalCellQ24TrainingCommandReceiptV1 > , super :: Error > { use codex_hepta_intelligence_eval :: ProductEvaluationExecutionStoreErrorV1 as Store ; use crate :: CellQ24TrainingOwnerErrorV1 as Native ; use crate :: OriginalCellQ24TrainingReceiptErrorV1 as Receipt ; use",
+    "after_context": "-> Result < Option < OriginalCellQ24TrainingCommandReceiptV1 > , super :: Error > { use crate :: CellQ24TrainingOwnerErrorV1 as Native ; use crate :: OriginalCellQ24TrainingReceiptErrorV1 as Receipt ; use"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+    "op": "insert",
+    "before_range": [
+      2149,
+      2149
+    ],
+    "after_range": [
+      2142,
+      2149
+    ],
+    "before": [],
+    "after": [
+      ";",
+      "use",
+      "codex_hepta_intelligence_eval",
+      "::",
+      "ProductEvaluationExecutionStoreErrorV1",
+      "as",
+      "Store"
+    ],
+    "before_context": "crate :: OriginalCellQ24TrainingStageErrorV1 as Stage ; use crate :: learning_owner_journal :: LearningOriginalOwnerErrorV1 as Owner ; let material = match crate :: SourceBoundCellQ24TrainingStageV1 :: read_candidate_material ( & self .",
+    "after_context": "crate :: OriginalCellQ24TrainingStageErrorV1 as Stage ; use crate :: learning_owner_journal :: LearningOriginalOwnerErrorV1 as Owner ; use codex_hepta_intelligence_eval :: ProductEvaluationExecutionStoreErrorV1 as Store ; let material = match crate :: SourceBoundCellQ24TrainingStageV1 :: read_candidate_material ( & self ."
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+    "op": "delete",
+    "before_range": [
+      1074,
+      1075
+    ],
+    "after_range": [
+      1076,
+      1076
+    ],
+    "before": [
+      "{"
+    ],
+    "after": [],
+    "before_context": "= self . alternate_held . as_ref ( ) . map ( | _ | { OriginalCircuitRetainedVersionRecoveryV1 { training : recovery . training . clone ( ) , attestations :",
+    "after_context": "= self . alternate_held . as_ref ( ) . map ( | _ | OriginalCircuitRetainedVersionRecoveryV1 { training : recovery . training . clone ( ) , attestations :"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+    "op": "delete",
+    "before_range": [
+      1207,
+      1208
+    ],
+    "after_range": [
+      1208,
+      1208
+    ],
+    "before": [
+      "}"
+    ],
+    "after": [],
+    "before_context": "clone ( ) , artifact_verifier : recovery . artifact_verifier . clone ( ) , } } ) ; let held = self . held . take ( ) .",
+    "after_context": "clone ( ) , artifact_verifier : recovery . artifact_verifier . clone ( ) , } ) ; let held = self . held . take ( ) ."
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1786,
+      1786
+    ],
+    "after_range": [
+      1787,
+      1788
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ") ; let first_poll = std :: future :: poll_fn ( | cx | std :: task :: Poll :: Ready ( std :: future :: Future ::",
+    "after_context": ") ; let first_poll = std :: future :: poll_fn ( | cx | { std :: task :: Poll :: Ready ( std :: future :: Future ::"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1811,
+      1811
+    ],
+    "after_range": [
+      1813,
+      1814
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": ":: Future :: poll ( request . as_mut ( ) , cx ) ) ) . await ; let pending = first_poll . is_pending ( ) ; let",
+    "after_context": ":: Future :: poll ( request . as_mut ( ) , cx ) ) } ) . await ; let pending = first_poll . is_pending ( ) ; let"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+    "op": "insert",
+    "before_range": [
+      2211,
+      2211
+    ],
+    "after_range": [
+      2214,
+      2215
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ") ; let first_poll = std :: future :: poll_fn ( | cx | std :: task :: Poll :: Ready ( std :: future :: Future ::",
+    "after_context": ") ; let first_poll = std :: future :: poll_fn ( | cx | { std :: task :: Poll :: Ready ( std :: future :: Future ::"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+    "op": "insert",
+    "before_range": [
+      2236,
+      2236
+    ],
+    "after_range": [
+      2240,
+      2241
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": ":: Future :: poll ( request . as_mut ( ) , cx ) ) ) . await ; let pending = first_poll . is_pending ( ) ; let",
+    "after_context": ":: Future :: poll ( request . as_mut ( ) , cx ) ) } ) . await ; let pending = first_poll . is_pending ( ) ; let"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+    "op": "replace",
+    "before_range": [
+      17,
+      20
+    ],
+    "after_range": [
+      17,
+      18
+    ],
+    "before": [
+      ">",
+      ",",
+      ">"
+    ],
+    "after": [
+      ">>"
+    ],
+    "before_context": "tokio :: task :: JoinHandle < Result < Option < OriginalCircuitLearningReadbackV1 > , ReadError > , > ; fn require_equal < T : PartialEq + std :: fmt :: Debug >",
+    "after_context": "tokio :: task :: JoinHandle < Result < Option < OriginalCircuitLearningReadbackV1 > , ReadError >> ; fn require_equal < T : PartialEq + std :: fmt :: Debug >"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1507,
+      1507
+    ],
+    "after_range": [
+      1506,
+      1507
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ":: from_millis ( 500 ) , PausedLocalReadCase :: CompetingAlias | PausedLocalReadCase :: CancelAwaiter => Duration :: from_secs ( 300 ) , } ) . await ; let (",
+    "after_context": ":: from_millis ( 500 ) , PausedLocalReadCase :: CompetingAlias | PausedLocalReadCase :: CancelAwaiter => { Duration :: from_secs ( 300 ) } } , ) . await ; let"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1513,
+      1513
+    ],
+    "after_range": [
+      1513,
+      1515
+    ],
+    "before": [],
+    "after": [
+      "}",
+      "}"
+    ],
+    "before_context": "PausedLocalReadCase :: CompetingAlias | PausedLocalReadCase :: CancelAwaiter => Duration :: from_secs ( 300 ) , } ) . await ; let ( local , live , readiness )",
+    "after_context": ":: CompetingAlias | PausedLocalReadCase :: CancelAwaiter => { Duration :: from_secs ( 300 ) } } , ) . await ; let ( local , live , readiness ) ="
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+    "op": "delete",
+    "before_range": [
+      1514,
+      1515
+    ],
+    "after_range": [
+      1516,
+      1516
+    ],
+    "before": [
+      "}"
+    ],
+    "after": [],
+    "before_context": ":: CompetingAlias | PausedLocalReadCase :: CancelAwaiter => Duration :: from_secs ( 300 ) , } ) . await ; let ( local , live , readiness ) = match",
+    "after_context": "PausedLocalReadCase :: CancelAwaiter => { Duration :: from_secs ( 300 ) } } , ) . await ; let ( local , live , readiness ) = match"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+    "op": "insert",
+    "before_range": [
+      2408,
+      2408
+    ],
+    "after_range": [
+      2410,
+      2411
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ") , ( Err ( error ) , Some ( cleanup ) ) => Err ( error . context ( format ! ( \"actual local cleanup: {cleanup:#}\" ) ) ) ,",
+    "after_context": ") , ( Err ( error ) , Some ( cleanup ) ) => { Err ( error . context ( format ! ( \"actual local cleanup: {cleanup:#}\" ) ) ) }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+    "op": "replace",
+    "before_range": [
+      2421,
+      2422
+    ],
+    "after_range": [
+      2424,
+      2425
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "=> Err ( error . context ( format ! ( \"actual local cleanup: {cleanup:#}\" ) ) ) , } ; finish_case ( result , case ) . await } # [ tokio",
+    "after_context": "{ Err ( error . context ( format ! ( \"actual local cleanup: {cleanup:#}\" ) ) ) } } ; finish_case ( result , case ) . await } # [ tokio"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+    "op": "insert",
+    "before_range": [
+      949,
+      949
+    ],
+    "after_range": [
+      949,
+      950
+    ],
+    "before": [],
+    "after": [
+      ")"
+    ],
+    "before_context": "( Version :: fixture_serve_original_selection_channel ( Arc :: clone ( & host ) , channel , ) ) ) ; let selector = self . selector . take (",
+    "after_context": "( Version :: fixture_serve_original_selection_channel ( Arc :: clone ( & host ) , channel ) , ) ) ; let selector = self . selector . take ( )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+    "op": "delete",
+    "before_range": [
+      950,
+      951
+    ],
+    "after_range": [
+      951,
+      951
+    ],
+    "before": [
+      ")"
+    ],
+    "after": [],
+    "before_context": "Version :: fixture_serve_original_selection_channel ( Arc :: clone ( & host ) , channel , ) ) ) ; let selector = self . selector . take ( ) .",
+    "after_context": ":: fixture_serve_original_selection_channel ( Arc :: clone ( & host ) , channel ) , ) ) ; let selector = self . selector . take ( ) ."
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+    "op": "insert",
+    "before_range": [
+      648,
+      648
+    ],
+    "after_range": [
+      649,
+      650
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ". control = Some ( control ) ; peer } TrainerServing :: OriginalService => commands :: serve ( Arc :: clone ( & fixture . trainer ) ,",
+    "after_context": ". control = Some ( control ) ; peer } TrainerServing :: OriginalService => { commands :: serve ( Arc :: clone ( & fixture . trainer ) ,"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+    "op": "replace",
+    "before_range": [
+      664,
+      665
+    ],
+    "after_range": [
+      666,
+      667
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "serve ( Arc :: clone ( & fixture . trainer ) , channel ) , } ) ; self . held = Some ( HeldPredecessors { dataset , dataset_receipt",
+    "after_context": "serve ( Arc :: clone ( & fixture . trainer ) , channel ) } } ) ; self . held = Some ( HeldPredecessors { dataset , dataset_receipt"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+    "op": "insert",
+    "before_range": [
+      797,
+      797
+    ],
+    "after_range": [
+      797,
+      798
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "=> serde_json :: to_vec ( & request ) ? , LocalReadOperation :: CompletionReadiness => serde_json :: to_vec ( & readiness :: Request :: from_profile ( & self .",
+    "after_context": "=> serde_json :: to_vec ( & request ) ? , LocalReadOperation :: CompletionReadiness => { serde_json :: to_vec ( & readiness :: Request :: from_profile ( & self ."
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+    "op": "replace",
+    "before_range": [
+      828,
+      829
+    ],
+    "after_range": [
+      828,
+      829
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": ", self . original . binding , request_id , ) ? , ) ? , } ; let original = Arc :: clone ( & self . original )",
+    "after_context": "context , self . original . binding , request_id , ) ? ) ? } } ; let original = Arc :: clone ( & self . original )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+    "op": "insert",
+    "before_range": [
+      2871,
+      2871
+    ],
+    "after_range": [
+      2878,
+      2879
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "anyhow ! ( \"original host retained\" ) ) ? ) . map_err ( | _ | anyhow :: anyhow ! ( \"all original Evaluation services must be joined before recovery\" ) ) ? ; let panel = host",
+    "after_context": "! ( \"original host retained\" ) ) ? , ) . map_err ( | _ | { anyhow :: anyhow ! ( \"all original Evaluation services must be joined before recovery\" ) } ) ? ; let panel ="
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+    "op": "insert",
+    "before_range": [
+      2878,
+      2878
+    ],
+    "after_range": [
+      2886,
+      2887
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": ") . map_err ( | _ | anyhow :: anyhow ! ( \"all original Evaluation services must be joined before recovery\" ) ) ? ; let panel = host . fixture_take_original_panel ( ) ? ; let",
+    "after_context": ". map_err ( | _ | { anyhow :: anyhow ! ( \"all original Evaluation services must be joined before recovery\" ) } ) ? ; let panel = host . fixture_take_original_panel ( ) ? ; let"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1787,
+      1787
+    ],
+    "after_range": [
+      1791,
+      1792
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "( ( ) ) , ( Err ( error ) , cleanup ) => Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) ,",
+    "after_context": "( ( ) ) , ( Err ( error ) , cleanup ) => { Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+    "op": "replace",
+    "before_range": [
+      1800,
+      1801
+    ],
+    "after_range": [
+      1805,
+      1806
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "=> Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) , ( Ok ( ( ) ) , Err ( error ) ) => Err",
+    "after_context": "{ Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) } ( Ok ( ( ) ) , Err ( error ) ) => Err"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1083,
+      1083
+    ],
+    "after_range": [
+      1086,
+      1087
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "Cell => \"cell\" , LearningUpdateScopeV2 :: Organ => \"organ\" , LearningUpdateScopeV2 :: BaseRelease => anyhow :: bail ! ( \"no base-release fixture authority\" ) , } ; Ok ( Report {",
+    "after_context": "Cell => \"cell\" , LearningUpdateScopeV2 :: Organ => \"organ\" , LearningUpdateScopeV2 :: BaseRelease => { anyhow :: bail ! ( \"no base-release fixture authority\" ) } } ; Ok ( Report {"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+    "op": "replace",
+    "before_range": [
+      1090,
+      1091
+    ],
+    "after_range": [
+      1094,
+      1095
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "=> \"organ\" , LearningUpdateScopeV2 :: BaseRelease => anyhow :: bail ! ( \"no base-release fixture authority\" ) , } ; Ok ( Report { purpose : PURPOSE . into ( ) ,",
+    "after_context": "\"organ\" , LearningUpdateScopeV2 :: BaseRelease => { anyhow :: bail ! ( \"no base-release fixture authority\" ) } } ; Ok ( Report { purpose : PURPOSE . into ( ) ,"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+    "op": "delete",
+    "before_range": [
+      1859,
+      1870
+    ],
+    "after_range": [
+      1864,
+      1864
+    ],
+    "before": [
+      "original_material",
+      "::",
+      "{",
+      "ProviderAdmission",
+      ",",
+      "UnstartedProvider",
+      "}",
+      ";",
+      "use",
+      "super",
+      "::"
+    ],
+    "after": [],
+    "before_context": "( ) -> anyhow :: Result < ( ) > { use super :: original_material :: { ProviderAdmission , UnstartedProvider } ; use super :: super :: evaluation_provider :: fresh_training :: PreparedBPanel ; let admission = ProviderAdmission :: new",
+    "after_context": "( ) -> anyhow :: Result < ( ) > { use super :: super :: evaluation_provider :: fresh_training :: PreparedBPanel ; use super :: original_material :: ProviderAdmission"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1877,
+      1877
+    ],
+    "after_range": [
+      1871,
+      1885
+    ],
+    "before": [],
+    "after": [
+      ";",
+      "use",
+      "super",
+      "::",
+      "original_material",
+      "::",
+      "ProviderAdmission",
+      ";",
+      "use",
+      "super",
+      "::",
+      "original_material",
+      "::",
+      "UnstartedProvider"
+    ],
+    "before_context": ", UnstartedProvider } ; use super :: super :: evaluation_provider :: fresh_training :: PreparedBPanel ; let admission = ProviderAdmission :: new ( ) . await ? ; let",
+    "after_context": "( ) > { use super :: super :: evaluation_provider :: fresh_training :: PreparedBPanel ; use super :: original_material :: ProviderAdmission ; use super :: original_material :: UnstartedProvider ; let admission = ProviderAdmission :: new ( ) . await ? ; let"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+    "op": "insert",
+    "before_range": [
+      3074,
+      3074
+    ],
+    "after_range": [
+      3085,
+      3086
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "( ( ) ) , ( Err ( error ) , cleanup ) => Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) ,",
+    "after_context": "( ( ) ) , ( Err ( error ) , cleanup ) => { Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+    "op": "replace",
+    "before_range": [
+      3087,
+      3088
+    ],
+    "after_range": [
+      3099,
+      3100
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "=> Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) , ( Ok ( ( ) ) , Err ( error ) ) => Err",
+    "after_context": "{ Err ( error . context ( format ! ( \"original fixture cleanup: {cleanup:?}\" ) ) ) } ( Ok ( ( ) ) , Err ( error ) ) => Err"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1747,
+      1747
+    ],
+    "after_range": [
+      1748,
+      1749
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "try_into ( ) . map_err ( | counts : Vec < u64 > | anyhow :: anyhow ! ( \"expected four original Material peer terminals, got {}\" , counts . len ( ) , )",
+    "after_context": "try_into ( ) . map_err ( | counts : Vec < u64 > | { anyhow :: anyhow ! ( \"expected four original Material peer terminals, got {}\" , counts . len ( ) , )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+    "op": "insert",
+    "before_range": [
+      1761,
+      1761
+    ],
+    "after_range": [
+      1763,
+      1764
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "anyhow :: anyhow ! ( \"expected four original Material peer terminals, got {}\" , counts . len ( ) , ) ) } }",
+    "after_context": "anyhow :: anyhow ! ( \"expected four original Material peer terminals, got {}\" , counts . len ( ) , ) } ) } }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+    "op": "insert",
+    "before_range": [
+      2226,
+      2226
+    ],
+    "after_range": [
+      2232,
+      2233
+    ],
+    "before": [],
+    "after": [
+      ")"
+    ],
+    "before_context": "spawn ( Version :: fixture_serve_original_selection_channel ( self . host ( ) ? , channel , ) ) ) ; let host = Arc :: new ( Selector ::",
+    "after_context": "spawn ( Version :: fixture_serve_original_selection_channel ( self . host ( ) ? , channel ) , ) ) ; let host = Arc :: new ( Selector :: into_evaluated_shared_command_owner"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+    "op": "delete",
+    "before_range": [
+      2227,
+      2228
+    ],
+    "after_range": [
+      2234,
+      2234
+    ],
+    "before": [
+      ")"
+    ],
+    "after": [],
+    "before_context": "( Version :: fixture_serve_original_selection_channel ( self . host ( ) ? , channel , ) ) ) ; let host = Arc :: new ( Selector :: into_evaluated_shared_command_owner (",
+    "after_context": "Version :: fixture_serve_original_selection_channel ( self . host ( ) ? , channel ) , ) ) ; let host = Arc :: new ( Selector :: into_evaluated_shared_command_owner ("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+    "op": "insert",
+    "before_range": [
+      572,
+      572
+    ],
+    "after_range": [
+      572,
+      573
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ") , ( Err ( error ) , Err ( cleanup ) ) => Err ( error . context ( format ! ( \"original Fresh cleanup: {cleanup:#}\" ) ) ) ,",
+    "after_context": ") , ( Err ( error ) , Err ( cleanup ) ) => { Err ( error . context ( format ! ( \"original Fresh cleanup: {cleanup:#}\" ) ) ) }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+    "op": "insert",
+    "before_range": [
+      588,
+      588
+    ],
+    "after_range": [
+      588,
+      589
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "error . context ( format ! ( \"original Fresh cleanup: {cleanup:#}\" ) ) ) , } }",
+    "after_context": "( error . context ( format ! ( \"original Fresh cleanup: {cleanup:#}\" ) ) ) } } }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+    "op": "replace",
+    "before_range": [
+      16,
+      19
+    ],
+    "after_range": [
+      16,
+      17
+    ],
+    "before": [
+      ">",
+      ",",
+      ">"
+    ],
+    "after": [
+      ">>"
+    ],
+    "before_context": "= std :: thread :: JoinHandle < Result < u64 , crate :: OriginalCellQ24TrainingBootstrapErrorV1 > , > ; type EvaluationPeer = std :: thread :: JoinHandle < anyhow :: Result <",
+    "after_context": "= std :: thread :: JoinHandle < Result < u64 , crate :: OriginalCellQ24TrainingBootstrapErrorV1 >> ; type EvaluationPeer = std :: thread :: JoinHandle < anyhow :: Result <"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+    "op": "delete",
+    "before_range": [
+      693,
+      694
+    ],
+    "after_range": [
+      693,
+      693
+    ],
+    "before": [
+      "{"
+    ],
+    "after": [],
+    "before_context": "< ( ) > { use super :: super :: evaluation_provider :: fresh_training :: { BorrowedOriginalObjective , CompletedTrainingInputs , } ; let mut fixture = Box :: pin (",
+    "after_context": "< ( ) > { use super :: super :: evaluation_provider :: fresh_training :: BorrowedOriginalObjective ; use super :: super :: evaluation_provider :: fresh_training :: CompletedTrainingInputs ; let"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+    "op": "replace",
+    "before_range": [
+      695,
+      696
+    ],
+    "after_range": [
+      694,
+      704
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      ";",
+      "use",
+      "super",
+      "::",
+      "super",
+      "::",
+      "evaluation_provider",
+      "::",
+      "fresh_training",
+      "::"
+    ],
+    "before_context": ") > { use super :: super :: evaluation_provider :: fresh_training :: { BorrowedOriginalObjective , CompletedTrainingInputs , } ; let mut fixture = Box :: pin ( FreshStages ::",
+    "after_context": "( ) > { use super :: super :: evaluation_provider :: fresh_training :: BorrowedOriginalObjective ; use super :: super :: evaluation_provider :: fresh_training :: CompletedTrainingInputs ; let mut fixture = Box :: pin ( FreshStages :: new ("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+    "op": "delete",
+    "before_range": [
+      697,
+      699
+    ],
+    "after_range": [
+      705,
+      705
+    ],
+    "before": [
+      ",",
+      "}"
+    ],
+    "after": [],
+    "before_context": "{ use super :: super :: evaluation_provider :: fresh_training :: { BorrowedOriginalObjective , CompletedTrainingInputs , } ; let mut fixture = Box :: pin ( FreshStages :: new ( )",
+    "after_context": "fresh_training :: BorrowedOriginalObjective ; use super :: super :: evaluation_provider :: fresh_training :: CompletedTrainingInputs ; let mut fixture = Box :: pin ( FreshStages :: new ( )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "insert",
+    "before_range": [
+      549,
+      549
+    ],
+    "after_range": [
+      549,
+      550
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "let response = match & self . selection { Some ( selection ) => OriginalCircuitRetainedVersionHostV1 :: original_evaluated_next_use_response ( & self . version , selection , self . reader",
+    "after_context": "let response = match & self . selection { Some ( selection ) => { OriginalCircuitRetainedVersionHostV1 :: original_evaluated_next_use_response ( & self . version , selection , self . reader"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "insert",
+    "before_range": [
+      575,
+      575
+    ],
+    "after_range": [
+      576,
+      577
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ". reader . as_ref ( ) , match operation { OriginalVersionLocalReadOperationV1 :: Readback => & NextUseReadPurpose :: Readback , OriginalVersionLocalReadOperationV1 :: CompletionReadiness => & NextUseReadPurpose :: CompletionReadiness ,",
+    "after_context": ". reader . as_ref ( ) , match operation { OriginalVersionLocalReadOperationV1 :: Readback => { & NextUseReadPurpose :: Readback } OriginalVersionLocalReadOperationV1 :: CompletionReadiness => { & NextUseReadPurpose :: CompletionReadiness"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "replace",
+    "before_range": [
+      579,
+      580
+    ],
+    "after_range": [
+      581,
+      582
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "( ) , match operation { OriginalVersionLocalReadOperationV1 :: Readback => & NextUseReadPurpose :: Readback , OriginalVersionLocalReadOperationV1 :: CompletionReadiness => & NextUseReadPurpose :: CompletionReadiness , } , bytes , request_id",
+    "after_context": ") , match operation { OriginalVersionLocalReadOperationV1 :: Readback => { & NextUseReadPurpose :: Readback } OriginalVersionLocalReadOperationV1 :: CompletionReadiness => { & NextUseReadPurpose :: CompletionReadiness } } , bytes ,"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "insert",
+    "before_range": [
+      584,
+      584
+    ],
+    "after_range": [
+      586,
+      587
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "{ OriginalVersionLocalReadOperationV1 :: Readback => & NextUseReadPurpose :: Readback , OriginalVersionLocalReadOperationV1 :: CompletionReadiness => & NextUseReadPurpose :: CompletionReadiness , } , bytes , request_id , ) ? ,",
+    "after_context": "OriginalVersionLocalReadOperationV1 :: Readback => { & NextUseReadPurpose :: Readback } OriginalVersionLocalReadOperationV1 :: CompletionReadiness => { & NextUseReadPurpose :: CompletionReadiness } } , bytes , request_id , ) ? }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "replace",
+    "before_range": [
+      588,
+      589
+    ],
+    "after_range": [
+      591,
+      592
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "=> & NextUseReadPurpose :: Readback , OriginalVersionLocalReadOperationV1 :: CompletionReadiness => & NextUseReadPurpose :: CompletionReadiness , } , bytes , request_id , ) ? , None => { if matches",
+    "after_context": "& NextUseReadPurpose :: Readback } OriginalVersionLocalReadOperationV1 :: CompletionReadiness => { & NextUseReadPurpose :: CompletionReadiness } } , bytes , request_id , ) ? } None => { if matches"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "replace",
+    "before_range": [
+      597,
+      598
+    ],
+    "after_range": [
+      600,
+      601
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": "=> & NextUseReadPurpose :: CompletionReadiness , } , bytes , request_id , ) ? , None => { if matches ! ( operation , OriginalVersionLocalReadOperationV1 :: CompletionReadiness ) {",
+    "after_context": "{ & NextUseReadPurpose :: CompletionReadiness } } , bytes , request_id , ) ? } None => { if matches ! ( operation , OriginalVersionLocalReadOperationV1 :: CompletionReadiness ) {"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "insert",
+    "before_range": [
+      1454,
+      1454
+    ],
+    "after_range": [
+      1459,
+      1460
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "( evaluated . clone_for_original_receipt ( ) , ) . map_err ( | error | Error :: Owner ( crate :: AgentdError :: Invalid ( error . to_string (",
+    "after_context": "( evaluated . clone_for_original_receipt ( ) , ) . map_err ( | error | { Error :: Owner ( crate :: AgentdError :: Invalid ( error . to_string ("
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+    "op": "insert",
+    "before_range": [
+      1471,
+      1471
+    ],
+    "after_range": [
+      1477,
+      1478
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "( crate :: AgentdError :: Invalid ( error . to_string ( ) ) ) ) ? ; let reader = Arc :: clone ( state . selection_reader .",
+    "after_context": "( crate :: AgentdError :: Invalid ( error . to_string ( ) ) ) } ) ? ; let reader = Arc :: clone ( state . selection_reader ."
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "insert",
+    "before_range": [
+      580,
+      580
+    ],
+    "after_range": [
+      579,
+      580
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "cfg ( test ) ] NextUseReadPurpose :: CompletionReadinessDeadlineProbe { end , .. } => ( * end ) . min ( self . end ) , _ =>",
+    "after_context": "cfg ( test ) ] NextUseReadPurpose :: CompletionReadinessDeadlineProbe { end , .. } => { ( * end ) . min ( self . end ) } _ =>"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "replace",
+    "before_range": [
+      591,
+      592
+    ],
+    "after_range": [
+      591,
+      592
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": ".. } => ( * end ) . min ( self . end ) , _ => self . end , } ; for request_id in 1 ..= 128",
+    "after_context": "} => { ( * end ) . min ( self . end ) } _ => self . end , } ; for request_id in 1 ..= 128"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "insert",
+    "before_range": [
+      1041,
+      1041
+    ],
+    "after_range": [
+      1042,
+      1043
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ") ) ? ; let original = match purpose { NextUseReadPurpose :: Readback => OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_response ( reader , bytes , request_id , ) , NextUseReadPurpose ::",
+    "after_context": ") ) ? ; let original = match purpose { NextUseReadPurpose :: Readback => { OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_response ( reader , bytes , request_id , ) } NextUseReadPurpose ::"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "replace",
+    "before_range": [
+      1052,
+      1053
+    ],
+    "after_range": [
+      1054,
+      1055
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": ":: Readback => OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_response ( reader , bytes , request_id , ) , NextUseReadPurpose :: CompletionReadiness => OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id ,",
+    "after_context": "Readback => { OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_response ( reader , bytes , request_id , ) } NextUseReadPurpose :: CompletionReadiness => { OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "insert",
+    "before_range": [
+      1057,
+      1057
+    ],
+    "after_range": [
+      1059,
+      1060
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "original_evaluated_next_use_response ( reader , bytes , request_id , ) , NextUseReadPurpose :: CompletionReadiness => OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) , # [",
+    "after_context": "original_evaluated_next_use_response ( reader , bytes , request_id , ) } NextUseReadPurpose :: CompletionReadiness => { OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) } # ["
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "replace",
+    "before_range": [
+      1068,
+      1069
+    ],
+    "after_range": [
+      1071,
+      1072
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": ":: CompletionReadiness => OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) , # [ cfg ( test ) ] NextUseReadPurpose :: CompletionReadinessDeadlineProbe { .. } =>",
+    "after_context": "CompletionReadiness => { OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) } # [ cfg ( test ) ] NextUseReadPurpose :: CompletionReadinessDeadlineProbe { .. } =>"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "insert",
+    "before_range": [
+      1083,
+      1083
+    ],
+    "after_range": [
+      1086,
+      1087
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "# [ cfg ( test ) ] NextUseReadPurpose :: CompletionReadinessDeadlineProbe { .. } => OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) , } .",
+    "after_context": "# [ cfg ( test ) ] NextUseReadPurpose :: CompletionReadinessDeadlineProbe { .. } => { OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) } } ."
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+    "op": "replace",
+    "before_range": [
+      1094,
+      1095
+    ],
+    "after_range": [
+      1098,
+      1099
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      "}"
+    ],
+    "before_context": ".. } => OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) , } . map_err ( | error | Error :: Owner ( crate :: AgentdError",
+    "after_context": "} => { OriginalCircuitLearningReadOwnerV1 :: original_evaluated_next_use_readiness_response ( reader , bytes , request_id , ) } } . map_err ( | error | Error :: Owner ( crate :: AgentdError"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "op": "insert",
+    "before_range": [
+      1305,
+      1305
+    ],
+    "after_range": [
+      1305,
+      1306
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "{ self . shared_evaluated . as_ref ( ) . map ( | shared | crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 0 ) } ) .",
+    "after_context": "{ self . shared_evaluated . as_ref ( ) . map ( | shared | { crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 0 } ) } )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "op": "insert",
+    "before_range": [
+      1315,
+      1315
+    ],
+    "after_range": [
+      1316,
+      1317
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "( | shared | crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 0 ) } ) . ok_or ( Error :: Unavailable ) , } } fn",
+    "after_context": "| shared | { crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 0 } ) } ) . ok_or ( Error :: Unavailable ) , } } fn"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "op": "insert",
+    "before_range": [
+      1410,
+      1410
+    ],
+    "after_range": [
+      1412,
+      1413
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "{ self . shared_evaluated . as_ref ( ) . map ( | shared | crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 1 ) } ) .",
+    "after_context": "{ self . shared_evaluated . as_ref ( ) . map ( | shared | { crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 1 } ) } )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+    "op": "insert",
+    "before_range": [
+      1420,
+      1420
+    ],
+    "after_range": [
+      1423,
+      1424
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": "( | shared | crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 1 ) } ) . ok_or ( Error :: Unavailable ) , } } pub",
+    "after_context": "| shared | { crate :: OriginalCircuitPublishedEvidenceReadbackV1 :: original_clients ( shared ) . 1 } ) } ) . ok_or ( Error :: Unavailable ) , } } pub"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+    "op": "insert",
+    "before_range": [
+      960,
+      960
+    ],
+    "after_range": [
+      959,
+      960
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": ":: SharedLocalEvaluated ( shared ) => shared . clone ( ) , _ => return Err ( Error :: Binding ( \"original shared local Selector predecessors\" ) ) , } ; let",
+    "after_context": ":: SharedLocalEvaluated ( shared ) => shared . clone ( ) , _ => { return Err ( Error :: Binding ( \"original shared local Selector predecessors\" , ) ) ; } }"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+    "op": "replace",
+    "before_range": [
+      970,
+      971
+    ],
+    "after_range": [
+      971,
+      973
+    ],
+    "before": [
+      ","
+    ],
+    "after": [
+      ";",
+      "}"
+    ],
+    "before_context": ") , _ => return Err ( Error :: Binding ( \"original shared local Selector predecessors\" ) ) , } ; let context = self . context . evaluated . as_ref ( )",
+    "after_context": "_ => { return Err ( Error :: Binding ( \"original shared local Selector predecessors\" , ) ) ; } } ; let context = self . context . evaluated . as_ref ( )"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+    "op": "insert",
+    "before_range": [
+      975,
+      975
+    ],
+    "after_range": [
+      982,
+      983
+    ],
+    "before": [],
+    "after": [
+      "{"
+    ],
+    "before_context": "| s . checked_mul ( 1_000_000_000 ) ) . and_then ( | s | u64 :: try_from ( clock . tv_nsec ) . ok ( ) . and_then",
+    "after_context": "| s . checked_mul ( 1_000_000_000 ) ) . and_then ( | s | { u64 :: try_from ( clock . tv_nsec ) . ok ( ) . and_then"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+    "op": "insert",
+    "before_range": [
+      1000,
+      1000
+    ],
+    "after_range": [
+      1008,
+      1009
+    ],
+    "before": [],
+    "after": [
+      "}"
+    ],
+    "before_context": ") . and_then ( | ns | s . checked_add ( ns ) ) ) . ok_or_else ( || refused ( \"original monotonic clock unavailable\" ) ) }",
+    "after_context": ") . and_then ( | ns | s . checked_add ( ns ) ) } ) . ok_or_else ( || refused ( \"original monotonic clock unavailable\" ) ) }"
+  }
+]

@@ -1,0 +1,170 @@
+{
+  "format": "hepta-root-post307-evidence-publication-proof-v1",
+  "recorded_at_utc": "2026-11-13 09:40:35 UTC",
+  "fixed_cut_at_utc": "2026-11-13 09:29:50 UTC",
+  "published_evidence_head": "04874bbc298638cf20007dff5fe8e250df063196",
+  "sole_parent": "30717b6b66f1a825c6e3113f26ec9732f5aae8c7",
+  "evidence_branch": "codex/utility-eval-evidence-20261112-36fa",
+  "non_forced_compare_and_swap_verified": true,
+  "source_branch": "codex/utility-evidence-closure-20261112-36fa",
+  "source_branch_unchanged": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "sha": "04874bbc298638cf20007dff5fe8e250df063196",
+  "leaf": "7c5e8ffab96880336bc25bc92e27ac086df562cb",
+  "root": "67deb5cb4961000dbae2623ab3538cc4aee3bc4a",
+  "fileCount": 6176,
+  "subdirectories": 878,
+  "recursiveEntries": 7054,
+  "legacyOversizedUnchanged": 31,
+  "preservedOldNonReadme": 5681,
+  "changedPaths": 495,
+  "fixed_new_closed_paths": 490,
+  "unique_fixed_full_get_blobs": 449,
+  "additional_publication_documents": [
+    {
+      "path": "post307-publication-plan-v1/ADDITIONS.json",
+      "sha": "0b13203ed654b8c9f88041b055ab86d3c197bf10",
+      "bytes": 134362,
+      "sha256": "7d68cf6f7c0227f4733771a8842c6646a11837e7e0a6880d5c7916fdcc698918"
+    },
+    {
+      "path": "post307-publication-plan-v1/FULL_GET_AVAILABILITY.json",
+      "sha": "e55660b500d6002f15d703c950553e8feda59b5b",
+      "bytes": 78749,
+      "sha256": "3407bd45c6b8fd44a362ea97e87d8509aa5c16449a7d54365469e9c1934f1494"
+    },
+    {
+      "path": "README.md",
+      "sha": "32efec6d61d2fe69b910b58bb382a6b7bb3127eb",
+      "bytes": 9335,
+      "sha256": "a752e9c59274a0e8e3a445265777dadbea3918cf1a8f1fd66160c10daced89c8"
+    }
+  ],
+  "content_manifest_package": {
+    "encoding": {
+      "bytes": 1214,
+      "git_blob": "8bc647fdb9a42f5864bc3bcedf155c503b6271cc",
+      "name": "ENCODING_MANIFEST.json",
+      "path": "post307-content-manifest-v1/ENCODING_MANIFEST.json",
+      "sha256": "4053c2ba66e445c3aad21390976ac372f6d83631a215bfe598667a33a17f6604"
+    },
+    "expected_final_file_count": 6176,
+    "gzip": {
+      "bytes": 199642,
+      "git_blob": "3c2d140d2b093ce7a7899f44ec7533e6b5543d58",
+      "sha256": "4505fe5cff07f5bf26a18978347e6cc5d6c88a6861184db783a850573e4d09a1"
+    },
+    "parts": [
+      {
+        "bytes": 266193,
+        "decoded_bytes": 199642,
+        "decoded_offset": 0,
+        "decoded_sha256": "4505fe5cff07f5bf26a18978347e6cc5d6c88a6861184db783a850573e4d09a1",
+        "git_blob": "30e3737d3d11ce7471112f1ab4a46e4add1568b6",
+        "name": "CONTENT_MANIFEST.json.gz.part-001.b64",
+        "path": "post307-content-manifest-v1/CONTENT_MANIFEST.json.gz.part-001.b64",
+        "sha256": "bded9a133e4f1fc2c92d9e708bc74c28f5b78c3efe50f357de7e7a19aa955394"
+      }
+    ],
+    "raw": {
+      "bytes": 774672,
+      "git_blob": "9994b26a5aa6533a8a94ad4c368e71e5f9496016",
+      "sha256": "603d4ecacecefa47a556e3be28bab9ac43684f40d8740b0425768a3b50c12624"
+    }
+  },
+  "readme": {
+    "path": "README.md",
+    "sha": "32efec6d61d2fe69b910b58bb382a6b7bb3127eb",
+    "bytes": 9335,
+    "sha256": "a752e9c59274a0e8e3a445265777dadbea3918cf1a8f1fd66160c10daced89c8"
+  },
+  "all_relative_readme_links_resolve": true,
+  "whole_leaf_recursive_full_read": {
+    "bytes": 2113925,
+    "sha256": "75a24fe8fcc5beeb5547be87cdeae8ae674f2c3b986533a3e14dc0edbac5c76b",
+    "truncated": false
+  },
+  "ancestors": [
+    {
+      "key": "evidence",
+      "sha": "26565505144a7a2e4557f019a4e44e93b934fde1",
+      "child": "7c5e8ffab96880336bc25bc92e27ac086df562cb"
+    },
+    {
+      "key": "qa",
+      "sha": "ab0b7bbbdd738fcd7775db520ac6136407b24f52",
+      "child": "26565505144a7a2e4557f019a4e44e93b934fde1"
+    },
+    {
+      "key": "root",
+      "sha": "67deb5cb4961000dbae2623ab3538cc4aee3bc4a",
+      "child": "ab0b7bbbdd738fcd7775db520ac6136407b24f52"
+    }
+  ],
+  "tree_batches": [
+    {
+      "start": 0,
+      "count": 80,
+      "base": "9ff56a57130ed2caae5f367d93b81b3ded6222be",
+      "sha": "ae2fa53067909bbed97ba1ab41f75248cf5dd88d"
+    },
+    {
+      "start": 80,
+      "count": 80,
+      "base": "ae2fa53067909bbed97ba1ab41f75248cf5dd88d",
+      "sha": "eea58953ab49d42586124e66d9596887d1bd07a7"
+    },
+    {
+      "start": 160,
+      "count": 80,
+      "base": "eea58953ab49d42586124e66d9596887d1bd07a7",
+      "sha": "f844dbc9646606b894f01d05afda8955699c7a4c"
+    },
+    {
+      "start": 240,
+      "count": 80,
+      "base": "f844dbc9646606b894f01d05afda8955699c7a4c",
+      "sha": "2528032a1c300cfdaf940c7b722e32c892ce0011"
+    },
+    {
+      "start": 320,
+      "count": 80,
+      "base": "2528032a1c300cfdaf940c7b722e32c892ce0011",
+      "sha": "02022d143b2922ce5e5b77769f5858f6f4a3c109"
+    },
+    {
+      "start": 400,
+      "count": 80,
+      "base": "02022d143b2922ce5e5b77769f5858f6f4a3c109",
+      "sha": "f3188f46bb2d8abc837cbeec2dbb317e1a94d60c"
+    },
+    {
+      "start": 480,
+      "count": 15,
+      "base": "f3188f46bb2d8abc837cbeec2dbb317e1a94d60c",
+      "sha": "7c5e8ffab96880336bc25bc92e27ac086df562cb"
+    }
+  ],
+  "preservation": "All 5681 preceding non-README file paths retain exact Git identities; only README is replaced. The 31 pre-existing over-limit leaves remain unchanged. No new over-limit leaf was introduced.",
+  "manifest_roundtrip": "Original raw JSON equals decompressed concatenated ASCII parts; raw/gzip/part three-part identities and exact full map checked. Only bounded ASCII representation and encoding manifest uploaded, not the large raw/gzip blobs.",
+  "local_packaging_diagnostic": "First local roundtrip check mistakenly subscripted a Path after producing the correct package; the corrected independent read-only verification checked all raw/gzip/part pins and exact roundtrip. No H or source mutation.",
+  "actual_source_object_availability_review": "a6e4ea4d887da846f38897568a635b1e1718124d",
+  "actual_runtime_root_closure": "5b4c9e41062feca6afc6d2d952322c4533e58e11",
+  "pr": {
+    "number": 6203,
+    "state": "open",
+    "draft": true,
+    "head": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "body": {
+      "sha": "29ad26c34eb322db010486ef8a0afb7656ee936b",
+      "bytes": 38114,
+      "sha256": "5cb6cbe4ea6c2db1347fa01c67202387f88932acd56c5033fb558142aafff2f3"
+    },
+    "body_full_readback_equal": true,
+    "prior_body_retained_verbatim": true,
+    "merged": false
+  },
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "new_H_execution_authorized": false,
+  "scope": "Evidence-only branch advance and draft PR metadata update. The actual fmt operation is complete; current-source compilation, final source gates, real task-chain and normal Root-host integration remain unqualified."
+}

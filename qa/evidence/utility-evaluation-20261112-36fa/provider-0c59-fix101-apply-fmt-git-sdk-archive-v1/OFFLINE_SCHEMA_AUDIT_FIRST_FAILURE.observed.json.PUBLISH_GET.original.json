@@ -1,0 +1,12 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\n  \"actual_observed_failure\": \"NameError: name pathlib is not defined in the isolated pure actual_leaf_map namespace, after the frozen failed-producer parser completed\",\n  \"previous_helper\": {\n    \"bytes\": 6357,\n    \"sha256\": \"25f0fd4f75698d2e9352a9c2ef592e3f1b4861b7bc9d293e8cda2437968f4785\"\n  },\n  \"repair\": \"Add only pathlib to the offline pure-helper namespace. Preserve the original helper file; no change to the frozen HOLD control, inputs or native state.\",\n  \"scope\": \"Offline audit helper only, not the HOLD driver or native runtime\"\n}\n"
+  },
+  "isError": false
+}

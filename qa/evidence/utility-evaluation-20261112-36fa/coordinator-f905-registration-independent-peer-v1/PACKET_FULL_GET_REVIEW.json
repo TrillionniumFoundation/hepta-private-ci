@@ -1,0 +1,50 @@
+{
+  "complete_original_local_packet_equal": true,
+  "format": "hepta-independent-complete-registration-packet-transport-v1",
+  "gzip": {
+    "bytes": 1138698,
+    "git_blob": "9a63080877b6c9b484bdb1361688667d8ac15058",
+    "sha256": "e8b855b2ace714d8c9261bf3f88b13ce40ab95080617b3806e0428d462f7f494"
+  },
+  "manifest": {
+    "bytes": 9818,
+    "git_blob": "28be71e6550d160bb4046c2d2cedd25887bb3643",
+    "sha256": "11b65d480a76498b13cad607f3007a853ba0703fd307676c5bd2949f339f6a6f"
+  },
+  "parts": [
+    {
+      "actual_full_get_equal": true,
+      "bytes": 409600,
+      "git_blob": "c7c12739a81efa0c958eff65eed95ee213d5e0ff",
+      "name": "SOURCE_PACKET.json.gz.part-001.b64",
+      "sha256": "b09bd3fa8a07332a83bec3a091a7e0df315bb93d704c4c455944d3dae6dc8601"
+    },
+    {
+      "actual_full_get_equal": true,
+      "bytes": 409600,
+      "git_blob": "564fec9a6f1876f6d5cc242aa0642a22f525fb58",
+      "name": "SOURCE_PACKET.json.gz.part-002.b64",
+      "sha256": "2cc5a1fbd2de9a5038710606e2ad1a441b6660add702b6ced9cfbb5bd0ab9ae5"
+    },
+    {
+      "actual_full_get_equal": true,
+      "bytes": 409600,
+      "git_blob": "b4db031cd3599e7bcc7ebdb577b8074cb4d4a7c1",
+      "name": "SOURCE_PACKET.json.gz.part-003.b64",
+      "sha256": "bfcf27a226a9d4fc0894f00c2d2c952f9ff28c0d5cf5fc194824ba86ca07e66d"
+    },
+    {
+      "actual_full_get_equal": true,
+      "bytes": 289464,
+      "git_blob": "18dbed5fb97c63be936597077c392f46a4aa630e",
+      "name": "SOURCE_PACKET.json.gz.part-004.b64",
+      "sha256": "dacc23ad85f0e3d8463eb82116bed3d1719fb3974b4b6ac17e7c111e0b85dc55"
+    }
+  ],
+  "raw": {
+    "bytes": 6316265,
+    "git_blob": "e01b6c1689e1d834701a0d4565c5da662936ea80",
+    "sha256": "6c9f1ae9ea4cd4f98b6d14ef628c1121b88dc2b27775f6e5867e2cb4bf6cd7c5"
+  },
+  "scope": "Independent full Git GET + strict individual chunk decode and exact gzip/raw equality. No native read, source edit or gate invocation."
+}

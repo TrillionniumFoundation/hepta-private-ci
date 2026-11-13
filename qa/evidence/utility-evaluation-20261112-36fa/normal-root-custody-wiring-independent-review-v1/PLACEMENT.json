@@ -1,0 +1,73 @@
+{
+  "schema": "hepta-evidence-placement-v1",
+  "group": "normal-root-custody-wiring-independent-review-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "scope": "Bounded read-only normal Root host wiring audit over 34 actual f905 source bytes and three prepared coordinator sources; no deployed assembly or qualification claim.",
+  "payload_count": 6,
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 18279,
+      "sha256": "11fbd66a526ce061922e97f28796185163912a56b968757fe5922862afac0ff6",
+      "git_blob": "301ac7b630d378729010ddef119a29c5b8865e1c",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-wiring-audit-v1/REVIEW.json",
+      "path": "normal-root-custody-wiring-independent-review-v1/REVIEW.json"
+    },
+    {
+      "name": "SOURCE_AND_ENTRY_PROOF.json",
+      "bytes": 26327,
+      "sha256": "bcbabdd80738a03e67511336beab1eecf8803cd537bf329363498e0b8c15a252",
+      "git_blob": "ce666415ef00dfba3fe43513561e6ff736c1fa74",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-wiring-audit-v1/SOURCE_AND_ENTRY_PROOF.json",
+      "path": "normal-root-custody-wiring-independent-review-v1/SOURCE_AND_ENTRY_PROOF.json"
+    },
+    {
+      "name": "verify_source_and_entry.py",
+      "bytes": 7372,
+      "sha256": "c0f408dc58b9812b95fc2df45bed592df58d971bcf41fea49855b242cb8f64b0",
+      "git_blob": "ff9b1ab23c7c8249b8b2f481989d990790aff25f",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-wiring-audit-v1/verify_source_and_entry.py",
+      "path": "normal-root-custody-wiring-independent-review-v1/verify_source_and_entry.py"
+    },
+    {
+      "name": "SOURCE_FULL_GET_OBSERVATIONS.json",
+      "bytes": 16717,
+      "sha256": "8f30cec683d4b825cb746ed82133bc26ed9ac96ab604012290419b40210432aa",
+      "git_blob": "5830d353749d9deac7d5557387c52f14cc5b438e",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-wiring-audit-v1/SOURCE_FULL_GET_OBSERVATIONS.json",
+      "path": "normal-root-custody-wiring-independent-review-v1/SOURCE_FULL_GET_OBSERVATIONS.json"
+    },
+    {
+      "name": "ACTUAL_GIT_FULL_READBACK.json",
+      "bytes": 1506,
+      "sha256": "48c710aa789e15a7f76486d516aefb97dc560a3fa1618ed8b02805875db30fa2",
+      "git_blob": "7396ec9d8b2cdbf4a516a00048271b8e1eabeeff",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-wiring-audit-v1/ACTUAL_GIT_FULL_READBACK.json",
+      "path": "normal-root-custody-wiring-independent-review-v1/ACTUAL_GIT_FULL_READBACK.json"
+    },
+    {
+      "name": "MANIFEST.json",
+      "bytes": 1846,
+      "sha256": "862b4427d8766e0acd41c0e5e0994fcab2548ec727f980f2b806cf29ceedb335",
+      "git_blob": "08fed7e002815a2a99e41a27fc8d443b3f851d43",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-wiring-audit-v1/MANIFEST.json",
+      "path": "normal-root-custody-wiring-independent-review-v1/MANIFEST.json"
+    }
+  ],
+  "self_included": false,
+  "self_note": "This placement is independently created and fully fetched after all listed payloads; its own identity is delivered separately, avoiding a self-hash cycle.",
+  "no_source_or_ref_changes": true,
+  "qualification": false
+}

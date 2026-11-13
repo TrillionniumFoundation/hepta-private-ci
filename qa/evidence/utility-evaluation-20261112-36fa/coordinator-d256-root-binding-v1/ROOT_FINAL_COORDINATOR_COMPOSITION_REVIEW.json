@@ -1,0 +1,182 @@
+{
+  "H_calls": 0,
+  "actual_f905_inventory": {
+    "bytes": 5634549,
+    "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+    "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+  },
+  "actual_retained_transitions": [
+    {
+      "packet": {
+        "bytes": 2175219,
+        "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+        "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+      },
+      "paths": 62
+    },
+    {
+      "packet": {
+        "bytes": 36709,
+        "git_blob": "786b5872a8064d18f6d391b82c7af3813541c0c1",
+        "sha256": "f03d11da7482d4a45e1c92459001b3d3e35a375ded269fb26d634e407cb62d00"
+      },
+      "paths": 1
+    }
+  ],
+  "all_other_source_rows_preserved": true,
+  "base_inventory": {
+    "bytes": 5611184,
+    "git_blob": "7f94788b70546a8b8030dfd2b9182a7d9287c537",
+    "sha256": "13d3efc000a6f1ae9e15d18e5d3cab27722062c27f3524f4ddd7e32f418fceb9"
+  },
+  "changed_directory_trees": 10,
+  "counts": {
+    "files": 15243,
+    "kinds": {
+      "file": 15242,
+      "symlink": 1
+    },
+    "modes": {
+      "100644": 15152,
+      "100755": 90,
+      "120000": 1
+    },
+    "rust_all_repository": 6794,
+    "rust_outside_codex_rs": 122,
+    "rust_under_codex_rs": 6672,
+    "unique_blob_objects": 14665
+  },
+  "covered_paths": 119,
+  "deletions": [],
+  "final_graph": {
+    "bytes": 3818494,
+    "git_blob": "097282896b5881614498faf2231e4c8c0da393c3",
+    "sha256": "41e1924454c39e21d46f4dddde2cc61a654f462cd82e8a6b659f46fa8e3eae4a"
+  },
+  "final_overlay": {
+    "bytes": 105977,
+    "git_blob": "9f6949a4b9fd6573f694ae20aa130453bebae00c",
+    "sha256": "596737fbcb5029ac655b05923113376bbdc94aa4959270a5113a741bc0d176a3"
+  },
+  "format": "hepta-root-independent-final-candidate-composition-review-v1",
+  "full_bounded_bundle_roundtrips": [
+    {
+      "gzip": {
+        "bytes": 1174526,
+        "git_blob": "0b9d7e8b64676277dffbe39c18696769f7df0338",
+        "sha256": "99d894c4e62a3d5b832572f5937211093f7c47a332d375c45fcae3c6fbbc47a1"
+      },
+      "name": "CANDIDATE_FILE_GRAPH.json",
+      "parts": 4,
+      "raw": {
+        "bytes": 3818494,
+        "git_blob": "097282896b5881614498faf2231e4c8c0da393c3",
+        "sha256": "41e1924454c39e21d46f4dddde2cc61a654f462cd82e8a6b659f46fa8e3eae4a"
+      }
+    },
+    {
+      "gzip": {
+        "bytes": 104810,
+        "git_blob": "f2bef1701086b4269d62e84988afbce9388d6c7f",
+        "sha256": "71bc4a23af82f1d0111b68b08d5547e46b5554712cdd0fddbabc7d619ad03c67"
+      },
+      "name": "TREE_OBJECT_PLAN.json",
+      "parts": 1,
+      "raw": {
+        "bytes": 407107,
+        "git_blob": "2a4a3f3330ac032e7e3d09c74e02f4449450dde5",
+        "sha256": "74e50ce0879c24d20b894247c2c1705b2e00e1474d50e50e58e938dcf1889bd0"
+      }
+    },
+    {
+      "gzip": {
+        "bytes": 1138698,
+        "git_blob": "9a63080877b6c9b484bdb1361688667d8ac15058",
+        "sha256": "e8b855b2ace714d8c9261bf3f88b13ce40ab95080617b3806e0428d462f7f494"
+      },
+      "name": "SOURCE_PACKET",
+      "parts": 4,
+      "raw": {
+        "bytes": 6316265,
+        "git_blob": "e01b6c1689e1d834701a0d4565c5da662936ea80",
+        "sha256": "6c9f1ae9ea4cd4f98b6d14ef628c1121b88dc2b27775f6e5867e2cb4bf6cd7c5"
+      }
+    },
+    {
+      "gzip": {
+        "bytes": 49344,
+        "git_blob": "c974013c05a8276d2f8f91356d096e5b77f1cc23",
+        "sha256": "a7edfcfd897638f5b49f359bf73dd4ece5fe1781bea4df762c44eaa41c1c1159"
+      },
+      "name": "FORMATTED_GUARD_REFRESH",
+      "parts": 1,
+      "raw": {
+        "bytes": 985234,
+        "git_blob": "649aae35a855ffc4278f5f660dd43d88e1c91799",
+        "sha256": "4a10dc001a2ac8c981938c1af10542a7a28be35fef3824282dd17f4e1a22c0ca"
+      }
+    }
+  ],
+  "full_source_tree": "a489b394666b8141840275128a780605b024cde0",
+  "layers": [
+    {
+      "packet": {
+        "bytes": 330014,
+        "git_blob": "773d67128190fd2e1c3271c372f72e2a5537d1e8",
+        "sha256": "2f5471dd1c66d764d5d577449a0cf7db9ac6a1c0fbdb3ae462159b362369c87f"
+      },
+      "path_count": 9,
+      "resulting_tree": "a0bd2241a3a005b68a4682a339d2be016fa3fa72"
+    },
+    {
+      "packet": {
+        "bytes": 74256,
+        "git_blob": "5279a43b99aa7031343578a21dba895f5eac3188",
+        "sha256": "9d114291af1408792b6c64413b216ff3c1264865c5aa560715a529e29fbe00a8"
+      },
+      "path_count": 3,
+      "resulting_tree": "2b423171ef3f1057ebaa081daf3ce42b78f467d7"
+    },
+    {
+      "packet": {
+        "bytes": 6316265,
+        "git_blob": "e01b6c1689e1d834701a0d4565c5da662936ea80",
+        "sha256": "6c9f1ae9ea4cd4f98b6d14ef628c1121b88dc2b27775f6e5867e2cb4bf6cd7c5"
+      },
+      "path_count": 7,
+      "resulting_tree": "a489b394666b8141840275128a780605b024cde0"
+    }
+  ],
+  "normal_root_host_wiring_complete": false,
+  "old_overlay": {
+    "bytes": 54410,
+    "git_blob": "148e9efc242f3ee3ee4e525281ec170feecf3f19",
+    "sha256": "ba2b642c5e1014fffa1151cca87e1b516c255f8d5ef549c633ce3f73fb615e57"
+  },
+  "qualification": false,
+  "real_authorized_task_chains": 0,
+  "root_verifier_diagnostic_history": [
+    "Initial independent coverage union omitted the retained actual fix witness; assertion stopped. Corrected by verifying and including both original actual transition packets. No project source, H request, or evidence result was altered."
+  ],
+  "source_ref_writes": 0,
+  "status": "EXACT_IMMUTABLE_SOURCE_COMPOSITION_VERIFIED_NOT_EXECUTED",
+  "tests_executed": 0,
+  "tree_plan": {
+    "bytes": 407107,
+    "git_blob": "2a4a3f3330ac032e7e3d09c74e02f4449450dde5",
+    "sha256": "74e50ce0879c24d20b894247c2c1705b2e00e1474d50e50e58e938dcf1889bd0"
+  },
+  "unchanged_directory_trees": 1839,
+  "updates": {
+    "cc57": {
+      "added": 55,
+      "count": 118,
+      "modified": 63
+    },
+    "f905": {
+      "added": 6,
+      "count": 16,
+      "modified": 10
+    }
+  }
+}

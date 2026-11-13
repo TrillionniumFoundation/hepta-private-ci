@@ -1,0 +1,40 @@
+{
+  "entries": [
+    {
+      "bytes": 10978,
+      "git_blob": "b90584055478ffe6d9c20f585349753b361784c7",
+      "name": "REVIEW.json",
+      "sha256": "baa235aa436c522030b9cc3049eaa25be76a4be05e81176b34055812ffe8babd"
+    },
+    {
+      "bytes": 389989,
+      "git_blob": "b84c6853a31996e21df55d2f9239e4e29387e0fd",
+      "name": "FROZEN_REGISTRATION_BYTE_AND_SCOPE_REVIEW.json",
+      "sha256": "8fcea20afef2070dc83583e11807567bff29a607abe3b49f273d3b1eb999f237"
+    },
+    {
+      "bytes": 29806,
+      "git_blob": "28638e0eb2f994c6dc4cb237bb3120b30f9486d4",
+      "name": "verify_frozen_registration.py",
+      "sha256": "7cfab37845ba2957088100391a95acb89e9614801cbc6e908a2b4dea774f6f6e"
+    },
+    {
+      "bytes": 1912,
+      "git_blob": "53a1d5575b22fc2d974c0493ae34093cdf8a339c",
+      "name": "PACKET_FULL_GET_REVIEW.json",
+      "sha256": "10e9865dd49820649e7473e0138369017e9a8272a5dc9ea25a02608c3c38cf6a"
+    },
+    {
+      "bytes": 1558,
+      "git_blob": "49a1594528820c17af83e0c9a9f9eba091709051",
+      "name": "ACTUAL_GIT_FULL_READBACK.json",
+      "sha256": "1437bb492865bddb1f94418f109e6bd74628877bd72570f6d132aaaa6ac01a77"
+    }
+  ],
+  "format": "hepta-independent-review-manifest-v1",
+  "group": "coordinator-f905-registration-independent-peer-v1",
+  "max_payload_bytes": 512000,
+  "metadata_no_self_reference": true,
+  "scope": "Frozen seven nonRust files only; pure expected graph and static source scopes. No main/gates/QA/Rust/H execution or source/ref edits.",
+  "source_packet_transport": "Four actual full-GET encoded parts; exact raw identity e01b6c1689e1d834701a0d4565c5da662936ea80, not standalone raw blob upload."
+}

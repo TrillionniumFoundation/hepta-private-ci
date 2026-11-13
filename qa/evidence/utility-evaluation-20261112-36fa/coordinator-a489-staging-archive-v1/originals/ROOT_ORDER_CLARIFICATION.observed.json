@@ -1,0 +1,17 @@
+{
+  "format": "hepta-parent-instruction-observation-v1",
+  "sender": "/root",
+  "approval_git_blob": "a395a49b15c861be88d4e4e49f1e03557470ca55",
+  "instruction": "For each clearly successful fixed write, exact original WRITE SDK size/SHA/mode is enough to proceed to the next frozen write and then the approved main. No additional external full download is required. The unchanged driver load_provided_input/read_input/final_inputs must fully read and audit all five actual parts, including ownership/mode/link-count/stability/raw/gzip/pins. Unknown or mismatching writes stop dependent actions and are reconciled only at the same fixed path/version.",
+  "already_completed_external_full_readbacks": [
+    1,
+    2
+  ],
+  "remaining_external_full_readbacks_not_claimed": [
+    3,
+    4,
+    5
+  ],
+  "frozen_requests_changed": false,
+  "driver_changed": false
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "hepta-evidence-placement-v1",
+  "group": "normal-root-custody-feasibility-memo-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "scope": "Short static feasibility memo supplementing 301ac7 host wiring review. Four new exact source reads; no source/H/gate/ref action or deployment approval.",
+  "payload_count": 3,
+  "entries": [
+    {
+      "name": "MEMO.json",
+      "bytes": 8826,
+      "sha256": "17e7f4738d818d2dbd6f1db1de6e0e63b600dff240abd24ab4f92083936be01a",
+      "git_blob": "e0fc0094fc489637e0b83c32c9ccdcf8053b293c",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "path": "normal-root-custody-feasibility-memo-v1/MEMO.json",
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-feasibility-memo-v1/MEMO.json"
+    },
+    {
+      "name": "ADDITIONAL_INPUT_PROOF.json",
+      "bytes": 1638,
+      "sha256": "4ab455b0857bddbd7d11fe716a33c6a1cd6c92011860f83084f50331c54657b7",
+      "git_blob": "c7aa27f2e916aeb5ae4377b3b9d534c9469282d3",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "path": "normal-root-custody-feasibility-memo-v1/ADDITIONAL_INPUT_PROOF.json",
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-feasibility-memo-v1/ADDITIONAL_INPUT_PROOF.json"
+    },
+    {
+      "name": "verify_inputs.py",
+      "bytes": 2726,
+      "sha256": "803d3468858e4396e467d66de4ca0d5e26ffd2715502116b37a18536f1595bb9",
+      "git_blob": "40355ba8393cfc4de6be3b3036f81ce5a19a974a",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "path": "normal-root-custody-feasibility-memo-v1/verify_inputs.py",
+      "local_path": "/tmp/hepta-36fa-normal-root-custody-feasibility-memo-v1/verify_inputs.py"
+    }
+  ],
+  "self_included": false,
+  "scope_note": "Original source blobs are already Git-backed inputs, not copied evidence leaves. Original SDK responses are retained locally under github/; this placement does not claim those SDK files as published payloads."
+}

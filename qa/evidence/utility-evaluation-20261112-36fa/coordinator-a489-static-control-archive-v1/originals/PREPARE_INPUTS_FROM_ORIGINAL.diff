@@ -1,0 +1,92 @@
+--- original/prepare_inputs.py
++++ successor/prepare_inputs.HOLD.py
+@@ -5,14 +5,16 @@
+ 
+ HERE = pathlib.Path(__file__).resolve().parent
+ OLD = pathlib.Path('/tmp/hepta-36fa-c0f-format-base-recovery-v1')
+-GRAPH = pathlib.Path('/tmp/hepta-36fa-full-candidate-graph-v1')
+-OVERLAY = pathlib.Path('/tmp/hepta-36fa-at-b-composed-candidate-v1')
++GRAPH = pathlib.Path('/tmp/hepta-36fa-coordinator-final-candidate-graph-v1')
++OVERLAY = GRAPH
+ DONOR = '/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1'
+-TARGET = '/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1'
+-CONTROL = '/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-isolated-materialization-v1'
+-STAGING_PREFIX = '/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-materialization-v1'
+-DEST_HEAD = '0c59aaca0b4932507f068c723f73da2f96729b3d'
+-DEST_TREE = '4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09'
++TARGET = '/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1'
++CONTROL = '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1'
++STAGING_PREFIX = '/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1'
++COMMIT_BINDING = json.loads((HERE / 'CANDIDATE_COMMIT_BINDING.json').read_bytes())
++DEST_HEAD = COMMIT_BINDING['commit']
++assert isinstance(DEST_HEAD, str) and len(DEST_HEAD) == 40 and DEST_HEAD != 'cc57c7198db6293ccca562253c42fffbe2a04633'
++DEST_TREE = 'a489b394666b8141840275128a780605b024cde0'
+ MAX_PART = 524288
+ 
+ def check(value, label):
+@@ -63,7 +65,7 @@
+ overlay_raw = (OVERLAY / 'EXACT_COMPOSED_OVERLAY.json').read_bytes()
+ overlay = json.loads(overlay_raw)
+ coverage = sorted(overlay['rust_files'] + overlay['non_rust_prepared'], key=lambda row: os.fsencode(row['path']))
+-check(len(coverage) == 110 and len({row['path'] for row in coverage}) == 110, 'exact frozen overlay coverage')
++check(len(coverage) == 119 and len({row['path'] for row in coverage}) == 119, 'exact frozen overlay coverage')
+ check(overlay['canonical_source_deletions'] == overlay['materializer_delete_operations'] == [], 'no canonical deletion')
+ 
+ rows = []
+@@ -74,7 +76,7 @@
+                  'sha256': row['sha256'], 'stable': True, 'working_blob': row['git_blob']})
+ rows.sort(key=lambda row: os.fsencode(row['path']))
+ target_by_path = {row['path']: row for row in rows}
+-check(len(rows) == len(target_by_path) == 15237 and set(donor_by_path) <= set(target_by_path), 'complete expected candidate membership')
++check(len(rows) == len(target_by_path) == 15243 and set(donor_by_path) <= set(target_by_path), 'complete expected candidate membership')
+ changes, provided = [], {}
+ for covered in coverage:
+     row = target_by_path[covered['path']]
+@@ -90,23 +92,24 @@
+         provided[item['sha']] = item
+ for path in set(donor_by_path) - {row['path'] for row in changes}:
+     check(target_by_path[path] == donor_by_path[path], 'every uncovered canonical leaf unchanged')
+-check(len(provided) == 109, '109 actual changed-or-new distinct blob bodies')
++check(len(provided) == 118, '118 actual changed-or-new distinct blob bodies')
+ target_root, target_trees = tree_objects(rows)
+ donor_root, donor_trees = tree_objects(donor['files'])
+ check(target_root == DEST_TREE and donor_root == seed['current']['tree'], 'independent exact Merkle roots')
+ tree_plan = json.loads((GRAPH / 'TREE_OBJECT_PLAN.json').read_bytes())
+ changed_trees = {key: raw for key, raw in target_trees.items() if key not in donor_trees}
+-check(len(changed_trees) == len(tree_plan['objects']) == 10, 'exact candidate new tree scope')
+-for item in tree_plan['objects']:
++check(len(changed_trees) == len(tree_plan['trees']) == 10, 'exact candidate new tree scope')
++for item in tree_plan['trees']:
+     raw = base64.b64decode(item['raw_base64'], validate=True)
+-    check(raw == changed_trees[item['expected_git_tree']] and len(raw) == item['raw_bytes'] and sha256(raw) == item['raw_sha256'], 'complete original candidate tree body')
++    check(raw == changed_trees[item['sha']] and pin(raw) == item['raw'], 'complete original candidate tree body')
+     given = obj('tree', raw)
+     provided[given['sha']] = given
+ commit_raw = (HERE / 'CANDIDATE_COMMIT.raw.txt').read_bytes()
+ commit = obj('commit', commit_raw)
+-check(commit['sha'] == DEST_HEAD and commit['bytes'] == 731 and commit['sha256'] == '291212c82bd82e80ff598d1261b1041e467e4e7a31fa6fda13ba9db1bec68623', 'actual typed candidate commit bytes')
++check(commit['sha'] == DEST_HEAD and pin(commit_raw) == COMMIT_BINDING['raw'], 'actual typed candidate commit bytes')
++check(commit_raw.split(b'\n', 1)[0] == ('tree ' + DEST_TREE).encode() and [line[7:].decode() for line in commit_raw.split(b'\n\n', 1)[0].split(b'\n') if line.startswith(b'parent ')] == [seed['current']['commit']], 'actual tree and sole clean-donor parent')
+ provided[DEST_HEAD] = commit
+-check(len(provided) == 120, 'exact 109 blobs 10 trees one commit')
++check(len(provided) == 129, 'exact 118 blobs 10 trees one commit')
+ candidate_input = {'format': 'hepta-reviewed-candidate-source-object-input-v1', 'qualification': False, 'native_execution': False,
+     'donor_commit': seed['current']['commit'], 'candidate_commit': DEST_HEAD, 'candidate_tree': DEST_TREE, 'candidate_parents': [seed['current']['commit']],
+     'reviewed_overlay': pin(overlay_raw), 'complete_leaf_graph': pin(leaf_graph_raw), 'canonical_source_deletions': [],
+@@ -194,13 +197,13 @@
+                    'provided_objects': 83, 'required_donor_objects': 16011, 'leaf_projection': pin(base_projection)},
+     'object_scope': {'format': 'four-complete-snapshots-not-full-ancestry',
+                     'complete_snapshot_commits': [DEST_HEAD, seed['current']['commit'], seed['parent_snapshot']['commit'], base_input['base']['commit']],
+-                    'reused_donor_objects': 16449, 'provided_base_objects': 83, 'provided_candidate_objects': 120,
++                    'reused_donor_objects': 16449, 'provided_base_objects': 83, 'provided_candidate_objects': 129,
+                     'provided_base_candidate_overlap': base_candidate_overlap,
+                     'union_objects': len(existing), 'counts': counts,
+                     'unmaterialized_parent_boundaries': ['9c4a11f61d30e9cc352bf44d56c98909d202a55d', *base_input['base']['parents']],
+                     'no_network': True, 'no_fsck': True, 'no_recursive_ancestor_walk': True},
+-    'overlay': {'identity': pin(overlay_raw), 'covered_paths': 110, 'new_paths': 49, 'modified_paths': 60, 'unchanged_covered_paths': 1,
+-                'canonical_source_deletions': [], 'rust_under_codex_rs': 6666, 'rust_all_repository': 6788},
++    'overlay': {'identity': pin(overlay_raw), 'covered_paths': 119, 'new_paths': 55, 'modified_paths': 63, 'unchanged_covered_paths': 1,
++                'canonical_source_deletions': [], 'rust_under_codex_rs': 6672, 'rust_all_repository': 6794},
+     'expected_not_native_observed': True}
+ packet_identity = write('MATERIALIZATION_PACKET.HOLD.json', encoded(packet))
+ write('EXPECTED_OBJECT_IDENTITIES.json', encoded([{'sha': key, **existing[key]} for key in sorted(existing)]))

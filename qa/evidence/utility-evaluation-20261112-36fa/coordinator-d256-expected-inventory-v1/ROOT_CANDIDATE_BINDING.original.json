@@ -1,0 +1,155 @@
+{
+  "format": "hepta-root-actual-candidate-commit-binding-v1",
+  "qualification": false,
+  "actual_commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+  "actual_tree": "a489b394666b8141840275128a780605b024cde0",
+  "actual_parents": [
+    "cc57c7198db6293ccca562253c42fffbe2a04633"
+  ],
+  "original_source_ref_unchanged": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "candidate_raw": {
+    "bytes": 935,
+    "sha256": "85579383437659a5139e1c5f16d6109ad9931914ef297b4c24a897d576cb0f25",
+    "git_blob": "39f1402eb842b1f005dc69206f1597fc2af0d3f1"
+  },
+  "source_api_full_get": {
+    "bytes": 1911,
+    "sha256": "ddb778d4dde9fa3312dc21b306be2dee6824b44ebb09cac73327b37eac011f4c",
+    "git_blob": "625ea2e9cccd5ba1559af47322338ad3445f7af6"
+  },
+  "actual_tree_full_get": {
+    "git_blob": "4afaafda6946f5ef0f2d56356d924a77017b2ed6",
+    "bytes": 13466,
+    "sha256": "eb5dd458d5b840641449cd1cc5c534b2c8471a5dd318c4c33652ec694343a983"
+  },
+  "complete_graph": {
+    "git_blob": "097282896b5881614498faf2231e4c8c0da393c3",
+    "bytes": 3818494,
+    "sha256": "41e1924454c39e21d46f4dddde2cc61a654f462cd82e8a6b659f46fa8e3eae4a"
+  },
+  "exact_overlay": "9f6949a4b9fd6573f694ae20aa130453bebae00c",
+  "source_availability": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "bytes": 13318,
+      "sha256": "28d1f9a9319d4eaad3455f9d14d83e5f7cef2a7731f5b5dbfbf94ce4a428b059",
+      "git_blob": "bf6cae8fe21f249a6e055b5edd2f69a2a61cafa8",
+      "reused_full_get": true
+    },
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "bytes": 30745,
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee",
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "reused_full_get": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1855845,
+      "sha256": "8c32ce84deefdb06bf98728dae51e287496349fc1abda95ecc96a9ce5599ce5c",
+      "git_blob": "1f53a53349aa18d37a0c7299f2ab9fe94b0de244",
+      "reused_full_get": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "bytes": 15934,
+      "sha256": "5b991c33123276137b0ea3f76efc91cc6521ef5b6564d02ed15671e2c19bddfb",
+      "git_blob": "34aff1e564ea7d6c0b1c9a4cdb7ab46b4660c0dd",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 72389,
+      "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896",
+      "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "bytes": 9428,
+      "sha256": "def4d820837b958a49b0308d4785dd97170a248d40a3fd7c94af8d3031166045",
+      "git_blob": "2861558bc7f9dfe833d70c7d72c5742d4e0f5fdd",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+      "bytes": 2504,
+      "sha256": "f85bd6c3e22b917be0c77b5068d52b2e68d623c28314ea068772b96337328e17",
+      "git_blob": "944a1927f2761000c206d018034b26d01a2ce0df",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+      "bytes": 7974,
+      "sha256": "50476f583779d8698223f0d1d4a9209245fee2277f2c455b0dc238536388cf60",
+      "git_blob": "4eeb2015fef5aa45775fe117903bbdb2d3ac8592",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "bytes": 7843,
+      "sha256": "137c8703d605fb76c06f01a5a89e452bd2c5dc59ac1cb8403732638343a945a0",
+      "git_blob": "31ede1a405c6469508871d672c50a4f000342985",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "bytes": 11301,
+      "sha256": "059076cfd2887eef09b5444f8bad1f875452327def9b72bff492c9cd40080a32",
+      "git_blob": "61b21fa07f57b750c9206f04604759535f5c65c2",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+      "bytes": 8591,
+      "sha256": "0f651b0c3bbf8048c3eba4c4bfc3115d8712e163517a692202c0d857d804d580",
+      "git_blob": "1166c82d9189461a7d8468347c6018cb4239ba40",
+      "reused_full_get": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+      "bytes": 7072,
+      "sha256": "1e08d5dad64b56fe92ab5436be4a7217c0595a6bc90cd0dfbc1b96b559544171",
+      "git_blob": "6cd8470ecba5b966f331fffdea86f0ffdf770c2f",
+      "reused_full_get": false
+    },
+    {
+      "path": "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+      "bytes": 358159,
+      "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7",
+      "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+      "reused_full_get": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "bytes": 102696,
+      "sha256": "caba0dc645261cb5ecb2ae8eb92e10bab92683f6fb9bb399b62a26eabe5360d3",
+      "git_blob": "03ca2b5de52c6982cfe1623885a1675fd3ed74fd",
+      "reused_full_get": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+      "bytes": 17979,
+      "sha256": "84d899d007956d9594b1465152467ecc6ba7eff2fc152a36f3ae83355de89b41",
+      "git_blob": "da9574801cfd3a7ef43232a8bfffe4510099fbad",
+      "reused_full_get": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "bytes": 33253,
+      "sha256": "019a8988beea067db2d71784f5cc4a8516d8830f749c6f6cf47cd7084adb2129",
+      "git_blob": "5a6f9372830e4eee584484b88e53e4ffbf5127d9",
+      "reused_full_get": true
+    }
+  ],
+  "independent_registration_review": "b90584055478ffe6d9c20f585349753b361784c7",
+  "reconstruction": "Canonical complete API tree, ordered parents, original author/committer epoch, previously verified -0500 timezone, complete API message without appended LF. Accepted only after exact typed Git commit hash equals the actual created and independently fetched commit.",
+  "H_calls": 0,
+  "ref_changes": 0,
+  "tests_executed": 0,
+  "real_authorized_task_chains": 0,
+  "verifier_diagnostics": [
+    "Initial Root union check omitted the historical retained fix witness and stopped; both original actual transition packets were subsequently verified and included.",
+    "Second Root pure verifier used after_base64 against original actual-transition schema; KeyError stopped. Corrected to the actual after_raw_base64 field. The final full verifier returned 0; no underlying source or H evidence was modified."
+  ]
+}

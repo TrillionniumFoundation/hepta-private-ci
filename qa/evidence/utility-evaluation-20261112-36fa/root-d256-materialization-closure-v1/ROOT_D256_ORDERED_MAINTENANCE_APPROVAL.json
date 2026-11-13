@@ -1,0 +1,199 @@
+{
+  "format": "hepta-root-d256-exact-ordered-maintenance-engineering-approval-v1",
+  "status": "APPROVED_ONE_EXACT_STAGE_THEN_CONDITIONAL_ONE_EXACT_MAINTENANCE",
+  "issued_utc": "2026-11-13 10:34:03 UTC",
+  "user_authorization": "User requested 全量冲. This is an internal exact engineering review for the already authorized isolated implementation and original validation work; it is not a request for new user permission and supplies no Hepta runtime owner, task grant, observation, outcome, utility definition or qualification.",
+  "sole_executor": "/root/native_ci_audit",
+  "approval_issued": true,
+  "not_runtime_Root_authority": true,
+  "source": {
+    "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "tree": "a489b394666b8141840275128a780605b024cde0",
+    "sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "leaves": 15243,
+    "path": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1"
+  },
+  "actual_materialization": {
+    "job_id": "1a1d468462a-392-3bb",
+    "result": {
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+      "bytes": 14663,
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+    },
+    "normal": {
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+      "bytes": 952,
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+    },
+    "root_runtime_closure": {
+      "git_blob": "f38e3836820315524e7c60dc64f42334f16e4ecb",
+      "bytes": 4660,
+      "sha256": "690e9dd6875846c2b3af39cfa83acf28cae04837433d2ec5d7eb0278bac42862"
+    },
+    "root_actual_index_review": {
+      "git_blob": "32d516ab084499572ad44bf17716fa964691524a",
+      "bytes": 5084,
+      "sha256": "d433934617f8b2822b8f3bb90e1487149e1f5a9ce8b417ab661fda61089b050a"
+    }
+  },
+  "actual_bound_HOLD": {
+    "git_blob": "eb322791ff64a67389b4e37b341bc01c63f3d5cb",
+    "bytes": 13728,
+    "sha256": "63c1f09ffcd3e0cb97dcb0896c2831eb6ad5eb91e1091d66faf7a442c2c06ca8"
+  },
+  "exact_driver": {
+    "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+    "bytes": 68520,
+    "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+  },
+  "execution_config": {
+    "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+    "bytes": 13693,
+    "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+  },
+  "configuration_transition": "Exactly status and root_execution_approved change from the actual-bound HOLD. Every actual proof, native nanosecond integer, historical runtime/V8 proof, budget, input and guard remains unchanged. Candidate historical descriptive HOLD fields are retained preparation metadata; this separately issued record authorizes only the exact sequence below.",
+  "stage": {
+    "request": {
+      "git_blob": "ff0f71fffd7c7ea1c67c510d0a12505d88f598be",
+      "bytes": 150690,
+      "sha256": "8617f71ce7831737cac574d865b4b7ecbba56a9982496e5ebaf5bb1642a8c995"
+    },
+    "bootstrap": {
+      "git_blob": "8329b61e228b19a5a157c546bcba654e323b9881",
+      "bytes": 5646,
+      "sha256": "ad95d6855c2018f2c380ac9e9f6019a575b28f6dae702da7552ab96d0561f88f"
+    },
+    "payload": {
+      "git_blob": "38af59e1726dc519fc331a52aa667c52076ecb82",
+      "bytes": 144642,
+      "sha256": "2a6a855b18213c14e8c402742bc38361c97b48d05e410aec2fd7c2ff71de5c9e"
+    },
+    "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-control-staging-v1",
+    "timeout_seconds": 900,
+    "maximum_starts": 1,
+    "control": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1",
+    "source_writes": false
+  },
+  "main": {
+    "request": {
+      "git_blob": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d",
+      "bytes": 5419,
+      "sha256": "556904e921d6bd61f991711aa9052a1e58d0867038cd00d8645225b9a85bee0e"
+    },
+    "launcher": {
+      "git_blob": "41a4b2cd40cad895afd944573aec29793613632f",
+      "bytes": 4933,
+      "sha256": "eed04ccc9167360b518d8c8fdc16f1fc4c4471edc98988185dcaf1d74e87d740"
+    },
+    "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-v1",
+    "timeout_seconds": 9300,
+    "maximum_starts": 1,
+    "stdin": false,
+    "environment_override": false
+  },
+  "original_commands": {
+    "fix": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "fmt": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ]
+  },
+  "original_budgets_seconds": {
+    "preflight": 600,
+    "fix": 7200,
+    "fmt": 900,
+    "records": 300,
+    "stage_outer": 900,
+    "main_outer": 9300
+  },
+  "original_limits": {
+    "minimum_target_free_bytes": 34359738368,
+    "create_target_if_absent": false,
+    "target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "max_log_bytes": 67108864,
+    "automatic_retry": false
+  },
+  "original_guard_review": {
+    "driver_delta": "Eight fixed substitutions from 3a0f6; 50 of 51 top-level definitions byte-identical; only complete candidate count changes inside validate_materialization. Original process, source, metadata, environment, tool, disk, timeout, evidence and finalizer predicates retained.",
+    "launcher": "Original sole LOCK_EX|LOCK_NB on the same fully observed inode, same nine native stat fields, same descriptor retained across exec. No second lock in driver or stage.",
+    "staging": "Original create-only owned 0700 directory, six exact decoded files, O_EXCL/O_NOFOLLOW, full stable readback/fsync, original 1 MiB bound, no exec or lock."
+  },
+  "root_review": {
+    "all_28_placement_inputs_full_Git_GET_verified": true,
+    "placement": {
+      "git_blob": "716920e1a85a970b3ecc67ff525718ad694b7903",
+      "bytes": 18186,
+      "sha256": "d6cad2aebd7ef91d2577ba88048ec988e64a548bca9bc1ee31d04290d2a01be2"
+    },
+    "read_complete_launcher_and_bootstrap": true,
+    "read_exact_driver_and_config_diffs": true,
+    "actual_native_metadata_never_reserialized_in_JavaScript": true
+  },
+  "independent_reviews": {
+    "HOLD": {
+      "git_blob": "39611d21e6c0d78a1d6ed02c75a80cf3da28d2e4",
+      "bytes": 8849,
+      "sha256": "9a78666af9784f8f895a4de03d3ddf78cea2090dda6dabffb4571ae99cc8734d"
+    },
+    "driver_bytes": {
+      "git_blob": "153a3e0614e5d1207f7e5e694617f595845ea88b",
+      "bytes": 41579,
+      "sha256": "a88b6dd8d31594845c056ee46f4b552e9791a4af49128860145f3237c73ff9a5"
+    },
+    "actual_binding": {
+      "git_blob": "e046efbd0ffcc9d341d4ed2ed5283fbdd62215a4",
+      "bytes": 10446,
+      "sha256": "556b049e061d642ad4d48077c6204eab56edf9b6570f27b57b6bba1a68dd08d3"
+    },
+    "final_semantic": {
+      "git_blob": "ba522986d8d4660ed3872cb8e11f743ff96d55d0",
+      "bytes": 9663,
+      "sha256": "31e1401464b0c9a945a66448090d0c83549b1fe2fea484361082bbfab6bcfa5b"
+    },
+    "final_exact_bytes": {
+      "git_blob": "7e1a2de97a8880fe005ab358e94e14e5fa85c918",
+      "bytes": 15538,
+      "sha256": "0f3f2586dbf4fb56cfd43aaa18a5495a682cc648108c32c8e53646c8faee863d"
+    },
+    "final_script": {
+      "git_blob": "036ec4083c38e81bc916bcbb6c153c80e0326e5c",
+      "bytes": 14677,
+      "sha256": "957aa66bc5a3b9a270d3731c32d88f069e699c1e417250b44de10d26a2f764e1"
+    }
+  },
+  "allowed_order": [
+    "Dispatch the exact fixed stage request once, recording original request, intent, admission and same-job status/streams.",
+    "Require same original stage job normal exit 0, complete durable terminal and untruncated streams. Fully read original STAGING_READBACK plus all nine recorded files (six fixed inputs and actual bootstrap/argv/payload) with complete byte ranges, stable versions and exact declared identities. Preserve native integer fields with Python integers or untouched raw bytes.",
+    "Only after every preceding condition is actually observed, the sole executor may proceed under this same conditional approval to the exact fixed main request once. No extra approval loop is required on an exact complete match; any mismatch, failure or Unknown blocks main.",
+    "The original sole EX launcher and driver must pass all original current preconditions. Run original scoped fix once, followed by original fmt only when original driver permits. Preserve actual logs, postimages, all required audits and original normal; success is not assumed from launch.",
+    "Any incomplete/failed outcome stops dependent source alignment/gates/tests until its concrete actual evidence is reviewed. Actual postimages determine subsequent source registration; do not restore or rewrite old sources/indexes to fit a proof."
+  ],
+  "unknown_result_rule": "Reconcile the same original request, job, fixed key/path and actual version only. No automatic retry, identity rotation, guessed success, replacement directory, overwrite, replacement lock, foreign process kill or evidence-destroying cleanup.",
+  "historical_results": {
+    "old_0c59_fix101": "Remains failed and consumed; this one new-source maintenance is not a retry of that job.",
+    "old_separate_apply_and_fmt": "Preserved as separate old-source engineering evidence; no inherited pass for this d256 maintenance."
+  },
+  "outside_this_approval": [
+    "test dispatch",
+    "source or evidence ref update by the native executor",
+    "old source/index/ref repair",
+    "dependency installation or archive replacement",
+    "merge or deploy",
+    "model activation",
+    "real owner/grant/task generation",
+    "new runtime permission or reward definition"
+  ],
+  "qualification": false,
+  "real_authorized_task_chains": 0
+}

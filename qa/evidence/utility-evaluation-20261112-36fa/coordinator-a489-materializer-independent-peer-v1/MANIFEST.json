@@ -1,0 +1,42 @@
+{
+  "schema": "hepta-independent-review-manifest-v1",
+  "evidence_leaf": "qa/evidence/utility-evaluation-20261112-36fa",
+  "prefix": "coordinator-a489-materializer-independent-peer-v1",
+  "files": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 10967,
+      "sha256": "29e5507f19a982f13133292d34eb9722a107bdf22c3176a6773b82a850003ac0",
+      "git_blob": "0e0891a830afdb43668158f18f6a2e5e1a606dd5",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "FROZEN_BYTE_AND_GUARD_REVIEW.json",
+      "bytes": 25332,
+      "sha256": "f7ad0decc320064477b3ed9774c6c68431f43e3b73d6a0befc598b4bb3e0a3f1",
+      "git_blob": "1c6eb0d0445f00f8e5ad12c9720924d6275cda4d",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "verify_fixed_delta.py",
+      "bytes": 14353,
+      "sha256": "7ab4c72c4343e409c8c4ffa45c6b0d331ec42a485b953cce5b95480975092dd4",
+      "git_blob": "2c22f071e2d1f5c4392176f3431abf5b181987ba",
+      "actual_create": true,
+      "full_get_equal": true
+    },
+    {
+      "name": "ACTUAL_GIT_FULL_READBACK.json",
+      "bytes": 1219,
+      "sha256": "e7ae8ca294094440cbd0673d718eae8a74fdc864b3bd26aaa057bf2df2385578",
+      "git_blob": "7a2eea15561931ff9b7635219b79d7e1974ca9b1",
+      "actual_create": true,
+      "full_get_equal": true
+    }
+  ],
+  "source_or_ref_changes": 0,
+  "qualification": false,
+  "notes": "All listed files have completed actual Git create and full UTF-8 GET equality. Original SDKs are preserved locally; no source code or runtime result is fabricated."
+}

@@ -1,0 +1,144 @@
+{
+  "format": "hepta-a489-maintenance-independent-final-exact-review-v1",
+  "status": "NO_CONCRETE_STATIC_BLOCKER_EXACT_ORDERED_CANDIDATE_READY_FOR_ROOT_DECISION",
+  "scope": "Independent immutable d256/a489 maintenance successor, actual producer-to-consumer binding and exact separate staging/sole-EX-main requests. No H, current native read, source mutation, formatter/Rust/QA execution or ref update.",
+  "references": {
+    "fixed_HOLD_semantic_review": "39611d21e6c0d78a1d6ed02c75a80cf3da28d2e4",
+    "fixed_driver_byte_and_ast_proof": "153a3e0614e5d1207f7e5e694617f595845ea88b",
+    "actual_materialization_binding_proof": "e046efbd0ffcc9d341d4ed2ed5283fbdd62215a4",
+    "exact_launch_byte_proof": "7e1a2de97a8880fe005ab358e94e14e5fa85c918",
+    "preceding_phase_placement": "63f6eac05ecf7d5f2f2f1aed9e2866f09dd19a21",
+    "author_candidate_placement": "716920e1a85a970b3ecc67ff525718ad694b7903"
+  },
+  "exact_subject": {
+    "commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "tree": "a489b394666b8141840275128a780605b024cde0",
+    "sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "leaves": 15243,
+    "driver": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+    "actual_bound_HOLD": "eb322791ff64a67389b4e37b341bc01c63f3d5cb",
+    "candidate_config": "7bddb6c423afbe739bc36a7df2516730911a9337",
+    "stage_request": "ff0f71fffd7c7ea1c67c510d0a12505d88f598be",
+    "main_request": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d",
+    "actual_materialization_job": "1a1d468462a-392-3bb",
+    "actual_materialization_result": "30ab4aad6ff10942063da972e02db49629e3809c",
+    "actual_materialization_normal": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+  },
+  "independent_input_full_GET": [
+    {
+      "name": "stage",
+      "bytes": 150690,
+      "sha256": "8617f71ce7831737cac574d865b4b7ecbba56a9982496e5ebaf5bb1642a8c995",
+      "git_blob": "ff0f71fffd7c7ea1c67c510d0a12505d88f598be",
+      "full_get_equal": true
+    },
+    {
+      "name": "main",
+      "bytes": 5419,
+      "sha256": "556904e921d6bd61f991711aa9052a1e58d0867038cd00d8645225b9a85bee0e",
+      "git_blob": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d",
+      "full_get_equal": true
+    },
+    {
+      "name": "config",
+      "bytes": 13693,
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+      "full_get_equal": true
+    },
+    {
+      "name": "launcher",
+      "bytes": 4933,
+      "sha256": "eed04ccc9167360b518d8c8fdc16f1fc4c4471edc98988185dcaf1d74e87d740",
+      "git_blob": "41a4b2cd40cad895afd944573aec29793613632f",
+      "full_get_equal": true
+    },
+    {
+      "name": "bootstrap",
+      "bytes": 5646,
+      "sha256": "ad95d6855c2018f2c380ac9e9f6019a575b28f6dae702da7552ab96d0561f88f",
+      "git_blob": "8329b61e228b19a5a157c546bcba654e323b9881",
+      "full_get_equal": true
+    },
+    {
+      "name": "payload",
+      "bytes": 144642,
+      "sha256": "2a6a855b18213c14e8c402742bc38361c97b48d05e410aec2fd7c2ff71de5c9e",
+      "git_blob": "38af59e1726dc519fc331a52aa667c52076ecb82",
+      "full_get_equal": true
+    },
+    {
+      "name": "index",
+      "bytes": 4201,
+      "sha256": "17ae5e9670ccea743c66e009362c5f53728d2f865d1b7c7ebbd219c312c5b80a",
+      "git_blob": "66ffc8b9969f30d149647bc83092e539aa899bd7",
+      "full_get_equal": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "L01",
+      "conclusion": "Successor driver remains the independently verified exact eight-substitution delta from3a0f6. Fifty of51 top-level definitions are byte/AST identical. Source identities and15243 leaves plus16661 object union change; runtime histories, c0f base, original source entry pins, complete guards and stage/finalizer behavior do not."
+    },
+    {
+      "id": "L02",
+      "conclusion": "Actual3bb proof is complete for this consumer: same-job normal0; complete RESULT and all three verified materializer audits;40 original commands normal0/no timeout;4 observed mutation records;13 before/final input identities equal;267 original artifacts;full2234-byte/six-file Git metadata and raw/gzip identities;actual2080152-byte index identity. The original consumer schema functions accepted these fixed bytes using memory-only I/O. Future current source/Git/stat checks remain mandatory."
+    },
+    {
+      "id": "L03",
+      "conclusion": "The proposed execution config differs from actual-bound HOLD eb322 in exactly status and root_execution_approved. Reversing those two textual substitutions recovers all13728 original bytes. Actual materialization proof, runtime/archive histories, environment, tool pins, budgets, source identity and lock stat remain byte-equivalent data. formal_approved_config_created=false and historical HOLD explanatory fields intentionally remain as the candidate's retained preparation metadata; these do not substitute for Root's separate engineering approval."
+    },
+    {
+      "id": "L04",
+      "conclusion": "The stage request is150690 bytes with exactly seven original fields; timeout900, desktop host, /usr/bin/python3, args[-B,-c,exact bootstrap], /home/qian-qi cwd and one fresh fixed key. Its144642-byte stdin is exactly the frozen payload. Six strict-base64 decoded files match their declared size/SHA256/Git blob and standalone local frozen bytes; the driver/config/current materialization supervisor change, while inventory driver/historical environment/V8 supervisor are byte-identical to the old request."
+    },
+    {
+      "id": "L05",
+      "conclusion": "Stage bootstrap changes only BASE and PINS. Reversing those assignments restores the entire original bootstrap bytes and AST; all four helper bodies are unchanged. It validates all six decoded inputs before creating the new0700 control directory, refuses an existing directory or symlink parent, uses O_EXCL/O_NOFOLLOW writes, fsyncs and rereads each retained file with nine-field stat continuity and exact body/mode/uid/single-link checks. It records failure and preserves partial files, and neither takes the lock nor execs maintenance. Original1MiB input/request bounds are satisfied without widening."
+    },
+    {
+      "id": "L06",
+      "conclusion": "The main request is5419 bytes with exactly six original fields, no stdin and no environment override; timeout9300, same host/interpreter/cwd, exact launcher code and a distinct fresh fixed main key. Replacing only args/code and key restores the complete original typed request. The stage request likewise restores its original bytes by reversing only code/key/stdin."
+    },
+    {
+      "id": "L07",
+      "conclusion": "Launcher changes are only ROOT, two PINS, lease source_repo and event label. Exact inverse restores old92be launcher bytes/AST; all five helper bodies remain unchanged. It fully verifies the driver/config, rejects an existing run, opens only the existing original lock, compares all nine actual stat fields against the bound proof and requires uid1000/single-link/0600. It calls flock(LOCK_EX|LOCK_NB) exactly once, sets the same descriptor inheritable, saves exact lease/launcher/argv records, then uses the unchanged execv. Driver has no second flock; staging has none."
+    },
+    {
+      "id": "L08",
+      "conclusion": "The same cooperative lock inode50139448/dev2050 is bound to the completed materialization observation. This does not extend lock coverage to noncooperating writers. Original live source/metadata and same-UID active/unreadable process checks remain required before the original stages."
+    },
+    {
+      "id": "L09",
+      "conclusion": "No command or time budget expands: preflight600, one scoped fix7200 for eval/agentd/learning-ledger, only then original fmt900 against c0f78493, shared record budget300 and main outer9300. Target creation remains false with32GiB minimum free space. There are no test or ref actions. Original failure/Unknown handling retains logs/postimages/audits and prevents automatic retries, reset or progression after an incomplete fix."
+    },
+    {
+      "id": "L10",
+      "conclusion": "Root's exact approval must explicitly preserve sequential dispatch: one exact staging request; observe same-job complete normal0 plus original staging receipt and all six input file identities (also bootstrap/argv/payload records); only then one exact main request. A transport Unknown or failed/incomplete stage only permits reconciliation of that original key/job and never permits main or a replacement attempt. Static approval values in the candidate JSON are not execution authorization."
+    }
+  ],
+  "original_proofs_preserved": {
+    "null_proof_HOLD": "e9308cb6cc5e7fd949236ded84f593ec81143795",
+    "actual_bound_HOLD": "eb322791ff64a67389b4e37b341bc01c63f3d5cb",
+    "historical_0c59_fix101_remains_failed": true,
+    "historical_separate_fmt_not_reclassified_as_this_maintenance": true
+  },
+  "verification": {
+    "pure_static_launch_script_completed": true,
+    "full_inverse_config_bootstrap_launcher_typed_bytes": true,
+    "strict_embedded_six_input_decode": true,
+    "original_predicate_memory_dataflow_completed": true,
+    "stage_or_launcher_executed": false,
+    "maintenance_main_executed": false,
+    "H_calls": 0,
+    "source_writes": 0,
+    "ref_writes": 0,
+    "project_gate_or_Rust_runs": 0
+  },
+  "limits": [
+    "This is static engineering review, not a permission grant or a recorded maintenance result.",
+    "No actual staging receipt, maintenance outcome, source qualification, Rust-test outcome or real independent task B is supplied by this review.",
+    "Only original live preconditions can establish the current source/environment/process/lock state at launch."
+  ],
+  "qualification": false
+}

@@ -1,0 +1,33 @@
+{
+  "format": "hepta-exact-fixed-staging-write-intent-v1",
+  "created_utc": "2026-11-13T10:14:28.086756+00:00",
+  "sequence": 3,
+  "approval": {
+    "bytes": 7698,
+    "sha256": "624156a7a015cdde153c39450cfc6838033d7e139d5405d238395803e95cfe7a",
+    "git_blob": "a395a49b15c861be88d4e4e49f1e03557470ca55"
+  },
+  "request": {
+    "bytes": 699256,
+    "git_blob": "b2c336cc5ab2fac26d27c796d75a806c26a8038d",
+    "sha256": "550708c126458c6e1b56aa26593231e85dd1286986cc1cef81557aa9f2f3f9f8"
+  },
+  "host": "desktop",
+  "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-candidate.json.gz.part-001",
+  "expected_version": "absent",
+  "decoded": {
+    "bytes": 524288,
+    "git_blob": "1ebd9707c2f5fcfee377c71e0b4ae6c7cc520cc0",
+    "sha256": "ca09b12f005d3066b4e6f088e7396489b45984123e6cc8fa482943419fe4cce8"
+  },
+  "prior_stage_successful_original_write_sdk": {
+    "name": "STAGE_02.WRITE.original.json",
+    "bytes": 329,
+    "sha256": "91f4d7c648a007f7103d7744f630b965f80966cdfcf3034b1ddebd9c92c4ade7",
+    "git_blob": "867dd6a19500a2f152dbf759d3f296b2613d6ab4"
+  },
+  "original_driver_full_input_audit_still_required": true,
+  "native_call": "h_binary_write",
+  "maximum_invocations": 1,
+  "unknown_rule": "Read only the same fixed path; never repeat this write or change identity."
+}

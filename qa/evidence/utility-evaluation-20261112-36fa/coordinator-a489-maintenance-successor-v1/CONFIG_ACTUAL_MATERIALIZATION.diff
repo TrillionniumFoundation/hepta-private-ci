@@ -1,0 +1,121 @@
+--- original-HOLD-null-proofs
++++ actual-materialization-HOLD
+@@ -31,20 +31,78 @@
+   "preflight_seconds": 600,
+   "record_seconds": 300,
+   "materialization": {
+-    "job_id": null,
++    "job_id": "1a1d468462a-392-3bb",
+     "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json",
+-    "result": null,
++    "result": {
++      "bytes": 14663,
++      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd",
++      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c"
++    },
+     "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/MATERIALIZATION_SUPERVISOR.original.json",
+-    "supervisor": null,
+-    "git_state": null,
+-    "index": null,
+-    "git_metadata": null,
+-    "git_metadata_gzip": null,
++    "supervisor": {
++      "bytes": 952,
++      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
++      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
++    },
++    "git_state": {
++      "config_bytes": 123,
++      "config_sha256": "5e224c2f489801ee7d2f46cf5c4e40261ea686332bac1588d05a5f463c59f84f",
++      "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
++      "head_raw_sha256": "576fb0120bbf996a96f0576d0d28b4efad2b90e69fdb6137defefdc1f59fb619",
++      "index_bytes": 2080152,
++      "index_sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b",
++      "refs_bytes": 0,
++      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "tree": "a489b394666b8141840275128a780605b024cde0"
++    },
++    "index": {
++      "all_actual_stat_fields_verified": true,
++      "all_entry_logical_identities_verified": true,
++      "assume_unchanged_or_skip_worktree_entries": 0,
++      "entries": 15243,
++      "extensions": [
++        {
++          "bytes": 68848,
++          "name": "TREE"
++        }
++      ],
++      "raw": {
++        "bytes": 2080152,
++        "git_blob": "5dfba375a9e88dc0578070f19e90bc25aee6efef",
++        "sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b"
++      }
++    },
++    "git_metadata": {
++      "bytes": 2234,
++      "git_blob": "8d6af319d99c5f9c47e5a7e761c118c5ba2c767b",
++      "sha256": "17530eef584440894d767eec9771201199e6313797bb293122eb20cb7fba6e13"
++    },
++    "git_metadata_gzip": {
++      "bytes": 790,
++      "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6",
++      "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a"
++    },
+     "records": {
+-      "command_records": null,
+-      "mutation_records": null,
+-      "input_records": null,
+-      "artifact_records": null
++      "command_records": {
++        "bytes": 34319,
++        "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2",
++        "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246"
++      },
++      "mutation_records": {
++        "bytes": 744,
++        "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b",
++        "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64"
++      },
++      "input_records": {
++        "bytes": 3326,
++        "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d",
++        "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687"
++      },
++      "artifact_records": {
++        "bytes": 84294,
++        "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603",
++        "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af"
++      }
+     }
+   },
+   "source_inventory": {
+@@ -185,15 +243,25 @@
+     "sha256",
+     "mode"
+   ],
+-  "waiting_for_actual_records": "HOLD. The d256 materialization original job must reach normal terminal and provide complete RESULT, four original records, raw index/Git metadata, coordination and all three final audits. Exact staging and maintenance require separate Root approval. No source qualification is inherited.",
++  "waiting_for_actual_records": "Actual d256 materialization normal/result/four records/raw index/Git metadata/coordination/three audits are bound. This remains HOLD pending Root exact maintenance approval and complete create-only staging. No maintenance or source/native qualification has run for this new candidate.",
+   "formal_approved_config_created": false,
+-  "source_inventory_observation": "Expected source inventory and native projection only at this preparation snapshot; no actual d256 success is claimed. Future configuration must bind the original materialization complete actual pins, and maintenance must reread all current bytes and actual Git-file stat before any fix/fmt.",
++  "source_inventory_observation": "Pre-held complete expected inventory 0463522b... and native projection 69cab8dc... match the actual original materialization RESULT before/after pins. The original producer fully read all source leaves. This is not a second external download of complete inventory bytes. New raw index and Git metadata were actually read from retained producer artifacts; future maintenance must reread all current source/Git bytes and exact metadata again.",
+   "outer_timeout_seconds": 9300,
+   "coordination_lock": {
+     "mode": "LOCK_EX",
+     "path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock",
+     "scope": "cooperating task writers only; full source checks remain mandatory",
+-    "stat": null
++    "stat": {
++      "st_ctime_ns": 1794513889031523889,
++      "st_dev": 2050,
++      "st_gid": 1000,
++      "st_ino": 50139448,
++      "st_mode": 33152,
++      "st_mtime_ns": 1794513889031523889,
++      "st_nlink": 1,
++      "st_size": 0,
++      "st_uid": 1000
++    }
+   },
+   "historical_known_runtime_blockers": {
+     "bytes": 2479,

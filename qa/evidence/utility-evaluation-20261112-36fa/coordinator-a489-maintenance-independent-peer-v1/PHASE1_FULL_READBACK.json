@@ -1,0 +1,54 @@
+{
+  "format": "hepta-a489-maintenance-peer-phase1-full-readback-v1",
+  "scope": "Frozen driver/HOLD and actual-materialization binding only; final execution candidate is not part of this ledger.",
+  "entries": [
+    {
+      "name": "HOLD_REVIEW.json",
+      "bytes": 8849,
+      "sha256": "9a78666af9784f8f895a4de03d3ddf78cea2090dda6dabffb4571ae99cc8734d",
+      "git_blob": "39611d21e6c0d78a1d6ed02c75a80cf3da28d2e4",
+      "actual_create": true,
+      "full_get_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/HOLD_REVIEW.json"
+    },
+    {
+      "name": "FROZEN_HOLD_BYTE_REVIEW.json",
+      "bytes": 41579,
+      "sha256": "a88b6dd8d31594845c056ee46f4b552e9791a4af49128860145f3237c73ff9a5",
+      "git_blob": "153a3e0614e5d1207f7e5e694617f595845ea88b",
+      "actual_create": true,
+      "full_get_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/FROZEN_HOLD_BYTE_REVIEW.json"
+    },
+    {
+      "name": "verify_static_hold.py",
+      "bytes": 15974,
+      "sha256": "6cecee21949bc92a3452d630bad93c45a13fc86f0c7930ca228a07bbee2ab5cb",
+      "git_blob": "9f1af6f756a0dc8592e1616b2c6af8c2f37d8e4b",
+      "actual_create": true,
+      "full_get_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/verify_static_hold.py"
+    },
+    {
+      "name": "ACTUAL_BINDING_BYTE_AND_PREDICATE_REVIEW.json",
+      "bytes": 10446,
+      "sha256": "556b049e061d642ad4d48077c6204eab56edf9b6570f27b57b6bba1a68dd08d3",
+      "git_blob": "e046efbd0ffcc9d341d4ed2ed5283fbdd62215a4",
+      "actual_create": true,
+      "full_get_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/ACTUAL_BINDING_BYTE_AND_PREDICATE_REVIEW.json"
+    },
+    {
+      "name": "verify_actual_binding.py",
+      "bytes": 13660,
+      "sha256": "dc38f120f74196a083f7945052049c73497e3c4bea8ebd35a9d87f84f9e3733d",
+      "git_blob": "d277dfe303d806f7dd3c6542fe0a748f023231ac",
+      "actual_create": true,
+      "full_get_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/verify_actual_binding.py"
+    }
+  ],
+  "original_create_and_get_sdk_locally_retained": true,
+  "expected_future_inputs": "Separate exact stage/launcher/typed main candidate, followed by a separate immutable review.",
+  "qualification": false
+}

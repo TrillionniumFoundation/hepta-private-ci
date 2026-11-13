@@ -1,0 +1,81 @@
+{
+  "H_calls": 0,
+  "action_record_seconds": [
+    600,
+    180
+  ],
+  "actual_dispatch_calls": 0,
+  "bootstrap": {
+    "bytes": 5881,
+    "git_blob": "b4b8ade499b3102ed450407fd9f05de44529cc39",
+    "sha256": "aa916595416f0952d4a991c9614f8a98fa16af1b70144ff3c14391a566d8bf90"
+  },
+  "candidate_config": {
+    "bytes": 666,
+    "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+    "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+  },
+  "candidate_true_config_is_not_runtime_Root_authority_or_qualification": true,
+  "cwd": "/home/qian-qi",
+  "decoded_five_payloads": [
+    {
+      "bytes": 70596,
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "name": "driver.py",
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    },
+    {
+      "bytes": 14404,
+      "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+      "name": "MATERIALIZATION_PACKET.json",
+      "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+    },
+    {
+      "bytes": 12671,
+      "git_blob": "40833805111c98773ba1d046df09285357531396",
+      "name": "DONOR_RESULT.original.json",
+      "sha256": "fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96"
+    },
+    {
+      "bytes": 951,
+      "git_blob": "c507335b611474857eff53b738071a7a3f27dc99",
+      "name": "DONOR_SUPERVISOR.original.json",
+      "sha256": "a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa"
+    },
+    {
+      "bytes": 666,
+      "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+      "name": "APPROVED_CONFIG.json",
+      "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+    }
+  ],
+  "environment_overrides": false,
+  "executable": "/usr/bin/python3",
+  "format": "hepta-root-a489-exact-launcher-static-review-v1",
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-isolated-materialization-v1",
+  "original_bootstrap_outside_exact_base_and_pins_byte_equal": true,
+  "original_four_helpers_complete_byte_equal": true,
+  "original_request": {
+    "bytes": 128112,
+    "git_blob": "a34c8779fca77cbf1dd7e26e5516efcfb654c191",
+    "sha256": "521c5c982cbc281ad0357498265312f43846995fbd85040d9d7e3dfdae1f0050"
+  },
+  "outer_seconds": 900,
+  "qualification": false,
+  "real_authorized_task_chains": 0,
+  "seven_typed_fields_exact": true,
+  "staging_requires_five_separate_fixed_absent_writes": true,
+  "status": "EXACT_LAUNCHER_VERIFIED_PENDING_FINAL_ENGINEERING_APPROVAL",
+  "stdin": {
+    "bytes": 121937,
+    "git_blob": "e4e971cde74ede142a8ef044a516652e35fbacb2",
+    "sha256": "d033544bf068677ebda7bb8223cac618fb7eb68ebdeef531f3070d04bc7c0cdb"
+  },
+  "typed_bytes_limit": 1048576,
+  "typed_request": {
+    "bytes": 128224,
+    "git_blob": "a5a3f6b6bcc0bdbfb4c36261d4c2d31f6fb5cefa",
+    "sha256": "9bc592eaf52602d71df0aa77995fb5b28124507db7f02359fdfb14e4a3cebda9"
+  }
+}

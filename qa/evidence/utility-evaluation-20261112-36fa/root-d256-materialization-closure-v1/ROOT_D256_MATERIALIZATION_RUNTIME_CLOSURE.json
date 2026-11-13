@@ -1,0 +1,111 @@
+{
+  "H_calls": 0,
+  "actual_integer_handling": "All native JSON parsed with Python integers; no JavaScript serialization of ns metadata.",
+  "admission": {
+    "bytes": 7342,
+    "git_blob": "0efe672783a0d3b5b68f17433859ec64ae48de74",
+    "sha256": "d27f792d484714e8e7dfe30ac47c67948a8b3582664edc5234d94e8730156e4b"
+  },
+  "all_artifacts_externally_downloaded": false,
+  "all_three_original_final_audits_verified": true,
+  "approval": {
+    "bytes": 7698,
+    "git_blob": "a395a49b15c861be88d4e4e49f1e03557470ca55",
+    "sha256": "624156a7a015cdde153c39450cfc6838033d7e139d5405d238395803e95cfe7a"
+  },
+  "current_and_donor_source_and_git_states_before_after_equal": true,
+  "donor_objects_producer_fully_verified": 16449,
+  "finished_at": "2026-11-13T10:19:05.220211+00:00",
+  "format": "hepta-root-d256-original-runtime-closure-v1",
+  "index_and_six_artifact_full_readback_review": {
+    "bytes": 5084,
+    "git_blob": "32d516ab084499572ad44bf17716fa964691524a",
+    "sha256": "d433934617f8b2822b8f3bb90e1487149e1f5a9ce8b417ab661fda61089b050a"
+  },
+  "input_identities_unchanged": 13,
+  "input_verification_clarification": {
+    "bytes": 2130,
+    "git_blob": "8473a68b5906c4b31285749259a87158e2e8f0bf",
+    "sha256": "6905c06a6802ed2dbc476d4df88e14c685d3721e5115bf8c61364a847294a7f2"
+  },
+  "job": "1a1d468462a-392-3bb",
+  "launch_nonce": "27c9390952a0a208dfcae8c66e25c805",
+  "listed_artifacts": 267,
+  "new_objects_producer_fully_verified": 16661,
+  "normal": {
+    "bytes": 952,
+    "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+    "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+  },
+  "observed_command_count": 40,
+  "observed_mutation_count": 4,
+  "original_stream_reads": [
+    {
+      "bytes": 3454,
+      "git_blob": "689e9372d525fa48ed4e5b1df3c955334b27a9f4",
+      "name": "STREAM_READ_01.original.json",
+      "sha256": "d6e72d8803c1a99764b3729edc52e1a450b0e2787f3b2e05282cd86e29647ab6"
+    },
+    {
+      "bytes": 2380,
+      "git_blob": "2383505ac04eb43180e42a6bdcf22ba3440b74ac",
+      "name": "STREAM_READ_02.original.json",
+      "sha256": "df04fbf9b82ec352af2be66cac03f3146d0de233253a5edbdf78be706219b811"
+    },
+    {
+      "bytes": 2609,
+      "git_blob": "e79e579a386c3417b4695556894a3e06150e85ab",
+      "name": "STREAM_READ_03.original.json",
+      "sha256": "c9b7864d90243e369c4aa019a3fc85e44c71c033da1d2c9f21b76806acf2f0f1"
+    }
+  ],
+  "qualification": false,
+  "real_authorized_task_chains": 0,
+  "request": {
+    "bytes": 128224,
+    "git_blob": "a5a3f6b6bcc0bdbfb4c36261d4c2d31f6fb5cefa",
+    "sha256": "9bc592eaf52602d71df0aa77995fb5b28124507db7f02359fdfb14e4a3cebda9"
+  },
+  "result": {
+    "bytes": 14663,
+    "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+    "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+  },
+  "reviewer_schema_correction": "Initial pure reviewer assumed all command records contained a stdout artifact. Original streamed Git object commands 14 and 16 instead carry requested/fully-verified object counts. Initial script and exit1 preserved; no runtime records or producer predicates changed.",
+  "same_job_request_key_and_no_retry": true,
+  "scope": "Root independently verifies original records, stream bytes, and complete actual index. Full native source/object/stat audits are the original producer observations. No claim of separate Root H rescan or external download of all 267 artifacts.",
+  "source": {
+    "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "inventory": {
+      "bytes": 5631947,
+      "filesystem_entries": 15243,
+      "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+      "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0",
+      "tracked_entries": 15243
+    },
+    "native_inventory": {
+      "bytes": 3543409,
+      "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+      "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+    },
+    "parents": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633"
+    ],
+    "status": "",
+    "tree": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "source_mutations": 0,
+  "started_at": "2026-11-13T10:16:07.707110+00:00",
+  "status": "ORIGINAL_MATERIALIZATION_RUNTIME_CLOSED_FOR_MAINTENANCE_REVIEW",
+  "stderr": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 2095,
+    "git_blob": "c84b496372186628010c39c46d4dc908cbc49609",
+    "sha256": "ebdc1587ef06fa26dda46dda859253347ceeae55e6611ed6b6ad8ebc7cfe4e65"
+  },
+  "test_commands_dispatched": 0
+}

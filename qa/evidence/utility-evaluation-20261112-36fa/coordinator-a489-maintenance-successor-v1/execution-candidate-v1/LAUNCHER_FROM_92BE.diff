@@ -1,0 +1,26 @@
+--- original_92be4953_launcher.py
++++ LAUNCHER.execution-candidate.py
+@@ -1,7 +1,7 @@
+ import ast,datetime,fcntl,hashlib,json,os,stat,sys
+ from pathlib import Path
+-ROOT=Path("/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1")
+-PINS={'driver-maintenance.py': (68496, 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', '3a0f6dec8127aa9587129d6e0f24bad55837ca13'), 'APPROVED_MAINTENANCE_CONFIG.json': (13768, 'ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf', 'd27dd8ee763c75eb5a0f195bb034fc9ca32b727e')}
++ROOT=Path("/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1")
++PINS={'driver-maintenance.py': (68520, '2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed', '59461030d4160f7ad6a978df5a7b6aaeb33fb2a6'), 'APPROVED_MAINTENANCE_CONFIG.json': (13693, '3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7', '7bddb6c423afbe739bc36a7df2516730911a9337')}
+ def need(v,m):
+  if not v:raise ValueError(m)
+ def sha(b):return hashlib.sha256(b).hexdigest()
+@@ -46,11 +46,11 @@
+ need(stat.S_ISREG(lock_info.st_mode) and lock_info.st_uid==1000 and lock_info.st_nlink==1 and stat.S_IMODE(lock_info.st_mode)==0o600,"owned exact coordination lock")
+ fcntl.flock(lock_fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+ os.set_inheritable(lock_fd,True)
+-lease={"format":"hepta-source-coordination-exclusive-lease-v1","at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"path":str(LOCK),"source_repo":"/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1","scope":"Cooperative source writers hold EX; actual source collectors hold SH on this same inode. Full before/after inventories remain mandatory. No historical coverage is claimed.","pid":os.getpid(),"fd":lock_fd,"created":created,"device":lock_info.st_dev,"inode":lock_info.st_ino,"uid":lock_info.st_uid,"gid":lock_info.st_gid,"mode":stat.S_IMODE(lock_info.st_mode),"nlink":lock_info.st_nlink,"lock_acquired":"LOCK_EX|LOCK_NB","inheritable":os.get_inheritable(lock_fd),"held_until":"The original maintenance main process exits; the descriptor is deliberately retained across exec.","qualification":False}
++lease={"format":"hepta-source-coordination-exclusive-lease-v1","at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"path":str(LOCK),"source_repo":"/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1","scope":"Cooperative source writers hold EX; actual source collectors hold SH on this same inode. Full before/after inventories remain mandatory. No historical coverage is claimed.","pid":os.getpid(),"fd":lock_fd,"created":created,"device":lock_info.st_dev,"inode":lock_info.st_ino,"uid":lock_info.st_uid,"gid":lock_info.st_gid,"mode":stat.S_IMODE(lock_info.st_mode),"nlink":lock_info.st_nlink,"lock_acquired":"LOCK_EX|LOCK_NB","inheritable":os.get_inheritable(lock_fd),"held_until":"The original maintenance main process exits; the descriptor is deliberately retained across exec.","qualification":False}
+ save("SOURCE_COORDINATION_EX.json",(json.dumps(lease,sort_keys=True,indent=2)+"\n").encode())
+ original=list(sys.orig_argv);need("-c" in original,"actual fixed -c launch")
+ actual_code=original[original.index("-c")+1].encode("utf-8")
+ save("ACTUAL_LAUNCHER.py",actual_code)
+ save("ACTUAL_LAUNCHER_ARGV.json",(json.dumps({"argv":original,"cwd":os.getcwd(),"pins":PINS,"driver_main_started":False,"qualification":False},sort_keys=True,indent=2)+"\n").encode())
+-print(json.dumps({"event":"fixed_original_maintenance_0c59_launcher_verified","driver_sha256":PINS["driver-maintenance.py"][1],"config_sha256":PINS["APPROVED_MAINTENANCE_CONFIG.json"][1],"qualification":False},sort_keys=True),flush=True)
++print(json.dumps({"event":"fixed_original_maintenance_coordinator_a489_launcher_verified","driver_sha256":PINS["driver-maintenance.py"][1],"config_sha256":PINS["APPROVED_MAINTENANCE_CONFIG.json"][1],"qualification":False},sort_keys=True),flush=True)
+ os.execv("/usr/bin/python3",["/usr/bin/python3","-B",str(ROOT/"driver-maintenance.py")])

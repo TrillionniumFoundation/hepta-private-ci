@@ -1,0 +1,96 @@
+{
+  "schema": "hepta-derived-git-full-readback-ledger-v1",
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 10790,
+      "sha256": "8b5644ca821fa94fab7edab2d8da385482c3c76d4e3e1b2e1d76f38152827cb8",
+      "git_blob": "976863ddbbca0ee4558e7846eddcb458114590cb",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/REVIEW.json",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/REVIEW.json"
+    },
+    {
+      "name": "FROZEN_BYTE_AND_SCOPE_REVIEW.json",
+      "bytes": 102907,
+      "sha256": "14668aba6107e0198baf6c584cfe8fced086f7934168cce6ff4ac4a6619d3971",
+      "git_blob": "6e34e51b45ac71904b76cf48d9b2959f8d9c9987",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/FROZEN_BYTE_AND_SCOPE_REVIEW.json",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/FROZEN_BYTE_AND_SCOPE_REVIEW.json"
+    },
+    {
+      "name": "verify_frozen_fmt62.py",
+      "bytes": 11640,
+      "sha256": "a0a7f7735dae59bc661807fd8da4d34e0d10eff0b117d827cb5bff9bd6c1725e",
+      "git_blob": "018034f6403d35cc4153ca616b4f077634fcd204",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/verify_frozen_fmt62.py",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/verify_frozen_fmt62.py"
+    },
+    {
+      "name": "LOCAL_REVIEW_NOTES.json",
+      "bytes": 1298,
+      "sha256": "9acdf45f39a3a690ee0824c2a0ad37e510a827cfbbbe74142a6a1a46a4516a81",
+      "git_blob": "596e50f698091e581f3f4d58de83cfbaaa75bac0",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/LOCAL_REVIEW_NOTES.json",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/LOCAL_REVIEW_NOTES.json"
+    },
+    {
+      "name": "inspect_fmt_tokens.py",
+      "bytes": 6925,
+      "sha256": "2a2083d5b592fda91d30eb672ecfebc239073aaf401d9145c4fb414a632b88ec",
+      "git_blob": "bbec3ca28bec77cf8d13636fbcd681a472e5eeaf",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/inspect_fmt_tokens.py",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/inspect_fmt_tokens.py"
+    },
+    {
+      "name": "classify_fmt_items.py",
+      "bytes": 5809,
+      "sha256": "23fecd835666b9a53b0af3c3f13712f3421df067f1b01c8e7c511cc29b0b59c0",
+      "git_blob": "c06316c4a8165dc28c2f58db190520312e7b3e16",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/classify_fmt_items.py",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/classify_fmt_items.py"
+    },
+    {
+      "name": "review_comma_contexts.py",
+      "bytes": 2463,
+      "sha256": "1f2b3b05d7ca68138941a5a31703c8c066fd098473472acec3268b4d45eef648",
+      "git_blob": "e9edeae7e121cf7a13cc2dbf4e1a86a41253e7a2",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/review_comma_contexts.py",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/review_comma_contexts.py"
+    },
+    {
+      "name": "COMMA_CONTEXT_REVIEW.json",
+      "bytes": 112171,
+      "sha256": "c6f99367382a75775ce4925ee22739d21d589472ef5a84b1651a5f2b20c8d9bf",
+      "git_blob": "033ff94befdac43f75b4b10d6faa095518363ff0",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/COMMA_CONTEXT_REVIEW.json",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/COMMA_CONTEXT_REVIEW.json"
+    },
+    {
+      "name": "RESIDUAL_NONCOMMA_HUNKS.json",
+      "bytes": 49831,
+      "sha256": "60b2ab9741ee12908d6ec8ac7fff17da7195a816896301685c7755d99fa08479",
+      "git_blob": "19e37cee43505892e61b8871d94f84beac6cb879",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1/RESIDUAL_NONCOMMA_HUNKS.json",
+      "path": "provider-0c59-fmt62-semantic-peer-v1/RESIDUAL_NONCOMMA_HUNKS.json"
+    }
+  ],
+  "notes": "Existing four core uploads and two lexer helpers reused only after complete original SDK contents and current local bytes were compared again. Three remaining context/script payloads were newly created and fully fetched. No source or gate was rerun."
+}

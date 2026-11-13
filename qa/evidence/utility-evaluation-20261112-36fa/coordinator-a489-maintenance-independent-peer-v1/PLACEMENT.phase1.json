@@ -1,0 +1,74 @@
+{
+  "schema": "hepta-evidence-placement-v1",
+  "group": "coordinator-a489-maintenance-independent-peer-v1",
+  "paths_relative_to": "qa/evidence/utility-evaluation-20261112-36fa/",
+  "scope": "Fixed maintenance driver/HOLD review and actual-materialization producer-to-consumer proof binding. Final stage and EX launcher/main request excluded pending separate review.",
+  "payload_count": 6,
+  "entries": [
+    {
+      "name": "HOLD_REVIEW.json",
+      "bytes": 8849,
+      "sha256": "9a78666af9784f8f895a4de03d3ddf78cea2090dda6dabffb4571ae99cc8734d",
+      "git_blob": "39611d21e6c0d78a1d6ed02c75a80cf3da28d2e4",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/HOLD_REVIEW.json",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/HOLD_REVIEW.json"
+    },
+    {
+      "name": "FROZEN_HOLD_BYTE_REVIEW.json",
+      "bytes": 41579,
+      "sha256": "a88b6dd8d31594845c056ee46f4b552e9791a4af49128860145f3237c73ff9a5",
+      "git_blob": "153a3e0614e5d1207f7e5e694617f595845ea88b",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/FROZEN_HOLD_BYTE_REVIEW.json",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/FROZEN_HOLD_BYTE_REVIEW.json"
+    },
+    {
+      "name": "verify_static_hold.py",
+      "bytes": 15974,
+      "sha256": "6cecee21949bc92a3452d630bad93c45a13fc86f0c7930ca228a07bbee2ab5cb",
+      "git_blob": "9f1af6f756a0dc8592e1616b2c6af8c2f37d8e4b",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/verify_static_hold.py",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/verify_static_hold.py"
+    },
+    {
+      "name": "ACTUAL_BINDING_BYTE_AND_PREDICATE_REVIEW.json",
+      "bytes": 10446,
+      "sha256": "556b049e061d642ad4d48077c6204eab56edf9b6570f27b57b6bba1a68dd08d3",
+      "git_blob": "e046efbd0ffcc9d341d4ed2ed5283fbdd62215a4",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/ACTUAL_BINDING_BYTE_AND_PREDICATE_REVIEW.json",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/ACTUAL_BINDING_BYTE_AND_PREDICATE_REVIEW.json"
+    },
+    {
+      "name": "verify_actual_binding.py",
+      "bytes": 13660,
+      "sha256": "dc38f120f74196a083f7945052049c73497e3c4bea8ebd35a9d87f84f9e3733d",
+      "git_blob": "d277dfe303d806f7dd3c6542fe0a748f023231ac",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/verify_actual_binding.py",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/verify_actual_binding.py"
+    },
+    {
+      "name": "PHASE1_FULL_READBACK.json",
+      "bytes": 2420,
+      "sha256": "f233a4dca3c508b0850f5f0e616171ee962f30f24c34a16c41f9ba2da5b822eb",
+      "git_blob": "075754e1206a2bbebd6ba534727a77dc052d8f05",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-a489-maintenance-independent-peer-v1/PHASE1_FULL_READBACK.json",
+      "path": "coordinator-a489-maintenance-independent-peer-v1/PHASE1_FULL_READBACK.json"
+    }
+  ],
+  "self_included": false,
+  "self_note": "Placement itself is separately created and fetched after these six payloads; identity delivered separately.",
+  "later_review_policy": "Preserve both HOLD and actual-bound reports unchanged. Any exact execution candidate review will use separate new filenames and a later placement.",
+  "no_source_or_ref_changes": true,
+  "qualification": false
+}

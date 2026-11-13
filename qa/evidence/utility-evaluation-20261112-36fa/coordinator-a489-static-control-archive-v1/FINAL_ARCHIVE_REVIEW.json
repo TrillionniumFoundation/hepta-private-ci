@@ -1,0 +1,63 @@
+{
+  "Git_tree_commit_ref_calls": 0,
+  "H_calls": 0,
+  "canonical_source_or_control_files_modified": false,
+  "derived_base64_decoded_part_bytes": 307200,
+  "derived_base64_leaves": 12,
+  "direct_original_raw_leaves": 83,
+  "evidence_leaf_limit": 512000,
+  "expected_inventory_archive_reused": "88ad362796481f768cde7953c9c9485719c04591",
+  "format": "hepta-closed-static-control-archive-final-review-v1",
+  "full_89_original_bytes_recovery": "83 direct leaves plus six complete gzip/base64 representations, each checked raw length/SHA256/Git blob, gzip length/SHA256/Git blob and all encoded/decoded part pins/offsets; every actual fetched evidence leaf was exactly equal to its verified local bytes. Final local reconstruction rechecked all89 originals against the fixed index.",
+  "future_runtime_results_read_or_added": false,
+  "limits": [
+    "This is a closed static-control archive. Existing HOLD/candidate labels, original SDK values and source text are preserved verbatim as historical artifacts.",
+    "Current or future native execution success, staging state, maintenance result and tests are outside this closure and were not read or inferred.",
+    "Computed raw blob identities of oversized originals and gzip streams identify reconstructed content; those oversized raw/gzip files are not evidence tree leaves.",
+    "The original89 count excludes this archive metadata and its new aggregate readback proof. New Git SDK bodies are not recursively added."
+  ],
+  "losslessly_encoded_originals": 6,
+  "max_evidence_leaf_bytes": 409601,
+  "new_archival_Git_SDKs_added_to_original_closure": false,
+  "only_immutable_blob_calls": true,
+  "original_completed_Git_SDK_records": 44,
+  "original_count": 89,
+  "original_index": {
+    "bytes": 46153,
+    "git_blob": "8817a6d9ec4a96b01da373e86c348d78f9941670",
+    "sha256": "3099504b1279a1fb44984235b754bd6819ac9044baf95b6b017d1abf1480fffe"
+  },
+  "original_index_and_members_unchanged": true,
+  "original_primary_controls": 45,
+  "original_raw_total_bytes": 5857575,
+  "proofs": {
+    "actual_payload_Git_readback": {
+      "bytes": 84936,
+      "git_blob": "146bcadbabc7d679676dfd0c88fab3c48b9f661b",
+      "sha256": "c4f5deb6531ba5900757bea910bffa32c7e1487e571893a0801b2157489c94d4"
+    },
+    "encoding_manifest": {
+      "bytes": 14548,
+      "git_blob": "5d25d85ca4d7f2c20655ca9aa241c8a28a99aec9",
+      "sha256": "ef2af1e366a2d2bb5efb6c1c1809e25b211f0f6af08f69d33a0d4fd3242245a1"
+    },
+    "member_map": {
+      "bytes": 60097,
+      "git_blob": "e01371a7f61c330dcad3971b34e7a149f63e4c23",
+      "sha256": "c32416b6d81baaee7be59037a30eae1604a4378b1c449d49fb3389f6453a8c30"
+    },
+    "payload_index": {
+      "bytes": 53168,
+      "git_blob": "d3e2f6608052aab75abc2419b07f3aa0f8473640",
+      "sha256": "3ed6266a779d91d409a30b1dea352a51b260e7250ef93e3857fbaea7a168f642"
+    },
+    "preparation_review": {
+      "bytes": 6203,
+      "git_blob": "0065164bf5f8f6015cfd33a1fd3a9ed8ead0cefb",
+      "sha256": "1d0208a471ab3d8e8042bd18f38c4c9b24b6b2f870cc23a7339d378afc3988fa"
+    }
+  },
+  "provided_packages": "Both provided object inputs and their original2+3 binary parts reconstruct entirely from the five preserved fixed write requests, matching the original packet raw/gzip/part pins. No duplicate large raw upload is used.",
+  "qualification_supplied": false,
+  "status": "ALL_89_FIXED_ORIGINALS_LOSSLESSLY_ARCHIVED_AND_FULL_GIT_READBACK_VERIFIED"
+}

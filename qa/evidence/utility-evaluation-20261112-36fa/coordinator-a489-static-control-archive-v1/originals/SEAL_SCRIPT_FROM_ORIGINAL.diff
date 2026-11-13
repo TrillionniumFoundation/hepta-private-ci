@@ -1,0 +1,11 @@
+--- a34c8779/seal_launch_candidate.py
++++ d256-a489/seal_launch_candidate.py
+@@ -46,7 +46,7 @@
+ request['stdin'] = payload_raw.decode()
+ assert set(request) == {'host', 'executable', 'args', 'cwd', 'stdin', 'idempotency_key', 'timeout_seconds'}
+ assert request['host'] == 'desktop' and request['executable'] == '/usr/bin/python3' and request['cwd'] == '/home/qian-qi'
+-assert request['timeout_seconds'] == 900 and request['idempotency_key'] == 'hepta-utility-36fa-provider-0c59-isolated-materialization-v1'
++assert request['timeout_seconds'] == 900 and request['idempotency_key'] == 'hepta-utility-36fa-provider-coordinator-a489-isolated-materialization-v1'
+ request_raw = enc(request)
+ assert len(request_raw) <= 1048576
+ request_pin = save('MATERIALIZATION_PROCESS_INPUT.candidate.json', request_raw)

@@ -1,0 +1,174 @@
+{
+  "format": "hepta-coordinator-a489-exact-maintenance-candidate-review-v1",
+  "status": "PREPARED_PENDING_ROOT_EXACT_ENGINEERING_APPROVAL",
+  "scope": "Pure offline construction and byte/AST verification; no H call or native preflight/main invocation.",
+  "approval_fields_are_candidate_bytes_only": true,
+  "config_changed_keys": [
+    "status",
+    "root_execution_approved"
+  ],
+  "config_two_field_inverse_full_bytes_equal": true,
+  "unchanged_formal_approved_config_created": false,
+  "historical_HOLD_explanation_unchanged": true,
+  "actual_materialization_job": "1a1d468462a-392-3bb",
+  "actual_materialization_result": {
+    "bytes": 14663,
+    "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd",
+    "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c"
+  },
+  "actual_materialization_supervisor": {
+    "bytes": 952,
+    "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+    "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+  },
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+  "control": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1",
+  "six_input_pins": {
+    "driver-maintenance.py": {
+      "bytes": 68520,
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6"
+    },
+    "APPROVED_MAINTENANCE_CONFIG.json": {
+      "bytes": 13693,
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7",
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337"
+    },
+    "inventory-driver.original.py": {
+      "bytes": 22946,
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2",
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31"
+    },
+    "MAINTENANCE_STARTED.original.json": {
+      "bytes": 1154,
+      "sha256": "f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1",
+      "git_blob": "69a3d38ff1cf800813f1fbf1f30bca224157f223"
+    },
+    "MATERIALIZATION_SUPERVISOR.original.json": {
+      "bytes": 952,
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30",
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644"
+    },
+    "V8_RESTORATION_SUPERVISOR.original.json": {
+      "bytes": 950,
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d",
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579"
+    }
+  },
+  "three_unchanged_input_names": [
+    "inventory-driver.original.py",
+    "MAINTENANCE_STARTED.original.json",
+    "V8_RESTORATION_SUPERVISOR.original.json"
+  ],
+  "bootstrap_exact_replacements": [
+    {
+      "before": "BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1')\n",
+      "after": "BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1')\n"
+    },
+    {
+      "before": "PINS = {'driver-maintenance.py': {'bytes': 68496, 'sha256': 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', 'git_blob': '3a0f6dec8127aa9587129d6e0f24bad55837ca13'}, 'APPROVED_MAINTENANCE_CONFIG.json': {'bytes': 13768, 'sha256': 'ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf', 'git_blob': 'd27dd8ee763c75eb5a0f195bb034fc9ca32b727e'}, 'inventory-driver.original.py': {'bytes': 22946, 'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2', 'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'}, 'MAINTENANCE_STARTED.original.json': {'bytes': 1154, 'sha256': 'f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1', 'git_blob': '69a3d38ff1cf800813f1fbf1f30bca224157f223'}, 'MATERIALIZATION_SUPERVISOR.original.json': {'bytes': 952, 'sha256': 'e15ab5c71e17bafc41ba55c23c872c2c69f6bd05006c74c85866f0cdf753f9aa', 'git_blob': 'b726c1fa0db15e96fc46f1398b362a7ce0391f3c'}, 'V8_RESTORATION_SUPERVISOR.original.json': {'bytes': 950, 'sha256': '3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d', 'git_blob': 'b5a9b8d0c8e5f9372eac59e3720ba90c42997579'}}\n",
+      "after": "PINS = {'driver-maintenance.py': {'bytes': 68520, 'sha256': '2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed', 'git_blob': '59461030d4160f7ad6a978df5a7b6aaeb33fb2a6'}, 'APPROVED_MAINTENANCE_CONFIG.json': {'bytes': 13693, 'sha256': '3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7', 'git_blob': '7bddb6c423afbe739bc36a7df2516730911a9337'}, 'inventory-driver.original.py': {'bytes': 22946, 'sha256': '20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2', 'git_blob': '51181866cbbb6e0176aab04117efffa8b6792b31'}, 'MAINTENANCE_STARTED.original.json': {'bytes': 1154, 'sha256': 'f9372b818186526929ae25be698d108a4fee17d6612a18f36b8e950172c02ce1', 'git_blob': '69a3d38ff1cf800813f1fbf1f30bca224157f223'}, 'MATERIALIZATION_SUPERVISOR.original.json': {'bytes': 952, 'sha256': 'fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30', 'git_blob': '2a11b4b9e2baa380c247b6a728f90edfbcdcd644'}, 'V8_RESTORATION_SUPERVISOR.original.json': {'bytes': 950, 'sha256': '3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d', 'git_blob': 'b5a9b8d0c8e5f9372eac59e3720ba90c42997579'}}\n"
+    }
+  ],
+  "bootstrap_inverse_full_bytes_equal": true,
+  "bootstrap_four_helpers_byte_equal": true,
+  "bootstrap_has_no_exec_or_flock": true,
+  "launcher_exact_replacements": [
+    {
+      "before": "ROOT=Path(\"/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1\")\n",
+      "after": "ROOT=Path(\"/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1\")\n"
+    },
+    {
+      "before": "PINS={'driver-maintenance.py': (68496, 'd47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259', '3a0f6dec8127aa9587129d6e0f24bad55837ca13'), 'APPROVED_MAINTENANCE_CONFIG.json': (13768, 'ccf92346644f428bc66e634c8e4aebe871ed6dcaac354538c1e35862ea83aacf', 'd27dd8ee763c75eb5a0f195bb034fc9ca32b727e')}\n",
+      "after": "PINS={'driver-maintenance.py': (68520, '2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed', '59461030d4160f7ad6a978df5a7b6aaeb33fb2a6'), 'APPROVED_MAINTENANCE_CONFIG.json': (13693, '3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7', '7bddb6c423afbe739bc36a7df2516730911a9337')}\n"
+    },
+    {
+      "before": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+      "after": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1"
+    },
+    {
+      "before": "fixed_original_maintenance_0c59_launcher_verified",
+      "after": "fixed_original_maintenance_coordinator_a489_launcher_verified"
+    }
+  ],
+  "launcher_inverse_full_bytes_equal": true,
+  "launcher_five_helpers_byte_equal": true,
+  "single_lock": "Only the original EX launcher opens and holds the actual shared lock across exec. Driver contains no flock; stage holds no lock.",
+  "stage_typed": {
+    "keys": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "timeout_seconds",
+      "idempotency_key",
+      "stdin"
+    ],
+    "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-control-staging-v1",
+    "timeout_seconds": 900,
+    "request": {
+      "bytes": 150690,
+      "sha256": "8617f71ce7831737cac574d865b4b7ecbba56a9982496e5ebaf5bb1642a8c995",
+      "git_blob": "ff0f71fffd7c7ea1c67c510d0a12505d88f598be"
+    },
+    "stdin": {
+      "bytes": 144642,
+      "sha256": "2a6a855b18213c14e8c402742bc38361c97b48d05e410aec2fd7c2ff71de5c9e",
+      "git_blob": "38af59e1726dc519fc331a52aa667c52076ecb82"
+    },
+    "no_environment_override": true,
+    "inverse_original_full_bytes_equal": true
+  },
+  "main_typed": {
+    "keys": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "idempotency_key",
+      "timeout_seconds"
+    ],
+    "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-maintenance-v1",
+    "timeout_seconds": 9300,
+    "request": {
+      "bytes": 5419,
+      "sha256": "556904e921d6bd61f991711aa9052a1e58d0867038cd00d8645225b9a85bee0e",
+      "git_blob": "3dc51d216864f13a4fcd8c8ebceeb88ba3d8413d"
+    },
+    "no_environment_override": true,
+    "no_stdin": true,
+    "inverse_original_full_bytes_equal": true
+  },
+  "ordered_execution_condition": "No H dispatch before Root exact approval. If authorized: unique create-only stage; same-job normal exit 0 and complete original staging record plus six input files and bootstrap/argv/payload readback; only then unique original EX main. Unknown results reconcile the original key/job and do not advance. Failures preserve all partial records.",
+  "original_budget_seconds": {
+    "preflight": 600,
+    "fix": 7200,
+    "fmt": 900,
+    "records": 300,
+    "main_outer": 9300,
+    "stage_outer": 900
+  },
+  "fix_argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "target_creation": false,
+  "minimum_target_free_bytes": 34359738368,
+  "H_calls": 0,
+  "maintenance_dispatch_authorized": false,
+  "tests_authorized": false,
+  "ref_updates_authorized": false,
+  "historical_0c59_fix101_retained": true
+}

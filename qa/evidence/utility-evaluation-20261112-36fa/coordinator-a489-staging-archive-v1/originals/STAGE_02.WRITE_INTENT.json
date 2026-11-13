@@ -1,0 +1,31 @@
+{
+  "format": "hepta-exact-fixed-staging-write-intent-v1",
+  "created_utc": "2026-11-13T10:13:23.659704+00:00",
+  "sequence": 2,
+  "approval": {
+    "bytes": 7698,
+    "sha256": "624156a7a015cdde153c39450cfc6838033d7e139d5405d238395803e95cfe7a",
+    "git_blob": "a395a49b15c861be88d4e4e49f1e03557470ca55"
+  },
+  "request": {
+    "bytes": 244959,
+    "git_blob": "0657755b9332da3addfe724e6dcb622a734d03dd",
+    "sha256": "b9e39b97e77c3c1bdc7705eb0804819dc79d5dabea4d7e42c8a215c0b1718e07"
+  },
+  "host": "desktop",
+  "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-base.json.gz.part-002",
+  "expected_version": "absent",
+  "decoded": {
+    "bytes": 183569,
+    "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+    "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+  },
+  "prior_stage_full_readback": {
+    "bytes": 5381,
+    "sha256": "df76b6681280f9d269f8ac1e6d9703fdf8bcaef1c68052138b3398418b8b3607",
+    "git_blob": "c0957864bc546e6261f5e297ef788a5d4aade4b6"
+  },
+  "native_call": "h_binary_write",
+  "maximum_invocations": 1,
+  "unknown_rule": "Read only the same fixed path; never repeat this write or change identity."
+}

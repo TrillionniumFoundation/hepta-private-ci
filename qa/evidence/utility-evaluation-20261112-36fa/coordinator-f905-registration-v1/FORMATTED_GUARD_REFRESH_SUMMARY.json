@@ -1,0 +1,1239 @@
+{
+  "all_old_forbidden_equal": true,
+  "all_old_top_level_and_literal_call_requirements_equal": true,
+  "changed_old_rows": [
+    279,
+    339,
+    351,
+    364,
+    373,
+    416,
+    417,
+    419,
+    422,
+    423,
+    424,
+    425,
+    426,
+    427,
+    428,
+    429,
+    430,
+    431,
+    432,
+    433,
+    434,
+    435,
+    436
+  ],
+  "changes": [
+    {
+      "after": {
+        "bytes": 2892,
+        "git_blob": "8a9f5ef7bd28b02f9c8ae1f7ec19690fc86da61b",
+        "sha256": "e771dfdfcc686c7b5085afd3cabcade652f391bb1552ffc01ac3d1fd670a3be8"
+      },
+      "before": {
+        "bytes": 2848,
+        "git_blob": "aef95fe1710796dcd0a7417823b438a943a480ed",
+        "sha256": "555eba2b45d1abcf8bb351086c3dc33e7642896038bfcc12c9fbb0f0d9143ba3"
+      },
+      "field": "required_function_order[5].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "row": 279
+    },
+    {
+      "after": {
+        "bytes": 263,
+        "git_blob": "4a09da6b3097cd6e13c06d7d8c81b6b71f0c7e92",
+        "sha256": "faeb4db8afdf18a2e42a3c0d0a0d50b8d56c54eb228572d82f36f07495b3cf07"
+      },
+      "before": {
+        "bytes": 240,
+        "git_blob": "fe6d5b06abf40c76340c5f5e766bb68721dfd957",
+        "sha256": "89dd1d0dd20eb137a0f730ac19cb8cba1056aff75a3be83784dfab99216c5fa3"
+      },
+      "field": "required_function_order[5].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "row": 339
+    },
+    {
+      "after": {
+        "bytes": 689,
+        "git_blob": "260eb412a3f4205d6f476cf149ee3aed360786f2",
+        "sha256": "d7519f04a7d64533ecd70a8550556c2897244d031a62a4c87ac8b66d44afe43d"
+      },
+      "before": {
+        "bytes": 627,
+        "git_blob": "5164eb488189a8918495c2767aff1a9ca899990a",
+        "sha256": "8e7981fb893126e9d96d5a6c0e4303635753d927b51965d3443bccd261b78b08"
+      },
+      "field": "required_function_order[10].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "row": 351
+    },
+    {
+      "after": {
+        "bytes": 354,
+        "git_blob": "8a678aa7e2d661b02d6b66ff34835a8fe5e7ee4b",
+        "sha256": "31f7d71d3cb52e64a1e7d74d4e536762f350cfacae5329379c58606988c33902"
+      },
+      "before": {
+        "bytes": 323,
+        "git_blob": "a93f398aeeb68c8c0dec56d406bca89146d99c79",
+        "sha256": "297306e4b258923ccc6fa4e799dc298f006295bfe2a75e9feb127eff77884f5a"
+      },
+      "field": "required_function_order[13].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "row": 351
+    },
+    {
+      "after": {
+        "bytes": 645,
+        "git_blob": "6249fab8142dc9a5f865e1abdbe1089715ba0559",
+        "sha256": "5167afc5d980482da7106ab59ddb31ef8c3cf7487607204236389c17593f2610"
+      },
+      "before": {
+        "bytes": 492,
+        "git_blob": "fc33e96bfd65a18e8c39bea7e028b62dfe0c7fc3",
+        "sha256": "78b3f9eb90df5c5da60f33218e97ad408efb654874756b20dc9dc35ee67b9796"
+      },
+      "field": "required_function_order[7].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "row": 364
+    },
+    {
+      "after": {
+        "bytes": 703,
+        "git_blob": "0e80e6a865713599bad2651949151cdf99e0ec49",
+        "sha256": "dac2cf3b28bec7c7b429881a5211fefe5ca2966fa2a1b96c6162549e2e7eba22"
+      },
+      "before": {
+        "bytes": 550,
+        "git_blob": "7041f4f822ebccf02b974ab69416396108e3cf98",
+        "sha256": "58168ce1b10d410aba15d232b6ec5f2279bbd64e2b9f70d1b37d735bb716ec85"
+      },
+      "field": "required_function_order[8].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "row": 364
+    },
+    {
+      "after": {
+        "bytes": 779,
+        "git_blob": "f0d87e6d40ad1a4836eac1cd2a49d0d262b098bd",
+        "sha256": "60dba97410aeb250970b2f703fe4830be277e58e461fb8db54adf84efcd377c2"
+      },
+      "before": {
+        "bytes": 720,
+        "git_blob": "ea47fc779df4cb13d884b2714168c0840d35be7d",
+        "sha256": "4dee89a8651544b033167ee1ebb555b570e71a7e96b063a55eb5bd43365bf688"
+      },
+      "field": "required_function_order[14].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "row": 373
+    },
+    {
+      "after": {
+        "bytes": 1129,
+        "git_blob": "fe4be987a52589baf6fcbcdf11f00295d584a0af",
+        "sha256": "491fe51c89867c547181052299550e0eb165540ba4d666011c44280c715230c5"
+      },
+      "before": {
+        "bytes": 1113,
+        "git_blob": "3871face4b23116dd04be342074a077cf7bb1cfe",
+        "sha256": "4cdd955e020a9425607c0974f70b3f562e34ba66c7200358b34d50acf160c8ff"
+      },
+      "field": "required_function_order[4].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "row": 416
+    },
+    {
+      "after": {
+        "bytes": 5436,
+        "git_blob": "e43d4f2ba5fc5aab94abd8a5a42910f916ec78de",
+        "sha256": "8b60d11c6034232f94c7db653a93d95563ccc7b19bc1399059227fff5d8eec1b"
+      },
+      "before": {
+        "bytes": 5377,
+        "git_blob": "84310f0d34361176077fa3047cd9c49ea57e14dc",
+        "sha256": "18c66d5f02241089e9a25097179c9cb485da22e9b78f22493722b2cb48894a8c"
+      },
+      "field": "required_function_order[1].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "row": 417
+    },
+    {
+      "after": {
+        "bytes": 1432,
+        "git_blob": "8f7106d614b0a972fcda7df1ad4a0bd97ec28109",
+        "sha256": "c505c701eee76650630faf5b1b2f6bd23982abf8717793f5e270ec216d52b908"
+      },
+      "before": {
+        "bytes": 1413,
+        "git_blob": "4412bdc08a6a9efe6ad6b8c5b7b4d41d7da8f0ee",
+        "sha256": "da21914d838c1d2890399054d2a20fb49436d3bffd1029cf055ef36e59b9b28e"
+      },
+      "field": "required_function_order[2].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "row": 417
+    },
+    {
+      "after": {
+        "bytes": 4179,
+        "git_blob": "ee8fcd29df6811f49b74cd0361893ed622eb9180",
+        "sha256": "79864d11afdf419640e92eb761006dcc655d4643b717903cd04e6a74e2c203de"
+      },
+      "before": {
+        "bytes": 4100,
+        "git_blob": "8b185b832a91cd4b216a4056b9118d366b41cadf",
+        "sha256": "551b5faca0f29239f5a62a391052a6cdea664af0cb3bf99a61d683a91f155b6b"
+      },
+      "field": "required_function_order[1].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "row": 419
+    },
+    {
+      "after": {
+        "bytes": 2078,
+        "git_blob": "188d186f0708365d987bda2c16e5e4cf3f3b5c5a",
+        "sha256": "6751517080329493ce8380cc00fb9a006e3b308f242ac5bbab554550bddcf901"
+      },
+      "before": {
+        "bytes": 2047,
+        "git_blob": "c10fc97516122c87f5847849f3824c2f1109125d",
+        "sha256": "405eceac575b3a1daaffdc71a6e1c393fc44c2f405ea35f0d128b641649c7ce4"
+      },
+      "field": "required_function_order[2].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "row": 419
+    },
+    {
+      "after": {
+        "bytes": 2884,
+        "git_blob": "8e8a36f4c585e1d4a8901ae30a1ce3fc3e2cd5b5",
+        "sha256": "b919425f970beca302d7d7749849bf72911b31f19e65629117137083199761a4"
+      },
+      "before": {
+        "bytes": 2422,
+        "git_blob": "f534ac9867b77905fb18633f8502b5157943d8e5",
+        "sha256": "edd01fa13aef15b684bef169aa1a6e00b5c62c0687e5d2ba113f2c905d9afcb4"
+      },
+      "field": "required_order[4][1]",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "row": 422
+    },
+    {
+      "after": {
+        "bytes": 2718,
+        "git_blob": "83678a33399dd5e743e52d228c2fcc91fd5f2e81",
+        "sha256": "2db3fd95940cdc3cbca5a983d51b235008bae64b60dfc911fdb5b8357c8a6b57"
+      },
+      "before": {
+        "bytes": 2435,
+        "git_blob": "895c55f7831b45cce9d2485dd51e71d727c9afa4",
+        "sha256": "e014d2a1c554f8e3a7dcef56c2e34fae64bd469d3b61e177ee5234dd92fd3cff"
+      },
+      "field": "required_order[6][1]",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "row": 422
+    },
+    {
+      "after": {
+        "bytes": 2594,
+        "git_blob": "b1fa16d9d803ff38c452886ab666eeaa3d7b38e6",
+        "sha256": "229b95dc34651201fb8088c21ef5d724234f85e19f9ce11ffa536ea0b6aa9c31"
+      },
+      "before": {
+        "bytes": 2132,
+        "git_blob": "db773ad72d28e203e7e508f87f29ab2c2275dbf5",
+        "sha256": "1560e512d484c79532ff6dcfb80fe15b4e15eed40ab2c96bdf85838a16c34886"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "row": 422
+    },
+    {
+      "after": {
+        "bytes": 2196,
+        "git_blob": "a42e7b4b4510a0907707e132fa69c8b4a3798e4d",
+        "sha256": "2ab046eff1afc3edc23855ea191b7bf4f8a3375533ffa8b7fbfde65c04fec7cb"
+      },
+      "before": {
+        "bytes": 1913,
+        "git_blob": "bb7c7f3ed2b91ed7723c464ac54c9ee56e9f7574",
+        "sha256": "117323f98eb39fe4ed0a148bc2b300b409eb92fbe47b1fc9e4b8850f145782dd"
+      },
+      "field": "required_function_order[2].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "row": 422
+    },
+    {
+      "after": {
+        "bytes": 1286,
+        "git_blob": "83db6df203e53aca5b99fd8787226d1c3b36d6f0",
+        "sha256": "4bb797449ca90db158b0c7d9b5e3ad5a4a5f346a04d56f8b5f6ea7f2880a9b2e"
+      },
+      "before": {
+        "bytes": 1224,
+        "git_blob": "cd1727637a630e582a8bd7523a741ac89e613b5d",
+        "sha256": "055159071586ac830fe0c9fe5697146a19e1e7ed8dcdfa069eb2581b5cee2253"
+      },
+      "field": "required_order[0][1]",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "row": 423
+    },
+    {
+      "after": {
+        "bytes": 1225,
+        "git_blob": "23857b3b905ddc5dc9de640fcb884a5e973c062d",
+        "sha256": "ac215a6a0ec8bb185450ee1708adba46a0b7a1bc7afd9d6498f7bf28c2d5c18f"
+      },
+      "before": {
+        "bytes": 1163,
+        "git_blob": "71c1d7a043eb7c13eda53142562461bab45e8b04",
+        "sha256": "8f2073c3889e74e61fa04ef99b4ed975e032515802148bcfda294aff38cae3f1"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "row": 423
+    },
+    {
+      "after": {
+        "bytes": 2908,
+        "git_blob": "af91bc44634f87ef7e2b283fd686b1003a869b40",
+        "sha256": "80c91f614f788ea9956d7a061e371b77c24f5a219a2ea9e32f6482af1891ded1"
+      },
+      "before": {
+        "bytes": 2789,
+        "git_blob": "3bf4f9ae4762f858cb7ce256f9db5d13688fefc9",
+        "sha256": "d8f63fda50cdfc23ec121fc37b548449771dbde6ebbc2405240acd4b8993477f"
+      },
+      "field": "required_order[0][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "row": 424
+    },
+    {
+      "after": {
+        "bytes": 2843,
+        "git_blob": "869d0980129ab358370faa95457456328fc0bc88",
+        "sha256": "49d2695b61e58f909011fa1b11afd9d123645ff4f7cdea5122a8a9b10c420993"
+      },
+      "before": {
+        "bytes": 2724,
+        "git_blob": "e6de07dfec0c266f71c7f7551ff58652a7e4ae1f",
+        "sha256": "430d6bfb7c7642108e0077aa4b48a4e0bd274ded881f3573f85b1182b90c12d7"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "row": 424
+    },
+    {
+      "after": {
+        "bytes": 2567,
+        "git_blob": "59821a8abedee0914e8204c57a4194c588b8ebd5",
+        "sha256": "d94f1624081c01db8590d287633f9afff67d8fa8ad256051a69763d4eb74400d"
+      },
+      "before": {
+        "bytes": 2561,
+        "git_blob": "d747a1243e7566fedad9c0845dfcc26e02ee3f7f",
+        "sha256": "8b403bb0d71904c0e5ac7b3cff264b31c3b51a06f505ef7d1037fe70474f99d8"
+      },
+      "field": "required_order[1][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "row": 425
+    },
+    {
+      "after": {
+        "bytes": 1528,
+        "git_blob": "19b19f6a2efa5ad3cc58aac52c65d28b0861bc8d",
+        "sha256": "a6819f92a449d3bdca67ca0574d0dc911eefffde2c69f618ee8bf11ffa1b3e8b"
+      },
+      "before": {
+        "bytes": 1522,
+        "git_blob": "fbe0b6a1bc9d41a37ccad680022235f4a0620ed9",
+        "sha256": "bbf627b987b2377c1dae8bb28cfe060dafc7baf78add772927112aac2013bfb2"
+      },
+      "field": "required_function_order[5].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "row": 425
+    },
+    {
+      "after": {
+        "bytes": 397,
+        "git_blob": "b2bb620c42b2033ad09e29e2351a9007eccfc41e",
+        "sha256": "0f9aa6d232fa5bed425c96e7a83fd6091b86275fc66e2019128f410e73baf7c7"
+      },
+      "before": {
+        "bytes": 384,
+        "git_blob": "a4beb970fe5b9768bfbbe2df985d9a5bd3cb35cb",
+        "sha256": "1e240671990e222c391415cf53c5e0d093a9c8fcec144a6c99fb251d9202016c"
+      },
+      "field": "required_order[1][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "row": 426
+    },
+    {
+      "after": {
+        "bytes": 4306,
+        "git_blob": "fd7dfb7fe4c079e78842ae7afd6dad36bc2f0048",
+        "sha256": "775f9064f5a36735cdb82f5a74ff12379e04b3127febdfb9712660fed01f8826"
+      },
+      "before": {
+        "bytes": 4251,
+        "git_blob": "68f882c67bb3d523e116db39df2786b50a7d8bdf",
+        "sha256": "f6a084b77938c218b8e5c6936f7a2aaed386db8c43c5d7b02b66c2098a1c9e03"
+      },
+      "field": "required_order[2][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "row": 426
+    },
+    {
+      "after": {
+        "bytes": 358,
+        "git_blob": "3ad304fad538bc76b8bd011dbe1897daa269d1a4",
+        "sha256": "54dade4006bd15f23cdd400a6a0348f6656dc521cf44f9c47ae721917f7b2cfc"
+      },
+      "before": {
+        "bytes": 345,
+        "git_blob": "5dc04a7089e54c5483741ae8912ecd363fd4fbd6",
+        "sha256": "b94571827e4957e8c57715922a312f24ba7073b1f3fe1634ffa3814b38dd7090"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "row": 426
+    },
+    {
+      "after": {
+        "bytes": 2399,
+        "git_blob": "7c6a19c11a5e8f04e8ac168ea93d2807fe01d2c7",
+        "sha256": "fe59025c8b424e80b05425dc42d00b9977b8cc8dd9d649a62a98c6bbce0ac538"
+      },
+      "before": {
+        "bytes": 2396,
+        "git_blob": "19c24a836d28711b75d912bb58351973c7ea81ec",
+        "sha256": "16746ad2023cfc887ce6acb5413f341492d7f2223b7a21670a990f07c9c93cd1"
+      },
+      "field": "required_function_order[1].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "row": 426
+    },
+    {
+      "after": {
+        "bytes": 1788,
+        "git_blob": "a4f84277e3ba1a0642e07598448dd0bd8be90861",
+        "sha256": "01f93f69cfa8e6a87f52dd7556021a06277d6707b974fc425b24b4c79e930231"
+      },
+      "before": {
+        "bytes": 1736,
+        "git_blob": "4a090d55a26ff86bca0993e86595bb21e288cbcd",
+        "sha256": "cb8a06df8c168f3d473814fc6fefca92a65a84eaa77a6d4a24469ebb644b9c21"
+      },
+      "field": "required_function_order[2].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "row": 426
+    },
+    {
+      "after": {
+        "bytes": 2727,
+        "git_blob": "4278fd4b622a3332645505946177891db111dd34",
+        "sha256": "c420741b74fbac7de5d0ea696c633b0542deccc7b6470c1b9ea69c48854734ad"
+      },
+      "before": {
+        "bytes": 2649,
+        "git_blob": "ef9e75676f05b83e3fc23a2ca41433f443677645",
+        "sha256": "2f132372e066177ae280222f03a21684063e6dfbcc7a4a3e8d717321d26b53ae"
+      },
+      "field": "required_order[0][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "row": 427
+    },
+    {
+      "after": {
+        "bytes": 547,
+        "git_blob": "d178fa068519d9c8a86a7a97549718c0b84a131a",
+        "sha256": "3a3dbc9194fcc3c7234a7282a522ea261932442a4ffcb98b1e43942d8d2c9f09"
+      },
+      "before": {
+        "bytes": 498,
+        "git_blob": "1d3d981c56ab7064a025fdbd60f1e3e20246acff",
+        "sha256": "4068913bb6a8bc02284b17892b556691b1409c2c390249ec2103331486478d3e"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "row": 427
+    },
+    {
+      "after": {
+        "bytes": 1337,
+        "git_blob": "16bbbb3dc8515444ed2a594875ef9d783ade11fe",
+        "sha256": "7a2d5c516d45bdfc05e7a6ca84e5c18e70397169a1bdda293cfbeb5825fc4dc1"
+      },
+      "before": {
+        "bytes": 1308,
+        "git_blob": "f20d76b5db7d1d9f0ddece237f91d976f92ccf56",
+        "sha256": "4e5e9997b838f3cde67a5ad53dce07df19ce23303d243a154319779859a8084f"
+      },
+      "field": "required_function_order[1].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "row": 427
+    },
+    {
+      "after": {
+        "bytes": 1979,
+        "git_blob": "0adb34d10fd11612759ba3c7f179afec4fc647a4",
+        "sha256": "48f14845fa86270f3d7e73a6e56a01f075e257edb10bac34c289ecb999dc0ab2"
+      },
+      "before": {
+        "bytes": 1943,
+        "git_blob": "0d03ae9526e66849f575aaf17ff27a00480c3194",
+        "sha256": "b62d9d74c89030aa0fa57b126c2d0f56ad0fe9d71fc374b7e3b8e8f81f279030"
+      },
+      "field": "required_order[1][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "row": 428
+    },
+    {
+      "after": {
+        "bytes": 1138,
+        "git_blob": "04a8ac383d3bcf47404e355a91eb8d11b83b6574",
+        "sha256": "371322566f941dfdde6ff017fa6717d86d19e272ebbe160983be5600a86ed47c"
+      },
+      "before": {
+        "bytes": 1102,
+        "git_blob": "6360b9dd891df012e671cf1abab1926cd0ed9c6c",
+        "sha256": "ad25c51c4d56c03b1b9f51bc47d8f5222e504ef57d5cd1921e3a234d53adadac"
+      },
+      "field": "required_function_order[4].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "row": 428
+    },
+    {
+      "after": {
+        "bytes": 7438,
+        "git_blob": "05b3609dd46453b6f0d9d81b4dc9c865894408ba",
+        "sha256": "de24b93b515b654ccfe6bb1197b111b322f33182a005dec114889ee67a2135aa"
+      },
+      "before": {
+        "bytes": 7148,
+        "git_blob": "23d950c98e3f5b4a23625adb41e5ed29bb83429d",
+        "sha256": "b5123951fe2cfecae87ac2b6d3c03f591d1771f7f0432860a7192be218ed64e1"
+      },
+      "field": "required_order[4][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after": {
+        "bytes": 2956,
+        "git_blob": "f7296877f873ac89c5254174cac162dc10c44a03",
+        "sha256": "fde15bc0a29cbcc2b9d3c8790307895bd8f3e3a49a1f70ae16d16e95ddfedf39"
+      },
+      "before": {
+        "bytes": 2870,
+        "git_blob": "e013f1076c9cdc7269e0e2086344b299f6bfffa6",
+        "sha256": "7e4f16d8d58561383dfbb81464e3b876d0081f4c85c862386e70c6c725e6cf78"
+      },
+      "field": "required_order[5][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after": {
+        "bytes": 323,
+        "git_blob": "03a697925f261c8f76e941304dc1698ae97afb59",
+        "sha256": "4ea6e85e60a41bd90fe292be451dfdf38cdb4dec4a6d85f95741638497e215ca"
+      },
+      "before": {
+        "bytes": 310,
+        "git_blob": "a09e19b75740426293c1e4c024ed32545afae3b8",
+        "sha256": "7e1eed3d2ca6242d3243bc26edb01a1e8e2dd032acc056cb1dcf57b26dd3d2e0"
+      },
+      "field": "required_function_order[6].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after": {
+        "bytes": 4815,
+        "git_blob": "9353152f47a8b066173256f4f337ff8d18cb8c3a",
+        "sha256": "697e6a1354d0879fe139312a9af9802cbd3387261a5ec8bf194dcc312915bb0d"
+      },
+      "before": {
+        "bytes": 4538,
+        "git_blob": "34c2ad505892754d6d5f6e4c5e208558b25721ab",
+        "sha256": "35d4efbb5e366cbbfec9d51153db2d10b8b340d552f356f3a4c1555092af752e"
+      },
+      "field": "required_function_order[7].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after": {
+        "bytes": 615,
+        "git_blob": "6288385325550c502b1aa62ffb07489036e734f1",
+        "sha256": "fd246be30fa853696a94c959dfd405551ef29e1c2666af2e5b50abd6739c7735"
+      },
+      "before": {
+        "bytes": 581,
+        "git_blob": "213d6bafcd3ac85ab74f6a23241e5f0a37d5cdd3",
+        "sha256": "3cd328eb20f83edb47398ff382ad022903f22e0e28d9f0fb201087a0f6652404"
+      },
+      "field": "required_function_order[11].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after": {
+        "bytes": 389,
+        "git_blob": "68103e72e19e3d810fe115d89b7a5476923a774f",
+        "sha256": "5dbdb259ebf26c62070bb5f3a6623304d8459c7595fc121ab395f1a36f915c5e"
+      },
+      "before": {
+        "bytes": 363,
+        "git_blob": "da5250082350e5f9f32ff16aa1c95c1dbf392ce5",
+        "sha256": "94fb1b00c19875998c06dd609b41f424264fcd1a0adb3a0e741365588f3946c3"
+      },
+      "field": "required_function_order[12].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after": {
+        "bytes": 384,
+        "git_blob": "517304dda5b360fc104dc76fdce15f06a1186223",
+        "sha256": "96f5e61c21e371ba31dc1779400a7410a72ca272134912165aa523ea5db5d88b"
+      },
+      "before": {
+        "bytes": 358,
+        "git_blob": "b62a2ae513908d817d00dd5e07911f3bd13577ea",
+        "sha256": "1bfc6de55fa6253a94dc014c659a57bb5b7667da1ceb835d7d0d342b03a6fbb6"
+      },
+      "field": "required_function_order[13].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "row": 429
+    },
+    {
+      "after": {
+        "bytes": 4058,
+        "git_blob": "b3873dfd629dfb1a92843de778f89a97e155b095",
+        "sha256": "3396d940f49dd5531d7e63f7aa62d9b768d127f1ee86663002f0cb5b5fb38c8c"
+      },
+      "before": {
+        "bytes": 3685,
+        "git_blob": "e459d213409ef61a012b948e89dbf80ebd880d4c",
+        "sha256": "2a1e6fc375eb6e30c07dd7d1e6ed63f5ffdc2cb85ab963f6300a7c6cfaeff3c1"
+      },
+      "field": "required_order[3][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 8037,
+        "git_blob": "d4f947b5e9a1338d2e27f24b935be65c6e1741c1",
+        "sha256": "bfa3b35b7f6682cce0d3a5a2d5a1906c70569f20b507e763849a2745e0e47eb5"
+      },
+      "before": {
+        "bytes": 7766,
+        "git_blob": "ea3eb24662ffcf36da04e63f34f6c4bb4ac95848",
+        "sha256": "6223df0380906db1ccfa7e157d9d8713348dabc8da5ce7a78609cfebb23e80ff"
+      },
+      "field": "required_order[4][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 1952,
+        "git_blob": "d43bf659877220bc014e19b0c30aabb08bd82e33",
+        "sha256": "96669c7e1e241cccf9201f88bc8b115f46408ff6f5f92314073f0ad7690ec27d"
+      },
+      "before": {
+        "bytes": 1881,
+        "git_blob": "8eb77c281912f36bf272801607bd0d3fa69a4345",
+        "sha256": "53429442e44588b4a3b0f1c72d3e69657d9b8f2c6c17febe7381c5b203f01461"
+      },
+      "field": "required_function_order[3].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 1742,
+        "git_blob": "57a925d4de41aa8f3eff2dcfbe9527063d2f3818",
+        "sha256": "ed9cc55bc94940134440ac03372e75a9186441e6b0a51c59f58fa030d6408e5d"
+      },
+      "before": {
+        "bytes": 1440,
+        "git_blob": "06d5ce7846a572f44469d5f7f210fab563fe7dd2",
+        "sha256": "45e0e9a1357af211d74980961301d7a0b6aef3310c06c8e6479e86f52aa573e7"
+      },
+      "field": "required_function_order[4].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 366,
+        "git_blob": "a8b72aa0688ef2f78694085886a65bb9779681cf",
+        "sha256": "36643c6aa92aa2e8f872848da645ef3b25968ea3f0a466598f609cb7e0a37c5f"
+      },
+      "before": {
+        "bytes": 310,
+        "git_blob": "4ff7cf51302d612d509af910aa9be49c6c39a2b6",
+        "sha256": "2587cc5d097eace4321ead3e335fcc42f723e2c946637a7d4d09c03e217194be"
+      },
+      "field": "required_function_order[5].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 437,
+        "git_blob": "68d74b1be268eea6ae667dfe70e931674e750668",
+        "sha256": "f82c18a5cbf25c3035d66f8bcd176bc3faf0e143181fb271941f84a8d11426f2"
+      },
+      "before": {
+        "bytes": 381,
+        "git_blob": "8c619bbe4b8590d467f7ab971a904f502e3e77c6",
+        "sha256": "5c8bb0698d5aa3fafaef9e0a5d4075b9d74a20c8f7c8ada5f59b993369fb8c5b"
+      },
+      "field": "required_function_order[6].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 1670,
+        "git_blob": "fce72bc5110dee14c254f54675607b4c4a0396ba",
+        "sha256": "ea18d39ad61b7f25cf8952a52c6633dfc8099b97656b11c729b21428cfe675ee"
+      },
+      "before": {
+        "bytes": 1642,
+        "git_blob": "1ad7a68c49275f8c5b0ba92f160f2e25d414cdb8",
+        "sha256": "bfb6b58e9990f29172e43106bc43ddc811664594b546645a4e70d381546f15c6"
+      },
+      "field": "required_function_order[7].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 3550,
+        "git_blob": "86a1be3cd3e998e9008002c04065fcba298ee4cb",
+        "sha256": "ef2cee344a459c68c009885023cc370466c826aaf059bbe50d74cbefa0ef9d02"
+      },
+      "before": {
+        "bytes": 3395,
+        "git_blob": "b5e2e1f3336b4be58368ac1156bcfa3f42def056",
+        "sha256": "495a13b97bc87baa9cfa7c15caef206739319d8b7ad1c5515a84330a69db3268"
+      },
+      "field": "required_function_order[8].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 1603,
+        "git_blob": "b03d49cbe8ef466e39bc08e2569e4041fc1e7b9e",
+        "sha256": "aa55760d90ef2964aee1d335080e639e45fdf54b6852f5845cb3f3d19fd81e4c"
+      },
+      "before": {
+        "bytes": 1627,
+        "git_blob": "35c2a23552a0d6569b39ea954697fa1e942e08b3",
+        "sha256": "750ece217c86b619c93486326b2f27d2836bff2e7cc34abdd09a66bebe36021a"
+      },
+      "field": "required_function_order[9].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "row": 430
+    },
+    {
+      "after": {
+        "bytes": 12557,
+        "git_blob": "5e982fbbd3a3835076c805e439944d192dd71aaf",
+        "sha256": "61d836acc4c0174471c59d54414185f17cf04ec87a3319ce86a730ff8d32a914"
+      },
+      "before": {
+        "bytes": 12226,
+        "git_blob": "187064c23fb84670340a52e72088f3d04615aa56",
+        "sha256": "702f5723c3b1110912884d1f35e0d49f810c3c6922784b78b65705b18d8824a4"
+      },
+      "field": "required_order[1][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "row": 431
+    },
+    {
+      "after": {
+        "bytes": 1296,
+        "git_blob": "f0ac12f955c9790cb8250939d4b50ec463f673c5",
+        "sha256": "aec7bfabab29609dd71d58b118c7a6b5a22de67f5c7f14206491df8efdbdef0a"
+      },
+      "before": {
+        "bytes": 1270,
+        "git_blob": "7b4709dc77599ac4e408f5b21cf11de041e5eeaf",
+        "sha256": "58035fe47f0f99a4d4aa07eac96420b3780ca89fa35d6e21e73f2e2dc4123025"
+      },
+      "field": "required_function_order[2].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "row": 431
+    },
+    {
+      "after": {
+        "bytes": 759,
+        "git_blob": "cb03d8fb275cd75aab18ab7743e4e7b2652d053d",
+        "sha256": "e65791c8d809aaac11987750a6d364dbff077f013fce500cbb76aef70bbbcfd7"
+      },
+      "before": {
+        "bytes": 790,
+        "git_blob": "ab85e48cac2912380042585532cf5a0cd5609790",
+        "sha256": "f537872c77469748b27bebc06cc61b2fd0e9c1104e87aee11a33b262b13cb77e"
+      },
+      "field": "required_function_order[3].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "row": 431
+    },
+    {
+      "after": {
+        "bytes": 1587,
+        "git_blob": "6e89f07152f4b5cbe7b9b329376f63590c92247b",
+        "sha256": "1374a0567e59c50f098aa792e80752be30616e386be36ec1e28654c83aae0cc3"
+      },
+      "before": {
+        "bytes": 1556,
+        "git_blob": "a24d1702d0224950e4e88d47a567ed9168eef55e",
+        "sha256": "44356ce5703ef475ec3d26a4b86aec4a3cf01022da1a3a3610e6aa0378678209"
+      },
+      "field": "required_function_order[4].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "row": 431
+    },
+    {
+      "after": {
+        "bytes": 3614,
+        "git_blob": "8c93f37fd34f05b42c1e750fbbad32cc38b18e43",
+        "sha256": "a34e437a5db2f451f20deb1c835654372b14ae4b196914e1524ed258861aca46"
+      },
+      "before": {
+        "bytes": 3439,
+        "git_blob": "0e02f025b7c728de4f1fb932ba06f58413d42a7e",
+        "sha256": "d661cc112fd9b955ed2857bee3cf5880abbdeeb140d0fc75dd5c44c960f87a58"
+      },
+      "field": "required_function_order[5].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "row": 431
+    },
+    {
+      "after": {
+        "bytes": 3445,
+        "git_blob": "c4da3bcd6083b292dbd09ac5975eac88dc15d3ef",
+        "sha256": "788a3940235337800fe28680abfb470f73f455dc42450df9eecc8a608398c303"
+      },
+      "before": {
+        "bytes": 3315,
+        "git_blob": "331b225f42f012ed68c4d75b37134e05e0cdc3fc",
+        "sha256": "09af8bea829c92093cef18c096a5ca79986860f416b4111049c247e2c274cf35"
+      },
+      "field": "required_function_order[6].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "row": 431
+    },
+    {
+      "after": {
+        "bytes": 1415,
+        "git_blob": "7c1a819940a661540c1ff5dffabca97ac0c550b1",
+        "sha256": "87edb9237cc740180d6b00eb9d6f5b1fa29452d1dd7e5378b8d4bf67e95cd1fd"
+      },
+      "before": {
+        "bytes": 1392,
+        "git_blob": "5062ced59a6af8c5c44f0457af26b46244663937",
+        "sha256": "ddadcb0b3edef9398ccd4f1cd57eb531ece19c455f269c4e3d34e33f0792bb47"
+      },
+      "field": "required_order[2][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "row": 432
+    },
+    {
+      "after": {
+        "bytes": 3521,
+        "git_blob": "ad53aea59fa914fce135165b5dc60bdff11eed6a",
+        "sha256": "b98f7b37223f9b7f11182c08f4a37dd734a1161bf772c0aee5f45035a9ad5781"
+      },
+      "before": {
+        "bytes": 3270,
+        "git_blob": "e80a6aade681120ae4e538956bac0cfd22781818",
+        "sha256": "778f8f649814666e0882ea3d4265b1447fdfd6c6fbe0dadc5ae490619b1637ed"
+      },
+      "field": "required_order[3][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "row": 432
+    },
+    {
+      "after": {
+        "bytes": 211,
+        "git_blob": "8ac3f71db44280b992885456886a2cbb7ab6869e",
+        "sha256": "2d488a68a9b6aa350d747579a76898346a52c959f2c2dd73c943629bd7b42e3d"
+      },
+      "before": {
+        "bytes": 188,
+        "git_blob": "ef6f1537e003aa2b2a56d04ae855cc4e2813bcec",
+        "sha256": "ac87161b5965ae822e73efd9dee9543821d617bb8f54fc2acd26592bd4adf46e"
+      },
+      "field": "required_function_order[3].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "row": 432
+    },
+    {
+      "after": {
+        "bytes": 3226,
+        "git_blob": "3c63a1cb44a63f1e974ee768594fde75bd0ebfdd",
+        "sha256": "b8c1f5200c931fefc2d4b14b787fa1290322a30af826d132e9bca36404798094"
+      },
+      "before": {
+        "bytes": 2975,
+        "git_blob": "33f782a8378074246b73bb34e940ebe4aaa276d6",
+        "sha256": "d6b4ebbf64bc5a87d90dd1edc4fec2566d3c89b2359704530d1a47d99eb8c347"
+      },
+      "field": "required_function_order[4].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "row": 432
+    },
+    {
+      "after": {
+        "bytes": 4219,
+        "git_blob": "5322f5284a261bf72916999888afb7c652c59f40",
+        "sha256": "65b202b20185d621372e2568a28dc4126b6d7aa585f35c7554b83757b2b97229"
+      },
+      "before": {
+        "bytes": 4116,
+        "git_blob": "27cdc224874f86153b16f8e4ca3fa479c34b1547",
+        "sha256": "ba1d05b88faa3a2081f60383072ff31d336406ac350fb03fbb25e0e7dfd76572"
+      },
+      "field": "required_order[7][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 3560,
+        "git_blob": "e4c49519043a27fb01eb46085d04bf5d40274fbd",
+        "sha256": "eeebd7c0706ce94d1d3e6a5f0f499a5e5ca5bffacc6a85f528dde3f8366dac47"
+      },
+      "before": {
+        "bytes": 3388,
+        "git_blob": "5c66df66e185166fa0660c0bb4714052c30b6dd8",
+        "sha256": "26aaf222bd16c68c2808b8bf5ea273f1bd646d18e79e3aa62acbca75e98a5505"
+      },
+      "field": "required_order[8][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 1526,
+        "git_blob": "89e194de4808df55860aa3a596af4916363f762a",
+        "sha256": "c018fc2544dc7b2248f8470400efb32a72642e5113ce32dbf56c150de10bf4e2"
+      },
+      "before": {
+        "bytes": 1463,
+        "git_blob": "10c5e8ee1d9df08925cf59867b2af176843b39ea",
+        "sha256": "49de8fcb3cf98ac1bb9856dea555cdfab4814da1e87386596018b26e3b90a51d"
+      },
+      "field": "required_order[9][1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 1926,
+        "git_blob": "9c72b52c44c1e4ca0d7d0b2e4c937a1b982188b0",
+        "sha256": "acc4e82a7e6e8c391cea741ea67b56f05b0610d9fdc82ea36bc3e31a85bf28e6"
+      },
+      "before": {
+        "bytes": 1858,
+        "git_blob": "b4c4bd0ee1234df4a4be2c98c1a8e53c85d8b951",
+        "sha256": "09ec690c8ad09e18de1b68e1459dd5ca7f1998815b2f9af5b9d15fa748466d85"
+      },
+      "field": "required_function_order[1].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 895,
+        "git_blob": "03d828fc8937622413746c3213c31919c25b4466",
+        "sha256": "0d7a0887be4432e0ee48568194da34fe89cf884c966190d42388ad76377e7399"
+      },
+      "before": {
+        "bytes": 886,
+        "git_blob": "fb96896fb904e62d098afa2293b33db7aa01b772",
+        "sha256": "d393d2e39c21031ad0535d1607528f0df5a59a2f184ea6cde9e25da0a2b1d64f"
+      },
+      "field": "required_function_order[2].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 990,
+        "git_blob": "b0f636e06720bcd60a6d0a1ee76d007a505dfc1d",
+        "sha256": "e602e45983ca43971e5cd09cb20350fe15aee1567b127fdc6bf9b1f77997095e"
+      },
+      "before": {
+        "bytes": 964,
+        "git_blob": "ab05bcb3fd9e87b3dab908c4f9c824fa816794e2",
+        "sha256": "7ec0766e75e526aabff832b8e11e2251607beea487755e5e847c16b6782aa9e9"
+      },
+      "field": "required_function_order[3].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 3221,
+        "git_blob": "dbd53a015d4ee7eb31c84882b6de82ebb9216168",
+        "sha256": "fd6316a71fa7f4a96238ab73a43e39e05546f264d72e73dae682acc1e4708e7f"
+      },
+      "before": {
+        "bytes": 3049,
+        "git_blob": "c1d6db91dac9940b0cf4b04a34336c0117a7fd60",
+        "sha256": "7313ed1e89e01a9f15addbbf64e24bb40ce5f3797c902db92e7664e848db6eb4"
+      },
+      "field": "required_function_order[4].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 1425,
+        "git_blob": "63a706952871fa33062d9dd342a7bcd8a0aa8d70",
+        "sha256": "e8be5236b21ee2a645d507981176a5d96b05f593566f98f43a5c5ec92bf18a3e"
+      },
+      "before": {
+        "bytes": 1362,
+        "git_blob": "24d7f253a307bdeb0edf343a587ab0f36829e9c5",
+        "sha256": "8572dcfc5e7a10d28e8cd76bab7fab43e20371ba1449fc94fd6dc83c4f3c359e"
+      },
+      "field": "required_function_order[5].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "row": 433
+    },
+    {
+      "after": {
+        "bytes": 1211,
+        "git_blob": "f6598c9e14169cac41a78ddcd6c44d7da49b0efa",
+        "sha256": "33081ccd34976150953d73d64553297ddb264634bbdcad2e8551a650391eaa85"
+      },
+      "before": {
+        "bytes": 1149,
+        "git_blob": "314b8a2569b6622cb84743a7f79735ddf7997756",
+        "sha256": "e50f4bdd177523558950c9da134448946cb8077f26db38f40434e0e6736d6e5e"
+      },
+      "field": "required_order[0][1]",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "row": 434
+    },
+    {
+      "after": {
+        "bytes": 1151,
+        "git_blob": "aefa1e37b6719899b876a8fee014d3bfe72e661d",
+        "sha256": "8f146a520588d527ed7db0ed42a212d4e163a3e4f4d5d27cf3425cdcb212d6ad"
+      },
+      "before": {
+        "bytes": 1089,
+        "git_blob": "236caf6bc16b9cbecd6f0549ecab6ab631a8eae1",
+        "sha256": "3666be80614ddef42a9d7674dc7915d6741c9a42f2f79793a2e95be51814aef5"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "row": 434
+    },
+    {
+      "after": {
+        "bytes": 4251,
+        "git_blob": "1116455fd95f07197a50f059754b57ce36bfb26d",
+        "sha256": "96db14a3d2f03823166a5a04f7c1eb1fc096b698d1c22401598cf379a25e83e8"
+      },
+      "before": {
+        "bytes": 3139,
+        "git_blob": "b0d12d26ef1433b14f0bfe1896f9d09944d5d8cd",
+        "sha256": "a63c8a2f64d4e6344f46ba09ee0e6cfb631f8f07b0cc77d45ac1fda501119da7"
+      },
+      "field": "required_order[5][1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 193,
+        "git_blob": "bb8615a7fce2939fb58e0dc861904346f4af46d7",
+        "sha256": "3bb95f75d848074f8fea23f59b12c7ab328d49d1792f9edd2d692da15d7503bf"
+      },
+      "before": {
+        "bytes": 150,
+        "git_blob": "fd447bc3a69e669b6244c4455ad4debf8c3ef40a",
+        "sha256": "c4fe7775e3ef67a9114f95fce0d321b4cfbfc148196226dc664ecec68e81d21a"
+      },
+      "field": "required_order[7][1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 4236,
+        "git_blob": "5cb498d81f8fe399f1c61bf2676a6c75f45834f3",
+        "sha256": "e7a80e5843242cd98111860fd965df69cf22c677e7a22a6688715aa40d62375e"
+      },
+      "before": {
+        "bytes": 3479,
+        "git_blob": "3b2a6ba12d5241eb2f78fb05fef1d33abc9d3474",
+        "sha256": "69c458a59c4860d273b09640a40ad3492bc5573fc10bd2463000e2157815c80b"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 632,
+        "git_blob": "c38c4f7c99d5daafb4ebb4d75320f5eaf445c716",
+        "sha256": "47fea5b40801ea0642f3cf676a4a1588ce584b5bf146caa3a10f2d2f55c540e8"
+      },
+      "before": {
+        "bytes": 603,
+        "git_blob": "ceefb24fb79e9d3cac1b591d2996b4055d2bcce6",
+        "sha256": "da743c24c35a0f028832dfa5e143c84ed58508651d758d88dd7b6d4d6aaf10ad"
+      },
+      "field": "required_function_order[1].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 4201,
+        "git_blob": "38605fcb2a2e18f3fe06fd9ff5497296d2a56d5a",
+        "sha256": "3298b6f74c8b3c996dd1093c7db57411af33ec83383a3d8823576afc88631dfe"
+      },
+      "before": {
+        "bytes": 3089,
+        "git_blob": "c1ea5c10b65552996f7c4dba2e98665dd9739dc4",
+        "sha256": "62140f50eaf6d63bec68477f9861cc5093e46ed56158a5549a0c594ebf61abc7"
+      },
+      "field": "required_function_order[2].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 544,
+        "git_blob": "0bcb30270e55a3c56d65cac55e017722eac77990",
+        "sha256": "8f9bda762d3d8155b1148626e353904753d165b624307b8fc2af07891e98090b"
+      },
+      "before": {
+        "bytes": 501,
+        "git_blob": "e3895e4024a7588649710b6f3c61e0edc28379c3",
+        "sha256": "12c9abbc7d35e2261dcfbecbdfa3d5b7174b8895d5a58017d02d2c523154812f"
+      },
+      "field": "required_function_order[3].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 857,
+        "git_blob": "2568535241a2188a4bfadfd26aeb172ad24a9323",
+        "sha256": "343a9ff4270c85c49c428b94d416704f02efaf1c85598cc06424066b2fccc944"
+      },
+      "before": {
+        "bytes": 779,
+        "git_blob": "ca441719f38b0b139dfa54e87ce15fa4800d4e4c",
+        "sha256": "fa4622fe78ea635c58f476079d9423632771344911d12d7aadd59fa6c4cc69df"
+      },
+      "field": "required_function_order[4].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 359,
+        "git_blob": "4e00331d3322f80abd918c5171ff9277d6faca0f",
+        "sha256": "22d716c4a1d56636bfc9f739900c6981343b57ef3f486380e4804880b3b8ea5d"
+      },
+      "before": {
+        "bytes": 335,
+        "git_blob": "fa14fe9aca383c676fa23afccb275870191b862b",
+        "sha256": "666cefbfb2bb5c2f9b069a1120d2dfe252452c3928466c21f747779c4cd2c33b"
+      },
+      "field": "required_function_order[5].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 952,
+        "git_blob": "9038d856b944344e135ea80c09712ef198c21480",
+        "sha256": "84e08af7ae4a3aa032374d9d828c51d594f535fe0f57d6520884170762662d09"
+      },
+      "before": {
+        "bytes": 865,
+        "git_blob": "e2bfecb2fad66295ff08bfd08622960aa9c22cb6",
+        "sha256": "175bef8aef92a1d5368621cadd2561e60bde7503cc01fa8a5485516f8a8df2bd"
+      },
+      "field": "required_function_order[6].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "row": 435
+    },
+    {
+      "after": {
+        "bytes": 1952,
+        "git_blob": "45581ce8d4cf29017fe64d21421e4bffff7bfba2",
+        "sha256": "eb3476009fd02e49940d60e513ed0a976cb7b404eb403d2acb35cffcf2d583d9"
+      },
+      "before": {
+        "bytes": 1841,
+        "git_blob": "b0da3eb65d0450fac33fb08372697a4cdf7ab961",
+        "sha256": "87127675ee64411fb4a568ead2e900143328ff8040692d051195b2089ff8b0bc"
+      },
+      "field": "required_function_order[0].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "row": 436
+    },
+    {
+      "after": {
+        "bytes": 1873,
+        "git_blob": "9d096c50695715d69732aa1e01dc35d8f55ba3a7",
+        "sha256": "3c06d7a8309d068e0d6d04c94373ee634432767d53a33b574cb0ff7a844a5755"
+      },
+      "before": {
+        "bytes": 1782,
+        "git_blob": "82b4b275370fd08b355ac831edd209d04a72f86b",
+        "sha256": "4d47e65c86d41a2a2aaf50a13d53e0e5ef0bb7a107985adb806384fae98602be"
+      },
+      "field": "required_function_order[1].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "row": 436
+    },
+    {
+      "after": {
+        "bytes": 664,
+        "git_blob": "634a3490ad1f0d12efc709a2e027e2874fbc7f8e",
+        "sha256": "8076baf48f04e68ea6b33e73eef015af623bb71208ecc2803944713effe1d484"
+      },
+      "before": {
+        "bytes": 567,
+        "git_blob": "dc453ee9113c666ff7c7f64677ab45cc664722a3",
+        "sha256": "d629819d9b6d6cc611b1ce71683b24d9d0af076493ca5ee56ccb59160e788a2e"
+      },
+      "field": "required_function_order[3].sequence[1]",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "row": 436
+    }
+  ],
+  "full_author_span_record": {
+    "bytes": 985234,
+    "git_blob": "649aae35a855ffc4278f5f660dd43d88e1c91799",
+    "sha256": "4a10dc001a2ac8c981938c1af10542a7a28be35fef3824282dd17f4e1a22c0ca"
+  },
+  "new_protected_count": 442,
+  "old_protected_count": 437,
+  "old_row411_byte_schema_equal": true
+}

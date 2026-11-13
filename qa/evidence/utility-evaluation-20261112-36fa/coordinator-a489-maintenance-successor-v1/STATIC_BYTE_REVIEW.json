@@ -1,0 +1,149 @@
+{
+  "format": "hepta-a489-maintenance-preparation-byte-review-v1",
+  "status": "HOLD_NOT_EXECUTED",
+  "original_driver": {
+    "bytes": 68496,
+    "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259",
+    "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13"
+  },
+  "driver": {
+    "name": "driver-maintenance.HOLD.py",
+    "bytes": 68520,
+    "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed",
+    "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6"
+  },
+  "config": {
+    "name": "WAITING_CONFIG.json",
+    "bytes": 10895,
+    "sha256": "a67115ebbd521c5637212f22308808fac33e9efa48f60b6981a5a804dc202994",
+    "git_blob": "e9308cb6cc5e7fd949236ded84f593ec81143795"
+  },
+  "exact_replacements": [
+    {
+      "before": "REPO=pathlib.Path(\"/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1\")",
+      "after": "REPO=pathlib.Path(\"/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1\")"
+    },
+    {
+      "before": "EVIDENCE=pathlib.Path(\"/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1\")",
+      "after": "EVIDENCE=pathlib.Path(\"/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1\")"
+    },
+    {
+      "before": "HEAD=\"0c59aaca0b4932507f068c723f73da2f96729b3d\"",
+      "after": "HEAD=\"d25675445c39f76db69a7bd8e71a1a72e1cd5b9f\""
+    },
+    {
+      "before": "TREE=\"4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09\"",
+      "after": "TREE=\"a489b394666b8141840275128a780605b024cde0\""
+    },
+    {
+      "before": "NATIVE_INVENTORY={\"bytes\":3541985,\"git_blob\":\"68342846200b9ba15f0483d89e28bfcf4c499a44\",\"sha256\":\"686c516814839ce12a3de6a8907a8efd5f27d4d39d9d4b14e380137698faa1f4\"}",
+      "after": "NATIVE_INVENTORY={\"bytes\":3543409,\"git_blob\":\"7647480c5ed06525e1661ac451d0ac0ff2b23ea7\",\"sha256\":\"69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b\"}"
+    },
+    {
+      "before": "SUCCESSOR_INVENTORY={\"bytes\":5629701,\"filesystem_entries\":15237,\"git_blob\":\"a596ae68859e3263a9ee58e2b5d7334ac9314c34\",\"sha256\":\"affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44\",\"tracked_entries\":15237}",
+      "after": "SUCCESSOR_INVENTORY={\"bytes\":5631947,\"filesystem_entries\":15243,\"git_blob\":\"f1e2d72f99093581403a2dcc91b55da22a33f905\",\"sha256\":\"0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0\",\"tracked_entries\":15243}"
+    },
+    {
+      "before": "LEAVES=15237",
+      "after": "LEAVES=15243"
+    },
+    {
+      "before": "observed.get(\"new_objects_fully_verified\")==16652",
+      "after": "observed.get(\"new_objects_fully_verified\")==16661"
+    }
+  ],
+  "inverse_full_bytes_equal": true,
+  "top_level_definition_count": 51,
+  "byte_identical_definitions": [
+    "PreconditionError",
+    "IntegrityError",
+    "now",
+    "sha256",
+    "oid",
+    "check",
+    "nodup",
+    "parse",
+    "regular_read",
+    "jbytes",
+    "write",
+    "jwrite",
+    "gzrecord",
+    "event",
+    "pin_bytes",
+    "read_input",
+    "real_directory",
+    "external_directory",
+    "run_readonly",
+    "git",
+    "git_state",
+    "verify_original_inputs",
+    "load_module",
+    "parse_supervisor",
+    "validate_materialization_current",
+    "verify_stage_source_entries",
+    "active_build_processes",
+    "installed_file_observation",
+    "project_runtime_file",
+    "validate_runtime_restoration",
+    "validate_archive_restoration",
+    "environment_preflight",
+    "metadata_inventory",
+    "actual_leaf_map",
+    "merkle",
+    "OriginalBlobReader",
+    "read_actual_leaf",
+    "archive_transition",
+    "capture_source",
+    "check_fmt_base",
+    "set_alarm",
+    "alarm_handler",
+    "bounded_record",
+    "stage",
+    "validate_config",
+    "initial_preflight",
+    "finalize_source",
+    "finalize_inputs",
+    "retain_terminal",
+    "main"
+  ],
+  "changed_definitions": [
+    "validate_materialization"
+  ],
+  "sole_function_change": "Exact observed new object union count 16652 to 16661; original predicate and all remaining bytes unchanged.",
+  "original_budgets": {
+    "fix": 7200,
+    "fmt": 900,
+    "preflight": 600,
+    "records": 300,
+    "outer": 9300
+  },
+  "original_fix_argv": [
+    "just",
+    "fix",
+    "-p",
+    "codex-hepta-intelligence-eval",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-learning-ledger"
+  ],
+  "original_fmt_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c0f78493f815780f68b9bf5e390a21314d79311f"
+  ],
+  "actual_materialization_proofs": null,
+  "maintenance_dispatch_authorized": false,
+  "H_calls": 0,
+  "source_writes": 0,
+  "historical_results_preserved": {
+    "0c59_fix_job": "1a1d3eccd3a-392-231",
+    "fix_returncode": 101,
+    "fix_consumed": true,
+    "old_apply4_fmt_job": "1a1d41eb3ef-392-2b2",
+    "not_reclassified": true
+  },
+  "lock_design": "Reuse the exact original EX launcher; it alone holds an inheritable EX descriptor. The original 3a0f6 main does not take a second flock.",
+  "next": "Bind only actual terminal proof to a new config after complete materialization, then freeze exact six-file create-only stage and original EX main requests for Root/peer review. No invocation from this preparation."
+}

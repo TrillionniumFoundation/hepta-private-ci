@@ -1,0 +1,44 @@
+--- 3a0f6-original
++++ a489-HOLD
+@@ -7,15 +7,15 @@
+ import base64, datetime, gzip, hashlib, json, os, pathlib, re, shutil, signal, stat
+ import subprocess, sys, tempfile, time, traceback, types
+ 
+-REPO=pathlib.Path("/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1")
+-EVIDENCE=pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1")
++REPO=pathlib.Path("/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1")
++EVIDENCE=pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1")
+ OUT=EVIDENCE/"run"
+ CONFIG=EVIDENCE/"APPROVED_MAINTENANCE_CONFIG.json"
+ INVENTORY_FILE=EVIDENCE/"inventory-driver.original.py"
+ ENVIRONMENT_FILE=EVIDENCE/"MAINTENANCE_STARTED.original.json"
+ GIT="/usr/bin/git"
+-HEAD="0c59aaca0b4932507f068c723f73da2f96729b3d"
+-TREE="4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09"
++HEAD="d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
++TREE="a489b394666b8141840275128a780605b024cde0"
+ C0F="c0f78493f815780f68b9bf5e390a21314d79311f"
+ C0F_TREE="313ee34febc8ccc54c611ab56286e289518c63cb"
+ A96="a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+@@ -28,9 +28,9 @@
+ DONOR_HEAD="cc57c7198db6293ccca562253c42fffbe2a04633"
+ DONOR_TREE="b7b357c07b5539769a068c6b9b009629f5612d1e"
+ COORDINATION_LOCK=pathlib.Path("/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/SOURCE_COORDINATION.lock")
+-NATIVE_INVENTORY={"bytes":3541985,"git_blob":"68342846200b9ba15f0483d89e28bfcf4c499a44","sha256":"686c516814839ce12a3de6a8907a8efd5f27d4d39d9d4b14e380137698faa1f4"}
+-SUCCESSOR_INVENTORY={"bytes":5629701,"filesystem_entries":15237,"git_blob":"a596ae68859e3263a9ee58e2b5d7334ac9314c34","sha256":"affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44","tracked_entries":15237}
+-LEAVES=15237
++NATIVE_INVENTORY={"bytes":3543409,"git_blob":"7647480c5ed06525e1661ac451d0ac0ff2b23ea7","sha256":"69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"}
++SUCCESSOR_INVENTORY={"bytes":5631947,"filesystem_entries":15243,"git_blob":"f1e2d72f99093581403a2dcc91b55da22a33f905","sha256":"0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0","tracked_entries":15243}
++LEAVES=15243
+ TARGET=pathlib.Path("/data/hepta-utility-36fa-final-native-target-v1")
+ DEPOT=pathlib.Path("/data/hepta-utility-36fa-runtime-materials-86dd-v1")
+ FIX=["just","fix","-p","codex-hepta-intelligence-eval","-p","codex-hepta-agentd","-p","codex-hepta-learning-ledger"]
+@@ -361,7 +361,7 @@
+     donor_git=observed["donor_git_state_after"]["git_state"]
+     check(donor_git.get("head")==DONOR_HEAD and donor_git.get("tree")==DONOR_TREE,
+           "historical donor is the actual cc57 repository, not the new candidate")
+-    check(observed.get("new_objects_fully_verified")==16652 and
++    check(observed.get("new_objects_fully_verified")==16661 and
+           observed.get("donor_objects_fully_verified")==16449 and
+           observed.get("physical_leaves_created")==LEAVES,"complete approved object/source counts")
+     index=observed.get("current_index")

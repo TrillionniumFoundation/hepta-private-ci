@@ -1,0 +1,182 @@
+{
+  "format": "hepta-runtime-original-binary-companion-map-v1",
+  "job_id": "1a1d468462a-392-3bb",
+  "companions": [
+    {
+      "format": "gzip-base64-original-native-parts",
+      "raw_name": "final.new-index.raw",
+      "raw": {
+        "bytes": 2080152,
+        "sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b",
+        "git_blob": "5dfba375a9e88dc0578070f19e90bc25aee6efef"
+      },
+      "compressed_name": "final.new-index.raw.gz",
+      "compressed": {
+        "bytes": 726664,
+        "sha256": "0f99b4796835282e3ab17e974316c75e23bfe99dc1089b76c5ddf7095e5005b1",
+        "git_blob": "0670cb6c264a0317db53ccbb4490a5d993abae3c"
+      },
+      "parts": [
+        {
+          "name": "final.new-index.raw.gz.part-001.b64",
+          "bytes": 349529,
+          "sha256": "0a20c4363a4192d5d4c5187a6b45cafb9d9a929014f236e992a968414cc33d75",
+          "git_blob": "b75cae48ae5c046380eb6af06640a86fc4ca1c3e",
+          "offset": 0,
+          "next_offset": 262144,
+          "decoded": {
+            "bytes": 262144,
+            "sha256": "ac918be9b5f30f04115d9786871cd324c692f4ea75790ffac3c9a95082f1a8dd",
+            "git_blob": "83df1964b550f70a9b187b897df9a7e99de91807"
+          }
+        },
+        {
+          "name": "final.new-index.raw.gz.part-002.b64",
+          "bytes": 349529,
+          "sha256": "f5dc8c2c33c4cc1a95ac0d27af1060da477cf18ba3ca02519a9dfc17fe48b4d8",
+          "git_blob": "9108d0073d49f4a91ef5174b22195a79c907f3b0",
+          "offset": 262144,
+          "next_offset": 524288,
+          "decoded": {
+            "bytes": 262144,
+            "sha256": "7937b9f0493b35a1e9e1e38d4162775b72842c7030bb4549fa0ee3da7de432fc",
+            "git_blob": "ac460fe4e014849b27d05c4efad0f1f4c06050b9"
+          }
+        },
+        {
+          "name": "final.new-index.raw.gz.part-003.b64",
+          "bytes": 269837,
+          "sha256": "0b5fc8a5e53b83eb54e037846f6e93dd2895ffd6294d9f2b8e025bf2e9ab420c",
+          "git_blob": "e6de8f5c8d419e9996aab13dfe46c931faddff0c",
+          "offset": 524288,
+          "next_offset": 726664,
+          "decoded": {
+            "bytes": 202376,
+            "sha256": "1fd4b9a47c18c97032e09ed95df3105731bef04b858a6c5d0069f97f0831c20c",
+            "git_blob": "392430f5bf34f5a0ef5e0091eec58eb33aacfa70"
+          }
+        }
+      ],
+      "actual_native_read_ranges": [
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_000000.original.json",
+          "offset": 0,
+          "next_offset": 65536,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_065536.original.json",
+          "offset": 65536,
+          "next_offset": 131072,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_131072.original.json",
+          "offset": 131072,
+          "next_offset": 196608,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_196608.original.json",
+          "offset": 196608,
+          "next_offset": 262144,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_262144.original.json",
+          "offset": 262144,
+          "next_offset": 327680,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_327680.original.json",
+          "offset": 327680,
+          "next_offset": 393216,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_393216.original.json",
+          "offset": 393216,
+          "next_offset": 458752,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_458752.original.json",
+          "offset": 458752,
+          "next_offset": 524288,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_524288.original.json",
+          "offset": 524288,
+          "next_offset": 589824,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_589824.original.json",
+          "offset": 589824,
+          "next_offset": 655360,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_655360.original.json",
+          "offset": 655360,
+          "next_offset": 720896,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        },
+        {
+          "name": "final.new-index.raw.gz.READ_OFFSET_720896.original.json",
+          "offset": 720896,
+          "next_offset": 726664,
+          "version": "2050:51121845:726664:1794565144074362412:1794565144074362412"
+        }
+      ],
+      "actual_complete_read_equal": true,
+      "native_artifact_pins_equal": true,
+      "raw_and_gzip_standalone_Git_upload_claimed": false
+    },
+    {
+      "format": "gzip-base64-original-native-parts",
+      "raw_name": "final.git-metadata.json",
+      "raw": {
+        "bytes": 2234,
+        "sha256": "17530eef584440894d767eec9771201199e6313797bb293122eb20cb7fba6e13",
+        "git_blob": "8d6af319d99c5f9c47e5a7e761c118c5ba2c767b"
+      },
+      "compressed_name": "final.git-metadata.json.gz",
+      "compressed": {
+        "bytes": 790,
+        "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6",
+        "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a"
+      },
+      "parts": [
+        {
+          "name": "final.git-metadata.json.gz.part-001.b64",
+          "bytes": 1057,
+          "sha256": "e650ec6702df31730c81c4146b8f03259728525ca548daee7fe9aee8cdea52fa",
+          "git_blob": "42d93bd4847a2d4146d73178d57f8dbf634151ac",
+          "offset": 0,
+          "next_offset": 790,
+          "decoded": {
+            "bytes": 790,
+            "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6",
+            "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a"
+          }
+        }
+      ],
+      "actual_native_read_ranges": [
+        {
+          "name": "final.git-metadata.json.gz.READ_OFFSET_000000.original.json",
+          "offset": 0,
+          "next_offset": 790,
+          "version": "2050:51121875:790:1794565144657603999:1794565144657603999"
+        }
+      ],
+      "actual_complete_read_equal": true,
+      "native_artifact_pins_equal": true,
+      "raw_and_gzip_standalone_Git_upload_claimed": false
+    }
+  ],
+  "source": "Actual retained native gzip bytes read through exact stable-version chunks; original native part bytes regenerated and required to equal original ARTIFACTS entries.",
+  "complete_source_inventory_included": false
+}

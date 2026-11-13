@@ -1,0 +1,83 @@
+{
+  "base_actual_physical_tree": "f905b18e6b05de1582024548179725a05d932536",
+  "canonical_source_deletions": [],
+  "expected_after_tree": "a489b394666b8141840275128a780605b024cde0",
+  "expected_leaves": 15243,
+  "expected_prepared_before_tree": "2b423171ef3f1057ebaa081daf3ce42b78f467d7",
+  "final_boundaries": 633,
+  "final_protected_rows": 442,
+  "format": "hepta-coordinator-actual-format-registration-author-review-v1",
+  "formatted_marker_values": 80,
+  "formatted_old_rows": 23,
+  "independent_prior_evidence": {
+    "coordinator_rebase_peer": "f7766b77fe1a7df5a0cc0b63b5a01d9b88e9d85a",
+    "fmt62_semantic_peer": "976863ddbbca0ee4558e7846eddcb458114590cb",
+    "metadata_name_peer": "8846963f793638f9b00e629de9b42966ec20fef3",
+    "old_qa_marker_peer": "abade3fd99defe3139c34b334167c36d4b57a370"
+  },
+  "lifecycle_limits": [
+    "RootSession timeout/outer cancellation leaves worker terminal state Unknown; no join guarantee is supplied.",
+    "Cold mechanism cases reopen the same protected Current/journal in one process; no Root process cold restart was observed.",
+    "Twelve new public methods still have no non-test caller. Root host/startup production wiring is a separate open implementation boundary."
+  ],
+  "main_or_root_startup_integration_completed": false,
+  "native_phase_count_or_driver_or_filter_semantics_changed": false,
+  "new_attack_specs": 24,
+  "new_boundaries": 12,
+  "new_lint_or_qualification_success": false,
+  "new_methods": 3,
+  "new_methods_non_test_callers": [],
+  "new_rows": 5,
+  "old_methods_byte_equal": 602,
+  "old_methods_with_explicit_registration_changes": 2,
+  "ordinary_scope_digest_changes": 0,
+  "original_attack_specs": 83,
+  "original_boundaries_preserved": 621,
+  "original_forbidden_preserved": true,
+  "original_methods": 604,
+  "original_native_driver": {
+    "bytes": 14986,
+    "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+    "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+  },
+  "original_ordinary_boundary_slice": "[541:569]",
+  "original_ordinary_literal_specs": 17,
+  "original_protected_rows": 437,
+  "original_qa_files": 64,
+  "original_root_budget_seconds": 7200,
+  "original_root_threads": 1,
+  "prior_fix101_remains_failed": true,
+  "provider_boundary_slice": "[569:]",
+  "provider_scope_digest_changes": 39,
+  "qa_or_full_collector_or_rust_or_native_executed": false,
+  "removed_methods": 0,
+  "retries": 0,
+  "root_workflow_appended": 9,
+  "root_workflow_expected_parents": 48,
+  "root_workflow_old_parents": 39,
+  "row411_preserved": true,
+  "run_ignored": "only",
+  "source_packet": {
+    "bytes": 6316265,
+    "git_blob": "e01b6c1689e1d834701a0d4565c5da662936ea80",
+    "path": "/tmp/hepta-36fa-coordinator-f905-registration-frozen-v1/SOURCE_PACKET.json",
+    "sha256": "6c9f1ae9ea4cd4f98b6d14ef628c1121b88dc2b27775f6e5867e2cb4bf6cd7c5"
+  },
+  "source_patch": {
+    "bytes": 1337312,
+    "git_blob": "30f0ab160ed982e1c8b469dad35cc980746a2eb0",
+    "path": "/tmp/hepta-36fa-coordinator-f905-registration-frozen-v1/SOURCE_DELTA.patch",
+    "sha256": "0315818bf779ba6a199a6353ea6b6382cecd04aa3c43f12800ea35cdf77359df"
+  },
+  "source_paths": [
+    ".github/blob-size-allowlist.txt",
+    ".github/workflows/hepta-daemon-learning-native.yml",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/PROVIDER_LOCAL_READ_SOURCE_CONTRACT.json",
+    "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+    "qa/b4-no-bypass/test_resident_provider_local_read_source_closure.py",
+    "qa/b4-no-bypass/test_resident_root_source_closure.py"
+  ],
+  "source_roots_ignore_and_authority_preserved": true,
+  "status": "FROZEN_PREPARATION_ONLY_INDEPENDENT_REVIEW_REQUIRED"
+}

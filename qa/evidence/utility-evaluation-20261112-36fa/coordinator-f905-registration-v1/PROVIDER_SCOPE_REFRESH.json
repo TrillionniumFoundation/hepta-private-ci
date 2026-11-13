@@ -1,0 +1,1355 @@
+{
+  "actual_attack_locations": [
+    {
+      "actual_occurrences": 1,
+      "function": "clone",
+      "group": "sealed_clones",
+      "marker": "Arc::clone(&self.original)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "clone",
+      "group": "sealed_clones",
+      "marker": "Arc::clone(&self.original)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "self.version.state.try_lock()",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(held_trainer, given_trainer)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(held_evaluator, given_evaluator)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "PublicationAccess::Readback",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "require_original_shared_readbacks",
+      "group": "original_identity",
+      "marker": "RetainedVersionFinalUseOutcomeV1::Published",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_original_shared_predecessors",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(original_t, current_t)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_original_shared_predecessors",
+      "group": "original_identity",
+      "marker": "!std::ptr::eq(original_e, current_e)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_original_local_shared_readbacks",
+      "group": "original_identity",
+      "marker": "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": ".take()",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "!(1..=128).contains(&slot.next_request_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "request_id.checked_add(1)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": ".min(self.original.original.original_end())",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "tokio::time::timeout_at(",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "response.require_request(&request)?",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "self.require_original_window()?",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 3,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "Instant::now() >= deadline",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original",
+      "group": "local_budget",
+      "marker": "*destination = Some(slot)",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": ".take()",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "!(1..=128).contains(&slot.next_request_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": ".min(self.original.end)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "OriginalCircuitSelectionLocalReadbackV1::require_original_selection(self, &value)?",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "Instant::now() >= deadline",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_original_selection",
+      "group": "local_budget",
+      "marker": "*restore = Some(slot)",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": "Duration::from_millis(500)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": "Duration::from_secs(300)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": ".try_acquire_owned()",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "open_original_evaluated_local_read",
+      "group": "local_budget",
+      "marker": "Instant::now() >= admission_end",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "scope != material.scope",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "initial.snapshot() != &material.initial",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "&original_dataset != dataset.snapshot()",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "channel: Mutex::new(None)",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "bind_original_evaluated_local_read",
+      "group": "readiness",
+      "marker": "local: Some(local)",
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_completion_readiness",
+      "group": "readiness",
+      "marker": "self.original.context.mode()? != wire::Mode::NextUse",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "read_completion_readiness",
+      "group": "readiness",
+      "marker": "LocalReadOperation::CompletionReadiness",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "self.read_original(&state)?",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "before != after",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "after.publication().is_none()",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "cut.require_fresh(",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "selection.original_receipt_predecessors(",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "original_evaluated_next_use_response",
+      "group": "version_current",
+      "marker": "RetainedVersionFinalUseOutcomeV1::Published",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "respond",
+      "group": "version_current",
+      "marker": "Instant::now() >= self.end",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "respond",
+      "group": "version_current",
+      "marker": "!(1..=128).contains(&request_id)",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "respond",
+      "group": "version_current",
+      "marker": "OriginalVersionLocalReadOperationV1::CompletionReadiness",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "super::root_pair(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "super::require_root_pin(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "require_process(&recipient)?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "sockets.insert(wire::socket_identity(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "send_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "now.checked_add(lifetime_ns)",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "receive_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "super::require_root_pin(&sender, root.pid as u32)?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "receive_root_candidate_stage_handoff",
+      "group": "root_handoff",
+      "marker": "validate_packet(&packet, profile.binding())?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "validate_packet(&self.packet, profile.binding())?",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "check_lifetime(&self.sender)",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "minimum.checked_sub(now)",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_original_streams",
+      "group": "root_handoff",
+      "marker": "require_timing(",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "receive",
+      "group": "root_handoff",
+      "marker": "libc::MSG_CMSG_CLOEXEC",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "receive",
+      "group": "root_handoff",
+      "marker": "libc::MSG_TRUNC | libc::MSG_CTRUNC",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "ResidentRootAuthorityV3::perform(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "ResidentRootAuthorityV3::readonly(&self.owner.authority)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_candidate_service",
+      "group": "root_service",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline(",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "run",
+      "group": "root_service",
+      "marker": "cancellation.clone().drop_guard()",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "run",
+      "group": "root_service",
+      "marker": "tokio::join!(run, server)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "run",
+      "group": "root_service",
+      "marker": "root_cancellation.cancelled()",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "run",
+      "group": "root_service",
+      "marker": "shutdown.0.shutdown(Shutdown::Both)",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 2,
+      "function": "run",
+      "group": "root_service",
+      "marker": "work.await",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "original != expected",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.peer.check_peer_lifetime()?",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "wire::authenticate_receipt(",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "&authenticated != original",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.execution_requested = true",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "Ok(Arc::new(self))",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "original != expected",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.peer.check_peer_lifetime()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "wire::authenticate_completed(",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "&authenticated != original",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "channel.execution_requested = true",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "seal_original_completed_readback",
+      "group": "shared_seals",
+      "marker": "Ok(Arc::new(self))",
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_root",
+      "group": "root_custody_consumption",
+      "marker": "libc::getuid()",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "require_root",
+      "group": "root_custody_consumption",
+      "marker": "libc::geteuid()",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "from_original_prepared",
+      "group": "root_custody_consumption",
+      "marker": "current.recover_initial_operation(&operation_id, intent_digest)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "from_original_prepared",
+      "group": "root_custody_consumption",
+      "marker": "original.target() != prepared.prepared.target()",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "publish",
+      "group": "root_custody_consumption",
+      "marker": "std::mem::replace(&mut self.phase, InitialPhase::ReadbackRequired)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "publish",
+      "group": "root_custody_consumption",
+      "marker": "(*prepared).publish(signed)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_original",
+      "group": "root_custody_consumption",
+      "marker": "matches!(self.phase, InitialPhase::ReadbackRequired)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_original",
+      "group": "root_custody_consumption",
+      "marker": "recover_agentd_generation_initial_v1(",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "current.recover_initial_operation(",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "current.read_initial_operation(&original)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "recover_agentd_generation_initial_v1(",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "Arc::clone(&current)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "recover_from_original_current",
+      "group": "root_cold_original_recovery",
+      "marker": "operation.read_original()? != before",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "InitialPhase::Ready(ready)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "(*ready).into_circuit_feature_task(inputs.definition, inputs.source)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "let retirement = task.clone();",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "published_task: task",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "config.with_q24_circuit_task_profile(profile)?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "cell: runtime.cell",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "into_q24_task",
+      "group": "root_task_same_cell",
+      "marker": "source: runtime.source",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "drain_completed_task",
+      "group": "root_task_same_cell",
+      "marker": "require_root()?",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "actual_occurrences": 1,
+      "function": "drain_completed_task",
+      "group": "root_task_same_cell",
+      "marker": ".drain_completed_task(&self.cell, self.source.as_ref(), &self.identity)",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    }
+  ],
+  "all_83_original_attacks_equal": true,
+  "contract": {
+    "bytes": 358159,
+    "git_blob": "455182ec88d104fdcd66385133c3f1ce6f757ed0",
+    "sha256": "bd720ff5576f1a02f6dc6c67dff9a286befa353a626a22a37b4c1d5bfa11cae7"
+  },
+  "new_attack_specs": 24,
+  "new_paths": 45,
+  "old_paths": 41,
+  "old_scope_digest_updates": [
+    {
+      "after": {
+        "literal_source_sha256": "8ecde7d3220608dc7c3809cfa4cf12cf4c493a73402c125af5e6f8bab1b48393",
+        "masked_sha256": "66d088521bc26c93b26a3d9f4f37d40bd6fb9bea0cf55697a120830aaa7d6b12"
+      },
+      "before": {
+        "literal_source_sha256": "63b4a50bc6401d25c1f2969cab95584b1d8537b33af4a57301377903719f9179",
+        "masked_sha256": "46a4f830a80bf56a5a95142b335c04eb9a4c65286c498033f2c2c2e3d5ccfabe"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "selector": {
+        "header": "impl RootResidentLearningRegistrationV3",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "685797ffb99cafa67924c0bc4a4b34b4a675cebc648cfd3e036108109209d76e",
+        "masked_sha256": "511dfaaa721eeeb6459a162a849556c1e15a06d6a48fb74695cb83acb9dc88e3"
+      },
+      "before": {
+        "literal_source_sha256": "cb6ee785fd5b0ae6f65c0adc52d6933e009de2cb5d7e94d2706c7cc9a9aa679d",
+        "masked_sha256": "9cfe4def48e8acd4fb7de3f5b2bb0563d7b365bb62e78e155c53d54995e971f9"
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "selector": {
+        "header": "impl RootResidentCandidateServiceV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "bb84707b08e72862586b6c144541b17b4b411eba45b1a9a05bd01764a0b2ca3d",
+        "masked_sha256": "a499808389cb3d118aead773e01b64835754f2705cf509a556b95ae230be5d05"
+      },
+      "before": {
+        "literal_source_sha256": "c831f8b9f7bb8df30da82c793d20cfc756a71be426425dea1c135e2ab2d1d3a9",
+        "masked_sha256": "77c25a6b4025780a3b4b391b838922fc6585844d810059c724d3b0b009a4e976"
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "selector": {
+        "header": "impl OriginalCellQ24CandidateStageOwnersV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "c06084e6b4a97fa4f782620dc8cf627fa83f0d8b7b5ddc4184bf579a586a83b7",
+        "masked_sha256": "3fb181dfa763326c749dd2c67902cec0d54378272e737b5d7a059e1b9f2b77a5"
+      },
+      "before": {
+        "literal_source_sha256": "b4b8d0bb8cbbd3e1703eb9838694a569f0465b369a4debfc35868f68d2aa3d5d",
+        "masked_sha256": "e7c38e23235f07f833546ac72d66131aa854a18b9baa630209e23b221d2a318a"
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "selector": {
+        "header": "impl OriginalCellQ24TrainingCommandClientV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "e17c11daa311aa307290f788861c3c43d23b676a7912ad43793183d822015637",
+        "masked_sha256": "8570eb80185a894dd9f72281b65cf989c7e1850b146812623b9def2dc9c71831"
+      },
+      "before": {
+        "literal_source_sha256": "488f8c13733ff63d5a1a7b8e383a1865e57c8991f7dc0bae03af0603bdb3deca",
+        "masked_sha256": "fec60633bbd1d9309df95890b3c3dc38661cdc29242afc40c22eed30ae89c0c1"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "selector": {
+        "header": "impl OriginalCircuitCompletionReadinessClientV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "f4c5f2efcfd8e705e8d2986db788ed1baa294c119ce8d43f2f9f40704a80cc80",
+        "masked_sha256": "860c33bc5863e3cf71696564ffffc1fe6cc63d8e30bad18e8dca38fc2b31e0cc"
+      },
+      "before": {
+        "literal_source_sha256": "5ff99dd8ff1914e38a37e3f22f1352194dd21c4888205b8d8a4191bf0fb95b63",
+        "masked_sha256": "80db4e73ba594aec44792beb119f0fd0cc00abd1bc3ff013c12ba6796fb41cfa"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "ed7e4108cad77c23847204e7caba60ab81dfcfb5d87a6b321412675e18860ebe",
+        "masked_sha256": "53472a40413ec00b1d28b11d8d01fab0ab237f2c530dffa70efe605f70d025f8"
+      },
+      "before": {
+        "literal_source_sha256": "4fd493a2531e0f5a39e2ccfcbc511aa81eb0041eca100276b31fb9998be75a31",
+        "masked_sha256": "35699a8e7a17ca68c83a4f5b9aa43d55c0a7060cabed7c5c43f02b79dfc144f1"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "selector": {
+        "header": "impl NextUseSources for OriginalCircuitEvaluatedNextUseLocalSourcesV1<'_>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "ece9167373876177ec5744975834df478f07bfb6d3dd6cc7471df9228bd92a72",
+        "masked_sha256": "c9195f57a1a7ddac53007ff6c723a74342d5391b4e78213be3a405cd6ff61224"
+      },
+      "before": {
+        "literal_source_sha256": "1d1c140124b0b9a0d6eb591cfa55439ce7ef5abf7da4b96155dde6d85fef7492",
+        "masked_sha256": "ec61ee03c27c20b3b4e514f950359ef95324f6cfb14d2b5c84e022897fccf97f"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "selector": {
+        "header": "impl OriginalSelector",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "65710b67720a10fbcf5a8bdb31cf01b9e1a172055153f4eb3a29708e04d0e4bc",
+        "masked_sha256": "1c0ef346739d1ff1935608275b26e929baf5a3a536df732b87961b976d28d47b"
+      },
+      "before": {
+        "literal_source_sha256": "38284154a92f4550b7880cddbeee2653cf9dca5b7db381f75054eff4c83f2e76",
+        "masked_sha256": "01a89d332b2e669e19d31a137eaf505dd81f5c3a11f5aa172ef742526cfd85b7"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "9ee63c552a4839011c3996382884b56ee67d0b2d57f7f28bebbf365b55427189",
+        "masked_sha256": "0b3853190fdc219cb2e9416da420aba074f17923540e6c9e3ff2a429db8a8826"
+      },
+      "before": {
+        "literal_source_sha256": "9f068ecf6f60558df23c7ca761045ddebbcf4ccf0376a48738dcd131ddf6c4ae",
+        "masked_sha256": "b2defd64e92de44b20c87de707e48a50e52c1688f8a74104d4a8e85f01c56e74"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "selector": {
+        "header": "impl OriginalCircuitEvaluatedRetentionContextV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "1cf14aeffc7f14352ea8d5c75f48dc24edf1e08f8b8800d25112b1f2809ef43d",
+        "masked_sha256": "5df157f2912f9ffeeaf2642058791cb9b2a61b2ad005745782f413ed75a7d134"
+      },
+      "before": {
+        "literal_source_sha256": "ffc3ddb8dc53d6331a4f044ab8cf7704ad26ccf441f11b681b873266e379c757",
+        "masked_sha256": "2cd2594cd0bb0a9ef951bf3552692cd79815e999ff1dea9be4d71f76e4a227f4"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "fcaa3a413b4bcfcfd07cfd7a2f5232865db209bbc696461e8f9981b957a1886d",
+        "masked_sha256": "7b25c392af1e59d119665bb008fec1e113296618e997bc1c7e905d09a36fbbef"
+      },
+      "before": {
+        "literal_source_sha256": "27ce0f02132dd53f8483e5fef1c367c46e53c14aae02eec55038097154e6ef3c",
+        "masked_sha256": "7561df1165c9443d86f82263c89692bf93184a7333a5749fdb6f14b75d285d02"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "a477b58588057ec748160dade9d1bce1219fd609f263f9fa5730c995da03b14c",
+        "masked_sha256": "86d85c8e79a7a053e72c4b484cb20670cd7c608f2173250d182197e00f072565"
+      },
+      "before": {
+        "literal_source_sha256": "8410b3535a753b061e0fe3ad83a111847b3917e99eff3f41bc71f1790c502886",
+        "masked_sha256": "9f85d6b071f0347d72705d4fc570ca1b87ad90fe0fa9d296cecbe5a7e5da6a5a"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "b62a7d9f23680b5338d081816c1c51170be1586d501a262d2529fe8484a9c1f9",
+        "masked_sha256": "a6ab32af2369dbf43180d5d59a7dc32874eb1876ae0de9494d0c2160bd431e17"
+      },
+      "before": {
+        "literal_source_sha256": "3340b644a42b1a48bef5f5da5d2ccd68d687104372831074b37241784aad7424",
+        "masked_sha256": "c450876d5a5f685b043e0c3248c287ca66b6f2a8d49b51fafb5967ec3399a450"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "selector": {
+        "header": "impl SelectionSources for OriginalCircuitEvaluatedSelectionLocalSourcesV1<'_>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "ed23200f13480690ba27e287be81b3ad7ba8d11cfd1f169606f8ac58da815775",
+        "masked_sha256": "82806fb863fe84b9e40617da2384ba78df45827ac7d7d83a2d789a17d18c4f1e"
+      },
+      "before": {
+        "literal_source_sha256": "794cde1af34c364d8290c7ffe5283dc8d5f037e43587b9f0f1fc671dd8259fcc",
+        "masked_sha256": "0c33f967fc4bd23bad98148731725fba167d972676b58bb1c1eba9f2f7cc22ac"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "selector": {
+        "header": "impl OriginalCircuitPublishedLocalReadV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "07b4a35a97f6dc0a5482ad07cf9a8fb43f23484481dc2592da555eb29b1e000c",
+        "masked_sha256": "9a6e028de3b87b2244d7db33b4ba5027183f5dc8d4844fc2ba4089b15224e4c3"
+      },
+      "before": {
+        "literal_source_sha256": "76bb9307807cb5d99fc988109f917df476ab807d95d4ffe91d915e57b7ba1c13",
+        "masked_sha256": "4e6274057bb306bfd66eb7a1d27a4da6d8943676b8d10a929d73f2339a4c3dc4"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "selector": {
+        "header": "impl OriginalCircuitLearningReadClientV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "970d467a760bf0c741a9e43d66ed68e2d6fab55edccc9b6bdd6f9087c853f627",
+        "masked_sha256": "0b8f180ee97dbfd727ea8c3736ce0967d9c03be6626b6dbfd7dd4a385bc9845b"
+      },
+      "before": {
+        "literal_source_sha256": "688b23f3a3191d24771a1a6707b7cbd7f1a21a8a5f79a5a342cea40d07cb9ede",
+        "masked_sha256": "a89443b3f697d9827e00c41ca7e9050fa85c3cdd9fb44ff9161c9bd228e2f1d9"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "selector": {
+        "header": "impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOwnerV1<C, S>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "fd5b9aaed8806bbd659fe2d6cbe5365b69c01ae3920a7c9fe9e3295ef1bf3356",
+        "masked_sha256": "f2781e0436abbcc8fefbb2d22b43a3dab8ded186fbaa7b0cd51b6725a27fc34b"
+      },
+      "before": {
+        "literal_source_sha256": "5ca376dacd67036de6cdd994c3a227891a08af59149e99b970598c9c97d21b9c",
+        "masked_sha256": "755566f434621af68e84bf711441416fc593419605e025aa1607994818cb5a1a"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "selector": {
+        "header": "impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "266718b5da5c56fe9e0493d94d61022e3ac5c0f072ae581fce9e04bebab1c3f6",
+        "masked_sha256": "27f1699935fde1b9f9a87d45ec196140f1fceb00278fcd68c996fe294ba9b748"
+      },
+      "before": {
+        "literal_source_sha256": "7b042d032bb503db9bab6b78d5248a353e454f0742ec514ba2a1c465a751cba3",
+        "masked_sha256": "d3eaf3a8a96c0631704374cb1db6989da51fa6ce6e2e96676ab23ecfc5627c19"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "selector": {
+        "header": "impl OriginalVersionLocalReadBindingV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "2780355b09d9af5b4e49995dc58935e859c7e5bc3421d3879aebe107e674b82b",
+        "masked_sha256": "994d18532274685c6a996ff750a4ef87d0a4d2ae5aa8b087fa0e209088a41d4b"
+      },
+      "before": {
+        "literal_source_sha256": "a3207c2585e41646b07ab1fc39e85086c8900ae0a59d50f04dc97903ac64778e",
+        "masked_sha256": "94d01681abd7bbafddd689fa59ca456d6c2d2fb3a3a3351b446ab219a508e1af"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "selector": {
+        "header": "impl OriginalCircuitRetainedVersionHostV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "c064da01e27ba826e2367dfe4a1f299edf2c26001ce355863e81e67db893ca04",
+        "masked_sha256": "c8e6203c37f1916efc497fd9f17be96a33a290d6fe2996ad94fc0cb31321b84c"
+      },
+      "before": {
+        "literal_source_sha256": "090565509bddb00b2bb8c27a9b5246996fcef75318881f0770df602f076ab696",
+        "masked_sha256": "6597be2e8081244c4549f80428bad34df1cb3ab408ece338b83092b84e559301"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "selector": {
+        "header": "impl OriginalCircuitRetainedVersionHostV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "8841149b1a2cc0f4dd9381e9033efb7e182a1e3fc143a97adfef20052fb268aa",
+        "masked_sha256": "3393d95f8f416ffa9fe3e9ef87ec620015f8d1041ec91fc59c499a4b0096df0b"
+      },
+      "before": {
+        "literal_source_sha256": "f2d475262a4a8697b7a3051c75b0cc741a37bd4ce555c37c24e88d114acaa4b6",
+        "masked_sha256": "c48d04b693b96dc4a4da39214e70ad8b1db2b9fca262820684a6a1e0a2b834bd"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "selector": {
+        "header": "impl OriginalCircuitPublishedEvidenceReadbackV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "3b6bc124829a26f9856191c406cb6c56a7b8e7d2eadee2dd703e7432b7be0a99",
+        "masked_sha256": "e4debc065f90750b12c49d0ed52a4d290b68649d8a515819efcfb9735bdfb0de"
+      },
+      "before": {
+        "literal_source_sha256": "0642bc2f208922e45e3ced51c160b0d511170f81afdd638c6c0c0a0cea4cd7d2",
+        "masked_sha256": "35650a3c7f0a9f9310fbcbb6834b610eb1f2695fc2ffd272a453c69d48560dda"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "selector": {
+        "header": "impl OriginalCircuitRetainedVersionHostV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "a8f1d07394abf5e2fc075cef8c3562912afc8d11dc4a16cb5bd0c521511d82c8",
+        "masked_sha256": "e589b2095660ed9a72d0d42f923321867b5b87a577a750b50ee60a6a697b0231"
+      },
+      "before": {
+        "literal_source_sha256": "f8a46c661ad0afed872db6ef368856db0d018eee4f6023ffd191c61381a85982",
+        "masked_sha256": "520a4c31455d74d7d9c29eaab0d9891c60b3eb161ae577d3e82f361d7f8ca674"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "selector": {
+        "header": "impl RetainedVersionHostStateV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "25f164e0ecdc056f5395df3f45e9275e957ddf8f9a2207f7c6a342948def5713",
+        "masked_sha256": "a9550b7b540f8f61004fdfeea00515f0c85451adb5394692b3c94aa3ca8aabe6"
+      },
+      "before": {
+        "literal_source_sha256": "d84a2ba0f07945a72a22e6af13feea68f0f322ca5392fa4bb52157497bef69df",
+        "masked_sha256": "46cc39ddde631a45c4a2a602f7a6662395c01e77363e273651ec5504c1004ede"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "selector": {
+        "header": "impl OriginalCircuitSelectionLocalReadbackV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "f60554061471f9bc4d50a2d7343837015a083ce623835f5a3e451c792491e714",
+        "masked_sha256": "c552ebd0c87d19fb3d32060e71a6308f13a540ad9414e2c9e2cd2ce8fd060e65"
+      },
+      "before": {
+        "literal_source_sha256": "1de22c061ab65592e68ef69ddd110ed03e632b1399a2f59c0115abe56646e1e8",
+        "masked_sha256": "f04d1812e5c966b90be6754a2699039ff238e552a4963817af199afc40ff51d0"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "selector": {
+        "anchor": "open_original_evaluated_local_readback",
+        "header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "b1655a1502beec0e9fa007266866948438e3f7ecd4f9a0d45dab3d2f855bed0a",
+        "masked_sha256": "262c5eb999354e06e8c9ae4d9877c48496c00d4991d48dbfc4ad8a27da9c38ae"
+      },
+      "before": {
+        "literal_source_sha256": "bad35d2906d0168ea95a80b363c8b83649b6656c4af70d431526dc32b3953b52",
+        "masked_sha256": "57ab882edb199f6818cb58eef1a015964fe5377cdd54730c2040ef3349942902"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "selector": {
+        "anchor": "from_original_evaluated_local_shared_receipt_owner",
+        "header": "impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionCommandOwnerV1<W>",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "128b7c293cace8e94f0d9955904fc0971db6620c3a58a7118bbf5c35341bb02a",
+        "masked_sha256": "1c0bad908007fbd4ff4514823bcb7b6b9406ec6e7a50d89b0f1b8fcd797006bf"
+      },
+      "before": {
+        "literal_source_sha256": "955edacca88f986b1cc74ddeaa4e9906700b9c6f4f04a16ae4269291781142cd",
+        "masked_sha256": "8c5a611b0b353753898421acf0acc30b6dc185212082f1322eab93badac820ba"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "selector": {
+        "header": "impl OriginalCellEvaluationCommandClientV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "66502006bb7839ca7f06b4d14109459881f605c0188408b439ec1c67ea0df989",
+        "masked_sha256": "96bc2a1f1c21a1fe313dfcc6924e10151e61135d0fefd638eb885a31422959ab"
+      },
+      "before": {
+        "literal_source_sha256": "6d4b05cdb588fc3feca5e2361424840eba0041239efcd8af98cfb407a169d0fb",
+        "masked_sha256": "c870f8598642d15a0760e454a5939fb95998215e41042198efad1d535de97472"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "header": "impl RootCandidateStageHandoffV1",
+        "kind": "root_container"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "d57d4eff439f6c81184cd25ae21369dc6adda9884380d991d96f0c64c8ca84f1",
+        "masked_sha256": "f7646ceac3e6ad08485dc786134d585bd41ffdf6805fd0b4d7cf24e287ab733d"
+      },
+      "before": {
+        "literal_source_sha256": "128f5193e1617d744194e1093f51034b5f2eb518990e7e4edd9bd5a9e13dd852",
+        "masked_sha256": "554e0ff9ffb542f7b517778d7800ca7cefd80decf2c226c77452603b9f35a61a"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "send_root_candidate_stage_handoff"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "3294e4d6e3d02b60bfc5fc803169edbf7476d59e548af91888e1841beca4ae50",
+        "masked_sha256": "3294e4d6e3d02b60bfc5fc803169edbf7476d59e548af91888e1841beca4ae50"
+      },
+      "before": {
+        "literal_source_sha256": "9ffc307bf44bec88d7799baa806d2117f827163e6f17143bf534dc1251ce7296",
+        "masked_sha256": "9ffc307bf44bec88d7799baa806d2117f827163e6f17143bf534dc1251ce7296"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "receive_root_candidate_stage_handoff"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "c7e35b1f247c12612dd77263f72c5c850863da627b9a400579ab07118d59d856",
+        "masked_sha256": "7b7d43aa27a74a8fc7d4108b6459dd245a738c415b7545e01ffa366e1c3a1ebe"
+      },
+      "before": {
+        "literal_source_sha256": "9563be48c0f9d863871f7827722b7c8423fd1263d15a95fb30b00c1f12e5009e",
+        "masked_sha256": "6656d9512162535115ab70d6936aba0621a8cea24bb5750327664687d6a8ab21"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "actor"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "f9b93b6d869de4a719bb699027450d98422ebf9f31fe245b6b6e0db8e08145eb",
+        "masked_sha256": "7dc51771e524a9c6103948d9ce979c708d5e3b811651248ea066671d8b7392e6"
+      },
+      "before": {
+        "literal_source_sha256": "c2268bc8a01cc38a71efd863c63d44182ceb9179cad20af1d0731d1e6d71157b",
+        "masked_sha256": "6860b2393aa67fd562eb4310c53c1224df0a9d5ce23d1226de10213b634e5f0f"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "validate_packet"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "b9c87e58fc8cbb5551761717048d26b41c88bd1b44b097c1ef443b286ebd7799",
+        "masked_sha256": "e8c6af4419b2a15ebfbda6379a347b97b8a42f07c774d6019bee60c29ff0f2fe"
+      },
+      "before": {
+        "literal_source_sha256": "f81ba6d6d010b21e30de740cda87d06680cdd8dff2a0296dc7f566d9a10bb00b",
+        "masked_sha256": "90255fb91d14e0664e6130d576b05692cdd2f0746dda1f1ca96375240f792945"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "require_timing"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "694e98b1943d801e89055bf84531eba6d60082fa50655fd471f665efdab8e2d5",
+        "masked_sha256": "e645e73f8a67d895d96bc030774e468698b0f6934745ff5dd2526579cbadede4"
+      },
+      "before": {
+        "literal_source_sha256": "25e425114b895de36cc5086da6133a4926a0ed2690d56345c20f1415e208cb73",
+        "masked_sha256": "746874e70335fd2bd131c0e4423a2ba4797768a7ec7ff16402fd5c2f7d9cb9b5"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "require_process"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "c35b6699778026cd3be7d5426ce98ed5f8360363869d8b46a7d4921c22665924",
+        "masked_sha256": "009709c9cd81851ca239aecde22313e24fe677658bc883bd90c0e97b52456b0f"
+      },
+      "before": {
+        "literal_source_sha256": "3ec8331b01532cc43cbfc0473dc91ff2c893da4b87274b06b64b9e33c11167ef",
+        "masked_sha256": "35f0e6fd38f61cf0ddc1a1dd009b34e4c5c617e988925cd24e880e9731e145c3"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "selector": {
+        "item_kind": "const",
+        "kind": "root_named_item",
+        "name": "ROLES"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "85e2c4df446d022918638492cd709a8c195d8f3293d43c818b2b6a38ec0f0207",
+        "masked_sha256": "8b0015647b24167302160bf39974f54d5a5198a82f289f278f503364217c4b61"
+      },
+      "before": {
+        "literal_source_sha256": "b9dd14c956f46f2b3c79870abc0afdbb109a90f424cc581fdc2f4495bbf59cb3",
+        "masked_sha256": "4e20a02b1df7c4e245505966d7ed5749cca9f6e2d6448bdadd29ac8e257ff79a"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "send"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "720c12c32e11bc669516545d15f3cb26f77f63c35e882e5e04746f92991b3e06",
+        "masked_sha256": "b68985ce357add887490166cf6ba2dbf7a61c3a1ee0faaf77e7c24799cd87297"
+      },
+      "before": {
+        "literal_source_sha256": "6577ffbdcfa6a024dda59f0d925b49bb053c6db3f043702d7f9f2ea8c2c80072",
+        "masked_sha256": "13b199bee121c2499e926716e7056362dff3ca4e38c52caf8534acf6a3f84e7e"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "receive"
+      }
+    },
+    {
+      "after": {
+        "literal_source_sha256": "cc7f95667f121b46866c91effac94b9a95cd28ce10dd2fdaa2ab68aa02827e59",
+        "masked_sha256": "b9452d3b0b074be153273ec1ef5b0a5231c82682b2b908dcc5d812e16b84d106"
+      },
+      "before": {
+        "literal_source_sha256": "a35a595b8aa2377679cf0f8f8de509fe3c353c0021e0f7a3ffcf99674a7b7336",
+        "masked_sha256": "64b19bb0356e45a22337b8f261ef4a2ab68c0fbfdb044f59383d9bdb6c6a5707"
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "selector": {
+        "kind": "root_function",
+        "name": "monotonic_ns"
+      }
+    }
+  ],
+  "old_selectors_unchanged": true,
+  "qa_methods_executed": 0,
+  "whole_old_method_bodies_preserved_except_separate_required_registration_update": true
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "hepta-derived-git-full-readback-ledger-v1",
+  "scope": "Exact nine-file rebase on actual f905; only lib export insertion differs from the original frozen coordinator bodies. No source activation or qualification.",
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "bytes": 4519,
+      "sha256": "b0b5ee7575a5eb6c33d46d1eb8ba74402b6df1d45021bf4455866118dd9ecef0",
+      "git_blob": "f7766b77fe1a7df5a0cc0b63b5a01d9b88e9d85a",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/REVIEW.json",
+      "path": "coordinator-f905-independent-peer-v1/REVIEW.json"
+    },
+    {
+      "name": "FROZEN_REBASE_PROOF.json",
+      "bytes": 7733,
+      "sha256": "e655629775e45bbea83b4c9572f45602b9ad25f81cf1192f8ba4a3d0652c854e",
+      "git_blob": "bba53e9d9e795ac7e0051a4c4f2236f748669f7a",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/FROZEN_REBASE_PROOF.json",
+      "path": "coordinator-f905-independent-peer-v1/FROZEN_REBASE_PROOF.json"
+    },
+    {
+      "name": "review_rebase.py",
+      "bytes": 6202,
+      "sha256": "4734590d8bc07453056e51942a9be1319e8cdd1a41182794d2a43aada1662ba0",
+      "git_blob": "7be9a43f5eec9a54bcaff4e83c9f3b917f77840c",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-coordinator-f905-independent-peer-v1/review_rebase.py",
+      "path": "coordinator-f905-independent-peer-v1/review_rebase.py"
+    }
+  ],
+  "original_sdk_retention": "Complete original create/GET payloads saved as local sidecars; no claim that those later sidecars are themselves part of this ledger's archived set."
+}

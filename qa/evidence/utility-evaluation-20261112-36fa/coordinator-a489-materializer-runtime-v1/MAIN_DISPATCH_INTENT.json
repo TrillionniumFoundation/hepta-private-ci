@@ -1,0 +1,30 @@
+{
+  "format": "hepta-exact-main-dispatch-intent-v1",
+  "created_utc": "2026-11-13T10:15:34.818093+00:00",
+  "approval": {
+    "bytes": 7698,
+    "sha256": "624156a7a015cdde153c39450cfc6838033d7e139d5405d238395803e95cfe7a",
+    "git_blob": "a395a49b15c861be88d4e4e49f1e03557470ca55"
+  },
+  "clarification": {
+    "bytes": 2130,
+    "sha256": "6905c06a6802ed2dbc476d4df88e14c685d3721e5115bf8c61364a847294a7f2",
+    "git_blob": "8473a68b5906c4b31285749259a87158e2e8f0bf"
+  },
+  "request": {
+    "bytes": 128224,
+    "sha256": "9bc592eaf52602d71df0aa77995fb5b28124507db7f02359fdfb14e4a3cebda9",
+    "git_blob": "a5a3f6b6bcc0bdbfb4c36261d4c2d31f6fb5cefa"
+  },
+  "staging_result": {
+    "bytes": 7157,
+    "sha256": "50c6a63429e2f26d50d6718ff205558dd9de7aeacc053057633729e48654a715",
+    "git_blob": "9f265eea1efccb6601e87dff99b698b8ee43f22c"
+  },
+  "host": "desktop",
+  "idempotency_key": "hepta-utility-36fa-provider-coordinator-a489-isolated-materialization-v1",
+  "maximum_starts": 1,
+  "outer_seconds": 900,
+  "scope": "Changed source independent materialization only; no fix/fmt/test/ref update.",
+  "unknown_rule": "Only the identical original request/key or known original job may be reconciled; no new attempt or changed parameters."
+}

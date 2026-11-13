@@ -1,0 +1,140 @@
+{
+  "H_calls": 0,
+  "already_archived_expected_inventories_placement": "88ad362796481f768cde7953c9c9485719c04591",
+  "closed_members_changed_or_added": 0,
+  "completed_original_git_sdk": 44,
+  "derived_base64_leaves": 12,
+  "direct_original_raw_leaves": 83,
+  "format": "hepta-closed-static-archive-preparation-review-v1",
+  "future_git_sdk_recursion": false,
+  "future_native_outputs_included": false,
+  "large_derived_inputs_not_reuploaded": [
+    {
+      "bytes": 5329161,
+      "git_blob": "a63ee09a56c9c1743a9fcc6c95c79e62c6263b94",
+      "name": "CANDIDATE_OBJECT_INPUT.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/CANDIDATE_OBJECT_INPUT.json",
+      "sha256": "1deeb72b92dca082d2a558cac2c9f55476e6a6c156a65451dacd228ec26aa3d5"
+    },
+    {
+      "bytes": 1122697,
+      "git_blob": "082e4c176ede67e76ccd0c7cd5bf34b7853081b3",
+      "name": "CANDIDATE_OBJECT_INPUT.json.gz",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/CANDIDATE_OBJECT_INPUT.json.gz",
+      "sha256": "89ef8698bdc17bbb4a6042edd1804bcb83145f1ff75a08033e4e203b9d4d792e"
+    },
+    {
+      "bytes": 524288,
+      "git_blob": "f8fe91fff1c88ab5c1837bc18edc53b88f581073",
+      "name": "BASE.json.gz.part-001",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/BASE.json.gz.part-001",
+      "sha256": "75304773cb0552f0f469a38782d19bb18903f39865d3b2c699eefc7296a4f7c4"
+    },
+    {
+      "bytes": 183569,
+      "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+      "name": "BASE.json.gz.part-002",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/BASE.json.gz.part-002",
+      "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+    },
+    {
+      "bytes": 524288,
+      "git_blob": "1ebd9707c2f5fcfee377c71e0b4ae6c7cc520cc0",
+      "name": "CANDIDATE.json.gz.part-001",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/CANDIDATE.json.gz.part-001",
+      "sha256": "ca09b12f005d3066b4e6f088e7396489b45984123e6cc8fa482943419fe4cce8"
+    },
+    {
+      "bytes": 524288,
+      "git_blob": "538fc7c5ab4b438967635cef59b2fd596b10f28c",
+      "name": "CANDIDATE.json.gz.part-002",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/CANDIDATE.json.gz.part-002",
+      "sha256": "d445e88e460519fbd879a31c7e88d7c60f7fd5f55aac2adf5521f9142757080a"
+    },
+    {
+      "bytes": 74121,
+      "git_blob": "310a69570f358472ca0981e44fd9d9d101137be7",
+      "name": "CANDIDATE.json.gz.part-003",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/CANDIDATE.json.gz.part-003",
+      "sha256": "23ef5f87ebcce2dd7f51166aa45f90b334c67d6f7a6115622955c37f8a079538"
+    },
+    {
+      "bytes": 5631947,
+      "git_blob": "f1e2d72f99093581403a2dcc91b55da22a33f905",
+      "name": "EXPECTED_CANDIDATE.complete.inventory.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/EXPECTED_CANDIDATE.complete.inventory.json",
+      "sha256": "0463522b45970d8ae9dbf5f4560e1b15e61768ec7c9ec164848019009c4643f0"
+    },
+    {
+      "bytes": 3543409,
+      "git_blob": "7647480c5ed06525e1661ac451d0ac0ff2b23ea7",
+      "name": "EXPECTED_CANDIDATE.native-five-field.inventory.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/EXPECTED_CANDIDATE.native-five-field.inventory.json",
+      "sha256": "69cab8dc5e68f6c9ebd8e8bd98ee54565fbbf112f1a1c61113c3413b77e3173b"
+    },
+    {
+      "bytes": 2564080,
+      "git_blob": "1a6ed5b28442d83b061019957fee98780fafb569",
+      "name": "EXPECTED_OBJECT_IDENTITIES.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/EXPECTED_OBJECT_IDENTITIES.json",
+      "sha256": "251fe3a7aac7affa06ea91f5387ab871ef8eb40b058b4dd72fd330a85229c846"
+    },
+    {
+      "bytes": 2531311,
+      "git_blob": "5f8f35dca6e43575f6e801a59f8aa4169faea157",
+      "name": "EXPECTED_DONOR_OBJECT_IDENTITIES.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-materializer-hold-v1/EXPECTED_DONOR_OBJECT_IDENTITIES.json",
+      "sha256": "da033493fa4a7357249a3f8c377f83f96b4fe4e262f7dd8aecb7d5015bb95237"
+    }
+  ],
+  "leaf_limit": 512000,
+  "limits": [
+    "Static controls retain their original HOLD/candidate wording and original invocation metadata; this archive adds no execution result.",
+    "Six oversized originals are represented by complete gzip/base64 parts; their computed raw blob IDs are content identities, not claims that those oversized originals are newly inserted as evidence leaves.",
+    "New archival GET receipts are maintained separately and are not members of the original89 closed set."
+  ],
+  "maximum_leaf_bytes_so_far": 409601,
+  "original_index": {
+    "bytes": 46153,
+    "git_blob": "8817a6d9ec4a96b01da373e86c348d78f9941670",
+    "sha256": "3099504b1279a1fb44984235b754bd6819ac9044baf95b6b017d1abf1480fffe"
+  },
+  "original_member_count": 89,
+  "original_member_roundtrips": true,
+  "original_paths_rehashed_unchanged": true,
+  "original_raw_total_bytes": 5857575,
+  "oversized_originals": 6,
+  "primary_controls": 45,
+  "provided_packages_recoverable_from_exact_requests": {
+    "base": {
+      "complete_equal_packet": true,
+      "gzip": {
+        "bytes": 707857,
+        "git_blob": "91b63310e61ac23156731532cba400ce9e7b998e",
+        "sha256": "4d76a6bd6afc7cfbd0b11f7d2283c3db520ad215c9b21a23f7e7df1ce460c7ae"
+      },
+      "parts": 2,
+      "raw": {
+        "bytes": 3095381,
+        "git_blob": "26a1d658112e58531b710ab9fb50ed93f50d1afe",
+        "sha256": "465d36f5dc99c651e59870806e8613cf2b3b5a1cecfabdce2363716c339711da"
+      }
+    },
+    "candidate": {
+      "complete_equal_packet": true,
+      "gzip": {
+        "bytes": 1122697,
+        "git_blob": "082e4c176ede67e76ccd0c7cd5bf34b7853081b3",
+        "sha256": "89ef8698bdc17bbb4a6042edd1804bcb83145f1ff75a08033e4e203b9d4d792e"
+      },
+      "parts": 3,
+      "raw": {
+        "bytes": 5329161,
+        "git_blob": "a63ee09a56c9c1743a9fcc6c95c79e62c6263b94",
+        "sha256": "1deeb72b92dca082d2a558cac2c9f55476e6a6c156a65451dacd228ec26aa3d5"
+      }
+    }
+  },
+  "source_control_tree_commit_ref_writes": 0,
+  "status": "ALL_89_ORIGINAL_BYTES_VERIFIED_AND_LOSSLESSLY_REPRESENTED_PENDING_GIT_ARCHIVAL"
+}

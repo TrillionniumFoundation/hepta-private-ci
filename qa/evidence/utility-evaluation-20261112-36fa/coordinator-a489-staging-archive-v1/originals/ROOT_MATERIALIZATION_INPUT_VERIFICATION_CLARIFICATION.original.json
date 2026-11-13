@@ -1,0 +1,31 @@
+{
+  "format": "hepta-root-materialization-input-verification-clarification-v1",
+  "approval": "a395a49b15c861be88d4e4e49f1e03557470ca55",
+  "status": "CLARIFICATION_OF_REQUIRED_VERIFICATION_NOT_ADDITIONAL_DISPATCH_AUTHORITY",
+  "unchanged": {
+    "main_request": "a5a3f6b6bcc0bdbfb4c36261d4c2d31f6fb5cefa",
+    "driver": "2044db8282eb8db8d5627519a425a49f636377da",
+    "packet": "b05c78c478bbd55219fea7869b1c7871617509c7",
+    "stage_request_manifest": "0b218906e689a212147853f3d2a27f69ccae4788",
+    "main_process_starts": 1,
+    "stage_absent_writes": 5,
+    "budgets_seconds": [
+      600,
+      180,
+      900
+    ],
+    "caps_bytes": [
+      524288,
+      1048576
+    ],
+    "retry": false
+  },
+  "required_actual_input_verification": "The frozen original controller must fully read all five staged chunks with original stable identity, ownership, 0600 mode and byte/hash checks, reconstruct and validate complete gzip/raw object inputs, and successfully complete its final input audit. These mandatory checks remain unchanged and cannot be substituted by write receipts.",
+  "external_transport_reads": "For a clearly successful fixed binary write whose complete SDK metadata matches the expected size, SHA256, mode and path, an additional external 64KiB download is optional. Remaining writes may proceed in the frozen order; the main controller still performs every original complete input check before success. If a write is unknown, rejected or mismatched, stop dependent actions and reconcile only the original fixed path/version.",
+  "in_flight_reads": "Already issued external reads are retained and completed as originally requested; do not cancel, re-enter or erase them.",
+  "attribution": "Only paths actually externally downloaded may be called external full readbacks. Original controller full reads and final input audits are a distinct source of actual evidence. Never assert that unperformed external GETs occurred.",
+  "preserved_independent_review": "0e0891a830afdb43668158f18f6a2e5e1a606dd5",
+  "qualification": false,
+  "not_runtime_Root_authority": true,
+  "no_new_H_action_or_request_identity": true
+}

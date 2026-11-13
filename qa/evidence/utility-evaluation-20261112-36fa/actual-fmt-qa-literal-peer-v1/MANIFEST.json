@@ -1,0 +1,111 @@
+{
+  "schema": "hepta-static-audit-manifest-v1",
+  "source_head": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+  "actual_physical_tree": "f905b18e6b05de1582024548179725a05d932536",
+  "scope": "Frozen read-only QA literal/anchor diagnostics; no QA or source-verifier execution. No registration draft or coordinator source application approved.",
+  "entries": [
+    {
+      "name": "REVIEW.json",
+      "git_blob": "abade3fd99defe3139c34b334167c36d4b57a370",
+      "bytes": 13304,
+      "sha256": "a260d9da18433a7ddaccbf9f9c61ff33e91238c39106561c7686cb75c676ee9e",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/REVIEW.json",
+      "path": "actual-fmt-qa-literal-peer-v1/REVIEW.json"
+    },
+    {
+      "name": "LITERAL_OCCURRENCE_DIAGNOSTIC.json",
+      "git_blob": "08a12e0633a4685f78353ca7e4bd376d859619f7",
+      "bytes": 54882,
+      "sha256": "c2c5df0edde4223a50942806cf89aa502d6c341962f8d4e9ffa3b7be5cadc615",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/LITERAL_OCCURRENCE_DIAGNOSTIC.json",
+      "path": "actual-fmt-qa-literal-peer-v1/LITERAL_OCCURRENCE_DIAGNOSTIC.json"
+    },
+    {
+      "name": "FIXED_CONTRACT_ANCHOR_REVIEW.json",
+      "git_blob": "f8c63afd49411f9e8f9532049cb3adcf65dfe1de",
+      "bytes": 81719,
+      "sha256": "34a83e2b1ff078e66a6a51f5484796707de82e16adb14eded8e1db4e525b6ac9",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/FIXED_CONTRACT_ANCHOR_REVIEW.json",
+      "path": "actual-fmt-qa-literal-peer-v1/FIXED_CONTRACT_ANCHOR_REVIEW.json"
+    },
+    {
+      "name": "TARGETED_LITERAL_CLASSIFICATION.json",
+      "git_blob": "6fd3fa092e7b250751afdf7a570629a7244bf033",
+      "bytes": 71394,
+      "sha256": "51e27480e040039f45423738dc4c28e937be8bb245f2fb1f7171848c11aa7c49",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/TARGETED_LITERAL_CLASSIFICATION.json",
+      "path": "actual-fmt-qa-literal-peer-v1/TARGETED_LITERAL_CLASSIFICATION.json"
+    },
+    {
+      "name": "scan_literal_drift.py",
+      "git_blob": "42835fc71971740052463483a6be89403252005f",
+      "bytes": 4390,
+      "sha256": "57f55449654f59da61bfea6d42be5c26463e9af8eb8efa819c45bb2f6f498453",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/scan_literal_drift.py",
+      "path": "actual-fmt-qa-literal-peer-v1/scan_literal_drift.py"
+    },
+    {
+      "name": "check_fixed_contract_anchors.py",
+      "git_blob": "e60d1ec8801d0a9f55059ee36e8eac768d219223",
+      "bytes": 5151,
+      "sha256": "c9e5d9db45d9ec32c4683f4860443ff96ab26d5e22d1e62e57b37287e5d6f81b",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/check_fixed_contract_anchors.py",
+      "path": "actual-fmt-qa-literal-peer-v1/check_fixed_contract_anchors.py"
+    },
+    {
+      "name": "classify_targeted_diagnostics.py",
+      "git_blob": "593ce5f346d45fbbc7f834f02a1d11cc971d1e46",
+      "bytes": 12579,
+      "sha256": "6b60ecdd6152bf49e1792ae41da1b88af6c4361d264aeefef2efd8c5dbc8cd03",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/classify_targeted_diagnostics.py",
+      "path": "actual-fmt-qa-literal-peer-v1/classify_targeted_diagnostics.py"
+    },
+    {
+      "name": "dependencies/inspect_fmt_tokens.py",
+      "git_blob": "bbec3ca28bec77cf8d13636fbcd681a472e5eeaf",
+      "bytes": 6925,
+      "sha256": "2a2083d5b592fda91d30eb672ecfebc239073aaf401d9145c4fb414a632b88ec",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/dependencies/inspect_fmt_tokens.py",
+      "path": "actual-fmt-qa-literal-peer-v1/dependencies/inspect_fmt_tokens.py"
+    },
+    {
+      "name": "dependencies/classify_fmt_items.py",
+      "git_blob": "c06316c4a8165dc28c2f58db190520312e7b3e16",
+      "bytes": 5809,
+      "sha256": "23fecd835666b9a53b0af3c3f13712f3421df067f1b01c8e7c511cc29b0b59c0",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/dependencies/classify_fmt_items.py",
+      "path": "actual-fmt-qa-literal-peer-v1/dependencies/classify_fmt_items.py"
+    },
+    {
+      "bytes": 4546,
+      "sha256": "8efdb6a7e05e48a90f3036e7e103f262571981a8540057c9df99f55fc422c1c9",
+      "git_blob": "13169c65f5a31e5732818efc18dfb31baa9bf170",
+      "name": "GITHUB_FULL_READBACK.json",
+      "actual_created": true,
+      "full_readback_equal": true,
+      "local_path": "/tmp/hepta-36fa-actual-fmt-qa-literal-peer-v1/GITHUB_FULL_READBACK.json",
+      "path": "actual-fmt-qa-literal-peer-v1/GITHUB_FULL_READBACK.json"
+    }
+  ],
+  "reproduction": "Scripts parse frozen QA and actual postimages. check_fixed_contract_anchors.py imports the two included pure lexer helpers from their original /tmp/hepta-36fa-provider-0c59-fmt62-semantic-peer-v1 locations. Place exact dependency bytes there before replay. No repository module is imported.",
+  "all_payloads_under_512000_bytes": true,
+  "sdk_retention": "Original create/full-GET SDK objects are local sidecars. The manifest does not claim those SDK sidecars as independently archived payloads."
+}

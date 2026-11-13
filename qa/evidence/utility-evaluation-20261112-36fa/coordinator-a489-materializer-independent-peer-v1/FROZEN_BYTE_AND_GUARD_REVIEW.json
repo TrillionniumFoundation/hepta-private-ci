@@ -1,0 +1,676 @@
+{
+  "all_original_guard_definitions_byte_equal": [
+    "preflight",
+    "command",
+    "source_physical",
+    "create_destination",
+    "main"
+  ],
+  "bootstrap_inverse_full_bytes_equal": true,
+  "candidate_config_exact_delta": {
+    "root_execution_approved": {
+      "after": true,
+      "before": false
+    },
+    "status": {
+      "after": "APPROVED_CANDIDATE_ISOLATED_MATERIALIZATION",
+      "before": "WAITING_ROOT_EXACT_APPROVAL"
+    }
+  },
+  "changed_globals": [
+    "TARGET",
+    "CONTROL",
+    "STAGING_PREFIX",
+    "HEAD",
+    "TREE",
+    "LEAVES",
+    "PACKET_PIN"
+  ],
+  "constants": {
+    "ACTION_SECONDS": 600,
+    "CONTROL": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1",
+    "DONOR_HEAD": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "DONOR_LEAVES": 15188,
+    "DONOR_TREE": "b7b357c07b5539769a068c6b9b009629f5612d1e",
+    "HEAD": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "LEAVES": 15243,
+    "PARENT": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "RECORD_SECONDS": 180,
+    "SOURCE": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+    "STAGING_PREFIX": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1",
+    "TARGET": "/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1",
+    "TREE": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "definitions": [
+    {
+      "after_sha256": "4947c8b7dae7be0e7963b915d710951c83b98a37e44432a37055d0bf3dd3eb9a",
+      "ast_equal": true,
+      "before_sha256": "4947c8b7dae7be0e7963b915d710951c83b98a37e44432a37055d0bf3dd3eb9a",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "now"
+    },
+    {
+      "after_sha256": "b386cacf50a2479a21922495a5d6516cc25c4c7b6186a2496ade67cdc880ccc9",
+      "ast_equal": true,
+      "before_sha256": "b386cacf50a2479a21922495a5d6516cc25c4c7b6186a2496ade67cdc880ccc9",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "check"
+    },
+    {
+      "after_sha256": "b64a55f3284548ff1a3a58c96bf1bb3afc1b42918297d35fe395d0f5e42cd04f",
+      "ast_equal": true,
+      "before_sha256": "b64a55f3284548ff1a3a58c96bf1bb3afc1b42918297d35fe395d0f5e42cd04f",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "sha256"
+    },
+    {
+      "after_sha256": "87486651699e56452eb97be4193834d455ca143050b26449cf20e475e87562a3",
+      "ast_equal": true,
+      "before_sha256": "87486651699e56452eb97be4193834d455ca143050b26449cf20e475e87562a3",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "oid"
+    },
+    {
+      "after_sha256": "12315761b8c2cb7f394ff6bf7743b3bd06bdd3164accda6950a61d390dbc077f",
+      "ast_equal": true,
+      "before_sha256": "12315761b8c2cb7f394ff6bf7743b3bd06bdd3164accda6950a61d390dbc077f",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "nodup"
+    },
+    {
+      "after_sha256": "97cfcd92e7f981727c95b0f5d57504397dc23caa34dc99638dc65f7b1b451f35",
+      "ast_equal": true,
+      "before_sha256": "97cfcd92e7f981727c95b0f5d57504397dc23caa34dc99638dc65f7b1b451f35",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "parse"
+    },
+    {
+      "after_sha256": "1b225694774baa8b8ccbbf80276a7b6a9cc8bb9c116d2dca750e44da3d6d766d",
+      "ast_equal": true,
+      "before_sha256": "1b225694774baa8b8ccbbf80276a7b6a9cc8bb9c116d2dca750e44da3d6d766d",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "encoded"
+    },
+    {
+      "after_sha256": "b5ad9c00e957d47e1935ded619c1cf37e103707787a30860b7584d9cfe215ee3",
+      "ast_equal": true,
+      "before_sha256": "b5ad9c00e957d47e1935ded619c1cf37e103707787a30860b7584d9cfe215ee3",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "pin"
+    },
+    {
+      "after_sha256": "eb58212ef38777387079fd490929defa75d9669e43f4e49a8d91a0e3f7800f6c",
+      "ast_equal": true,
+      "before_sha256": "eb58212ef38777387079fd490929defa75d9669e43f4e49a8d91a0e3f7800f6c",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "real_directory"
+    },
+    {
+      "after_sha256": "1d49907515b714a1152481f6f78fe47daee01b90ef50505c57e24e202437d0f6",
+      "ast_equal": true,
+      "before_sha256": "1d49907515b714a1152481f6f78fe47daee01b90ef50505c57e24e202437d0f6",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "regular_read"
+    },
+    {
+      "after_sha256": "63fd44221b61a2385cb44d9855052438caaed8c16762c630b6e6ddf0a1aa7129",
+      "ast_equal": true,
+      "before_sha256": "63fd44221b61a2385cb44d9855052438caaed8c16762c630b6e6ddf0a1aa7129",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "read_input"
+    },
+    {
+      "after_sha256": "77dca2f625af30a21c9dd88e297d8a95d5107d09e3f03aff724fc822a3f578ab",
+      "ast_equal": true,
+      "before_sha256": "77dca2f625af30a21c9dd88e297d8a95d5107d09e3f03aff724fc822a3f578ab",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "write"
+    },
+    {
+      "after_sha256": "8d32100b9e4cc1e0665e04614f35950bf58bab3db354a5a97f694ac80843b7f2",
+      "ast_equal": true,
+      "before_sha256": "8d32100b9e4cc1e0665e04614f35950bf58bab3db354a5a97f694ac80843b7f2",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "jwrite"
+    },
+    {
+      "after_sha256": "44f34b9eb3ed6bda1d44256f305df1d56f5849eeb357efc55b5c24038c679a96",
+      "ast_equal": true,
+      "before_sha256": "44f34b9eb3ed6bda1d44256f305df1d56f5849eeb357efc55b5c24038c679a96",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "gzrecord"
+    },
+    {
+      "after_sha256": "66a0c3036160df175af3f10623c1bbfdbcd010426cb2f9920ae51f39ffd27a7a",
+      "ast_equal": true,
+      "before_sha256": "66a0c3036160df175af3f10623c1bbfdbcd010426cb2f9920ae51f39ffd27a7a",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "event"
+    },
+    {
+      "after_sha256": "697d98740dfa87d7548898b67af0788dfb28dec2a2558656638178a41382434a",
+      "ast_equal": true,
+      "before_sha256": "697d98740dfa87d7548898b67af0788dfb28dec2a2558656638178a41382434a",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "remaining"
+    },
+    {
+      "after_sha256": "272bbd41f43a3435d86bd559511896388a3e7195c9ff1074e0f564818b339d60",
+      "ast_equal": true,
+      "before_sha256": "272bbd41f43a3435d86bd559511896388a3e7195c9ff1074e0f564818b339d60",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "alarm_handler"
+    },
+    {
+      "after_sha256": "035708c67ac125b64b7a6f91d71e339ed6174235f77135aa0460d74fa9ff0dfe",
+      "ast_equal": true,
+      "before_sha256": "035708c67ac125b64b7a6f91d71e339ed6174235f77135aa0460d74fa9ff0dfe",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "disarm"
+    },
+    {
+      "after_sha256": "4b908a2171c7923dc90131ea8e5d04f6f91d6c158c3c61498317811cb26a0630",
+      "ast_equal": true,
+      "before_sha256": "4b908a2171c7923dc90131ea8e5d04f6f91d6c158c3c61498317811cb26a0630",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "arm_if_remaining"
+    },
+    {
+      "after_sha256": "097233d5e83f195351f7a56473f766773dfb9a8e649969eab53449fb95b0f1ac",
+      "ast_equal": true,
+      "before_sha256": "097233d5e83f195351f7a56473f766773dfb9a8e649969eab53449fb95b0f1ac",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "active_build_processes"
+    },
+    {
+      "after_sha256": "4980d23ff40d7fbdcf235f5ac32e16eac8f1454a403483284c12a13a5fb60cff",
+      "ast_equal": true,
+      "before_sha256": "4980d23ff40d7fbdcf235f5ac32e16eac8f1454a403483284c12a13a5fb60cff",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "parse_index"
+    },
+    {
+      "after_sha256": "cb3cc4c72e887fd92a355ce87ea366ed697aef7cad3223f9f446efb01146ddf7",
+      "ast_equal": true,
+      "before_sha256": "cb3cc4c72e887fd92a355ce87ea366ed697aef7cad3223f9f446efb01146ddf7",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "pack_entry_header"
+    },
+    {
+      "after_sha256": "fc5b9f5584694890cc87904599f3f7ad6416a66f1b7b6e03422d8016a7179ad1",
+      "ast_equal": true,
+      "before_sha256": "fc5b9f5584694890cc87904599f3f7ad6416a66f1b7b6e03422d8016a7179ad1",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "stat_identity"
+    },
+    {
+      "after_sha256": "3f954a2c8de4d275c5dee802dab03c36d3f47208441b740e89c4903d9d30975c",
+      "ast_equal": true,
+      "before_sha256": "3f954a2c8de4d275c5dee802dab03c36d3f47208441b740e89c4903d9d30975c",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "identity"
+    },
+    {
+      "after_sha256": "8c767cca27da094d21474bee0c0f34ef2fd7f3b9fddbdeb7f360a97e1edbf086",
+      "ast_equal": true,
+      "before_sha256": "8c767cca27da094d21474bee0c0f34ef2fd7f3b9fddbdeb7f360a97e1edbf086",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "retained_pin"
+    },
+    {
+      "after_sha256": "3f9aed741b2f2908f6f6e9c30b3477ca8b8cdafa51dc614f285bb6b6a6129731",
+      "ast_equal": true,
+      "before_sha256": "3f9aed741b2f2908f6f6e9c30b3477ca8b8cdafa51dc614f285bb6b6a6129731",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "check_processes"
+    },
+    {
+      "after_sha256": "a38575e1edb52002f10fbdbcb8e9a2c3480cfd001b442158890ad30541442be2",
+      "ast_equal": true,
+      "before_sha256": "a38575e1edb52002f10fbdbcb8e9a2c3480cfd001b442158890ad30541442be2",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "mutation_intent"
+    },
+    {
+      "after_sha256": "34755d60229bd2fc5b3ba76817cac15b7587045966a5657d8f943e4679ade61c",
+      "ast_equal": true,
+      "before_sha256": "34755d60229bd2fc5b3ba76817cac15b7587045966a5657d8f943e4679ade61c",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "command"
+    },
+    {
+      "after_sha256": "d6dd9c094d1d06245d2b033bcc829f400be9a3967c506f37e13f978268546ec1",
+      "ast_equal": true,
+      "before_sha256": "d6dd9c094d1d06245d2b033bcc829f400be9a3967c506f37e13f978268546ec1",
+      "byte_equal": true,
+      "kind": "ClassDef",
+      "name": "ObjectReader"
+    },
+    {
+      "after_sha256": "80aec6f2fb61237c9b30dbd44739d35a02d55e18d922435e357de5a34c06d9f7",
+      "ast_equal": true,
+      "before_sha256": "80aec6f2fb61237c9b30dbd44739d35a02d55e18d922435e357de5a34c06d9f7",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "tree_objects"
+    },
+    {
+      "after_sha256": "c6e127f6778bbc9cff7693a4f9904d08868c9cddf40b9314b90b815275ef1826",
+      "ast_equal": true,
+      "before_sha256": "c6e127f6778bbc9cff7693a4f9904d08868c9cddf40b9314b90b815275ef1826",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "raw_commit_fields"
+    },
+    {
+      "after_sha256": "9f0f9bb1980322ec238faddc1bbaba7c4794e89b21d1166cd1e2277f8543d98d",
+      "ast_equal": true,
+      "before_sha256": "9f0f9bb1980322ec238faddc1bbaba7c4794e89b21d1166cd1e2277f8543d98d",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "load_provided_input"
+    },
+    {
+      "after_sha256": "8fa4da122806f37731d71aa506ddd5f52aca53376203b246dfe7f3606ec5ce11",
+      "ast_equal": false,
+      "before_sha256": "29a10ebc29918cf86a1ef16b30854d77e8f0b422dbaccd2ed622598d79159730",
+      "byte_equal": false,
+      "kind": "FunctionDef",
+      "name": "derive_candidate_inventory"
+    },
+    {
+      "after_sha256": "eb8954a0cb239f74f64279646f4e7e72205a3dbc4be9df9db566ffcb072eddf6",
+      "ast_equal": false,
+      "before_sha256": "cae9eaa5d53e077747503124793db342108d6f7acf1fc7fd98f888ae9b9d260c",
+      "byte_equal": false,
+      "kind": "FunctionDef",
+      "name": "expected_graphs"
+    },
+    {
+      "after_sha256": "fe7f77c40772afd7146dbc78f34b74ffad9a8018c513ba7d5535f36fecec2e3f",
+      "ast_equal": true,
+      "before_sha256": "fe7f77c40772afd7146dbc78f34b74ffad9a8018c513ba7d5535f36fecec2e3f",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "identity_projection"
+    },
+    {
+      "after_sha256": "a9a7a9ac51fe58752c849df2a10f8c6ca2970ef5c40dc8e4e39bf005ec3e2fe9",
+      "ast_equal": true,
+      "before_sha256": "a9a7a9ac51fe58752c849df2a10f8c6ca2970ef5c40dc8e4e39bf005ec3e2fe9",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "physical_paths"
+    },
+    {
+      "after_sha256": "087f23c795f1e996caba4d77af90ed618113acfb39cd876213e7a5f2b4016a2c",
+      "ast_equal": true,
+      "before_sha256": "087f23c795f1e996caba4d77af90ed618113acfb39cd876213e7a5f2b4016a2c",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "source_leaf"
+    },
+    {
+      "after_sha256": "710ccc571b0d067d8e1a37287030f709e74e8205f50622755e72a073af7fbc8c",
+      "ast_equal": true,
+      "before_sha256": "710ccc571b0d067d8e1a37287030f709e74e8205f50622755e72a073af7fbc8c",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "source_physical"
+    },
+    {
+      "after_sha256": "4c897c96cdc9a999981a86acaa923db1bcca2e947876ae18f6200ff3afb7784e",
+      "ast_equal": true,
+      "before_sha256": "4c897c96cdc9a999981a86acaa923db1bcca2e947876ae18f6200ff3afb7784e",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "old_git_state"
+    },
+    {
+      "after_sha256": "715fa8ae9632ff9253d1f421aae0c79a535af1a1946002c3f8d779ec17f2e826",
+      "ast_equal": true,
+      "before_sha256": "715fa8ae9632ff9253d1f421aae0c79a535af1a1946002c3f8d779ec17f2e826",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "parse_supervisor"
+    },
+    {
+      "after_sha256": "a011f069da0eff827b16809e896ce8d0be6e51d6198b651d3aa7b750306c86c7",
+      "ast_equal": true,
+      "before_sha256": "a011f069da0eff827b16809e896ce8d0be6e51d6198b651d3aa7b750306c86c7",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "preflight"
+    },
+    {
+      "after_sha256": "063c7f7667cbd6739b55c1996fdb2fc5264a40fd8937e1d9f407bb0a14c7d40a",
+      "ast_equal": true,
+      "before_sha256": "063c7f7667cbd6739b55c1996fdb2fc5264a40fd8937e1d9f407bb0a14c7d40a",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "journal"
+    },
+    {
+      "after_sha256": "faf8f16756c6196694380dff9777df2c96d48a11c9625281038485979bedeb5a",
+      "ast_equal": true,
+      "before_sha256": "faf8f16756c6196694380dff9777df2c96d48a11c9625281038485979bedeb5a",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "destination_leaf"
+    },
+    {
+      "after_sha256": "4cef5754ac24fa95a9337dc8996e7339600a38a408ded70945c0509842fdda84",
+      "ast_equal": true,
+      "before_sha256": "4cef5754ac24fa95a9337dc8996e7339600a38a408ded70945c0509842fdda84",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "create_destination"
+    },
+    {
+      "after_sha256": "be526c767256cb0ae30866297d956c34b4fcb52f018364e5652ddfc0acce0f23",
+      "ast_equal": true,
+      "before_sha256": "be526c767256cb0ae30866297d956c34b4fcb52f018364e5652ddfc0acce0f23",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "verify_import"
+    },
+    {
+      "after_sha256": "605472b2a52523edbc9612cb8f6ea521ecff85a70b269449f4bab6c7adc81683",
+      "ast_equal": true,
+      "before_sha256": "605472b2a52523edbc9612cb8f6ea521ecff85a70b269449f4bab6c7adc81683",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "initialize_index"
+    },
+    {
+      "after_sha256": "05f55c3fec6443751ffa98195a1ed541c2d9e9d550970ec34b10838661649550",
+      "ast_equal": true,
+      "before_sha256": "05f55c3fec6443751ffa98195a1ed541c2d9e9d550970ec34b10838661649550",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "verify_index"
+    },
+    {
+      "after_sha256": "c52a39e2a425f7ad4d0d46dfde4084aa72cb2e66d62f1333b57690082940949d",
+      "ast_equal": true,
+      "before_sha256": "c52a39e2a425f7ad4d0d46dfde4084aa72cb2e66d62f1333b57690082940949d",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "current_git_state"
+    },
+    {
+      "after_sha256": "a07e3c706c51787fced6daf06768d92a386512f2d34c82ede6bb0d302ac9ee58",
+      "ast_equal": true,
+      "before_sha256": "a07e3c706c51787fced6daf06768d92a386512f2d34c82ede6bb0d302ac9ee58",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "native_projection"
+    },
+    {
+      "after_sha256": "ac1f3ecfffb87c1ce62be90018f9a9ce4148ee3ee0902b0b2dd6618e56653f78",
+      "ast_equal": true,
+      "before_sha256": "ac1f3ecfffb87c1ce62be90018f9a9ce4148ee3ee0902b0b2dd6618e56653f78",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "destination_physical"
+    },
+    {
+      "after_sha256": "6d5b3c0f88bffb855f4d23cc1054415c03273fab1201d8b9b534a64d22c17a87",
+      "ast_equal": true,
+      "before_sha256": "6d5b3c0f88bffb855f4d23cc1054415c03273fab1201d8b9b534a64d22c17a87",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "git_metadata"
+    },
+    {
+      "after_sha256": "b9306a234a2c9b6c299eb934ccbce72022782edf0f5259cd7a2f8c7edeab8a71",
+      "ast_equal": true,
+      "before_sha256": "b9306a234a2c9b6c299eb934ccbce72022782edf0f5259cd7a2f8c7edeab8a71",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "final_old"
+    },
+    {
+      "after_sha256": "1901805a266064e782de5b81f780ae53bd497d551986bacd9607028b394bc5b7",
+      "ast_equal": true,
+      "before_sha256": "1901805a266064e782de5b81f780ae53bd497d551986bacd9607028b394bc5b7",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "final_new"
+    },
+    {
+      "after_sha256": "8f43286ecfd3bb0afb96790d7e73a246de76c351f918c0152b98d2a6e890fe8d",
+      "ast_equal": true,
+      "before_sha256": "8f43286ecfd3bb0afb96790d7e73a246de76c351f918c0152b98d2a6e890fe8d",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "final_inputs"
+    },
+    {
+      "after_sha256": "4291d80ad7411f072ba08f5099ee109afcd99180d171edcf468fe23ca9071c4e",
+      "ast_equal": true,
+      "before_sha256": "4291d80ad7411f072ba08f5099ee109afcd99180d171edcf468fe23ca9071c4e",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "retain_existing_output"
+    },
+    {
+      "after_sha256": "87986b6ef7a4f5be3c68315595943f6d866ecfef791c5a819fe2167736cb995e",
+      "ast_equal": true,
+      "before_sha256": "87986b6ef7a4f5be3c68315595943f6d866ecfef791c5a819fe2167736cb995e",
+      "byte_equal": true,
+      "kind": "FunctionDef",
+      "name": "main"
+    }
+  ],
+  "five_payload_identities": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 666,
+      "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+      "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+    },
+    "DONOR_RESULT.original.json": {
+      "bytes": 12671,
+      "git_blob": "40833805111c98773ba1d046df09285357531396",
+      "sha256": "fb1168aba9adacb138ed174f9a5b0f17fb1de42fc8f33c7d51ca0f696eef9c96"
+    },
+    "DONOR_SUPERVISOR.original.json": {
+      "bytes": 951,
+      "git_blob": "c507335b611474857eff53b738071a7a3f27dc99",
+      "sha256": "a50934e8bbc5aa4587f478e954fee193de9339d63d0294e08ed7dc8f95e090aa"
+    },
+    "MATERIALIZATION_PACKET.json": {
+      "bytes": 14404,
+      "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+      "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+    },
+    "driver.py": {
+      "bytes": 70596,
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    }
+  },
+  "four_bootstrap_helpers_byte_equal": true,
+  "input_identities": {
+    "bootstrap": {
+      "bytes": 5881,
+      "git_blob": "b4b8ade499b3102ed450407fd9f05de44529cc39",
+      "sha256": "aa916595416f0952d4a991c9614f8a98fa16af1b70144ff3c14391a566d8bf90"
+    },
+    "config": {
+      "bytes": 666,
+      "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+      "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+    },
+    "driver": {
+      "bytes": 70596,
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    },
+    "old_driver": {
+      "bytes": 70560,
+      "git_blob": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+      "sha256": "2c4c8582d1940605d1b2138587ee3a73ab4b4d6eb265bfcb03ffd7d291c8b1f6"
+    },
+    "old_typed": {
+      "bytes": 128112,
+      "git_blob": "a34c8779fca77cbf1dd7e26e5516efcfb654c191",
+      "sha256": "521c5c982cbc281ad0357498265312f43846995fbd85040d9d7e3dfdae1f0050"
+    },
+    "packet": {
+      "bytes": 14404,
+      "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+      "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+    },
+    "typed": {
+      "bytes": 128224,
+      "git_blob": "a5a3f6b6bcc0bdbfb4c36261d4c2d31f6fb5cefa",
+      "sha256": "9bc592eaf52602d71df0aa77995fb5b28124507db7f02359fdfb14e4a3cebda9"
+    }
+  },
+  "invariant_packet_keys": [
+    "donor",
+    "donor_git",
+    "donor_proof",
+    "format",
+    "format_base",
+    "git_tool",
+    "original_inventory",
+    "parent_snapshot",
+    "qualification",
+    "seed_raw_commits",
+    "source_repo"
+  ],
+  "inverse_full_driver_bytes_equal": true,
+  "no_H_no_product_execution_no_source_mutation": true,
+  "object_content_membership_peer_scope": "Ordinary independently audits full 129 objects and union. This review checks exact algorithm preservation, declared bindings and bounded staging identities; it does not call expected_graphs or preflight.",
+  "replacement_count": 10,
+  "request_environment_override": false,
+  "request_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "schema": "hepta-a489-materializer-fixed-delta-independent-byte-review-v1",
+  "separate_parts": [
+    2,
+    3
+  ],
+  "staging_path_pin_capacity_checks": [
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "f8fe91fff1c88ab5c1837bc18edc53b88f581073",
+        "sha256": "75304773cb0552f0f469a38782d19bb18903f39865d3b2c699eefc7296a4f7c4"
+      },
+      "expected_version": "absent",
+      "name": "STAGE_BASE_001.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-base.json.gz.part-001",
+      "request": {
+        "bytes": 699251,
+        "git_blob": "31a228fc25d8b9fc4c94894bd3441f428ac031a5",
+        "sha256": "03054e9afa45c2b9f22aa7272d88b42a825b076c74a1ba1daef92d67c9a4b428"
+      },
+      "required_mode_checked_by_driver": "0600"
+    },
+    {
+      "decoded": {
+        "bytes": 183569,
+        "git_blob": "9ec1a3d092ae2fd43be567cd501f27f6e68c3e05",
+        "sha256": "f79087a83a2d426f17447bc11011470d893b77a5d31d6d7607a8bcab6dda711b"
+      },
+      "expected_version": "absent",
+      "name": "STAGE_BASE_002.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-base.json.gz.part-002",
+      "request": {
+        "bytes": 244959,
+        "git_blob": "0657755b9332da3addfe724e6dcb622a734d03dd",
+        "sha256": "b9e39b97e77c3c1bdc7705eb0804819dc79d5dabea4d7e42c8a215c0b1718e07"
+      },
+      "required_mode_checked_by_driver": "0600"
+    },
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "1ebd9707c2f5fcfee377c71e0b4ae6c7cc520cc0",
+        "sha256": "ca09b12f005d3066b4e6f088e7396489b45984123e6cc8fa482943419fe4cce8"
+      },
+      "expected_version": "absent",
+      "name": "STAGE_CANDIDATE_001.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-candidate.json.gz.part-001",
+      "request": {
+        "bytes": 699256,
+        "git_blob": "b2c336cc5ab2fac26d27c796d75a806c26a8038d",
+        "sha256": "550708c126458c6e1b56aa26593231e85dd1286986cc1cef81557aa9f2f3f9f8"
+      },
+      "required_mode_checked_by_driver": "0600"
+    },
+    {
+      "decoded": {
+        "bytes": 524288,
+        "git_blob": "538fc7c5ab4b438967635cef59b2fd596b10f28c",
+        "sha256": "d445e88e460519fbd879a31c7e88d7c60f7fd5f55aac2adf5521f9142757080a"
+      },
+      "expected_version": "absent",
+      "name": "STAGE_CANDIDATE_002.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-candidate.json.gz.part-002",
+      "request": {
+        "bytes": 699256,
+        "git_blob": "14ff67b57e23d4cb042e860f7da1cf0e42b80cef",
+        "sha256": "1af6ce515ad3c97aab8304b52b4c99845197dde9bf7c348fd0636d60bff1e4e3"
+      },
+      "required_mode_checked_by_driver": "0600"
+    },
+    {
+      "decoded": {
+        "bytes": 74121,
+        "git_blob": "310a69570f358472ca0981e44fd9d9d101137be7",
+        "sha256": "23ef5f87ebcce2dd7f51166aa45f90b334c67d6f7a6115622955c37f8a079538"
+      },
+      "expected_version": "absent",
+      "name": "STAGE_CANDIDATE_003.REQUEST.HOLD.json",
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-materialization-v1-candidate.json.gz.part-003",
+      "request": {
+        "bytes": 99032,
+        "git_blob": "2d78b4259ad1dbb442ca73e089cc7c929b3dc75e",
+        "sha256": "3fd3e30065c33fd8fb893a94328f7e5c39c3f7379f89022e15cb78a934ed3b85"
+      },
+      "required_mode_checked_by_driver": "0600"
+    }
+  ],
+  "status": "PURE_CHECKS_COMPLETE_NO_CONTROL_EXECUTION",
+  "timeout_seconds": 900,
+  "unchanged_definitions": 54
+}

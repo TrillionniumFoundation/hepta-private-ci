@@ -1,0 +1,161 @@
+{
+  "all_other_bytes_unchanged_in_three_files": true,
+  "definition_name_changes": 2,
+  "format": "hepta-coordinator-new-getter-name-byte-review-v1",
+  "mechanism_call_site_changes": 7,
+  "new_packet": {
+    "bytes": 74256,
+    "git_blob": "5279a43b99aa7031343578a21dba895f5eac3188",
+    "sha256": "9d114291af1408792b6c64413b216ff3c1264865c5aa560715a529e29fbe00a8"
+  },
+  "parent_packet": {
+    "bytes": 330014,
+    "git_blob": "773d67128190fd2e1c3271c372f72e2a5537d1e8",
+    "sha256": "2f5471dd1c66d764d5d577449a0cf7db9ac6a1c0fbdb3ae462159b362369c87f"
+  },
+  "read_only_method_bodies": [
+    "pub fn original_final_use_binding(&self) -> &FinalUseBinding {\n        &self.operation.binding\n    }",
+    "pub fn original_intent_digest(&self) -> Digest32 {\n        self.operation.recovery.intent_digest\n    }"
+  ],
+  "rows": [
+    {
+      "after": {
+        "bytes": 7843,
+        "git_blob": "31ede1a405c6469508871d672c50a4f000342985",
+        "sha256": "137c8703d605fb76c06f01a5a89e452bd2c5dc59ac1cb8403732638343a945a0"
+      },
+      "before": {
+        "bytes": 7825,
+        "git_blob": "f5a922fd2f565d8f313365f0dae82a86def32e5c",
+        "sha256": "6445995f8114aa6895463108a251e887582d45cb162193b83bf979cc5ec1106a"
+      },
+      "exact_forward_and_inverse": true,
+      "full_preimage_matches_773d": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "replacements": [
+        {
+          "after": "pub fn original_final_use_binding(",
+          "before": "pub fn final_use_binding(",
+          "occurrences": 1
+        },
+        {
+          "after": "pub fn original_intent_digest(",
+          "before": "pub fn intent_digest(",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "after": {
+        "bytes": 11301,
+        "git_blob": "61b21fa07f57b750c9206f04604759535f5c65c2",
+        "sha256": "059076cfd2887eef09b5444f8bad1f875452327def9b72bff492c9cd40080a32"
+      },
+      "before": {
+        "bytes": 11292,
+        "git_blob": "90fe1199cbca514c569fe8092c0015a5767929f4",
+        "sha256": "aafb2d5b9a475c3a4e4b5bbffec8c9d68d037abd9d74e2deaadcd3d23b579dcf"
+      },
+      "exact_forward_and_inverse": true,
+      "full_preimage_matches_773d": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "replacements": [
+        {
+          "after": "custody.original_final_use_binding()",
+          "before": "custody.final_use_binding()",
+          "occurrences": 1
+        }
+      ]
+    },
+    {
+      "after": {
+        "bytes": 7974,
+        "git_blob": "4eeb2015fef5aa45775fe117903bbdb2d3ac8592",
+        "sha256": "50476f583779d8698223f0d1d4a9209245fee2277f2c455b0dc238536388cf60"
+      },
+      "before": {
+        "bytes": 7920,
+        "git_blob": "f053afb5b973121ddb817ba901689907717e3480",
+        "sha256": "4f096297c2c7952a19a988519b752f8e37681fb76a47a62465ab113bc12b56a0"
+      },
+      "exact_forward_and_inverse": true,
+      "full_preimage_matches_773d": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+      "replacements": [
+        {
+          "after": "old.original_intent_digest()",
+          "before": "old.intent_digest()",
+          "occurrences": 4
+        },
+        {
+          "after": "old.original_final_use_binding()",
+          "before": "old.final_use_binding()",
+          "occurrences": 1
+        },
+        {
+          "after": "recovered.original_final_use_binding()",
+          "before": "recovered.final_use_binding()",
+          "occurrences": 1
+        }
+      ]
+    }
+  ],
+  "scope": "Only the packet layer was examined. No QA, verifier, collector, compiler, formatter, H job, source write, ref update or getter call was executed.",
+  "semantic_boundaries": [
+    "The first accessor still borrows the same protected operation FinalUseBinding and the second still returns the same intent Digest32. Neither constructs, signs, dispatches, publishes or recovers authority.",
+    "All Prepared consumption, original operation binding/readback, Ready transition, same-Arc task installation/drain, cleanup and deadline code is byte-identical after inverse name substitution.",
+    "The original initial production module and the new cold-recovery production module are absent from this delta. This selected layer does not apply the alternative UFCS edits.",
+    "The new names still require exact boundary/caller registration. A local name disambiguation does not establish a complete repository caller scan or compilation.",
+    "Prior lifecycle limits remain: a five-second cleanup timeout is terminal Unknown and Drop cancellation is not join evidence; reopened protected Current/journal tests are not a real process cold-restart observation."
+  ],
+  "unchanged_other_six_rebased_paths": [
+    {
+      "after": {
+        "bytes": 15934,
+        "git_blob": "34aff1e564ea7d6c0b1c9a4cdb7ab46b4660c0dd",
+        "sha256": "5b991c33123276137b0ea3f76efc91cc6521ef5b6564d02ed15671e2c19bddfb"
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs"
+    },
+    {
+      "after": {
+        "bytes": 72389,
+        "git_blob": "58ba0a212811b1bf3e53a812c45a1160034850e9",
+        "sha256": "0fecd7f34767133bf6dfbc8fec4ff72cae766abbe0567f69d7c44af483e86896"
+      },
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after": {
+        "bytes": 9428,
+        "git_blob": "2861558bc7f9dfe833d70c7d72c5742d4e0f5fdd",
+        "sha256": "def4d820837b958a49b0308d4785dd97170a248d40a3fd7c94af8d3031166045"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs"
+    },
+    {
+      "after": {
+        "bytes": 2504,
+        "git_blob": "944a1927f2761000c206d018034b26d01a2ce0df",
+        "sha256": "f85bd6c3e22b917be0c77b5068d52b2e68d623c28314ea068772b96337328e17"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after": {
+        "bytes": 8591,
+        "git_blob": "1166c82d9189461a7d8468347c6018cb4239ba40",
+        "sha256": "0f651b0c3bbf8048c3eba4c4bfc3115d8712e163517a692202c0d857d804d580"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 7072,
+        "git_blob": "6cd8470ecba5b966f331fffdea86f0ffdf770c2f",
+        "sha256": "1e08d5dad64b56fe92ab5436be4a7217c0595a6bc90cd0dfbc1b96b559544171"
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    }
+  ]
+}
