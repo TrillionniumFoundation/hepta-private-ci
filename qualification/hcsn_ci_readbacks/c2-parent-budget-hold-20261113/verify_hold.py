@@ -21,6 +21,8 @@ assert [fit["last_observed_late_epoch"] for fit in fits] == [116, 76, 126, 50, 1
 assert all(fit["remaining_wall_seconds"] == "UNKNOWN" for fit in fits)
 assert all(len(fit["original_start_parent_sha256"]) == 64 for fit in fits)
 assert all(len(fit["last_observed_late_checkpoint_sha256"]) == 64 for fit in fits)
+assert all(len(fit["original_plan_sha256"]) == 64 for fit in fits)
+assert all(len(fit["original_result_sha256"]) == 64 for fit in fits)
 assert not ({fit["original_start_parent_sha256"] for fit in fits} & {fit["last_observed_late_checkpoint_sha256"] for fit in fits})
 
 checks = hold["arithmetic_checks_only_not_authoritative_ledgers"]
