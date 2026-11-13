@@ -413,6 +413,7 @@ async fn duplicate_handshakes_exhaust_failure_budget() -> Result<()> {
         environment_joined = true;
         let reason = completion.context("environment task failed after budget exhaustion")?;
         eprintln!("failure-budget environment disconnect reason: {reason:?}");
+        assert_eq!(reason, RendezvousDisconnectReason::LocalShutdown);
         Ok::<_, anyhow::Error>(())
     })
     .catch_unwind()
