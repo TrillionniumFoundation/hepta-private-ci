@@ -1,0 +1,136 @@
+{
+  "schema": "hcsn-c2-six-fit-parent-budget-hold-v1",
+  "overall": "HOLD_NO_GO",
+  "all_closed": false,
+  "full_independent_training_replay_completed": 0,
+  "full_independent_training_replay_denominator": 6,
+  "known_completed_diagnostic_optimizer_calls": 52,
+  "lifetime_optimizer_calls": "UNKNOWN",
+  "original_controller_terminal": "UNKNOWN",
+  "execution": {
+    "model": 0,
+    "torch": 0,
+    "optimizer": 0,
+    "native_training": 0,
+    "new_idempotency_keys": 0
+  },
+  "input_archive": {
+    "source_pr": 6214,
+    "git_head": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+    "git_blob": "2afc4e810f1c75a1ff5b9fb85464f6dda6c43245",
+    "bytes": 11397159,
+    "sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75",
+    "central_directory_offset": 11313513,
+    "central_directory_bytes": 83624,
+    "entries": 556,
+    "originals": 555,
+    "index_entries": 1,
+    "source_commit": "5cb83d9c76beedf4c1c917e4bf561f5f26261ce7",
+    "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb"
+  },
+  "contract": {
+    "fits": 6,
+    "cumulative_active_wall_seconds_per_fit": 43200,
+    "reserve_seconds_inside_cap": 600,
+    "max_epochs": 200,
+    "zero_parent_refund": true,
+    "authoritative_aggregate_maximum_new_summed_fit_active_wall_seconds_before_exit_overhead": 172938.8845898183
+  },
+  "fits": [
+    {
+      "seed": 101,
+      "learning_rate": "0.001",
+      "original_start_parent_epoch": 46,
+      "original_start_parent_sha256": "e0c8c946aa8010bfcf4df5b9e155235d2fb6b12a9832e4eaa5db3d9afb154d78",
+      "original_result_wall_seconds": 14373.191371734021,
+      "original_result_process_wall_seconds": 14375.145333121996,
+      "last_observed_late_epoch": 116,
+      "last_observed_late_checkpoint_sha256": "eb017f86a0e3f7a1268591b10ef4f2727c36daf2edeed3aa9e5316d6eaa6c30b",
+      "last_observed_cumulative_process_wall_seconds": 34204.140166625846,
+      "remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "seed": 101,
+      "learning_rate": "0.003",
+      "original_start_parent_epoch": 47,
+      "original_start_parent_sha256": "bea446e64571e7cd424411036eff207bb6839af4495a7b60cf0f9df81181ba05",
+      "original_result_wall_seconds": 14374.921412173193,
+      "original_result_process_wall_seconds": 14376.902993892087,
+      "last_observed_late_epoch": 76,
+      "last_observed_late_checkpoint_sha256": "bdd2342af17e2e04bd4403af6c4f0aef5875bb192faa254396ad3b5d56c810e5",
+      "last_observed_cumulative_process_wall_seconds": 22975.868277003756,
+      "remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "seed": 211,
+      "learning_rate": "0.001",
+      "original_start_parent_epoch": 46,
+      "original_start_parent_sha256": "cdbca6e633c6aba5f72f08f259ab08b1c5c2c5745d1dbd2f323a78df876e1e79",
+      "original_result_wall_seconds": 14374.068624393083,
+      "original_result_process_wall_seconds": 14376.110540841008,
+      "last_observed_late_epoch": 126,
+      "last_observed_late_checkpoint_sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3",
+      "last_observed_cumulative_process_wall_seconds": 37199.48737557721,
+      "remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "seed": 211,
+      "learning_rate": "0.003",
+      "original_start_parent_epoch": 47,
+      "original_start_parent_sha256": "b7d162101f18628fcfcabb21e9609499d62c8a26ad6d53b9c375ed2e0439d2f4",
+      "original_result_wall_seconds": 14373.705424577929,
+      "original_result_process_wall_seconds": 14375.710730218794,
+      "last_observed_late_epoch": 50,
+      "last_observed_late_checkpoint_sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f",
+      "last_observed_cumulative_process_wall_seconds": 15478.471235961653,
+      "remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "seed": 307,
+      "learning_rate": "0.001",
+      "original_start_parent_epoch": 46,
+      "original_start_parent_sha256": "17d6ad363d82ba31b006d0a4f55ca9c63453fa2c9c34f7370f022e2ff66a4f5c",
+      "original_result_wall_seconds": 14372.301136150956,
+      "original_result_process_wall_seconds": 14374.313252261141,
+      "last_observed_late_epoch": 127,
+      "last_observed_late_checkpoint_sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441",
+      "last_observed_cumulative_process_wall_seconds": 37186.457580900285,
+      "remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "seed": 307,
+      "learning_rate": "0.003",
+      "original_start_parent_epoch": 46,
+      "original_start_parent_sha256": "736ee7d7afe911a3cf5bb7f7ad97babff4dfb74e28a46ec9c148579160a5075c",
+      "original_result_wall_seconds": 14373.805557579035,
+      "original_result_process_wall_seconds": 14375.715441173874,
+      "last_observed_late_epoch": 72,
+      "last_observed_late_checkpoint_sha256": "31241e7158ef0b921fe80bd8f1ebc32614e3b6a8bc270ead1997ed49df93b2ee",
+      "last_observed_cumulative_process_wall_seconds": 22132.39835255593,
+      "remaining_wall_seconds": "UNKNOWN"
+    }
+  ],
+  "arithmetic_checks_only_not_authoritative_ledgers": {
+    "sum_original_result_wall_seconds": 86241.99352660822,
+    "naive_cap_minus_result_wall_seconds": 172958.00647339178,
+    "sum_original_result_process_wall_seconds": 86253.8982915089,
+    "naive_cap_minus_process_wall_seconds": 172946.1017084911
+  },
+  "closed": [
+    "exact immutable archive identity and complete central-directory inventory",
+    "six original campaign-v2 start-parent epochs and checkpoint SHA256 identities",
+    "six last-observed later checkpoint epochs, SHA256 identities, and cumulative process-wall lower bounds"
+  ],
+  "still_missing": [
+    "the six original start-parent PT bytes are absent from the #6214 archive",
+    "authoritative terminal state and final charged wall for the original controller",
+    "per-fit exit overhead and a source-authenticated decomposition of the aggregate remaining-wall decision",
+    "per-fit remaining-wall seconds after all non-refunded attempts"
+  ],
+  "non_transfer": [
+    "later checkpoints are not substitutes for the six original start parents",
+    "last-observed cumulative wall is a lower bound, not a terminal balance",
+    "naive subtraction is not an authoritative ledger",
+    "this evidence does not admit or start a full replay"
+  ]
+}
