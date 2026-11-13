@@ -25,6 +25,7 @@ SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 WIRE = "codex-rs/hepta-agent-protocol/src/q24_outcome.rs"
 ADAPTER = AGENT + "cell_q24_task_outcome_control.rs"
+OBSERVATION = AGENT + "cell_q24_task_observation_control.rs"
 CONFIG = AGENT + "config_q24_outcome.rs"
 STATE = AGENT + "state_q24_outcome.rs"
 CLIENT = AGENT + "client_q24_outcome.rs"
@@ -34,7 +35,7 @@ DISPATCH = AGENT + "state_control.rs"
 OUTCOME = AGENT + "cell_q24_task_ledger_outcome.rs"
 CALLERS = {
     "q24_task_original_outcome_submit": (ADAPTER,),
-    "q24_outcome_control_original_identity": (CONFIG, STATE),
+    "q24_outcome_control_original_identity": (OBSERVATION, CONFIG, STATE),
     "q24_outcome_control_original_submit": (STATE,),
     "q24_outcome_control_config_install": (INSTALL,),
     "q24_outcome_control_config_take": (RUNTIME,),
