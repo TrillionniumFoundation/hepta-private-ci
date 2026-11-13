@@ -1,5 +1,6 @@
 use super::*;
 
+use crate::SparseError;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -304,6 +305,135 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
         first_anchor.checkpoint_digest
     );
     assert_eq!(model.calls, 2);
+}
+
+#[test]
+fn invalid_successor_sequence_or_clock_never_reaches_model_port() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        config,
+        witness.clone(),
+    ));
+    let mut model = FakeModel::new();
+    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let predecessor = first.tick.checkpoint_after;
+    assert_eq!(model.calls, 1);
+
+    // A valid predecessor digest must not authorize skipping logical time.
+    let skipped = input(3, predecessor);
+    assert!(matches!(
+        runtime.tick(&mut model, skipped),
+        Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+            SparseError::Sequence
+        )))
+    ));
+    assert_eq!(model.calls, 1, "skipped successor invoked model");
+
+    // The correct sequence with a backwards clock is equally invalid.
+    let mut stale_clock = input(2, predecessor);
+    stale_clock.monotonic_time_micros = 1_000;
+    assert!(matches!(
+        runtime.tick(&mut model, stale_clock),
+        Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+            SparseError::Clock
+        )))
+    ));
+    assert_eq!(model.calls, 1, "stale clock invoked model");
+    assert_eq!(checked(runtime.current_anchor()).unwrap().checkpoint_digest, predecessor);
+    assert_eq!(checked(witness.current()).unwrap().checkpoint_digest, predecessor);
+
+    // Neither rejection poisoned the journal or consumed a request slot.
+    let second = checked(runtime.tick(&mut model, input(2, predecessor)));
+    assert_eq!(model.calls, 2);
+    assert_eq!(second.tick.checkpoint_before, predecessor);
+}
+
+#[test]
+fn wrong_journal_context_or_body_never_reaches_model_port() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        config,
+        MemoryWitness::default(),
+    ));
+    let mut model = FakeModel::new();
+    let mut wrong_first = input(1, Digest32::ZERO);
+    wrong_first.subject_id = checked(StableId::new("subject.foreign"));
+    assert!(matches!(
+        runtime.tick(&mut model, wrong_first),
+        Err(NeuronRuntimeError::Journal(JournalError::ContextMismatch))
+    ));
+    assert_eq!(model.calls, 0, "foreign initial scope invoked model");
+
+    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let predecessor = first.tick.checkpoint_after;
+    assert_eq!(model.calls, 1);
+
+    let mut wrong_subject = input(2, predecessor);
+    wrong_subject.subject_id = checked(StableId::new("subject.foreign"));
+    assert!(matches!(
+        runtime.tick(&mut model, wrong_subject),
+        Err(NeuronRuntimeError::Journal(JournalError::ContextMismatch))
+    ));
+    assert_eq!(model.calls, 1);
+
+    let mut wrong_objective = input(2, predecessor);
+    wrong_objective.objective_digest = Digest32::of_bytes(b"foreign-objective");
+    assert!(matches!(
+        runtime.tick(&mut model, wrong_objective),
+        Err(NeuronRuntimeError::Journal(JournalError::ContextMismatch))
+    ));
+    assert_eq!(model.calls, 1);
+
+    let mut wrong_body = input(2, predecessor);
+    wrong_body.body_generation = Some(2);
+    assert!(matches!(
+        runtime.tick(&mut model, wrong_body),
+        Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+            SparseError::ScopeDrift
+        )))
+    ));
+    assert_eq!(model.calls, 1);
+    assert_eq!(checked(runtime.current_anchor()).unwrap().sequence, 1);
+
+    checked(runtime.tick(&mut model, input(2, predecessor)));
+    assert_eq!(model.calls, 2);
+}
+
+#[test]
+fn full_neuron_journal_never_invokes_model_again() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 1,
+        config,
+        MemoryWitness::default(),
+    ));
+    let mut model = FakeModel::new();
+    let first = checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    assert_eq!(model.calls, 1);
+    assert!(matches!(
+        runtime.tick(&mut model, input(2, first.tick.checkpoint_after)),
+        Err(NeuronRuntimeError::Journal(JournalError::Capacity))
+    ));
+    assert_eq!(model.calls, 1, "full journal invoked model");
+    assert_eq!(checked(runtime.current_anchor()).unwrap().sequence, 1);
 }
 
 #[test]

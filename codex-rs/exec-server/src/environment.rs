@@ -937,13 +937,16 @@ impl Environment {
         match &self.remote_client {
             Some(client) => {
                 let mut connection_state = client.subscribe_connection_state();
-                let client = client.get().await?;
+                // A transport failure may replace the lazy client's underlying RPC
+                // connection. Resolve it for each attempt, including the replay,
+                // rather than retrying through a stale disconnected client.
                 let discover = || async {
+                    let active_client = client.get().await?;
                     if params.roots.iter().any(|root| {
                         root.sandbox
                             .as_ref()
                             .is_some_and(crate::FileSystemSandboxContext::should_run_in_sandbox)
-                    }) && !client
+                    }) && !active_client
                         .environment_info()
                         .await?
                         .capabilities
@@ -954,7 +957,7 @@ impl Environment {
                                 .to_string(),
                         ));
                     }
-                    client.discover_capability_roots(params.clone()).await
+                    active_client.discover_capability_roots(params.clone()).await
                 };
                 match discover().await {
                     Err(error) if crate::client::is_retryable_recovery_error(&error) => {

@@ -269,6 +269,43 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         if input.checkpoint_digest != expected_checkpoint {
             return Err(NeuronRuntimeError::CheckpointMismatch);
         }
+        // Verify context against the journal's *registered* Scope/Objective,
+        // not against caller-provided digests. Wrong identity must never
+        // result in a model request, even for the very first tick.
+        let source_scope_digest = subject_scope_digest(&input.subject_id)?;
+        self.journal
+            .verify_owner_context(source_scope_digest, input.objective_digest)?;
+        // Validate the durable frontier BEFORE invoking the selected model.
+        // SparseJournal::commit used to discover these stale/future inputs only
+        // *after* model.execute(), wasting resources and potentially issuing
+        // an external invocation for a tick that can never be committed.
+        // Keep the same journal/mechanism error categories as sparse_tick.
+        if let Some(checkpoint) = current {
+            if checkpoint.sequence().checked_add(1) != Some(input.logical_sequence) {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::Sequence,
+                )));
+            }
+            if input.monotonic_time_micros <= checkpoint.monotonic_micros() {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::Clock,
+                )));
+            }
+            if checkpoint.body_digest() != body_digest(&self.config, &input) {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::ScopeDrift,
+                )));
+            }
+        } else if input.logical_sequence != 1 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                crate::SparseError::Sequence,
+            )));
+        }
+        // A full journal cannot commit even a valid successor. Do not consume
+        // another model request until an authorized owner rolls the segment.
+        if self.journal.remaining_capacity()? == 0 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Capacity));
+        }
         let expected_anchor = current.map(|checkpoint| JournalAnchor {
             sequence: checkpoint.sequence(),
             checkpoint_digest: checkpoint.digest(),
@@ -280,7 +317,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let model_runtime_digest = digest_model_binding(&model_output)?;
 
         let sparse_tick = SparseTick {
-            scope_digest: subject_scope_digest(&input.subject_id)?,
+            scope_digest: source_scope_digest,
             objective_digest: input.objective_digest,
             ndu_digest: input.ndu_snapshot_digest,
             body_digest: body_digest(&self.config, &input),
