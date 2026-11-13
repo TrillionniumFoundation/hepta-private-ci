@@ -39,7 +39,11 @@ impl ModelProviderPolicyError {
 ///
 /// The host must digest semantic provider material before constructing this
 /// value. Raw prompts, request bodies, authentication headers, provider tokens,
-/// and response text must never cross this API.
+/// and response text must never cross [`ModelProviderInvocationInput`]. A
+/// provider-attempt lease may separately request one final-use observation of
+/// the exact encoded body immediately before transport; that callback is the
+/// sole payload-bearing exception and must not retain plaintext after producing
+/// its bounded proof record.
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ModelProviderSha256Digest(String);
 
@@ -155,6 +159,31 @@ pub enum ModelProviderTerminal {
 ///
 /// The consuming receiver ensures the host cannot finish the same lease twice.
 pub trait ModelProviderAttemptLease: Send {
+    /// Whether this attempt must observe and approve the exact canonical
+    /// encoded request body before transport may be invoked.
+    ///
+    /// Returning `true` causes Core to install a single-use, fail-closed
+    /// observer on the same `RequestDispatchMetadata` instance that owns the
+    /// transport-invocation witness. The default keeps existing contributors
+    /// payload-blind.
+    fn requires_final_request_observation(&self) -> bool {
+        false
+    }
+
+    /// Validate the exact request body after canonical encoding and immediately
+    /// before the physical HTTP transport boundary.
+    ///
+    /// Implementations may tokenize and digest `body`, persist a pre-dispatch
+    /// claim, and return only after that claim is durable. They must not retain
+    /// plaintext request bytes after the future resolves. This callback is
+    /// invoked only when [`Self::requires_final_request_observation`] is true.
+    fn observe_final_request<'a>(
+        &'a self,
+        _body: &'a [u8],
+    ) -> ModelProviderPolicyFuture<'a, ()> {
+        Box::pin(std::future::ready(Ok(())))
+    }
+
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,
