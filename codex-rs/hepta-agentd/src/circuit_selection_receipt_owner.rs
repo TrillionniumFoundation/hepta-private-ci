@@ -65,6 +65,7 @@ mod readback_host;
 
 #[path = "circuit_evaluated_selection_receipt.rs"]
 mod evaluated;
+pub(crate) use evaluated::OriginalCircuitEvaluatedSelectionLocalSourcesV1;
 pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptConfigV1;
 pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptSourcesV1;
 pub use evaluated::OriginalCircuitEvaluatedSelectionReceiptV1;

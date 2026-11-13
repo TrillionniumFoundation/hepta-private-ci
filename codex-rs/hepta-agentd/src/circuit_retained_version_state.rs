@@ -229,7 +229,16 @@ impl RetainedVersionHostStateV1 {
     fn original_trainer(&self) -> Result<&OriginalCellQ24TrainingCommandClientV1, Error> {
         match self.phase.as_ref().ok_or(Error::CommitUncertain)? {
             RetainedVersionHostPhaseV1::Prepared { original, .. } => Ok(original.trainer()),
-            _ => self.trainer.as_ref().ok_or(Error::Unavailable),
+            _ => self
+                .trainer
+                .as_ref()
+                .or_else(|| {
+                    self.shared_evaluated.as_ref().map(|shared| {
+                        crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared)
+                            .0
+                    })
+                })
+                .ok_or(Error::Unavailable),
         }
     }
 
@@ -238,7 +247,16 @@ impl RetainedVersionHostStateV1 {
             RetainedVersionHostPhaseV1::Prepared { original, .. } => {
                 original.evaluator().ok_or(Error::Unavailable)
             }
-            _ => self.evaluator.as_ref().ok_or(Error::Unavailable),
+            _ => self
+                .evaluator
+                .as_ref()
+                .or_else(|| {
+                    self.shared_evaluated.as_ref().map(|shared| {
+                        crate::OriginalCircuitPublishedEvidenceReadbackV1::original_clients(shared)
+                            .1
+                    })
+                })
+                .ok_or(Error::Unavailable),
         }
     }
 

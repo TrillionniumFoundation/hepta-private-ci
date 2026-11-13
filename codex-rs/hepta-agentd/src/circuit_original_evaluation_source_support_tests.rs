@@ -9,6 +9,54 @@ use codex_hepta_types::FixedQ32;
 use material::evaluation_provider::DecisionBinding;
 use pretty_assertions::assert_eq;
 
+/// Complete borrowed comparison objective, not an A admission or Source
+/// publication. A trusted test host supplies these four compiled fields; this
+/// value carries no task identity, authority, history, issuer or signature.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(in super::super) struct BorrowedOriginalObjective<'a> {
+    pub(super) objective_digest: Digest32,
+    pub(super) objective_semantic_bytes: &'a [u8],
+    pub(super) objective_function_v1_digest: Digest32,
+    pub(super) objective_function_v1_bytes: &'a [u8],
+}
+
+impl<'a> BorrowedOriginalObjective<'a> {
+    pub(super) fn from_original_record(record: &'a RunStartRecordV1) -> Self {
+        Self {
+            objective_digest: record.snapshot.objective_digest,
+            objective_semantic_bytes: &record.objective_semantic_bytes,
+            objective_function_v1_digest: record.objective_function_v1_digest,
+            objective_function_v1_bytes: &record.objective_function_v1_bytes,
+        }
+    }
+
+    /// Pure consistency checks use the same full-byte identities and limits
+    /// as the original RunStart record. They do not authenticate an ingress or
+    /// create a completed A. The caller must retain its pre-held full contract.
+    pub(in super::super) fn from_preheld_compiled_objective(
+        objective_digest: Digest32,
+        objective_semantic_bytes: &'a [u8],
+        objective_function_v1_digest: Digest32,
+        objective_function_v1_bytes: &'a [u8],
+    ) -> anyhow::Result<Self> {
+        anyhow::ensure!(
+            !objective_digest.is_zero()
+                && !objective_function_v1_digest.is_zero()
+                && (1..=256 * 1024).contains(&objective_semantic_bytes.len())
+                && (1..=256 * 1024).contains(&objective_function_v1_bytes.len())
+                && Digest32::of_bytes(objective_semantic_bytes) == objective_digest
+                && Digest32::of_bytes(objective_function_v1_bytes) == objective_function_v1_digest,
+            "complete pre-held compiled objective bytes and original identities"
+        );
+        Ok(Self {
+            objective_digest,
+            objective_semantic_bytes,
+            objective_function_v1_digest,
+            objective_function_v1_bytes,
+        })
+    }
+}
+
 pub(super) enum ObservationMode {
     Complete,
     NonCanonicalOrder,
@@ -155,6 +203,48 @@ impl BFixture {
     ) -> anyhow::Result<()> {
         let baseline = original.config.decision.request.selected_bundle.digest()?;
         let candidate = original.candidate.digest()?;
+        self.populate_from_original_training(
+            &original.previous,
+            baseline,
+            candidate,
+            mode,
+            changed_candidate_action,
+            decision_binding,
+        )
+        .await
+    }
+
+    /// The fresh-provider path obtains both bundle digests from the actual
+    /// completed Trainer; it has no preceding auxiliary E or Model fixture.
+    pub(super) async fn populate_from_original_training(
+        &mut self,
+        previous: &CircuitTaskSourcePublicationV1,
+        baseline: Digest32,
+        candidate: Digest32,
+        mode: ObservationMode,
+        changed_candidate_action: bool,
+        decision_binding: DecisionBinding,
+    ) -> anyhow::Result<()> {
+        self.populate_from_preheld_objective(
+            BorrowedOriginalObjective::from_original_record(previous.original_record()),
+            baseline,
+            candidate,
+            mode,
+            changed_candidate_action,
+            decision_binding,
+        )
+        .await
+    }
+
+    pub(super) async fn populate_from_preheld_objective(
+        &mut self,
+        objective: BorrowedOriginalObjective<'_>,
+        baseline: Digest32,
+        candidate: Digest32,
+        mode: ObservationMode,
+        changed_candidate_action: bool,
+        decision_binding: DecisionBinding,
+    ) -> anyhow::Result<()> {
         let rule = self.rule.clone();
         let history_at = rule.history_start_unix_seconds + 10;
         for (index, episode) in rule.history.iter().enumerate() {
@@ -172,7 +262,7 @@ impl BFixture {
                 );
             }
             let publication = self
-                .execute(original, input, baseline, index, history_at)
+                .execute(objective, input, baseline, index, history_at)
                 .await?;
             material::evaluation_provider::decision(
                 self.writer.as_mut().expect("original B ledger"),
@@ -213,7 +303,7 @@ impl BFixture {
             }
             let publication = self
                 .execute(
-                    original,
+                    objective,
                     input.clone(),
                     baseline,
                     /*selected_index*/ 0,
@@ -231,7 +321,7 @@ impl BFixture {
             let mut candidate_input = input;
             candidate_input.scope.run_id = target.candidate_run_id.clone();
             self.execute(
-                original,
+                objective,
                 candidate_input,
                 candidate,
                 usize::from(changed_candidate_action),
@@ -278,7 +368,7 @@ impl BFixture {
 
     async fn execute(
         &mut self,
-        original: &PositiveFixture,
+        objective: BorrowedOriginalObjective<'_>,
         input: crate::CircuitTaskSourceInputV1,
         bundle: Digest32,
         selected_index: usize,
@@ -293,15 +383,11 @@ impl BFixture {
         // A shared digest cannot replace the original compiled objective.
         // B keeps its distinct admission/run/time, with the complete objective
         // and function bytes used by the preregistered comparison.
-        let objective = original.previous.original_record();
-        assert_eq!(
-            objective.snapshot.objective_digest,
-            self.rule.objective_digest
-        );
+        assert_eq!(objective.objective_digest, self.rule.objective_digest);
         record.snapshot.objective_digest = self.rule.objective_digest;
-        record.objective_semantic_bytes = objective.objective_semantic_bytes.clone();
+        record.objective_semantic_bytes = objective.objective_semantic_bytes.to_vec();
         record.objective_function_v1_digest = objective.objective_function_v1_digest;
-        record.objective_function_v1_bytes = objective.objective_function_v1_bytes.clone();
+        record.objective_function_v1_bytes = objective.objective_function_v1_bytes.to_vec();
         record.admission.observed_at_unix_micros = at * 1_000_000;
         record.admission.deadline_unix_micros = (at + 1) * 1_000_000;
         record.authentication.expires_at_ms = (at + 1) * 1_000;
@@ -334,6 +420,23 @@ impl BFixture {
         original: &PositiveFixture,
         registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
     ) -> anyhow::Result<OriginalCircuitEvaluationCohortConfigV1> {
+        self.config_from_original_training(
+            Self::training(original)?,
+            &original.config.scope,
+            &original.config.training_evidence,
+            &original.config.verifier,
+            registration,
+        )
+    }
+
+    pub(super) fn config_from_original_training(
+        &self,
+        training: LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+        training_evidence: &SignedLearningEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        registration: &crate::OriginalCellEvaluationPanelRegistrationV1,
+    ) -> anyhow::Result<OriginalCircuitEvaluationCohortConfigV1> {
         let freeze_plan = DatasetFreezePlanV2 {
             snapshot_id: self.rule.snapshot_id.clone(),
             objective_digest: self.rule.objective_digest,
@@ -343,10 +446,7 @@ impl BFixture {
             .writer
             .as_ref()
             .expect("original B ledger before transfer");
-        assert_eq!(
-            writer.verifier().trust_digest(),
-            original.config.verifier.trust_digest()
-        );
+        assert_eq!(writer.verifier().trust_digest(), verifier.trust_digest());
         let freeze_evidence = material::evaluation_provider::freeze(
             writer,
             &self.credentials,
@@ -356,10 +456,10 @@ impl BFixture {
         Ok(OriginalCircuitEvaluationCohortConfigV1 {
             registration: registration.clone(),
             rule: self.rule.clone(),
-            training: Self::training(original)?,
-            scope: original.config.scope.clone(),
-            training_evidence: original.config.training_evidence.clone(),
-            verifier: original.config.verifier.clone(),
+            training,
+            scope: scope.clone(),
+            training_evidence: training_evidence.clone(),
+            verifier: verifier.clone(),
             freeze_plan,
             freeze_evidence,
         })

@@ -12,6 +12,9 @@ mod command_owner_adapter;
 #[path = "circuit_evaluated_selection_remote.rs"]
 mod remote;
 pub use remote::OriginalCircuitEvaluatedSelectionRemoteSourcesV1;
+#[path = "circuit_evaluated_selection_local.rs"]
+mod local;
+pub(crate) use local::OriginalCircuitEvaluatedSelectionLocalSourcesV1;
 
 pub struct OriginalCircuitEvaluatedSelectionReceiptConfigV1 {
     pub context: OriginalCircuitEvaluatedRetentionContextV1,

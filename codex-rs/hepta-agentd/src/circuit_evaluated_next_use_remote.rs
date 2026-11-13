@@ -19,8 +19,8 @@ impl NextUseSources for OriginalCircuitEvaluatedNextUseRemoteSourcesV1<'_> {
     fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> {
         None
     }
-    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
-        self.selector
+    fn selector(&self) -> OriginalSelectorRead<'_> {
+        OriginalSelectorRead::Remote(self.selector)
     }
     fn evaluated_owners(
         &self,
@@ -85,6 +85,23 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
     ) -> Result<OriginalCircuitEvaluatedNextUseReceiptV1, Error> {
         let completed = self.readback_source(source).await?;
         self.completed_evaluated_next_use(completed)
+    }
+
+    pub fn into_evaluated_shared_command_owner(
+        self,
+        live: OriginalCircuitLearningReadClientV1,
+        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
+        selector: LearningIterationEvidenceClientV1,
+    ) -> Result<
+        crate::OriginalCircuitNextUseCommandOwnerV1<W>,
+        crate::OriginalCircuitNextUseCommandErrorV1,
+    >
+    where
+        W: Send + 'static,
+    {
+        crate::OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
+            self, live, shared, selector,
+        )
     }
 
     pub fn into_evaluated_command_owner(

@@ -427,3 +427,6 @@ mod original_model;
 
 #[path = "authority_host_learning_resident_retention_auth_tests.rs"]
 mod retention_auth;
+
+#[path = "authority_host_learning_resident_provider_transport_tests.rs"]
+mod provider_transport;

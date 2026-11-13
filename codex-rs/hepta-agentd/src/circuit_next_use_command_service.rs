@@ -36,6 +36,10 @@ use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 mod evaluated;
 use evaluated::OriginalPredecessors;
 
+#[path = "circuit_evaluated_next_use_local_command.rs"]
+mod local;
+use local::OriginalSelector;
+
 #[path = "circuit_next_use_command_evidence.rs"]
 mod evidence;
 
@@ -43,7 +47,7 @@ pub struct OriginalCircuitNextUseCommandOwnerV1<W: AnchorWitnessStore> {
     owner: Mutex<OriginalCircuitNextUseReceiptOwnerV1<W>>,
     live: OriginalCircuitLearningReadClientV1,
     predecessors: OriginalPredecessors,
-    selector: LearningIterationEvidenceClientV1,
+    selector: OriginalSelector,
     context: OriginalCircuitNextUseCommandContextV1,
     initial_head: Digest32,
     binding: Digest32,
@@ -103,7 +107,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
             owner: Mutex::new(owner),
             live,
             predecessors: OriginalPredecessors::Legacy(trainer),
-            selector,
+            selector: OriginalSelector::Remote(selector),
             context,
             initial_head: initial.head_digest,
             binding,

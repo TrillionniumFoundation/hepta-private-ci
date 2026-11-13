@@ -106,6 +106,7 @@ fn profile_client(
                 next_request_id: 1,
             })),
             retained: Mutex::new(None),
+            local: None,
         },
         channel(server)?,
     ))

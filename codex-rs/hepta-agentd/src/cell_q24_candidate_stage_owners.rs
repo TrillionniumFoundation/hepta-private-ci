@@ -116,6 +116,18 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
         Ok(())
     }
 
+    /// Narrow the original command path to the already elapsed handoff end.
+    /// This consumes the bundle before Root can install its effect gate.
+    pub(crate) fn restrict_original_handoff_deadline(
+        mut self,
+        end: Instant,
+    ) -> Result<Self, Error> {
+        self.end = self.end.min(end);
+        self.common.end = self.common.end.min(self.end);
+        self.require_live_deadline()?;
+        Ok(self)
+    }
+
     pub(crate) fn install_fresh_resident_gate(
         &mut self,
         gate: Arc<RootResidentLearningEffectGateV3>,

@@ -31,6 +31,9 @@ use crate::OriginalCellEvaluationPanelRegistrationV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "neuron_cell_evaluation_shared_readback.rs"]
+mod shared_readback;
+
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum Origin {
     Fresh,

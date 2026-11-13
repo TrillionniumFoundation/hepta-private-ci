@@ -27,6 +27,7 @@ pub(crate) fn client(
         binding,
         channel,
         retained,
+        local,
     } = original;
     Ok((
         OriginalCircuitCompletionReadinessClientV1 {
@@ -34,6 +35,7 @@ pub(crate) fn client(
             binding,
             channel,
             retained,
+            local,
         },
         server,
     ))

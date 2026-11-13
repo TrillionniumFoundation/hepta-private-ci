@@ -684,3 +684,6 @@ mod resident_model;
 
 #[path = "circuit_deep_training_readback_tests.rs"]
 mod deep_readonly;
+
+#[path = "circuit_resident_candidate_provider_support_tests.rs"]
+mod resident_provider;

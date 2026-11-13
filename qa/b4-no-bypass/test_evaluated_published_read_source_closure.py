@@ -34,14 +34,27 @@ READINESS = AGENT + "circuit_learning_completion_readiness_service.rs"
 SELECTOR = AGENT + "circuit_selection_receipt_owner.rs"
 EVALUATED_S = AGENT + "circuit_evaluated_selection_receipt.rs"
 EXPECTED = {
-    "learning_original_evaluated_read_selection_context": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',),
-    "learning_original_evaluated_read_next_use_context": ('codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs',),
+    "learning_original_evaluated_read_selection_context": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',
+ 'codex-rs/hepta-agentd/src/circuit_learning_local_read.rs',
+ 'codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs'),
+    "learning_original_evaluated_read_next_use_context": ('codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs',
+ 'codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs',
+ 'codex-rs/hepta-agentd/src/circuit_learning_local_read.rs',
+ 'codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs',
+ 'codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs'),
     "learning_original_evaluated_read_client_create": (),
-    "learning_original_evaluated_read_owner_create": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',),
-    "learning_original_evaluated_read_selection_binding": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs'),
+    "learning_original_evaluated_read_owner_create": ('codex-rs/hepta-agentd/src/circuit_retained_version_state.rs',
+ 'codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs'),
+    "learning_original_evaluated_read_selection_binding": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs',
+ 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',
+ 'codex-rs/hepta-agentd/src/circuit_learning_local_read.rs'),
     "learning_original_evaluated_selection_remote_attest": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',),
     "learning_original_evaluated_selection_remote_readback": ('codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',),
-    "learning_original_published_read_client_current": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs', 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs'),
+    "learning_original_published_read_client_current": ('codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs',
+ 'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs',
+ 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_remote.rs',
+ 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs',
+ 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs'),
 }
 DOMAINS = {
     PROFILE: [(None, r"const EVALUATED_OPERATION: &str =", '"runtime.learning.original-circuit.evaluated-current-read.v1"')],
@@ -426,7 +439,7 @@ class EvaluatedPublishedReadClosureTests(unittest.TestCase):
 
 
 
-# Actual post-format root scopes supplement the original verifier's generic
+# Exact prepared root scopes supplement the original verifier's generic
 # function/file-level fallback. No source or verdict cache is used.
 ORDINARY_SCOPE_GUARDS = {'codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs': [{'masked_sha256': '5c4f0690b07de885b62baf68ed3552c7c4c857b2c5659104ddc8fda6909c6115',
                                                                            'selector': {'kind': 'unique_function',
@@ -460,7 +473,7 @@ ORDINARY_SCOPE_GUARDS = {'codex-rs/hepta-agentd/src/authority_host_learning_resi
                                                                      'selector': {'item_kind': 'struct',
                                                                                   'kind': 'root_type',
                                                                                   'name': 'EvaluatedContinuation'}}],
- 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs': [{'masked_sha256': '788e9294781130c0388da29ae0643923675dfefffae346cff8c0455bd99a0348',
+ 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs': [{'masked_sha256': 'd71f6e091660b680f8e8bb0ccf706f93acc9fa73c83c9d0f9f70d2c32be6afb0',
                                                                               'selector': {'item_kind': 'enum',
                                                                                            'kind': 'root_type',
                                                                                            'name': 'OriginalPredecessors'}}],
@@ -487,7 +500,7 @@ ORDINARY_SCOPE_GUARDS = {'codex-rs/hepta-agentd/src/authority_host_learning_resi
                                                                                     'kind': 'root_impl_method',
                                                                                     'name': 'clone',
                                                                                     'protect_entire_impl': True}}],
- 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs': [{'masked_sha256': '788e9294781130c0388da29ae0643923675dfefffae346cff8c0455bd99a0348',
+ 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs': [{'masked_sha256': 'd71f6e091660b680f8e8bb0ccf706f93acc9fa73c83c9d0f9f70d2c32be6afb0',
                                                                                'selector': {'item_kind': 'enum',
                                                                                             'kind': 'root_type',
                                                                                             'name': 'OriginalPredecessors'}}],
@@ -512,7 +525,7 @@ ORDINARY_SCOPE_GUARDS = {'codex-rs/hepta-agentd/src/authority_host_learning_resi
                                                                          'selector': {'item_kind': 'struct',
                                                                                       'kind': 'root_type',
                                                                                       'name': 'Request'}},
-                                                                        {'masked_sha256': '0f5ef71d9af430fc6cbec9b63a39c2948c38a1bbd79b57e64addecb4a7050c3f',
+                                                                        {'masked_sha256': '26814e30e1870e50bde061a103fe31e4520d2e74270fec91ee2e33faee1410ca',
                                                                          'selector': {'item_kind': 'struct',
                                                                                       'kind': 'root_type',
                                                                                       'name': 'OriginalCircuitCompletionReadinessClientV1'}}],
@@ -524,11 +537,11 @@ ORDINARY_SCOPE_GUARDS = {'codex-rs/hepta-agentd/src/authority_host_learning_resi
                                                             'selector': {'item_kind': 'struct',
                                                                          'kind': 'root_type',
                                                                          'name': 'OriginalCircuitNextUseCommandReceiptV1'}}],
- 'codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs': [{'masked_sha256': '53da4e4e2085a6bae752fd5eb7b0def900ac7607f494d24dcbf1db0eeb424007',
+ 'codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs': [{'masked_sha256': '9b1f5d5de2400e7aeeffb9dbac683e00ebc04272c0ab2063df3d79b3b3de0340',
                                                                     'selector': {'item_kind': 'struct',
                                                                                  'kind': 'root_type',
                                                                                  'name': 'OriginalCircuitNextUseCommandOwnerV1'}}],
- 'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs': [{'masked_sha256': '668bb26007c66f1b2d9e2034544da39db00b24925a409c291e4350dc198028e5',
+ 'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs': [{'masked_sha256': '7d311b26a1a60d2d16ed7dc63500a5a1a2f667ee98df5dabe954a0d87f219284',
                                                                   'selector': {'item_kind': 'trait',
                                                                                'kind': 'root_type',
                                                                                'name': 'NextUseSources'}}],
@@ -671,7 +684,7 @@ ORDINARY_MODULE_MOUNTS = [{'parent': 'codex-rs/hepta-agentd/src/cell_q24_candida
   'module_name': 'prepared_custody',
   'path_literal': '"circuit_retained_version_prepared.rs"'}]
 
-ORDINARY_COMPLETE_BOUNDARY_SHA256 = 'b8e7f02aac1b5ca68580764ee7922e7f16519d3fb1583ed45b0ce4961b1c84f3'
+ORDINARY_COMPLETE_BOUNDARY_SHA256 = 'fbd2bad9dcaf4cc327d48442c42a0bdd05e856a20054340591e71b8d07239a7a'
 
 ORDINARY_NEW_BOUNDARIES = [{'id': 'learning_original_candidate_retained_stage_route',
   'symbol': 'OriginalCellQ24CandidateStageOwnersV1::require_evaluated_retained_stage',
@@ -708,7 +721,8 @@ ORDINARY_NEW_BOUNDARIES = [{'id': 'learning_original_candidate_retained_stage_ro
   'definition_path': 'codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs',
   'definition_markers': ['fn require_original_evaluated_next_use('],
   'product_callers': ['codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs',
-                      'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs'],
+                      'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs',
+                      'codex-rs/hepta-agentd/src/circuit_learning_local_read.rs'],
   'caller_markers': []},
  {'id': 'learning_original_evaluated_selector_command_context',
   'symbol': 'OriginalCircuitSelectionCommandContextV1::from_original_evaluation',
@@ -729,7 +743,8 @@ ORDINARY_NEW_BOUNDARIES = [{'id': 'learning_original_candidate_retained_stage_ro
   'receiver_type': 'OriginalCircuitSelectionReceiptOwnerV1',
   'definition_path': 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs',
   'definition_markers': ['fn original_evaluated_command_context('],
-  'product_callers': ['codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs'],
+  'product_callers': ['codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs',
+                      'codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs'],
   'caller_markers': []},
  {'id': 'learning_original_evaluated_selector_command_owner_factory',
   'symbol': 'OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_receipt_owner',
@@ -750,7 +765,8 @@ ORDINARY_NEW_BOUNDARIES = [{'id': 'learning_original_candidate_retained_stage_ro
   'receiver_type': 'OriginalCircuitEvaluatedSelectionReceiptV1',
   'definition_path': 'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs',
   'definition_markers': ['fn from_original_command_response('],
-  'product_callers': ['codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs'],
+  'product_callers': ['codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs',
+                      'codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs'],
   'caller_markers': []},
  {'id': 'learning_original_evaluated_selector_readback_binding',
   'symbol': 'OriginalCircuitSelectionReadbackConnectionV1::bind_original_evaluated_selection',
@@ -785,7 +801,8 @@ ORDINARY_NEW_BOUNDARIES = [{'id': 'learning_original_candidate_retained_stage_ro
   'receiver_type': 'OriginalCircuitNextUseReceiptOwnerV1',
   'definition_path': 'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_remote.rs',
   'definition_markers': ['fn original_evaluated_command_selection('],
-  'product_callers': ['codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs'],
+  'product_callers': ['codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs',
+                      'codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs'],
   'caller_markers': []},
  {'id': 'learning_original_evaluated_next_use_command_owner_factory',
   'symbol': 'OriginalCircuitNextUseCommandOwnerV1::from_original_evaluated_receipt_owner',
@@ -1157,7 +1174,7 @@ class EvaluatedOrdinaryRetainedClosureTests(unittest.TestCase):
     def test_new_typed_edges_and_old_boundary_inventory_are_exact(self):
         boundaries = PROOF._boundary_rows(self.manifest)
         PROOF._verify_privileged_inventory(self.manifest, boundaries)
-        self.assertEqual(len(boundaries), 569)
+        self.assertEqual(len(boundaries), 633)
         self.assertEqual(PROOF._string_tuple(self.manifest, "source_roots"), ("codex-rs",))
         self.assertEqual(PROOF._string_tuple(self.manifest, "ignored_path_fragments"),
                          ("/tests/", "/examples/", "_tests.rs"))
@@ -1165,7 +1182,7 @@ class EvaluatedOrdinaryRetainedClosureTests(unittest.TestCase):
             "boundary", "privileged_inventory", "authority", "source_roots", "ignored_path_fragments")}
         observed = hashlib.sha256(json.dumps(checked, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         self.assertEqual(observed, ORDINARY_COMPLETE_BOUNDARY_SHA256)
-        self.assertEqual(self.manifest["boundary"][-28:], ORDINARY_NEW_BOUNDARIES)
+        self.assertEqual(self.manifest["boundary"][541:569], ORDINARY_NEW_BOUNDARIES)
         self.assertTrue(all(value is False for value in self.manifest["authority"].values()))
         for path in ORDINARY_SCOPE_GUARDS:
             with self.subTest(actual_root_scopes=path):

@@ -54,6 +54,7 @@ mod serving;
 #[path = "circuit_selection_command_wire.rs"]
 mod wire;
 pub use serving::OriginalCircuitSelectionCommandOwnerV1;
+pub use serving::OriginalCircuitSelectionLocalReadbackV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCircuitSelectionCommandErrorV1 {

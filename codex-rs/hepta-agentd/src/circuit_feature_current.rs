@@ -56,6 +56,7 @@ pub use learning_read::OriginalCircuitLearningReadContextV1;
 pub use learning_read::OriginalCircuitLearningReadErrorV1;
 pub use learning_read::OriginalCircuitLearningReadOwnerV1;
 pub use learning_read::OriginalCircuitLearningReadbackV1;
+pub use learning_read::OriginalCircuitPublishedLocalReadV1;
 #[cfg(test)]
 pub(crate) use learning_read::fixture as original_learning_read_fixture;
 pub use owner::PublishedCircuitCellOwnerV1;
@@ -74,6 +75,7 @@ pub use retained_publication::prepare_original_circuit_evaluated_retention_v1;
 pub use retained_publication::prepare_original_circuit_retained_publication_v1;
 pub use retained_publication::recover_original_circuit_evaluated_retention_v1;
 pub use retained_publication::recover_original_circuit_retained_publication_v1;
+pub use retained_publication::version::OriginalCircuitPublishedEvidenceReadbackV1;
 pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
 pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
 pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;

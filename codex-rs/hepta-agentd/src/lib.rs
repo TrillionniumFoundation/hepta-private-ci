@@ -187,6 +187,12 @@ pub use authority_host_service::resident::ROOT_RESIDENT_LEARNING_EXECUTE_V3;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::resident::ROOT_RESIDENT_LEARNING_READBACK_V3;
 #[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentCandidateInputsV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentCandidateServiceV1;
+#[cfg(target_os = "linux")]
+pub use authority_host_service::resident::RootResidentLearningConsumerV3;
+#[cfg(target_os = "linux")]
 pub(crate) use authority_host_service::resident::RootResidentLearningEffectGateV3;
 #[cfg(target_os = "linux")]
 pub use authority_host_service::resident::RootResidentLearningHandleV3;
@@ -223,15 +229,21 @@ pub use config::PreparedRootAgentdConfig;
 #[cfg(target_os = "linux")]
 pub use config::drop_root_native_owner_credentials;
 #[cfg(target_os = "linux")]
+pub use root_production_handoff::RootCandidateStageHandoffV1;
+#[cfg(target_os = "linux")]
 pub use root_production_handoff::RootLearningHandoffV1;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::RootProductionWriterDescriptor;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::receive_root_candidate_stage_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_learning_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::receive_root_production_writer_handoff;
+#[cfg(target_os = "linux")]
+pub use root_production_handoff::send_root_candidate_stage_handoff;
 #[cfg(target_os = "linux")]
 pub use root_production_handoff::send_root_learning_handoff;
 #[cfg(target_os = "linux")]
@@ -459,6 +471,8 @@ pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandError
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandOwnerV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionCommandReceiptV1;
+#[cfg(target_os = "linux")]
+pub use learning_iteration_evidence_client::OriginalCircuitSelectionLocalReadbackV1;
 #[cfg(target_os = "linux")]
 pub use learning_iteration_evidence_client::OriginalCircuitSelectionReadbackConnectionV1;
 
@@ -880,6 +894,10 @@ pub use circuit_feature_current::OriginalCircuitLearningReadOwnerV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitLearningReadbackV1;
 #[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitPublishedEvidenceReadbackV1;
+#[cfg(target_os = "linux")]
+pub use circuit_feature_current::OriginalCircuitPublishedLocalReadV1;
+#[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitRetainedArtifactCheckpointV1;
 #[cfg(target_os = "linux")]
 pub use circuit_feature_current::OriginalCircuitRetainedPublicationContextV1;
@@ -1198,6 +1216,16 @@ pub use neuron_generation_current::PublishedNeuronGenerationInitialV1;
 pub use neuron_generation_current::PublishedNeuronGenerationUpdateV1;
 pub use neuron_generation_episode::append_neuron_generation_outcome_credit_v1;
 pub use neuron_generation_episode::append_neuron_generation_outcome_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_initial::OriginalRootCircuitTaskCustodyV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_initial::OriginalRootCircuitTaskInputsV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_initial::OriginalRootCircuitTaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_initial::OriginalRootInitialGenerationCustodyV1;
+#[cfg(target_os = "linux")]
+pub use neuron_generation_initial::OriginalRootInitialInstallationErrorV1;
 #[cfg(unix)]
 pub use neuron_generation_initial::PreparedAgentdGenerationInitialV1;
 #[cfg(unix)]

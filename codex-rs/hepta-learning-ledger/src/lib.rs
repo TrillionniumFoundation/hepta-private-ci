@@ -25,6 +25,7 @@ mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod snapshot_codec;
 mod trust_distribution;
 mod witness;
 
@@ -160,6 +161,10 @@ pub use signed_evidence::verify_signed_actor_separation;
 pub use signed_evidence::verify_signed_independent_roles_v1;
 pub use signed_evidence::verify_signed_role_separation;
 pub use signed_evidence::verify_verified_role_separation;
+pub use snapshot_codec::MAX_ORIGINAL_LEDGER_SNAPSHOT_BYTES_V1;
+pub use snapshot_codec::OriginalLedgerSnapshotCodecErrorV1;
+pub use snapshot_codec::decode_original_ledger_snapshot_v1;
+pub use snapshot_codec::encode_original_ledger_snapshot_v1;
 pub use trust_distribution::ActivatedLearningTrustV1;
 pub use trust_distribution::LearningTrustDistributionError;
 pub use trust_distribution::LearningTrustDistributionV1;

@@ -34,6 +34,10 @@ pub use evaluated::OriginalCircuitEvaluatedLearningReadContextV1;
 mod profile;
 use profile::ReadProfile;
 
+#[path = "circuit_learning_local_read.rs"]
+mod local;
+pub use local::OriginalCircuitPublishedLocalReadV1;
+
 #[path = "circuit_learning_completion_readiness.rs"]
 mod readiness;
 pub(crate) use readiness::OriginalCircuitCompletionReadinessClientV1;
@@ -109,6 +113,7 @@ pub struct OriginalCircuitLearningReadClientV1 {
     binding: Digest32,
     channel: Mutex<Option<Channel>>,
     retained: Mutex<Option<OriginalCircuitLearningReadbackV1>>,
+    local: Option<OriginalCircuitPublishedLocalReadV1>,
 }
 
 impl OriginalCircuitLearningReadClientV1 {
@@ -164,12 +169,16 @@ impl OriginalCircuitLearningReadClientV1 {
                 next_request_id: 1,
             })),
             retained: Mutex::new(None),
+            local: None,
         })
     }
 
     /// Each invocation performs original owner I/O. Failed or cancelled reads
     /// consume this connection. A historical successful read cannot satisfy it.
     pub async fn read_current(&self) -> Result<OriginalCircuitLearningReadbackV1, Error> {
+        if let Some(local) = &self.local {
+            return OriginalCircuitPublishedLocalReadV1::read_current(local).await;
+        }
         let mut channel = self
             .channel
             .try_lock()

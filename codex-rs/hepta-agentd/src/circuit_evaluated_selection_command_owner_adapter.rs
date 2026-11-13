@@ -13,6 +13,22 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         }
     }
 
+    pub fn into_evaluated_shared_command_owner(
+        self,
+        live: OriginalCircuitLearningReadClientV1,
+        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
+    ) -> Result<
+        crate::OriginalCircuitSelectionCommandOwnerV1<W>,
+        crate::OriginalCircuitSelectionCommandErrorV1,
+    >
+    where
+        W: Send + 'static,
+    {
+        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_shared_receipt_owner(
+            self, live, shared,
+        )
+    }
+
     pub fn into_evaluated_command_owner(
         self,
         live: OriginalCircuitLearningReadClientV1,
@@ -48,5 +64,35 @@ impl OriginalCircuitEvaluatedSelectionReceiptV1 {
         };
         value.original_receipt_predecessors(now()?)?;
         Ok(value)
+    }
+}
+
+impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitSelectionReceiptOwnerV1<W> {
+    /// Consume the same original custody and the explicit local Version purpose.
+    /// The old remote/shared and by-value factories retain their old contracts.
+    pub fn into_evaluated_local_shared_command_owner(
+        self,
+        live: OriginalCircuitLearningReadClientV1,
+        shared: crate::OriginalCircuitPublishedEvidenceReadbackV1,
+    ) -> Result<
+        crate::OriginalCircuitSelectionCommandOwnerV1<W>,
+        crate::OriginalCircuitSelectionCommandErrorV1,
+    > {
+        let context =
+            OriginalCircuitSelectionReceiptOwnerV1::original_evaluated_command_context(&self)
+                .ok_or(crate::OriginalCircuitSelectionCommandErrorV1::Binding(
+                    "original evaluated local Selector custody",
+                ))?;
+        OriginalCircuitLearningReadClientV1::require_original_local_evaluated_selection(
+            &live, context,
+        )
+        .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+        OriginalCircuitLearningReadClientV1::require_original_local_shared_readbacks(
+            &live, &shared,
+        )
+        .map_err(OriginalCircuitSelectionReceiptErrorV1::from)?;
+        crate::OriginalCircuitSelectionCommandOwnerV1::from_original_evaluated_local_shared_receipt_owner(
+            self, live, shared,
+        )
     }
 }

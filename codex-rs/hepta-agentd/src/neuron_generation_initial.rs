@@ -29,6 +29,21 @@ use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
 use crate::neuron_generation_update_live::LiveGenerationCurrent;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_initial_root_custody.rs"]
+mod root_custody;
+
+#[cfg(target_os = "linux")]
+pub use root_custody::OriginalRootCircuitTaskCustodyV1;
+#[cfg(target_os = "linux")]
+pub use root_custody::OriginalRootCircuitTaskInputsV1;
+#[cfg(target_os = "linux")]
+pub use root_custody::OriginalRootCircuitTaskRuntimeV1;
+#[cfg(target_os = "linux")]
+pub use root_custody::OriginalRootInitialGenerationCustodyV1;
+#[cfg(target_os = "linux")]
+pub use root_custody::OriginalRootInitialInstallationErrorV1;
+
 /// Owns the exact root preparation and actual successor lock until publication.
 /// Neither the prepared journal nor a raw runtime endpoint can be extracted.
 pub struct PreparedAgentdGenerationInitialV1<W: AnchorWitnessStore> {

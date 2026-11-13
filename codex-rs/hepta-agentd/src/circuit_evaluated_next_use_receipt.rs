@@ -10,6 +10,10 @@ use crate::OriginalCellQ24TrainingCommandClientV1;
 use crate::OriginalCircuitEvaluatedSelectionReceiptV1;
 pub use remote::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
 
+#[path = "circuit_evaluated_next_use_local.rs"]
+mod local;
+pub(crate) use local::OriginalCircuitEvaluatedNextUseLocalSourcesV1;
+
 pub struct OriginalCircuitEvaluatedNextUseReceiptConfigV1 {
     pub selection: OriginalCircuitEvaluatedSelectionReceiptV1,
     pub signer: TrustedLearningSignerV1,
@@ -97,8 +101,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
         None
     }
 
-    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
-        self.selector
+    fn selector(&self) -> OriginalSelectorRead<'_> {
+        OriginalSelectorRead::Remote(self.selector)
     }
 
     fn evaluated_owners(

@@ -39,8 +39,8 @@ EXPECTED = {
     "root_resident_service_register": [],
     "root_resident_service_recover": [],
     "root_resident_runtime_consume": [],
-    "root_resident_coordinator_run": [],
-    "root_resident_original_stream_serve": [],
+    "root_resident_coordinator_run": ['codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs'],
+    "root_resident_original_stream_serve": ['codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs'],
     "root_resident_original_client_create": [],
     "root_resident_original_client_recover": [],
     "root_resident_original_client_readback": [
@@ -110,6 +110,12 @@ ROOT_CASES = [
     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
     "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+    "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+    "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins",
 ]
 ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
@@ -120,6 +126,15 @@ ROOT_ISSUER_CASES = [
     "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
     "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
 ]
+ROOT_CUSTODY_CASES = ['runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback',
+ 'runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error']
 
 class ResidentRootSourceClosureTests(unittest.TestCase):
     @classmethod
@@ -391,7 +406,8 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
         self.assertEqual(len(parents), len(set(parents)))
         self.assertTrue(set(ROOT_CASES).issubset(parents))
         self.assertTrue(set(ROOT_ISSUER_CASES).issubset(parents))
-        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES))
+        self.assertTrue(set(ROOT_CUSTODY_CASES).issubset(parents))
+        self.assertEqual(len(parents), 7 + len(ROOT_CASES) + len(ROOT_ISSUER_CASES) + len(ROOT_CUSTODY_CASES))
         roots = (ROOT / (AGENT + "authority_host_learning_resident_root_tests.rs")).read_text()
         evaluation = (ROOT / (AGENT + "authority_host_learning_resident_evaluation_tests.rs")).read_text()
         self.assertIn(
@@ -408,15 +424,60 @@ class ResidentRootSourceClosureTests(unittest.TestCase):
             '#[path = "authority_host_learning_resident_retention_auth_tests.rs"]\nmod retention_auth;',
             roots,
         )
+        provider = (ROOT / (AGENT + "authority_host_learning_resident_provider_transport_tests.rs")).read_text()
+        lifecycle = (ROOT / (AGENT + "authority_host_learning_resident_provider_lifecycle_tests.rs")).read_text()
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_provider_transport_tests.rs"]\nmod provider_transport;',
+            roots,
+        )
+        self.assertIn(
+            '#[path = "authority_host_learning_resident_provider_lifecycle_tests.rs"]\nmod lifecycle;',
+            provider,
+        )
         for name in ROOT_CASES:
-            source = retention if "::retention_auth::" in name else model if "::original_model::" in name else evaluation if "::evaluation::" in name else roots
+            source = (
+                lifecycle if "::provider_transport::lifecycle::" in name
+                else provider if "::provider_transport::" in name
+                else retention if "::retention_auth::" in name
+                else model if "::original_model::" in name
+                else evaluation if "::evaluation::" in name
+                else roots
+            )
             self.assertIn("fn " + name.rsplit("::", 1)[-1] + "(", source)
         self.assertEqual(
             roots.count('#[ignore = "explicit actual Root')
             + evaluation.count('#[ignore = "explicit actual Root')
             + model.count('#[ignore = "explicit actual Root')
-            + retention.count('#[ignore = "explicit actual Root'),
+            + retention.count('#[ignore = "explicit actual Root')
+            + provider.count('#[ignore = "explicit actual Root')
+            + lifecycle.count('#[ignore = "explicit actual Root'),
             len(ROOT_CASES),
+        )
+        task_support = (ROOT / (AGENT + "circuit_q24_task_test_support.rs")).read_text()
+        custody_support = (ROOT / (AGENT + "neuron_generation_initial_root_custody_support_tests.rs")).read_text()
+        custody = (ROOT / (AGENT + "neuron_generation_initial_root_custody_tests.rs")).read_text()
+        cold = (ROOT / (AGENT + "neuron_generation_initial_root_cold_tests.rs")).read_text()
+        self.assertIn(
+            '#[path = "neuron_generation_initial_root_custody_support_tests.rs"]\nmod root_initial_custody;',
+            task_support,
+        )
+        self.assertIn(
+            '#[path = "neuron_generation_initial_root_custody_tests.rs"]\nmod tests;',
+            custody_support,
+        )
+        self.assertIn(
+            '#[path = "neuron_generation_initial_root_cold_tests.rs"]\nmod cold_tests;',
+            custody_support,
+        )
+        self.assertEqual(len(ROOT_CUSTODY_CASES), len(set(ROOT_CUSTODY_CASES)))
+        self.assertTrue(set(ROOT_CUSTODY_CASES).isdisjoint(ROOT_CASES + ROOT_ISSUER_CASES))
+        for name in ROOT_CUSTODY_CASES:
+            source = cold if "::cold_tests::" in name else custody
+            self.assertIn("async fn " + name.rsplit("::", 1)[-1] + "(", source)
+        self.assertEqual(
+            custody.count('#[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]')
+            + cold.count('#[ignore = "requires actual RootAuthorityDirectory and original signed owner fixtures"]'),
+            len(ROOT_CUSTODY_CASES),
         )
         for marker in (
             '"codex-rs/hepta-neuron/**"', '"-p", "codex-hepta-neuron"',

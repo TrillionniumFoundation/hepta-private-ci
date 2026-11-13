@@ -24,9 +24,12 @@ mod wire;
 
 pub use c_task::OriginalCircuitRetainedTaskInputsV1;
 pub use client::OriginalCircuitRetainedVersionClientV1;
+pub use host::OriginalCircuitPublishedEvidenceReadbackV1;
 pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
 pub use host::OriginalCircuitRetainedVersionHostV1;
 pub use host::OriginalCircuitRetainedVersionRecoveryV1;
+pub(crate) use host::OriginalVersionLocalReadBindingV1;
+pub(crate) use host::OriginalVersionLocalReadOperationV1;
 
 #[derive(Debug, thiserror::Error)]
 pub enum OriginalCircuitRetainedVersionErrorV1 {

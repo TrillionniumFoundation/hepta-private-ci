@@ -420,3 +420,6 @@ pub(super) async fn start(
         worker: Some(worker),
     })
 }
+
+#[path = "neuron_generation_initial_root_custody_support_tests.rs"]
+mod root_initial_custody;

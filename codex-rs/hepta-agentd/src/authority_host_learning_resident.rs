@@ -29,6 +29,11 @@ mod runtime;
 mod stages;
 pub use runtime::RootResidentLearningHandleV3;
 pub use runtime::RootResidentLearningRuntimeV3;
+#[path = "authority_host_learning_candidate_service.rs"]
+mod candidate_service;
+pub use candidate_service::RootResidentCandidateInputsV1;
+pub use candidate_service::RootResidentCandidateServiceV1;
+pub use candidate_service::RootResidentLearningConsumerV3;
 #[path = "authority_host_learning_resident_auth.rs"]
 mod authentication;
 #[path = "authority_host_learning_resident_model.rs"]

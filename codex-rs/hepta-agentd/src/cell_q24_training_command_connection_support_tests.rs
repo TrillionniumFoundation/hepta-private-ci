@@ -66,3 +66,43 @@ pub(crate) fn recovered_peer(
 )> {
     pair(material, Origin::Recovered(expected), lifetime)
 }
+
+// Test-only shutdown custody for real original handlers; no production FD getter.
+impl OriginalCellQ24TrainingCommandConnectionV1 {
+    pub(crate) fn fixture_peer_with_shutdown(
+        material: OriginalCellQ24MaterialReceiptConfigV1,
+        lifetime: Duration,
+    ) -> anyhow::Result<(
+        OriginalCellQ24TrainingCommandConnectionV1,
+        HostAuthorityPeerChannel,
+        UnixStream,
+    )> {
+        let (client, server) = UnixStream::pair()?;
+        let shutdown = client.try_clone()?;
+        let policy = || HostAuthorityPeerPolicy {
+            // SAFETY: explicit same-process fixture credentials.
+            peer: HostIssuerPeer {
+                uid: unsafe { libc::geteuid() },
+                pid: std::process::id(),
+            },
+            timeout: Duration::from_secs(30).min(lifetime),
+            lifetime,
+            request_bound: 16_384,
+            response_bound: 16_384,
+        };
+        let peer = HostAuthorityPeerChannel::from_stream(client, policy(), transport::pidfd()?)?;
+        let server = HostAuthorityPeerChannel::from_stream(server, policy(), transport::pidfd()?)?;
+        let (initial_binding, _) =
+            OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
+        Ok((
+            OriginalCellQ24TrainingCommandConnectionV1 {
+                peer,
+                material,
+                initial_binding,
+                origin: Origin::Fresh,
+            },
+            server,
+            shutdown,
+        ))
+    }
+}

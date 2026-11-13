@@ -41,6 +41,9 @@ mod evidence;
 #[path = "circuit_selection_command_readback_service.rs"]
 mod readonly;
 
+#[path = "circuit_evaluated_selection_command_local_readback.rs"]
+mod local_evaluated_readback;
+
 pub struct OriginalCircuitSelectionCommandOwnerV1<W: AnchorWitnessStore> {
     owner: Mutex<OriginalCircuitSelectionReceiptOwnerV1<W>>,
     live: OriginalCircuitLearningReadClientV1,
@@ -241,3 +244,7 @@ fn original_state(error: OriginalCircuitSelectionReceiptErrorV1) -> wire::Comman
 #[cfg(test)]
 #[path = "circuit_selection_command_support_tests.rs"]
 pub(crate) mod command_test_support;
+
+#[path = "circuit_selection_local_predecessor.rs"]
+mod local_predecessor;
+pub use local_predecessor::OriginalCircuitSelectionLocalReadbackV1;

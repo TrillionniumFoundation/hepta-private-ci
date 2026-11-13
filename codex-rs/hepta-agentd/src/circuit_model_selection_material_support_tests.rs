@@ -90,6 +90,23 @@ pub(super) fn ledger_at(
     at: u64,
     binding: Digest32,
 ) -> anyhow::Result<(LedgerWriter, Credentials)> {
+    let (writer, credentials, _original_trust) =
+        ledger_at_with_original_trust(root, objective, at, binding)?;
+    Ok((writer, credentials))
+}
+
+/// The same explicit fixture Root validates the distribution before returning
+/// either its activated writer authority or the full host-owned trust clone.
+/// A parent can call this with its own preselected objective/time before a
+/// child reports material. Child metadata never selects a new trust state.
+pub(super) fn original_fixture_trust_at(
+    objective: Digest32,
+    at: u64,
+) -> anyhow::Result<(
+    ActivatedLearningTrustV1,
+    Credentials,
+    LearningEvidenceTrustV1,
+)> {
     let credentials = Credentials {
         generator: signer(
             "positive-generator",
@@ -151,6 +168,7 @@ pub(super) fn ledger_at(
     };
     let root_key = SigningKey::from_bytes(&[99; 32]);
     distribution.signature = root_key.sign(&distribution.signing_bytes()?).to_bytes();
+    let original_trust = distribution.distribution.trust.clone();
     let trust = activate_learning_trust(
         &LearningTrustRootV1 {
             root_id: distribution.root_id.clone(),
@@ -164,6 +182,16 @@ pub(super) fn ledger_at(
         None,
         at,
     )?;
+    Ok((trust, credentials, original_trust))
+}
+
+pub(super) fn ledger_at_with_original_trust(
+    root: &std::path::Path,
+    objective: Digest32,
+    at: u64,
+    binding: Digest32,
+) -> anyhow::Result<(LedgerWriter, Credentials, LearningEvidenceTrustV1)> {
+    let (trust, credentials, original_trust) = original_fixture_trust_at(objective, at)?;
     let ledger = DurableLedger::create(opened(root, "positive-ledger", true)?, binding, 64)?;
     let witness =
         LedgerWitnessStore::create(opened(root, "positive-ledger-witness", true)?, binding)?;
@@ -171,7 +199,26 @@ pub(super) fn ledger_at(
     Ok((
         LedgerWriter::from_durable(ledger, witness, trust, &directory, &directory)?,
         credentials,
+        original_trust,
     ))
+}
+
+/// Exact inputs and signature admitted by one original Decision append.
+/// Retaining these bytes does not append, re-sign or authorize another event.
+#[derive(Clone)]
+pub(super) struct OriginalDecisionEvidence {
+    pub(super) request: ProductionDecisionV2,
+    pub(super) evidence: SignedLearningEvidenceV1,
+    pub(super) admitted_at: u64,
+}
+
+/// Exact inputs and signature admitted by one original Outcome append.
+/// The independent fixture target and original credential windows are unchanged.
+#[derive(Clone)]
+pub(super) struct OriginalOutcomeEvidence {
+    pub(super) outcome: AuthenticatedOutcomeV1,
+    pub(super) evidence: SignedLearningEvidenceV1,
+    pub(super) admitted_at: u64,
 }
 
 pub(super) fn decision(
@@ -179,6 +226,14 @@ pub(super) fn decision(
     credentials: &Credentials,
     publication: &CircuitTaskSourcePublicationV1,
 ) -> anyhow::Result<()> {
+    decision_with_original_evidence(writer, credentials, publication).map(|_| ())
+}
+
+pub(super) fn decision_with_original_evidence(
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    publication: &CircuitTaskSourcePublicationV1,
+) -> anyhow::Result<OriginalDecisionEvidence> {
     let source = publication.input();
     let policy = publication.original_policy()?;
     let mut candidates = policy
@@ -220,8 +275,13 @@ pub(super) fn decision(
         &decision_signing_payload_v2(&record)?,
         at,
     );
+    let original = OriginalDecisionEvidence {
+        request: record.clone(),
+        evidence: evidence.clone(),
+        admitted_at: at,
+    };
     writer.append_decision(Digest32::ZERO, record, &evidence, at)?;
-    Ok(())
+    Ok(original)
 }
 
 pub(super) fn terminal_outcome(
@@ -237,6 +297,19 @@ pub(super) fn terminal_outcome(
     )
 }
 
+pub(super) fn terminal_outcome_with_original_evidence(
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    publication: &CircuitTaskSourcePublicationV1,
+) -> anyhow::Result<OriginalOutcomeEvidence> {
+    terminal_outcome_with_value_and_original_evidence(
+        writer,
+        credentials,
+        publication,
+        FixedQ32::from_raw(2_i64 << 32),
+    )
+}
+
 // The caller fixes this explicit test measurement before material or Training.
 // It is never computed from the model output or a subsequent training result.
 pub(super) fn terminal_outcome_with_value(
@@ -245,6 +318,16 @@ pub(super) fn terminal_outcome_with_value(
     publication: &CircuitTaskSourcePublicationV1,
     value: FixedQ32,
 ) -> anyhow::Result<()> {
+    terminal_outcome_with_value_and_original_evidence(writer, credentials, publication, value)
+        .map(|_| ())
+}
+
+fn terminal_outcome_with_value_and_original_evidence(
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    publication: &CircuitTaskSourcePublicationV1,
+    value: FixedQ32,
+) -> anyhow::Result<OriginalOutcomeEvidence> {
     let admitted_at = publication
         .original_record()
         .admission
@@ -288,8 +371,13 @@ pub(super) fn terminal_outcome_with_value(
         &outcome_signing_payload_v2(&outcome),
         at,
     );
+    let original = OriginalOutcomeEvidence {
+        outcome: outcome.clone(),
+        evidence: evidence.clone(),
+        admitted_at: at,
+    };
     writer.append_outcome(writer.snapshot()?.head_digest, outcome, &evidence, at)?;
-    Ok(())
+    Ok(original)
 }
 
 pub(super) struct Material {
@@ -337,6 +425,106 @@ pub(super) fn unstarted_material_with_profile(
     crate::OriginalCellQ24MaterialReceiptConfigV1,
     crate::CellQ24SgdRuleV1,
 )> {
+    let (config, optimizer, _original_inputs) = unstarted_material_with_original_inputs(
+        _root,
+        writer,
+        credentials,
+        source,
+        identity,
+        baseline,
+        bundle,
+        publication,
+        evaluation_profile,
+        next_use_observer,
+    )?;
+    Ok((config, optimizer))
+}
+
+/// Retain the inputs already used by the original freeze and scope; this is
+/// not another dataset read, signature, time sample, or writer.
+#[derive(Clone)]
+pub(super) struct OriginalMaterialConstructorInputs {
+    pub(super) update_scope: LearningUpdateScopeV2,
+    pub(super) update_rule: Digest32,
+    pub(super) freeze_payload: Vec<u8>,
+}
+
+/// The old fixture samples its deadline at the original freeze point. A
+/// first-admission parent can instead fix the same bounded work window before
+/// A starts; the child cannot renew it when creating Material.
+#[derive(Clone, Copy)]
+pub(super) enum OriginalMaterialWorkDeadline {
+    AtOriginalFreeze,
+    PreheldExact(u64),
+}
+
+impl OriginalMaterialWorkDeadline {
+    fn at_original_freeze(self) -> anyhow::Result<u64> {
+        match self {
+            Self::AtOriginalFreeze => Ok(now()? + 900),
+            Self::PreheldExact(expiry) => {
+                let at = now()?;
+                let original_limit = at
+                    .checked_add(900)
+                    .ok_or_else(|| anyhow::anyhow!("original work deadline overflow"))?;
+                anyhow::ensure!(
+                    at < expiry && expiry <= original_limit,
+                    "pre-held absolute work expiry is current and does not extend the original window"
+                );
+                Ok(expiry)
+            }
+        }
+    }
+}
+
+pub(super) fn unstarted_material_with_original_inputs(
+    _root: &std::path::Path,
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+    identity: &crate::AgentdIdentity,
+    baseline: &LoadedCellQ24ModelV1,
+    bundle: &CellCompatibilityBundleV1,
+    publication: &CircuitTaskSourcePublicationV1,
+    evaluation_profile: Digest32,
+    next_use_observer: StableId,
+) -> anyhow::Result<(
+    crate::OriginalCellQ24MaterialReceiptConfigV1,
+    crate::CellQ24SgdRuleV1,
+    OriginalMaterialConstructorInputs,
+)> {
+    unstarted_material_with_original_work_deadline(
+        _root,
+        writer,
+        credentials,
+        source,
+        identity,
+        baseline,
+        bundle,
+        publication,
+        evaluation_profile,
+        next_use_observer,
+        OriginalMaterialWorkDeadline::AtOriginalFreeze,
+    )
+}
+
+pub(super) fn unstarted_material_with_original_work_deadline(
+    _root: &std::path::Path,
+    writer: &mut LedgerWriter,
+    credentials: &Credentials,
+    source: &crate::CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,
+    identity: &crate::AgentdIdentity,
+    baseline: &LoadedCellQ24ModelV1,
+    bundle: &CellCompatibilityBundleV1,
+    publication: &CircuitTaskSourcePublicationV1,
+    evaluation_profile: Digest32,
+    next_use_observer: StableId,
+    work_deadline: OriginalMaterialWorkDeadline,
+) -> anyhow::Result<(
+    crate::OriginalCellQ24MaterialReceiptConfigV1,
+    crate::CellQ24SgdRuleV1,
+    OriginalMaterialConstructorInputs,
+)> {
     let input = publication.input();
     let initial = LearningIterationCoordinatorV1::new(
         LearningIterationRequestV1 {
@@ -359,7 +547,7 @@ pub(super) fn unstarted_material_with_profile(
                 maximum_diff_bytes: 4_096,
                 maximum_candidates: 1,
                 maximum_parallel_sandboxes: 1,
-                expiry_unix_seconds: now()? + 900,
+                expiry_unix_seconds: work_deadline.at_original_freeze()?,
             },
             budget: LearningIterationBudgetV1 {
                 maximum_dataset_rows: 1,
@@ -391,11 +579,12 @@ pub(super) fn unstarted_material_with_profile(
         objective_digest: input.objective_digest,
         inclusion_policy_digest: rule.inclusion_policy_digest(&initial)?,
     };
+    let freeze_payload = dataset_freeze_signing_payload_v2(&writer.snapshot()?, &freeze_plan)?;
     let freeze_evidence = sign(
         writer.verifier(),
         &credentials.evaluator,
         42,
-        &dataset_freeze_signing_payload_v2(&writer.snapshot()?, &freeze_plan)?,
+        &freeze_payload,
         now()?,
     );
     let observed = crate::CellQ24DatasetReaderV1::new(source, identity, writer).read_current(
@@ -431,7 +620,15 @@ pub(super) fn unstarted_material_with_profile(
         verifier: writer.verifier().clone(),
         maximum_signature_lifetime_seconds: 600,
     };
-    Ok((config, optimizer))
+    Ok((
+        config,
+        optimizer,
+        OriginalMaterialConstructorInputs {
+            update_scope: LearningUpdateScopeV2::Cell,
+            update_rule,
+            freeze_payload,
+        },
+    ))
 }
 
 pub(super) fn material_with_profile(

@@ -50,8 +50,18 @@ mod effect;
 mod issuer;
 #[path = "circuit_retained_version_service.rs"]
 mod service;
+#[path = "circuit_retained_version_shared_readback.rs"]
+mod shared_readback;
 #[path = "circuit_retained_version_state.rs"]
 mod state;
+pub use shared_readback::OriginalCircuitPublishedEvidenceReadbackV1;
+
+#[path = "circuit_retained_version_local_read.rs"]
+mod local_read;
+#[path = "circuit_retained_version_next_use_readback.rs"]
+mod next_use_readback;
+pub(crate) use local_read::OriginalVersionLocalReadBindingV1;
+pub(crate) use local_read::OriginalVersionLocalReadOperationV1;
 
 #[path = "circuit_retained_version_prepared.rs"]
 mod prepared_custody;
@@ -144,6 +154,7 @@ struct RetainedVersionHostStateV1 {
     trainer: Option<OriginalCellQ24TrainingCommandClientV1>,
     initial_evaluator: Option<OriginalCellEvaluationCommandConnectionV1>,
     evaluator: Option<OriginalCellEvaluationCommandClientV1>,
+    shared_evaluated: Option<OriginalCircuitPublishedEvidenceReadbackV1>,
     cut: Option<OriginalVersionCut>,
     expected: Option<RetainedVersionColdCutV1>,
     control: Arc<NeuronGenerationCurrentOwnerV1>,
@@ -271,6 +282,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 trainer: None,
                 initial_evaluator: evidence.into_evaluator(),
                 evaluator: None,
+                shared_evaluated: None,
                 cut: None,
                 expected: None,
                 control,
@@ -367,6 +379,7 @@ impl OriginalCircuitRetainedVersionHostV1 {
                 trainer: None,
                 initial_evaluator: evidence.into_evaluator(),
                 evaluator: None,
+                shared_evaluated: None,
                 cut: None,
                 expected: Some(RetainedVersionColdCutV1 {
                     training: original.training,

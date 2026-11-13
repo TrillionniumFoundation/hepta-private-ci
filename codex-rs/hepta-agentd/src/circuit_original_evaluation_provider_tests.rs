@@ -467,3 +467,6 @@ mod panel_members;
 
 #[path = "circuit_original_evaluation_decision_binding_tests.rs"]
 mod decision_binding;
+
+#[path = "circuit_original_evaluation_fresh_training_support_tests.rs"]
+pub(super) mod fresh_training;

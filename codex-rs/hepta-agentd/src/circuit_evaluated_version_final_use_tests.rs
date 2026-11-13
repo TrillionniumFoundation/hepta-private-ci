@@ -146,8 +146,18 @@ async fn evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve
         issuer,
         Duration::from_secs(300),
     )?);
+    // Awaiting has real owners but no Published result to export.
+    assert!(matches!(
+        Version::share_original_evaluated_readbacks(Arc::clone(&host)).await,
+        Err(VersionError::ReadbackRequired)
+    ));
     let prepared = Version::prepare_original_version_fixture(Arc::clone(&host)).await?;
     assert!(prepared.publication().is_none());
+    // A successful actual Prepare still has no FinalUse publication.
+    assert!(matches!(
+        Version::share_original_evaluated_readbacks(Arc::clone(&host)).await,
+        Err(VersionError::ReadbackRequired)
+    ));
     let intent = prepared.intent_digest();
     *arm.lock()
         .map_err(|_| anyhow::anyhow!("fixture intent arm"))? = Some(intent);
@@ -172,6 +182,11 @@ async fn evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve
         host.fixture_original_selection_reader_installed()?,
         "the actual reader was installed before the final failed E read"
     );
+    // Installed plus reader is insufficient after the actual late B failure.
+    assert!(matches!(
+        Version::share_original_evaluated_readbacks(Arc::clone(&host)).await,
+        Err(VersionError::ReadbackRequired)
+    ));
     let published_bytes = f.publication_bytes()?;
     let c_journal = c_runtime.identity.home_root.join("q24-cell.journal");
     let installed_c = std::fs::read(&c_journal)?;

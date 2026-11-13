@@ -14,6 +14,7 @@ use super::Error;
 use super::OriginalCircuitEvaluatedLearningReadContextV1;
 use super::OriginalCircuitLearningReadContextV1 as Context;
 use super::OriginalCircuitLearningReadbackV1 as Readback;
+use super::OriginalCircuitPublishedLocalReadV1;
 use super::now;
 use super::profile::ReadProfile;
 use super::wire as original;
@@ -124,6 +125,7 @@ pub(crate) struct OriginalCircuitCompletionReadinessClientV1 {
     binding: Digest32,
     channel: Mutex<Option<Channel>>,
     retained: Mutex<Option<Readback>>,
+    local: Option<OriginalCircuitPublishedLocalReadV1>,
 }
 
 impl OriginalCircuitCompletionReadinessClientV1 {
@@ -211,12 +213,16 @@ impl OriginalCircuitCompletionReadinessClientV1 {
                 next_request_id: 1,
             })),
             retained: Mutex::new(None),
+            local: None,
         })
     }
 
     /// Each poll reads the original task host. Only an authenticated NotReady
     /// reply retains the connection; every uncertain/invalid exchange consumes it.
     pub(crate) async fn read_current(&self) -> Result<Option<Readback>, Error> {
+        if let Some(local) = &self.local {
+            return OriginalCircuitPublishedLocalReadV1::read_completion_readiness(local).await;
+        }
         let mut channel = self
             .channel
             .try_lock()
@@ -278,3 +284,6 @@ pub(crate) mod fixture;
 #[cfg(test)]
 #[path = "circuit_evaluated_completion_readiness_support_tests.rs"]
 pub(crate) mod evaluated_fixture;
+
+#[path = "circuit_completion_readiness_local.rs"]
+mod local;

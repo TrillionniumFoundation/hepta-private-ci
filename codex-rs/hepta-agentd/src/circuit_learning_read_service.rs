@@ -162,6 +162,62 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         Err(Error::Unavailable)
     }
 
+    /// One Selection response for the concrete local Version lane. The
+    /// Version brackets this actual original read with its full current checks.
+    pub(crate) fn original_evaluated_selection_response(
+        &self,
+        expected: &crate::OriginalCircuitEvaluatedRetentionContextV1,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
+        let ReadProfile::Evaluated(context) = &self.context else {
+            return Err(Error::Binding(
+                "local evaluated Selection-only read purpose",
+            ));
+        };
+        if self.context.mode()? != wire::Mode::Selection {
+            return Err(Error::Binding(
+                "local evaluated Selection-only read purpose",
+            ));
+        }
+        context.require_original_selection(expected)?;
+        self.response(bytes, request_id)
+    }
+
+    /// One readonly response for the original Version's five-cut C reader.
+    /// The concrete Version serving lane brackets this with its actual full
+    /// predecessor/publication observations under the same Version state lock.
+    pub(crate) fn original_evaluated_next_use_response(
+        &self,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
+        self.require_original_evaluated_next_use_profile()?;
+        self.response(bytes, request_id)
+    }
+
+    /// The distinct readiness response still performs only the original C
+    /// observation. Missing/Pending neither executes C nor authorizes work.
+    pub(crate) fn original_evaluated_next_use_readiness_response(
+        &self,
+        bytes: &[u8],
+        request_id: u64,
+    ) -> Result<Vec<u8>, Error> {
+        self.require_original_evaluated_next_use_profile()?;
+        self.readiness_response(bytes, request_id)
+    }
+
+    fn require_original_evaluated_next_use_profile(&self) -> Result<(), Error> {
+        if !matches!(&self.context, ReadProfile::Evaluated(_))
+            || self.context.mode()? != wire::Mode::NextUse
+        {
+            return Err(Error::Binding(
+                "evaluated Version NextUse-only read purpose",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         let started_at = now()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
@@ -258,3 +314,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         })
     }
 }
+
+#[cfg(test)]
+#[path = "circuit_evaluated_next_use_read_channel_support_tests.rs"]
+mod evaluated_next_use_fixture;

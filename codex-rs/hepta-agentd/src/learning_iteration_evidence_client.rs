@@ -74,6 +74,7 @@ pub use selection_command::OriginalCircuitSelectionCommandContextV1;
 pub use selection_command::OriginalCircuitSelectionCommandErrorV1;
 pub use selection_command::OriginalCircuitSelectionCommandOwnerV1;
 pub use selection_command::OriginalCircuitSelectionCommandReceiptV1;
+pub use selection_command::OriginalCircuitSelectionLocalReadbackV1;
 pub use selection_command::OriginalCircuitSelectionReadbackConnectionV1;
 
 #[path = "circuit_next_use_command.rs"]

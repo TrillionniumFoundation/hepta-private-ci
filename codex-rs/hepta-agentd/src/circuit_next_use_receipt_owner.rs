@@ -60,6 +60,8 @@ pub enum OriginalCircuitNextUseReceiptErrorV1 {
     Evaluated(#[from] crate::OriginalCircuitRetainedPublicationErrorV1),
     #[error("original evaluated Selector predecessor: {0}")]
     EvaluatedSelection(#[from] crate::OriginalCircuitSelectionReceiptErrorV1),
+    #[error("original colocated Selector predecessor: {0}")]
+    LocalSelection(#[source] Box<crate::OriginalCircuitSelectionCommandErrorV1>),
 }
 type Error = OriginalCircuitNextUseReceiptErrorV1;
 
@@ -85,6 +87,8 @@ pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptSourcesV1;
 pub use evaluated::OriginalCircuitEvaluatedNextUseReceiptV1;
 pub use evaluated::OriginalCircuitEvaluatedNextUseRemoteSourcesV1;
 use evaluated::Profile;
+
+pub(crate) use evaluated::OriginalCircuitEvaluatedNextUseLocalSourcesV1;
 
 /// Fixed original Selection cut and host-enrolled Observer. An immutable trust
 /// snapshot is not an enrollment operation or evidence of independent operators.
@@ -122,10 +126,15 @@ pub struct OriginalCircuitNextUseRemoteSourcesV1<'a> {
     pub selector: &'a LearningIterationEvidenceClientV1,
 }
 
+enum OriginalSelectorRead<'a> {
+    Remote(&'a LearningIterationEvidenceClientV1),
+    Local(&'a crate::OriginalCircuitSelectionLocalReadbackV1),
+}
+
 trait NextUseSources {
     fn snapshot(&self) -> &LearningIterationSnapshotV1;
     fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1>;
-    fn selector(&self) -> &LearningIterationEvidenceClientV1;
+    fn selector(&self) -> OriginalSelectorRead<'_>;
     fn evaluated_owners(
         &self,
     ) -> Option<(
@@ -162,8 +171,8 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> NextUseSources
     fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> {
         Some(self.trainer)
     }
-    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
-        self.selector
+    fn selector(&self) -> OriginalSelectorRead<'_> {
+        OriginalSelectorRead::Remote(self.selector)
     }
     fn location(&self) -> ObservationLocation {
         ObservationLocation::LocalOwner
@@ -183,8 +192,8 @@ impl NextUseSources for OriginalCircuitNextUseRemoteSourcesV1<'_> {
     fn trainer(&self) -> Option<&LearningIterationEvidenceClientV1> {
         Some(self.trainer)
     }
-    fn selector(&self) -> &LearningIterationEvidenceClientV1 {
-        self.selector
+    fn selector(&self) -> OriginalSelectorRead<'_> {
+        OriginalSelectorRead::Remote(self.selector)
     }
     fn location(&self) -> ObservationLocation {
         ObservationLocation::RemoteOwner
@@ -502,13 +511,42 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
                 self.config.training_evidence.clone()
             }
         };
-        let selector: &LearningIterationEvidenceClientV1 = source.selector();
-        let selection = selector
-            .readback(
-                source.snapshot(),
-                prior(&self.config, LearningIterationStageV1::Selection)?,
-            )
-            .await?;
+        let selection = match source.selector() {
+            OriginalSelectorRead::Remote(selector) => {
+                LearningIterationEvidenceClientV1::readback(
+                    selector,
+                    source.snapshot(),
+                    prior(&self.config, LearningIterationStageV1::Selection)?,
+                )
+                .await?
+            }
+            OriginalSelectorRead::Local(selector) => {
+                let Profile::Evaluated(expected) = &self.profile else {
+                    return Err(
+                        OwnerError::Binding("original local evaluated C predecessor").into(),
+                    );
+                };
+                crate::OriginalCircuitSelectionLocalReadbackV1::require_original_selection(
+                    selector, expected,
+                )
+                .map_err(|error| Error::LocalSelection(Box::new(error)))?;
+                let current =
+                    crate::OriginalCircuitSelectionLocalReadbackV1::read_original_selection(
+                        selector,
+                    )
+                    .await
+                    .map_err(|error| Error::LocalSelection(Box::new(error)))?;
+                if current.snapshot() != expected.snapshot()
+                    || current.receipt() != expected.receipt()
+                    || current.attestation() != expected.attestation()
+                    || current.original_receipt_binding() != expected.original_receipt_binding()
+                {
+                    return Err(OwnerError::Binding("unchanged original local Selector cut").into());
+                }
+                current.original_receipt_predecessors(now()?)?;
+                current.attestation().clone()
+            }
+        };
         Ok([training, selection])
     }
 

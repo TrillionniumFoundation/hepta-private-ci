@@ -191,3 +191,15 @@ mod tests;
 
 #[path = "circuit_evaluated_version_final_use_tests.rs"]
 mod final_use_tests;
+
+#[path = "circuit_evaluated_version_shared_readback_tests.rs"]
+mod shared_readback_tests;
+
+#[path = "circuit_evaluated_version_shared_export_tests.rs"]
+mod shared_export_tests;
+
+#[path = "circuit_evaluated_version_next_use_readback_tests.rs"]
+mod next_use_readback_tests;
+
+#[path = "circuit_evaluated_same_host_sc_support_tests.rs"]
+mod same_host_sc;

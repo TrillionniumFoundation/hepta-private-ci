@@ -48,7 +48,93 @@ fn now() -> anyhow::Result<u64> {
 }
 
 impl PanelMemberFixture {
-    pub(crate) async fn complete(
+    pub(crate) fn complete<'a>(
+        original_plan: ProviderPlanFixture,
+        provider: ProviderAt,
+        initial: &'a LearningIterationSnapshotV1,
+        training: LearningIterationSnapshotV1,
+        training_evidence: SignedLearningEvidenceV1,
+        scope: &'a FrozenLearningScopeV2,
+        generator: &'a TrustedLearningSignerV1,
+        evaluator: &'a TrustedLearningSignerV1,
+        verifier: LearningEvidenceVerifierV1,
+        retention_receipt_digests: Vec<Digest32>,
+    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
+        Self::complete_with_trainer(
+            original_plan,
+            provider,
+            initial,
+            training,
+            training_evidence,
+            scope,
+            generator,
+            evaluator,
+            verifier,
+            retention_receipt_digests,
+            None,
+        )
+    }
+
+    /// The caller retains and joins this real Trainer's server. No retained
+    /// signature responder is constructed on the fresh-provider path.
+    pub(crate) fn complete_from_original_trainer<'a>(
+        original_plan: ProviderPlanFixture,
+        provider: ProviderAt,
+        initial: &'a LearningIterationSnapshotV1,
+        training: LearningIterationSnapshotV1,
+        training_evidence: SignedLearningEvidenceV1,
+        scope: &'a FrozenLearningScopeV2,
+        generator: &'a TrustedLearningSignerV1,
+        evaluator: &'a TrustedLearningSignerV1,
+        verifier: LearningEvidenceVerifierV1,
+        retention_receipt_digests: Vec<Digest32>,
+        trainer: crate::LearningIterationEvidenceClientV1,
+    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
+        Self::complete_with_trainer(
+            original_plan,
+            provider,
+            initial,
+            training,
+            training_evidence,
+            scope,
+            generator,
+            evaluator,
+            verifier,
+            retention_receipt_digests,
+            Some(Arc::new(trainer)),
+        )
+    }
+
+    /// Both B tasks keep the same original read-only client, not a new peer.
+    pub(crate) fn complete_from_shared_original_trainer<'a>(
+        original_plan: ProviderPlanFixture,
+        provider: ProviderAt,
+        initial: &'a LearningIterationSnapshotV1,
+        training: LearningIterationSnapshotV1,
+        training_evidence: SignedLearningEvidenceV1,
+        scope: &'a FrozenLearningScopeV2,
+        generator: &'a TrustedLearningSignerV1,
+        evaluator: &'a TrustedLearningSignerV1,
+        verifier: LearningEvidenceVerifierV1,
+        retention_receipt_digests: Vec<Digest32>,
+        trainer: Arc<crate::LearningIterationEvidenceClientV1>,
+    ) -> impl std::future::Future<Output = anyhow::Result<Self>> + 'a {
+        Self::complete_with_trainer(
+            original_plan,
+            provider,
+            initial,
+            training,
+            training_evidence,
+            scope,
+            generator,
+            evaluator,
+            verifier,
+            retention_receipt_digests,
+            Some(trainer),
+        )
+    }
+
+    async fn complete_with_trainer(
         original_plan: ProviderPlanFixture,
         mut provider: ProviderAt,
         initial: &LearningIterationSnapshotV1,
@@ -59,6 +145,7 @@ impl PanelMemberFixture {
         evaluator: &TrustedLearningSignerV1,
         verifier: LearningEvidenceVerifierV1,
         retention_receipt_digests: Vec<Digest32>,
+        original_trainer: Option<Arc<crate::LearningIterationEvidenceClientV1>>,
     ) -> anyhow::Result<Self> {
         let ProviderPlanFixture {
             mut fixture,
@@ -194,12 +281,18 @@ impl PanelMemberFixture {
             )?,
             config.clone(),
         )?;
-        let (trainer, thread) = fixture_original_receipt_client_until_close(
-            initial.clone(),
-            training.receipts[2].clone(),
-            verifier,
-            training_evidence,
-        )?;
+        let (trainer, thread) = match original_trainer {
+            Some(trainer) => (trainer, None),
+            None => {
+                let (trainer, thread) = fixture_original_receipt_client_until_close(
+                    initial.clone(),
+                    training.receipts[2].clone(),
+                    verifier,
+                    training_evidence,
+                )?;
+                (Arc::new(trainer), Some(thread))
+            }
+        };
         // Do not inline the original Qualification readback state into the
         // surrounding member setup, which owns both physical runner journals.
         let qualification = Box::pin(qualification_owner.qualify_or_readback(
@@ -230,7 +323,7 @@ impl PanelMemberFixture {
             candidate_plan: fixture.candidate_temporal,
             baseline_plan: fixture.baseline_temporal,
             executions,
-            trainer: Arc::new(trainer),
+            trainer,
             cohort,
         };
         Ok(Self {
@@ -238,7 +331,7 @@ impl PanelMemberFixture {
             qualification,
             config,
             initial: initial.clone(),
-            thread: Some(thread),
+            thread,
             _execution_signer: execution_signer,
             directory: fixture.directory,
         })
@@ -293,5 +386,16 @@ impl PanelMemberFixture {
             .expect("retained original peer")
             .join()
             .expect("original panel Trainer transport")
+    }
+
+    /// Drop the actual member's client before the outside fixture joins the
+    /// original Trainer server. This does not report a fabricated frame count.
+    pub(crate) fn finish_with_external_trainer(mut self) -> anyhow::Result<()> {
+        anyhow::ensure!(
+            self.thread.is_none(),
+            "original Trainer server remains externally owned"
+        );
+        drop(self.member.take());
+        Ok(())
     }
 }

@@ -29,7 +29,7 @@ EXPECTED = {
     "learning_original_no_update_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",),
     "learning_original_candidate_stage_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
     "learning_original_candidate_stage_resident_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",),
-    "root_resident_candidate_runtime_consume": (),
+    "root_resident_candidate_runtime_consume": ('codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs',),
     "root_resident_concrete_stages_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",),
     "root_resident_concrete_stages_gate": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",),
     "root_resident_concrete_stages_route": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",),

@@ -30,6 +30,12 @@ pub use learning::RootLearningHandoffV1;
 pub use learning::receive_root_learning_handoff;
 pub use learning::send_root_learning_handoff;
 
+#[path = "root_candidate_stage_handoff.rs"]
+mod candidate_stages;
+pub use candidate_stages::RootCandidateStageHandoffV1;
+pub use candidate_stages::receive_root_candidate_stage_handoff;
+pub use candidate_stages::send_root_candidate_stage_handoff;
+
 /// Consume exactly one inherited unnamed pair. The retained creator must be
 /// actual UID0, and the second transferred descriptor must pin that same Root.
 /// All received rights close on malformed/truncated frames. This function does

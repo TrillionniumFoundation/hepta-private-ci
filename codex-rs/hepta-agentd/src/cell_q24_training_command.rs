@@ -32,6 +32,9 @@ use crate::LearningIterationCheckpointErrorV1;
 use crate::OriginalCellQ24TrainingStageErrorV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
+#[path = "cell_q24_training_shared_readback.rs"]
+mod shared_readback;
+
 #[path = "cell_q24_training_command_connection.rs"]
 mod connection;
 pub use connection::OriginalCellQ24TrainingCommandConnectionErrorV1;

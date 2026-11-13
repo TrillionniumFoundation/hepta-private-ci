@@ -263,8 +263,8 @@ class EvaluatedNextUseClosureTests(unittest.TestCase):
             "prior(&self.config, LearningIterationStageV1::Training)?",
             "Profile::Evaluated(selection) =>", "source.evaluated_owners()",
             ".require_original_receipt_owners(trainer, evaluator)",
-            "let selector: &LearningIterationEvidenceClientV1 = source.selector();",
-            ".readback(source.snapshot(), prior(&self.config, LearningIterationStageV1::Selection)?,)",
+            "let selection = match source.selector()",
+            "LearningIterationEvidenceClientV1::readback(\n                    selector, source.snapshot(), prior(&self.config, LearningIterationStageV1::Selection)?,\n                )",
             "Ok([training, selection])",
         ):
             self.rejects(OWNER, "fn predecessors(", marker)

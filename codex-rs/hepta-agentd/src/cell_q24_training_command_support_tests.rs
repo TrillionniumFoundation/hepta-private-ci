@@ -345,3 +345,52 @@ fn serve_retained_training_fixture(
     });
     Ok(server)
 }
+
+// This method is compiled only through serving::command_test_support. It is
+// a single synchronous observation of the already held original Stage, not
+// a command, a new connection, or a receipt/signing-custody constructor.
+impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 'static>
+    OriginalCellQ24TrainingCommandOwnerV1<TW, RW>
+{
+    pub(crate) fn fixture_completed_candidate_receipt(
+        &self,
+    ) -> Result<Option<OriginalCellQ24TrainingCommandReceiptV1>, super::Error> {
+        use crate::CellQ24TrainingOwnerErrorV1 as Native;
+        use crate::OriginalCellQ24TrainingReceiptErrorV1 as Receipt;
+        use crate::OriginalCellQ24TrainingStageErrorV1 as Stage;
+        use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as Owner;
+        use codex_hepta_intelligence_eval::ProductEvaluationExecutionStoreErrorV1 as Store;
+
+        let material = match crate::SourceBoundCellQ24TrainingStageV1::read_candidate_material(
+            &self.stage,
+            &self.context.dataset,
+        ) {
+            Ok(material) => material,
+            // Exactly the non-completed states already distinguished by the
+            // original command service. No other read failure becomes None.
+            Err(Stage::Busy)
+            | Err(Stage::Training(Native::Pending))
+            | Err(Stage::Receipt(Receipt::Training(Native::Pending)))
+            | Err(Stage::Receipt(Receipt::Owner(Owner::Pending)))
+            | Err(Stage::Training(Native::Store(Store::Missing)))
+            | Err(Stage::Receipt(Receipt::Training(Native::Store(Store::Missing))))
+            | Err(Stage::Receipt(Receipt::Owner(Owner::Store(Store::Missing)))) => {
+                return Ok(None);
+            }
+            Err(error) => return Err(error.into()),
+        };
+        // The original material lane has re-read both original owners and the
+        // live source before and after its work. Authenticate those exact
+        // retained bytes with the original command context and current time.
+        let original = wire::authenticate_receipt(
+            &self.context,
+            material.receipt().clone(),
+            material.attestation().clone(),
+            super::super::now()?,
+        )?;
+        Ok(Some(original))
+    }
+}
+
+#[path = "cell_q24_training_shared_readback_support_tests.rs"]
+pub(crate) mod shared_readback;

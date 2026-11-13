@@ -186,6 +186,31 @@ impl OriginalCircuitEvaluatedRetentionContextV1 {
             .map_err(|_| Error::Binding("two original evaluated predecessors"))
     }
 
+    /// Consume the same retained clients only after the Version host has
+    /// completed its actual Published/current checks. These handles are local.
+    pub(crate) fn seal_original_readback_owners(
+        &self,
+        trainer: OriginalCellQ24TrainingCommandClientV1,
+        evaluator: OriginalCellEvaluationCommandClientV1,
+    ) -> Result<
+        (
+            std::sync::Arc<OriginalCellQ24TrainingCommandClientV1>,
+            std::sync::Arc<OriginalCellEvaluationCommandClientV1>,
+        ),
+        Error,
+    > {
+        self.authenticate(now()?, PublicationAccess::Readback)?;
+        let trainer = OriginalCellQ24TrainingCommandClientV1::seal_original_completed_readback(
+            trainer,
+            &self.training,
+        )?;
+        let evaluator = OriginalCellEvaluationCommandClientV1::seal_original_completed_readback(
+            evaluator,
+            &self.evaluation,
+        )?;
+        Ok((trainer, evaluator))
+    }
+
     // Receipt owners retain the same opaque pins and origin. This is not an
     // owner/client getter, a new stream, or a promotion from cold to fresh.
     pub(crate) fn clone_for_original_receipt(&self) -> Self {

@@ -182,7 +182,7 @@ impl LedgerWitnessStore {
             if length != self.length {
                 return Err(DurableLedgerError::Corrupt);
             }
-            if length < HEADER as u64 || (length - HEADER as u64) % FRAME as u64 != 0 {
+            if length < HEADER as u64 || !(length - HEADER as u64).is_multiple_of(FRAME as u64) {
                 return Err(DurableLedgerError::IncompleteTail);
             }
             self.file.seek(SeekFrom::Start(0))?;
