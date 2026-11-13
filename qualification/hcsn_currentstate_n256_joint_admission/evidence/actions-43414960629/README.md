@@ -11,4 +11,6 @@ This directory preserves the exact hosted original for Draft PR #6303 without ch
 
 The independent readback made no candidate, oracle, serializer, Torch, optimizer, dynamic, or matrix-exponential call. It verified the ZIP CRC, all four extracted members byte-for-byte, the recorded five-test result, `RED_JOINT_ADMISSION_HOLD`, `all_closed=false`, `largegrid_qualification=false`, and all seven zero-execution counters.
 
+The original job log contains seven GitHub-emitted blank lines with trailing spaces. Those bytes are intentionally preserved; the raw log is exempt from `git diff --check` rather than normalized.
+
 This evidence does not admit N256 work and does not modify any historical RED or UNKNOWN result.
