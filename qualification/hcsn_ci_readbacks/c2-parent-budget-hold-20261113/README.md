@@ -6,6 +6,8 @@ This evidence-only inventory decodes the immutable #6214 ZIP without running a m
 
 The original campaign-v2 result bytes close the six intended start-parent identities at epochs `46/47/46/47/46/46`. The ZIP does not contain those six PT files. Its only six PT members are later checkpoints at epochs `116/76/126/50/127/72`; they are retained only as last-observed cumulative-wall lower bounds and are not substituted for the original parents.
 
+The inventory also binds the exact source commit, data-manifest SHA256, Torch version/git version, and each fit's original plan/result SHA256. The plan hashes bind the original model configuration; no model configuration is inferred from checkpoint outputs.
+
 No exact per-fit remaining-wall ledger can be reconstructed. The original controller terminal/finalization state and per-fit exit overhead are absent. The authoritative aggregate maximum (`172938.8845898183`) also differs from both naive result-wall and process-wall subtractions. `HOLD.json` therefore preserves every per-fit remainder as `UNKNOWN`; it does not refund old attempts or infer a decomposition.
 
 Run the zero-execution consistency check with:
