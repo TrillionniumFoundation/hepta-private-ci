@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "v10_original_key_reconciliation_ack",
+  "original_start_request": "7d7c61dedd9af500b25b470435a83fe333dc50a4",
+  "original_no_ack_response": "c43b0f4240939af6f0d39a016edc87077794c607",
+  "exact_original_arguments_reused": true,
+  "new_idempotency_key": false,
+  "tool_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-05bb4dba0c216a294706b6b255103129dd0aa7728657a341bbc0c747d9b766a0\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794538267971,\"output_complete\":false,\"owner_pid\":2102776,\"pid\":2102777,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "decoded_ack": {
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "host": "ai395",
+    "persistent_across_runtime_restart": true,
+    "reused": false,
+    "session_id": "dpty-05bb4dba0c216a294706b6b255103129dd0aa7728657a341bbc0c747d9b766a0",
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 0,
+      "bytes_stored": 0,
+      "capture_error": null,
+      "created_unix_ms": 1794538267971,
+      "output_complete": false,
+      "owner_pid": 2102776,
+      "pid": 2102777,
+      "state": "running"
+    }
+  },
+  "current_205_candidate": "4c88f446fa47e35d8260886ce4b54658f349ca2b",
+  "current_205_candidate_launched": false,
+  "native_result_not_yet_observed": true
+}

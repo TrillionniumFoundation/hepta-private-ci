@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "kind": "actual_v10_E0432_tests_only_private_lifecycle_import_fix",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "source proposal CREATE/GET and static unique forward/reverse verified; not compiled or executed",
+  "target_source_manifest": "443d5295721bd5399d86e54bc3b3a879fc4ec6da",
+  "target_note": "Apply to current205 test preimage below, alongside Root's separate native-hunk transplant of root_authority_session.rs. No product file is changed by this packet.",
+  "actual_failure": {
+    "original_log": "580f182677e22fb2975dc490969f1bec1210cbcd",
+    "log_bytes": 77473,
+    "log_sha256": "381753570b3785e84be06cef8463d4ce5f5bd7a861b49b526d5fc9f2f717a851",
+    "result": "33675b56aca5a702daff5f3f141a9b37cd3438e8",
+    "actual_source_commit": "ac0037168295c898d8b2572d2274f4328dd08aef",
+    "actual_final_patch": "a96c60064f62780f79548723e71ba7e1c9494bef",
+    "postimage_manifest": "f78270fa3b365f5d09dcc2ee7a2d7b7759a8644f",
+    "diagnostics": [
+      {
+        "code": "E0432",
+        "source_line": 5,
+        "missing_parent_reexport": "OriginalConsumerFailure"
+      },
+      {
+        "code": "E0432",
+        "source_line": 7,
+        "missing_parent_reexport": "OriginalRootSessionJoinObservation"
+      },
+      {
+        "code": "E0432",
+        "source_line": 8,
+        "missing_parent_reexport": "OriginalRootWorkerTermination"
+      }
+    ],
+    "actual_parent_pre": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+    "actual_parent_post": "b04f96d7020eea414dacabc98e002bdc805d6a65",
+    "actual_parent_post_GET_hash_verified": true,
+    "explanation": "Clippy removed four root_authority_session parent reexports; old tests use three. The actual lifecycle child still defines/reexports the same types. Compiler diagnostics explicitly suggest these existing lifecycle paths."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "pre": "8da46083a7230b62019922a5ba6ef4000f8337ee",
+      "pre_bytes": 12263,
+      "pre_sha256": "4096a1e380ccc1a0930fedd850c0046aa5fe8d4e247d37e468f7fe9dcfd883e5",
+      "post": "acc23f9fb795f978bab66b5ea3c99e11fc33d927",
+      "post_bytes": 12296,
+      "post_sha256": "75454b84a13005e9c24e2ef24b2a429c2cca71e57e83b2d5627f8773fba2255b",
+      "post_CREATE_GET_full_equal": true
+    }
+  ],
+  "ops": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "kind": "replace_exact",
+      "before": "use crate::root_authority_session::OriginalConsumerFailure;",
+      "after": "use crate::root_authority_session::lifecycle::OriginalConsumerFailure;",
+      "occurrence_count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "kind": "replace_exact",
+      "before": "use crate::root_authority_session::OriginalRootSessionJoinObservation;",
+      "after": "use crate::root_authority_session::lifecycle::OriginalRootSessionJoinObservation;",
+      "occurrence_count": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_tests.rs",
+      "kind": "replace_exact",
+      "before": "use crate::root_authority_session::OriginalRootWorkerTermination;",
+      "after": "use crate::root_authority_session::lifecycle::OriginalRootWorkerTermination;",
+      "occurrence_count": 1
+    }
+  ],
+  "visibility_basis": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pin": "d0aff3097e3d548e7c1382b5694e35ce416e0c59",
+      "fact": "Private lifecycle child and cfg(test) tests child share this parent. lifecycle_custody is a descendant of tests and can access the private lifecycle sibling through their common root_authority_session ancestor."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "pin": "191fb6a5db52cdbf7e4ded2857120336c28cfff4",
+      "fact": "Declares root_authority_session_lifecycle_tests.rs as private lifecycle_custody; this parent is mounted only under cfg(test)."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle.rs",
+      "pin": "471a2f261fba698b52bfa20cf1e282e28beb121a",
+      "exact_items": [
+        "pub(crate) use consumer_jobs::OriginalConsumerFailure;",
+        "pub(crate) enum OriginalRootSessionJoinObservation {",
+        "pub(crate) enum OriginalRootWorkerTermination {"
+      ],
+      "fact": "All three corrected paths exist. No production visibility, type, enum variant, constructor or method is changed."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_jobs.rs",
+      "pin": "af646ff44ca68d4caefbfd3a18693546267f3e6c",
+      "exact_item": "pub(crate) enum OriginalConsumerFailure {",
+      "fact": "Uses the existing lifecycle reexport of this exact enum, not an inaccessible private consumer_jobs path or a duplicate type."
+    }
+  ],
+  "preservation": {
+    "entire_suffix_from_first_tokio_test_unchanged": {
+      "bytes": 11431,
+      "sha256": "6904417b9c06e4ab64ca2f6a8452f85b531c4e08922509320f06270006895218"
+    },
+    "original_test_function_count": 5,
+    "original_test_bodies": [
+      {
+        "name": "cancelled_cleanup_retains_actual_blocking_cas_and_original_file",
+        "source_bytes": 4076,
+        "sha256": "12bd04c06129ba5274da3afe91b9444049bba99d39664aca6c7b0ce69cd2a6f7",
+        "unchanged": true
+      },
+      {
+        "name": "cancelled_activation_keeps_its_real_consumer_job_until_join",
+        "source_bytes": 2608,
+        "sha256": "b7f31f14d5d66a818f10a3ff21e4f120e388c0aa7f560a9f16a701de550efd07",
+        "unchanged": true
+      },
+      {
+        "name": "original_consumer_panic_is_joined_and_retained_as_failure",
+        "source_bytes": 1828,
+        "sha256": "c071cf75c63f1c806e7d08af9c83e6e992f0db9430e301c435d236d933fd223f",
+        "unchanged": true
+      },
+      {
+        "name": "stopped_empty_slot_rejects_phase_spawn_after_real_initial_read",
+        "source_bytes": 1063,
+        "sha256": "76b016562629cd68accd6ed786ecce965ea400c9c38bb4276b03fd3548668b46",
+        "unchanged": true
+      },
+      {
+        "name": "post_spawn_gate_refusal_keeps_actual_worker_in_external_slot",
+        "source_bytes": 1447,
+        "sha256": "5309c21f167077822f44f803fc362f6f1f7f183689fd96f310f4fe760543dc0b",
+        "unchanged": true
+      }
+    ],
+    "normal_pause_child_declaration_unchanged": true,
+    "all_assertions_timeouts_fixtures_and_error_branches_unchanged": true,
+    "production_source_modified": false,
+    "visibility_modified": false,
+    "cfg_or_module_mount_modified": false,
+    "removed_parent_reexports_restored": false,
+    "lint_allow_added": false,
+    "three_import_paths_only": true,
+    "all_other_source_bytes_equal_after_reversing_three_imports": true,
+    "tests_and_support_unmodified": [
+      {
+        "bytes": 9928,
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "post": "c81181f88644df942875a708c9aec2f754c309f4",
+        "pre": null,
+        "sha256": "fbd521460a529d13e793c8562c017e8602afd2c526b1c11307e86b3678effad0"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+        "pre": null,
+        "post": "1b41cd1166beef8605e6cdfc2ff13fa75cd8bdce",
+        "bytes": 4621,
+        "sha256": "7e2e2dd4531fa49588b5e31bbae07306bb0702d05db87953e9e97ccf5cfd203b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+        "pre": null,
+        "post": "0ed52109d1bbfa942d88e74fa0e503bda639efe6",
+        "bytes": 3804,
+        "sha256": "28ff80fe6ac607a2d58fc252ec09510db83d0e46c0be2b4689786f003583a105"
+      }
+    ],
+    "recording_test_scope_checks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_worker_recording_tests.rs",
+        "pin": "0ed52109d1bbfa942d88e74fa0e503bda639efe6",
+        "scope": "root_authority_session::lifecycle::recording_tests",
+        "fact": "use super::* obtains OriginalRootWorkerTermination and OriginalRootSessionJoinObservation from their defining lifecycle parent; removed root parent reexports are unnecessary. Shared fixture uses the unchanged cfg(test) lifecycle_support_tests child."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_consumer_recording_tests.rs",
+        "pin": "1b41cd1166beef8605e6cdfc2ff13fa75cd8bdce",
+        "scope": "root_authority_session::lifecycle::consumer_jobs::recording_tests",
+        "fact": "use super::* obtains OriginalConsumerFailure from its defining consumer_jobs parent; removed root parent reexports are unnecessary."
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session_lifecycle_support_tests.rs",
+        "pin": "c81181f88644df942875a708c9aec2f754c309f4",
+        "fact": "Its only explicit root_authority_session type import is OriginalRootSessionCustodySlot, still reexported in actual b04f. It has no dependency on the four removed parent reexports."
+      }
+    ]
+  },
+  "guard_impact": "No product definition, production caller, guard body, test identifier, cfg condition or module path changes. No CALLERS edit. Root's separate product postimage integration and metadata validation remain separate.",
+  "verification": {
+    "forward_unique": 3,
+    "reverse_unique": 3,
+    "whole_pre_roundtrip_equal": true,
+    "whole_post_roundtrip_equal": true,
+    "source_blob_hashes_checked": true,
+    "original_log_read": true,
+    "actual_parent_patch_read": true,
+    "compiler": false,
+    "formatter": false,
+    "original_checker": false,
+    "native": false,
+    "h": false,
+    "ref_mutation": false
+  },
+  "limits": [
+    "Original v10 remains a failed attempt. This source proposal is not a rerun or qualification success.",
+    "The three import spellings use actual existing module/type definitions. Later unrelated compiler or test failures are not excluded.",
+    "Current205 module/support/test graph is retained; it is not replaced by the earlier202 tree."
+  ]
+}

@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "kind": "root_actual_v10_14_postimage_transfer_to_current_205",
+  "actual_run": {
+    "source": "ac0037168295c898d8b2572d2274f4328dd08aef",
+    "manifest": "378cde8a6caa50aebb8992128cd250e437844537",
+    "session": "dpty-05bb4dba0c216a294706b6b255103129dd0aa7728657a341bbc0c747d9b766a0",
+    "result": "33675b56aca5a702daff5f3f141a9b37cd3438e8",
+    "final_postimages": "f78270fa3b365f5d09dcc2ee7a2d7b7759a8644f",
+    "original_patch": "a96c60064f62780f79548723e71ba7e1c9494bef"
+  },
+  "target": {
+    "commit": "4c88f446fa47e35d8260886ce4b54658f349ca2b",
+    "tree": "4b182178a21eb19cf620794bbb94facb9a909f46",
+    "manifest": "443d5295721bd5399d86e54bc3b3a879fc4ec6da"
+  },
+  "method": {
+    "native_patch_full_forward_reverse": true,
+    "native_full_index_and_postimages_equal": true,
+    "current_exact_hunk_forward_reverse": true,
+    "current_unique_string_forward_reverse": true,
+    "files": 14,
+    "hunks": 23,
+    "byte_identical_native_posts": 13,
+    "root_single_existing_cfg_test_module_preserved": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/original_owned_shutdown.rs",
+      "pre": "f816d6cbb940a0781253278445b606251706fabc",
+      "post": "81a71f744d8bde6f5d3be65630815253bb54ddc1",
+      "bytes": 19764,
+      "sha256": "804491d8a35a50e71b7d63523aaf6502d40a59aeb11430f054f2c25186f9199e",
+      "actual_native_pre": "f816d6cbb940a0781253278445b606251706fabc",
+      "actual_native_post": "81a71f744d8bde6f5d3be65630815253bb54ddc1",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "\nimpl OriginalAppServerJob {\n    fn unit(handle: JoinHandle<()>) -> Arc<Self> {\n        let completion = async move {\n            handle\n                .await\n                .map_err(OriginalAppServerFailure::from_join)\n        }\n        .boxed()\n        .shared();\n        Arc::new(Self {\n            completion,\n            terminal: OnceLock::new(),\n",
+          "new": "\nimpl OriginalAppServerJob {\n    fn unit(handle: JoinHandle<()>) -> Arc<Self> {\n        let completion = async move { handle.await.map_err(OriginalAppServerFailure::from_join) }\n            .boxed()\n            .shared();\n        Arc::new(Self {\n            completion,\n            terminal: OnceLock::new(),\n",
+          "native_old_start": 101,
+          "native_new_start": 101
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/codex-mcp/src/original_owned_shutdown.rs",
+      "pre": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+      "post": "3c9e79f389ef625e44241c17f736b2bf745574fc",
+      "bytes": 14005,
+      "sha256": "776b84b31e99f95df02b08b224f70203ceb69f4134a2f88c31cbcd8627930083",
+      "actual_native_pre": "4676f4f1bcae462d4392e7545df37d1c670ed1b6",
+      "actual_native_post": "3c9e79f389ef625e44241c17f736b2bf745574fc",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "}\n\nstruct OriginalCleanupJob {\n    completion: Shared<\n        BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,\n    >,\n}\n\n/// Actual cleanup facts, not business completion or authority permission.\n",
+          "new": "}\n\nstruct OriginalCleanupJob {\n    completion:\n        Shared<BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,\n}\n\n/// Actual cleanup facts, not business completion or authority permission.\n",
+          "native_old_start": 62,
+          "native_new_start": 62
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task.rs",
+      "pre": "4d26e8aeec736e696a28fd1f479dfd66d5d2b593",
+      "post": "216803e5e3ba1c6e9ae0080d8ebd0b7ebabc4652",
+      "bytes": 5718,
+      "sha256": "1eb96511e814501f3792fd4114b859c328b86108a26fcc6d3cce05e477431bae",
+      "actual_native_pre": "4d26e8aeec736e696a28fd1f479dfd66d5d2b593",
+      "actual_native_post": "216803e5e3ba1c6e9ae0080d8ebd0b7ebabc4652",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCQuiescenceOrigin;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitJoinObservation;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitJoinStatus;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitNaturalJoin;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitOwnerCustody;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitOwnerOutcome;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitResultDelivery;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalSameActorCJoined;\n",
+          "new": "#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCQuiescenceOrigin;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitJoinStatus;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitNaturalJoin;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitOwnerCustody;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalCircuitResultDelivery;\n#[cfg(target_os = \"linux\")]\npub(crate) use runtime::OriginalSameActorCJoined;\n",
+          "native_old_start": 28,
+          "native_new_start": 28
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs",
+      "pre": "5bfff889730384ea518405efc8b12e1f21f37e53",
+      "post": "1a45df46e1f924372f49ce68b226835b6a9ccbc2",
+      "bytes": 24828,
+      "sha256": "8ef7293111ba2b3e420d88254339c661b0068b211e4ca5f736d2635e4e944f26",
+      "actual_native_pre": "5bfff889730384ea518405efc8b12e1f21f37e53",
+      "actual_native_post": "1a45df46e1f924372f49ce68b226835b6a9ccbc2",
+      "actual_native_image_equal": true,
+      "hunks": 7,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "    pub(crate) fn request_stop(&self) {\n        self.gate.close();\n        // Poison recovery is terminal custody only and cannot start any work.\n        let mut state = self.start.lock().unwrap_or_else(|error| error.into_inner());\n        state.stopped = true;\n        if let Some(job) = &state.job {\n            job.cancellation.cancel();\n",
+          "new": "    pub(crate) fn request_stop(&self) {\n        self.gate.close();\n        // Poison recovery is terminal custody only and cannot start any work.\n        let mut state = self\n            .start\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        state.stopped = true;\n        if let Some(job) = &state.job {\n            job.cancellation.cancel();\n",
+          "native_old_start": 391,
+          "native_new_start": 391
+        },
+        {
+          "kind": "replace",
+          "old": "            });\n        };\n        job.join.clone().await;\n        let state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        job.join_locked(&state)?;\n        let outcome = state\n            .joined\n",
+          "new": "            });\n        };\n        job.join.clone().await;\n        let state = job\n            .state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        job.join_locked(&state)?;\n        let outcome = state\n            .joined\n",
+          "native_old_start": 413,
+          "native_new_start": 416
+        },
+        {
+          "kind": "replace",
+          "old": "        let terminal = self\n            .normal\n            .lock()\n            .unwrap_or_else(|error| error.into_inner())\n            .terminal\n            .take();\n        drop(terminal);\n",
+          "new": "        let terminal = self\n            .normal\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner)\n            .terminal\n            .take();\n        drop(terminal);\n",
+          "native_old_start": 424,
+          "native_new_start": 430
+        },
+        {
+          "kind": "replace",
+          "old": "        let job = self\n            .start\n            .lock()\n            .unwrap_or_else(|error| error.into_inner())\n            .job\n            .clone()\n            .ok_or_else(|| custody_error(\"outer Circuit owner was not started\"))?;\n        let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        if state.joined.is_none() {\n            return Err(custody_error(\"outer Circuit owner has not been joined\"));\n        }\n",
+          "new": "        let job = self\n            .start\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner)\n            .job\n            .clone()\n            .ok_or_else(|| custody_error(\"outer Circuit owner was not started\"))?;\n        let mut state = job\n            .state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        if state.joined.is_none() {\n            return Err(custody_error(\"outer Circuit owner has not been joined\"));\n        }\n",
+          "native_old_start": 470,
+          "native_new_start": 476
+        },
+        {
+          "kind": "replace",
+          "old": "            };\n            // No await separates the actual join from retaining its exact\n            // non-Clone result. This cell has no back-reference to the job.\n            let mut state = completed.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n            state.result = Some(result);\n            state.joined = Some(outcome);\n        }\n",
+          "new": "            };\n            // No await separates the actual join from retaining its exact\n            // non-Clone result. This cell has no back-reference to the job.\n            let mut state = completed\n                .lock()\n                .unwrap_or_else(std::sync::PoisonError::into_inner);\n            state.result = Some(result);\n            state.joined = Some(outcome);\n        }\n",
+          "native_old_start": 531,
+          "native_new_start": 540
+        },
+        {
+          "kind": "replace",
+          "old": "    async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {\n        self.gate.require_open().map_err(custody_error)?;\n        self.join.clone().await;\n        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n        self.join_locked(&state)?;\n        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {\n            return Err(custody_error(\n",
+          "new": "    async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {\n        self.gate.require_open().map_err(custody_error)?;\n        self.join.clone().await;\n        let state = self\n            .state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        self.join_locked(&state)?;\n        if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {\n            return Err(custody_error(\n",
+          "native_old_start": 584,
+          "native_new_start": 595
+        },
+        {
+          "kind": "replace",
+          "old": "        };\n        async move {\n            job.join.clone().await;\n            let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);\n            job.join_locked(&state)?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {\n                return Err(custody_error(\n",
+          "new": "        };\n        async move {\n            job.join.clone().await;\n            let mut state = job\n                .state\n                .lock()\n                .unwrap_or_else(std::sync::PoisonError::into_inner);\n            job.join_locked(&state)?;\n            if job.delivery.load(Ordering::Acquire) != WAITING {\n                return Err(custody_error(\n",
+          "native_old_start": 609,
+          "native_new_start": 623
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs",
+      "pre": "a2488297954907d01cc1b10b921b295d3aa9e631",
+      "post": "ea45099ab048c62925db5cb878bb7a75986dbf2b",
+      "bytes": 7835,
+      "sha256": "9ffa66460517c85acaaf59d1a789f2d6203a9489fdaf6d52e186f552293e6aa8",
+      "actual_native_pre": "a2488297954907d01cc1b10b921b295d3aa9e631",
+      "actual_native_post": "ea45099ab048c62925db5cb878bb7a75986dbf2b",
+      "actual_native_image_equal": true,
+      "hunks": 2,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "//! or an owner which the closure has opened but not yet delivered.\n\nuse super::refused;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse crate::AgentdError;\nuse crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse codex_hepta_contracts::FinalUseAuthority;\nuse std::future::Future;\nuse std::sync::Arc;\nuse std::sync::Mutex;\n",
+          "new": "//! or an owner which the closure has opened but not yet delivered.\n\nuse super::refused;\nuse crate::AgentdError;\nuse crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;\nuse crate::same_actor_q24_phase_gate::SameActorPhaseGate;\nuse codex_hepta_contracts::FinalUseAuthority;\nuse futures::FutureExt;\nuse futures::future::BoxFuture;\nuse futures::future::Shared;\nuse std::future::Future;\nuse std::sync::Arc;\nuse std::sync::Mutex;\n",
+          "native_old_start": 3,
+          "native_new_start": 3
+        },
+        {
+          "kind": "replace",
+          "old": "    }\n\n    pub(super) fn close(&self) {\n        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());\n        state.closed = true;\n        for job in &state.jobs {\n            job.gate.close();\n",
+          "new": "    }\n\n    pub(super) fn close(&self) {\n        let mut state = self\n            .state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner);\n        state.closed = true;\n        for job in &state.jobs {\n            job.gate.close();\n",
+          "native_old_start": 90,
+          "native_new_start": 90
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs",
+      "pre": "995f62c55ce775c1a90367ba140ac4044b2fb9b3",
+      "post": "bb35bdb53faf6e8f7d5a840e2c1a73889e095ee4",
+      "bytes": 19411,
+      "sha256": "55e1b5a62ed018dc476742f8438f2b1d3e098c4257612e437157551ab64ef2af",
+      "actual_native_pre": "995f62c55ce775c1a90367ba140ac4044b2fb9b3",
+      "actual_native_post": "bb35bdb53faf6e8f7d5a840e2c1a73889e095ee4",
+      "actual_native_image_equal": true,
+      "hunks": 3,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "        self.cancellation.cancel();\n        let (gate, circuit) = {\n            // Poison permits only terminal cleanup, never construction.\n            let state = self.state.lock().unwrap_or_else(|error| error.into_inner());\n            (state.gate.clone(), state.circuit.clone())\n        };\n        if let Some(gate) = gate {\n",
+          "new": "        self.cancellation.cancel();\n        let (gate, circuit) = {\n            // Poison permits only terminal cleanup, never construction.\n            let state = self\n                .state\n                .lock()\n                .unwrap_or_else(std::sync::PoisonError::into_inner);\n            (state.gate.clone(), state.circuit.clone())\n        };\n        if let Some(gate) = gate {\n",
+          "native_old_start": 197,
+          "native_new_start": 197
+        },
+        {
+          "kind": "replace",
+          "old": "        let circuit = self\n            .state\n            .lock()\n            .unwrap_or_else(|error| error.into_inner())\n            .circuit\n            .clone();\n        let mut failure = None;\n",
+          "new": "        let circuit = self\n            .state\n            .lock()\n            .unwrap_or_else(std::sync::PoisonError::into_inner)\n            .circuit\n            .clone();\n        let mut failure = None;\n",
+          "native_old_start": 253,
+          "native_new_start": 256
+        },
+        {
+          "kind": "replace",
+          "old": "impl Drop for OriginalPhaseRunOwner {\n    fn drop(&mut self) {\n        OriginalPhaseRunControl::request_stop(&self.control);\n        if let Some(thread) = self.thread.take() {\n            if let Err(error) = join_original_owner(thread) {\n                let _ = writeln!(\n                    std::io::stderr().lock(),\n                    \"hepta-agentd level=error error={error}: cancelled original phase owner finished with failure\",\n                );\n            }\n        }\n    }\n}\n",
+          "new": "impl Drop for OriginalPhaseRunOwner {\n    fn drop(&mut self) {\n        OriginalPhaseRunControl::request_stop(&self.control);\n        if let Some(thread) = self.thread.take()\n            && let Err(error) = join_original_owner(thread)\n        {\n            let _ = writeln!(\n                std::io::stderr().lock(),\n                \"hepta-agentd level=error error={error}: cancelled original phase owner finished with failure\",\n            );\n        }\n    }\n}\n",
+          "native_old_start": 442,
+          "native_new_start": 445
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs",
+      "pre": "03b3ec1759d42031f48f965aeb9b0d9816307c28",
+      "post": "81a3f8a4dc15928a8922d7067e292a4b8f280eee",
+      "bytes": 6474,
+      "sha256": "43352ede59e749e963c385844d763c4f4a94045d6813023b164be9ae29d6178b",
+      "actual_native_pre": "03b3ec1759d42031f48f965aeb9b0d9816307c28",
+      "actual_native_post": "81a3f8a4dc15928a8922d7067e292a4b8f280eee",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "        }\n        Err(error) => Err(error),\n    };\n    if let Some(coordinator) = coordinator.as_mut() {\n        if let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {\n            if result.is_ok() { return Err(error); }\n            let _ = writeln!(\n                std::io::stderr().lock(),\n                \"hepta-agentd level=error error={error}: original deployment coordinator also failed\",\n            );\n        }\n    }\n    result\n}\n",
+          "new": "        }\n        Err(error) => Err(error),\n    };\n    if let Some(coordinator) = coordinator.as_mut()\n        && let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {\n            if result.is_ok() { return Err(error); }\n            let _ = writeln!(\n                std::io::stderr().lock(),\n                \"hepta-agentd level=error error={error}: original deployment coordinator also failed\",\n            );\n        }\n    result\n}\n",
+          "native_old_start": 167,
+          "native_new_start": 167
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs",
+      "pre": "5bdf4a49aa51981061b784f156ca6325a628d01e",
+      "post": "eaddaf5c4759120577075d19dcfd73d13dab83f5",
+      "bytes": 13451,
+      "sha256": "52a97878079412867a2405afcb3ccba5f89ad25ca4b7c8a260f9d2e770ee4135",
+      "actual_native_pre": "5bdf4a49aa51981061b784f156ca6325a628d01e",
+      "actual_native_post": "eaddaf5c4759120577075d19dcfd73d13dab83f5",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "                if let Some(device) = device.take() {\n                    device.invalidate();\n                }\n                if let Some(mcp) = mcp.take() {\n                    if let Err(cleanup) =\n                        codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await\n                    {\n                        let _ = writeln!(\n                            std::io::stderr().lock(),\n                            \"hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed\",\n                        );\n                    }\n                }\n                return Err(error);\n            }\n",
+          "new": "                if let Some(device) = device.take() {\n                    device.invalidate();\n                }\n                if let Some(mcp) = mcp.take()\n                    && let Err(cleanup) =\n                        codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await\n                {\n                    let _ = writeln!(\n                        std::io::stderr().lock(),\n                        \"hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed\",\n                    );\n                }\n                return Err(error);\n            }\n",
+          "native_old_start": 279,
+          "native_new_start": 279
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "pre": "d0aff3097e3d548e7c1382b5694e35ce416e0c59",
+      "post": "cf847deb9c9b835e976fba0a81c52139a7778d75",
+      "bytes": 35373,
+      "sha256": "53485ca343deb8a0a4ad4c0b9807a037d27cf7b1eb39fbe8b2521bee99092e3f",
+      "actual_native_pre": "9d1bcb8b5a4cd54914dae290c7d472c56d8f3730",
+      "actual_native_post": "b04f96d7020eea414dacabc98e002bdc805d6a65",
+      "actual_native_image_equal": false,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "\n#[path = \"root_authority_session_lifecycle.rs\"]\nmod lifecycle;\npub(crate) use lifecycle::OriginalConsumerFailure;\npub(crate) use lifecycle::OriginalConsumerJoinSummary;\npub(crate) use lifecycle::OriginalRootSessionCustodySlot;\npub(crate) use lifecycle::OriginalRootSessionFullyRetired;\npub(crate) use lifecycle::OriginalRootSessionJoinObservation;\npub(crate) use lifecycle::OriginalRootSessionObservationRetired;\npub(crate) use lifecycle::OriginalRootSessionPauseWaiter;\npub(crate) use lifecycle::OriginalRootSessionPaused;\npub(crate) use lifecycle::OriginalRootWorkerTermination;\nuse lifecycle::OriginalSessionWorker;\n\nstruct LiveRoot {\n",
+          "new": "\n#[path = \"root_authority_session_lifecycle.rs\"]\nmod lifecycle;\npub(crate) use lifecycle::OriginalRootSessionCustodySlot;\npub(crate) use lifecycle::OriginalRootSessionFullyRetired;\npub(crate) use lifecycle::OriginalRootSessionObservationRetired;\npub(crate) use lifecycle::OriginalRootSessionPauseWaiter;\npub(crate) use lifecycle::OriginalRootSessionPaused;\nuse lifecycle::OriginalSessionWorker;\n\nstruct LiveRoot {\n",
+          "native_old_start": 42,
+          "native_new_start": 42
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs",
+      "pre": "f773b59e86f34b9fb36956123db438efcd22fab5",
+      "post": "289edf4e5f5d9f3193cf1263070becb3db7d2cb5",
+      "bytes": 8096,
+      "sha256": "62d836b28dc756da61fa78a7720ae7e20fa4b1c364e42479cfbb9528d65ae2ec",
+      "actual_native_pre": "f773b59e86f34b9fb36956123db438efcd22fab5",
+      "actual_native_post": "289edf4e5f5d9f3193cf1263070becb3db7d2cb5",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "                \"ordinary task is repeated or differs from the original spawn\",\n            ));\n        }\n        if stage == OriginalOrdinaryTaskStage::C {\n            if !matches!(\n                self.acknowledged[0].as_ref(),\n                Some(ObjectiveStartOutcome::Admitted { .. })\n            ) || self.run_ids[0].as_ref() == Some(&request.body.run_id)\n            {\n                return Err(deployment_refused(\n                    \"ordinary C requires an original A admission and a distinct real run\",\n                ));\n            }\n        }\n        // This terminal attempt bit precedes every await. Cancellation,\n        // malformed input, rejection and ACK loss never rearm this stage.\n",
+          "new": "                \"ordinary task is repeated or differs from the original spawn\",\n            ));\n        }\n        if stage == OriginalOrdinaryTaskStage::C\n            && (!matches!(\n                self.acknowledged[0].as_ref(),\n                Some(ObjectiveStartOutcome::Admitted { .. })\n            ) || self.run_ids[0].as_ref() == Some(&request.body.run_id))\n        {\n            return Err(deployment_refused(\n                \"ordinary C requires an original A admission and a distinct real run\",\n            ));\n        }\n        // This terminal attempt bit precedes every await. Cancellation,\n        // malformed input, rejection and ACK loss never rearm this stage.\n",
+          "native_old_start": 88,
+          "native_new_start": 88
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs",
+      "pre": "280ff9a1009900edd9d006d08d6873c5e1be3f3d",
+      "post": "e8ce6e7361a803ca5be680e5f92db83a90910840",
+      "bytes": 3160,
+      "sha256": "27d8fbb66190fea093e3fb0a96be352f66ed9f0cac3618c0178e99aa4d1a8dd8",
+      "actual_native_pre": "280ff9a1009900edd9d006d08d6873c5e1be3f3d",
+      "actual_native_post": "e8ce6e7361a803ca5be680e5f92db83a90910840",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "            heads: super::files::OriginalPinnedRead::clone_original_file(&heads)?,\n            organ_adapter: organ\n                .as_ref()\n                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))\n                .transpose()?,\n            cell_adapter: cell\n                .as_ref()\n                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))\n                .transpose()?,\n        })\n        .map_err(deployment_error)?;\n",
+          "new": "            heads: super::files::OriginalPinnedRead::clone_original_file(&heads)?,\n            organ_adapter: organ\n                .as_ref()\n                .map(super::files::OriginalPinnedRead::clone_original_file)\n                .transpose()?,\n            cell_adapter: cell\n                .as_ref()\n                .map(super::files::OriginalPinnedRead::clone_original_file)\n                .transpose()?,\n        })\n        .map_err(deployment_error)?;\n",
+          "native_old_start": 53,
+          "native_new_start": 53
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase.rs",
+      "pre": "b6dddaa1be00534dc987699941238e10b9c9eefd",
+      "post": "966287c5b80c1c39e7e2fcdea1129cbe8b82f9fa",
+      "bytes": 13384,
+      "sha256": "b7fda5f96da2a6248045ae0eab1a737f220eb0e884b1878ac6e7fdbf5f0faf19",
+      "actual_native_pre": "b6dddaa1be00534dc987699941238e10b9c9eefd",
+      "actual_native_post": "966287c5b80c1c39e7e2fcdea1129cbe8b82f9fa",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "        require_original_material_time(context, expiry)?;\n        let expired = async {\n            loop {\n                if let Err(error) = require_original_material_time(context, expiry) {\n                    return Err(error);\n                }\n                tokio::time::sleep(std::time::Duration::from_millis(5)).await;\n            }\n        };\n",
+          "new": "        require_original_material_time(context, expiry)?;\n        let expired = async {\n            loop {\n                require_original_material_time(context, expiry)?;\n                tokio::time::sleep(std::time::Duration::from_millis(5)).await;\n            }\n        };\n",
+          "native_old_start": 250,
+          "native_new_start": 250
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs",
+      "pre": "326ad2808cdd4e38b6b347e11afd1a2f92ddc0cc",
+      "post": "4b0ab82f4d1a8414b8b2da8e2c0b806033541232",
+      "bytes": 7441,
+      "sha256": "814c3ffa08058586aa83dbedd467a110f61a04d77eab3dbae68ec92104827b86",
+      "actual_native_pre": "326ad2808cdd4e38b6b347e11afd1a2f92ddc0cc",
+      "actual_native_post": "4b0ab82f4d1a8414b8b2da8e2c0b806033541232",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "mod work;\n#[path = \"same_actor_q24_phase_learning_worker.rs\"]\nmod worker;\npub(crate) use work::OriginalJobReceiveError;\npub(crate) use work::OriginalLearningStop;\npub(crate) use work::OriginalLearningWorkJoined;\npub(crate) use work::OriginalSameActorLearningCleanup;\n",
+          "new": "mod work;\n#[path = \"same_actor_q24_phase_learning_worker.rs\"]\nmod worker;\npub(crate) use work::OriginalLearningStop;\npub(crate) use work::OriginalLearningWorkJoined;\npub(crate) use work::OriginalSameActorLearningCleanup;\n",
+          "native_old_start": 23,
+          "native_new_start": 23
+        }
+      ],
+      "unique_forward_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs",
+      "pre": "e51513e8e9c31d9d27df39498f7c3b1393bf96c9",
+      "post": "3520874a3197ee4efbf19248256f6cf433669b18",
+      "bytes": 16806,
+      "sha256": "d594228b716d58bb4a3d416f0877e8f23d7f95b2c07a535bcccedccfc9ffa72e",
+      "actual_native_pre": "e51513e8e9c31d9d27df39498f7c3b1393bf96c9",
+      "actual_native_post": "3520874a3197ee4efbf19248256f6cf433669b18",
+      "actual_native_image_equal": true,
+      "hunks": 1,
+      "ops": [
+        {
+          "kind": "replace",
+          "old": "            if let Err(error) = context.gate().require_open() {\n                break Some(format!(\"original Learning worker phase: {error}\"));\n            }\n            if !stop_authorized {\n                if let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result) {\n                    let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);\n                    if let Err(error) =\n                        work.authorize_original_learning_stop(original, acknowledged)\n                    {\n                        break Some(format!(\"original terminal Learning stop: {error}\"));\n                    }\n                    stop_authorized = true;\n                }\n            }\n            if stop_authorized && !successor_stop_requested {\n                if let Some(Ok(learning_owner)) = &learning_result {\n                    let Some(original) = &quiescence else {\n                        break Some(\"original C quiescence is missing\".into());\n                    };\n                    if let Err(error) =\n                        OriginalLearningLoopRetired::require_original_work(learning_owner, &work)\n                    {\n                        break Some(format!(\"original Learning owner retirement: {error}\"));\n                    }\n                    // The actual Learning receiver has closed and all its\n                    // reservations have finished. Only now stop the real C\n                    // loop using the drain-authorized local slot token.\n                    if let Err(error) =\n                        OriginalSameActorCQuiescence::request_original_successor_retirement(\n                            original,\n                        )\n                    {\n                        break Some(format!(\"original C local retirement: {error}\"));\n                    }\n                    successor_stop_requested = true;\n                }\n            }\n            if successor_stop_requested\n                && learning_result.is_some()\n",
+          "new": "            if let Err(error) = context.gate().require_open() {\n                break Some(format!(\"original Learning worker phase: {error}\"));\n            }\n            if !stop_authorized\n                && let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result)\n            {\n                let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);\n                if let Err(error) = work.authorize_original_learning_stop(original, acknowledged) {\n                    break Some(format!(\"original terminal Learning stop: {error}\"));\n                }\n                stop_authorized = true;\n            }\n            if stop_authorized\n                && !successor_stop_requested\n                && let Some(Ok(learning_owner)) = &learning_result\n            {\n                let Some(original) = &quiescence else {\n                    break Some(\"original C quiescence is missing\".into());\n                };\n                if let Err(error) =\n                    OriginalLearningLoopRetired::require_original_work(learning_owner, &work)\n                {\n                    break Some(format!(\"original Learning owner retirement: {error}\"));\n                }\n                // The actual Learning receiver has closed and all its\n                // reservations have finished. Only now stop the real C\n                // loop using the drain-authorized local slot token.\n                if let Err(error) =\n                    OriginalSameActorCQuiescence::request_original_successor_retirement(original)\n                {\n                    break Some(format!(\"original C local retirement: {error}\"));\n                }\n                successor_stop_requested = true;\n            }\n            if successor_stop_requested\n                && learning_result.is_some()\n",
+          "native_old_start": 221,
+          "native_new_start": 221
+        }
+      ],
+      "unique_forward_reverse": true
+    }
+  ],
+  "status": "actual_formatter_and_clippy_source_delta_not_qualification",
+  "native_result": "v10 FAILED fix=101",
+  "new_tests_executed": false,
+  "metadata_requires_successor": true,
+  "business_counts": [
+    0,
+    0,
+    0
+  ]
+}

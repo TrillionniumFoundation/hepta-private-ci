@@ -1,0 +1,438 @@
+diff --git a/codex-rs/app-server/src/original_owned_shutdown.rs b/codex-rs/app-server/src/original_owned_shutdown.rs
+index f816d6cbb940a0781253278445b606251706fabc..81a71f744d8bde6f5d3be65630815253bb54ddc1 100644
+--- a/codex-rs/app-server/src/original_owned_shutdown.rs
++++ b/codex-rs/app-server/src/original_owned_shutdown.rs
+@@ -101,13 +101,9 @@ pub(crate) struct OriginalAppServerJob {
+ 
+ impl OriginalAppServerJob {
+     fn unit(handle: JoinHandle<()>) -> Arc<Self> {
+-        let completion = async move {
+-            handle
+-                .await
+-                .map_err(OriginalAppServerFailure::from_join)
+-        }
+-        .boxed()
+-        .shared();
++        let completion = async move { handle.await.map_err(OriginalAppServerFailure::from_join) }
++            .boxed()
++            .shared();
+         Arc::new(Self {
+             completion,
+             terminal: OnceLock::new(),
+diff --git a/codex-rs/codex-mcp/src/original_owned_shutdown.rs b/codex-rs/codex-mcp/src/original_owned_shutdown.rs
+index 4676f4f1bcae462d4392e7545df37d1c670ed1b6..3c9e79f389ef625e44241c17f736b2bf745574fc 100644
+--- a/codex-rs/codex-mcp/src/original_owned_shutdown.rs
++++ b/codex-rs/codex-mcp/src/original_owned_shutdown.rs
+@@ -62,9 +62,8 @@ struct OriginalStartupJoined {
+ }
+ 
+ struct OriginalCleanupJob {
+-    completion: Shared<
+-        BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,
+-    >,
++    completion:
++        Shared<BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,
+ }
+ 
+ /// Actual cleanup facts, not business completion or authority permission.
+diff --git a/codex-rs/hepta-agentd/src/circuit_task.rs b/codex-rs/hepta-agentd/src/circuit_task.rs
+index 4d26e8aeec736e696a28fd1f479dfd66d5d2b593..216803e5e3ba1c6e9ae0080d8ebd0b7ebabc4652 100644
+--- a/codex-rs/hepta-agentd/src/circuit_task.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task.rs
+@@ -28,16 +28,12 @@ pub use runtime::CircuitTaskRuntimeBootstrapV1;
+ #[cfg(target_os = "linux")]
+ pub(crate) use runtime::OriginalCQuiescenceOrigin;
+ #[cfg(target_os = "linux")]
+-pub(crate) use runtime::OriginalCircuitJoinObservation;
+-#[cfg(target_os = "linux")]
+ pub(crate) use runtime::OriginalCircuitJoinStatus;
+ #[cfg(target_os = "linux")]
+ pub(crate) use runtime::OriginalCircuitNaturalJoin;
+ #[cfg(target_os = "linux")]
+ pub(crate) use runtime::OriginalCircuitOwnerCustody;
+ #[cfg(target_os = "linux")]
+-pub(crate) use runtime::OriginalCircuitOwnerOutcome;
+-#[cfg(target_os = "linux")]
+ pub(crate) use runtime::OriginalCircuitResultDelivery;
+ #[cfg(target_os = "linux")]
+ pub(crate) use runtime::OriginalSameActorCJoined;
+diff --git a/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs b/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs
+index 5bfff889730384ea518405efc8b12e1f21f37e53..1a45df46e1f924372f49ce68b226835b6a9ccbc2 100644
+--- a/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs
+@@ -391,7 +391,10 @@ impl OriginalCircuitOwnerCustody {
+     pub(crate) fn request_stop(&self) {
+         self.gate.close();
+         // Poison recovery is terminal custody only and cannot start any work.
+-        let mut state = self.start.lock().unwrap_or_else(|error| error.into_inner());
++        let mut state = self
++            .start
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         state.stopped = true;
+         if let Some(job) = &state.job {
+             job.cancellation.cancel();
+@@ -413,7 +416,10 @@ impl OriginalCircuitOwnerCustody {
+             });
+         };
+         job.join.clone().await;
+-        let state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++        let state = job
++            .state
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         job.join_locked(&state)?;
+         let outcome = state
+             .joined
+@@ -424,7 +430,7 @@ impl OriginalCircuitOwnerCustody {
+         let terminal = self
+             .normal
+             .lock()
+-            .unwrap_or_else(|error| error.into_inner())
++            .unwrap_or_else(std::sync::PoisonError::into_inner)
+             .terminal
+             .take();
+         drop(terminal);
+@@ -470,11 +476,14 @@ impl OriginalCircuitOwnerCustody {
+         let job = self
+             .start
+             .lock()
+-            .unwrap_or_else(|error| error.into_inner())
++            .unwrap_or_else(std::sync::PoisonError::into_inner)
+             .job
+             .clone()
+             .ok_or_else(|| custody_error("outer Circuit owner was not started"))?;
+-        let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++        let mut state = job
++            .state
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         if state.joined.is_none() {
+             return Err(custody_error("outer Circuit owner has not been joined"));
+         }
+@@ -531,7 +540,9 @@ impl OriginalCircuitStartAdmission<'_> {
+             };
+             // No await separates the actual join from retaining its exact
+             // non-Clone result. This cell has no back-reference to the job.
+-            let mut state = completed.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++            let mut state = completed
++                .lock()
++                .unwrap_or_else(std::sync::PoisonError::into_inner);
+             state.result = Some(result);
+             state.joined = Some(outcome);
+         }
+@@ -584,7 +595,10 @@ impl OriginalCircuitOwnerJob {
+     async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {
+         self.gate.require_open().map_err(custody_error)?;
+         self.join.clone().await;
+-        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++        let state = self
++            .state
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         self.join_locked(&state)?;
+         if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {
+             return Err(custody_error(
+@@ -609,7 +623,10 @@ impl OriginalCircuitOwnerJob {
+         };
+         async move {
+             job.join.clone().await;
+-            let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++            let mut state = job
++                .state
++                .lock()
++                .unwrap_or_else(std::sync::PoisonError::into_inner);
+             job.join_locked(&state)?;
+             if job.delivery.load(Ordering::Acquire) != WAITING {
+                 return Err(custody_error(
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs b/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs
+index a2488297954907d01cc1b10b921b295d3aa9e631..ea45099ab048c62925db5cb878bb7a75986dbf2b 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs
+@@ -3,13 +3,13 @@
+ //! or an owner which the closure has opened but not yet delivered.
+ 
+ use super::refused;
+-use futures::FutureExt;
+-use futures::future::BoxFuture;
+-use futures::future::Shared;
+ use crate::AgentdError;
+ use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+ use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+ use codex_hepta_contracts::FinalUseAuthority;
++use futures::FutureExt;
++use futures::future::BoxFuture;
++use futures::future::Shared;
+ use std::future::Future;
+ use std::sync::Arc;
+ use std::sync::Mutex;
+@@ -90,7 +90,10 @@ impl OriginalBootstrapConsumers {
+     }
+ 
+     pub(super) fn close(&self) {
+-        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
++        let mut state = self
++            .state
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         state.closed = true;
+         for job in &state.jobs {
+             job.gate.close();
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs b/codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs
+index 995f62c55ce775c1a90367ba140ac4044b2fb9b3..bb35bdb53faf6e8f7d5a840e2c1a73889e095ee4 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_same_actor_owner.rs
+@@ -197,7 +197,10 @@ impl OriginalPhaseRunControl {
+         self.cancellation.cancel();
+         let (gate, circuit) = {
+             // Poison permits only terminal cleanup, never construction.
+-            let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
++            let state = self
++                .state
++                .lock()
++                .unwrap_or_else(std::sync::PoisonError::into_inner);
+             (state.gate.clone(), state.circuit.clone())
+         };
+         if let Some(gate) = gate {
+@@ -253,7 +256,7 @@ impl OriginalPhaseRunControl {
+         let circuit = self
+             .state
+             .lock()
+-            .unwrap_or_else(|error| error.into_inner())
++            .unwrap_or_else(std::sync::PoisonError::into_inner)
+             .circuit
+             .clone();
+         let mut failure = None;
+@@ -442,13 +445,13 @@ impl Future for OriginalPhaseRunOwner {
+ impl Drop for OriginalPhaseRunOwner {
+     fn drop(&mut self) {
+         OriginalPhaseRunControl::request_stop(&self.control);
+-        if let Some(thread) = self.thread.take() {
+-            if let Err(error) = join_original_owner(thread) {
+-                let _ = writeln!(
+-                    std::io::stderr().lock(),
+-                    "hepta-agentd level=error error={error}: cancelled original phase owner finished with failure",
+-                );
+-            }
++        if let Some(thread) = self.thread.take()
++            && let Err(error) = join_original_owner(thread)
++        {
++            let _ = writeln!(
++                std::io::stderr().lock(),
++                "hepta-agentd level=error error={error}: cancelled original phase owner finished with failure",
++            );
+         }
+     }
+ }
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs b/codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs
+index 03b3ec1759d42031f48f965aeb9b0d9816307c28..81a3f8a4dc15928a8922d7067e292a4b8f280eee 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_same_actor_run.rs
+@@ -167,14 +167,13 @@ pub(super) async fn run_owned_original_phase(
+         }
+         Err(error) => Err(error),
+     };
+-    if let Some(coordinator) = coordinator.as_mut() {
+-        if let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {
++    if let Some(coordinator) = coordinator.as_mut()
++        && let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {
+             if result.is_ok() { return Err(error); }
+             let _ = writeln!(
+                 std::io::stderr().lock(),
+                 "hepta-agentd level=error error={error}: original deployment coordinator also failed",
+             );
+         }
+-    }
+     result
+ }
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs b/codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs
+index 5bdf4a49aa51981061b784f156ca6325a628d01e..eaddaf5c4759120577075d19dcfd73d13dab83f5 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_same_actor_runtime.rs
+@@ -279,15 +279,14 @@ impl AgentdProductionLaunch {
+                 if let Some(device) = device.take() {
+                     device.invalidate();
+                 }
+-                if let Some(mcp) = mcp.take() {
+-                    if let Err(cleanup) =
++                if let Some(mcp) = mcp.take()
++                    && let Err(cleanup) =
+                         codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await
+-                    {
+-                        let _ = writeln!(
+-                            std::io::stderr().lock(),
+-                            "hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed",
+-                        );
+-                    }
++                {
++                    let _ = writeln!(
++                        std::io::stderr().lock(),
++                        "hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed",
++                    );
+                 }
+                 return Err(error);
+             }
+diff --git a/codex-rs/hepta-agentd/src/root_authority_session.rs b/codex-rs/hepta-agentd/src/root_authority_session.rs
+index 9d1bcb8b5a4cd54914dae290c7d472c56d8f3730..b04f96d7020eea414dacabc98e002bdc805d6a65 100644
+--- a/codex-rs/hepta-agentd/src/root_authority_session.rs
++++ b/codex-rs/hepta-agentd/src/root_authority_session.rs
+@@ -42,15 +42,11 @@ use tokio::io::unix::AsyncFd;
+ 
+ #[path = "root_authority_session_lifecycle.rs"]
+ mod lifecycle;
+-pub(crate) use lifecycle::OriginalConsumerFailure;
+-pub(crate) use lifecycle::OriginalConsumerJoinSummary;
+ pub(crate) use lifecycle::OriginalRootSessionCustodySlot;
+ pub(crate) use lifecycle::OriginalRootSessionFullyRetired;
+-pub(crate) use lifecycle::OriginalRootSessionJoinObservation;
+ pub(crate) use lifecycle::OriginalRootSessionObservationRetired;
+ pub(crate) use lifecycle::OriginalRootSessionPauseWaiter;
+ pub(crate) use lifecycle::OriginalRootSessionPaused;
+-pub(crate) use lifecycle::OriginalRootWorkerTermination;
+ use lifecycle::OriginalSessionWorker;
+ 
+ struct LiveRoot {
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs b/codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs
+index f773b59e86f34b9fb36956123db438efcd22fab5..289edf4e5f5d9f3193cf1263070becb3db7d2cb5 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_deployment_ingress.rs
+@@ -88,16 +88,15 @@ impl OriginalOrdinaryTaskIngress {
+                 "ordinary task is repeated or differs from the original spawn",
+             ));
+         }
+-        if stage == OriginalOrdinaryTaskStage::C {
+-            if !matches!(
++        if stage == OriginalOrdinaryTaskStage::C
++            && (!matches!(
+                 self.acknowledged[0].as_ref(),
+                 Some(ObjectiveStartOutcome::Admitted { .. })
+-            ) || self.run_ids[0].as_ref() == Some(&request.body.run_id)
+-            {
+-                return Err(deployment_refused(
+-                    "ordinary C requires an original A admission and a distinct real run",
+-                ));
+-            }
++            ) || self.run_ids[0].as_ref() == Some(&request.body.run_id))
++        {
++            return Err(deployment_refused(
++                "ordinary C requires an original A admission and a distinct real run",
++            ));
+         }
+         // This terminal attempt bit precedes every await. Cancellation,
+         // malformed input, rejection and ACK loss never rearm this stage.
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs b/codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs
+index 280ff9a1009900edd9d006d08d6873c5e1be3f3d..e8ce6e7361a803ca5be680e5f92db83a90910840 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_deployment_model.rs
+@@ -53,11 +53,11 @@ impl OriginalModelData {
+             heads: super::files::OriginalPinnedRead::clone_original_file(&heads)?,
+             organ_adapter: organ
+                 .as_ref()
+-                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))
++                .map(super::files::OriginalPinnedRead::clone_original_file)
+                 .transpose()?,
+             cell_adapter: cell
+                 .as_ref()
+-                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))
++                .map(super::files::OriginalPinnedRead::clone_original_file)
+                 .transpose()?,
+         })
+         .map_err(deployment_error)?;
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs b/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs
+index b6dddaa1be00534dc987699941238e10b9c9eefd..966287c5b80c1c39e7e2fcdea1129cbe8b82f9fa 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_phase.rs
+@@ -250,9 +250,7 @@ impl OriginalSameActorPhaseHostV1 {
+         require_original_material_time(context, expiry)?;
+         let expired = async {
+             loop {
+-                if let Err(error) = require_original_material_time(context, expiry) {
+-                    return Err(error);
+-                }
++                require_original_material_time(context, expiry)?;
+                 tokio::time::sleep(std::time::Duration::from_millis(5)).await;
+             }
+         };
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs b/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs
+index 326ad2808cdd4e38b6b347e11afd1a2f92ddc0cc..4b0ab82f4d1a8414b8b2da8e2c0b806033541232 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning.rs
+@@ -23,7 +23,6 @@ use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+ mod work;
+ #[path = "same_actor_q24_phase_learning_worker.rs"]
+ mod worker;
+-pub(crate) use work::OriginalJobReceiveError;
+ pub(crate) use work::OriginalLearningStop;
+ pub(crate) use work::OriginalLearningWorkJoined;
+ pub(crate) use work::OriginalSameActorLearningCleanup;
+diff --git a/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs b/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs
+index e51513e8e9c31d9d27df39498f7c3b1393bf96c9..3520874a3197ee4efbf19248256f6cf433669b18 100644
+--- a/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs
++++ b/codex-rs/hepta-agentd/src/same_actor_q24_phase_learning_worker_retirement.rs
+@@ -221,39 +221,36 @@ impl OriginalSameActorLearningWorker {
+             if let Err(error) = context.gate().require_open() {
+                 break Some(format!("original Learning worker phase: {error}"));
+             }
+-            if !stop_authorized {
+-                if let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result) {
+-                    let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);
+-                    if let Err(error) =
+-                        work.authorize_original_learning_stop(original, acknowledged)
+-                    {
+-                        break Some(format!("original terminal Learning stop: {error}"));
+-                    }
+-                    stop_authorized = true;
++            if !stop_authorized
++                && let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result)
++            {
++                let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);
++                if let Err(error) = work.authorize_original_learning_stop(original, acknowledged) {
++                    break Some(format!("original terminal Learning stop: {error}"));
+                 }
++                stop_authorized = true;
+             }
+-            if stop_authorized && !successor_stop_requested {
+-                if let Some(Ok(learning_owner)) = &learning_result {
+-                    let Some(original) = &quiescence else {
+-                        break Some("original C quiescence is missing".into());
+-                    };
+-                    if let Err(error) =
+-                        OriginalLearningLoopRetired::require_original_work(learning_owner, &work)
+-                    {
+-                        break Some(format!("original Learning owner retirement: {error}"));
+-                    }
+-                    // The actual Learning receiver has closed and all its
+-                    // reservations have finished. Only now stop the real C
+-                    // loop using the drain-authorized local slot token.
+-                    if let Err(error) =
+-                        OriginalSameActorCQuiescence::request_original_successor_retirement(
+-                            original,
+-                        )
+-                    {
+-                        break Some(format!("original C local retirement: {error}"));
+-                    }
+-                    successor_stop_requested = true;
++            if stop_authorized
++                && !successor_stop_requested
++                && let Some(Ok(learning_owner)) = &learning_result
++            {
++                let Some(original) = &quiescence else {
++                    break Some("original C quiescence is missing".into());
++                };
++                if let Err(error) =
++                    OriginalLearningLoopRetired::require_original_work(learning_owner, &work)
++                {
++                    break Some(format!("original Learning owner retirement: {error}"));
++                }
++                // The actual Learning receiver has closed and all its
++                // reservations have finished. Only now stop the real C
++                // loop using the drain-authorized local slot token.
++                if let Err(error) =
++                    OriginalSameActorCQuiescence::request_original_successor_retirement(original)
++                {
++                    break Some(format!("original C local retirement: {error}"));
+                 }
++                successor_stop_requested = true;
+             }
+             if successor_stop_requested
+                 && learning_result.is_some()

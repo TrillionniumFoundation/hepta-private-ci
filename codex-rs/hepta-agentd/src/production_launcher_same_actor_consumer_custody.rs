@@ -3,13 +3,13 @@
 //! or an owner which the closure has opened but not yet delivered.
 
 use super::refused;
-use futures::FutureExt;
-use futures::future::BoxFuture;
-use futures::future::Shared;
 use crate::AgentdError;
 use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
 use codex_hepta_contracts::FinalUseAuthority;
+use futures::FutureExt;
+use futures::future::BoxFuture;
+use futures::future::Shared;
 use std::future::Future;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -90,7 +90,10 @@ impl OriginalBootstrapConsumers {
     }
 
     pub(super) fn close(&self) {
-        let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         state.closed = true;
         for job in &state.jobs {
             job.gate.close();

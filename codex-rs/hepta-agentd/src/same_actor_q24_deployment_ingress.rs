@@ -88,16 +88,15 @@ impl OriginalOrdinaryTaskIngress {
                 "ordinary task is repeated or differs from the original spawn",
             ));
         }
-        if stage == OriginalOrdinaryTaskStage::C {
-            if !matches!(
+        if stage == OriginalOrdinaryTaskStage::C
+            && (!matches!(
                 self.acknowledged[0].as_ref(),
                 Some(ObjectiveStartOutcome::Admitted { .. })
-            ) || self.run_ids[0].as_ref() == Some(&request.body.run_id)
-            {
-                return Err(deployment_refused(
-                    "ordinary C requires an original A admission and a distinct real run",
-                ));
-            }
+            ) || self.run_ids[0].as_ref() == Some(&request.body.run_id))
+        {
+            return Err(deployment_refused(
+                "ordinary C requires an original A admission and a distinct real run",
+            ));
         }
         // This terminal attempt bit precedes every await. Cancellation,
         // malformed input, rejection and ACK loss never rearm this stage.

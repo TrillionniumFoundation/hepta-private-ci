@@ -167,14 +167,13 @@ pub(super) async fn run_owned_original_phase(
         }
         Err(error) => Err(error),
     };
-    if let Some(coordinator) = coordinator.as_mut() {
-        if let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {
+    if let Some(coordinator) = coordinator.as_mut()
+        && let Err(error) = crate::same_actor_q24_deployment::OriginalDeploymentCoordinatorOwner::stop_and_join_original(coordinator) {
             if result.is_ok() { return Err(error); }
             let _ = writeln!(
                 std::io::stderr().lock(),
                 "hepta-agentd level=error error={error}: original deployment coordinator also failed",
             );
         }
-    }
     result
 }

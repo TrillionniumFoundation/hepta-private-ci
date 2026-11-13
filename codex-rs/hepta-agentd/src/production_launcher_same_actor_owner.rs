@@ -197,7 +197,10 @@ impl OriginalPhaseRunControl {
         self.cancellation.cancel();
         let (gate, circuit) = {
             // Poison permits only terminal cleanup, never construction.
-            let state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+            let state = self
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             (state.gate.clone(), state.circuit.clone())
         };
         if let Some(gate) = gate {
@@ -253,7 +256,7 @@ impl OriginalPhaseRunControl {
         let circuit = self
             .state
             .lock()
-            .unwrap_or_else(|error| error.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .circuit
             .clone();
         let mut failure = None;
@@ -442,13 +445,13 @@ impl Future for OriginalPhaseRunOwner {
 impl Drop for OriginalPhaseRunOwner {
     fn drop(&mut self) {
         OriginalPhaseRunControl::request_stop(&self.control);
-        if let Some(thread) = self.thread.take() {
-            if let Err(error) = join_original_owner(thread) {
-                let _ = writeln!(
-                    std::io::stderr().lock(),
-                    "hepta-agentd level=error error={error}: cancelled original phase owner finished with failure",
-                );
-            }
+        if let Some(thread) = self.thread.take()
+            && let Err(error) = join_original_owner(thread)
+        {
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "hepta-agentd level=error error={error}: cancelled original phase owner finished with failure",
+            );
         }
     }
 }

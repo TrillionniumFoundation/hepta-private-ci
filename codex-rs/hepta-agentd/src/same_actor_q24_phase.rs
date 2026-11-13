@@ -250,9 +250,7 @@ impl OriginalSameActorPhaseHostV1 {
         require_original_material_time(context, expiry)?;
         let expired = async {
             loop {
-                if let Err(error) = require_original_material_time(context, expiry) {
-                    return Err(error);
-                }
+                require_original_material_time(context, expiry)?;
                 tokio::time::sleep(std::time::Duration::from_millis(5)).await;
             }
         };

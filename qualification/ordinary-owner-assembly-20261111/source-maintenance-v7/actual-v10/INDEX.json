@@ -1,0 +1,432 @@
+{
+  "schema_version": 1,
+  "kind": "actual_v10_failure_and_source_successor",
+  "parent_commit": "4c88f446fa47e35d8260886ce4b54658f349ca2b",
+  "parent_tree": "4b182178a21eb19cf620794bbb94facb9a909f46",
+  "actual_run_source": "ac0037168295c898d8b2572d2274f4328dd08aef",
+  "actual_terminal_session": "dpty-05bb4dba0c216a294706b6b255103129dd0aa7728657a341bbc0c747d9b766a0",
+  "actual_result": "33675b56aca5a702daff5f3f141a9b37cd3438e8",
+  "actual_maintenance_passed": false,
+  "actual_completion_unknown": false,
+  "source_manifest": {
+    "blob": "091d00310a6bd34e9d060ca43f188aeac7f61d89",
+    "bytes": 59789,
+    "sha256": "f6f52aeaf8d584b7ebdd238b61405b80a14045bae71bc1da0a5878de8c563cbd"
+  },
+  "source_file_count": 205,
+  "source_change_paths": 15,
+  "actual_hunks": 23,
+  "additional_test_import_ops": 3,
+  "metadata_successor_pending": true,
+  "current_callers": "0f0b4c835de967f90263ae9041865f5ac431615e",
+  "artifacts": [
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/RESULT.json",
+      "blob": "33675b56aca5a702daff5f3f141a9b37cd3438e8",
+      "bytes": 12508,
+      "sha256": "70a1d15418ea2ef5ce4ac54c09911734929d6f7c104f5570cfa4bcaf34883f40",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/final-postimages.json",
+      "blob": "f78270fa3b365f5d09dcc2ee7a2d7b7759a8644f",
+      "bytes": 69584,
+      "sha256": "76734f133ec21a1dc04b6cf1f49c82edffba1b5616c64878e33db517683c4cad",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fix-eleven-crates.log",
+      "blob": "580f182677e22fb2975dc490969f1bec1210cbcd",
+      "bytes": 77473,
+      "sha256": "381753570b3785e84be06cef8463d4ce5f5bd7a861b49b526d5fc9f2f717a851",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/final.patch",
+      "blob": "a96c60064f62780f79548723e71ba7e1c9494bef",
+      "bytes": 22010,
+      "sha256": "e754812b7a045f7c4763c1654ca6ac2d4aa737007599a09765515e8e78028e16",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/isolated-clone.execution.json",
+      "blob": "a8e0007673052a47b8edd4f89b37a6bcd3d00987",
+      "bytes": 972,
+      "sha256": "3a3bc05ad687af3893f270cf0810dc021a4151708133d1dd1bcabdb17db07ea4",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/isolated-clone.log",
+      "blob": "09d3b4f4a7f91603089672087793cc1a8d6aced4",
+      "bytes": 108,
+      "sha256": "97b5f02021f572ec28a8360abe36d771df0534ce2316ffa1fbd6abe2e884de5d",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fetch-exact-source.execution.json",
+      "blob": "e78ac9770e146cd2e92b934c8352846977791d83",
+      "bytes": 966,
+      "sha256": "e93eaf50077e85dae608dfe27e6e9dbb6e863814ffcce2b040aa02770ab4b20a",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fetch-exact-source.log",
+      "blob": "7ff50feb9e713ac2153705ce0fa601ad505db939",
+      "bytes": 142,
+      "sha256": "53dc6d57718fba10eb35a69b6ae48a23a5e04343178bfcbf24a33fc180b05657",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/checkout-exact-source.execution.json",
+      "blob": "7440ed0cd9bccee052387b5d562fe9903ec91da6",
+      "bytes": 907,
+      "sha256": "20bb2322d55ac1916a1b86235c769e376382b12a43d86d0d520b441c0113f248",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/checkout-exact-source.log",
+      "blob": "4e7096d934b85e5a53d85205e1ec3fc6bb29aa4b",
+      "bytes": 198,
+      "sha256": "0b1dc9bd16741c4d7216c6b6bdea1b97181b93727e105620e6f06966a3a8ba39",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/format-base-ancestry.execution.json",
+      "blob": "650aecd11fb416e02a1d8b1e8fdff03b0e36e60f",
+      "bytes": 860,
+      "sha256": "2751d468acacd54692104c059519bdbbbd92578d0abe99a71d4d02f810de0d23",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/format-base-ancestry.log",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/operator-rustc.execution.json",
+      "blob": "db32890dc9da7a8e1527e8a8da81cf6405f5426f",
+      "bytes": 750,
+      "sha256": "bcc358478a7ae05bef0df9bec554b249d65b6b7c7f231ffa45257d653ea971e2",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/operator-rustc.log",
+      "blob": "4b0852244672d9611e81367e960345736b255b8c",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fmt-before.execution.json",
+      "blob": "ed152255532d5bab29b21b373a0a9243313a39c4",
+      "bytes": 765,
+      "sha256": "4b18439903e78862f471bac6ad27ca27cea46a568839a3e6931f378bdac1fb8e",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fmt-before.log",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fix-eleven-crates.execution.json",
+      "blob": "bf5f41ea01be4f80629a2d752d7db42eee0dd0bf",
+      "bytes": 1174,
+      "sha256": "deb2f11fdba112cab75a7d159c9994345368ad2eea5e86fad6afd78292af121e",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fmt-after.execution.json",
+      "blob": "902a61b9c52b20d325db2da483e5376c169f2f35",
+      "bytes": 763,
+      "sha256": "441f41ea09d4731493a3afcde67a7d57db9e3e3412df2a874a098a5853ebb304",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/fmt-after.log",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/CONFIG.json",
+      "blob": "dbce3fd7712406a9d83ffa6fdeedd54a1be8bc0e",
+      "bytes": 1613,
+      "sha256": "7832c7786bbf95dfb8cfe3b7f7a46a5e6227b9b35e1327438985de0058160fdf",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/progress.json",
+      "blob": "8dda6b4dfe432dcd893280842c8822f94d196dc8",
+      "bytes": 12507,
+      "sha256": "29a6491a148cb6d4a24ecc3528f84999b0f4e7cc2ca0dd214bc307185f8e6c77",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/formatted-scope-observation.json",
+      "blob": "04f6c5d45ebd4e5a2fb97766a4f245526f767620",
+      "bytes": 598,
+      "sha256": "83dfeecfeefcdf2a422eecf0926b9d077bcdad4ea39138f799440f2640e10bbe",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/final-scope-observation.json",
+      "blob": "5f673ef76e8b7a8d8df5f9037c61834dd72423bc",
+      "bytes": 1267,
+      "sha256": "831faef74d53f665a3007c5c7f9b4e9395fd8e1fb586a24bb69e9101d70c70d8",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/execution/TERMINAL.txt",
+      "blob": "1b80681917518f1b3b35aa41cc72dbfb81450a59",
+      "bytes": 3144,
+      "sha256": "546b650ca36defc386d89506df188a9d1e91fb3a6c67078acd2fcaa6a8565482",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/execution/TERMINAL_TOOL.json",
+      "blob": "0813eb2bdb7f118b621596c87f97b564859c0bec",
+      "bytes": 10559,
+      "sha256": "dd298f241ba0fb60b5654f4b71275dd18d510efabee1f78fd1a6b081528553eb",
+      "role": "actual complete native v10 record"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/formatted-postimages.json",
+      "blob": "38a3f7bfd77b5d01da1a2f570051c8d240a9cd9a",
+      "bytes": 64384,
+      "sha256": "43b76eb35afefe7c0705086a777a32684840f9cabeadc176687b5a79aa16512b",
+      "role": "actual formatted stage postimage inventory"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/formatted.patch",
+      "blob": "dfdb632289400f6d26503e2eddf8b4e31506f8b8",
+      "bytes": 5614,
+      "sha256": "55e22da3a6935aa2cdeedc7f87657f5a70c4c191b4691a9681534543ba9a8d9a",
+      "role": "actual original formatted stage patch"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-formatted/013.txt",
+      "blob": "6e4db679d67ee67e671aedebfce02cc1e6e41872",
+      "bytes": 24765,
+      "sha256": "d3d85381cb11d202b02acf47d72cc6a37a945ade5d3127e4c788a418e40d570c",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-formatted/058.txt",
+      "blob": "b0fc5b553a4c90b69b6737a9a4df0ed4324faa11",
+      "bytes": 7788,
+      "sha256": "e410e4496e6a9f4c355892753bb8c7e018eb4bde9e4baf41b5aa7d1006c76f40",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-formatted/157.txt",
+      "blob": "3c9e79f389ef625e44241c17f736b2bf745574fc",
+      "bytes": 14005,
+      "sha256": "776b84b31e99f95df02b08b224f70203ceb69f4134a2f88c31cbcd8627930083",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-formatted/190.txt",
+      "blob": "81a71f744d8bde6f5d3be65630815253bb54ddc1",
+      "bytes": 19764,
+      "sha256": "804491d8a35a50e71b7d63523aaf6502d40a59aeb11430f054f2c25186f9199e",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/012.txt",
+      "blob": "216803e5e3ba1c6e9ae0080d8ebd0b7ebabc4652",
+      "bytes": 5718,
+      "sha256": "1eb96511e814501f3792fd4114b859c328b86108a26fcc6d3cce05e477431bae",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/013.txt",
+      "blob": "1a45df46e1f924372f49ce68b226835b6a9ccbc2",
+      "bytes": 24828,
+      "sha256": "8ef7293111ba2b3e420d88254339c661b0068b211e4ca5f736d2635e4e944f26",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/015.txt",
+      "blob": "b04f96d7020eea414dacabc98e002bdc805d6a65",
+      "bytes": 35268,
+      "sha256": "5f61bbfdd3a9a62f3eb5250b91a9e58eaa91a4d5b202fff44011cf3b9373ab86",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/051.txt",
+      "blob": "966287c5b80c1c39e7e2fcdea1129cbe8b82f9fa",
+      "bytes": 13384,
+      "sha256": "b7fda5f96da2a6248045ae0eab1a737f220eb0e884b1878ac6e7fdbf5f0faf19",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/057.txt",
+      "blob": "bb35bdb53faf6e8f7d5a840e2c1a73889e095ee4",
+      "bytes": 19411,
+      "sha256": "55e1b5a62ed018dc476742f8438f2b1d3e098c4257612e437157551ab64ef2af",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/058.txt",
+      "blob": "ea45099ab048c62925db5cb878bb7a75986dbf2b",
+      "bytes": 7835,
+      "sha256": "9ffa66460517c85acaaf59d1a789f2d6203a9489fdaf6d52e186f552293e6aa8",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/060.txt",
+      "blob": "81a3f8a4dc15928a8922d7067e292a4b8f280eee",
+      "bytes": 6474,
+      "sha256": "43352ede59e749e963c385844d763c4f4a94045d6813023b164be9ae29d6178b",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/061.txt",
+      "blob": "eaddaf5c4759120577075d19dcfd73d13dab83f5",
+      "bytes": 13451,
+      "sha256": "52a97878079412867a2405afcb3ccba5f89ad25ca4b7c8a260f9d2e770ee4135",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/064.txt",
+      "blob": "4b0ab82f4d1a8414b8b2da8e2c0b806033541232",
+      "bytes": 7441,
+      "sha256": "814c3ffa08058586aa83dbedd467a110f61a04d77eab3dbae68ec92104827b86",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/087.txt",
+      "blob": "3520874a3197ee4efbf19248256f6cf433669b18",
+      "bytes": 16806,
+      "sha256": "d594228b716d58bb4a3d416f0877e8f23d7f95b2c07a535bcccedccfc9ffa72e",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/090.txt",
+      "blob": "289edf4e5f5d9f3193cf1263070becb3db7d2cb5",
+      "bytes": 8096,
+      "sha256": "62d836b28dc756da61fa78a7720ae7e20fa4b1c364e42479cfbb9528d65ae2ec",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/103.txt",
+      "blob": "e8ce6e7361a803ca5be680e5f92db83a90910840",
+      "bytes": 3160,
+      "sha256": "27d8fbb66190fea093e3fb0a96be352f66ed9f0cac3618c0178e99aa4d1a8dd8",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/157.txt",
+      "blob": "3c9e79f389ef625e44241c17f736b2bf745574fc",
+      "bytes": 14005,
+      "sha256": "776b84b31e99f95df02b08b224f70203ceb69f4134a2f88c31cbcd8627930083",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/original-records/postimages-final/190.txt",
+      "blob": "81a71f744d8bde6f5d3be65630815253bb54ddc1",
+      "bytes": 19764,
+      "sha256": "804491d8a35a50e71b7d63523aaf6502d40a59aeb11430f054f2c25186f9199e",
+      "role": "actual native immutable source postimage copy"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/invocation/ACK_RECONCILED.json",
+      "blob": "d89b09961349eff96f1a1287478bc2778cee9ea4",
+      "bytes": 1636,
+      "sha256": "c29fbe324fe066224259d4b0bf76eb7c11a262a97067a3ec9da13f3626b74bce",
+      "role": "same exact original key actual ACK"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/invocation/START_REQUEST.json",
+      "blob": "7d7c61dedd9af500b25b470435a83fe333dc50a4",
+      "bytes": 21729,
+      "sha256": "e41c2a82b12ff3b9ebc008dfe0c9ee156f2bc3950f18139db248e871b1398c97",
+      "role": "original unchanged start request"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/invocation/SUPERVISOR.py",
+      "blob": "48eaf85b81dcabae3a8b7088b1c801ecbcb87b60",
+      "bytes": 18685,
+      "sha256": "d5e7536b25766c38638f3ce0a57996305a526d7e87bc8302db4809f87f74216a",
+      "role": "original unchanged bound maintenance supervisor"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/invocation/CONFIG.json",
+      "blob": "d80fca778ceaa5df576dddb372eed8257724034a",
+      "bytes": 1469,
+      "sha256": "8adef5acf1d2143677d9247374ac043c2f4ca7761c41a93843bfe3665f1118d3",
+      "role": "original invocation configuration"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/invocation/ORIGINAL_NO_ACK_TOOL_RESPONSE.json",
+      "blob": "c43b0f4240939af6f0d39a016edc87077794c607",
+      "bytes": 997,
+      "sha256": "821ddf8bd6d9cac3bf71e2294e841902b75536c85470a86232536920d2dd7ffa",
+      "role": "historical pre-reconciliation start transport error"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/invocation/ORIGINAL_NO_ACK_STATUS.json",
+      "blob": "591fa371d37186123729e1fe75299834cbe0f05c",
+      "bytes": 2599,
+      "sha256": "9c69dcf01d6720f8bb3953e7bf8c57b6a2915ef9f64210c0bd8decf7f8771118",
+      "role": "historical no-ACK status, superseded by actual reconciliation"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/transfer/ROOT_EXACT_TRANSFER.json",
+      "blob": "e633bb82a9b4e385508ffc2896c9a803e473dc6a",
+      "bytes": 34736,
+      "sha256": "3542542f698d7cd0b161e5825405a2638ac76bc8deaa4daff90d06f51bfe74f7",
+      "role": "14 actual source transfer and cfg-test preservation"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/repair/TEST_IMPORT_PROPOSAL.json",
+      "blob": "4ede938cdf667d09f03150c26283b3ddd811aa67",
+      "bytes": 10093,
+      "sha256": "50acb63bd78208df5868eafffa93f2194d76190555fe8ac582b41c880d687afd",
+      "role": "3 test import only source repair"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/repair/TEST_IMPORT_PEER_REVIEW.json",
+      "blob": "85e308ebab497766b2fdd0a9025545d8ffddf204",
+      "bytes": 3713,
+      "sha256": "a9c2ddf90ab0f3d8ecee454c0bde9982321bacba6118da5f7c5caf7da92c3807",
+      "role": "independent test visibility and byte review"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/extra-gates/SAME_SOURCE_FIXTURE_BINDING_CHECKLIST.json",
+      "blob": "09a764481e58ff66d3d0bda817b7610eb809b9c5",
+      "bytes": 18895,
+      "sha256": "9a6c7c7192a8d02f0cc10aab719ac401a64b38c15115dae2ebf67019493bde49",
+      "role": "unbound additional-gate helper checklist"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/repair/ROOT_TEST_IMPORT_REPLAY.json",
+      "blob": "bcd867d238564122856f9a1da3e37c14488e9ff9",
+      "bytes": 243,
+      "sha256": "285b829db0a07d547c952d947e7c69fb21b8765ecc9ac57890fbd37f50b13294",
+      "role": "root independent exact test import replay"
+    },
+    {
+      "path": "qualification/ordinary-owner-assembly-20261111/source-maintenance-v7/actual-v10/README.md",
+      "blob": "82c015ab4cebc51242c075a817b6993bbd6e7f8d",
+      "bytes": 5457,
+      "sha256": "dabfe364338fa66da59a5127b3ebec4cc3727f8dbabb670c50a50c3b7185e67d",
+      "role": "observed v10 failure and post-source checkpoint status"
+    }
+  ],
+  "artifact_count": 57,
+  "original_native_run_on_successor": false,
+  "business_counts": [
+    0,
+    0,
+    0
+  ],
+  "draft_only": true,
+  "pr_source_advanced": false
+}

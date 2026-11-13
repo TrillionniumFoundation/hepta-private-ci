@@ -279,15 +279,14 @@ impl AgentdProductionLaunch {
                 if let Some(device) = device.take() {
                     device.invalidate();
                 }
-                if let Some(mcp) = mcp.take() {
-                    if let Err(cleanup) =
+                if let Some(mcp) = mcp.take()
+                    && let Err(cleanup) =
                         codex_app_server::ConfiguredMcpRuntime::shutdown_original_owned(mcp).await
-                    {
-                        let _ = writeln!(
-                            std::io::stderr().lock(),
-                            "hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed",
-                        );
-                    }
+                {
+                    let _ = writeln!(
+                        std::io::stderr().lock(),
+                        "hepta-agentd level=error error={cleanup}: original Runtime MCP cleanup also failed",
+                    );
                 }
                 return Err(error);
             }

@@ -28,15 +28,11 @@ pub use runtime::CircuitTaskRuntimeBootstrapV1;
 #[cfg(target_os = "linux")]
 pub(crate) use runtime::OriginalCQuiescenceOrigin;
 #[cfg(target_os = "linux")]
-pub(crate) use runtime::OriginalCircuitJoinObservation;
-#[cfg(target_os = "linux")]
 pub(crate) use runtime::OriginalCircuitJoinStatus;
 #[cfg(target_os = "linux")]
 pub(crate) use runtime::OriginalCircuitNaturalJoin;
 #[cfg(target_os = "linux")]
 pub(crate) use runtime::OriginalCircuitOwnerCustody;
-#[cfg(target_os = "linux")]
-pub(crate) use runtime::OriginalCircuitOwnerOutcome;
 #[cfg(target_os = "linux")]
 pub(crate) use runtime::OriginalCircuitResultDelivery;
 #[cfg(target_os = "linux")]

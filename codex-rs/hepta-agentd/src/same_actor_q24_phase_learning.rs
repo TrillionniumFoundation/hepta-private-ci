@@ -23,7 +23,6 @@ use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
 mod work;
 #[path = "same_actor_q24_phase_learning_worker.rs"]
 mod worker;
-pub(crate) use work::OriginalJobReceiveError;
 pub(crate) use work::OriginalLearningStop;
 pub(crate) use work::OriginalLearningWorkJoined;
 pub(crate) use work::OriginalSameActorLearningCleanup;

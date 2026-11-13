@@ -1,0 +1,121 @@
+diff --git a/codex-rs/app-server/src/original_owned_shutdown.rs b/codex-rs/app-server/src/original_owned_shutdown.rs
+index f816d6cbb940a0781253278445b606251706fabc..81a71f744d8bde6f5d3be65630815253bb54ddc1 100644
+--- a/codex-rs/app-server/src/original_owned_shutdown.rs
++++ b/codex-rs/app-server/src/original_owned_shutdown.rs
+@@ -101,13 +101,9 @@ pub(crate) struct OriginalAppServerJob {
+ 
+ impl OriginalAppServerJob {
+     fn unit(handle: JoinHandle<()>) -> Arc<Self> {
+-        let completion = async move {
+-            handle
+-                .await
+-                .map_err(OriginalAppServerFailure::from_join)
+-        }
+-        .boxed()
+-        .shared();
++        let completion = async move { handle.await.map_err(OriginalAppServerFailure::from_join) }
++            .boxed()
++            .shared();
+         Arc::new(Self {
+             completion,
+             terminal: OnceLock::new(),
+diff --git a/codex-rs/codex-mcp/src/original_owned_shutdown.rs b/codex-rs/codex-mcp/src/original_owned_shutdown.rs
+index 4676f4f1bcae462d4392e7545df37d1c670ed1b6..3c9e79f389ef625e44241c17f736b2bf745574fc 100644
+--- a/codex-rs/codex-mcp/src/original_owned_shutdown.rs
++++ b/codex-rs/codex-mcp/src/original_owned_shutdown.rs
+@@ -62,9 +62,8 @@ struct OriginalStartupJoined {
+ }
+ 
+ struct OriginalCleanupJob {
+-    completion: Shared<
+-        BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,
+-    >,
++    completion:
++        Shared<BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,
+ }
+ 
+ /// Actual cleanup facts, not business completion or authority permission.
+diff --git a/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs b/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs
+index 5bfff889730384ea518405efc8b12e1f21f37e53..6e4db679d67ee67e671aedebfce02cc1e6e41872 100644
+--- a/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs
++++ b/codex-rs/hepta-agentd/src/circuit_task_runtime_lifecycle.rs
+@@ -413,7 +413,10 @@ impl OriginalCircuitOwnerCustody {
+             });
+         };
+         job.join.clone().await;
+-        let state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++        let state = job
++            .state
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         job.join_locked(&state)?;
+         let outcome = state
+             .joined
+@@ -474,7 +477,10 @@ impl OriginalCircuitOwnerCustody {
+             .job
+             .clone()
+             .ok_or_else(|| custody_error("outer Circuit owner was not started"))?;
+-        let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++        let mut state = job
++            .state
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         if state.joined.is_none() {
+             return Err(custody_error("outer Circuit owner has not been joined"));
+         }
+@@ -531,7 +537,9 @@ impl OriginalCircuitStartAdmission<'_> {
+             };
+             // No await separates the actual join from retaining its exact
+             // non-Clone result. This cell has no back-reference to the job.
+-            let mut state = completed.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++            let mut state = completed
++                .lock()
++                .unwrap_or_else(std::sync::PoisonError::into_inner);
+             state.result = Some(result);
+             state.joined = Some(outcome);
+         }
+@@ -584,7 +592,10 @@ impl OriginalCircuitOwnerJob {
+     async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {
+         self.gate.require_open().map_err(custody_error)?;
+         self.join.clone().await;
+-        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++        let state = self
++            .state
++            .lock()
++            .unwrap_or_else(std::sync::PoisonError::into_inner);
+         self.join_locked(&state)?;
+         if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {
+             return Err(custody_error(
+@@ -609,7 +620,10 @@ impl OriginalCircuitOwnerJob {
+         };
+         async move {
+             job.join.clone().await;
+-            let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
++            let mut state = job
++                .state
++                .lock()
++                .unwrap_or_else(std::sync::PoisonError::into_inner);
+             job.join_locked(&state)?;
+             if job.delivery.load(Ordering::Acquire) != WAITING {
+                 return Err(custody_error(
+diff --git a/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs b/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs
+index a2488297954907d01cc1b10b921b295d3aa9e631..b0fc5b553a4c90b69b6737a9a4df0ed4324faa11 100644
+--- a/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher_same_actor_consumer_custody.rs
+@@ -3,13 +3,13 @@
+ //! or an owner which the closure has opened but not yet delivered.
+ 
+ use super::refused;
+-use futures::FutureExt;
+-use futures::future::BoxFuture;
+-use futures::future::Shared;
+ use crate::AgentdError;
+ use crate::same_actor_q24_phase_gate::CloseSameActorPhaseOnDrop;
+ use crate::same_actor_q24_phase_gate::SameActorPhaseGate;
+ use codex_hepta_contracts::FinalUseAuthority;
++use futures::FutureExt;
++use futures::future::BoxFuture;
++use futures::future::Shared;
+ use std::future::Future;
+ use std::sync::Arc;
+ use std::sync::Mutex;

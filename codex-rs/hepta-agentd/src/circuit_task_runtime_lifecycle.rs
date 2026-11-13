@@ -391,7 +391,10 @@ impl OriginalCircuitOwnerCustody {
     pub(crate) fn request_stop(&self) {
         self.gate.close();
         // Poison recovery is terminal custody only and cannot start any work.
-        let mut state = self.start.lock().unwrap_or_else(|error| error.into_inner());
+        let mut state = self
+            .start
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         state.stopped = true;
         if let Some(job) = &state.job {
             job.cancellation.cancel();
@@ -413,7 +416,10 @@ impl OriginalCircuitOwnerCustody {
             });
         };
         job.join.clone().await;
-        let state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let state = job
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         job.join_locked(&state)?;
         let outcome = state
             .joined
@@ -424,7 +430,7 @@ impl OriginalCircuitOwnerCustody {
         let terminal = self
             .normal
             .lock()
-            .unwrap_or_else(|error| error.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .terminal
             .take();
         drop(terminal);
@@ -470,11 +476,14 @@ impl OriginalCircuitOwnerCustody {
         let job = self
             .start
             .lock()
-            .unwrap_or_else(|error| error.into_inner())
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
             .job
             .clone()
             .ok_or_else(|| custody_error("outer Circuit owner was not started"))?;
-        let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut state = job
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if state.joined.is_none() {
             return Err(custody_error("outer Circuit owner has not been joined"));
         }
@@ -531,7 +540,9 @@ impl OriginalCircuitStartAdmission<'_> {
             };
             // No await separates the actual join from retaining its exact
             // non-Clone result. This cell has no back-reference to the job.
-            let mut state = completed.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let mut state = completed
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             state.result = Some(result);
             state.joined = Some(outcome);
         }
@@ -584,7 +595,10 @@ impl OriginalCircuitOwnerJob {
     async fn join_original_returned_ok(&self) -> Result<(), AgentdError> {
         self.gate.require_open().map_err(custody_error)?;
         self.join.clone().await;
-        let state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         self.join_locked(&state)?;
         if state.joined != Some(OriginalCircuitOwnerOutcome::ReturnedOk) {
             return Err(custody_error(
@@ -609,7 +623,10 @@ impl OriginalCircuitOwnerJob {
         };
         async move {
             job.join.clone().await;
-            let mut state = job.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let mut state = job
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             job.join_locked(&state)?;
             if job.delivery.load(Ordering::Acquire) != WAITING {
                 return Err(custody_error(

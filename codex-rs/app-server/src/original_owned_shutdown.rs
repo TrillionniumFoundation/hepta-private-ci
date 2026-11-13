@@ -101,13 +101,9 @@ pub(crate) struct OriginalAppServerJob {
 
 impl OriginalAppServerJob {
     fn unit(handle: JoinHandle<()>) -> Arc<Self> {
-        let completion = async move {
-            handle
-                .await
-                .map_err(OriginalAppServerFailure::from_join)
-        }
-        .boxed()
-        .shared();
+        let completion = async move { handle.await.map_err(OriginalAppServerFailure::from_join) }
+            .boxed()
+            .shared();
         Arc::new(Self {
             completion,
             terminal: OnceLock::new(),

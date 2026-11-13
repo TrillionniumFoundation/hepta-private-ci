@@ -221,39 +221,36 @@ impl OriginalSameActorLearningWorker {
             if let Err(error) = context.gate().require_open() {
                 break Some(format!("original Learning worker phase: {error}"));
             }
-            if !stop_authorized {
-                if let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result) {
-                    let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);
-                    if let Err(error) =
-                        work.authorize_original_learning_stop(original, acknowledged)
-                    {
-                        break Some(format!("original terminal Learning stop: {error}"));
-                    }
-                    stop_authorized = true;
+            if !stop_authorized
+                && let (Some(original), Some(Ok(delivered))) = (&quiescence, &delivery_result)
+            {
+                let acknowledged = OriginalLearningDeliveryRetired::acknowledgement(delivered);
+                if let Err(error) = work.authorize_original_learning_stop(original, acknowledged) {
+                    break Some(format!("original terminal Learning stop: {error}"));
                 }
+                stop_authorized = true;
             }
-            if stop_authorized && !successor_stop_requested {
-                if let Some(Ok(learning_owner)) = &learning_result {
-                    let Some(original) = &quiescence else {
-                        break Some("original C quiescence is missing".into());
-                    };
-                    if let Err(error) =
-                        OriginalLearningLoopRetired::require_original_work(learning_owner, &work)
-                    {
-                        break Some(format!("original Learning owner retirement: {error}"));
-                    }
-                    // The actual Learning receiver has closed and all its
-                    // reservations have finished. Only now stop the real C
-                    // loop using the drain-authorized local slot token.
-                    if let Err(error) =
-                        OriginalSameActorCQuiescence::request_original_successor_retirement(
-                            original,
-                        )
-                    {
-                        break Some(format!("original C local retirement: {error}"));
-                    }
-                    successor_stop_requested = true;
+            if stop_authorized
+                && !successor_stop_requested
+                && let Some(Ok(learning_owner)) = &learning_result
+            {
+                let Some(original) = &quiescence else {
+                    break Some("original C quiescence is missing".into());
+                };
+                if let Err(error) =
+                    OriginalLearningLoopRetired::require_original_work(learning_owner, &work)
+                {
+                    break Some(format!("original Learning owner retirement: {error}"));
                 }
+                // The actual Learning receiver has closed and all its
+                // reservations have finished. Only now stop the real C
+                // loop using the drain-authorized local slot token.
+                if let Err(error) =
+                    OriginalSameActorCQuiescence::request_original_successor_retirement(original)
+                {
+                    break Some(format!("original C local retirement: {error}"));
+                }
+                successor_stop_requested = true;
             }
             if successor_stop_requested
                 && learning_result.is_some()

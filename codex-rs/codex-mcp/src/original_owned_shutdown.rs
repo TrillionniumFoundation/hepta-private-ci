@@ -62,9 +62,8 @@ struct OriginalStartupJoined {
 }
 
 struct OriginalCleanupJob {
-    completion: Shared<
-        BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>,
-    >,
+    completion:
+        Shared<BoxFuture<'static, Result<Arc<OriginalMcpRuntimeShutdownObservation>, String>>>,
 }
 
 /// Actual cleanup facts, not business completion or authority permission.

@@ -42,15 +42,11 @@ use tokio::io::unix::AsyncFd;
 
 #[path = "root_authority_session_lifecycle.rs"]
 mod lifecycle;
-pub(crate) use lifecycle::OriginalConsumerFailure;
-pub(crate) use lifecycle::OriginalConsumerJoinSummary;
 pub(crate) use lifecycle::OriginalRootSessionCustodySlot;
 pub(crate) use lifecycle::OriginalRootSessionFullyRetired;
-pub(crate) use lifecycle::OriginalRootSessionJoinObservation;
 pub(crate) use lifecycle::OriginalRootSessionObservationRetired;
 pub(crate) use lifecycle::OriginalRootSessionPauseWaiter;
 pub(crate) use lifecycle::OriginalRootSessionPaused;
-pub(crate) use lifecycle::OriginalRootWorkerTermination;
 use lifecycle::OriginalSessionWorker;
 
 struct LiveRoot {

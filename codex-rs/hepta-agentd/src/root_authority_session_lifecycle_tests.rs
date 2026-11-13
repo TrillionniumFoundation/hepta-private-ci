@@ -2,10 +2,10 @@
 //! Same-UID/synthetic proof components; no ordinary effect or Root completion.
 
 use super::*;
-use crate::root_authority_session::OriginalConsumerFailure;
+use crate::root_authority_session::lifecycle::OriginalConsumerFailure;
 use crate::root_authority_session::OriginalRootSessionCustodySlot;
-use crate::root_authority_session::OriginalRootSessionJoinObservation;
-use crate::root_authority_session::OriginalRootWorkerTermination;
+use crate::root_authority_session::lifecycle::OriginalRootSessionJoinObservation;
+use crate::root_authority_session::lifecycle::OriginalRootWorkerTermination;
 use pretty_assertions::assert_eq;
 use std::fs::OpenOptions;
 use std::os::unix::fs::MetadataExt;

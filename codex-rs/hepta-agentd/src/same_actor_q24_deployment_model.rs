@@ -53,11 +53,11 @@ impl OriginalModelData {
             heads: super::files::OriginalPinnedRead::clone_original_file(&heads)?,
             organ_adapter: organ
                 .as_ref()
-                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))
+                .map(super::files::OriginalPinnedRead::clone_original_file)
                 .transpose()?,
             cell_adapter: cell
                 .as_ref()
-                .map(|read| super::files::OriginalPinnedRead::clone_original_file(read))
+                .map(super::files::OriginalPinnedRead::clone_original_file)
                 .transpose()?,
         })
         .map_err(deployment_error)?;
