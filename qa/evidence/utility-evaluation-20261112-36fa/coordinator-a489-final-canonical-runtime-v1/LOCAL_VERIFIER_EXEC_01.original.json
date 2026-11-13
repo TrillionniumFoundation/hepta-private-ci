@@ -1,0 +1,7 @@
+{
+  "chunk_id": "a2e57a",
+  "wall_time_seconds": 0.119652102,
+  "exit_code": 1,
+  "original_token_count": 195,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/verify_actual_runtime.py\", line 83, in <module>\n    assert all(row['actual_terminal'] == 'observed' and row['returncode'] == 0 and row['timed_out'] is False for row in commands)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/verify_actual_runtime.py\", line 83, in <genexpr>\n    assert all(row['actual_terminal'] == 'observed' and row['returncode'] == 0 and row['timed_out'] is False for row in commands)\n                                                                                   ~~~^^^^^^^^^^^^^\nKeyError: 'timed_out'\n"
+}

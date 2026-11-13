@@ -1,0 +1,73 @@
+{
+  "format": "hepta-root-012066-publication-closure-v1",
+  "status": "ACTUAL_EVIDENCE_COMMIT_REF_AND_DRAFT_PR_FULLY_READ_BACK",
+  "evidence_commit": "012066007240146d41bc2e1609aec965c411ae2b",
+  "evidence_parent": "d5536e6b20e8d7f599af9b24fbd4e011f808175c",
+  "root_tree": "e915339eb00bb1aa926b0c59b1e5424c2d1b71d5",
+  "qa_tree": "37da2510ed4dcc5d9ac8f97bd7c984448920938c",
+  "qa_evidence_tree": "608721fea0667f068f6147d77c8451a7251400c4",
+  "evidence_leaf_tree": "e3e7986562ce9c3958ae417c0f3aeb1e74cf1c3a",
+  "file_count": 7375,
+  "tree_count": 949,
+  "new_nonreadme_leaves": 709,
+  "old_nonreadme_leaves_preserved": 6665,
+  "historical_nonreadme_exactly_preserved": true,
+  "new_leaf_limit": 512000,
+  "old_oversized_leaves_retained_unchanged": 31,
+  "readonly_recursive_verification": {
+    "sha": "e3e7986562ce9c3958ae417c0f3aeb1e74cf1c3a",
+    "files": 7375,
+    "trees": 949,
+    "entries": 8323,
+    "pin": {
+      "sha": "44eb0230470ba8a7eccef175f2f6d989a8060d2d",
+      "bytes": 2508245,
+      "sha256": "497bc77c679e95ae01f8626d8e2adf0af4adbd2e4531ac240a5f3b6a9f410382"
+    }
+  },
+  "changed_evidence_trees_full_GET": 40,
+  "readme": {
+    "sha": "af1b2d1d6460b2ff405274cf6923203f080dbe34",
+    "bytes": 28286,
+    "sha256": "ad9cbce482e8c81e562263019fd8e73063f10120e77f8930f39712881427f9c5"
+  },
+  "original_evidence_ref_readback": {
+    "bytes": 502,
+    "sha256": "e9b091a03354bf45166b1c47f82021d56d367dc54bc0a150cd8b10bd1e106def",
+    "git_blob": "012ecd52457cb4bac6bc472e9154638087bb2a8a"
+  },
+  "actual_commit_readback": {
+    "bytes": 1741,
+    "sha256": "0758bf963360108822648afbb5e05e15154aef04923168c9e79fe7855e26457b",
+    "git_blob": "cda81d3b32e9595680432929ad0b44ee446a1484"
+  },
+  "PR": 6203,
+  "PR_open": true,
+  "PR_draft": true,
+  "PR_body_full_GET_equal": true,
+  "PR_body": {
+    "bytes": 3948,
+    "sha256": "b2260400f5a3c1bd7856d6244743b9d5e6cbf8b3090731fe7309854d35b191be",
+    "git_blob": "09a2b7bd8b3e59ad2474aa2b380488c81dd5f720"
+  },
+  "PR_full_readback": {
+    "bytes": 22659,
+    "sha256": "a42e0561b130f6c753b5921e1f942d6dff9132fe5cc8c144edbc7f776cdacea5",
+    "git_blob": "41cd45453f7c1ae26b0903f7a64cc625e3810543"
+  },
+  "source_ref_and_PR_head_unchanged": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "immutable_candidate": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+  "candidate_tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+  "checkpoint_scope": "Actual 41e and 50f closures, immutable b608 candidate, static qualification migration, original canonical controls, peer review and one exact Root approval. Later 5a9 runtime and source/native qualification results are outside this frozen publication.",
+  "observer_correction": {
+    "scope": "Immutable evidence tree verification only; no ref or source change from this observer correction",
+    "initial_failure": "Tree body typed hash, actual SHA and all entry fields were equal, but the expected helper entries retained insertion order while Git GET returned canonical order.",
+    "correction": "Compare exact unique path/mode/type/sha maps and the typed Git tree hash; do not require insertion order. Already-created exact objects are reconciled by full GET, not recreated."
+  },
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "source_branch_updated": false,
+  "merged": false,
+  "deployed": false,
+  "model_activated": false
+}

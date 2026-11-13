@@ -1,0 +1,226 @@
+{
+  "actual_canonical": null,
+  "actual_proofs": {
+    "archive": {
+      "job_id": "1a1d38b82e9-392-160",
+      "result": {
+        "bytes": 17615,
+        "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+        "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+      },
+      "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/RESULT.json",
+      "supervisor": {
+        "bytes": 950,
+        "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+        "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+      },
+      "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/V8_RESTORATION_SUPERVISOR.original.json"
+    },
+    "final_format": {
+      "job_id": "1a1d4a979d9-392-50f",
+      "result": {
+        "bytes": 7408,
+        "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+        "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+      },
+      "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/RESULT.json",
+      "supervisor": {
+        "bytes": 952,
+        "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+        "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+      },
+      "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/FINAL_FORMAT_NORMAL.original.json"
+    },
+    "maintenance": {
+      "job_id": "1a1d47cebc8-392-41e",
+      "result": {
+        "bytes": 12532,
+        "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+        "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+      },
+      "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/RESULT.json",
+      "supervisor": {
+        "bytes": 956,
+        "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+        "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+      },
+      "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/MAINTENANCE_NORMAL.original.json"
+    },
+    "materialization": {
+      "job_id": "1a1d468462a-392-3bb",
+      "result": {
+        "bytes": 14663,
+        "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+        "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+      },
+      "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json",
+      "supervisor": {
+        "bytes": 952,
+        "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+        "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+      },
+      "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/MATERIALIZATION_SUPERVISOR.original.json"
+    },
+    "runtime": {
+      "job_id": "1a1d0fcb212-2564-1bf4",
+      "result": {
+        "bytes": 21366,
+        "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+        "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+      },
+      "result_path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json",
+      "supervisor": {
+        "bytes": 954,
+        "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+        "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+      },
+      "supervisor_path": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json"
+    }
+  },
+  "expected_canonical_subject": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "parents": [
+      "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+    ],
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "inputs": {
+    "ARCHIVE_V3_ARTIFACTS": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 28169,
+        "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+        "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+      }
+    },
+    "ARCHIVE_V3_READBACK": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARCHIVE_READBACK.json",
+      "pin": {
+        "bytes": 496,
+        "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+        "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+      }
+    },
+    "FINAL_FORMAT_ARTIFACTS": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 67498,
+        "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+        "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f"
+      }
+    },
+    "FINAL_FORMAT_CONFIG": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/APPROVED_CONFIG.json",
+      "pin": {
+        "bytes": 2906,
+        "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+        "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+      }
+    },
+    "FINAL_FORMAT_DRIVER": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/driver.py",
+      "pin": {
+        "bytes": 28657,
+        "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+        "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+      }
+    },
+    "HISTORICAL_ENVIRONMENT_READY": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json",
+      "pin": {
+        "bytes": 21724,
+        "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+        "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+      }
+    },
+    "MAINTENANCE_41E_ARTIFACTS": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 53526,
+        "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+        "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+      }
+    },
+    "MAINTENANCE_41E_CONFIG": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/APPROVED_MAINTENANCE_CONFIG.json",
+      "pin": {
+        "bytes": 13693,
+        "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+        "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+      }
+    },
+    "MAINTENANCE_41E_DRIVER": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/driver-maintenance.py",
+      "pin": {
+        "bytes": 68520,
+        "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+        "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+      }
+    },
+    "MAINTENANCE_41E_INPUT_IDENTITIES": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/INPUT_IDENTITIES.json",
+      "pin": {
+        "bytes": 6256,
+        "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+        "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+      }
+    },
+    "MATERIALIZATION_3BB_ARTIFACTS": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 84294,
+        "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+        "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+      }
+    },
+    "MATERIALIZATION_3BB_COMMANDS": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/COMMANDS.json",
+      "pin": {
+        "bytes": 34319,
+        "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246",
+        "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2"
+      }
+    },
+    "MATERIALIZATION_3BB_CONFIG": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/APPROVED_CONFIG.json",
+      "pin": {
+        "bytes": 666,
+        "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+        "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+      }
+    },
+    "MATERIALIZATION_3BB_INPUT_IDENTITIES": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/INPUT_IDENTITIES.before.json",
+      "pin": {
+        "bytes": 3326,
+        "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687",
+        "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d"
+      }
+    },
+    "MATERIALIZATION_3BB_MUTATION_INTENTS": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/MUTATION_INTENTS.json",
+      "pin": {
+        "bytes": 744,
+        "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64",
+        "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b"
+      }
+    },
+    "MATERIALIZATION_3BB_PACKET": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/MATERIALIZATION_PACKET.json",
+      "pin": {
+        "bytes": 14404,
+        "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+        "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+      }
+    },
+    "MATERIALIZER_3BB": {
+      "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/driver.py",
+      "pin": {
+        "bytes": 70596,
+        "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+        "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+      }
+    }
+  },
+  "native_path_provenance": "Original pinned input maps and producer templates; no new host observation."
+}

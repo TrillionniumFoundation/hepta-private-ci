@@ -1,0 +1,313 @@
+{
+  "H_calls": 0,
+  "actual_artifacts": {
+    "bytes": 108578,
+    "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+    "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c"
+  },
+  "actual_canonical_subject": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "parents": [
+      "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+    ],
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "actual_job_id": "1a1d4cbd33e-392-5a9",
+  "actual_normal": {
+    "bytes": 950,
+    "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+    "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+  },
+  "actual_result": {
+    "bytes": 224883,
+    "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+    "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+  },
+  "all_physical_rows_unchanged": true,
+  "bounded_original_parts": 10,
+  "derived_native_projection": {
+    "bytes": 3543409,
+    "git_blob": "4e3589d81ef758d55d62a79e3e6c099ba59c5076",
+    "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/NATIVE.expected_from_actual_clean_inventory.json",
+    "name": "NATIVE.expected_from_actual_clean_inventory.json",
+    "scope": "Pure expected original five-field projection from exact actual full inventory. No b92 snapshot or native qualification has run.",
+    "sha256": "6cc21c8815ccc96153a1df5aa9f73cccd2c0335fa4960e9f2edb0379af552dde"
+  },
+  "format": "hepta-5a9-complete-inventory-exact-recovery-v1",
+  "metadata_and_index_scope": "Actual complete metadata/index extraction and review remain native/Root responsibilities; this recovery does not replace them.",
+  "native_source_read_calls": 0,
+  "native_test_execution_observed": false,
+  "no_oversized_raw_Git_upload_claimed": true,
+  "original_artifact_rows": 505,
+  "original_serializer": {
+    "bytes": 46159,
+    "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+    "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+  },
+  "qualification": false,
+  "recovered": [
+    {
+      "all_original_raw_gzip_part_identities_equal": true,
+      "endpoint": "before",
+      "gzip": {
+        "bytes": 1266970,
+        "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz",
+        "name": "SOURCE.before.inventory.json.gz",
+        "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+      },
+      "original_artifact": {
+        "bytes": 1266970,
+        "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+        "name": "SOURCE.before.inventory.json.gz",
+        "parts": [
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 0,
+            "decoded_sha256": "ee7e9b57aba5a3e82410f4eca735e21e538d29df1d0b0079276a7a230648fb6f",
+            "git_blob": "eb4045622c5c1a62ecb921efe35844a102977821",
+            "name": "SOURCE.before.inventory.json.gz.part-001.b64",
+            "sha256": "e19f930af8e1fcc3c11f01199bbbe9bf78c366896f71d5da269f165a94aa38e9"
+          },
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 262144,
+            "decoded_sha256": "7cacea0fa7cf185ea90da5ea779b0a8e6e2a9b644ffc9130425c40317a5d6168",
+            "git_blob": "079ba1506bad62cbdfb7eeed32765159a6106a83",
+            "name": "SOURCE.before.inventory.json.gz.part-002.b64",
+            "sha256": "81865f2b230a948dddf90945d12a25d638ddaf95926f612af8543a3dde21e9a2"
+          },
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 524288,
+            "decoded_sha256": "3bae2c98be2b220666788be3910048800fb27132fecddcc2c2284cfe041fff04",
+            "git_blob": "8f18386f82374b900f65c3dddc8aed77ebd812ff",
+            "name": "SOURCE.before.inventory.json.gz.part-003.b64",
+            "sha256": "15856edddd91d3a813e8202d89c3d3f29229550e22adfbdcf286e80cfccaae5b"
+          },
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 786432,
+            "decoded_sha256": "80df79021cbe2a8a601c3a6393c09901c55b9b42457125c1b227bdb1e1515581",
+            "git_blob": "6a1d310681f746989751dce40b5c0de4861ff738",
+            "name": "SOURCE.before.inventory.json.gz.part-004.b64",
+            "sha256": "327cedc45fc61e3f2699badbda66d240fd60c70c5bf69ccc3a4f771c4d3c1e55"
+          },
+          {
+            "bytes": 291193,
+            "decoded_bytes": 218394,
+            "decoded_offset": 1048576,
+            "decoded_sha256": "7d25798cdcb03e4138bed3824a0beef5a85d5d622ead19238f98a2bddb242827",
+            "git_blob": "73ee04599539bd729739a23dc5d0bf4fe1bac87b",
+            "name": "SOURCE.before.inventory.json.gz.part-005.b64",
+            "sha256": "729158a068c48b2680d0cc774d44411290b57d57fa38ee564680b225cd8d6286"
+          }
+        ],
+        "raw_bytes": 5633513,
+        "raw_git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+        "raw_sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202",
+        "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+      },
+      "original_parts": [
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "eb4045622c5c1a62ecb921efe35844a102977821",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-001.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-001.b64",
+          "sha256": "e19f930af8e1fcc3c11f01199bbbe9bf78c366896f71d5da269f165a94aa38e9"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "079ba1506bad62cbdfb7eeed32765159a6106a83",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-002.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-002.b64",
+          "sha256": "81865f2b230a948dddf90945d12a25d638ddaf95926f612af8543a3dde21e9a2"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "8f18386f82374b900f65c3dddc8aed77ebd812ff",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-003.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-003.b64",
+          "sha256": "15856edddd91d3a813e8202d89c3d3f29229550e22adfbdcf286e80cfccaae5b"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "6a1d310681f746989751dce40b5c0de4861ff738",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-004.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-004.b64",
+          "sha256": "327cedc45fc61e3f2699badbda66d240fd60c70c5bf69ccc3a4f771c4d3c1e55"
+        },
+        {
+          "bytes": 291193,
+          "chars": 291193,
+          "git_blob": "73ee04599539bd729739a23dc5d0bf4fe1bac87b",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-005.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-005.b64",
+          "sha256": "729158a068c48b2680d0cc774d44411290b57d57fa38ee564680b225cd8d6286"
+        }
+      ],
+      "preheld_source_path": "/tmp/hepta-36fa-a489-final-nonrust-exact-recovery-v1/final.inventory.exact_recovered.json",
+      "provenance": "Existing pre-held bytes, independently matched to all actual producer raw/gzip/part identities; not a second H source read.",
+      "raw": {
+        "bytes": 5633513,
+        "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.exact_recovered.json",
+        "name": "SOURCE.before.inventory.exact_recovered.json",
+        "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202"
+      },
+      "tree": {
+        "all_repository_rust_files": 6794,
+        "codex_rs_rust_files": 6672,
+        "directory_trees": 1849,
+        "leaves": 15243,
+        "modes": {
+          "100644": 15152,
+          "100755": 90,
+          "120000": 1
+        },
+        "root": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+      }
+    },
+    {
+      "all_original_raw_gzip_part_identities_equal": true,
+      "endpoint": "final",
+      "gzip": {
+        "bytes": 1266064,
+        "git_blob": "fb0c0f4daa47218c30ca434ada497e4147b9e7e5",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz",
+        "name": "SOURCE.final.inventory.json.gz",
+        "sha256": "e8fb430f7bfff9ef4a65c0f4db9db48930b90c49455d00a56d437e748962e593"
+      },
+      "original_artifact": {
+        "bytes": 1266064,
+        "git_blob": "fb0c0f4daa47218c30ca434ada497e4147b9e7e5",
+        "name": "SOURCE.final.inventory.json.gz",
+        "parts": [
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 0,
+            "decoded_sha256": "a0540d3fccb2063cb67e8a00ebbf7306a6a09f09cd84c187420db907777ba330",
+            "git_blob": "406bded732688fc755066c2d163cab02daa21e08",
+            "name": "SOURCE.final.inventory.json.gz.part-001.b64",
+            "sha256": "cbb0b0e8e24df6839b96fb9fb0caf839d8624627d926074b044683e7f486194e"
+          },
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 262144,
+            "decoded_sha256": "de65660d9030811791b99629e7c21b83478d942e6e927722a51ff0cc1af22bd8",
+            "git_blob": "ea8f8355dd1d7e858f8246389e8b3daa340f7795",
+            "name": "SOURCE.final.inventory.json.gz.part-002.b64",
+            "sha256": "6b43b5d15abda949867c5850e903893545a55247332d9749710c7981ebb5d620"
+          },
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 524288,
+            "decoded_sha256": "6e9fcd13c973d008ff640c7c984cc98e88fe688fd176823fca1440b6af7a62b9",
+            "git_blob": "ec5599b324471b4986c532d08521dc52b416a228",
+            "name": "SOURCE.final.inventory.json.gz.part-003.b64",
+            "sha256": "57b2563e99886b9a29510e3193961907044b77a655bcd238c772add8a37883b4"
+          },
+          {
+            "bytes": 349529,
+            "decoded_bytes": 262144,
+            "decoded_offset": 786432,
+            "decoded_sha256": "ed3f04e1a93166983e3ae0d53e2431e521544465e7cd44d5d16315906e071f4f",
+            "git_blob": "1bfbe65cf77456572ae25564a53e1fac9cf9838d",
+            "name": "SOURCE.final.inventory.json.gz.part-004.b64",
+            "sha256": "11c830b306a3691eb8ec1ce9f98465beeb9ec3d2fcc37aa68230661b8902000f"
+          },
+          {
+            "bytes": 289985,
+            "decoded_bytes": 217488,
+            "decoded_offset": 1048576,
+            "decoded_sha256": "a7091f4d067f3c1b34863dbcb56e1564e6bde8e0569e536019e5e1dfbed6d5c2",
+            "git_blob": "016e895cebd225d5fb43fa3f8b640bb0d3fc631b",
+            "name": "SOURCE.final.inventory.json.gz.part-005.b64",
+            "sha256": "4424429ad03b1ac00eabb1277bf9bcb45b9d12afd0b536fdf7052354fe1f0c0c"
+          }
+        ],
+        "raw_bytes": 5631947,
+        "raw_git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+        "raw_sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e",
+        "sha256": "e8fb430f7bfff9ef4a65c0f4db9db48930b90c49455d00a56d437e748962e593"
+      },
+      "original_parts": [
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "406bded732688fc755066c2d163cab02daa21e08",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-001.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-001.b64",
+          "sha256": "cbb0b0e8e24df6839b96fb9fb0caf839d8624627d926074b044683e7f486194e"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "ea8f8355dd1d7e858f8246389e8b3daa340f7795",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-002.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-002.b64",
+          "sha256": "6b43b5d15abda949867c5850e903893545a55247332d9749710c7981ebb5d620"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "ec5599b324471b4986c532d08521dc52b416a228",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-003.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-003.b64",
+          "sha256": "57b2563e99886b9a29510e3193961907044b77a655bcd238c772add8a37883b4"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "1bfbe65cf77456572ae25564a53e1fac9cf9838d",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-004.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-004.b64",
+          "sha256": "11c830b306a3691eb8ec1ce9f98465beeb9ec3d2fcc37aa68230661b8902000f"
+        },
+        {
+          "bytes": 289985,
+          "chars": 289985,
+          "git_blob": "016e895cebd225d5fb43fa3f8b640bb0d3fc631b",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-005.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-005.b64",
+          "sha256": "4424429ad03b1ac00eabb1277bf9bcb45b9d12afd0b536fdf7052354fe1f0c0c"
+        }
+      ],
+      "preheld_source_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-inputs-v1/EXPECTED_AFTER_INVENTORY.json",
+      "provenance": "Existing pre-held bytes, independently matched to all actual producer raw/gzip/part identities; not a second H source read.",
+      "raw": {
+        "bytes": 5631947,
+        "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.exact_recovered.json",
+        "name": "SOURCE.final.inventory.exact_recovered.json",
+        "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+      },
+      "tree": {
+        "all_repository_rust_files": 6794,
+        "codex_rs_rust_files": 6672,
+        "directory_trees": 1849,
+        "leaves": 15243,
+        "modes": {
+          "100644": 15152,
+          "100755": 90,
+          "120000": 1
+        },
+        "root": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+      }
+    }
+  ],
+  "source_gates_executed": false,
+  "source_or_ref_writes": false,
+  "status": "ALL_ACTUAL_RAW_GZIP_AND_TEN_PART_PINS_MATCH"
+}

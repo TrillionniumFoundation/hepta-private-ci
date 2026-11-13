@@ -1,0 +1,240 @@
+{
+  "format": "hepta-final-qualification-admission-successor-code-review-v1",
+  "status": "FROZEN_HOLD_CODE_FOR_INDEPENDENT_REVIEW",
+  "source_gate_execution": false,
+  "native_execution": false,
+  "H_calls": 0,
+  "source_or_ref_writes": false,
+  "qualification": false,
+  "baseline": {
+    "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+    "bytes": 26963
+  },
+  "candidate": {
+    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+    "bytes": 87654,
+    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+  },
+  "diff": {
+    "git_blob": "1a8faaeca7f0a48feeab0e57f9c687ba025d1eec",
+    "bytes": 101548
+  },
+  "configuration": {
+    "git_blob": "460139b9ce065184a0809def0823d8d20c45fe41",
+    "bytes": 19355
+  },
+  "cutoff": {
+    "actual_bound": [
+      "materialization job 1a1d468462a-392-3bb",
+      "maintenance job 1a1d47cebc8-392-41e",
+      "final non-Rust/fmt job 1a1d4a979d9-392-50f",
+      "separate original runtime proof",
+      "separate V8 archive-v3 proof"
+    ],
+    "canonical_actual_binding": null,
+    "expected_canonical_subject": {
+      "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+      "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+      "parents": [
+        "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+      ]
+    },
+    "late_notification": "Native and Root subsequently reported completed 5a9 core originals. This frozen layer does not bind or validate those new originals. Full actual endpoint metadata/index and the later binding remain separate."
+  },
+  "four_original_migrations": [
+    {
+      "name": "Admission.__init__",
+      "purpose": "Retain the approval-first HOLD rejection and original two-module V5 setup; require the three repository roles and complete late bindings before any original module loading, output creation or environment change.",
+      "unchanged": "Historical V5 module retains its original REPO, SEED, environment validator and target. Only the independent observation module follows current source."
+    },
+    {
+      "name": "Admission.acquire_and_validate",
+      "purpose": "Consume the four distinct producer operations, then use actual canonical after.git_state and the current complete source inventory as the endpoint; retain the original SH inode, original runtime preflight, source pins and native driver."
+    },
+    {
+      "name": "Admission.validate_materialization",
+      "purpose": "Understand actual 3bb complete-candidate materialization with clean cc57 donor and d256/a489 destination. It no longer equates the initial materialized source with the later canonical endpoint."
+    },
+    {
+      "name": "Admission.finish",
+      "purpose": "Keep the original complete row comparison and visible ignored-output extras, while adding comparison of complete canonical Git metadata including ownership. Duplicate inventory paths are rejected."
+    }
+  ],
+  "nine_byte_identical_original_definitions": [
+    "check",
+    "identity",
+    "pin",
+    "load",
+    "Admission.read",
+    "Admission.observed_proof",
+    "Admission.current_lock",
+    "Admission.before_native_stage",
+    "Admission.close"
+  ],
+  "retained_function_meanings": {
+    "check_identity_pin_load": "Exact original bodies and exception/byte hashing/loading semantics; no replacement globals or monkeypatches.",
+    "read_and_observed_proof": "Original pin-checked raw copies and original strict normal supervisor/full-output parser.",
+    "current_lock": "Same O_NOFOLLOW inode, uid, mode and nlink checks; same LOCK_SH|LOCK_NB in acquire.",
+    "before_native_stage": "Same active/unreadable build-process rejection, both original input inventories, and current task lock.",
+    "close": "Same single owned lease descriptor closure."
+  },
+  "schema_seams": [
+    {
+      "id": "S01",
+      "name": "Distinct actual source producers and endpoints",
+      "helpers": [
+        "Admission._check_materialization",
+        "Admission._validate_maintenance",
+        "Admission._check_maintenance",
+        "Admission._validate_final_format",
+        "Admission._check_final_format",
+        "require_stage",
+        "physical_projection",
+        "native_projection"
+      ],
+      "evidence": "The four producer operations retain distinct formats, job IDs, raw result pins, paths, source identities, stages and final audits. 3bb contributes the clean d256 start; 41e contributes dirty c026; 50f contributes dirty 8ebb; only future completed canonical contributes clean b608.",
+      "runtime_limit": "Historical full inventories for 3bb and 41e are not re-read or re-archived. Their complete identities are checked through exact pinned producer RESULT, catalog and control/input records. The required final physical-content comparison uses actual 50f full bytes and the single current complete inventory read."
+    },
+    {
+      "id": "S02",
+      "name": "Complete canonical metadata and index",
+      "helpers": [
+        "Admission._validate_canonical",
+        "Admission._check_canonical",
+        "Admission._validate_index_audit",
+        "Admission._require_live_metadata",
+        "canonical_to_v5_projection",
+        "stable_canonical_metadata",
+        "metadata_file_projection"
+      ],
+      "evidence": "Canonical complete metadata keeps uid/gid, exact integer stat fields, safe unique path membership, parent-directory closure, and original global path order. Before projection, a stable live observation compares every field. The additional V5 observation uses original DFS order and serializer. Index proof comes from new canonical INDEX.final, never the old materialized index.",
+      "runtime_limit": "There are two complete live .git observations: admission and finish. Existing original complete source inventory reads remain one at admission and one at finish. Index lstat verification is confined to the actual canonical complete index entries and existing source leaves. No donor/history object walk, object import, write-tree, or source mutation is introduced."
+    },
+    {
+      "id": "S03",
+      "name": "Historical environment and separate current archive restoration",
+      "helpers": [
+        "Admission._validate_archive",
+        "Admission._check_archive"
+      ],
+      "evidence": "The complete old ENV and old 86dd runtime validator remain unchanged. Actual archive-v3 result, normal, catalog and full readback stat are separately pinned; original path/resolved/bytes/SHA/mode projection is equal. New inode is retained as archive-v3 evidence and never written into old ENV.",
+      "runtime_limit": "Original h.environment_preflight remains the only live environment/target/tool/resource validator. A source-only use retains original historical proof validation without pretending a live Cargo environment check was performed."
+    },
+    {
+      "id": "S04",
+      "name": "Original plan with one explicit workflow successor",
+      "helpers": [
+        "Admission._validate_source_controls"
+      ],
+      "evidence": "The entire original 3aef plan and all twelve original source pins remain retained. Exactly the workflow path is overridden from old08ffc to c001. Eleven remaining pins are checked verbatim. Complete current inventory rows and the actual workflow bytes cross-bind every pin. Original AST extraction yields exactly 48 unique Root names and the original ordinary packages.",
+      "runtime_limit": "The 48 names are not independently redefined in the new code. Their full list is fixed by c001 and retained in EXACT_WORKFLOW_PARENT_BINDINGS. The unchanged b92 driver still chooses and enforces exact Root JUnit coverage."
+    }
+  ],
+  "shared_pinned_data_helpers": {
+    "names": [
+      "Admission._require_complete_bindings",
+      "Admission._fixed",
+      "Admission._fixed_json",
+      "Admission._observed_known",
+      "Admission._artifact",
+      "exact_pin",
+      "pin_fields",
+      "audited",
+      "artifact_catalog"
+    ],
+    "purpose": "Bounded exact input and producer-record validation shared by S01-S04. Catalogs retain duplicate rejection and their original list/wrapped schemas. Original fixed path inputs are registered with V5 read_input. Canonical catalog ordering includes the RESULT row only after RESULT.artifacts was captured.",
+    "limits": "No new CLI, callback, transport, environment override, stage dispatch, retry, or mutable grant. Decoded proof reads stay within the original V5 40,000,000-byte input bound. Catalog identity-only rows may describe the original larger pack without attempting to read it through this bound."
+  },
+  "budgets_and_commands": {
+    "source_driver": "51181866cbbb6e0176aab04117efffa8b6792b31 unchanged",
+    "source_wrapper": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3 unchanged",
+    "native_wrapper": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae unchanged",
+    "native_driver": "b92ddded4fce78aeb076d022471c62bf81ce2e4f unchanged",
+    "plan": "3aefbc71d69d8014eed9e5a18269bbcc866a7583 unchanged",
+    "source_budgets_seconds": {
+      "source-closure": 600,
+      "self-test": 300,
+      "verify": 4800,
+      "outer": 7200
+    },
+    "admission_seconds": 600,
+    "final_record_seconds": 300,
+    "native_outer_seconds": 45000,
+    "native_phase_count": 14,
+    "root_parent_count": 48,
+    "original_nextest_threads": 1,
+    "explicit_retries": 0,
+    "original_stack_bytes": 8388608,
+    "scope": "No command/filter/JUnit/budget/default changes; ordinary ignored tests are not represented as Root passes."
+  },
+  "verification": {
+    "original_function_proof": "ac728e94fafbd74b704f70dfa08a69dca23667ed",
+    "pure_report": "19c7e3abf1ecb9268639397363d04e0d9624381c",
+    "pure_script": "0d9292177608b317e4d4728e7eb7c190491d4ed6",
+    "checks": 53,
+    "accepted": 17,
+    "rejected": 36,
+    "scope": "Pure data functions and a fixed local byte-map transport adapter only. The one constructor call used the unapproved HOLD config and was verified to stop before environment changes or output creation. No acquire, finish, current_lock, live metadata, original preflight or project gate was called.",
+    "negative_examples": [
+      "wrong donor/current/historical roles",
+      "materialization mistaken for canonical",
+      "missing object or unknown cleanup",
+      "old ENV rewritten",
+      "archive stat drift despite equal content projection",
+      "wrong prior job/source inventory",
+      "changed argv/budget or output truncation",
+      "extra formatter Rust path or second fix",
+      "duplicate audits/artifact paths",
+      "wrong artifact envelope",
+      "missing/boolean uid, missing gid, unsafe/duplicate/unclosed metadata paths",
+      "global-sort versus DFS ordering",
+      "expected b608 offered without actual canonical records"
+    ],
+    "not_proven": [
+      "live source/native admission",
+      "current environment/target resource readiness",
+      "any source gate or Rust/Root test result",
+      "actual canonical endpoint accepted by this code",
+      "real authorized A/B/C task result"
+    ]
+  },
+  "late_binding_requirements": {
+    "remain_null": [
+      "canonical_alignment.job_id",
+      "canonical_alignment.result",
+      "canonical_alignment.supervisor",
+      "canonical_alignment.artifacts",
+      "canonical_alignment.before_git_metadata_raw",
+      "canonical_alignment.final_git_metadata_raw",
+      "canonical_alignment.final_index_raw",
+      "canonical_alignment.final_index_audit",
+      "canonical_alignment.complete_entry_delta",
+      "canonical_alignment.allowed_metadata_delta",
+      "canonical_alignment.commands",
+      "canonical_alignment.progress",
+      "canonical_alignment.inputs",
+      "canonical_alignment.approved_config",
+      "canonical_alignment.canonical_packet",
+      "source",
+      "tree",
+      "parents",
+      "full_physical_inventory",
+      "full_native_inventory",
+      "current_final_git_state",
+      "canonical_complete_git_metadata",
+      "canonical_original_index",
+      "expected_inventory_sha256"
+    ],
+    "source_pin_objects": "Final full and native inventory bindings use the exact three fields bytes/sha256/git_blob. Producer inventories with tracked_entries/filesystem_entries remain preserved and are explicitly projected only for identity comparisons.",
+    "still_required": "Actual originals, independent Root/peer review, exact formal cfg/launcher/bootstrap and a separate Root execution approval. No state/approval is promoted by this code-generation layer."
+  },
+  "provenance": {
+    "prior_frozen_spec_placement": "89e356ba75e6e02d256b4eca39ff94d1e02ead3c",
+    "prior_spec_peer": "6d9964f321e78e3d5b06a2d68e25832f0bf772f4",
+    "actual50f_recovery_placement": "8eec6897d3e4886b66970ea0083f623f36b77e2d",
+    "source_repo": "TrillionniumFoundation/hepta-private-ci",
+    "old_spec_not_overwritten": true,
+    "source_tree_or_ref_created": false,
+    "pending": "Independent peer review of this actual code layer."
+  }
+}

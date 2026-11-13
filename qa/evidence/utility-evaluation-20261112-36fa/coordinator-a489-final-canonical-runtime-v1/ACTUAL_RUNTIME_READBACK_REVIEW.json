@@ -1,0 +1,1072 @@
+{
+  "actual_metadata_delta_rows": 61,
+  "after": {
+    "commit": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+    "git_state": {
+      "config_bytes": 123,
+      "config_sha256": "5e224c2f489801ee7d2f46cf5c4e40261ea686332bac1588d05a5f463c59f84f",
+      "head": "b6084394a4a38ab495c16eaba09e879f04a96f8e",
+      "head_raw_sha256": "8b8e050242657f9811ecc5b9ed11d68f1eca02f00d2d5a775aeb4250ca40707e",
+      "index_bytes": 2080152,
+      "index_sha256": "8b20d98ed47dfe227b3c269ebad70377abc86dd6cede26d7e68e71f914d42b0a",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+    },
+    "inventory": {
+      "bytes": 5631947,
+      "filesystem_entries": 15243,
+      "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+      "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e",
+      "tracked_entries": 15243
+    },
+    "parents": [
+      "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f"
+    ],
+    "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+  },
+  "approval": {
+    "bytes": 8881,
+    "git_blob": "adae9ceb057634904d03c10f9bd3ec33a98fef79",
+    "sha256": "5cf08ab1f875e32c4ef44fa1048cd0542ca9bee8e9d4d4d9b33910bab6c2d7c5"
+  },
+  "before": {
+    "commit": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+    "git_state": {
+      "config_bytes": 123,
+      "config_sha256": "5e224c2f489801ee7d2f46cf5c4e40261ea686332bac1588d05a5f463c59f84f",
+      "head": "d25675445c39f76db69a7bd8e71a1a72e1cd5b9f",
+      "head_raw_sha256": "576fb0120bbf996a96f0576d0d28b4efad2b90e69fdb6137defefdc1f59fb619",
+      "index_bytes": 2080152,
+      "index_sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b",
+      "refs_bytes": 0,
+      "refs_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tree": "a489b394666b8141840275128a780605b024cde0"
+    },
+    "inventory": {
+      "bytes": 5633513,
+      "filesystem_entries": 15243,
+      "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+      "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202",
+      "tracked_entries": 15243
+    },
+    "parents": [
+      "cc57c7198db6293ccca562253c42fffbe2a04633"
+    ],
+    "tree": "a489b394666b8141840275128a780605b024cde0"
+  },
+  "binary_reads": [
+    {
+      "chunk_sha256": "fe46c24a1af64ec8b36b9af2cac9acbadffa631990b93463c05d83e2121afd56",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/ARTIFACTS.json",
+      "next_offset": 65536,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 87886,
+        "git_blob": "3722d509673d4dc434e4cd967f43071787e84822",
+        "sha256": "02ed7b5cc7b710935828eef2a4fb303404922b88ffb9854fd3c428770a11a068"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/ARTIFACTS.json.READ_01.original.json",
+      "size": 108578,
+      "version": "2050:51123511:108578:1794571527542602290:1794571527542602290"
+    },
+    {
+      "chunk_sha256": "7f9c06256b4df2fc3470c381539ceb9609f63cab13a7ca75d9c4bdaf4c3d5463",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/ARTIFACTS.json",
+      "next_offset": 108578,
+      "offset": 65536,
+      "sdk_identity": {
+        "bytes": 57898,
+        "git_blob": "e0f027f6abfb03390bc51387d16d65e836400717",
+        "sha256": "f32f81a574163c3ca37a751fb4147f3ca3e4b3a63f9a84341976f3b321b92f86"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/ARTIFACTS.json.READ_02.original.json",
+      "size": 108578,
+      "version": "2050:51123511:108578:1794571527542602290:1794571527542602290"
+    },
+    {
+      "chunk_sha256": "7da94bd29e8ff95be3aadcfa151617815e8f7b8940ee43d7815887de8838c282",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/COMMANDS.json",
+      "next_offset": 65536,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 87883,
+        "git_blob": "34c5df45265cc9ccf6943b25fc5ebecc19649662",
+        "sha256": "bd550d1b7a5c819b64a24b895ec29717e881a3baa00d0830c964adcafb3c15d2"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/COMMANDS.json.READ_01.original.json",
+      "size": 85193,
+      "version": "2050:51123507:85193:1794571527532415560:1794571527532415560"
+    },
+    {
+      "chunk_sha256": "113d9b54c4cc4de71c49196373925f2ec2d1cf73b9d6ccacd13488909f6c1d3c",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/COMMANDS.json",
+      "next_offset": 85193,
+      "offset": 65536,
+      "sdk_identity": {
+        "bytes": 26714,
+        "git_blob": "309f4bd4d7535d1750ff5bcc85e42ea695bfa958",
+        "sha256": "97e77e7b3fe23bf72b47d6922701050b9e0a03595843ffb3e5460ea5cc3ecfd6"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/COMMANDS.json.READ_02.original.json",
+      "size": 85193,
+      "version": "2050:51123507:85193:1794571527532415560:1794571527532415560"
+    },
+    {
+      "chunk_sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/FINAL_FORMAT_GIT_STATE.original.json",
+      "next_offset": 489,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1167,
+        "git_blob": "fdb35201960212714ec16c312eacec6bfde4f7dd",
+        "sha256": "cd3147034973b101453782c4441a7c664559cecc4507d90097e5d108eba9b67c"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/FINAL_FORMAT_GIT_STATE.original.json.READ_01.original.json",
+      "size": 489,
+      "version": "2050:51122606:489:1794571491927162111:1794571491927162111"
+    },
+    {
+      "chunk_sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/FINAL_FORMAT_RESULT.original.json",
+      "next_offset": 7408,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 10395,
+        "git_blob": "cd9088198ad9f037b5e75d98a49f91e0b415095f",
+        "sha256": "be34c13f0bf293acec7b8bbb3256f8802e0df73e9e3ac876bb9c24febc6e18b0"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/FINAL_FORMAT_RESULT.original.json.READ_01.original.json",
+      "size": 7408,
+      "version": "2050:51122603:7408:1794571491923347079:1794571491923347079"
+    },
+    {
+      "chunk_sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/FINAL_FORMAT_SUPERVISOR.original.json",
+      "next_offset": 952,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1788,
+        "git_blob": "5b5b57d015981c9e23e3ab87a19e62be5a4681b4",
+        "sha256": "cf135f3257944b9d9438b2b17ebc8343a90e72febbfbd7b9e3bc7ff521a7d869"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/FINAL_FORMAT_SUPERVISOR.original.json.READ_01.original.json",
+      "size": 952,
+      "version": "2050:51122605:952:1794571491925322293:1794571491925322293"
+    },
+    {
+      "chunk_sha256": "791f445db5745c68cfb03bf4e9a9c7c068732714933f96a8207d91fa96d05f7e",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.allowed-actual-delta.json",
+      "next_offset": 18995,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 25851,
+        "git_blob": "3d6a315c765d3e9be5c9dd93eca3e1761988a7d2",
+        "sha256": "77cd058cc1119d7794a6582998467d95557e99289601fdf37d4e8f919752c076"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/GIT_METADATA.allowed-actual-delta.json.READ_01.original.json",
+      "size": 18995,
+      "version": "2050:51123503:18995:1794571527472302821:1794571527472302821"
+    },
+    {
+      "chunk_sha256": "a85ee80c20bd7f3cec3646fa5000e84165517a40afa6ac7fd650ff3206b31768",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.before.json.gz",
+      "next_offset": 772,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1538,
+        "git_blob": "2f90903002d1a0d47f588ec5e241e63b555511b5",
+        "sha256": "8c762c8dfa60533ec60c97b02c298ba213ad44f132a7993ce5d28d92393b764d"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/GIT_METADATA.before.json.gz.READ_01.original.json",
+      "size": 772,
+      "version": "2050:51122655:772:1794571493073493724:1794571493073493724"
+    },
+    {
+      "chunk_sha256": "2c13b9d1425fd6d15aec7c336821657ce6a117bf5af514bea523a6dc976a59fa",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_METADATA.final.json.gz",
+      "next_offset": 3742,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 5500,
+        "git_blob": "273177ce78feed21a0777fd3475468b618554336",
+        "sha256": "059a06306cd2f8d002b2a6f1cda5cac514bd8f4d69ca214eac8016981a820f76"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/GIT_METADATA.final.json.gz.READ_01.original.json",
+      "size": 3742,
+      "version": "2050:51123411:3742:1794571527451658349:1794571527451658349"
+    },
+    {
+      "chunk_sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_STATE.before.json",
+      "next_offset": 489,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1152,
+        "git_blob": "d76c63e708eec23e008f010bfa877018128fef01",
+        "sha256": "a39b162a76411f81a7214f7d0b520dda8a321e82d053b8a620e03d9c1dc05a17"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/GIT_STATE.before.json.READ_01.original.json",
+      "size": 489,
+      "version": "2050:51122654:489:1794571492377843323:1794571492377843323"
+    },
+    {
+      "chunk_sha256": "1de2b67a144e21ef6ca48bbf31a3138e39de902d459ca10ff70e45dc97f21b9c",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/GIT_STATE.final.json",
+      "next_offset": 489,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1151,
+        "git_blob": "37b47848d4029abb93452ab4246f13ed550adc6a",
+        "sha256": "e9710e766fbecff879e47c96b896b95f4b0bb63a217e2eb4f35b56cfb586aefc"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/GIT_STATE.final.json.READ_01.original.json",
+      "size": 489,
+      "version": "2050:51123393:489:1794571525218397768:1794571525218397768"
+    },
+    {
+      "chunk_sha256": "576fb0120bbf996a96f0576d0d28b4efad2b90e69fdb6137defefdc1f59fb619",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/HEAD.before.raw",
+      "next_offset": 41,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 547,
+        "git_blob": "7983b4bed3ca82b83e76172d15e78a64886664da",
+        "sha256": "0e6b3aa19477fd876cf37e7b7f7534588f9d57425a37c6c087915013c0e889a9"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/HEAD.before.raw.READ_01.original.json",
+      "size": 41,
+      "version": "2050:51122653:41:1794571492375839948:1794571492375839948"
+    },
+    {
+      "chunk_sha256": "309fd9b9982557902ee0e5ce097f693c6dda3c032b87d19f21ff0ea0837be7b1",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 65536,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 87891,
+        "git_blob": "2292112aa4e87659c737b264cb61d7643ba60146",
+        "sha256": "1c1a10616498553fb44f4a2daae833a36b0caccfbc638548f305e5f4d07155de"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_01.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "99a1e0ef8bce214f052875bebce292138ecc262875287cc9a6740a46e95211c1",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 131072,
+      "offset": 65536,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "e1dbaa4195845894bea2a1596ed52df228393792",
+        "sha256": "e2623893fde795cdb30e5b0c90da10c28a5492219e9147bffb85428edcac51e9"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_02.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "73d2a74f14d84e5ff6b4752908a0fe12839086ae13a5e52db170a597e6103974",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 196608,
+      "offset": 131072,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "a7a75954b4bfe17df72e5a49e731c6763be62ca8",
+        "sha256": "513044c242ad8cd6a8baf71f1409dfa5471fa0b7a56917e05a5763f65975e068"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_03.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "b9941a23cf29a811709cd467ee772b2d266d40a5a269179e7260a37d20a11733",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 262144,
+      "offset": 196608,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "a286da7534b5eba9b55c6e6e9573a3835b3502ab",
+        "sha256": "4469e1615b522ac18ae831d15a40e4112860012fc5192a2d7b9a21311c4cd350"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_04.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "57f20a0d2a180c7b783cb13439c264f815ca59ec1c7da752122e7cd89db00dc4",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 327680,
+      "offset": 262144,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "1a6d08dda557cfe3358ac263ae4d8a6d338ffc56",
+        "sha256": "f6fb4ae8797a39ecb1288c3f35dc0ade004cdd596ef98b613f6b739888d959f4"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_05.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "249f0f5b697c0ba2f12a9b5bbcce16067715c832bb8f691e3869ec660b7d3f20",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 393216,
+      "offset": 327680,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "bfb203031b914a0affd115fce72bd16b6aede5fd",
+        "sha256": "ccb4e248cc42c119fccbcabc620350ae28817f8df4fdcb1934420928d7b8a178"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_06.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "6f5aa0ac00ca97ddcc5814e254805c20605fe7486d8275c5d9b7c446c06e0b4e",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 458752,
+      "offset": 393216,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "c589c10435437f5e1dcbb7311360629f5c60922c",
+        "sha256": "425c28b84ac84e18283960ade50dc20ef9804840d5881181d443c16c441102b8"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_07.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "d72b412aee04595707de1176cef8e037c4677e23c54c8995f80d4b4ccae0c204",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 524288,
+      "offset": 458752,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "54f47b6190c52f0f4f4e66ac974e204b9791e74a",
+        "sha256": "d2211f445ce0fecccdbe1ff46b341f3c0e356d442f8e547175f95e310ce8c8e8"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_08.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "c69fc498726ecce604534a217658b5579db12623b4996cff5ce053877390e05d",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 589824,
+      "offset": 524288,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "24be6c0ca5a05180d6589e9d2d6258c69d963fcf",
+        "sha256": "588161476361225e62e8238d73d26d13f719bc0bd0240553bd5544413dc688dd"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_09.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "fae3818d891b5842f5953d3625befd16db3a429a529764d439c7c77aac1e8bd3",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 655360,
+      "offset": 589824,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "dffd736661138da5d7d62ac921d5b7b92c71dabd",
+        "sha256": "62cae70b9dbfb847315ec446b93aefe50c64f74d24b2d145b8248da353b4e025"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_10.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "af448c86de1226b65c90eceb3b4b2c41b27aae9b8f088e9bd3b010b3dce003ec",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 720896,
+      "offset": 655360,
+      "sdk_identity": {
+        "bytes": 87897,
+        "git_blob": "57fbfc5b02fc025a1f73ff9018c180c30890ecea",
+        "sha256": "877fbf5ebfa3daab1a16a24ffe2b962f46067dd9a04ac04c11b45fedcd3a906d"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_11.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "446ba19f865af015f4a79675bf473828ecaaa7873569ea0746f354f746ee9195",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.before.raw.gz",
+      "next_offset": 726664,
+      "offset": 720896,
+      "sdk_identity": {
+        "bytes": 8204,
+        "git_blob": "aed29e095624fbf446ced7a2a8d9acecb8c4c3f3",
+        "sha256": "c0143d84fe3686a05fed07e364120f00ce4bb89ef113c2419ee6dfd663eed150"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.before.raw.gz.READ_12.original.json",
+      "size": 726664,
+      "version": "2050:51122648:726664:1794571492331762073:1794571492331762073"
+    },
+    {
+      "chunk_sha256": "44129318730a270d3296f587ab6454410fabf6ff292e3b06a01e5b132eb997de",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.complete-entry-delta.json.gz",
+      "next_offset": 4310,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 6264,
+        "git_blob": "1e43ad7c4ac4507887ce1f21f0ac849a13f3f75c",
+        "sha256": "1220418539287a7016f29e0eb98f358aff4f26150fdb053400a4abb410bb6e77"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.complete-entry-delta.json.gz.READ_01.original.json",
+      "size": 4310,
+      "version": "2050:51123421:4310:1794571526799372196:1794571526799372196"
+    },
+    {
+      "chunk_sha256": "64d17c729a6dc96fc72bcd3b88209b943df89851648d760612777dcebe74714b",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 65536,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 87890,
+        "git_blob": "53ef62e7536687d12fc9fdbc4d461c3f7ff66bde",
+        "sha256": "c883592f0048524c32feca5cff997cc45d975cb0ca297e51a0ef173d9e04fb7e"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_01.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "bb584745da3dcec1735954dc2a5b90c19d646efbf9ef13ae4139fb147d051a29",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 131072,
+      "offset": 65536,
+      "sdk_identity": {
+        "bytes": 87895,
+        "git_blob": "3989c9b44169536e600242e10c703431108ad330",
+        "sha256": "6ca82a23615397c88c7b91388292af50b44eca511b30dd985e1482d4f1c48e3a"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_02.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "ab6fa18b149770e4f553ff0766342ac1c3d6ca7456abf652e6b3cf09bdc5451f",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 196608,
+      "offset": 131072,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "3917595dd0ffade5406c1834ca306b2cdf378d92",
+        "sha256": "b1837ff7e2cdc81f8f0eb445a66f594f5968946c7bb0e2ad09949d7a000a0747"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_03.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "ca3e201bc32b8482ae0f745fedb87dc22c138cfacabbe58bbb22fe9f0397c60d",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 262144,
+      "offset": 196608,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "58f8f8cca8abdeac34559d5f64d5134ecb3ee621",
+        "sha256": "3869a32f80d6848b3dbbad73fab108a2acf50ab00ebf7af5faac92e636e9977d"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_04.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "917ca123773d6366c282ab3529cf072a929e6b1defb9a95dd51f558c361436aa",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 327680,
+      "offset": 262144,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "452ebe99b2ec8d900ed97fdbb3468008ec76cd8c",
+        "sha256": "13504b3eeaeada508259b9ddcfe5ce6b3b11207cebf715269b3cfb5a5b461fd1"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_05.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "382a613f600c150f3f975dc85e124bcef87a576624e00be921aec9329ccd7fe9",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 393216,
+      "offset": 327680,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "4fe38dee020ad422dc1a9c55f55057407513c27f",
+        "sha256": "cef2a0a396d919f7ef9b8c964608e36c00beb265bfcfd16c67fff54ae90da005"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_06.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "a70b235db952f3675f172d4304f0d7e6e5ca4c976abeb4fe9eb28149fc30b74d",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 458752,
+      "offset": 393216,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "9349b07ee5807bda5014923e55bb4e35fd68c1a1",
+        "sha256": "038cff960d46f3d8f1e1eedec8c719a9b37ada4fc010a8da27ef71c3a66b4ca7"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_07.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "0e5191c88a27f8e195f4eb01e494cfeaabddf8c3f555a8e96ae625704b5317f2",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 524288,
+      "offset": 458752,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "37ff3c82afc0d43d14eeeb617037346d44920b7d",
+        "sha256": "fc9f273890b8e09ea8bee46339a751fc6e650f55b5b93b32f97c618419fbc458"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_08.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "08800d1cd1d6d0b09dbffe6aa1a092425a7d9926dde849827b7447ef79e220a8",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 589824,
+      "offset": 524288,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "fb07a0e25d5216df8316235d60dcf10731e0bc74",
+        "sha256": "78f3d3ec9408e9c106f50de163ccfe2105ce699dd80a1fe99a6a0e4ed1342806"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_09.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "5d7b4c82e3d155342d695f20ff940d37789fa46da9140b47ccf74e8e9239c9d2",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 655360,
+      "offset": 589824,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "4206977bab3c82b37769feaa0d0c1a7507ae116a",
+        "sha256": "4ad4a26697e7eaec284e5093ba56511a5f3d740db1d5195e74e77f28239e88fc"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_10.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "0f9caa99c19e0c9d605cc93a6744751185ee7047e9a596430ac7aa69626b2018",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 720896,
+      "offset": 655360,
+      "sdk_identity": {
+        "bytes": 87896,
+        "git_blob": "bf4c61bda761af23f8f2cfcf4fa4d76f366a25ed",
+        "sha256": "8504910a128c27008ea3b006fcf8741044ca63a0d30bc4006e7edb1da1ff46d0"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_11.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "4a1d94ed45bfa9aefe255eaf3240b619e8bf5fbe3951a916b84ef33bddd5ef6c",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.final.raw.gz",
+      "next_offset": 726723,
+      "offset": 720896,
+      "sdk_identity": {
+        "bytes": 8283,
+        "git_blob": "757c55e7c5d20badb8311375022121ca6ff6d685",
+        "sha256": "d45f5c548584a6528fe925903c4d1dc926c9869c58512b8e7abb9cd77e6f0424"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INDEX.final.raw.gz.READ_12.original.json",
+      "size": 726723,
+      "version": "2050:51123394:726723:1794571525415507901:1794571525415507901"
+    },
+    {
+      "chunk_sha256": "e4059b53db565f763b4613490e1dcac80126ec7d091f91d78ecf428cf0be2983",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INPUTS.final.json",
+      "next_offset": 1955,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 3107,
+        "git_blob": "dc33e33789d92c66c1d165c45f5d547838d39ae1",
+        "sha256": "90fbbf8f001fc143179886196dda008ed4ba0f16736b899fa66df655e840fbca"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/INPUTS.final.json.READ_01.original.json",
+      "size": 1955,
+      "version": "2050:51123505:1955:1794571527527352608:1794571527527352608"
+    },
+    {
+      "chunk_sha256": "84d1c1965f1410f48f7b487973c504bbfd10f068c05c754fcc78daa4a1b79cd7",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/MUTATION_PROGRESS.json",
+      "next_offset": 8111,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 11320,
+        "git_blob": "b4ce6d0b1ef9cfd88cbd57b4e031ce56cfe44929",
+        "sha256": "cb2627d47484eaf73fdb83a3f5c65b72590399630ee6687b9983a2cc77122656"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/MUTATION_PROGRESS.json.READ_01.original.json",
+      "size": 8111,
+      "version": "2050:51123506:8111:1794571527529374085:1794571527529374085"
+    },
+    {
+      "chunk_sha256": "c6f42e385d4e62d318144f00b2ca24020990601355010c2d786ad599913df6d9",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/OBJECT_BATCH.intent.json",
+      "next_offset": 538,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1223,
+        "git_blob": "11c4afcbc471f8569d916ebae8ca55a31eccab2a",
+        "sha256": "edbcff7d3b8eed02696021546e966024a16710d6f2e05ceec8af3753cb5c4dc7"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/OBJECT_BATCH.intent.json.READ_01.original.json",
+      "size": 538,
+      "version": "2050:51123191:538:1794571503820603436:1794571503820603436"
+    },
+    {
+      "chunk_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/OBJECT_BATCH.stderr",
+      "next_offset": 0,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 492,
+        "git_blob": "bd8c6c6ba6b71e980cfb34d273b3ac95782d73f7",
+        "sha256": "e240fe10f1933ee5c0cd77f61ee6822bd658a26e784596f8fd86b516bcd6742b"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/OBJECT_BATCH.stderr.READ_01.original.json",
+      "size": 0,
+      "version": "2050:51123192:0:1794571503820718786:1794571503820718786"
+    },
+    {
+      "chunk_sha256": "001d872d0782aa567dfb9d44aa87dd8c557b8e0ca6e99b1fe9d696e7badfbe5a",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/OBJECT_BATCH.terminal.json",
+      "next_offset": 795,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1565,
+        "git_blob": "690e84b031ddf42cbdab5cd63fd69a0f39373454",
+        "sha256": "80151a536827a5d4138c5af97afbd51749261ff2a587f8e960867abd3ac3b6d3"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/OBJECT_BATCH.terminal.json.READ_01.original.json",
+      "size": 795,
+      "version": "2050:51123204:795:1794571510024806641:1794571510024806641"
+    },
+    {
+      "chunk_sha256": "e24f8874ab9f2c74812fd9223f42fb7035ad98a1a6ac29dbd7631fda5f20cb8f",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/OBJECT_IMPORT.json",
+      "next_offset": 1331,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 2276,
+        "git_blob": "867c3d4f72f4e6a1967e7cdb2df9e81e97db04fa",
+        "sha256": "9a11406bb16a87f6abf2f23883c28718e223f46e5192c70a8bf8cc448d002b29"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/OBJECT_IMPORT.json.READ_01.original.json",
+      "size": 1331,
+      "version": "2050:51123209:1331:1794571510032646448:1794571510032646448"
+    },
+    {
+      "chunk_sha256": "6ed57120cc2bc5e01bea476faa05a751f5d2aca1a0c47f038096b382da8c78c6",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/RESULT.json",
+      "next_offset": 65536,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 87883,
+        "git_blob": "45b64fa060a1c2ce99ac43409c0a5deafb0b51d1",
+        "sha256": "33f86894e0e9e0ea515045f8c6946634597f93a8d729f942ccec2c3d8216f521"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/RESULT.json.READ_01.original.json",
+      "size": 224883,
+      "version": "2050:51123508:224883:1794571527537673910:1794571527537673910"
+    },
+    {
+      "chunk_sha256": "32c5fcc28aaf8133710fade2fbb63dd8283c805bc45b3f36a0755484b86707dd",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/RESULT.json",
+      "next_offset": 131072,
+      "offset": 65536,
+      "sdk_identity": {
+        "bytes": 87888,
+        "git_blob": "5b3ea0257463d9e290f1cb37a4f7904baf9b34e8",
+        "sha256": "ba567031658807a4525da6dc68e162c573ac00402f06f49f1df42d4179fbb93a"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/RESULT.json.READ_02.original.json",
+      "size": 224883,
+      "version": "2050:51123508:224883:1794571527537673910:1794571527537673910"
+    },
+    {
+      "chunk_sha256": "32b2cbc128bd7fc8530428a32567164a73183e4dabeee1a26014327cafacf18a",
+      "eof": false,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/RESULT.json",
+      "next_offset": 196608,
+      "offset": 131072,
+      "sdk_identity": {
+        "bytes": 87889,
+        "git_blob": "1b39acae8912e6f28238e1d9fcf21fdb6647eed0",
+        "sha256": "1d9d7aabcd7fc39ae037787207f20b08579b4704307053cb97777b5509d89db6"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/RESULT.json.READ_03.original.json",
+      "size": 224883,
+      "version": "2050:51123508:224883:1794571527537673910:1794571527537673910"
+    },
+    {
+      "chunk_sha256": "c1532a3a6c19d13aa8aa52c9be728b7c0cf2077097d10d908725e4178341119c",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/RESULT.json",
+      "next_offset": 224883,
+      "offset": 196608,
+      "sdk_identity": {
+        "bytes": 38204,
+        "git_blob": "931de50562c102f405084ebe0ec095f3de3de22f",
+        "sha256": "c929cb8c9cea9da9e40c9772af70cd9328639357abd499186072d1ff0cd7f779"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/RESULT.json.READ_04.original.json",
+      "size": 224883,
+      "version": "2050:51123508:224883:1794571527537673910:1794571527537673910"
+    },
+    {
+      "chunk_sha256": "10dd959f7d6ec95ba45e8ffe17fc1596cc9ad6534914d5bdc4e00d210897edda",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/SOURCE_COORDINATION_EX.json",
+      "next_offset": 360,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 986,
+        "git_blob": "5f95610af16b9d93e95d3d01557b8e09cab5f73d",
+        "sha256": "295e32fae4e0bedc1db031658ee6900ef2c901216a78c832937e635a0eb1aaa5"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/SOURCE_COORDINATION_EX.json.READ_01.original.json",
+      "size": 360,
+      "version": "2050:51122601:360:1794571491818835466:1794571491818835466"
+    },
+    {
+      "chunk_sha256": "cb1114f3612e649509e79e08410f9397a0310cc5bd5e0c4f08340e56b458521a",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/STAGING_READBACK.json",
+      "next_offset": 2376,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 3667,
+        "git_blob": "cc7e7e83d12e66c5cb49af28d009d9fee9210422",
+        "sha256": "221b8a43b30ab642b77a0a2ef5a97510cc3e8f2d819f6553e4603e10a4635de7"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/STAGING_READBACK.json.READ_01.original.json",
+      "size": 2376,
+      "version": "2050:51122599:2376:1794571491718657054:1794571491718657054"
+    },
+    {
+      "chunk_sha256": "d775986c25d6a1a3e91c4661486d566712344e78b4a5347b3758089e28a403d9",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/ACTUAL_BOOTSTRAP.py",
+      "next_offset": 5738,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 8149,
+        "git_blob": "be874c6bf576e33a83217207015a612fd2e4693a",
+        "sha256": "adb20118f6d2f52f54c74cf6d6f56a541b22615054346d97c5c04795e09b6df0"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/control.ACTUAL_BOOTSTRAP.py.READ_01.original.json",
+      "size": 5738,
+      "version": "2050:51122581:5738:1794571491646261553:1794571491646261553"
+    },
+    {
+      "chunk_sha256": "5c8972052eb8bdf3390931d5306768fd21541eebabd4260485350775e4b56197",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/ACTUAL_BOOTSTRAP_ARGV.json",
+      "next_offset": 5887,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 8356,
+        "git_blob": "5624e1bff8f0041ecefbd630313e5105418333fd",
+        "sha256": "ad2e0e8a3f9339a48ce96854465f7fdf8e1c4481150c93f179acaa2e22184925"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/control.ACTUAL_BOOTSTRAP_ARGV.json.READ_01.original.json",
+      "size": 5887,
+      "version": "2050:51122590:5887:1794571491660514543:1794571491660514543"
+    },
+    {
+      "chunk_sha256": "a01b6e54b91e275c7a8b0c0cffef878a44c81bcfd46560f402bcf26bedfac5db",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/APPROVED_CONFIG.json",
+      "next_offset": 3453,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 5102,
+        "git_blob": "97ca6bb58434f4cd6b9b740be44c42d9af4b3133",
+        "sha256": "6f2818e5479af10034a26cfe8530be8b2f01979cb9c954aab0f5c686fc5f63d1"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/control.APPROVED_CONFIG.json.READ_01.original.json",
+      "size": 3453,
+      "version": "2050:51122596:3453:1794571491716687019:1794571491716687019"
+    },
+    {
+      "chunk_sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/FINAL_FORMAT_NORMAL.original.json",
+      "next_offset": 952,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 1780,
+        "git_blob": "c536c6da0c30f74fe1a482f84523a2598c9c72f8",
+        "sha256": "8c9b3b05a2f944b6f8897c35f16a1bd5237b55f5f36146a37532e9f66466d1a4"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/control.FINAL_FORMAT_NORMAL.original.json.READ_01.original.json",
+      "size": 952,
+      "version": "2050:51122594:952:1794571491675341971:1794571491675341971"
+    },
+    {
+      "chunk_sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/driver.py",
+      "next_offset": 46159,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 62038,
+        "git_blob": "641758ddd75a82c830dc95169183a343c192ac1c",
+        "sha256": "5cdb4f88a2d9c7e189de8982c6a365a321a51dbae6a02002c21eb42053a2cbb9"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/control.driver.py.READ_01.original.json",
+      "size": 46159,
+      "version": "2050:51122593:46159:1794571491673028971:1794571491673028971"
+    },
+    {
+      "chunk_sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/immediately-before-index-head-change.process-preflight.json",
+      "next_offset": 185,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 786,
+        "git_blob": "87de52d2d42b2680823ae69e2526ad25fbc8e844",
+        "sha256": "b6c16040345c5bb6841d842812dbd0961c0c8f730ad2e5b9dd35b342de0ff87c"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/immediately-before-index-head-change.process-preflight.json.READ_01.original.json",
+      "size": 185,
+      "version": "2050:51123261:185:1794571513760307634:1794571513760307634"
+    },
+    {
+      "chunk_sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/immediately-before-object-import.process-preflight.json",
+      "next_offset": 185,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 782,
+        "git_blob": "9ee1be71053dbc986d3724841f2d96250f6a0ba6",
+        "sha256": "d39f3043633dbc6c863a1217c0067fd981c208ea126f9a0e2535e94790a87ad1"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/immediately-before-object-import.process-preflight.json.READ_01.original.json",
+      "size": 185,
+      "version": "2050:51122692:185:1794571502148881475:1794571502148881475"
+    },
+    {
+      "chunk_sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0",
+      "eof": true,
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/initial.process-preflight.json",
+      "next_offset": 185,
+      "offset": 0,
+      "sdk_identity": {
+        "bytes": 757,
+        "git_blob": "fa7e5c5c0010e00015a2cefe896fad540f1a0203",
+        "sha256": "79adbd87983eedd305ab4610cd1b26f547d57c96469cb2ff2cca8b4ceabb2056"
+      },
+      "sdk_path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/initial.process-preflight.json.READ_01.original.json",
+      "size": 185,
+      "version": "2050:51122608:185:1794571491993975695:1794571491993975695"
+    }
+  ],
+  "canonical_status": "CANONICAL_SOURCE_ALIGNED_CLEAN_ONLY",
+  "catalogue_scope_note": "The 505 original catalogue rows are retained as producer identities; this report does not claim that all 505 files were externally downloaded.",
+  "commands_observed_zero": 94,
+  "complete_original_stream_bytes": {
+    "stderr": 0,
+    "stdout": 706
+  },
+  "external_binary_read_calls": 58,
+  "external_complete_native_paths": 31,
+  "format": "hepta-canonical-single-job-actual-native-runtime-closure-v1",
+  "head_final_scope_note": "No separate HEAD.final.raw artifact was emitted. The original final Git state, metadata and successful detached HEAD CAS retain its observed identity.",
+  "index_audit_recovery": {
+    "bytes": 7255,
+    "git_blob": "1f8f68796357dfb3d221b0ca91863e9e30683351",
+    "sha256": "39f66618695c5deb39e9cd5767949fa3fa1cdc1e386753f7dd67e6b9d1dd5514"
+  },
+  "index_audit_scope_note": "Actual before/final raw index files were downloaded completely. Audit bytes are exact recovered content matching all original raw/gzip/part pins; no additional native lstat or audit-file download.",
+  "index_complete_delta_rows": 21,
+  "inventory_scope_note": "The original producer performed full before/final source inventories; ordinary_path separately binds pre-held complete bytes to every actual raw/gzip/part pin. This report does not claim a second external full-inventory download.",
+  "job_id": "1a1d4cbd33e-392-5a9",
+  "mutations_observed": 33,
+  "normal": {
+    "bytes": 950,
+    "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+    "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+  },
+  "original_artifact_catalogue": {
+    "bytes": 108578,
+    "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+    "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c"
+  },
+  "original_artifact_catalogue_rows": 505,
+  "original_inputs": 8,
+  "original_process_guard_observations": 3,
+  "qualification": false,
+  "request": {
+    "bytes": 940279,
+    "git_blob": "fd655e0dea612e9dd13d4026c11d01b811c8fd8d",
+    "sha256": "a83c5966abbbc5af9b6f6ea555cd8f671698f2f54f48b78e6743929c51ac8048"
+  },
+  "result": {
+    "bytes": 224883,
+    "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+    "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+  },
+  "source_branch_refs_updated": false,
+  "source_or_native_tests_dispatched": 0,
+  "staging": {
+    "external_full_file_reads": 5,
+    "format": "hepta-canonical-original-staging-identity-closure-v1",
+    "job_id": "1a1d4cbd33e-392-5a9",
+    "large_preheld_bodies_bound_to_original_full_readback": 2,
+    "original_manifest": {
+      "bytes": 2376,
+      "git_blob": "198c4ea7f93e41dec443cc4e035eabfe3763a85d",
+      "sha256": "cb1114f3612e649509e79e08410f9397a0310cc5bd5e0c4f08340e56b458521a"
+    },
+    "qualification": false,
+    "records": [
+      {
+        "bytes": 5738,
+        "git_blob": "601a3b9448f46c44936ea7789b57d6499e584926",
+        "name": "ACTUAL_BOOTSTRAP.py",
+        "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/staging/ACTUAL_BOOTSTRAP.py",
+        "provenance": "complete original native binary read",
+        "sha256": "d775986c25d6a1a3e91c4661486d566712344e78b4a5347b3758089e28a403d9",
+        "version": "2050:51122581:5738:1794571491646261553:1794571491646261553"
+      },
+      {
+        "bytes": 5887,
+        "git_blob": "875237acba12bbd542d10a3281580fdc604102bb",
+        "name": "ACTUAL_BOOTSTRAP_ARGV.json",
+        "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/staging/ACTUAL_BOOTSTRAP_ARGV.json",
+        "provenance": "complete original native binary read",
+        "sha256": "5c8972052eb8bdf3390931d5306768fd21541eebabd4260485350775e4b56197",
+        "version": "2050:51122590:5887:1794571491660514543:1794571491660514543"
+      },
+      {
+        "bytes": 46159,
+        "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+        "name": "driver.py",
+        "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/staging/driver.py",
+        "provenance": "complete original native binary read",
+        "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5",
+        "version": "2050:51122593:46159:1794571491673028971:1794571491673028971"
+      },
+      {
+        "bytes": 3453,
+        "git_blob": "0f69f739486c1dc3506f61c0e8a6ef3737fbe17e",
+        "name": "APPROVED_CONFIG.json",
+        "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/staging/APPROVED_CONFIG.json",
+        "provenance": "complete original native binary read",
+        "sha256": "a01b6e54b91e275c7a8b0c0cffef878a44c81bcfd46560f402bcf26bedfac5db",
+        "version": "2050:51122596:3453:1794571491716687019:1794571491716687019"
+      },
+      {
+        "bytes": 952,
+        "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+        "name": "FINAL_FORMAT_NORMAL.original.json",
+        "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/staging/FINAL_FORMAT_NORMAL.original.json",
+        "provenance": "complete original native binary read",
+        "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90",
+        "version": "2050:51122594:952:1794571491675341971:1794571491675341971"
+      },
+      {
+        "bytes": 934139,
+        "git_blob": "268aacaec6be37bf047b34278656d83008a1a34a",
+        "name": "ACTUAL_BOOTSTRAP_PAYLOAD.json",
+        "provenance": "pre-held exact dispatched bytes, equal to original producer full-readback pins; not a new external download",
+        "sha256": "a1a42f3c0184c1d8fe796e31ec25653e8635613216922138638ff663849aa666"
+      },
+      {
+        "bytes": 3428251,
+        "git_blob": "bb4b4abd809047be4c9402b95fa2a2dc30b2ab78",
+        "name": "CANONICAL_PACKET.json",
+        "provenance": "pre-held exact dispatched bytes, equal to original producer full-readback pins; not a new external download",
+        "sha256": "8201fdbaa5e6f6f7a3a27dcae2351f6d92405db1c1f427cba2322b90794c5af6"
+      }
+    ]
+  },
+  "status": "ACTUAL_RECORDS_RECONCILED",
+  "three_final_audits": [
+    {
+      "check": "source",
+      "finished_at": "2026-11-13T12:05:25.223728+00:00",
+      "started_at": "2026-11-13T12:05:20.623881+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "git",
+      "finished_at": "2026-11-13T12:05:27.491590+00:00",
+      "started_at": "2026-11-13T12:05:25.223744+00:00",
+      "status": "verified"
+    },
+    {
+      "check": "inputs",
+      "finished_at": "2026-11-13T12:05:27.529055+00:00",
+      "started_at": "2026-11-13T12:05:27.491618+00:00",
+      "status": "verified"
+    }
+  ],
+  "transport_failures_in_this_closed_native_read_set": 0
+}

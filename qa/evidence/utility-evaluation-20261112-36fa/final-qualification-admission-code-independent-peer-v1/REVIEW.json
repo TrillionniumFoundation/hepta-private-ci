@@ -1,0 +1,158 @@
+{
+  "H_calls": 0,
+  "configuration": {
+    "bytes": 19355,
+    "git_blob": "460139b9ce065184a0809def0823d8d20c45fe41",
+    "sha256": "0c0fc2ba2ab2a42ae8a35e8e8e062fa3ce4dc0bf5be5ee2fb1282fc755c717bd"
+  },
+  "created_at": "2026-11-13T12:13:10.591906+00:00",
+  "diff": {
+    "bytes": 101548,
+    "git_blob": "1a8faaeca7f0a48feeab0e57f9c687ba025d1eec",
+    "sha256": "700932c9cae126ba797b47011a0524e7ee2407c88c1d2e8fc03c79d8ead4b4cc"
+  },
+  "execution_approval": false,
+  "findings": [
+    {
+      "detail": "The whole unified patch was independently applied in memory to exact 23d412 bytes and equals c77e3be6. No moving draft is approved.",
+      "evidence": [
+        "c77e3be6230d3267c08333be582f69f23c016fb9",
+        "1a8faaeca7f0a48feeab0e57f9c687ba025d1eec",
+        "460139b9ce065184a0809def0823d8d20c45fe41"
+      ],
+      "finding": "Frozen code and exact full diff are independently fetched and byte-verified.",
+      "id": "A01"
+    },
+    {
+      "detail": "The unchanged original loader, raw reads, terminal proof parser call, lock identity, before-stage process/input guard and close are retained. V5/source/native driver and wrapper input identities remain fixed.",
+      "finding": "All 13 original definitions remain; nine have identical complete source bytes and four have explicit migrations.",
+      "id": "A02",
+      "migrated": [
+        "Admission.__init__",
+        "Admission.acquire_and_validate",
+        "Admission.validate_materialization",
+        "Admission.finish"
+      ],
+      "same": [
+        "check",
+        "identity",
+        "pin",
+        "load",
+        "Admission.read",
+        "Admission.observed_proof",
+        "Admission.current_lock",
+        "Admission.before_native_stage",
+        "Admission.close"
+      ]
+    },
+    {
+      "detail": "Historical 86dd runtime stays on its original module instance and seed. cc57 is the provenance donor. d256/a489 is the actual 3bb materialized start. 41e and 50f modify physical source without changing d256 index/HEAD. Only future actual canonical after-state may become the b608/8ebb qualification baseline. The materialized state is never asserted equal to the canonical endpoint.",
+      "finding": "Three repository roles and four actual operations are kept distinct.",
+      "functions": [
+        "Admission.__init__",
+        "validate_materialization",
+        "_check_materialization",
+        "_check_maintenance",
+        "_check_final_format",
+        "_check_canonical"
+      ],
+      "id": "A03"
+    },
+    {
+      "dataflow": {
+        "bytes": 25010,
+        "git_blob": "e0b48113432d7e5b4549fdcc7dc4818b01d7641d",
+        "sha256": "53ae8a3cf7e038cacbcfed6be65077468085d5f804102b879dfd44916e6f31fa"
+      },
+      "detail": "Independent audit checks 41 exact original input bodies, evaluates only explicitly extracted literal-data predicates, and records 11 accepted captured-data comparisons and 13 rejected negative mutations. No module import, constructor, acquire, finish, filesystem observer or project test was executed. These are interface checks, not qualification results.",
+      "finding": "Actual 3bb, 41e, archive-v3 and 50f JSON satisfy the frozen pure consumer predicates.",
+      "id": "A04"
+    },
+    {
+      "detail": "The actual 3bb six-file list is compared field-for-field to the file subset of actual V5 twelve-row DFS metadata, including bytes/hash and device/inode/mode/nlink/timestamps. Canonical uid/gid metadata is retained as its full dictionary; only an explicit separate V5 serialization drops uid/gid and restores V5 DFS ordering/envelope. Live metadata must equal the complete canonical baseline, and its separate projection must equal unchanged original V5 observer bytes. Thus uid/gid are not discarded from the actual preservation check. Canonical full metadata and index audit still require actual late-bound artifacts before this seam can be accepted for execution.",
+      "finding": "Complete metadata schema bridge preserves ownership-bearing original data.",
+      "functions": [
+        "metadata_file_projection",
+        "canonical_to_v5_projection",
+        "stable_canonical_metadata",
+        "_require_live_metadata",
+        "_validate_index_audit"
+      ],
+      "id": "A05"
+    },
+    {
+      "detail": "Archive-v3 actual full stat/identity is compared to its original RESULT/readback/audit. The old ENV inode 26738826 and later actual restoration inode 26738823 remain separate evidence. The fresh unchanged V5 environment preflight enforces its original five fields (path/resolved/bytes/SHA256/mode); this review does not claim that V5 newly enforces the later inode at qualification time.",
+      "finding": "V8 restoration history is retained without rewriting ENVIRONMENT_READY.",
+      "id": "A06"
+    },
+    {
+      "detail": "The workflow is required by complete 30,745-byte c0012652 identity both through read_input and the clean full inventory. The current 48 exact FQNs therefore derive from a fixed whole workflow, rather than an unconstrained length check. Its parsed five-package ordinary list is exact. Original 3aef plan, 5118 source driver, 8607 wrapper, DE3 wrapper and B92 driver are not modified. The first-layer HOLD does not assert actual workflow acceptance until the late-bound flag and live matching bytes exist.",
+      "finding": "Exactly one original workflow pin override is permitted; eleven other original plan files remain exact.",
+      "id": "A07"
+    },
+    {
+      "detail": "There are no new subprocess, execv, alarm, sleep, cargo, formatter or test entrypoints. The only exec remains the byte-identical original pinned module loader. Both os.open calls are read-only/no-follow: metadata reads and the existing SH coordination lock. Output writes use existing m/h evidence writers, with original create-only output directories. Old original source/native wrappers retain their 600-second admission and 300-second final-record windows and original outer 7200/45000 controls; the successor introduces no timing override. Stage checks retain fix7200/fmt900 solely as historical prerequisite verification, not dispatch.",
+      "finding": "New code does not dispatch commands, alter gate budgets or add executable permissions.",
+      "id": "A08"
+    },
+    {
+      "detail": "Fixed proof bodies are cached once in the admission instance. Historical full inventories are linked by exact pinned catalog/RESULT raw identities, not rescanned. Actual 50f final inventory is decoded once to compare all physical fields against the original current full inventory. The original full-source observer still runs at admission and finish. Complete live Git metadata runs only at admission completion and finish; each runs the ownership-aware observer and the original V5 observer for exact bridge equivalence. Canonical index admission lstat checks all 15,243 captured audit rows. Gzip proof decoding retains the 40,000,000-byte original input bound. No recursive Git ancestry, new repository, repair, retry or network behavior is added.",
+      "finding": "Additional reads are bounded and tied to the four schema seams.",
+      "id": "A09"
+    },
+    {
+      "detail": "The constructor first checks original READY/approval, then calls the pure complete-binding validator before module load, mkdir or lock acquisition. The frozen HOLD keeps approval false and canonical job/result/supervisor/index/metadata/inventory fields null. Even setting known b608/tree/parents does not satisfy the missing actual inventory/proof requirement. No predicted 457adb clean inventory or prepared commit substitutes for an actual canonical result.",
+      "finding": "Missing actual canonical bindings reject before constructor I/O.",
+      "id": "A10"
+    },
+    {
+      "detail": "A changed raw Git state or full canonical metadata raises SourceChanged. Original full physical rows must be equal; added physical output rows remain visible and are not silently counted unchanged, while B92 retains its separate tracked/nonignored comparison. The inherited finish comparison can emit a secondary SourceChanged when initial_git was never established after an earlier admission error. That secondary message alone is not evidence that source changed. The original wrappers retain the primary error and missing-before/unknown record distinctions; this peer does not reclassify them or alter that old policy.",
+      "finding": "Original failure and final source-comparison boundaries remain, with an inherited limitation.",
+      "id": "A11"
+    },
+    {
+      "detail": "No concrete static blocker was found in the frozen c77e code and known 3bb/41e/50f interfaces. This is not a final executable approval. Remaining required review: actual canonical original RESULT/normal/catalog/complete metadata/index audit/raw/entry delta/allowed metadata delta/commands/progress/inputs; exact late-bound config and source/native stage requests; preserved full source gate then native ordering. The actual native filesystem observers and project gates remain unexecuted by this agent.",
+      "finding": "First-layer review is complete; exact launch acceptance remains pending.",
+      "id": "A12"
+    }
+  ],
+  "format": "hepta-final-qualification-admission-code-independent-review-v1",
+  "no_concrete_static_blocker_in_reviewed_scope": true,
+  "original_admission": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+  "project_commands": 0,
+  "proof_files": {
+    "ACTUAL_INPUT_FULL_GET.json": {
+      "bytes": 1058,
+      "git_blob": "26fe49cba37539d77a3d1d8d6509c6189f74cbaf",
+      "sha256": "127d602e9bf959d492b5bb5e34ba1e0a0058edc5a87e4722415743cafc5304db"
+    },
+    "FROZEN_CODE_DATAFLOW.json": {
+      "bytes": 25010,
+      "git_blob": "e0b48113432d7e5b4549fdcc7dc4818b01d7641d",
+      "sha256": "53ae8a3cf7e038cacbcfed6be65077468085d5f804102b879dfd44916e6f31fa"
+    },
+    "audit_frozen_code.py": {
+      "bytes": 16521,
+      "git_blob": "50b69223d45d1ba0eb853dfb8b9f0a7ceaa439c9",
+      "sha256": "b265d16b611789e10ade1e2b340506180c021b373e98d3ca4c5208b1eeb59332"
+    }
+  },
+  "qualification": false,
+  "required_later_inputs": [
+    "actual canonical RESULT and supervisor",
+    "actual canonical ARTIFACTS including rich before/final Git metadata",
+    "original final index raw, full audit and complete entry delta",
+    "allowed actual metadata delta",
+    "canonical original commands, progress and input map",
+    "actual current full physical and five-field native inventories",
+    "complete late-bound qualification config and exact source/native typed requests"
+  ],
+  "runtime_admission_calls": 0,
+  "source": {
+    "bytes": 87654,
+    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+  },
+  "source_or_ref_writes": 0,
+  "status": "CODE_STATIC_REVIEW_COMPLETE_ACTUAL_CANONICAL_BINDING_PENDING"
+}

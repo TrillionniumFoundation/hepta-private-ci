@@ -1,0 +1,82 @@
+{
+  "format": "hepta-bounded-evidence-placement-v1",
+  "prefix": "final-qualification-admission-execution-candidate-v1",
+  "entries": [
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/QUALIFICATION_CONFIG.execution-candidate.json",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/QUALIFICATION_CONFIG.execution-candidate.json",
+      "bytes": 24155,
+      "sha256": "ac5663c711d2d47669c334052e09151d2fbda34776ff41b0b8727804d322a840",
+      "git_blob": "720abbdfa96bca8c7e6aaf633a800693960d80db",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/SOURCE_GATES_CONFIG.execution-candidate.json",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/SOURCE_GATES_CONFIG.execution-candidate.json",
+      "bytes": 831,
+      "sha256": "f08beb0e1a0c87117bd7a091ec3c7b4390285cf47a291c0d7569fd0f1d2e197c",
+      "git_blob": "b97682c5a95bb7f09241e54f0b3d13bf7fa791a4",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/FROM_ACTUAL_HOLD.patch",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/FROM_ACTUAL_HOLD.patch",
+      "bytes": 1849,
+      "sha256": "b717d94153474f49f6e2588a76ba05d6345737304975dab40805d855b49baa06",
+      "git_blob": "f8243a1399006539bf734a48c178e2bf2930d16a",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/EXACT_FIELD_AND_INVERSE_REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/EXACT_FIELD_AND_INVERSE_REVIEW.json",
+      "bytes": 3712,
+      "sha256": "bc2f2db3a4276f6357be773c1dfe96fef4072fbe9958e0ff7627f37404877846",
+      "git_blob": "fbea5faf8be6a56c3491a847adc61f75674425e2",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/CONFIG_PACKET.json",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/CONFIG_PACKET.json",
+      "bytes": 55127,
+      "sha256": "34fb8e542c0f26896a828852bd1e839f25cbeac12e2ed7971f6a23d4472942a5",
+      "git_blob": "cfc789aae34fa88d33c4a8937e9a378bd5aaf41d",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/prepare_execution_candidates.py",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/prepare_execution_candidates.py",
+      "bytes": 6838,
+      "sha256": "bbc86b47b5ff4c39b737835a3ee2edda2eb7e2c1f3c8bb8e9cef4d670fa87daf",
+      "git_blob": "4829fdbac3da77fd9a4d4906fdd5220aa20c0c2f",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/REVIEW.md",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/REVIEW.md",
+      "bytes": 2030,
+      "sha256": "63c09e2b2145ae1cc003fe6789243c2ae92d97d4b8eb375aa4b32d5c82bd80d2",
+      "git_blob": "f34c5412d91cd8d19cc8ab252b53c49f9481d988",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/MANIFEST.json",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/MANIFEST.json",
+      "bytes": 6346,
+      "sha256": "f703840daf4385ab655d6c9aaedf51fbff4e6e938419ee8fc9d005d7970b6569",
+      "git_blob": "c69dd8ee69d9d1f553103621012a3be8c47e03d4",
+      "actual_create_and_complete_GET_equal": true
+    },
+    {
+      "path": "final-qualification-admission-execution-candidate-v1/FULL_READBACK.json",
+      "local_path": "/tmp/hepta-36fa-final-qualification-admission-execution-candidate-v1/FULL_READBACK.json",
+      "bytes": 6575,
+      "sha256": "7f797893648ea3f72e700369ec77d7ce1df2004b3f3ca20d6726d37f5fde450a",
+      "git_blob": "f19b7e74a2aea4fb3e192878d4e1c6f7017320c3",
+      "actual_create_and_complete_GET_equal": true
+    }
+  ],
+  "payloads_before_placement": 9,
+  "leaf_limit_bytes": 512000,
+  "predecessor_actual_HOLD_placement": "0752655a339e5031d0a2242b03e3e24265d68910",
+  "scope": "Only the two requested state fields, root_execution_approved and the exact source config identity change. Pending separate exact Root approval before staging or H."
+}

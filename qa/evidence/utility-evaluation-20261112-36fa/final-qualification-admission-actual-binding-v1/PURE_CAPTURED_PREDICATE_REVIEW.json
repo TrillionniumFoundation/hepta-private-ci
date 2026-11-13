@@ -1,0 +1,427 @@
+{
+  "accepted": 6,
+  "actual_artifacts": {
+    "bytes": 108578,
+    "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+    "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c"
+  },
+  "actual_binding_config": {
+    "bytes": 24162,
+    "git_blob": "083694f6a08cb7a9fbaeea2227b2f60f8608219a",
+    "sha256": "136b8593115c0a9f5df9f9e7667235d55aa05853743805302df9c00e8d4caa38"
+  },
+  "actual_clean_inventory": {
+    "bytes": 5631947,
+    "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+    "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+  },
+  "actual_full_metadata": {
+    "bytes": 16703,
+    "git_blob": "f4032cd8f6c1cceb7c46085664d8a28f24a1a31d",
+    "sha256": "4d8d21c385cb3e5148bd8fab3eb2e3b7143dd05d9ff59d317f74936d62259a40"
+  },
+  "actual_job_id": "1a1d4cbd33e-392-5a9",
+  "actual_normal": {
+    "bytes": 950,
+    "git_blob": "2deafbe4bfc7ad2c84d9e6315c12aaa6493adab2",
+    "sha256": "da2b842525ca95a78f10292fc9db13c30466a2e498b717a51a7ebe3f2714c990"
+  },
+  "actual_original_index": {
+    "bytes": 2080152,
+    "git_blob": "fb90fea0dfd1896de5d9737f529c4999728f9a28",
+    "sha256": "8b20d98ed47dfe227b3c269ebad70377abc86dd6cede26d7e68e71f914d42b0a"
+  },
+  "actual_original_index_audit": {
+    "bytes": 4959960,
+    "git_blob": "d956ee8894e6e3c66824ca8dd3d74727aff9bbf7",
+    "sha256": "397e564459012a221d13a74aa23aa3e4e5294b2165725036ee8f23c6bd45239c"
+  },
+  "actual_result": {
+    "bytes": 224883,
+    "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+    "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+  },
+  "admission_constructor_acquire_finish_live_calls": 0,
+  "all_captured_index_entries_equal_audit_and_complete_source": true,
+  "checks": [
+    {
+      "name": "all actual binding fields structurally complete while execution remains HOLD",
+      "outcome": "accepted",
+      "scope": "captured original bytes and pure predicates only"
+    },
+    {
+      "name": "actual 50f to canonical original schema and budgets",
+      "outcome": "accepted",
+      "scope": "captured original bytes and pure predicates only"
+    },
+    {
+      "name": "actual canonical normal complete output and terminal",
+      "outcome": "accepted",
+      "scope": "captured original bytes and pure predicates only"
+    },
+    {
+      "count": 70,
+      "name": "captured metadata ownership/full delta and original V5 bridge",
+      "outcome": "accepted",
+      "scope": "captured original bytes only; no current native lstat or environment observation"
+    },
+    {
+      "count": 15243,
+      "name": "captured index checksum/all entries/full stats from original audit",
+      "outcome": "accepted",
+      "scope": "captured original bytes only; no current native lstat or environment observation"
+    },
+    {
+      "count": 94,
+      "name": "captured command/intents preserve independent OBJECT_BATCH terminal schema",
+      "outcome": "accepted",
+      "scope": "captured original bytes only; no current native lstat or environment observation"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical source wrongly treated as materialization",
+      "outcome": "rejected",
+      "reason": "actual clean canonical alignment only",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical allows source writes",
+      "outcome": "rejected",
+      "reason": "actual clean canonical alignment only",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical claims test execution",
+      "outcome": "rejected",
+      "reason": "actual clean canonical alignment only",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical loses stable input audit",
+      "outcome": "rejected",
+      "reason": "complete actual canonical audits",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "binding substitutes d256 endpoint",
+      "outcome": "rejected",
+      "reason": "actual final source must bind the reviewed immutable canonical subject",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "binding omits final raw index",
+      "outcome": "rejected",
+      "reason": "actual canonical final_index_raw remains required",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "binding drops final full metadata identity",
+      "outcome": "rejected",
+      "reason": "one complete canonical Git baseline",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "binding omits workflow override",
+      "outcome": "rejected",
+      "reason": "one explicit workflow successor pin",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "binding adds a second workflow override",
+      "outcome": "rejected",
+      "reason": "one explicit workflow successor pin",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "binding changes original target budget",
+      "outcome": "rejected",
+      "reason": "original materialized start, complete runtime contract and coordination inode",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical control budget changes",
+      "outcome": "rejected",
+      "reason": "exact original canonical control and budgets",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "metadata missing uid",
+      "outcome": "rejected",
+      "reason": "exact canonical metadata row fields",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "metadata contains duplicate path",
+      "outcome": "rejected",
+      "reason": "safe unique canonical metadata path",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "metadata nanoseconds rounded to a float",
+      "outcome": "rejected",
+      "reason": "complete exact integer canonical ownership and stat fields",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "metadata unsafe path",
+      "outcome": "rejected",
+      "reason": "safe unique canonical metadata path",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "changed full ownership cannot reuse actual original metadata pin",
+      "outcome": "rejected",
+      "reason": "complete original metadata identity",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "canonical normal missing complete output",
+      "outcome": "rejected",
+      "reason": "actual complete normal supervisor terminal",
+      "scope": "independent altered captured-data probe; no native access"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "captured index checksum corruption",
+      "outcome": "rejected",
+      "reason": "complete index checksum",
+      "scope": "independent altered captured-data probe; no native access"
+    }
+  ],
+  "deferred_to_exact_authorized_admission": [
+    "complete current live metadata and uid/gid equality",
+    "all current working-file index stat checks",
+    "original lock inode and SH acquisition",
+    "original live environment/current process guards",
+    "original source and native complete snapshots",
+    "actual source gates and native 14-phase/JUnit results"
+  ],
+  "derived_v5_projection": {
+    "bytes": 15213,
+    "git_blob": "8d4b2850c10642466b55471af2191f2a5c5332fa",
+    "sha256": "528867bccf074247b9b18871954f2b2dd7c126188ac5d08fe46457b724ac98c9"
+  },
+  "derived_v5_projection_is_not_a_live_observation": true,
+  "expected_only_native_projection": {
+    "bytes": 3543409,
+    "git_blob": "4e3589d81ef758d55d62a79e3e6c099ba59c5076",
+    "sha256": "6cc21c8815ccc96153a1df5aa9f73cccd2c0335fa4960e9f2edb0379af552dde"
+  },
+  "format": "hepta-actual-canonical-captured-predicate-review-v1",
+  "frozen_admission": {
+    "bytes": 87654,
+    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+  },
+  "historical_limitation": "Original finish may report secondary SourceChanged before initial_git exists; that alone does not prove a physical source change.",
+  "new_native_or_H_reads": 0,
+  "original_config": {
+    "bytes": 19355,
+    "git_blob": "460139b9ce065184a0809def0823d8d20c45fe41",
+    "sha256": "0c0fc2ba2ab2a42ae8a35e8e8e062fa3ce4dc0bf5be5ee2fb1282fc755c717bd"
+  },
+  "planned_paths_not_staged_or_probed": {
+    "control": "/home/qian-qi/hepta-utility-36fa-evidence/final-qualification-b608-v1",
+    "root_run": "/run/hepta-utility-36fa-final-b608-v1",
+    "source_clone": "/home/qian-qi/hepta-utility-36fa-source-gates-b608-v1"
+  },
+  "project_gate_or_test_calls": 0,
+  "qualification": false,
+  "qualification_field_change_count": 39,
+  "real_task_chain_success": 0,
+  "rejected": 18,
+  "runtime_environment_or_lock_observed": false,
+  "source_controls": [
+    {
+      "effective_pin": {
+        "bytes": 22519,
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 22519,
+        "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      "path": "AGENTS.md"
+    },
+    {
+      "effective_pin": {
+        "bytes": 7838,
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 7838,
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      },
+      "path": "justfile"
+    },
+    {
+      "effective_pin": {
+        "bytes": 10206,
+        "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 10206,
+        "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+        "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+      },
+      "path": "scripts/run-nextest.py"
+    },
+    {
+      "effective_pin": {
+        "bytes": 6617,
+        "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+        "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 6617,
+        "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+        "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+      },
+      "path": "codex-rs/.config/nextest.toml"
+    },
+    {
+      "effective_pin": {
+        "bytes": 12863,
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 12863,
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+      },
+      "path": "scripts/hepta_ci_exec.py"
+    },
+    {
+      "effective_pin": {
+        "bytes": 6613,
+        "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+        "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 6613,
+        "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8",
+        "sha256": "cdb325f4a9266bc554fa266ee6a42dc1e1390b6b45d4bac47fa50aa9255cdeec"
+      },
+      "path": "scripts/hepta_ci_junit.py"
+    },
+    {
+      "effective_pin": {
+        "bytes": 18658,
+        "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+        "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 18658,
+        "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+        "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae"
+      },
+      "path": "scripts/hepta_cell_test_helpers.py"
+    },
+    {
+      "effective_pin": {
+        "bytes": 28918,
+        "git_blob": "49a99d7093dbabe467b2dc5053a597f4df320078",
+        "sha256": "a2138ead7b212acf8f4fb747c7bf41b07df56aa51b34f45544d1a1690911a0df"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 28918,
+        "git_blob": "49a99d7093dbabe467b2dc5053a597f4df320078",
+        "sha256": "a2138ead7b212acf8f4fb747c7bf41b07df56aa51b34f45544d1a1690911a0df"
+      },
+      "path": "scripts/hepta_c_observer_coverage.py"
+    },
+    {
+      "effective_pin": {
+        "bytes": 30745,
+        "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+        "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+      },
+      "explicit_override": true,
+      "original_pin": {
+        "bytes": 28133,
+        "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+        "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+      },
+      "path": ".github/workflows/hepta-daemon-learning-native.yml"
+    },
+    {
+      "effective_pin": {
+        "bytes": 16599,
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 16599,
+        "git_blob": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      "path": "scripts/format.py"
+    },
+    {
+      "effective_pin": {
+        "bytes": 2030,
+        "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 2030,
+        "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+        "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+      },
+      "path": "scripts/just-shell.py"
+    },
+    {
+      "effective_pin": {
+        "bytes": 78,
+        "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      "explicit_override": false,
+      "original_pin": {
+        "bytes": 78,
+        "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      "path": "codex-rs/rust-toolchain.toml"
+    }
+  ],
+  "source_gate_field_change_count": 6,
+  "source_gates_config": {
+    "bytes": 847,
+    "git_blob": "0d3c48853572dc89a823ca9afb5d5487868189e6",
+    "sha256": "602fd434d927f35bc6f0479211094ec2588aaf82e1a3855470e393d27117c6d8"
+  },
+  "source_ref_tree_commit_writes": 0
+}

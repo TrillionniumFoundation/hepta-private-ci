@@ -1,0 +1,364 @@
+{
+  "Git_commands": 0,
+  "H_calls": 0,
+  "actual_catalog": {
+    "bytes": 108578,
+    "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+    "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c"
+  },
+  "actual_result": {
+    "bytes": 224883,
+    "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+    "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+  },
+  "canonical_source_or_native_qualification_result": null,
+  "created_at": "2026-11-13T12:25:10.939574+00:00",
+  "execution_approval": false,
+  "findings": [
+    {
+      "before": {
+        "exact_original_native_raw_equal": true,
+        "gzip": {
+          "bytes": 726664,
+          "git_blob": "0670cb6c264a0317db53ccbb4490a5d993abae3c",
+          "sha256": "0f99b4796835282e3ab17e974316c75e23bfe99dc1089b76c5ddf7095e5005b1"
+        },
+        "new_native_read": false,
+        "parts": [
+          "b75cae48ae5c046380eb6af06640a86fc4ca1c3e",
+          "9108d0073d49f4a91ef5174b22195a79c907f3b0",
+          "e6de8f5c8d419e9996aab13dfe46c931faddff0c"
+        ],
+        "raw": {
+          "bytes": 2080152,
+          "git_blob": "5dfba375a9e88dc0578070f19e90bc25aee6efef",
+          "sha256": "ac849543b6bbc1f42425d5673f2f7666502dc4d440d7e7a830574a2d84d7b87b"
+        }
+      },
+      "detail": "All six fetched encoded strings were strictly decoded in offset order; every encoded/decoded part identity, concatenated gzip identity and decompressed raw triple matches the original ARTIFACTS catalog and the already-received native raw files. No second H or native path read occurred.",
+      "final": {
+        "exact_original_native_raw_equal": true,
+        "gzip": {
+          "bytes": 726723,
+          "git_blob": "afffd6a6d3175c4ea4a1c9818e3673d38fa15f27",
+          "sha256": "dc3425b207c7cf08ab0ff624509aac2958848184127b31bde5b33816527188d7"
+        },
+        "new_native_read": false,
+        "parts": [
+          "99da93210ae5a2b9a177d417c3162f7e0e699813",
+          "df5991c0284b9ac0ab5e8f1e438eab1d552c0ca6",
+          "eb8c28b4c1949e80dc3771711564efa2a43b2707"
+        ],
+        "raw": {
+          "bytes": 2080152,
+          "git_blob": "fb90fea0dfd1896de5d9737f529c4999728f9a28",
+          "sha256": "8b20d98ed47dfe227b3c269ebad70377abc86dd6cede26d7e68e71f914d42b0a"
+        }
+      },
+      "finding": "Both actual index payloads were independently recovered from all six original Git-backed parts.",
+      "id": "I01"
+    },
+    {
+      "before": {
+        "all_paths_unique_sorted_utf8": true,
+        "cache_tree": {
+          "all_directory_counts_and_typed_tree_ids_equal": true,
+          "complete_payload_consumed": true,
+          "full_records_sha256": "979c853ce43e117bf8460acdc671cc48db751f2da4ef4f2e7c9f8275a24d507b",
+          "invalid_records": 0,
+          "records": 1849
+        },
+        "checksum": "d66ad0a54a7d3d86109a1686a7d02d4e3453d075",
+        "checksum_verified": true,
+        "complete_payload_consumed": true,
+        "entries": 15243,
+        "extensions": [
+          {
+            "bytes": 68848,
+            "name": "TREE",
+            "sha256": "30211ef02c2efe48a751e8d542892085bcf903fa0b5f325a8e2c719b4c4bde82"
+          }
+        ],
+        "normal_stage_zero_flags": true,
+        "signature": "DIRC",
+        "tree": "a489b394666b8141840275128a780605b024cde0",
+        "tree_count": 1849,
+        "version": 2
+      },
+      "detail": "Both indexes contain 15,243 unique byte-sorted UTF-8 stage-zero paths, exact path-length flags, zero assume-unchanged/extended/merge flags, normal supported modes and zero entry padding. Every byte through the SHA-1 trailer is accounted for. TREE is the sole extension.",
+      "final": {
+        "all_paths_unique_sorted_utf8": true,
+        "cache_tree": {
+          "all_directory_counts_and_typed_tree_ids_equal": true,
+          "complete_payload_consumed": true,
+          "full_records_sha256": "7771a5a810c7fe80748bcdf67d5d342034f794fb52b6655e9fe948136df8dea5",
+          "invalid_records": 0,
+          "records": 1849
+        },
+        "checksum": "f2c93e2759ca649fbf4e7dbb6f66966c34c5aa3b",
+        "checksum_verified": true,
+        "complete_payload_consumed": true,
+        "entries": 15243,
+        "extensions": [
+          {
+            "bytes": 68848,
+            "name": "TREE",
+            "sha256": "f1f705d35d5d77c8492af714391a6f85db9e19247120bd31152a747490e9cbf2"
+          }
+        ],
+        "normal_stage_zero_flags": true,
+        "signature": "DIRC",
+        "tree": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638",
+        "tree_count": 1849,
+        "version": 2
+      },
+      "finding": "Complete v2 binary structure, trailing checksums, all entries and extension bounds pass independent parsing.",
+      "id": "I02"
+    },
+    {
+      "changed": [
+        {
+          "after": {
+            "children": 23,
+            "entries": 15243,
+            "path": "",
+            "sha": "8ebb37e523ad3932a58cf016af0a9f4e0eeb6638"
+          },
+          "before": {
+            "children": 23,
+            "entries": 15243,
+            "path": "",
+            "sha": "a489b394666b8141840275128a780605b024cde0"
+          },
+          "path": ""
+        },
+        {
+          "after": {
+            "children": 6,
+            "entries": 178,
+            "path": ".github",
+            "sha": "629f248f37f1ae553c318f3c4768ab950dced588"
+          },
+          "before": {
+            "children": 6,
+            "entries": 178,
+            "path": ".github",
+            "sha": "45ee5d38aa0d086a853cfed01b7096e5099b12b0"
+          },
+          "path": ".github"
+        },
+        {
+          "after": {
+            "children": 154,
+            "entries": 11146,
+            "path": "codex-rs",
+            "sha": "b560b38992ade20010336177b7a6d1b0d5d9b137"
+          },
+          "before": {
+            "children": 154,
+            "entries": 11146,
+            "path": "codex-rs",
+            "sha": "4f567c258f4a7b78d4680f9712844c5a56c32e1f"
+          },
+          "path": "codex-rs"
+        },
+        {
+          "after": {
+            "children": 5,
+            "entries": 1505,
+            "path": "codex-rs/hepta-agentd",
+            "sha": "9b3cda8c31a1dc9614d6e794b2a84406c6712209"
+          },
+          "before": {
+            "children": 5,
+            "entries": 1505,
+            "path": "codex-rs/hepta-agentd",
+            "sha": "4f18da28ce6f14b0eb2c155cb1d92ae42668ab77"
+          },
+          "path": "codex-rs/hepta-agentd"
+        },
+        {
+          "after": {
+            "children": 2,
+            "entries": 970,
+            "path": "codex-rs/hepta-agentd/src",
+            "sha": "079ed3f36ff595194a065b0b0a12667515ca48a5"
+          },
+          "before": {
+            "children": 2,
+            "entries": 970,
+            "path": "codex-rs/hepta-agentd/src",
+            "sha": "2ab66259b1716c1f48b30f9327469047828d02a6"
+          },
+          "path": "codex-rs/hepta-agentd/src"
+        },
+        {
+          "after": {
+            "children": 5,
+            "entries": 156,
+            "path": "qa",
+            "sha": "f4ab0e2467bf0bab125ae8ac9262668fd5fd1313"
+          },
+          "before": {
+            "children": 5,
+            "entries": 156,
+            "path": "qa",
+            "sha": "808a61510361c71ce0b2d58f835c5436677291bd"
+          },
+          "path": "qa"
+        },
+        {
+          "after": {
+            "children": 0,
+            "entries": 66,
+            "path": "qa/b4-no-bypass",
+            "sha": "2f7f04080e2228a3c3a0a46ac5a5d8d5be18302e"
+          },
+          "before": {
+            "children": 0,
+            "entries": 66,
+            "path": "qa/b4-no-bypass",
+            "sha": "e47e9aefa45c322c13b84025991bf1873c816662"
+          },
+          "path": "qa/b4-no-bypass"
+        }
+      ],
+      "detail": "Each extension contains 1,849 complete valid directory records. Every record has the exact direct-subtree count, descendant-entry count and typed tree object ID rebuilt independently from all index paths/modes/blob IDs. No invalid cached tree record remains. Roots are a489b394666b8141840275128a780605b024cde0 and 8ebb37e523ad3932a58cf016af0a9f4e0eeb6638. Seven cache-tree records change, matching the seven canonical tree objects.",
+      "finding": "Both cache-tree extensions agree with independently rebuilt full Git directory trees.",
+      "id": "I03"
+    },
+    {
+      "counts": {
+        "flags": 0,
+        "mode": 0,
+        "sha": 21,
+        "stat": 21
+      },
+      "delta": {
+        "bytes": 13262,
+        "git_blob": "66f95068a8fee607e33d9744177e41f57011d7f5",
+        "sha256": "112150fc56dfc16d13c609166602fba9b084e1d11cbb9ee7602fa37058f27c5c"
+      },
+      "detail": "All 21 change blob ID and stat fields. No entry changes mode or flags. The other 15,222 complete raw entries, including padding and stat, are identical. The independently reconstructed 13,262-byte delta equals the original 66f95068 artifact.",
+      "finding": "Exactly 21 raw index entries change; the original full delta is reproduced byte-for-byte.",
+      "id": "I04"
+    },
+    {
+      "detail": "The actual-pinned e3ce before inventory and 457adb final inventory each have exactly 15,243 rows, with the identical physical row projection. The before index matches every recorded before index_mode/index_blob; the final index matches every final index_mode/index_blob/working_blob and the physical executable/symlink mode. This is a comparison of original captured/recovered bytes, not a fresh physical inventory observation.",
+      "finding": "All recorded before/final inventory paths and logical index fields agree.",
+      "id": "I05",
+      "inventories": {
+        "before": {
+          "bytes": 5633513,
+          "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+          "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202"
+        },
+        "final": {
+          "bytes": 5631947,
+          "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+          "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+        }
+      }
+    },
+    {
+      "audit": {
+        "all_15243_parsed_entries_equal": true,
+        "all_stat_fields_match_actual_files_claim_origin": "Unchanged original e8d606 validate_canonical_index used native lstat at 5a9; copied from original producer proof, not established by a new observer here.",
+        "full_raw_bytes_equal": true,
+        "new_lstat_calls": 0,
+        "original_artifact_raw_pin_equal": true,
+        "pin": {
+          "bytes": 4959960,
+          "git_blob": "d956ee8894e6e3c66824ca8dd3d74727aff9bbf7",
+          "sha256": "397e564459012a221d13a74aa23aa3e4e5294b2165725036ee8f23c6bd45239c"
+        },
+        "stat_values_parsed_from_original_index": true
+      },
+      "detail": "All 15,243 stat vectors, modes, flags, paths, blob IDs and raw-entry hashes, plus the exact TREE-extension header/payload hash, match the original audit. The serialized full audit equals d956ee8894e6e3c66824ca8dd3d74727aff9bbf7 and its original ARTIFACTS raw triple. The audit assertion all_stat_fields_match_actual_files derives from the unchanged original e8d606 validate_canonical_index native lstat comparison. This agent did not perform that comparison again, and decoding an index does not independently establish live filesystem stat.",
+      "finding": "The complete 4,959,960-byte final index audit is exactly reproduced from independently parsed index entries.",
+      "id": "I06"
+    },
+    {
+      "before": {
+        "bytes": 2868,
+        "git_blob": "6f96e5af9d40ace64ddebfe049e730df25c41f52",
+        "sha256": "afbcafbc3dfdb5674a75750c38d8e77991a0e8b337f09bb6fe8a492b67d8d385"
+      },
+      "detail": "Before contains 12 rows; final contains 70. The exact delta is 58 additions (29 canonical loose-object files and their 29 directories) plus changes to the existing HEAD, index and objects directory. No old path disappears. All old entries outside those three remain byte-for-byte equal. Existing objects identity/mode/uid/gid/device/inode fields remain equal; only its mtime/ctime/nlink change. All original numeric fields were parsed as Python integers.",
+      "final": {
+        "bytes": 16703,
+        "git_blob": "f4032cd8f6c1cceb7c46085664d8a28f24a1a31d",
+        "sha256": "4d8d21c385cb3e5148bd8fab3eb2e3b7143dd05d9ff59d317f74936d62259a40"
+      },
+      "finding": "All ownership-bearing metadata and the complete 61-row metadata delta are retained and consistent.",
+      "id": "I07"
+    },
+    {
+      "detail": "The packet full bytes equal the packet identity in the actual RESULT. This independent peer verifies path-set attribution and original complete metadata identities. Native loose-object body decompression/verification remains the original producer operation and is not claimed as a new read in this peer.",
+      "finding": "The new metadata paths are exactly the 29 original canonical packet object paths and their directories.",
+      "id": "I08",
+      "packet": {
+        "bytes": 3428251,
+        "git_blob": "bb4b4abd809047be4c9402b95fa2a2dc30b2ab78",
+        "sha256": "8201fdbaa5e6f6f7a3a27dcae2351f6d92405db1c1f427cba2322b90794c5af6"
+      }
+    },
+    {
+      "detail": "Index size/SHA, HEAD newline bytes/SHA, config size/SHA, and Merkle tree roots all agree with the before/final states and the actual RESULT. Config metadata is unchanged. Ref directories contain no recorded files, packed-refs is absent, and both Git states have the original empty-ref size/hash. This is complete captured-state consistency, not a new current observation.",
+      "finding": "Both raw Git state records agree with index and metadata identities.",
+      "id": "I09"
+    },
+    {
+      "detail": "An independently implemented DFS projection and the frozen c77e pure projector agree on both inputs. Before projected bytes equal the actual 50f/41e V5 record 42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a exactly. Final projects to 15,213 bytes, Git 8d4b2850c10642466b55471af2191f2a5c5332fa. The complete 70-row uid/gid-bearing original f4032cd8 remains the actual canonical baseline. The final projection is explicitly derived and is not a live V5 observation.",
+      "finding": "Canonical-to-V5 bridge is verified on the actual complete metadata.",
+      "id": "I10",
+      "projection": {
+        "before": {
+          "bytes": 2654,
+          "git_blob": "42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a",
+          "sha256": "2a980585e50ec38b223fef002990f42e122b7f8a57b49298c32de6c7c67a24b9"
+        },
+        "final": {
+          "bytes": 15213,
+          "git_blob": "8d4b2850c10642466b55471af2191f2a5c5332fa",
+          "sha256": "528867bccf074247b9b18871954f2b2dd7c126188ac5d08fe46457b724ac98c9"
+        }
+      }
+    },
+    {
+      "detail": "These original bytes can be used as the actual canonical index/complete-metadata inputs of the separate late-binding review. Root retains responsibility for the same-job terminal/admission, 94 commands, 33 intents, staged controls and whole run closure. Final executable cfg/typed requests and live admission remain separate prerequisites. No H, source/ref write, Git command, project gate or live filesystem observer was called.",
+      "finding": "No concrete index/metadata mismatch found in this fixed scope.",
+      "id": "I11"
+    }
+  ],
+  "format": "hepta-canonical-5a9-index-metadata-independent-review-v1",
+  "live_lstat_calls": 0,
+  "native_audit_recovery_review": "1f8f68796357dfb3d221b0ca91863e9e30683351",
+  "no_concrete_mismatch_in_reviewed_scope": true,
+  "project_commands": 0,
+  "proofs": {
+    "CANONICAL_FINAL_V5_PROJECTION.derived.json": {
+      "bytes": 15213,
+      "git_blob": "8d4b2850c10642466b55471af2191f2a5c5332fa",
+      "sha256": "528867bccf074247b9b18871954f2b2dd7c126188ac5d08fe46457b724ac98c9"
+    },
+    "FULL_GET_CONTENT_INDEX.json": {
+      "bytes": 2930,
+      "git_blob": "896be177d6b4f472186ea075acfc37205fc9dadd",
+      "sha256": "0d611cf1122881af868710fe4425fb3590e0999a9d1f47530cbe6d9c3262eab4"
+    },
+    "INDEX_METADATA_DATAFLOW.json": {
+      "bytes": 36419,
+      "git_blob": "6f7995ceedad50b72f6b5298a39cccf973cc1a1a",
+      "sha256": "252942da091de5cb93f7e9b432b84bc6c86bab2f3384494d8b2f140018a39e6c"
+    },
+    "audit_index_metadata.py": {
+      "bytes": 19649,
+      "git_blob": "645b65976fe5838a5547ec6bff001a61930f36ed",
+      "sha256": "aeeb39ba138154a8a5f21bb969f91c8818c362bb39bb08ea226834a07f56549e"
+    }
+  },
+  "qualification": false,
+  "separate_source_recovery_placement": "29bff7138b54ec375b8cd96779edfa090f271e2d",
+  "status": "ACTUAL_CAPTURED_INDEX_AND_METADATA_CONSISTENT"
+}

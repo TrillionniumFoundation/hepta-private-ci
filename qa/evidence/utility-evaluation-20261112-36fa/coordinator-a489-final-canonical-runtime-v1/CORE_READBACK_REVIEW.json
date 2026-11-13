@@ -1,0 +1,98 @@
+{
+  "complete_fixed_version_coverage": true,
+  "format": "hepta-canonical-actual-core-native-binary-readback-v1",
+  "job_id": "1a1d4cbd33e-392-5a9",
+  "qualification": false,
+  "records": [
+    {
+      "bytes": 224883,
+      "chunks": [
+        {
+          "chunk_sha256": "6ed57120cc2bc5e01bea476faa05a751f5d2aca1a0c47f038096b382da8c78c6",
+          "next_offset": 65536,
+          "offset": 0,
+          "sdk": "RESULT.json.READ_01.original.json"
+        },
+        {
+          "chunk_sha256": "32c5fcc28aaf8133710fade2fbb63dd8283c805bc45b3f36a0755484b86707dd",
+          "next_offset": 131072,
+          "offset": 65536,
+          "sdk": "RESULT.json.READ_02.original.json"
+        },
+        {
+          "chunk_sha256": "32b2cbc128bd7fc8530428a32567164a73183e4dabeee1a26014327cafacf18a",
+          "next_offset": 196608,
+          "offset": 131072,
+          "sdk": "RESULT.json.READ_03.original.json"
+        },
+        {
+          "chunk_sha256": "c1532a3a6c19d13aa8aa52c9be728b7c0cf2077097d10d908725e4178341119c",
+          "next_offset": 224883,
+          "offset": 196608,
+          "sdk": "RESULT.json.READ_04.original.json"
+        }
+      ],
+      "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+      "name": "RESULT.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/RESULT.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/RESULT.json",
+      "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222",
+      "version": "2050:51123508:224883:1794571527537673910:1794571527537673910"
+    },
+    {
+      "bytes": 108578,
+      "chunks": [
+        {
+          "chunk_sha256": "fe46c24a1af64ec8b36b9af2cac9acbadffa631990b93463c05d83e2121afd56",
+          "next_offset": 65536,
+          "offset": 0,
+          "sdk": "ARTIFACTS.json.READ_01.original.json"
+        },
+        {
+          "chunk_sha256": "7f9c06256b4df2fc3470c381539ceb9609f63cab13a7ca75d9c4bdaf4c3d5463",
+          "next_offset": 108578,
+          "offset": 65536,
+          "sdk": "ARTIFACTS.json.READ_02.original.json"
+        }
+      ],
+      "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+      "name": "ARTIFACTS.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/ARTIFACTS.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/ARTIFACTS.json",
+      "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c",
+      "version": "2050:51123511:108578:1794571527542602290:1794571527542602290"
+    },
+    {
+      "bytes": 2376,
+      "chunks": [
+        {
+          "chunk_sha256": "cb1114f3612e649509e79e08410f9397a0310cc5bd5e0c4f08340e56b458521a",
+          "next_offset": 2376,
+          "offset": 0,
+          "sdk": "STAGING_READBACK.json.READ_01.original.json"
+        }
+      ],
+      "git_blob": "198c4ea7f93e41dec443cc4e035eabfe3763a85d",
+      "name": "STAGING_READBACK.json",
+      "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/STAGING_READBACK.json",
+      "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/STAGING_READBACK.json",
+      "sha256": "cb1114f3612e649509e79e08410f9397a0310cc5bd5e0c4f08340e56b458521a",
+      "version": "2050:51122599:2376:1794571491718657054:1794571491718657054"
+    },
+    {
+      "bytes": 706,
+      "git_blob": "12bf4c2746e98eed83b90afaff37e11ee867df08",
+      "name": "STDOUT.original.txt",
+      "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/STDOUT.original.txt",
+      "sha256": "9fbd6c2460a9e052a1a2c1ed59740dc92c1a98de27b9a365e241c1deaa5114f7"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "name": "STDERR.original.txt",
+      "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/STDERR.original.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "terminal_and_full_streams_equal": true
+}

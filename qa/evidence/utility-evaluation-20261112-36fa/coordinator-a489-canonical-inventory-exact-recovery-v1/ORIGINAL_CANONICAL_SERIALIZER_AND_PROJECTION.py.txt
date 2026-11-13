@@ -1,0 +1,38 @@
+def gzrecord(name, raw):
+    gz = gzip.compress(raw,mtime=0)
+    check(gzip.decompress(gz)==raw,'gzip roundtrip')
+    row = write(name+'.gz',gz)
+    row.update(raw_bytes=len(raw),raw_sha256=sha256(raw),raw_git_blob=oid('blob',raw),parts=[])
+    for n, off in enumerate(range(0,len(gz),262144),1):
+        block = gz[off:off+262144]
+        part = write(name+'.gz.part-%03d.b64'%n,base64.b64encode(block)+b'\n')
+        part.update(decoded_offset=off,decoded_bytes=len(block),decoded_sha256=sha256(block))
+        row['parts'].append(part)
+    return row
+
+
+def inventory_summary(raw):
+    value = parse(raw)
+    check(value['tracked_entries']==LEAVES and value['filesystem_entries']==LEAVES,
+          'complete physical/index population')
+    check(len(value['files'])==LEAVES and all(r.get('stable') is True for r in value['files']),
+          'complete stable physical inventory')
+    return {'bytes':len(raw),'sha256':sha256(raw),'git_blob':oid('blob',raw),
+            'tracked_entries':value['tracked_entries'],'filesystem_entries':value['filesystem_entries']}
+
+
+def physical_projection(raw):
+    value=parse(raw)
+    inventory_summary(raw)
+    rows={}
+    for row in value['files']:
+        path=row['path']
+        check(path not in rows and not path.startswith('/') and
+              all(p not in ('','.','..','.git') for p in path.split('/')), 'safe unique physical path')
+        check(row['kind'] in ('file','symlink') and row['stable'] is True, 'supported stable physical leaf')
+        mode='120000' if row['kind']=='symlink' else ('100755' if row['permissions']&0o111 else '100644')
+        rows[path]={'mode':mode,'sha':row['working_blob'],'bytes':row['bytes'],'sha256':row['sha256'],
+                    'physical':{k:v for k,v in row.items() if k not in ('index_blob','index_mode','matches_index')}}
+    check(len(rows)==LEAVES,'all physical leaves included')
+    return rows
+

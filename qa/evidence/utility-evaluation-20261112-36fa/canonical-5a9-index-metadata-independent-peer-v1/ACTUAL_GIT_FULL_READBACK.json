@@ -1,0 +1,92 @@
+{
+  "H_calls": 0,
+  "created_at": "2026-11-13T12:28:02.554481+00:00",
+  "entries": [
+    {
+      "actual_create": true,
+      "actual_full_get": true,
+      "bytes": 16621,
+      "full_readback_equal": true,
+      "git_blob": "e8c87c9ef2dfb09f1db40533b675b4032c852f9d",
+      "local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/REVIEW.json",
+      "name": "REVIEW.json",
+      "sdk_identity": {
+        "bytes": 36439,
+        "git_blob": "d1aa18c5cd42e598a5e81b933a68513becdf6b06",
+        "sha256": "764a64976692c8b053bfa8a76f4e8833f3531d0e4b155540d23032645c69088b"
+      },
+      "sdk_local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/github/REVIEW.json.PUBLISH.original.json",
+      "sha256": "bb0887f5807fb7d337e124596b6bb9c547b86d65fd45993ffb73bf5bf23f9059"
+    },
+    {
+      "actual_create": true,
+      "actual_full_get": true,
+      "bytes": 36419,
+      "full_readback_equal": true,
+      "git_blob": "6f7995ceedad50b72f6b5298a39cccf973cc1a1a",
+      "local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/INDEX_METADATA_DATAFLOW.json",
+      "name": "INDEX_METADATA_DATAFLOW.json",
+      "sdk_identity": {
+        "bytes": 79567,
+        "git_blob": "1b33f3194b120a943dbad7be9276f4aa4267c939",
+        "sha256": "0ae042edeca4f5bbb7310cc7a04f4078996e396da34a5f3f80d0f46ad1d7ad21"
+      },
+      "sdk_local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/github/INDEX_METADATA_DATAFLOW.json.PUBLISH.original.json",
+      "sha256": "252942da091de5cb93f7e9b432b84bc6c86bab2f3384494d8b2f140018a39e6c"
+    },
+    {
+      "actual_create": true,
+      "actual_full_get": true,
+      "bytes": 19649,
+      "full_readback_equal": true,
+      "git_blob": "645b65976fe5838a5547ec6bff001a61930f36ed",
+      "local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/audit_index_metadata.py",
+      "name": "audit_index_metadata.py",
+      "sdk_identity": {
+        "bytes": 40825,
+        "git_blob": "e0c467de6b54736dc80c467b5962e4e17510b91b",
+        "sha256": "63decf638463130c96a1680c93cf5128d97c17b4f0a671a1d36fcba9207b08bd"
+      },
+      "sdk_local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/github/audit_index_metadata.py.PUBLISH.original.json",
+      "sha256": "aeeb39ba138154a8a5f21bb969f91c8818c362bb39bb08ea226834a07f56549e"
+    },
+    {
+      "actual_create": true,
+      "actual_full_get": true,
+      "bytes": 15213,
+      "full_readback_equal": true,
+      "git_blob": "8d4b2850c10642466b55471af2191f2a5c5332fa",
+      "local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/CANONICAL_FINAL_V5_PROJECTION.derived.json",
+      "name": "CANONICAL_FINAL_V5_PROJECTION.derived.json",
+      "sdk_identity": {
+        "bytes": 34553,
+        "git_blob": "0001c948800e7fddb7e14dc863685c26319e5115",
+        "sha256": "734c5780df129fce4fc8099b7898fb0720c450833ec45c4cff8bc3a0dd6a7723"
+      },
+      "sdk_local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/github/CANONICAL_FINAL_V5_PROJECTION.derived.json.PUBLISH.original.json",
+      "sha256": "528867bccf074247b9b18871954f2b2dd7c126188ac5d08fe46457b724ac98c9"
+    },
+    {
+      "actual_create": true,
+      "actual_full_get": true,
+      "bytes": 2930,
+      "full_readback_equal": true,
+      "git_blob": "896be177d6b4f472186ea075acfc37205fc9dadd",
+      "local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/FULL_GET_CONTENT_INDEX.json",
+      "name": "FULL_GET_CONTENT_INDEX.json",
+      "sdk_identity": {
+        "bytes": 7337,
+        "git_blob": "54e28f68e85545155b4f1f1eec0300df0fc487d8",
+        "sha256": "6e9df5146b86d41a85a6681ddcba0110f494f5538572a9570a0e7fa36d4bd1c8"
+      },
+      "sdk_local_path": "/tmp/hepta-36fa-canonical-5a9-index-metadata-independent-peer-v1/github/FULL_GET_CONTENT_INDEX.json.PUBLISH.original.json",
+      "sha256": "0d611cf1122881af868710fe4425fb3590e0999a9d1f47530cbe6d9c3262eab4"
+    }
+  ],
+  "format": "hepta-independent-peer-git-readback-v1",
+  "live_lstat_calls": 0,
+  "note": "Complete SDK payloads for these five create/GET operations are preserved locally. This ledger does not assert durable archival of every original input SDK wrapper; FULL_GET_CONTENT_INDEX records that narrower distinction.",
+  "qualification": false,
+  "scope": "Five immutable outputs of the independent captured 5a9 index/metadata review; original input content evidence is indexed separately.",
+  "source_or_ref_mutations": 0
+}

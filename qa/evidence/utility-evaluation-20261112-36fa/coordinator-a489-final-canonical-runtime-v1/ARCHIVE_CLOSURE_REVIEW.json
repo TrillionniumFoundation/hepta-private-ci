@@ -1,0 +1,53 @@
+{
+  "archive_publication_failures_in_104_member_batch": 0,
+  "closed_index": {
+    "bytes": 110230,
+    "git_blob": "5d8fbb094e98cbc2a6a803ff47da6ad84d94a850",
+    "sha256": "c6fa5ca58ae8c5c7e4602c3f577c4b4a7f3d21ad9bcebb1aa613078f4b1ade99"
+  },
+  "fixed_cut_at_utc": "2026-11-13T12:25:24.985497+00:00",
+  "fixed_members": 161,
+  "format": "hepta-fixed-canonical-runtime-archive-closure-v1",
+  "full_get_ledger": {
+    "bytes": 211872,
+    "git_blob": "88875eafdb62f7244bdf08d773adc4df2ccd413b",
+    "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/FULL_GIT_READBACK_LEDGER.json",
+    "sha256": "ee6ad4be87f29e9670e87985cbe2ef4133b5a00e9f37f76c891cc7eea51a8b2c"
+  },
+  "job_id": "1a1d4cbd33e-392-5a9",
+  "leaf_cap_bytes": 512000,
+  "local_reviewer_errors_preserved": [
+    "Initial reviewer incorrectly expected timed_out on the original OBJECT_BATCH special schema; original error and corrected reviewer are retained.",
+    "Initial cloud archive collector attempted to read the helper transport-save-parts directory as a file; original error and exact exclusion correction are retained."
+  ],
+  "maximum_payload_leaf_bytes": 409601,
+  "native_binary_read_sdk_wrappers_preserved": 58,
+  "native_read_calls_are_historical_completed_observations": true,
+  "native_read_failures": 0,
+  "new_members_saved": 104,
+  "new_native_operations_for_archive": 0,
+  "next_source_or_native_dispatch_authorized_by_this_record": false,
+  "no_source_or_remote_ref_mutation_by_archive": true,
+  "prior_claims_revalidated": 57,
+  "provenance_counts": {
+    "bounded-exact-dispatched-request": 3,
+    "complete-actual-native-file-readback-proof": 23,
+    "complete-actual-native-staging-file": 5,
+    "decoded-original-native-artifact-or-exact-original-format-part": 30,
+    "exact-recovered-original-index-audit-material": 7,
+    "fixed-runtime-control-or-review": 35,
+    "original-native-binary-read-sdk": 58
+  },
+  "qualification": false,
+  "representation_boundaries": [
+    "Both raw indices were fully read through original compressed files and stable-version chunks; the original-format bounded parts preserve their exact bytes.",
+    "The complete original index audit was reconstructed from the actual raw indices and accepted only after all original raw/gzip/part identities matched. No new lstat or second H audit download occurred.",
+    "The full source inventory recovery is separately preserved by placement 29bff7138b54ec375b8cd96779edfa090f271e2d, using preheld bytes matched to actual producer identities.",
+    "The two large staging bodies were not externally downloaded again; exact preheld dispatched bytes are bound by the actual bootstrap full-readback and terminal input audit.",
+    "The 505 original catalogue entries are references, not a claim of 505 external file downloads.",
+    "Generated Git publication SDK files are supporting records for the ledger, not an unbounded recursive expansion of the fixed native evidence set."
+  ],
+  "status": "FIXED_CLOSED_SET_ALL_ACTUAL_GIT_FULL_GET_EQUAL",
+  "tests_started": 0,
+  "unique_blob_count": 155
+}

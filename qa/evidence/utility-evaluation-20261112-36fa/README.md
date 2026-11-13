@@ -1,3 +1,49 @@
+# Actual final canonical alignment; qualification remains pending
+
+This checkpoint adds the original evidence for canonical job `1a1d4cbd33e-392-5a9` and the separately reviewed qualification-admission code/configuration layers. It preserves the preceding `012066007240146d41bc2e1609aec965c411ae2b` checkpoint and every historical non-README path. The preceding README follows verbatim below.
+
+## Actual completed operation
+
+The one exact approved request `fd655e0dea612e9dd13d4026c11d01b811c8fd8d` completed with original supervisor success / exit 0, complete durable output, and no timeout, cancellation or automatic retry. The isolated repository has detached HEAD `b6084394a4a38ab495c16eaba09e879f04a96f8e`, sole parent `d25675445c39f76db69a7bd8e71a1a72e1cd5b9f`, and matching index/tree `8ebb37e523ad3932a58cf016af0a9f4e0eeb6638`.
+
+The actual clean inventory contains 15,243 files: `457adb9bf9ba3a844e9dfa149be49460bb306998`, 5,631,947 bytes, SHA-256 `de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e`. Physical bytes and modes are identical to the closed actual 50f result. Alignment imported 29 exact objects and performed four approved index/HEAD operations, with zero physical source writes. It ran no source gate or native test.
+
+Root independently fetched 63 original SDK/control bodies and replayed all 58 binary-read receipts into 31 complete fixed-version paths. The same-job approval/request/admission/normal/streams, all 94 observed command terminals, 33 observed mutation intents, eight final inputs, three final audits, complete source inventories, both full snapshot trees and the 16,523-object request listing reconcile. The 505 catalogue rows retain original producer identities; they do not imply 505 separate external downloads.
+
+- [Root actual source/runtime closure](root-5a9-actual-closure/ROOT_5A9_ACTUAL_SOURCE_RUNTIME_CLOSURE.json) — `9144fb5ba97d90393446cd1f919d480c27ca6dbc`.
+- [Root original full-GET ledger](root-5a9-actual-closure/ROOT_5A9_ORIGINAL_FULL_GET.json) and [offline verifier](root-5a9-actual-closure/review_5a9_actual_closure.py).
+- [Original runtime archive](coordinator-a489-final-canonical-runtime-v1/PLACEMENT.json) — `1e7b390f93ff2f41fc2c457d0753b26dae6ef65c`, 166 payloads plus placement, including all 58 binary SDK originals.
+- [Complete inventory recovery](coordinator-a489-canonical-inventory-exact-recovery-v1/PLACEMENT.json) — exact raw/gzip/all ten original parts, with no second host inventory download.
+
+## Independent index and ownership metadata review
+
+Both actual 2,080,152-byte indexes pass complete parsing and checksums. Each has 15,243 normal stage-zero entries and 1,849 valid cache-tree records; every cached directory count and tree identity matches the independently rebuilt full tree. Exactly 21 entries change blob/stat fields, with no mode or flag change; the other 15,222 raw entries are identical. The complete entry delta is reproduced exactly.
+
+Original metadata grows from 12 to 70 rows. Its exact 61-row delta comprises 29 new object files, 29 new directories, and changes to the existing HEAD, index and objects directory. No old path disappears. Complete uid/gid and exact integer nanoseconds remain in actual baseline `f4032cd8f6c1cceb7c46085664d8a28f24a1a31d`. The separate V5 compatibility projection is derived, not a new live observation. The full 4,959,960-byte index audit is recovered exactly from the original index; live filesystem-stat comparison remains attributed to the original producer.
+
+See the [independent index/metadata review](canonical-5a9-index-metadata-independent-peer-v1/REVIEW.json) (`e8c87c9ef2dfb09f1db40533b675b4032c852f9d`) and [complete placement](canonical-5a9-index-metadata-independent-peer-v1/PLACEMENT.json).
+
+## Qualification preparation
+
+Frozen admission successor `c77e3be6230d3267c08333be582f69f23c016fb9` retains all 13 original definitions: nine are byte-identical and four explicitly bridge the reviewed historical/current schemas. It preserves the original live environment, coordination, complete source, index and ownership checks. The [independent code review](final-qualification-admission-code-independent-peer-v1/REVIEW.json) found no concrete static blocker within its scope.
+
+The [actual-binding layer](final-qualification-admission-actual-binding-v1/PLACEMENT.json) separately binds the real 5a9 records; the earlier frozen HOLD is not rewritten. Its [independent review](final-qualification-actual-binding-independent-peer-v1/REVIEW.json) keeps 3bb/41e/50f, historical runtime/ENV and V8 restoration evidence distinct.
+
+The [execution-candidate layer](final-qualification-admission-execution-candidate-v1/PLACEMENT.json) changes only the two original READY states, engineering approval Boolean and dependent source-config byte/hash triplet. Its [independent exact-delta review](final-qualification-ready-config-independent-peer-v1/REVIEW.json) confirms that reversing only those values restores both complete HOLD byte strings. Prepared READY data does not itself authorize execution.
+
+The exact source bootstrap/typed request and separate Root action decision are outside this checkpoint. Source gates must run first, preserving phase budgets 600/300/4800 seconds and outer 7200 seconds. Later native qualification retains the original 14 phases, 45000-second outer budget, ordinary packages, full evaluation library, focused cases and exact Root 48-FQN/JUnit checks. Future source/native results remain null. The inherited finalizer may report secondary `SourceChanged` before an initial Git snapshot exists; that secondary exception alone does not establish source mutation.
+
+## Real utility boundary
+
+`qualification=false`; real authorized A → original Training owner → independent B → Adopt or complete NoUpdate → new C → daemon/Root process cold-recovery chains completed: **0**. The source branch and draft PR remain at `cc57c7198db6293ccca562253c42fffbe2a04633`. No merge, deployment or learning activation occurred.
+
+Engineering receipts do not supply original Model/Selector/Version/FinalUse authority, independently identified outcomes, a complete frozen cost ledger, available authorized model materials, actual new-consumer use or genuine process cold recovery. Missing evidence remains Unknown; it is not converted into NoUpdate or Objective Fraud. Recorded normal-host integration and original-owner gaps remain open.
+
+---
+
+## Preserved preceding checkpoint
+
+
 # Hepta utility evaluation: actual maintenance, final source receipts, and b608 candidate
 
 This checkpoint closes the actual **41e maintenance** and **50f four-file application plus final formatter**. It also preserves the immutable `b6084394` source candidate and the precisely bound inputs for a subsequent canonical Git alignment. Canonical execution and source/native qualification results are outside this frozen checkpoint.

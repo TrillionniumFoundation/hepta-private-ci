@@ -1,0 +1,17 @@
+--- freeze_runtime_archive.py
++++ freeze_runtime_archive.v2.py
+@@ -41,10 +41,14 @@
+ create(ROOT / 'RUNTIME_LARGE_REPRESENTATIONS.json', encoded(representations))
+ 
+ top = ['ROOT_EXACT_APPROVAL.original.json', 'ROOT_EXACT_APPROVAL.GIT_GET.original.json', 'MAIN_DISPATCH_INTENT.json', 'MAIN_ADMISSION.original.json', 'STATUS_01.original.json', 'STATUS_02.original.json', 'STREAM_READ_01.original.json', 'STDOUT.original.txt', 'STDERR.original.txt', 'RESULT.json', 'ARTIFACTS.json', 'STAGING_READBACK.json', 'CORE_READBACK_REVIEW.json', 'ACTUAL_RUNTIME_READBACK_REVIEW.json', 'STAGING_IDENTITY_REVIEW.json', 'decode_core.py', 'decode_artifact.py', 'recover_index_audit.py', 'verify_actual_runtime.py', 'verify_actual_runtime.initial.py', 'verify_actual_runtime.v2.py', 'LOCAL_VERIFIER_EXEC_01.original.json', 'LOCAL_VERIFIER_EXEC_02.original.json', 'LOCAL_REVIEW_SCHEMA_CORRECTION.json', 'LOCAL_REVIEW_SCHEMA_CORRECTION.diff', 'LOCAL_INTENT_PREPARE_EXEC.original.json', 'LOCAL_METADATA_DECODE_EXEC.original.json', 'LOCAL_SCHEMA_CORRECTION_EXEC.original.json', 'LOCAL_SCHEMA_INSPECTION_EXEC.original.json', 'RUNTIME_LARGE_REPRESENTATIONS.json', 'freeze_runtime_archive.py']
++top += ['freeze_runtime_archive.v2.py', 'LOCAL_ARCHIVE_FREEZE_EXEC_01.original.json', 'LOCAL_ARCHIVE_FREEZE_CORRECTION.json', 'LOCAL_ARCHIVE_FREEZE_CORRECTION.diff']
+ selected = [(ROOT / name, 'fixed-runtime-control-or-review') for name in top]
+ selected += [(path, 'original-native-binary-read-sdk') for path in sorted(ROOT.iterdir()) if re.fullmatch(r'.+\.READ_[0-9]{2}\.original\.json', path.name)]
+ selected += [(path, 'complete-actual-native-file-readback-proof') for path in sorted(ROOT.iterdir()) if path.name.endswith('.DECODED_READBACK.json')]
+ for path in sorted((ROOT / 'artifacts').iterdir()):
++    if path.name == 'transport-save-parts':
++        assert path.is_dir()
++        continue
+     if '.PUBLISH_' in path.name or path.name.endswith('.gz') or path.name in ('INDEX.before.raw', 'INDEX.final.raw'):
+         continue
+     selected.append((path, 'decoded-original-native-artifact-or-exact-original-format-part'))

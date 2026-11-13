@@ -1,0 +1,7 @@
+{
+  "chunk_id": "f1f263",
+  "wall_time_seconds": 0.03290797,
+  "exit_code": 0,
+  "original_token_count": 285,
+  "output": "{\n  \"missing_timeout\": [\n    {\n      \"ordinal\": 74,\n      \"actual_terminal\": \"observed\",\n      \"argv\": [\n        \"/usr/bin/git\",\n        \"--no-optional-locks\",\n        \"-C\",\n        \"/home/qian-qi/hepta-utility-36fa-provider-coordinator-a489-isolated-v1\",\n        \"cat-file\",\n        \"--batch\"\n      ],\n      \"finished_at\": \"2026-11-13T12:05:10.024472+00:00\",\n      \"objects\": 16523,\n      \"objects_observed\": 16523,\n      \"purpose\": \"full two-snapshot original object validation\",\n      \"raw_payload_scope\": \"Per-object exact full bytes are hashed; exact approved canonical bodies remain in the original packet. No new history reads.\",\n      \"returncode\": 0,\n      \"started_at\": \"2026-11-13T12:05:03.818112+00:00\",\n      \"stderr\": {\n        \"bytes\": 0,\n        \"git_blob\": \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\",\n        \"name\": \"OBJECT_BATCH.stderr\",\n        \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n      },\n      \"stdin_sha256\": \"2eae7b32fb9d6591044677a82a1de7cebece7f4e913360c8f003bbf2b929e254\"\n    }\n  ]\n}\ninitial_script_sha256=caf7c28c4a72f945809cbb43d64921561d8277919f9414579f73fd652391cbc6\n"
+}

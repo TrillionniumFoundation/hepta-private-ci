@@ -1,0 +1,7 @@
+{
+  "chunk_id": "000ab3",
+  "wall_time_seconds": 0.19827487,
+  "exit_code": 1,
+  "original_token_count": 198,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/freeze_runtime_archive.py\", line 60, in <module>\n    raw = path.read_bytes()\n          ^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nIsADirectoryError: [Errno 21] Is a directory: '/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/artifacts/transport-save-parts'\n"
+}

@@ -1,0 +1,11 @@
+{
+  "exact_correction": "93 ordinary command records keep explicit timed_out=false; the one batch must equal the actually-read original OBJECT_BATCH.terminal.json and remains observed return0/16523 without a fabricated timed_out field.",
+  "final_script_sha256": "1ca422765fdb1f571737d1022251869cdde099734eed1847679adc86544f9a0d",
+  "format": "hepta-local-review-schema-correction-v1",
+  "initial_error": "Reviewer incorrectly required timed_out on original OBJECT_BATCH record 74; producer omits that field.",
+  "initial_failure_retained": "LOCAL_VERIFIER_EXEC_01.original.json",
+  "initial_script_sha256": "caf7c28c4a72f945809cbb43d64921561d8277919f9414579f73fd652391cbc6",
+  "native_impact": "None; no H command, rerun or original-record modification.",
+  "original_producer_function_sha256": "8c28f2e422b6ffd2fb200c4648d7a940b9ea355c40d7125ce57a0edcbf32349f",
+  "source_changes": false
+}

@@ -1,0 +1,40 @@
+{
+  "actual": {
+    "bytes": 4310,
+    "git_blob": "3deb21a26ae251da6ea0db485811cdcd5b6cd593",
+    "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/artifacts/INDEX.complete-entry-delta.json.gz",
+    "sha256": "44129318730a270d3296f587ab6454410fabf6ff292e3b06a01e5b132eb997de"
+  },
+  "decoded_raw": {
+    "bytes": 13262,
+    "git_blob": "66f95068a8fee607e33d9744177e41f57011d7f5",
+    "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/artifacts/INDEX.complete-entry-delta.json",
+    "sha256": "112150fc56dfc16d13c609166602fba9b084e1d11cbb9ee7602fa37058f27c5c"
+  },
+  "exact_original_format_parts_derived_from_actual_native_gzip": [
+    {
+      "bytes": 5749,
+      "git_blob": "8eed4570570cc571381e96bd226b573c0b6c22bc",
+      "path": "/tmp/hepta-36fa-coordinator-a489-final-canonical-runtime-v1/artifacts/INDEX.complete-entry-delta.json.gz.part-001.b64",
+      "sha256": "a8671da022ab0ef3100df7ececa554b2d6cdf16f7dc0809d9231456c7de47d6b"
+    }
+  ],
+  "format": "hepta-actual-canonical-artifact-binary-readback-v1",
+  "full_bytes_read_from_original_native_file": true,
+  "name": "INDEX.complete-entry-delta.json.gz",
+  "native_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/run/INDEX.complete-entry-delta.json.gz",
+  "reads": [
+    {
+      "chunk_sha256": "44129318730a270d3296f587ab6454410fabf6ff292e3b06a01e5b132eb997de",
+      "next_offset": 4310,
+      "offset": 0,
+      "sdk": "INDEX.complete-entry-delta.json.gz.READ_01.original.json",
+      "sdk_identity": {
+        "bytes": 6264,
+        "git_blob": "1e43ad7c4ac4507887ce1f21f0ac849a13f3f75c",
+        "sha256": "1220418539287a7016f29e0eb98f358aff4f26150fdb053400a4abb410bb6e77"
+      }
+    }
+  ],
+  "version": "2050:51123421:4310:1794571526799372196:1794571526799372196"
+}

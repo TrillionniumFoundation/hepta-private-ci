@@ -1,0 +1,15 @@
+--- verify_actual_runtime.initial.py
++++ verify_actual_runtime.v2.py
+@@ -80,7 +80,11 @@
+ mutations = get('artifacts/MUTATION_PROGRESS.json')
+ assert commands == result['commands'] and len(commands) == 94
+ assert mutations == result['mutation_intents'] and len(mutations) == 33
+-assert all(row['actual_terminal'] == 'observed' and row['returncode'] == 0 and row['timed_out'] is False for row in commands)
++assert all(row['actual_terminal'] == 'observed' and row['returncode'] == 0 for row in commands)
++standard_commands = [row for row in commands if 'timed_out' in row]
++object_batches = [row for row in commands if 'timed_out' not in row]
++assert len(standard_commands) == 93 and all(row['timed_out'] is False for row in standard_commands)
++assert object_batches == [get('artifacts/OBJECT_BATCH.terminal.json')]
+ assert all(row['terminal'] == 'observed' and 'completed_at' in row for row in mutations)
+ batch = get('artifacts/OBJECT_BATCH.terminal.json')
+ assert batch['actual_terminal'] == 'observed' and batch['returncode'] == 0

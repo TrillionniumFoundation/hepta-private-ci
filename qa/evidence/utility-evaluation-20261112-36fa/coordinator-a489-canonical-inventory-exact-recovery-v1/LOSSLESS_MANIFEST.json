@@ -1,0 +1,142 @@
+{
+  "catalog": {
+    "bytes": 108578,
+    "git_blob": "84efb7055e5f8d4bbb5d37e1fa93769d36e69ded",
+    "sha256": "a2805ebc9fb22fb1dde43b0436f8ce8bb09e69395cd72b4a07b834c11e90a81c"
+  },
+  "derived_native_projection_expected_only": {
+    "bytes": 3543409,
+    "git_blob": "4e3589d81ef758d55d62a79e3e6c099ba59c5076",
+    "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/NATIVE.expected_from_actual_clean_inventory.json",
+    "name": "NATIVE.expected_from_actual_clean_inventory.json",
+    "sha256": "6cc21c8815ccc96153a1df5aa9f73cccd2c0335fa4960e9f2edb0379af552dde"
+  },
+  "format": "hepta-original-raw-gzip-part-reconstruction-manifest-v1",
+  "producer": {
+    "bytes": 224883,
+    "git_blob": "5aa9590a7b68504bd58ad0d0b889605c7e8ad71d",
+    "sha256": "2e35342d728eb88cb81f16a43fbc8e014416b3ec730815ebfc94df9017bfd222"
+  },
+  "provenance": "No new H inventory read. Pre-held raw content is accepted only after all actual full identities agree.",
+  "recovered": [
+    {
+      "endpoint": "before",
+      "gzip": {
+        "bytes": 1266970,
+        "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz",
+        "name": "SOURCE.before.inventory.json.gz",
+        "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+      },
+      "original_parts": [
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "eb4045622c5c1a62ecb921efe35844a102977821",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-001.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-001.b64",
+          "sha256": "e19f930af8e1fcc3c11f01199bbbe9bf78c366896f71d5da269f165a94aa38e9"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "079ba1506bad62cbdfb7eeed32765159a6106a83",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-002.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-002.b64",
+          "sha256": "81865f2b230a948dddf90945d12a25d638ddaf95926f612af8543a3dde21e9a2"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "8f18386f82374b900f65c3dddc8aed77ebd812ff",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-003.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-003.b64",
+          "sha256": "15856edddd91d3a813e8202d89c3d3f29229550e22adfbdcf286e80cfccaae5b"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "6a1d310681f746989751dce40b5c0de4861ff738",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-004.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-004.b64",
+          "sha256": "327cedc45fc61e3f2699badbda66d240fd60c70c5bf69ccc3a4f771c4d3c1e55"
+        },
+        {
+          "bytes": 291193,
+          "chars": 291193,
+          "git_blob": "73ee04599539bd729739a23dc5d0bf4fe1bac87b",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.json.gz.part-005.b64",
+          "name": "SOURCE.before.inventory.json.gz.part-005.b64",
+          "sha256": "729158a068c48b2680d0cc774d44411290b57d57fa38ee564680b225cd8d6286"
+        }
+      ],
+      "raw": {
+        "bytes": 5633513,
+        "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.before.inventory.exact_recovered.json",
+        "name": "SOURCE.before.inventory.exact_recovered.json",
+        "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202"
+      }
+    },
+    {
+      "endpoint": "final",
+      "gzip": {
+        "bytes": 1266064,
+        "git_blob": "fb0c0f4daa47218c30ca434ada497e4147b9e7e5",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz",
+        "name": "SOURCE.final.inventory.json.gz",
+        "sha256": "e8fb430f7bfff9ef4a65c0f4db9db48930b90c49455d00a56d437e748962e593"
+      },
+      "original_parts": [
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "406bded732688fc755066c2d163cab02daa21e08",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-001.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-001.b64",
+          "sha256": "cbb0b0e8e24df6839b96fb9fb0caf839d8624627d926074b044683e7f486194e"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "ea8f8355dd1d7e858f8246389e8b3daa340f7795",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-002.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-002.b64",
+          "sha256": "6b43b5d15abda949867c5850e903893545a55247332d9749710c7981ebb5d620"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "ec5599b324471b4986c532d08521dc52b416a228",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-003.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-003.b64",
+          "sha256": "57b2563e99886b9a29510e3193961907044b77a655bcd238c772add8a37883b4"
+        },
+        {
+          "bytes": 349529,
+          "chars": 349529,
+          "git_blob": "1bfbe65cf77456572ae25564a53e1fac9cf9838d",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-004.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-004.b64",
+          "sha256": "11c830b306a3691eb8ec1ce9f98465beeb9ec3d2fcc37aa68230661b8902000f"
+        },
+        {
+          "bytes": 289985,
+          "chars": 289985,
+          "git_blob": "016e895cebd225d5fb43fa3f8b640bb0d3fc631b",
+          "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.json.gz.part-005.b64",
+          "name": "SOURCE.final.inventory.json.gz.part-005.b64",
+          "sha256": "4424429ad03b1ac00eabb1277bf9bcb45b9d12afd0b536fdf7052354fe1f0c0c"
+        }
+      ],
+      "raw": {
+        "bytes": 5631947,
+        "git_blob": "457adb9bf9ba3a844e9dfa149be49460bb306998",
+        "local_path": "/tmp/hepta-36fa-coordinator-a489-canonical-inventory-exact-recovery-v1/SOURCE.final.inventory.exact_recovered.json",
+        "name": "SOURCE.final.inventory.exact_recovered.json",
+        "sha256": "de044334afed8b804f2a997f8b8e8d16e6e1c596d2a5b3400c40f350229b054e"
+      }
+    }
+  ],
+  "representation": "Each original gzip is the concatenation of five strict-base64 leaves; decode once then decompress losslessly."
+}

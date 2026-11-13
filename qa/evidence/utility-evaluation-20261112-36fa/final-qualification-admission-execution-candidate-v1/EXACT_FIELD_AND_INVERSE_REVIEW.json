@@ -1,0 +1,85 @@
+{
+  "all_keys_unchanged": true,
+  "complete_inverse_qualification_bytes_equal": true,
+  "complete_inverse_source_gate_bytes_equal": true,
+  "format": "hepta-two-config-permission-field-inverse-proof-v1",
+  "frozen_admission_code_unchanged": {
+    "bytes": 87654,
+    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+  },
+  "no_H_or_project_gate_or_Rust_execution": true,
+  "no_constructor_acquire_finish_live_or_main_called": true,
+  "normal_native_and_source_results_remains_null": true,
+  "not_an_execution_approval_remains_true": true,
+  "original_ready_data_predicate_true_for_candidate": true,
+  "original_source_wrapper_single_pure_data_expression": "cfg['schema'] == 'hepta.utility.desktop-source-gates.v1' and cfg['state'] == 'READY_FOR_EXACT_SOURCE_RUN' and (cfg['source_sha'] == INPUT['source']) and (cfg['source_tree'] == INPUT['tree']) and (cfg['object_repository'] == INPUT['repo']) and (cfg['driver_sha256'] == module.INVENTORY_PIN['sha256']) and (cfg['hepta_ci_exec_sha256'] == '9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1') and (cfg['budgets_seconds'] == {'source-closure': 600, 'self-test': 300, 'verify': 4800})",
+  "original_source_wrapper_unchanged": {
+    "bytes": 5610,
+    "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+    "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+  },
+  "qualification_after": {
+    "bytes": 24155,
+    "git_blob": "720abbdfa96bca8c7e6aaf633a800693960d80db",
+    "sha256": "ac5663c711d2d47669c334052e09151d2fbda34776ff41b0b8727804d322a840"
+  },
+  "qualification_before": {
+    "bytes": 24162,
+    "git_blob": "083694f6a08cb7a9fbaeea2227b2f60f8608219a",
+    "sha256": "136b8593115c0a9f5df9f9e7667235d55aa05853743805302df9c00e8d4caa38"
+  },
+  "qualification_changes": [
+    {
+      "after": true,
+      "before": false,
+      "path": "/root_execution_approved"
+    },
+    {
+      "after": 831,
+      "before": 847,
+      "path": "/source_gates_config_pin/bytes"
+    },
+    {
+      "after": "b97682c5a95bb7f09241e54f0b3d13bf7fa791a4",
+      "before": "0d3c48853572dc89a823ca9afb5d5487868189e6",
+      "path": "/source_gates_config_pin/git_blob"
+    },
+    {
+      "after": "f08beb0e1a0c87117bd7a091ec3c7b4390285cf47a291c0d7569fd0f1d2e197c",
+      "before": "602fd434d927f35bc6f0479211094ec2588aaf82e1a3855470e393d27117c6d8",
+      "path": "/source_gates_config_pin/sha256"
+    },
+    {
+      "after": "READY_FOR_FINAL_SOURCE_QUALIFICATION",
+      "before": "HOLD_FOR_EXACT_ROOT_QUALIFICATION_APPROVAL",
+      "path": "/state"
+    }
+  ],
+  "qualification_execution_dispatched_remains_false": true,
+  "same_predicate_false_for_frozen_HOLD": true,
+  "scope": "READY permission bytes prepared only under Root instruction; their preparation does not supply the separate exact engineering approval to stage or execute them.",
+  "source_gate_config_full_pin_exact": {
+    "bytes": 831,
+    "git_blob": "b97682c5a95bb7f09241e54f0b3d13bf7fa791a4",
+    "sha256": "f08beb0e1a0c87117bd7a091ec3c7b4390285cf47a291c0d7569fd0f1d2e197c"
+  },
+  "source_gates_after": {
+    "bytes": 831,
+    "git_blob": "b97682c5a95bb7f09241e54f0b3d13bf7fa791a4",
+    "sha256": "f08beb0e1a0c87117bd7a091ec3c7b4390285cf47a291c0d7569fd0f1d2e197c"
+  },
+  "source_gates_before": {
+    "bytes": 847,
+    "git_blob": "0d3c48853572dc89a823ca9afb5d5487868189e6",
+    "sha256": "602fd434d927f35bc6f0479211094ec2588aaf82e1a3855470e393d27117c6d8"
+  },
+  "source_gates_changes": [
+    {
+      "after": "READY_FOR_EXACT_SOURCE_RUN",
+      "before": "HOLD_FOR_EXACT_ROOT_QUALIFICATION_APPROVAL",
+      "path": "/state"
+    }
+  ],
+  "source_tree_commit_ref_writes": 0
+}

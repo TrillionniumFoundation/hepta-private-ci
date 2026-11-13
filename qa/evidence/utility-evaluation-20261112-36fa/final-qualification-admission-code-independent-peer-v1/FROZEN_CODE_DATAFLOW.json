@@ -1,0 +1,538 @@
+{
+  "HOLD_rejected_before_any_constructor_io": true,
+  "H_calls": 0,
+  "accepted": [
+    "actual 3bb full result/packet/four records",
+    "actual 41e source, terminals, budgets and original inputs",
+    "actual 50f four paths, original fmt and complete endpoint",
+    "actual archive v3 and unmodified historical ENV content projection",
+    "exact artifact schema MATERIALIZATION_3BB_ARTIFACTS.json",
+    "exact artifact schema MAINTENANCE_41E_ARTIFACTS.json",
+    "exact artifact schema FINAL_FORMAT_50F_ARTIFACTS.json",
+    "actual V5 metadata envelope",
+    "actual 3bb six-file to 41e twelve-row DFS metadata bridge",
+    "actual catalog raw identities connect 3bb -> 41e -> 50f",
+    "entire unchanged runtime guard equals actual maintenance control projection"
+  ],
+  "canonical_actual_in_this_review": null,
+  "code": {
+    "bytes": 87654,
+    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+  },
+  "complete_patch_apply_equal": true,
+  "diff": {
+    "bytes": 101548,
+    "git_blob": "1a8faaeca7f0a48feeab0e57f9c687ba025d1eec",
+    "sha256": "700932c9cae126ba797b47011a0524e7ee2407c88c1d2e8fc03c79d8ead4b4cc"
+  },
+  "format": "hepta-qualification-admission-code-independent-dataflow-v1",
+  "hold_config": {
+    "bytes": 19355,
+    "git_blob": "460139b9ce065184a0809def0823d8d20c45fe41",
+    "sha256": "0c0fc2ba2ab2a42ae8a35e8e8e062fa3ce4dc0bf5be5ee2fb1282fc755c717bd"
+  },
+  "input_index": {
+    "bytes": 9516,
+    "git_blob": "ac6f1219b6e6cd684a29e991d656c81bc3970ea1",
+    "sha256": "f2e05f6ae0a3048127314bccd42438e3c69b0f471fb1fddb2294ed71f05c246b"
+  },
+  "limitations": [
+    "No actual canonical output was supplied to this frozen first-layer review.",
+    "No live directory or index observer was executed.",
+    "Inherited finish can report a secondary SourceChanged when initial_git was never established; do not infer actual source mutation from that secondary error alone.",
+    "No source/native qualification was dispatched or passed by this audit."
+  ],
+  "live_metadata_call_sites": [
+    {
+      "line": 643,
+      "owner": "Admission.acquire_and_validate"
+    },
+    {
+      "line": 698,
+      "owner": "Admission.finish"
+    }
+  ],
+  "metadata_bridge": {
+    "canonical_actual_pending": true,
+    "mapped_files": 6,
+    "materialization_file_rows": 6,
+    "uid_gid_removal_is_projection_only": true,
+    "v5_all_rows": 12
+  },
+  "migrated_definitions": [
+    "Admission.__init__",
+    "Admission.acquire_and_validate",
+    "Admission.validate_materialization",
+    "Admission.finish"
+  ],
+  "new_helpers": [
+    "Admission._artifact",
+    "Admission._check_archive",
+    "Admission._check_canonical",
+    "Admission._check_final_format",
+    "Admission._check_maintenance",
+    "Admission._check_materialization",
+    "Admission._fixed",
+    "Admission._fixed_json",
+    "Admission._observed_known",
+    "Admission._require_complete_bindings",
+    "Admission._require_live_metadata",
+    "Admission._validate_archive",
+    "Admission._validate_canonical",
+    "Admission._validate_final_format",
+    "Admission._validate_index_audit",
+    "Admission._validate_maintenance",
+    "Admission._validate_source_controls",
+    "artifact_catalog",
+    "audited",
+    "canonical_to_v5_projection",
+    "exact_pin",
+    "metadata_file_projection",
+    "native_projection",
+    "physical_projection",
+    "pin_fields",
+    "require_stage",
+    "stable_canonical_metadata"
+  ],
+  "new_helpers_count": 27,
+  "old_definition_count": 13,
+  "originals": [
+    {
+      "bytes": 26963,
+      "git_blob": "23d412ed67927a6cbfa5f521884e891afc93eb6f",
+      "name": "ADMISSION_23D412.original.py",
+      "sha256": "d44eeb0fd87e82d80c16407f75d65820c63d0d00c928f367fb02dce934dda52d"
+    },
+    {
+      "bytes": 63007,
+      "git_blob": "6632d0cc1e0a127db9ee3324b32bf2d2fc2f7735",
+      "name": "V5_GUARD_6632.original.py",
+      "sha256": "ff2078884d48dcb92ec3b681d7479c33e9b074d1677108ce60e913c90f002431"
+    },
+    {
+      "bytes": 22946,
+      "git_blob": "51181866cbbb6e0176aab04117efffa8b6792b31",
+      "name": "SOURCE_GATES_5118.py",
+      "sha256": "20c11034146f6739dd24e9d7e33b94ee909754b07ce6295c242c842c5f3c40b2"
+    },
+    {
+      "bytes": 5610,
+      "git_blob": "8607fa4bf00fc8cf535849de04d1eb6ff29429b3",
+      "name": "SOURCE_WRAPPER_8607.py",
+      "sha256": "f798be087f04685a30bd66ad04aefa86c2aceb4bf1644ac909b411ab7f726457"
+    },
+    {
+      "bytes": 13360,
+      "git_blob": "de3e9dc5e7eb30f47929f9e1ba9f460035a94fae",
+      "name": "NATIVE_WRAPPER_DE3.py",
+      "sha256": "fc5b2c43fdf01288396b03369647a5c886108ec3e8eec3da2e2fe5afadb21d5f"
+    },
+    {
+      "bytes": 14986,
+      "git_blob": "b92ddded4fce78aeb076d022471c62bf81ce2e4f",
+      "name": "NATIVE_DRIVER_B92.py",
+      "sha256": "3c318e8d028afd0039325a531215c4add411dc5a1a0ec5016fd3448dfbf2d231"
+    },
+    {
+      "bytes": 32246,
+      "git_blob": "3aefbc71d69d8014eed9e5a18269bbcc866a7583",
+      "name": "PLAN_3AEF.json",
+      "sha256": "2a2df598aa5b2673b55465c3978cb6c51a22326fde9878d97f39bf984e905619"
+    },
+    {
+      "bytes": 56492,
+      "git_blob": "201fbc1f645df05226182dfec544fa2c33ca6361",
+      "name": "STATIC_TEMPLATE_BINDINGS.json",
+      "sha256": "2be6ebd118afc4b8ea6faf14fc48b8d46d56a79a80dc4588fe67b7c5c2e34c43"
+    },
+    {
+      "bytes": 30745,
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "name": "WORKFLOW_D256.yml",
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+    },
+    {
+      "bytes": 14663,
+      "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+      "name": "MATERIALIZATION_3BB_RESULT.json",
+      "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+    },
+    {
+      "bytes": 952,
+      "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+      "name": "MATERIALIZATION_3BB_NORMAL.json",
+      "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+    },
+    {
+      "bytes": 34319,
+      "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246",
+      "name": "MATERIALIZATION_3BB_COMMANDS.json",
+      "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2"
+    },
+    {
+      "bytes": 744,
+      "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64",
+      "name": "MATERIALIZATION_3BB_MUTATION_INTENTS.json",
+      "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b"
+    },
+    {
+      "bytes": 3326,
+      "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687",
+      "name": "MATERIALIZATION_3BB_INPUT_IDENTITIES.json",
+      "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d"
+    },
+    {
+      "bytes": 84294,
+      "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+      "name": "MATERIALIZATION_3BB_ARTIFACTS.json",
+      "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+    },
+    {
+      "bytes": 14404,
+      "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+      "name": "MATERIALIZATION_3BB_PACKET.json",
+      "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+    },
+    {
+      "bytes": 666,
+      "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+      "name": "MATERIALIZATION_3BB_CONFIG.json",
+      "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+    },
+    {
+      "bytes": 70596,
+      "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+      "name": "MATERIALIZER_3BB.original.py",
+      "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+    },
+    {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "name": "MAINTENANCE_41E_RESULT.json",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    },
+    {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "name": "MAINTENANCE_41E_NORMAL.json",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    {
+      "bytes": 53526,
+      "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+      "name": "MAINTENANCE_41E_ARTIFACTS.json",
+      "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+    },
+    {
+      "bytes": 13693,
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+      "name": "MAINTENANCE_41E_CONFIG.json",
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+    },
+    {
+      "bytes": 68520,
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+      "name": "MAINTENANCE_41E.original.py",
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+    },
+    {
+      "bytes": 6256,
+      "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+      "name": "MAINTENANCE_41E_INPUT_IDENTITIES.json",
+      "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+    },
+    {
+      "bytes": 2654,
+      "git_blob": "42e3986f6a5f06d8518067f0d9dd2ec3e6b46c6a",
+      "name": "MAINTENANCE_41E_GIT_METADATA.json",
+      "sha256": "2a980585e50ec38b223fef002990f42e122b7f8a57b49298c32de6c7c67a24b9"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "name": "MAINTENANCE_41E_GIT_STATE.json",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    {
+      "bytes": 2234,
+      "git_blob": "8d6af319d99c5f9c47e5a7e761c118c5ba2c767b",
+      "name": "MATERIALIZATION_3BB_GIT_METADATA.json",
+      "sha256": "17530eef584440894d767eec9771201199e6313797bb293122eb20cb7fba6e13"
+    },
+    {
+      "bytes": 17615,
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "name": "ARCHIVE_V3_RESULT.json",
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+    },
+    {
+      "bytes": 950,
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "name": "ARCHIVE_V3_NORMAL.json",
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    },
+    {
+      "bytes": 496,
+      "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+      "name": "ARCHIVE_V3_READBACK.json",
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+    },
+    {
+      "bytes": 28169,
+      "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+      "name": "ARCHIVE_V3_ARTIFACTS.json",
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+    },
+    {
+      "bytes": 21366,
+      "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+      "name": "HISTORICAL_RUNTIME_RESULT.json",
+      "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+    },
+    {
+      "bytes": 954,
+      "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+      "name": "HISTORICAL_RUNTIME_NORMAL.json",
+      "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+    },
+    {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "name": "HISTORICAL_ENVIRONMENT_READY.json",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    {
+      "bytes": 28657,
+      "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "name": "FINAL_NONRUST_TEMPLATE_27C0.HOLD.py",
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+    },
+    {
+      "bytes": 2906,
+      "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+      "name": "FINAL_NONRUST_CONFIG.execution-candidate.json",
+      "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+    },
+    {
+      "bytes": 46159,
+      "git_blob": "e8d606b801b54ab949c5f215c49cdf47ed0ea89a",
+      "name": "CANONICAL_TEMPLATE_E8D606.HOLD.py",
+      "sha256": "f82c0550492a6f6230e29a5047777ec999a563669ec124425a3149b4f115b4e5"
+    },
+    {
+      "bytes": 2105,
+      "git_blob": "69b2eb215ae4e51b2aaded60ac6d008f00006a62",
+      "name": "CANONICAL_WAITING_CONFIG.HOLD.json",
+      "sha256": "92d80b4f64339977d47f548f9966cd308926f738b4981af675173236f9cfb4e7"
+    },
+    {
+      "bytes": 7408,
+      "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "name": "FINAL_FORMAT_50F_RESULT.json",
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+    },
+    {
+      "bytes": 952,
+      "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "name": "FINAL_FORMAT_50F_NORMAL.json",
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+    },
+    {
+      "bytes": 67498,
+      "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+      "name": "FINAL_FORMAT_50F_ARTIFACTS.json",
+      "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f"
+    }
+  ],
+  "os_open_calls": [
+    {
+      "call": "os.open(cfg['coordination_lock']['path'], os.O_RDONLY | os.O_NOFOLLOW)",
+      "line": 602
+    },
+    {
+      "call": "os.open(path, os.O_RDONLY | os.O_NOFOLLOW)",
+      "line": 462
+    }
+  ],
+  "patch_hunks": 8,
+  "project_commands": 0,
+  "qualification": false,
+  "rejected": [
+    {
+      "case": "materialization must not be relabelled final canonical",
+      "exception": "RuntimeError",
+      "reason": "actual materialization producer roles"
+    },
+    {
+      "case": "materialization cannot grant tests",
+      "exception": "RuntimeError",
+      "reason": "materialization did not authorize qualification"
+    },
+    {
+      "case": "maintenance cannot use materialization as final subject",
+      "exception": "RuntimeError",
+      "reason": "actual maintenance source identity"
+    },
+    {
+      "case": "maintenance command failure remains rejected",
+      "exception": "RuntimeError",
+      "reason": "actual maintenance source identity"
+    },
+    {
+      "case": "final format cannot claim a repeated fix",
+      "exception": "RuntimeError",
+      "reason": "one actual final original fmt, exactly reviewed non-Rust application"
+    },
+    {
+      "case": "final formatter changed paths require rejection",
+      "exception": "RuntimeError",
+      "reason": "one actual final original fmt, exactly reviewed non-Rust application"
+    },
+    {
+      "case": "archive cannot overwrite historical source role",
+      "exception": "RuntimeError",
+      "reason": "independent archive restoration provenance"
+    },
+    {
+      "case": "original fix budget immutable",
+      "exception": "RuntimeError",
+      "reason": "original maintenance command, complete output and retention"
+    },
+    {
+      "case": "all four exact non-Rust paths required",
+      "exception": "RuntimeError",
+      "reason": "all four actual non-Rust application paths"
+    },
+    {
+      "case": "new archive stat cannot be old ENV inode",
+      "exception": "RuntimeError",
+      "reason": "complete original new archive identity and stat"
+    },
+    {
+      "case": "frozen HOLD cannot satisfy complete actual binding",
+      "exception": "RuntimeError",
+      "reason": "actual final source must bind the reviewed immutable canonical subject"
+    },
+    {
+      "case": "known final commit still lacks actual canonical inventory",
+      "exception": "RuntimeError",
+      "reason": "actual canonical full_physical_inventory required"
+    },
+    {
+      "case": "duplicate metadata path",
+      "exception": "RuntimeError",
+      "reason": "unique original V5 metadata rows"
+    }
+  ],
+  "runtime_admission_calls": 0,
+  "scope": "Frozen source AST, captured actual JSON and literal-only pure predicates; no module import, constructor, acquire, finish, live observation, gate or H invocation.",
+  "selected_pure_functions": [
+    "check",
+    "identity",
+    "pin",
+    "exact_pin",
+    "pin_fields",
+    "audited",
+    "artifact_catalog",
+    "canonical_to_v5_projection",
+    "physical_projection",
+    "native_projection",
+    "metadata_file_projection",
+    "require_stage",
+    "Admission._require_complete_bindings",
+    "Admission._check_materialization",
+    "Admission._check_archive",
+    "Admission._check_maintenance",
+    "Admission._check_final_format"
+  ],
+  "top_level_constant_bytes": 23996,
+  "unchanged_definitions": [
+    "check",
+    "identity",
+    "pin",
+    "load",
+    "Admission.read",
+    "Admission.observed_proof",
+    "Admission.current_lock",
+    "Admission.before_native_stage",
+    "Admission.close"
+  ],
+  "workflow": {
+    "old_pin": {
+      "bytes": 28133,
+      "git_blob": "08ffc5c603a4c950cca285ed2b1e479508d8b5ed",
+      "sha256": "40ff9b74214cf1901bd0ac40e416523c73c223ced4271df5c81b9cf964872ea1"
+    },
+    "original_controls": 12,
+    "overrides": 1,
+    "packages": [
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-neuron"
+    ],
+    "parents": [
+      "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+      "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+      "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+      "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+      "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin",
+      "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+      "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+      "authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes",
+      "authority_host_service::resident::authority::tests::resident_root_reissued_intent_cannot_create_another_operation_namespace",
+      "authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation",
+      "authority_host_service::resident::authority::tests::resident_root_same_epoch_grant_revocation_fences_the_pending_effect",
+      "authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch",
+      "authority_host_service::resident::authority::tests::resident_root_lost_fresh_ack_recovers_only_under_explicit_readback_intent",
+      "authority_host_service::resident::authority::tests::resident_root_queued_admit_cancellation_sends_no_frame_and_consumes_channel",
+      "authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback",
+      "authority_host_service::resident::authority::tests::evaluation::resident_root_original_evaluation_requires_actual_checkpoint_and_independent_signature",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_uses_actual_prepared_binding_and_installs_distinct_c",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_denied_once_keeps_actual_prepared_operation_read_only",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_lost_ack_never_reissues_original_intent",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_wrong_grant_cannot_replace_prepared_purpose",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_withdrawal_before_root_request_sends_no_frame",
+      "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_support::version_issuer::tests::retained_version_issuer_queued_cancellation_sends_no_frame_and_never_reopens_once",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_four_cut_preserves_original_wire_and_all_signatures",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_five_cut_uses_original_record_without_fifth_signature",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_cold_checkpoint_is_readonly_and_pins_complete_original_bytes",
+      "authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate",
+      "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_roundtrip_keeps_exact_six_stage_prefix",
+      "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window",
+      "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_all_cocontrolled_role_pairs",
+      "authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages",
+      "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::version_recovery_tests::final_use_tests::evaluated_version_late_b_loss_keeps_published_material_but_cannot_serve_s_or_start_c",
+      "authority_host_service::resident::authority::tests::provider_transport::resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+      "authority_host_service::resident::authority::tests::provider_transport::resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+      "authority_host_service::resident::authority::tests::provider_transport::resident_role_receiver_refuses_another_real_recipient_or_registered_profile",
+      "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_original_a_eof_does_not_cancel_fresh_or_readonly_root",
+      "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_root_cancel_closes_live_a_and_joins_original_work",
+      "authority_host_service::resident::authority::tests::provider_transport::lifecycle::resident_idle_delivery_delay_keeps_original_service_expiry_and_joins",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+      "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error"
+    ],
+    "pin": {
+      "bytes": 30745,
+      "git_blob": "c0012652889b0cca409b27f87bfdc74b234c0fbe",
+      "sha256": "6453782023604b6bb89468611d906e854f0fb79f82f154886225d7765a266aee"
+    },
+    "unchanged_original_controls": 11
+  }
+}

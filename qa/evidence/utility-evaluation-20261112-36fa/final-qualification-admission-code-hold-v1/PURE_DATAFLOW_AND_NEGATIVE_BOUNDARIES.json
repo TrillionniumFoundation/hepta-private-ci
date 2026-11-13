@@ -1,0 +1,856 @@
+{
+  "H_calls": 0,
+  "accepted": 17,
+  "actual_canonical": null,
+  "actual_canonical_observed": false,
+  "actual_known_producer_operations": [
+    "3bb",
+    "41e",
+    "50f",
+    "archive-v3",
+    "historical-runtime"
+  ],
+  "admission_or_acquire_or_finish_or_live_metadata_called": false,
+  "candidate": {
+    "bytes": 87654,
+    "git_blob": "c77e3be6230d3267c08333be582f69f23c016fb9",
+    "sha256": "453de56b668a8361c710be67f058b5a37c8e39be106a28c5bc803783906b6ca2"
+  },
+  "checks": [
+    {
+      "name": "actual materialization schema, donor, objects, four records and exact source start",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "actual V8 restoration and old ENV five-field projection",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "actual 3bb to 41e identity, original commands/budgets and retained source",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "actual 41e to 50f identity, four paths and original fmt terminal",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "donor confused with historical runtime",
+      "outcome": "rejected",
+      "reason": "actual materialization producer roles",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "current destination confused with donor",
+      "outcome": "rejected",
+      "reason": "actual materialization producer roles",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "materialization mistaken for final canonical",
+      "outcome": "rejected",
+      "reason": "actual materialization producer roles",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "one missing provided object",
+      "outcome": "rejected",
+      "reason": "complete materialization object/leaf/cleanup observations",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "materialization unknown cleanup",
+      "outcome": "rejected",
+      "reason": "complete materialization object/leaf/cleanup observations",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "archive repair rewrites environment",
+      "outcome": "rejected",
+      "reason": "archive restoration did not authorize environment_changes",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "archive claims wrong source",
+      "outcome": "rejected",
+      "reason": "independent archive restoration provenance",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "maintenance references a different materialization",
+      "outcome": "rejected",
+      "reason": "actual 3bb to 41e link",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "maintenance drops full metadata guard",
+      "outcome": "rejected",
+      "reason": "one actual original fix and fmt, no inferred test qualification",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "maintenance retries after completion",
+      "outcome": "rejected",
+      "reason": "one actual original fix and fmt, no inferred test qualification",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "final fmt uses old schema repo",
+      "outcome": "rejected",
+      "reason": "actual final-format producer identity",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "final fmt makes extra Rust change",
+      "outcome": "rejected",
+      "reason": "one actual final original fmt, exactly reviewed non-Rust application",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "final fmt attempts a second fix",
+      "outcome": "rejected",
+      "reason": "one actual final original fmt, exactly reviewed non-Rust application",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "fix changes original timeout",
+      "outcome": "rejected",
+      "reason": "original maintenance command, complete output and retention",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "fix drops ledger scope",
+      "outcome": "rejected",
+      "reason": "original maintenance command, complete output and retention",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "fmt output is truncated",
+      "outcome": "rejected",
+      "reason": "actual normal maintenance command; no test result inferred",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "maintenance initial inventory drifts",
+      "outcome": "rejected",
+      "reason": "actual 3bb to 41e link",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "final-format wrong before inventory",
+      "outcome": "rejected",
+      "reason": "actual maintained source to final-format before identity",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "final-format wrong fmt budget",
+      "outcome": "rejected",
+      "reason": "original maintenance command, complete output and retention",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "final-format only 27 original inputs",
+      "outcome": "rejected",
+      "reason": "28 actual final-format inputs unchanged",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "non-Rust application includes Rust",
+      "outcome": "rejected",
+      "reason": "all four actual non-Rust application paths",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "archive full actual inode differs even with same content projection",
+      "outcome": "rejected",
+      "reason": "complete original new archive identity and stat",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "duplicate audit cannot replace a required audit",
+      "outcome": "rejected",
+      "reason": "all original materialization audits",
+      "scope": "independent mutated data"
+    },
+    {
+      "name": "MATERIALIZATION_3BB_NORMAL.json original complete normal parser",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "MAINTENANCE_41E_NORMAL.json original complete normal parser",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "FINAL_FORMAT_50F_NORMAL.json original complete normal parser",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "ARCHIVE_V3_NORMAL.json original complete normal parser",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "HISTORICAL_RUNTIME_NORMAL.json original complete normal parser",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "error_type": "ValueError",
+      "name": "actual normal parser rejects incomplete output",
+      "outcome": "rejected",
+      "reason": "actual complete normal supervisor terminal",
+      "scope": "independent mutated data"
+    },
+    {
+      "name": "MATERIALIZATION_3BB_ARTIFACTS.json exact catalog schema/unique paths/full pins",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "MAINTENANCE_41E_ARTIFACTS.json exact catalog schema/unique paths/full pins",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "name": "FINAL_FORMAT_50F_ARTIFACTS.json exact catalog schema/unique paths/full pins",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "duplicate original artifact name",
+      "outcome": "rejected",
+      "reason": "one-level unique original artifact name",
+      "scope": "independent mutated data"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "maintenance envelope cannot be used as canonical list",
+      "outcome": "rejected",
+      "reason": "complete artifact list",
+      "scope": "independent mutated data"
+    },
+    {
+      "name": "actual archive proof reader with original normal parser and fixed map",
+      "outcome": "accepted",
+      "scope": "actual pinned data"
+    },
+    {
+      "input_files": 27,
+      "name": "complete actual 3bb metadata to 41e to 50f proof-reader chain",
+      "outcome": "accepted",
+      "retained_final_inventory": {
+        "bytes": 5633513,
+        "git_blob": "e3ce3d7bba028e29efca751c6f43fde124b05ea0",
+        "sha256": "2e22d929e311bf55beb9c91e91bc191cc15be4bed3c8022e14489df66025f202"
+      },
+      "scope": "Pinned local bytes only; no Admission/acquire/live/canonical operation executed"
+    },
+    {
+      "name": "original five-field serializer reproduces actual materialized native identity",
+      "outcome": "accepted",
+      "scope": "actual pinned full bytes, pure projection"
+    },
+    {
+      "name": "canonical global path order becomes original per-directory DFS without integer loss",
+      "outcome": "accepted",
+      "scope": "synthetic structural fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical missing ownership field",
+      "outcome": "rejected",
+      "reason": "exact canonical metadata row fields",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical duplicate path",
+      "outcome": "rejected",
+      "reason": "safe unique canonical metadata path",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical missing parent closure",
+      "outcome": "rejected",
+      "reason": "canonical metadata parent directory closure",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical unsafe path",
+      "outcome": "rejected",
+      "reason": "safe unique canonical metadata path",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical unknown metadata key",
+      "outcome": "rejected",
+      "reason": "exact canonical metadata row fields",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical boolean masquerades as uid",
+      "outcome": "rejected",
+      "reason": "complete exact integer canonical ownership and stat fields",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical symlink substituted for regular file",
+      "outcome": "rejected",
+      "reason": "exact canonical metadata row fields",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "canonical row order differs",
+      "outcome": "rejected",
+      "reason": "canonical complete path order",
+      "scope": "synthetic structural negative fixture only"
+    },
+    {
+      "name": "ownership loss in V5 projection is expressly covered by separate complete live equality",
+      "outcome": "accepted",
+      "scope": "synthetic counterexample plus exact production AST assertion; no live check executed"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "HOLD configuration stops before module loading, output creation or environment mutation",
+      "outcome": "rejected",
+      "reason": "final source input remains HOLD",
+      "scope": "HOLD rejection only"
+    },
+    {
+      "error_type": "RuntimeError",
+      "name": "expected b608 alone cannot supply missing actual canonical bindings",
+      "outcome": "rejected",
+      "reason": "actual canonical full_physical_inventory required",
+      "scope": "HOLD structural rejection only"
+    }
+  ],
+  "config": {
+    "bytes": 19355,
+    "git_blob": "460139b9ce065184a0809def0823d8d20c45fe41",
+    "sha256": "0c0fc2ba2ab2a42ae8a35e8e8e062fa3ce4dc0bf5be5ee2fb1282fc755c717bd"
+  },
+  "format": "hepta-admission-successor-pure-data-review-v1",
+  "local_map_reads_only": true,
+  "local_sources": [
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/ARCHIVE_V3_ARTIFACTS.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 28169,
+        "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+        "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/ARCHIVE_V3_READBACK.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARCHIVE_READBACK.json",
+      "pin": {
+        "bytes": 496,
+        "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+        "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/FINAL_FORMAT_50F_ARTIFACTS.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 67498,
+        "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+        "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/FINAL_NONRUST_CONFIG.execution-candidate.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/APPROVED_CONFIG.json",
+      "pin": {
+        "bytes": 2906,
+        "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+        "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/FINAL_NONRUST_TEMPLATE_27C0.HOLD.py",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/driver.py",
+      "pin": {
+        "bytes": 28657,
+        "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+        "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/HISTORICAL_ENVIRONMENT_READY.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json",
+      "pin": {
+        "bytes": 21724,
+        "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+        "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_ARTIFACTS.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 53526,
+        "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+        "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_CONFIG.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/APPROVED_MAINTENANCE_CONFIG.json",
+      "pin": {
+        "bytes": 13693,
+        "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+        "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E.original.py",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/driver-maintenance.py",
+      "pin": {
+        "bytes": 68520,
+        "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+        "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_INPUT_IDENTITIES.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/INPUT_IDENTITIES.json",
+      "pin": {
+        "bytes": 6256,
+        "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+        "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_ARTIFACTS.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/ARTIFACTS.json",
+      "pin": {
+        "bytes": 84294,
+        "git_blob": "5d2eb472d5651500e02957013e5cdacb3f7b05af",
+        "sha256": "5b1fbab7087da64bf3b8ee07a3369692158164631549827d2b40ffa94dbe1603"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_COMMANDS.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/COMMANDS.json",
+      "pin": {
+        "bytes": 34319,
+        "git_blob": "c3286df54535e30914d1d33e62cd9d19cc8f8246",
+        "sha256": "65f9f5d52daa905a16f33a2c5966c48ac46ae6d89bba8e0e0dd68dee2d104fb2"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_CONFIG.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/APPROVED_CONFIG.json",
+      "pin": {
+        "bytes": 666,
+        "git_blob": "42bd8a4df41c9b0bdfceab1487cce4b35da6c585",
+        "sha256": "db85c15a435d59560635d728de174f70257985db9a6efcec9ec31f94923eb0d7"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_INPUT_IDENTITIES.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/INPUT_IDENTITIES.before.json",
+      "pin": {
+        "bytes": 3326,
+        "git_blob": "e201c4c7f5fdcb485effad0514c7c51020bd5687",
+        "sha256": "1841e53025069346a1c15fb6d9880b93b4018632852b7b91d29c6de5fb3a478d"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_MUTATION_INTENTS.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/MUTATION_INTENTS.json",
+      "pin": {
+        "bytes": 744,
+        "git_blob": "c4a8dbca67be8f9d30367a82e121f1f212532e64",
+        "sha256": "f3e4af4d13cd1bb022d7499e1ce6c4bb55f44ace3834067e23e8a4872b14ca1b"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_PACKET.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/MATERIALIZATION_PACKET.json",
+      "pin": {
+        "bytes": 14404,
+        "git_blob": "b05c78c478bbd55219fea7869b1c7871617509c7",
+        "sha256": "d1b1a1a77101e3ad1bd27d8d2ac8028ad5610279f6a2c8fc428d3e617c5f574b"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZER_3BB.original.py",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/driver.py",
+      "pin": {
+        "bytes": 70596,
+        "git_blob": "2044db8282eb8db8d5627519a425a49f636377da",
+        "sha256": "daf9f1e3b15abddf86a8efe24aa1e034cdc32e15bed35e40df908c2821fa3caf"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/ARCHIVE_V3_RESULT.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/RESULT.json",
+      "pin": {
+        "bytes": 17615,
+        "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+        "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/ARCHIVE_V3_NORMAL.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/V8_RESTORATION_SUPERVISOR.original.json",
+      "pin": {
+        "bytes": 950,
+        "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+        "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/FINAL_FORMAT_50F_RESULT.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/RESULT.json",
+      "pin": {
+        "bytes": 7408,
+        "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+        "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/FINAL_FORMAT_50F_NORMAL.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/FINAL_FORMAT_NORMAL.original.json",
+      "pin": {
+        "bytes": 952,
+        "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+        "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_RESULT.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/RESULT.json",
+      "pin": {
+        "bytes": 12532,
+        "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+        "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_NORMAL.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/MAINTENANCE_NORMAL.original.json",
+      "pin": {
+        "bytes": 956,
+        "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+        "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_RESULT.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/RESULT.json",
+      "pin": {
+        "bytes": 14663,
+        "git_blob": "30ab4aad6ff10942063da972e02db49629e3809c",
+        "sha256": "d64b804836db43eac9b178c31059c8d339f2de5cd2d0a3582d64b791ddf451bd"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_NORMAL.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/MATERIALIZATION_SUPERVISOR.original.json",
+      "pin": {
+        "bytes": 952,
+        "git_blob": "2a11b4b9e2baa380c247b6a728f90edfbcdcd644",
+        "sha256": "fd1140f7bdc02bcc7ea475a15542bd64cfb0d2f23d78dd0708525b49ad214d30"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/HISTORICAL_RUNTIME_RESULT.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/RESULT.json",
+      "pin": {
+        "bytes": 21366,
+        "git_blob": "7832ed48200e8361ae4a7dd5ca8b7b5f7f289b09",
+        "sha256": "272f2f2719d92b14939273d8807f5d1143b1307b7de78c4499fbfdad10f13a90"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/HISTORICAL_RUNTIME_NORMAL.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/RUNTIME_RESTORATION_SUPERVISOR.original.json",
+      "pin": {
+        "bytes": 954,
+        "git_blob": "3705e1ded34c017b57ee9eb13472f67df0da8e20",
+        "sha256": "6709b0594c9649b28cd1d16651b3181458681296cdd2e5d56cf996f16e8deceb"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MATERIALIZATION_3BB_GIT_METADATA.json; exact original gzip re-encoding proved by all three pins",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/final.git-metadata.json.gz",
+      "pin": {
+        "bytes": 790,
+        "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a",
+        "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_GIT_METADATA.json; exact original gzip re-encoding proved by all three pins",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.before.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_GIT_METADATA.json; exact original gzip re-encoding proved by all three pins",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.before.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_GIT_METADATA.json; exact original gzip re-encoding proved by all three pins",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.after.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_GIT_METADATA.json; exact original gzip re-encoding proved by all three pins",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.after.json.gz",
+      "pin": {
+        "bytes": 791,
+        "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+        "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_GIT_STATE.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_STATE.before.json",
+      "pin": {
+        "bytes": 489,
+        "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+        "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_GIT_STATE.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/final.git-state.json",
+      "pin": {
+        "bytes": 489,
+        "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+        "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-final-qualification-admission-code-hold-v1/inputs/MAINTENANCE_41E_GIT_STATE.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.git-state.json",
+      "pin": {
+        "bytes": 489,
+        "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+        "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-a489-final-nonrust-exact-recovery-v1/final.inventory.exact_recovered.json; exact original gzip re-encoding proved by all three pins",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.inventory.json.gz",
+      "pin": {
+        "bytes": 1266970,
+        "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+        "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/fmt.after.postimages.json.gz",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/fmt.after.postimages.json.gz",
+      "pin": {
+        "bytes": 275,
+        "git_blob": "8e906c93044cff287759aa7f55d007a12a80ccb5",
+        "sha256": "37176043df90538c0485ca19f8365e890cffa77fe8d63bfbe0667a7c40aecfee"
+      }
+    },
+    {
+      "local_provenance": "/tmp/hepta-36fa-coordinator-a489-final-nonrust-format-runtime-v1/INPUT_IDENTITIES.json",
+      "native_path_as_data_only": "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/INPUT_IDENTITIES.json",
+      "pin": {
+        "bytes": 7273,
+        "git_blob": "51ca8acea55f78b7323551f4288ab5ead2c8e233",
+        "sha256": "52946287f8b6f52d60acdcd70565622fe9c57ab8ba63eb0a5331f5cde8c3204e"
+      }
+    }
+  ],
+  "project_gate_commands_called": [],
+  "qualification": false,
+  "read_inputs": {
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-canonical-alignment-v1/FINAL_FORMAT_NORMAL.original.json": {
+      "bytes": 952,
+      "git_blob": "0f7aee8fb7c354f234732b5791e78d63671cd894",
+      "sha256": "816ca8fa765b327ebb42fd304f63e6b8e342f026833c9d080a9320202d7e2f90"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/APPROVED_CONFIG.json": {
+      "bytes": 2906,
+      "git_blob": "c05c83f1b6ce14afa2bcef5c9e4d8eaae3059708",
+      "sha256": "9f8bd53789bbcfee921e9fdf41f5fac937fafd58cfad8306f64096e10de723d1"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/MAINTENANCE_NORMAL.original.json": {
+      "bytes": 956,
+      "git_blob": "70e1866f963a2a2a8d6f3bd468ddd0c291fbf871",
+      "sha256": "865ecacf8f40e4f3e94a92d80adc19190f60d847869394728adfc3a643190b04"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/driver.py": {
+      "bytes": 28657,
+      "git_blob": "27c0db4e4bceb69bcaafc97f5cc843a37b180941",
+      "sha256": "f744383af73475b32fc866298c4e59ebfa70ed5cb5cee7a7837d7770f778ff46"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/ARTIFACTS.json": {
+      "bytes": 67498,
+      "git_blob": "0119bbc670ec82b93b5235d9e512f61f58baf409",
+      "sha256": "abec7769c53d7d87af8deb5e7d71841622c1575e72bd901b63cc46e13d7f515f"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/INPUT_IDENTITIES.json": {
+      "bytes": 7273,
+      "git_blob": "51ca8acea55f78b7323551f4288ab5ead2c8e233",
+      "sha256": "52946287f8b6f52d60acdcd70565622fe9c57ab8ba63eb0a5331f5cde8c3204e"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/RESULT.json": {
+      "bytes": 7408,
+      "git_blob": "800869ed57256984964dd3c8b9f29e09c496438a",
+      "sha256": "286f9ae45fa594197566eac17ab0806c8ca0d71ef0d329c983d3a9cc7ab9aa7b"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.after.json.gz": {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/SOURCE_GIT_METADATA.before.json.gz": {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.git-state.json": {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/final.inventory.json.gz": {
+      "bytes": 1266970,
+      "git_blob": "6df7be3a8227dcda963213e9af9ed7f9a2c88ee1",
+      "sha256": "0505f24e14a38b05f395d8408aaaff1d4d4556fa3f3f15bf55f083c364434743"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-final-nonrust-format-v1/run/fmt.after.postimages.json.gz": {
+      "bytes": 275,
+      "git_blob": "8e906c93044cff287759aa7f55d007a12a80ccb5",
+      "sha256": "37176043df90538c0485ca19f8365e890cffa77fe8d63bfbe0667a7c40aecfee"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-isolated-materialization-v1/run/final.git-metadata.json.gz": {
+      "bytes": 790,
+      "git_blob": "95740fe0014ad136e425f93e29ff496f74b6aa9a",
+      "sha256": "c5d347c15bb07f685f46311188eac1bd2321b2dbbff3c048bb5010fc712f32a6"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/APPROVED_MAINTENANCE_CONFIG.json": {
+      "bytes": 13693,
+      "git_blob": "7bddb6c423afbe739bc36a7df2516730911a9337",
+      "sha256": "3ab98f7c35ce030439773f2035b7d6e4b8f9c4b11b3f6e8f93b431ea369286d7"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/V8_RESTORATION_SUPERVISOR.original.json": {
+      "bytes": 950,
+      "git_blob": "b5a9b8d0c8e5f9372eac59e3720ba90c42997579",
+      "sha256": "3fc77b2332259fea7142abbc4542ea6a77144cb7f75541b12b3483300e6c4f5d"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/driver-maintenance.py": {
+      "bytes": 68520,
+      "git_blob": "59461030d4160f7ad6a978df5a7b6aaeb33fb2a6",
+      "sha256": "2e8501f584a6905a07124f04bb623c2674c1ec77299b89fbc76ef06610c589ed"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/ARTIFACTS.json": {
+      "bytes": 53526,
+      "git_blob": "222eb4e2913d62cdd308e2ce26edf7c320ebe47f",
+      "sha256": "4fe039d5630c39af2a05c9ba7a9272cda4bc2a351a81cd253eca7bf21657e706"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/INPUT_IDENTITIES.json": {
+      "bytes": 6256,
+      "git_blob": "5c0ae8a43544a14461d272e1a0e70bb9ef3b1395",
+      "sha256": "477d05eb00e62a90f5c187cc18c4ad1401be0b39c289ef5b4dfe1328be96d4bb"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/RESULT.json": {
+      "bytes": 12532,
+      "git_blob": "b87aed7647ac34e3db0e381110bf685438aee0ee",
+      "sha256": "fc551cbf01cbc3a113b4039212e6263cf3c59034421dc795ac187248cabac484"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.after.json.gz": {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_METADATA.before.json.gz": {
+      "bytes": 791,
+      "git_blob": "4858d38c42978b8db371db5a98232bacd99a94cc",
+      "sha256": "e2424547edb11c781c10b53e619ad7ee04b8325c3ddd4f49e96e5fe33a70c7be"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/SOURCE_GIT_STATE.before.json": {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/provider-coordinator-a489-maintenance-v1/run/final.git-state.json": {
+      "bytes": 489,
+      "git_blob": "aef9e645b81c2a7f349b11d546c5555b1475c906",
+      "sha256": "a63fa97612dbe0eb6a90da53563a895bcbff187898ef38083df08a18269e8147"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/runtime-materials-restore-86dd-v1/run-v2/ENVIRONMENT_READY.json": {
+      "bytes": 21724,
+      "git_blob": "8b62ac16f554c1f34ee72974637752f5a3b58aec",
+      "sha256": "d37a2b3eccf86e42643676d86cf0232ce1931de4693f45bb295761bb42da2172"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARCHIVE_READBACK.json": {
+      "bytes": 496,
+      "git_blob": "e1c3ebf8a5c1a0de7b3aaa15189bbc1e733266a8",
+      "sha256": "d207d1d6fc544ea9eaf3b129b1b0d72f1ed10ee180e7aa6b1f4c6c1bbf884052"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/ARTIFACTS.json": {
+      "bytes": 28169,
+      "git_blob": "0b206ef6b276e88c0574d58faa88798d9f00158d",
+      "sha256": "4e08da141f0d5e54614425ad4f3b58a6dabb9dadf934e204d12512b87f45ac8d"
+    },
+    "/home/qian-qi/hepta-utility-36fa-evidence/v8-single-archive-restore-v3/run/RESULT.json": {
+      "bytes": 17615,
+      "git_blob": "8c5b4818db13a46f990262c02ffe871c8e6f00dc",
+      "sha256": "2814ac7d831b1a306584d5034c6d8781f111ce0ac11e47b7d14b2964ef8d5d72"
+    }
+  },
+  "rejected": 36,
+  "source_note": "Runtime original read functions are unchanged. Proof transport here is a fixed local byte map, never a native filesystem or a success simulation."
+}

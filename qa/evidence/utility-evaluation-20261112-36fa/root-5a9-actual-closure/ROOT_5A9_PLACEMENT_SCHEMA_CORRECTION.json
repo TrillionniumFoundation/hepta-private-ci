@@ -1,0 +1,11 @@
+{
+  "format": "hepta-root-unpublished-placement-consumer-schema-correction-v1",
+  "observed_at": "2026-11-13 12:36:52 UTC",
+  "original_placement": "5eb660ddcd43f7054177265faf329f5b00c58331",
+  "error": "The Root pending-map normalizer looked for self_path or prefix, while this immutable peer schema supplies placement_self_path and package_prefix. It produced the unpublished alias undefined/PLACEMENT.json. Adding a second peer placement raised a collision before any tree/ref publication.",
+  "correction": "Read the original explicit placement_self_path and map the same immutable blob to canonical-5a9-index-metadata-independent-peer-v1/PLACEMENT.json. Later peers also use their explicit placement_self_path.",
+  "original_payloads_modified": false,
+  "git_tree_or_ref_published_during_error": false,
+  "native_or_source_or_gate_operation_performed": false,
+  "all_current_pending_paths_checked": true
+}
