@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.source-archive.v1",
+  "status": "SOURCE_ONLY_HOLD",
+  "authority": "none",
+  "reason": "Historical named-host qualification program depends on unexported, unfinished PlannerStore APIs; preserve exact bytes outside Cargo binary auto-discovery.",
+  "source": {
+    "selected_head": "9e7d6dc7e7d82281e787d9d201a419e5c83b52c9",
+    "mechanical_candidate": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+    "candidate_tree": "69a70b18c5dbc236bf9dfcf0cc526f01419b735a",
+    "origin_merge_sequence": 111,
+    "path": "codex-rs/hepta-control-plane/src/bin/control-runtime-named-host-qualification.rs",
+    "git_mode": "100644",
+    "git_blob": "2a72962d604b76a39973cf464f906437d52ca79a",
+    "sha256": "5972eff44ea194a7defc6ac3830cae9eb03d0363f34b93c0e7fda646223335fd",
+    "bytes": 3529
+  },
+  "archived_path": "library-recovery/control-runtime-named-host-qualification-20261113/control-runtime-named-host-qualification.rs",
+  "source_bytes_changed": false,
+  "caller_search": {
+    "candidate": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+    "complete": true,
+    "only_external_text_references": [
+      {
+        "path": "scripts/control_runtime_stage3_bootstrap.py",
+        "lines": [
+          263,
+          270
+        ],
+        "kind": "generated workflow template"
+      }
+    ],
+    "generator_disposition": "Unchanged by this relocation; covered by a separate private 113-entry historical-automation archive proposal and remains in the uncompleted generator semantic-review group. This archive does not disable or validate it."
+  },
+  "cargo_manifest_changed": false,
+  "autobins_setting_changed": false,
+  "other_binaries_changed": false,
+  "qualification": "not_established",
+  "production_authorized": false,
+  "reintroduction": "Requires a reviewed, complete PlannerStore owner contract and normal package/build validation; retaining this source is not proof of current compilability."
+}
