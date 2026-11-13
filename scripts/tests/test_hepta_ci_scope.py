@@ -146,6 +146,50 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["native"])
         self.assertFalse(scope["full_repo"])
 
+    def test_dossier_detail_only_trusts_markdown_as_prose(self):
+        prose = select(
+            ["qualification/module-execution-dossiers/detail/owner.md"]
+        )
+        self.assertTrue(prose["derived"])
+        self.assertFalse(prose["native"])
+        self.assertFalse(prose["full_repo"])
+
+        for suffix in (".py", ".rs", ".sh", ".json", ".yaml", ".txt"):
+            path = "qualification/module-execution-dossiers/detail/unsafe" + suffix
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["derived"])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(scope["native"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
+    def test_hepta_prefix_only_shortcuts_direct_python_helpers(self):
+        for python_helper in (
+            "scripts/hepta_repository_controls.py",
+            "scripts/test_hepta_control_hardening.py",
+            "scripts/tests/test_hepta_ci_exec.py",
+        ):
+            with self.subTest(path=python_helper):
+                scope = select([python_helper])
+                self.assertTrue(scope["derived"])
+                self.assertFalse(scope["native"])
+                self.assertFalse(scope["full_repo"])
+
+        for untrusted in (
+            "scripts/hepta_custom.rs",
+            "scripts/hepta_custom.sh",
+            "scripts/hepta_noextension",
+            "scripts/test_hepta_custom.toml",
+            "scripts/hepta_nested/driver.py",
+            "scripts/test_hepta_special/run.py",
+        ):
+            with self.subTest(path=untrusted):
+                scope = select([untrusted])
+                self.assertTrue(scope["derived"])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(scope["native"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
     def test_bad_paths_fail_instead_of_selecting_nothing(self):
         for path in [
             "",
@@ -154,6 +198,11 @@ class ScopeTests(unittest.TestCase):
             "docs/../foo.md",
             "docs\\foo.md",
             "docs/a\0.md",
+            "docs/a\nb.md",
+            "docs/a\rb.md",
+            "docs/a\tb.md",
+            "docs/a\x7fb.md",
+            "docs/control-plane/\nOBJECTIVES.json",
         ]:
             with self.subTest(path=path), self.assertRaises(ValueError):
                 select([path])

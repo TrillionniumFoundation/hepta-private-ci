@@ -91,14 +91,23 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             or path.startswith("/")
             or ".." in parts
             or "\\" in path
-            or "\x00" in path
+            or any(ord(char) < 32 or ord(char) == 127 for char in path)
         ):
             raise ValueError(f"invalid repository path: {path!r}")
 
-        if path in DERIVED_ONLY_DOCS or path.startswith(
-            "qualification/module-execution-dossiers/detail/"
-        ):
+        if path in DERIVED_ONLY_DOCS:
             derived = True
+            continue
+
+        if path.startswith("qualification/module-execution-dossiers/detail/"):
+            derived = True
+            # A generated markdown dossier is prose. An unfamiliar or
+            # executable input in this directory is NOT a derived-only view.
+            # Fail closed to full native CI rather than allowing its suffix
+            # to bypass the usual unknown-source fallback.
+            if PurePosixPath(path).suffix != ".md":
+                selected.update(GROUPS)
+                full_repo = True
             continue
 
         if path in {"README.md", "CONTRIBUTING.md"} or (
@@ -163,13 +172,20 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             derived = True
             continue
 
-        if (
-            path.startswith("scripts/hepta")
-            or path.startswith("scripts/test_hepta")
+        # Only direct Python helpers may take the derived-only fast path.
+        # A nested module or non-Python executable whose name happens to
+        # begin with hepta/test_hepta must retain the full native fallback.
+        if PurePosixPath(path).suffix == ".py" and (
+            (
+                len(parts) == 2
+                and (
+                    path.startswith("scripts/hepta")
+                    or path.startswith("scripts/test_hepta")
+                )
+            )
             or (
                 len(parts) == 3
                 and path.startswith("scripts/tests/test_hepta")
-                and PurePosixPath(path).suffix == ".py"
             )
         ):
             derived = True

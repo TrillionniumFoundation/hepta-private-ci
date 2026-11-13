@@ -142,6 +142,25 @@ class ResearchUnitsTests(unittest.TestCase):
                 ):
                     self.screen(record)
 
+    def test_normalized_source_aliases_cannot_inflate_natural_group_count(self):
+        for alternate in ("SOURCE-1", "ＳＯＵＲＣＥ-１"):
+            with self.subTest(alternate=alternate):
+                record = self.task_bound_experiment()
+                record["units"]["cases"][1]["source_group_id"] = alternate
+                with self.assertRaisesRegex(
+                    ValueError, "aliased natural source-group identity"
+                ):
+                    self.screen(record)
+
+    def test_repeated_exact_source_ids_share_one_natural_group(self):
+        record = self.task_bound_experiment()
+        record["units"]["cases"][1]["source_group_id"] = "source-1"
+        result = self.screen(record)
+        self.assertEqual(result["statistical_units"]["natural_source_groups"], 1)
+        self.assertIn(
+            "INSUFFICIENT_SOURCE_GROUPS", result["statistical_units"]["blockers"]
+        )
+
     def test_same_unit_task_repetition_preserves_group_counts_and_weights(self):
         record = self.task_bound_experiment()
         before = self.screen(record)

@@ -10,6 +10,7 @@ Byte integrity does not establish task semantic completeness or source custody.
 from collections import Counter, defaultdict
 from statistics import fmean
 import re
+import unicodedata
 
 import hepta_cell_joint_config as joint
 
@@ -68,6 +69,7 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         raise ValueError("unsupported research units schema")
     task_bound = schema == "hepta.cell-research-units.v2"
     cases, source_splits, task_units = {}, {}, {}
+    source_aliases = {}
     for case in records(document["cases"]):
         shape(
             case,
@@ -79,6 +81,12 @@ def review(document, rows, evidence, sampling_spec, cost_categories):
         ]
         if case_id in cases or case["split"] not in SPLITS:
             raise ValueError("duplicate case or unknown registered split")
+        # A case-folded or compatibility-normalized alias cannot create an
+        # apparent second natural source group in a descriptive sample count.
+        # This is an identity-consistency check, not source authentication.
+        normalized_source = unicodedata.normalize("NFKC", source).casefold()
+        if source_aliases.setdefault(normalized_source, source) != source:
+            raise ValueError("aliased natural source-group identity")
         if source_splits.setdefault(source, case["split"]) != case["split"]:
             raise ValueError("one natural source crosses registered splits")
         if task_bound:
