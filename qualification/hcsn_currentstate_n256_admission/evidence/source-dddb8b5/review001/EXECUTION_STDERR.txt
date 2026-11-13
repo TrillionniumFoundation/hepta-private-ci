@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/qian-qi/workspace/hcsn-n256-expm-candidate-20261113-c06d/qualification/hcsn_currentstate_n256_admission/review.py", line 98, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/qian-qi/workspace/hcsn-n256-expm-candidate-20261113-c06d/qualification/hcsn_currentstate_n256_admission/review.py", line 75, in main
+    require(digest(args.root / relative) == report["original_sha256"][name], f"original changed: {name}")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/workspace/hcsn-n256-expm-candidate-20261113-c06d/qualification/hcsn_currentstate_n256_admission/review.py", line 38, in digest
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1021, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qian-qi/workspace/hcsn-n256-expm-candidate-20261113-c06d/4ee017d5c418f6288c24fbad6f451e0e78524ad048a9b20d75bf5e626bd28376'

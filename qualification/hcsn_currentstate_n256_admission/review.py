@@ -28,6 +28,20 @@ ZERO_FIELDS = (
     "optimizer_steps",
     "training_runs",
 )
+ORIGINAL_PATHS = {
+    "metadata": "qualification/hcsn_n256_new_export/evidence/attempt001/METADATA.json",
+    "state": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json",
+    "phase": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json",
+    "npz_b64": "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64",
+    "export_receipt": "qualification/hcsn_n256_new_export/evidence/attempt001/RECEIPT.json",
+    "export_audit": "qualification/hcsn_n256_new_export/evidence/attempt001/AUDIT.json",
+    "roster_readback": "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/INPUT_READBACK.json",
+    "roster_summary": "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/SUMMARY.json",
+    "roster_audit": "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/AUDIT.json",
+    "engineering": "qualification/hcsn_currentstate_n256_engineering/evidence/source-8b0d340/attempt001/AUDIT.json",
+    "streaming": "qualification/hcsn_currentstate_n256_streaming_intent/evidence/source-f2a83b0/attempt002/PLAN.json",
+    "streaming_audit": "qualification/hcsn_currentstate_n256_streaming_intent/evidence/source-f2a83b0/FINAL_AUDIT.json",
+}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -71,7 +85,8 @@ def main() -> int:
     require(report["largegrid_qualification"] is False and report["global_HOLD"] is True, "HOLD")
     require(report["all_closed"] is False and len(report["remaining_gates"]) == 7, "remaining gates")
 
-    for name, relative in report["original_sha256"].items():
+    require(set(report["original_sha256"]) == set(ORIGINAL_PATHS), "original path roster")
+    for name, relative in ORIGINAL_PATHS.items():
         require(digest(args.root / relative) == report["original_sha256"][name], f"original changed: {name}")
 
     review = {
