@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "head": "afdf13ffc1757c0dfa5d3f6922bde2d746251df7",
+  "tree": "7eb8f9f742ce2a28327b6d7aae0b2f0f8cd7ebf4",
+  "source_qa": {
+    "status": "completed",
+    "exit_code": 0,
+    "started": "2026-11-13T02:02:19.350943+00:00",
+    "finished": "2026-11-13T02:06:00.621714+00:00",
+    "elapsed_seconds": 221.2700963660027,
+    "source_unchanged": true,
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qa/b4-no-bypass",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "files": {
+      "fullsource.stderr.log": {
+        "bytes": 192262,
+        "sha256": "3f1df1eefa2332e5d562fe63988a73b4adc466756661eedf216031472cf2c704"
+      },
+      "fullsource.stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "read_only_child_usage": {
+      "before": {
+        "utime": 0.030824999999999998,
+        "stime": 0.072308,
+        "maxrss_kib": 15544,
+        "minor_faults": 8308,
+        "major_faults": 0,
+        "voluntary_switches": 47,
+        "involuntary_switches": 7,
+        "scope": "launcher cumulative reaped children; maxrss is a peak, not subtractable"
+      },
+      "after": {
+        "utime": 205.012875,
+        "stime": 8.470544,
+        "maxrss_kib": 674016,
+        "minor_faults": 212921,
+        "major_faults": 0,
+        "voluntary_switches": 29537,
+        "involuntary_switches": 15809,
+        "scope": "launcher cumulative reaped children; maxrss is a peak, not subtractable"
+      }
+    }
+  },
+  "unittest_summary": {
+    "tests": 926,
+    "elapsed_seconds": 218.235,
+    "status": "OK"
+  },
+  "source_snapshot": {
+    "head": "afdf13ffc1757c0dfa5d3f6922bde2d746251df7",
+    "tree": "7eb8f9f742ce2a28327b6d7aae0b2f0f8cd7ebf4",
+    "status": "",
+    "tracked_files": 15500,
+    "tracked_bytes": 234446647,
+    "tracked_sha256": "10d16cdd1f455bb0ea756b72156658f33e6a34f1e6f15ccc88c74e4aade5191d",
+    "callers_sha256": "86cc52079c610b02d50fd5b3c2e56846ef9dc238e9afbfc4d577b9924dedd216"
+  },
+  "samples": {
+    "count": 221,
+    "same_pid_and_start": true,
+    "observation_errors": 0,
+    "bytes": 106951,
+    "sha256": "3a2bb706b9f40dcc70f921dd82fefaade595ea89112b07ee3821fdee7cebc6d6",
+    "summary": {
+      "samples": 221,
+      "same_start_all_observed": true,
+      "errors": [],
+      "max_rss_kib": 674780,
+      "max_hwm_kib": 674780,
+      "max_vpeak_kib": 700700,
+      "first": {
+        "observed_at": "2026-11-13T02:02:19.932140+00:00",
+        "monotonic": 64982.702678289,
+        "pid": 52,
+        "start_ticks": "6498270",
+        "same_child_start": true,
+        "status_fields": [
+          "Name:\tpython3",
+          "State:\tR (running)",
+          "Pid:\t52",
+          "PPid:\t3",
+          "VmPeak:\t   30804 kB",
+          "VmSize:\t   30804 kB",
+          "VmHWM:\t     624 kB",
+          "VmRSS:\t     624 kB",
+          "Threads:\t1"
+        ],
+        "memory_available": [
+          "MemTotal:       10206472 kB",
+          "MemAvailable:    1825904 kB",
+          "SwapTotal:             0 kB",
+          "SwapFree:              0 kB"
+        ]
+      },
+      "last": {
+        "observed_at": "2026-11-13T02:06:00.393103+00:00",
+        "monotonic": 65203.163649226,
+        "pid": 52,
+        "start_ticks": "6498270",
+        "same_child_start": true,
+        "status_fields": [
+          "Name:\tpython3",
+          "State:\tR (running)",
+          "Pid:\t52",
+          "PPid:\t3",
+          "VmPeak:\t  700700 kB",
+          "VmSize:\t  655644 kB",
+          "VmHWM:\t  674016 kB",
+          "VmRSS:\t  629760 kB",
+          "Threads:\t1"
+        ],
+        "memory_available": [
+          "MemTotal:       10206472 kB",
+          "MemAvailable:    1564548 kB",
+          "SwapTotal:             0 kB",
+          "SwapFree:              0 kB"
+        ]
+      },
+      "sha256": "3a2bb706b9f40dcc70f921dd82fefaade595ea89112b07ee3821fdee7cebc6d6",
+      "bytes": 106951,
+      "scope": "Same launcher read-only samples; successful current run does not establish prior SIGKILL cause"
+    }
+  },
+  "full_caller_executed_on_this_candidate": false,
+  "actual_cli_receipt_source": "5e2426ad737fc5f8bef5c69e4a49f4b9a0275be4",
+  "same_cli_inputs_proof": {
+    "only_changed_path": "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+    "not_a_scanner_or_rust_or_callers_file": true,
+    "not_protected_or_definition_input": true
+  },
+  "previous_signal_cause_inferred": false,
+  "native_tests_executed": 0,
+  "whole_qualification_counts": [
+    0,
+    0,
+    0
+  ],
+  "previous_evidence_head": "f5a8672016ca4fa5e4b6eca01afd4e42f6763311"
+}
