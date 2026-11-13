@@ -1,0 +1,52 @@
+{
+  "all_closed": false,
+  "artifact_crc_pass": true,
+  "artifact_members": 47,
+  "candidate_oracle_raw_stream_pairs_byte_exact": 5,
+  "checks": {
+    "call_accounting_exact": true,
+    "capsules_match_immutable_parent_bytes": true,
+    "coordinate_denominator_exact": true,
+    "development_reds_preserved": true,
+    "job_terminal_success": true,
+    "parent_identity_exact": true,
+    "qualification_false": true,
+    "source_identity_exact": true,
+    "unique_key_exact": true,
+    "zip_sha256_exact": true
+  },
+  "coordinate_comparisons": 3206270,
+  "executed_by_review": {
+    "dynamic_segments": 0,
+    "matrix_exponentials": 0,
+    "optimizer_updates": 0,
+    "torch_operations": 0
+  },
+  "observed_admission_calls": {
+    "candidate_dynamic_segments": 27,
+    "candidate_matrix_exponentials": 108,
+    "optimizer_updates": 0,
+    "oracle_dynamic_segments": 27,
+    "oracle_matrix_exponentials": 108,
+    "torch_operations": 0
+  },
+  "observed_admission_cost": {
+    "full_child_tree_cpu_seconds": 7.882923,
+    "full_child_tree_wall_seconds": 8.183478197999989,
+    "reported_child_tree_max_rss_kib": 87528
+  },
+  "overall": "PASS_EVIDENCE_READBACK_BOUNDED_SCOPE_ONLY",
+  "qualification": false,
+  "remaining_open": [
+    "direct slicing and arbitrary histories",
+    "third and later cycles",
+    "N256/N512 dynamics",
+    "full-network training",
+    "finite-domain qualification",
+    "asynchronous complete cost",
+    "HPCA external sealed and retention custody",
+    "same-budget task benefit",
+    "C2 complete six-fit replay"
+  ],
+  "scope": "N128 canonical second-cycle coarse/cold controls only"
+}
