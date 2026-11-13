@@ -16,6 +16,9 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+#[path = "root_generation_initial_lane.rs"]
+mod lane;
+
 #[path = "root_generation_initial_peer_ready.rs"]
 mod peer_ready;
 #[path = "root_generation_initial_run_start.rs"]
@@ -37,6 +40,9 @@ pub(crate) struct RootGenerationInitialClient {
     mode: crate::RootGenerationInitialModeV1,
     connection: crate::RootGenerationPublicationConnectionV1,
     lane: Mutex<Option<Lane>>,
+    admission: lane::InitialLaneAdmission,
+    frame_timeout: std::time::Duration,
+    session_end: std::time::Instant,
     fenced: AtomicBool,
     run_start_attempted: AtomicBool,
 }
@@ -98,6 +104,8 @@ impl RootGenerationInitialClient {
         validate_profile(profile)?;
         validate_head(profile, response.head.as_ref())?;
         connection.require_original_publication_session()?;
+        let (frame_timeout, session_end) = stream.original_frame_budget();
+        let admission = lane::InitialLaneAdmission::new()?;
         Ok(Self {
             profile: response.profile,
             mode: response.mode,
@@ -106,6 +114,9 @@ impl RootGenerationInitialClient {
                 stream,
                 sequence: 2,
             })),
+            admission,
+            frame_timeout,
+            session_end,
             fenced: AtomicBool::new(false),
             run_start_attempted: AtomicBool::new(false),
         })
@@ -184,6 +195,7 @@ impl RootGenerationInitialClient {
     }
 
     fn exchange(&self, command: Command) -> Result<Option<CurrentHead>, AgentdError> {
+        let end = self.original_frame_end()?;
         if self.fenced.load(Ordering::Acquire) {
             initial_failure("already_fenced", None, format_args!("class=Fenced"));
             return Err(uncertain());
@@ -197,16 +209,8 @@ impl RootGenerationInitialClient {
             );
             return Err(uncertain());
         }
-        let mut held = self.lane.try_lock().map_err(|error| {
-            self.fenced.store(true, Ordering::Release);
-            let class = match error {
-                std::sync::TryLockError::WouldBlock => "WouldBlock",
-                std::sync::TryLockError::Poisoned(_) => "Poisoned",
-            };
-            initial_failure("lane_try_lock", None, format_args!("class={class}"));
-            uncertain()
-        })?;
-        let mut lane = held.take().ok_or_else(uncertain).inspect_err(|_| {
+        let mut held = self.acquire_original_lane(end)?;
+        let mut lane = held.data.take().ok_or_else(uncertain).inspect_err(|_| {
             initial_failure("lane_absent", None, format_args!("class=Absent"));
         })?;
         let request_id = lane.sequence;
@@ -223,33 +227,33 @@ impl RootGenerationInitialClient {
             profile: self.profile.binding.clone(),
             command,
         };
-        let raw = lane
-            .stream
-            .exchange(
-                &serde_json::to_vec(&request)
-                    .inspect_err(|error| {
-                        initial_failure(
-                            "encode_request",
-                            Some(request_id),
-                            format_args!("class={:?}", error.classify()),
-                        );
-                    })
-                    .map_err(|_| uncertain())?,
-            )
-            .inspect_err(|error| {
-                // This stream's errors contain only fixed framing phases,
-                // kernel I/O classes, lengths and poll/deadline fields.
-                initial_failure(
-                    "frame_exchange",
-                    Some(request_id),
-                    format_args!(
-                        "io_kind={:?}; os_error={:?}; detail={error}",
-                        error.kind(),
-                        error.raw_os_error()
-                    ),
-                );
-            })
-            .map_err(|_| uncertain())?;
+        let raw = crate::root_generation_current_client::OriginalPublicationStream::exchange_until(
+            &mut lane.stream,
+            &serde_json::to_vec(&request)
+                .inspect_err(|error| {
+                    initial_failure(
+                        "encode_request",
+                        Some(request_id),
+                        format_args!("class={:?}", error.classify()),
+                    );
+                })
+                .map_err(|_| uncertain())?,
+            held.end,
+        )
+        .inspect_err(|error| {
+            // This stream's errors contain only fixed framing phases,
+            // kernel I/O classes, lengths and poll/deadline fields.
+            initial_failure(
+                "frame_exchange",
+                Some(request_id),
+                format_args!(
+                    "io_kind={:?}; os_error={:?}; detail={error}",
+                    error.kind(),
+                    error.raw_os_error()
+                ),
+            );
+        })
+        .map_err(|_| uncertain())?;
         let response: Response = serde_json::from_slice(&raw)
             .inspect_err(|error| {
                 // Do not log serde's Display: it can contain a peer's value.
@@ -295,7 +299,9 @@ impl RootGenerationInitialClient {
             );
             return Err(uncertain());
         }
-        *held = Some(lane);
+        held.require_open()?;
+        *held.data = Some(lane);
+        held.release()?;
         Ok(response.head)
     }
 }

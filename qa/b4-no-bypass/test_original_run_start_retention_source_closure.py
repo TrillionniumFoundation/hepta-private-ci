@@ -346,8 +346,9 @@ class OriginalRunStartRetentionSourceTests(unittest.TestCase):
             "published.publication.disposition != RunStartAppendDisposition::Appended",
             "!crate::objective_runtime::run_start_matches_original_publisher(",
             "self.connection.original_launch_binding().1", "&record.snapshot,",
-            "published.run_start != record.snapshot", "self.lane.try_lock()", "held.take()",
-            "request_id.checked_add(1)", "lane.stream.exchange(", "require_retained_reply(",
+            "published.run_start != record.snapshot", "self.original_frame_end()?",
+            "self.acquire_original_lane(end)?", "held.data.take()",
+            "request_id.checked_add(1)", "OriginalPublicationStream::exchange_until(", "&mut lane.stream,", "held.end", "require_retained_reply(",
             "self.observe_initial_current()? != before", "self.fence()",
         ))
         self.remove(CLIENT, "require_retained_reply", (

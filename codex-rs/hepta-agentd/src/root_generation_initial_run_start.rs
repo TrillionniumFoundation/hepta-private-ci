@@ -47,8 +47,9 @@ impl RootGenerationInitialClient {
             };
             publication.validate().map_err(|_| uncertain())?;
             {
-                let mut held = self.lane.try_lock().map_err(|_| uncertain())?;
-                let mut lane = held.take().ok_or_else(uncertain)?;
+                let end = self.original_frame_end()?;
+                let mut held = self.acquire_original_lane(end)?;
+                let mut lane = held.data.take().ok_or_else(uncertain)?;
                 let request_id = lane.sequence;
                 lane.sequence = request_id.checked_add(1).ok_or_else(uncertain)?;
                 let request = Request {
@@ -63,7 +64,11 @@ impl RootGenerationInitialClient {
                 self.connection.require_original_publication_session()?;
                 // exchange retains the original absolute end and Root pidfd;
                 // neither this attempt nor a fresh timeout can extend it.
-                let raw = lane.stream.exchange(&serde_json::to_vec(&request)?)?;
+                let raw = crate::root_generation_current_client::OriginalPublicationStream::exchange_until(
+                    &mut lane.stream,
+                    &serde_json::to_vec(&request)?,
+                    held.end,
+                )?;
                 require_retained_reply(
                     &raw,
                     request_id,
@@ -75,7 +80,9 @@ impl RootGenerationInitialClient {
                 if self.fenced.load(Ordering::Acquire) {
                     return Err(uncertain());
                 }
-                *held = Some(lane);
+                held.require_open()?;
+                *held.data = Some(lane);
+                held.release()?;
             }
             if self.observe_initial_current()? != before {
                 return Err(uncertain());

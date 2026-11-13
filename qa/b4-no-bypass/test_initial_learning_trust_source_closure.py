@@ -101,11 +101,11 @@ class InitialLearningTrustSourceTests(unittest.TestCase):
 
     def test_client_validates_same_session_before_and_after_actual_activation(self):
         file = "root_generation_initial_learning_trust.rs"
-        for occurrence in (0, 1, 2):
+        for occurrence in range(4):
             self.reject_removal(file, "fn read_original_learning_trust(",
                                 "self.require_learning_trust_session(session, identity)?", occurrence)
         for marker in ("pin.require_target(&self.profile.deployment.target)?", "original_initial_record(",
-                       "held.take().ok_or_else(uncertain)?", "&response.pin != pin", "response.payload.activate_pinned_genesis(",
+                       "held.data.take().ok_or_else(uncertain)?", "&response.pin != pin", "response.payload.activate_pinned_genesis(",
                        "response.payload.require_activation_pin(&activated, pin)?", "self.observe_initial_current()? != before", "self.fence()"):
             self.reject_removal(file, "fn read_original_learning_trust(", marker)
         self.reject_removal(file, "fn require_learning_trust_session(", "self.connection.original_launch_binding().1 != identity")

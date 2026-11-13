@@ -51,11 +51,9 @@ impl RootGenerationInitialClient {
         self.connection.require_original_publication_session()?;
         let head = self.observe_initial_current()?;
         original_initial_record(&self.profile.prepared, &head)?.ok_or_else(uncertain)?;
-        let mut held = self.lane.try_lock().map_err(|_| {
-            self.fenced.store(true, Ordering::Release);
-            uncertain()
-        })?;
-        let mut lane = held.take().ok_or_else(uncertain)?;
+        let end = self.original_frame_end()?;
+        let mut held = self.acquire_original_lane(end)?;
+        let mut lane = held.data.take().ok_or_else(uncertain)?;
         // Terminal admission consumes the lane before any capture request.
         // Neither success nor uncertainty can restore it for another use.
         self.fenced.store(true, Ordering::Release);
@@ -71,12 +69,15 @@ impl RootGenerationInitialClient {
             command: Command::CaptureSource {},
         };
         self.connection.require_original_publication_session()?;
-        let raw = lane
-            .stream
-            .exchange(&serde_json::to_vec(&capture).map_err(|_| uncertain())?)
-            .map_err(|_| uncertain())?;
+        let raw = crate::root_generation_current_client::OriginalPublicationStream::exchange_until(
+            &mut lane.stream,
+            &serde_json::to_vec(&capture).map_err(|_| uncertain())?,
+            held.end,
+        )
+        .map_err(|_| uncertain())?;
         let pin = self.source_capture_reply(&raw, captured_id, SourceCapturePhase::Captured)?;
         self.connection.require_original_publication_session()?;
+        held.require_deadline()?;
         let acknowledgement = Request {
             schema: 1,
             purpose: SOURCE_CAPTURE_PURPOSE.into(),
@@ -95,7 +96,8 @@ impl RootGenerationInitialClient {
         if acknowledged != pin {
             return Err(uncertain());
         }
-        self.connection.require_original_publication_session()
+        self.connection.require_original_publication_session()?;
+        held.release()
     }
 
     fn source_capture_reply(

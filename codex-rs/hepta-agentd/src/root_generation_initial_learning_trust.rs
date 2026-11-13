@@ -45,8 +45,11 @@ impl RootGenerationInitialClient {
             )?
             .ok_or_else(uncertain)?;
             let response = {
-                let mut held = self.lane.try_lock().map_err(|_| uncertain())?;
-                let mut lane = held.take().ok_or_else(uncertain)?;
+                let end = self.original_frame_end()?;
+                let mut held = self.acquire_original_lane(end)?;
+                self.require_learning_trust_session(session, identity)?;
+                held.require_open()?;
+                let mut lane = held.data.take().ok_or_else(uncertain)?;
                 let request_id = lane.sequence;
                 lane.sequence = request_id.checked_add(1).ok_or_else(uncertain)?;
                 let request = Request {
@@ -56,7 +59,11 @@ impl RootGenerationInitialClient {
                     profile: self.profile.binding.clone(),
                     command: Command::ReadLearningTrust {},
                 };
-                let raw = lane.stream.exchange(&serde_json::to_vec(&request)?)?;
+                let raw = crate::root_generation_current_client::OriginalPublicationStream::exchange_until(
+                    &mut lane.stream,
+                    &serde_json::to_vec(&request)?,
+                    held.end,
+                )?;
                 let response: LearningTrustResponseV1 = serde_json::from_slice(&raw)?;
                 if response.schema != 1
                     || response.purpose != LEARNING_TRUST_PURPOSE
@@ -68,7 +75,9 @@ impl RootGenerationInitialClient {
                     return Err(uncertain());
                 }
                 self.require_learning_trust_session(session, identity)?;
-                *held = Some(lane);
+                held.require_open()?;
+                *held.data = Some(lane);
+                held.release()?;
                 response
             };
             let (activated, generator, observer) = response.payload.activate_pinned_genesis(

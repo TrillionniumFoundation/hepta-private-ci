@@ -117,14 +117,32 @@ impl OriginalPublicationStream {
         })
     }
 
+    pub(crate) fn original_frame_budget(&self) -> (Duration, Instant) {
+        (self.timeout, self.end)
+    }
+
     pub(crate) fn exchange(&mut self, request: &[u8]) -> io::Result<Vec<u8>> {
+        self.exchange_until(request, (Instant::now() + self.timeout).min(self.end))
+    }
+
+    pub(crate) fn exchange_until(
+        &mut self,
+        request: &[u8],
+        requested_end: Instant,
+    ) -> io::Result<Vec<u8>> {
         if request.is_empty() || request.len() > 16_384 {
             return Err(io::Error::other(format!(
                 "original Root publication request frame length rejected: {}",
                 request.len()
             )));
         }
-        let end = (Instant::now() + self.timeout).min(self.end);
+        let now = Instant::now();
+        let end = requested_end.min(now + self.timeout).min(self.end);
+        if now >= end {
+            return Err(io::Error::other(
+                "original Root publication frame deadline elapsed before request",
+            ));
+        }
         crate::root_observation_stream::check_lifetime(&self.root).map_err(|error| {
             frame_error("Root lifetime before request", io::Error::other(error))
         })?;
@@ -281,3 +299,7 @@ fn bounded_text(path: &str, limit: u64) -> io::Result<String> {
 fn unavailable() -> io::Error {
     io::Error::other("original Root publication lane unavailable")
 }
+
+#[cfg(test)]
+#[path = "root_generation_initial_frame_tests.rs"]
+mod initial_deadline_tests;
