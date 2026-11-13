@@ -1,0 +1,470 @@
+{
+  "status": "completed",
+  "source_head": "fbf2cc0a3eaf4ca1e720300c306ff6ad38517449",
+  "source_tree": "7b5104c68e65c4fec111f21d3aa8f5ba04984e9d",
+  "archive": "/home/qq/hepta-learn-ff41-tools/validation/root-originals-fbf2cc0a-v1/originals.tar.xz",
+  "archive_sha256": "154f69338407158e558f3a583bda1ed3057c164d7f2eb75c6df5ac7cd2174605",
+  "manifest_sha256": "569d0760ee44275cd7cd712e12d0e528c7ce1d88befd52385ce45895e976ee48",
+  "all_archived_members_verified": 250,
+  "all_archived_bytes_verified": 8838274,
+  "selected_sqlite_originals": [
+    {
+      "member": "cases/ordinary-a/retained/a_runtime/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3",
+      "original_path": "/run/oq-Ovma1L/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3",
+      "actual_path": "/run/oq-Ovma1L/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3",
+      "bytes": 4096,
+      "sha256": "89a2318c76452be80e1d743f163f3dd96623b2b05604aa06985c6b5501238362"
+    },
+    {
+      "member": "cases/ordinary-a/retained/a_runtime/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3-shm",
+      "original_path": "/run/oq-Ovma1L/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3-shm",
+      "actual_path": "/run/oq-Ovma1L/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3-shm",
+      "bytes": 32768,
+      "sha256": "254209651d76c7b50b79c782dff6b38e451e9e52b67e47dbedf6a92b6444f590"
+    },
+    {
+      "member": "cases/ordinary-a/retained/a_runtime/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3-wal",
+      "original_path": "/run/oq-Ovma1L/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3-wal",
+      "actual_path": "/run/oq-Ovma1L/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/automation/automation_1.sqlite3-wal",
+      "bytes": 939392,
+      "sha256": "f94bfcd541556d2126dc022b0f3f5e642ed52b0ebc9d9468258a76768a15677d"
+    }
+  ],
+  "copy_before": {
+    "automation_1.sqlite3": {
+      "bytes": 4096,
+      "sha256": "89a2318c76452be80e1d743f163f3dd96623b2b05604aa06985c6b5501238362",
+      "physical": [
+        66306,
+        64274338,
+        33152,
+        1000,
+        1000,
+        4096,
+        1794530339467998456,
+        1794530339469520832
+      ]
+    },
+    "automation_1.sqlite3-shm": {
+      "bytes": 32768,
+      "sha256": "254209651d76c7b50b79c782dff6b38e451e9e52b67e47dbedf6a92b6444f590",
+      "physical": [
+        66306,
+        64274339,
+        33152,
+        1000,
+        1000,
+        32768,
+        1794530339470891373,
+        1794530339470891373
+      ]
+    },
+    "automation_1.sqlite3-wal": {
+      "bytes": 939392,
+      "sha256": "f94bfcd541556d2126dc022b0f3f5e642ed52b0ebc9d9468258a76768a15677d",
+      "physical": [
+        66306,
+        64274340,
+        33152,
+        1000,
+        1000,
+        939392,
+        1794530339473037656,
+        1794530339473037656
+      ]
+    }
+  },
+  "copy_after": {
+    "automation_1.sqlite3": {
+      "bytes": 4096,
+      "sha256": "89a2318c76452be80e1d743f163f3dd96623b2b05604aa06985c6b5501238362",
+      "physical": [
+        66306,
+        64274338,
+        33152,
+        1000,
+        1000,
+        4096,
+        1794530339467998456,
+        1794530339469520832
+      ]
+    },
+    "automation_1.sqlite3-shm": {
+      "bytes": 32768,
+      "sha256": "0964b6166f496571cb8450d9ee555350f7b1659cb0b3400ee1fb215567983683",
+      "physical": [
+        66306,
+        64274339,
+        33152,
+        1000,
+        1000,
+        32768,
+        1794530339490619181,
+        1794530339490619181
+      ]
+    },
+    "automation_1.sqlite3-wal": {
+      "bytes": 939392,
+      "sha256": "f94bfcd541556d2126dc022b0f3f5e642ed52b0ebc9d9468258a76768a15677d",
+      "physical": [
+        66306,
+        64274340,
+        33152,
+        1000,
+        1000,
+        939392,
+        1794530339473037656,
+        1794530339473037656
+      ]
+    }
+  },
+  "copy_unchanged": false,
+  "copied_db_and_wal_unchanged": true,
+  "copy_cache_changes": [
+    "automation_1.sqlite3-shm"
+  ],
+  "archive_unchanged": true,
+  "queries": {
+    "run": "SELECT owner_agent_id, run_id, definition_digest, revision, state_json, state_digest, last_event_digest FROM circuit_v2_runs WHERE run_id = ?",
+    "definition": "SELECT circuit_id, version, definition_digest, definition_json FROM circuit_v2_definitions WHERE owner_agent_id = ? AND definition_digest = ?",
+    "events": "SELECT seq, command_id, event_json, previous_digest, state_digest, event_digest FROM circuit_v2_events WHERE owner_agent_id = ? AND run_id = ? ORDER BY seq LIMIT 257"
+  },
+  "observation": {
+    "sqlite_version": "3.46.1",
+    "journal_mode": "wal",
+    "schema": {
+      "circuit_v2_runs": [
+        {
+          "cid": 0,
+          "name": "owner_agent_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "run_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 2
+        },
+        {
+          "cid": 2,
+          "name": "definition_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 3,
+          "name": "revision",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "state_json",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "state_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "last_event_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "circuit_v2_definitions": [
+        {
+          "cid": 0,
+          "name": "owner_agent_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "circuit_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 2
+        },
+        {
+          "cid": 2,
+          "name": "version",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 3
+        },
+        {
+          "cid": 3,
+          "name": "definition_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "definition_json",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ],
+      "circuit_v2_events": [
+        {
+          "cid": 0,
+          "name": "owner_agent_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 1
+        },
+        {
+          "cid": 1,
+          "name": "run_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 2
+        },
+        {
+          "cid": 2,
+          "name": "seq",
+          "type": "INTEGER",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 3
+        },
+        {
+          "cid": 3,
+          "name": "command_id",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 4,
+          "name": "command_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 5,
+          "name": "event_json",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 6,
+          "name": "previous_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 7,
+          "name": "state_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        },
+        {
+          "cid": 8,
+          "name": "event_digest",
+          "type": "TEXT",
+          "notnull": 1,
+          "dflt_value": null,
+          "pk": 0
+        }
+      ]
+    },
+    "run_metadata": {
+      "owner_agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+      "run_id": "ordinary-original-a",
+      "definition_digest": "6303cbd4b9969cdf3743c437b8641d690724b93e18345b51d33a411f5106e1ee",
+      "revision": 1,
+      "state_digest": "1b01adaf7c9df9475531743316fcbc0cf9f93e876705c5bd84b90cfe56ed7984",
+      "last_event_digest": "462894e2f8eb5beb37a80d13329385daac0a52fd1c2caa75b5dcace4fb4b21f2"
+    },
+    "state_fields": [
+      {
+        "field": "$.created_at_ms",
+        "value": 1794528912455
+      },
+      {
+        "field": "$.last_observed_ms",
+        "value": 1794528915335
+      },
+      {
+        "field": "$.revision",
+        "value": 1
+      },
+      {
+        "field": "$.activations",
+        "count": 1
+      },
+      {
+        "field": "$.activations.1.activation_id",
+        "value": 1
+      },
+      {
+        "field": "$.activations.1.status",
+        "value": "cancelled"
+      },
+      {
+        "field": "$.stop_reason",
+        "value": "deadline"
+      }
+    ],
+    "state_top_level_keys": [
+      "activations",
+      "created_at_ms",
+      "definition_digest",
+      "instances",
+      "last_observed_ms",
+      "next_activation",
+      "owner_agent_id",
+      "revision",
+      "run_id",
+      "scope_digest",
+      "stop_reason",
+      "writer"
+    ],
+    "definition_metadata": {
+      "circuit_id": "native-cell",
+      "version": 1,
+      "definition_digest": "6303cbd4b9969cdf3743c437b8641d690724b93e18345b51d33a411f5106e1ee"
+    },
+    "definition_fields": [
+      {
+        "field": "$.limits.max_activations",
+        "value": 16
+      },
+      {
+        "field": "$.limits.max_elapsed_ms",
+        "value": 1000
+      },
+      {
+        "field": "$.programs[0].nodes[0].kind",
+        "variant_keys": [
+          "kind",
+          "max_work"
+        ]
+      },
+      {
+        "field": "$.programs[0].nodes[0].kind.kind",
+        "value": "decide"
+      },
+      {
+        "field": "$.programs[0].nodes[1].kind",
+        "variant_keys": [
+          "kind",
+          "outcome"
+        ]
+      },
+      {
+        "field": "$.programs[0].nodes[1].kind.kind",
+        "value": "exit"
+      },
+      {
+        "field": "$.programs[0].nodes[2].kind",
+        "variant_keys": [
+          "kind",
+          "outcome"
+        ]
+      },
+      {
+        "field": "$.programs[0].nodes[2].kind.kind",
+        "value": "exit"
+      }
+    ],
+    "events": [
+      {
+        "seq": 0,
+        "command_id": "create",
+        "previous_digest": "fdb60f2c5032d41e33f463fd7f1c27b02ba8abf281997a5b63c1151970790bdb",
+        "state_digest": "89484807a39381bb0af09df3790578735d82aba011acd727c56c2945d241bb6b",
+        "event_digest": "1d36123b8730b8ff1475519ece0a1c8b389fdf401207a506c4fa055bc41e5da6",
+        "event_json_sha256": "34aaa0f4cb33ce829f5bbf9758d6279670a68f1e92612c1e885450a53a2c0768",
+        "top_level_keys": [
+          "fence",
+          "kind",
+          "start"
+        ],
+        "fields": [
+          {
+            "field": "$.kind",
+            "value": "created"
+          },
+          {
+            "field": "$.start.created_at_ms",
+            "value": 1794528912455
+          }
+        ]
+      },
+      {
+        "seq": 1,
+        "command_id": "task-advance:0",
+        "previous_digest": "1d36123b8730b8ff1475519ece0a1c8b389fdf401207a506c4fa055bc41e5da6",
+        "state_digest": "1b01adaf7c9df9475531743316fcbc0cf9f93e876705c5bd84b90cfe56ed7984",
+        "event_digest": "462894e2f8eb5beb37a80d13329385daac0a52fd1c2caa75b5dcace4fb4b21f2",
+        "event_json_sha256": "32d6affe3f9b325310543d2c0594cbbdd8f4e8c93b0e0ca893851a0b08c9c94d",
+        "top_level_keys": [
+          "event",
+          "expected_revision",
+          "fence",
+          "kind",
+          "now_ms"
+        ],
+        "fields": [
+          {
+            "field": "$.kind",
+            "value": "applied"
+          },
+          {
+            "field": "$.now_ms",
+            "value": 1794528915335
+          },
+          {
+            "field": "$.event.kind",
+            "value": "advance"
+          }
+        ]
+      }
+    ]
+  },
+  "native_tests_run": false,
+  "qualification_inferred": false,
+  "scope": "Pure DATA query (mode=ro and query_only) of a separate copied DB plus archived WAL/SHM; only private SQLite cache changes may occur. All original archive members and copied durable DB/WAL remain unchanged. No original store opened and no native qualification inferred.",
+  "finished": "2026-11-13T00:38:59.492701+00:00"
+}
