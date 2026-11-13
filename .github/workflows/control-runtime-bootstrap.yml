@@ -1,0 +1,93 @@
+name: control.runtime bootstrap
+
+on:
+  push:
+    branches:
+      - codex/control-runtime-convergence-20260925
+    paths:
+      - .github/control-runtime-bootstrap.py
+      - .github/workflows/control-runtime-bootstrap.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-runtime-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          ref: codex/control-runtime-convergence-20260925
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just,cargo-nextest
+
+      - name: Apply convergence transformation
+        run: python3 .github/control-runtime-bootstrap.py
+
+      - name: Format targeted Rust packages
+        working-directory: codex-rs
+        run: |
+          cargo fmt --package codex-hepta-control-plane \
+            --package codex-hepta-agentd \
+            --package codex-hepta-operations \
+            --package codex-hepta-ndu
+          cargo fmt --package codex-hepta-control-plane \
+            --package codex-hepta-agentd \
+            --package codex-hepta-operations \
+            --package codex-hepta-ndu -- --check
+
+      - name: Compile all targets and update the local dependency lock
+        working-directory: codex-rs
+        run: |
+          cargo check \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-agentd \
+            -p codex-hepta-operations \
+            -p codex-hepta-ndu \
+            --all-targets
+
+      - name: Strict Clippy
+        working-directory: codex-rs
+        run: |
+          cargo clippy --locked \
+            -p codex-hepta-control-plane \
+            -p codex-hepta-agentd \
+            -p codex-hepta-operations \
+            -p codex-hepta-ndu \
+            --all-targets -- -D warnings
+
+      - name: Focused package tests
+        working-directory: codex-rs
+        run: |
+          just test --locked -p codex-hepta-control-plane --retries 0 --test-threads 2
+          just test --locked -p codex-hepta-operations --retries 0 --test-threads 2
+          just test --locked -p codex-hepta-ndu --retries 0 --test-threads 2
+          just test --locked -p codex-hepta-agentd -E 'test(cognitive_context)' --retries 0 --test-threads 2
+
+      - name: Lane D semantic gate
+        run: python3 scripts/hepta-lane-d-semantic-conformance.py verify
+
+      - name: Commit validated core
+        env:
+          BRANCH: codex/control-runtime-convergence-20260925
+        run: |
+          rm .github/control-runtime-bootstrap.py
+          rm .github/workflows/control-runtime-bootstrap.yml
+          git add -A
+          git diff --cached --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git commit -m 'fix(control.runtime): close planner integrity and lint gaps'
+          git push origin HEAD:"$BRANCH"
