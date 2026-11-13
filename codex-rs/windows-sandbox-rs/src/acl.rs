@@ -205,22 +205,31 @@ unsafe fn dacl_mask_allows_with_scope(
 }
 
 /// Path-based wrapper around the mask check (single DACL fetch).
-pub fn path_mask_allows(
+///
+/// # Safety
+/// Every pointer in psids must refer to a complete, valid SID that is correctly
+/// aligned, readable and unchanged for this entire call. The caller retains
+/// each SID allocation; this function neither takes ownership nor frees it.
+pub unsafe fn path_mask_allows(
     path: &Path,
     psids: &[*mut c_void],
     desired_mask: u32,
     require_all_bits: bool,
 ) -> Result<bool> {
-    path_mask_allows_with_scope(
-        path,
-        psids,
-        desired_mask,
-        require_all_bits,
-        AceScope::Effective,
-    )
+    // SAFETY: the caller retains valid SID allocations for this complete query.
+    unsafe {
+        path_mask_allows_with_scope(
+            path,
+            psids,
+            desired_mask,
+            require_all_bits,
+            AceScope::Effective,
+        )
+    }
 }
 
-fn path_mask_allows_with_scope(
+// The caller retains the same valid SID allocations required by path_mask_allows.
+unsafe fn path_mask_allows_with_scope(
     path: &Path,
     psids: &[*mut c_void],
     desired_mask: u32,
@@ -363,7 +372,12 @@ unsafe fn dacl_allow_mask_needs_refresh(
 }
 
 /// Returns whether any provided SID needs its writable-root allow ACE refreshed.
-pub fn path_write_aces_need_refresh(path: &Path, psids: &[*mut c_void]) -> Result<bool> {
+///
+/// # Safety
+/// Every pointer in psids must refer to a complete, valid SID that is correctly
+/// aligned, readable and unchanged for this entire call. The caller retains
+/// each SID allocation; this function neither takes ownership nor frees it.
+pub unsafe fn path_write_aces_need_refresh(path: &Path, psids: &[*mut c_void]) -> Result<bool> {
     unsafe {
         let (p_dacl, p_sd) = fetch_dacl_handle(path)?;
         let needs_refresh = psids.iter().any(|psid| {

@@ -16,7 +16,9 @@ use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 #[path = "setup_runtime_bin_tests.rs"]
 mod tests;
 
-pub(super) fn ensure_codex_app_runtime_paths_readable(
+/// # Safety
+/// sandbox_group_psid must remain a valid, readable SID for the entire call.
+pub(super) unsafe fn ensure_codex_app_runtime_paths_readable(
     sandbox_group_psid: *mut c_void,
     refresh_errors: &mut Vec<String>,
     log: &mut dyn Write,
@@ -34,12 +36,16 @@ pub(super) fn ensure_codex_app_runtime_paths_readable(
             continue;
         }
 
-        let has_access = match path_mask_allows(
-            &runtime_path,
-            &[sandbox_group_psid],
-            read_execute_mask,
-            /*require_all_bits*/ true,
-        ) {
+        // SAFETY: run_setup_full retains the successfully converted group SID
+        // until after this helper returns, as required by this helper's contract.
+        let has_access = match unsafe {
+            path_mask_allows(
+                &runtime_path,
+                &[sandbox_group_psid],
+                read_execute_mask,
+                /*require_all_bits*/ true,
+            )
+        } {
             Ok(has_access) => has_access,
             Err(err) => {
                 refresh_errors.push(format!(
