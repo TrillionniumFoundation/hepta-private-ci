@@ -124,6 +124,10 @@ pub(super) fn source_data_for_original_files(
     circuit.limits.work_budget = maximum_work
         .checked_mul(2)
         .ok_or_else(|| anyhow::anyhow!("original Circuit work budget overflow"))?;
+    // The original observation predates daemon startup. Freeze the Circuit
+    // budget from the Source's declared lease before creating either owner;
+    // neither the observation time nor any running deadline is renewed.
+    circuit.limits.max_elapsed_ms = source.lease_duration_ms;
     circuit.parameter_bundle_digest =
         Sha256Digest::parse(definition.bundle_digest.to_string()).map_err(anyhow::Error::msg)?;
     circuit.route_policy_digest = crate::circuit_cell_route_policy_digest_v1(&bindings)?;
@@ -296,5 +300,168 @@ fn ordinary_q24_public_source_preimage_preserves_actual_definition_and_task() ->
     decoded.registry()?;
     decoded.circuit.programs[0].nodes[0].kind = CircuitNodeKindV2::Decide { max_work: 2_000 };
     assert!(decoded.registry().is_err());
+    Ok(())
+}
+
+// Pure source data and the real Circuit reducer only. These tests do not open a
+// Root session, admit an objective, execute a Cell or manufacture completion.
+fn original_source_lease_reducer_data(
+    lease_duration_ms: u64,
+) -> anyhow::Result<(
+    crate::OriginalSingleQ24SourceConfigurationV1,
+    codex_hepta_automation::CircuitStartV2,
+)> {
+    let directory = tempfile::tempdir()?;
+    let (_, _, definition) = super::super::material::model(directory.path())?;
+    let mut source = super::super::material::source("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+    source.lease_duration_ms = lease_duration_ms;
+    source.deadline_micros = source
+        .monotonic_micros
+        .checked_add(
+            lease_duration_ms
+                .checked_mul(1_000)
+                .ok_or_else(|| anyhow::anyhow!("declared Source duration overflow"))?,
+        )
+        .ok_or_else(|| anyhow::anyhow!("declared Source deadline overflow"))?;
+    let original_source = source.clone();
+    let paths = OriginalAFilePaths::new(directory.path(), directory.path());
+    let fleet = codex_hepta_paths::HeptaFleetRoot::parse(directory.path().join("fleet"))?;
+    let agent = codex_hepta_contracts::AgentId::parse(source.scope.agent_id.as_str())?;
+    let layout = fleet.layout().agent(&agent);
+    let identity = AgentdIdentity {
+        agent_id: agent,
+        spawn_generation: 1,
+        fleet_root: fleet.as_path().to_path_buf(),
+        workspace: directory.path().into(),
+        resources: codex_hepta_fleet::ResourceBudget::local_default(),
+        home_root: layout.home_root().into(),
+        run_root: layout.run_root().into(),
+        control_socket: layout.agentd_control_socket().into(),
+        app_server_socket: layout.app_server_socket().into(),
+        layout,
+    };
+    let value = paths.source_data(
+        &identity,
+        &definition,
+        &source,
+        &directory.path().join("ledger.json"),
+    )?;
+    let decoded = crate::OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
+        &serde_json::to_vec(&value)?,
+        &identity,
+    )?;
+    decoded.registry()?;
+    pretty_assertions::assert_eq!(decoded.source, original_source);
+    pretty_assertions::assert_eq!(source, original_source);
+    // Match SourceOwner::request's conversion of the original observation
+    // time. This is fixed test data, not a new admission clock or signed grant.
+    let original_observed_at_unix_micros = 1_000_000_000_u64;
+    let start = codex_hepta_automation::CircuitStartV2 {
+        run_id: decoded.source.scope.run_id.to_string(),
+        scope_digest: crate::circuit_cell_scope_digest_v1(&decoded.source.scope)?,
+        input_digest: Sha256Digest::for_bytes(&decoded.source.observation),
+        created_at_ms: original_observed_at_unix_micros / 1_000,
+        lease_duration_ms: decoded.source.lease_duration_ms,
+    };
+    Ok((decoded, start))
+}
+
+#[test]
+fn ordinary_q24_circuit_dispatches_after_boot_delay_with_original_source_lease()
+-> anyhow::Result<()> {
+    use codex_hepta_automation::CircuitEventV2;
+    use codex_hepta_automation::CircuitRunV2;
+    use codex_hepta_automation::CircuitStopReasonV2;
+
+    for lease in [60_000, 120_000] {
+        let (data, start) = original_source_lease_reducer_data(lease)?;
+        let original_source = data.source.clone();
+        let original_start = serde_json::to_vec(&start)?;
+        let initial = CircuitRunV2::prepare(&data.circuit, &start, &data.fence)?;
+        let after_boot = start
+            .created_at_ms
+            .checked_add(2_000)
+            .ok_or_else(|| anyhow::anyhow!("fixed test time overflow"))?;
+        let (running, dispatches) = initial.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            after_boot,
+        )?;
+        pretty_assertions::assert_eq!(dispatches.len(), 1);
+        pretty_assertions::assert_eq!(dispatches[0].run_id, start.run_id);
+        pretty_assertions::assert_eq!(running.stop_reason(), None);
+        pretty_assertions::assert_eq!(running.outcome(), None);
+        pretty_assertions::assert_eq!(running.unresolved(), 1);
+        pretty_assertions::assert_eq!(
+            serde_json::to_value(&running)?["created_at_ms"],
+            json!(start.created_at_ms)
+        );
+        pretty_assertions::assert_eq!(serde_json::to_vec(&start)?, original_start);
+        pretty_assertions::assert_eq!(data.source, original_source);
+
+        // The inherited one-second route reproduces the pre-dispatch rejection:
+        // the reducer stops before any computation intent can be dispatched.
+        let mut inherited = data.circuit.clone();
+        inherited.limits.max_elapsed_ms = 1_000;
+        let expired = CircuitRunV2::prepare(&inherited, &start, &data.fence)?;
+        let (stopped, dispatches) = expired.reduce(
+            &inherited,
+            &CircuitEventV2::Advance { quantum: 1 },
+            after_boot,
+        )?;
+        pretty_assertions::assert_eq!(stopped.stop_reason(), Some(CircuitStopReasonV2::Deadline));
+        assert!(dispatches.is_empty());
+        pretty_assertions::assert_eq!(stopped.unresolved(), 0);
+    }
+    Ok(())
+}
+
+#[test]
+fn ordinary_q24_circuit_keeps_the_original_source_lease_deadline() -> anyhow::Result<()> {
+    use codex_hepta_automation::CircuitEventV2;
+    use codex_hepta_automation::CircuitRunV2;
+    use codex_hepta_automation::CircuitStopReasonV2;
+
+    for lease in [60_000, 120_000] {
+        let (data, start) = original_source_lease_reducer_data(lease)?;
+        let original_source = data.source.clone();
+        let original_start = serde_json::to_vec(&start)?;
+        let initial = CircuitRunV2::prepare(&data.circuit, &start, &data.fence)?;
+        let deadline = start
+            .created_at_ms
+            .checked_add(lease)
+            .ok_or_else(|| anyhow::anyhow!("original test deadline overflow"))?;
+        let (last_current, dispatches) = initial.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            deadline - 1,
+        )?;
+        pretty_assertions::assert_eq!(dispatches.len(), 1);
+        pretty_assertions::assert_eq!(last_current.stop_reason(), None);
+        let (stopped, dispatches) = initial.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            deadline,
+        )?;
+        pretty_assertions::assert_eq!(stopped.stop_reason(), Some(CircuitStopReasonV2::Deadline));
+        assert!(dispatches.is_empty());
+        pretty_assertions::assert_eq!(stopped.unresolved(), 0);
+        // Expiry cannot erase an already dispatched, unresolved computation.
+        let (inflight, dispatches) = last_current.reduce(
+            &data.circuit,
+            &CircuitEventV2::Advance { quantum: 1 },
+            deadline,
+        )?;
+        pretty_assertions::assert_eq!(inflight.stop_reason(), Some(CircuitStopReasonV2::Deadline));
+        assert!(dispatches.is_empty());
+        pretty_assertions::assert_eq!(inflight.unresolved(), 1);
+        pretty_assertions::assert_eq!(inflight.outcome(), None);
+        pretty_assertions::assert_eq!(
+            serde_json::to_value(&inflight)?["created_at_ms"],
+            json!(start.created_at_ms)
+        );
+        pretty_assertions::assert_eq!(serde_json::to_vec(&start)?, original_start);
+        pretty_assertions::assert_eq!(data.source, original_source);
+    }
     Ok(())
 }
