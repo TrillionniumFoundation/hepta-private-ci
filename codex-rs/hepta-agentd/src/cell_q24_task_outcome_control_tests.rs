@@ -24,6 +24,8 @@ use crate::AgentdResponse;
 use crate::AgentdState;
 use crate::cell_q24_task_ledger::control::encode;
 
+#[path = "cell_q24_initial_task_progress_control_tests.rs"]
+mod initial_progress;
 #[path = "cell_q24_task_observation_control_tests.rs"]
 mod observation;
 
