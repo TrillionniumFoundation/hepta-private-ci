@@ -11,6 +11,8 @@ codex_rust_crate(
         "tests/fixtures/notes-previous-receipt-v1.json",
     ],
     crate_name = "codex_hepta_memory",
+    test_shard_counts = {"hepta-memory-unit-tests": 4},
+    unit_test_flaky = False,
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

@@ -209,6 +209,7 @@ def codex_rust_crate(
         test_tags = [],
         test_threads = 0,
         unit_test_timeout = None,
+        unit_test_flaky = None,
         unit_test_extra_binaries = [],
         unit_test_extra_srcs = [],
         integration_test_extra_srcs = {},
@@ -271,6 +272,8 @@ def codex_rust_crate(
         test_threads: Optional Rust test thread limit for sharded integration tests.
         unit_test_timeout: Optional Bazel timeout for the unit-test target
             generated from `src/**/*.rs`.
+        unit_test_flaky: Optional flaky override for sharded library and binary
+            unit tests. None preserves the existing sharded-test retry behavior.
         unit_test_extra_binaries: Additional binary labels to surface as
             unit-test runfiles and `CARGO_BIN_EXE_*` environment variables.
         unit_test_extra_srcs: Additional source files required only by the
@@ -413,7 +416,7 @@ def codex_rust_crate(
             unit_test_kwargs["timeout"] = unit_test_timeout
         if unit_test_shard_count:
             unit_test_kwargs["shard_count"] = unit_test_shard_count
-            unit_test_kwargs["flaky"] = True
+            unit_test_kwargs["flaky"] = unit_test_flaky if unit_test_flaky != None else True
 
         workspace_root_test(
             name = unit_test_name,
@@ -489,7 +492,7 @@ def codex_rust_crate(
             binary_unit_test_kwargs["timeout"] = unit_test_timeout
         if binary_unit_test_shard_count:
             binary_unit_test_kwargs["shard_count"] = binary_unit_test_shard_count
-            binary_unit_test_kwargs["flaky"] = True
+            binary_unit_test_kwargs["flaky"] = unit_test_flaky if unit_test_flaky != None else True
 
         workspace_root_test(
             name = binary_unit_test_name,
