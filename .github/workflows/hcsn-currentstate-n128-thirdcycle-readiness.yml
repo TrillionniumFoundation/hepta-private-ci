@@ -1,0 +1,67 @@
+name: HCSN current-state N128 third-cycle readiness
+on:
+  push:
+    branches:
+      - research/hcsn-n128-thirdcycle-readiness-20261113-c06d
+permissions:
+  contents: read
+concurrency:
+  group: hcsn-n128-thirdcycle-readiness-20261113-c06d-001
+  cancel-in-progress: false
+jobs:
+  static-thirdcycle-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CANDIDATE_COMMIT: ${{ github.sha }}
+      EXPECTED_BRANCH: research/hcsn-n128-thirdcycle-readiness-20261113-c06d
+      GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - uses: ./.github/actions/setup-ci-tools
+      - name: Bind exact frozen static source
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$GITHUB_REF_NAME" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_COMMIT"
+          git merge-base --is-ancestor 7883eac90ee882b6a0d453452582860dfb47b517 HEAD
+          root="$RUNNER_TEMP/hcsn-n128-thirdcycle-readiness"
+          mkdir "$root"
+          python -B qualification/hcsn_currentstate_n128_thirdcycle_readiness/static_inspector.py --root . --output "$root/RESULT.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'hcsn-n128-thirdcycle-readiness'
+          result = json.loads((root / 'RESULT.json').read_text())
+          if result['status'] != 'PASS_STATIC_THIRDCYCLE_READINESS_HOLD_ONLY' or result['dynamic_segments'] != 0 or result['matrix_exponentials'] != 0 or result['torch_operations'] != 0 or result['optimizer_updates'] != 0 or result['qualification'] is not False or result['all_closed'] is not False:
+              raise SystemExit(1)
+          PY
+      - name: Apply exact repository format gate
+        run: |
+          cd codex-rs
+          just fmt --base 7883eac90ee882b6a0d453452582860dfb47b517
+          cd ..
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Confirm checkout remained immutable
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hcsn-n128-thirdcycle-readiness-attempt001-originals
+          path: ${{ runner.temp }}/hcsn-n128-thirdcycle-readiness
+          if-no-files-found: error
