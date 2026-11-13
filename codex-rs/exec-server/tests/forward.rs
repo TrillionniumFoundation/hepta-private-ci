@@ -26,18 +26,26 @@ use tokio_util::task::AbortOnDropHandle;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
+    let diagnostic_started = std::time::Instant::now();
     let relay = RelayTest::new().await?;
     let mut destination = common::exec_server::exec_server().await?;
     let (shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel();
-    let forwarder = AbortOnDropHandle::new(tokio::spawn(
-        codex_exec_server::run_remote_environment_forward_until_shutdown(
-            relay.config()?,
-            destination.websocket_url().to_string(),
-            async move {
-                let _ = shutdown_rx.await;
-            },
-        ),
-    ));
+    let forward = codex_exec_server::run_remote_environment_forward_until_shutdown(
+        relay.config()?,
+        destination.websocket_url().to_string(),
+        async move {
+            let _ = shutdown_rx.await;
+        },
+    );
+    let forward_started = std::time::Instant::now();
+    let forwarder = AbortOnDropHandle::new(tokio::spawn(async move {
+        let result = forward.await;
+        let elapsed_ms = forward_started.elapsed().as_millis();
+        eprintln!(
+            "forward_test phase=forward_task_returned elapsed_ms={elapsed_ms} result={result:?}"
+        );
+        result
+    }));
     let connection = relay.connect().await?;
     let client = &connection.client;
 
@@ -119,6 +127,10 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
     let temp_dir = TempDir::new()?;
     let path = temp_dir.path().join("large-request.bin");
     let contents = vec![0xa5; 13 * 1024 * 1024];
+    eprintln!(
+        "forward_test phase=large_file_write_started elapsed_ms={}",
+        diagnostic_started.elapsed().as_millis()
+    );
     timeout(
         TEST_TIMEOUT,
         client.fs_write_file(FsWriteFileParams {
@@ -130,6 +142,10 @@ async fn forwarder_runs_commands_and_transfers_files() -> Result<()> {
     )
     .await
     .context("forward large-file write phase timed out")??;
+    eprintln!(
+        "forward_test phase=large_file_write_completed elapsed_ms={}",
+        diagnostic_started.elapsed().as_millis()
+    );
     // A following request must still arrive as its own complete message.
     let read_response = client
         .fs_read_file(FsReadFileParams {

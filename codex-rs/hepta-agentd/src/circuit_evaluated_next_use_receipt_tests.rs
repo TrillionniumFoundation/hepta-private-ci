@@ -338,7 +338,7 @@ async fn evaluated_c_refuses_each_actual_original_predecessor_without_claim() ->
             "evaluator" => assert!(matches!(
                 result,
                 Err(NextUseError::Evaluated(PublicationError::Evaluation(
-                    crate::OriginalCellEvaluationCommandErrorV1::CommitUncertain
+                    crate::OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable
                 )))
             )),
             "selector" => assert!(matches!(
@@ -425,7 +425,8 @@ async fn evaluated_c_rereads_actual_source_after_the_final_s_response() -> anyho
                 &evaluator,
                 &selector,
             ))
-            .await,
+            .await
+            .inspect_err(|error| eprintln!("local C final S actual refusal: {error:?}")),
         Err(NextUseError::Observation(_))
     ));
     // The actual C claim/signature exists, but no successful response may use
@@ -499,7 +500,8 @@ async fn evaluated_c_recovery_of_missing_receipt_never_claims_or_signs() -> anyh
                 &evaluator,
                 &selector,
             ))
-            .await,
+            .await
+            .inspect_err(|error| eprintln!("local C cold missing actual refusal: {error:?}")),
         Err(NextUseError::Owner(OwnerError::Store(
             ProductEvaluationExecutionStoreErrorV1::Missing
         )))

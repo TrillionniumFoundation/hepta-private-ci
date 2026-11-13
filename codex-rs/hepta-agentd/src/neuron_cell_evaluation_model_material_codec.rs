@@ -220,6 +220,14 @@ impl<'a> Reader<'a> {
     pub(super) fn ids(&mut self) -> Result<Vec<StableId>, Error> {
         (0..self.count(1024)?).map(|_| self.id()).collect()
     }
+    // Product Qualification vectors use u64 counts; request vectors use u32.
+    pub(super) fn ids_u64(&mut self) -> Result<Vec<StableId>, Error> {
+        let count = self.u64()?;
+        if count > 1024 {
+            return Err(Error::Binding("bounded original material count"));
+        }
+        (0..count).map(|_| self.id()).collect()
+    }
     pub(super) fn principal(&mut self) -> Result<AuthenticatedPrincipalV1, Error> {
         Ok(AuthenticatedPrincipalV1 {
             principal_id: self.id()?,
@@ -237,4 +245,54 @@ impl<'a> Reader<'a> {
         }
         Ok(())
     }
+}
+
+// Check vectors from the actual producer in the existing material fixture.
+#[cfg(test)]
+pub(super) fn fixture_qualification_vector_bounds(bytes: &[u8]) -> Result<(), Error> {
+    let mut original = Reader::new(bytes);
+    original.literal(b"hepta.intelligence-eval.product-qualification.v4")?;
+    let _ = original.take(7 * 32)?;
+    for _ in 0..3 {
+        let _ = original.id()?;
+    }
+    let _ = original.u8()?;
+    let failed_start = original.offset;
+    let _ = original.ids_u64()?;
+    let failed_end = original.offset;
+    let _ = original.id()?;
+    let _ = original.principal()?;
+    let _ = original.principal()?;
+    let _ = original.u8()?;
+    let snapshots_start = original.offset;
+    let _ = original.ids_u64()?;
+    let snapshots_end = original.offset;
+    let _ = original.u8()?;
+    let _ = original.u8()?;
+    original.finish()?;
+    for (start, end) in [(failed_start, failed_end), (snapshots_start, snapshots_end)] {
+        let bytes = &bytes[start..end];
+        let mut exact = Reader::new(bytes);
+        let _ = exact.ids_u64()?;
+        exact.finish()?;
+        for count in [1025_u64, u64::MAX] {
+            let mut oversized = bytes.to_vec();
+            oversized[..8].copy_from_slice(&count.to_be_bytes());
+            let mut reader = Reader::new(&oversized);
+            assert!(matches!(
+                reader.ids_u64(),
+                Err(Error::Binding("bounded original material count"))
+            ));
+            assert_eq!(reader.offset, 8);
+        }
+        assert!(matches!(
+            Reader::new(&bytes[..7]).ids_u64(),
+            Err(Error::Binding("truncated original material"))
+        ));
+        assert!(matches!(
+            Reader::new(&bytes[..bytes.len() - 1]).ids_u64(),
+            Err(Error::Binding("truncated original material"))
+        ));
+    }
+    Ok(())
 }

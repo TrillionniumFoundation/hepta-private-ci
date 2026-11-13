@@ -267,7 +267,8 @@ async fn evaluated_remote_c_cold_missing_reads_originals_without_claiming() -> a
                 &evaluator,
                 &original.client,
             ))
-            .await,
+            .await
+            .inspect_err(|error| eprintln!("remote C cold missing actual refusal: {error:?}")),
         Err(NextUseError::Owner(OwnerError::Store(
             ProductEvaluationExecutionStoreErrorV1::Missing
         )))
@@ -339,7 +340,8 @@ async fn evaluated_remote_c_fences_after_last_s_reply_withdraws_actual_source() 
                 &evaluator,
                 &original.client,
             ))
-            .await,
+            .await
+            .inspect_err(|error| eprintln!("remote C final S actual refusal: {error:?}")),
         Err(NextUseError::PublishedRead(ReadError::Transport(_)))
     ));
     let committed = files.bytes()?;

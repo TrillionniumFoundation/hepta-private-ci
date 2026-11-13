@@ -243,6 +243,7 @@ impl OriginalCellEvaluationModelMaterialV1 {
         assert!(self.fixture_original_material_pages() > 1);
         assert!(self.fixture_original_material_pages() <= MAX_PAGES);
         let raw = &body.members[0];
+        super::super::codec::fixture_qualification_vector_bounds(&raw.qualification)?;
         let record: serde_json::Value = serde_json::from_slice(&raw.record)?;
         let candidate: CellBackendManifestV2 =
             serde_json::from_value(record["candidate"]["manifest"].clone())?;

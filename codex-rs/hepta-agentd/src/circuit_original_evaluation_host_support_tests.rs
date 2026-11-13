@@ -202,13 +202,20 @@ impl HostFixture {
         Ok(())
     }
 
-    pub(super) async fn finish(mut self: Box<Self>) -> anyhow::Result<[usize; 2]> {
-        drop(self.host.take());
-        let counts = [self.primary.finish()?, self.retention.finish()?];
-        drop(self.primary_b);
-        drop(self.retention_b);
-        self.original.finish().await?;
-        Ok(counts)
+    // Keep the cleanup future indirect in every enclosing test state.
+    pub(super) fn finish(
+        self: Box<Self>,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<[usize; 2]>>>> {
+        Box::pin(async move {
+            // Capture the whole fixture until the cleanup future is polled.
+            let mut fixture = self;
+            drop(fixture.host.take());
+            let counts = [fixture.primary.finish()?, fixture.retention.finish()?];
+            drop(fixture.primary_b);
+            drop(fixture.retention_b);
+            fixture.original.finish().await?;
+            Ok(counts)
+        })
     }
 }
 

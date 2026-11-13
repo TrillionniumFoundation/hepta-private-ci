@@ -425,7 +425,9 @@ async fn withdrawn_original(which: Withdraw) -> anyhow::Result<()> {
                 Withdraw::Training => [7, 6],
                 Withdraw::Evaluation => [7, 7],
             },
-            3,
+            // Execute observes before T/B, before commit, and after all T/B;
+            // the refused Readback observes once before its withdrawn owner.
+            4,
         )
         .await
 }

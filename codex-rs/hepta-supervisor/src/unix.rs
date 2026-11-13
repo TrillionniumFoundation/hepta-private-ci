@@ -656,14 +656,31 @@ fn read_agent_drain_frame(
     identity: &AgentHealthProbeIdentity,
     request: &[u8],
 ) -> std::io::Result<Vec<u8>> {
+    #[cfg(test)]
+    eprintln!("hepta_drain_frame phase=connect");
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    #[cfg(test)]
+    eprintln!("hepta_drain_frame phase=set_read_timeout");
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    #[cfg(test)]
+    eprintln!("hepta_drain_frame phase=set_write_timeout");
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    #[cfg(test)]
+    eprintln!("hepta_drain_frame phase=write_request");
     stream.write_all(request)?;
+    #[cfg(test)]
+    eprintln!("hepta_drain_frame phase=shutdown_write");
     stream.shutdown(Shutdown::Write)?;
     let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut response = Vec::new();
+    #[cfg(test)]
+    eprintln!("hepta_drain_frame phase=read_frame");
     reader.read_until(b'\n', &mut response)?;
+    #[cfg(test)]
+    eprintln!(
+        "hepta_drain_frame phase=frame_complete bytes={}",
+        response.len()
+    );
     Ok(response)
 }
 

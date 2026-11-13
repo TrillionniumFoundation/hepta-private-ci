@@ -363,7 +363,6 @@ jobs:
           path: ${{ runner.temp }}/bazel-exec-server-windows-test-shard-1
           if-no-files-found: warn
 
-
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
         continue-on-error: true

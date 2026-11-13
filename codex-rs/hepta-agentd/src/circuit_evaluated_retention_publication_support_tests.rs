@@ -344,10 +344,17 @@ impl PublicationFixture {
         .await
     }
 
-    pub(super) async fn finish(self: Box<Self>) -> anyhow::Result<()> {
-        drop(self.trainer);
-        self.host.finish().await?;
-        Ok(())
+    // Keep the cleanup future indirect in every enclosing test state.
+    pub(super) fn finish(
+        self: Box<Self>,
+    ) -> std::pin::Pin<Box<impl std::future::Future<Output = anyhow::Result<()>>>> {
+        Box::pin(async move {
+            // Capture the whole fixture until the cleanup future is polled.
+            let fixture = self;
+            drop(fixture.trainer);
+            fixture.host.finish().await?;
+            Ok(())
+        })
     }
 }
 

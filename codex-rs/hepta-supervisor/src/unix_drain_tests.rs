@@ -101,16 +101,19 @@ fn only_exact_closed_admission_with_no_running_turns_is_drained() -> TestResult 
     let temp = tempfile::tempdir()?;
     let identity = identity(&temp)?;
     let response = acknowledgement(&identity);
+    eprintln!("hepta_drain_case phase=exact_ack");
     assert!(exchange(&identity, frame(&response)?)??);
     let mut busy = response.clone();
     if let AgentdPayload::Drain(snapshot) = &mut busy.payload {
         snapshot.running_turns = 1;
     }
+    eprintln!("hepta_drain_case phase=running_turns");
     assert!(!exchange(&identity, frame(&busy)?)??);
     let mut fenced = response;
     if let AgentdPayload::Drain(snapshot) = &mut fenced.payload {
         snapshot.fenced = true;
     }
+    eprintln!("hepta_drain_case phase=fenced");
     assert!(exchange(&identity, frame(&fenced)?)?.is_err());
     Ok(())
 }
