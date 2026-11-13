@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "source_head": "bfee5aa363cb63897c28c8f74fd6b167de5e859b",
+  "source_tree": "d24d13a0d716036319a6b814dd89b8e913689b00",
+  "native_original_archive": {
+    "bytes": 317900,
+    "sha256": "d42b5e0c33f38c1b3b372a82857434e137b4a3356f8f0c35d75bc4250b273209",
+    "git_blob": "fb83efca465b3f372145299d62f9afe8399cc5ae",
+    "regular_members": 261,
+    "original_input_bytes": 8972543,
+    "all_member_bytes_verified": true
+  },
+  "native": {
+    "status": "completed",
+    "started": "2026-11-13T01:06:41.403188+00:00",
+    "finished": "2026-11-13T01:09:48.227562+00:00",
+    "elapsed": 186.8242749350611,
+    "source_unchanged": true,
+    "gates": {
+      "root-run-start-publisher": {
+        "status": "passed",
+        "total_testcases": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped_in_xml": 0,
+        "junit_bytes": 1649,
+        "junit_sha256": "b8b5d6d5a65c469d3933d9e3bbf549e9a7d509f017070610c169bca9741b6f3d",
+        "exact_parent_coverage": true,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=objective_runtime::tests::original_publisher::actual_running_generation_is_independent_of_the_cell_target) | test(=objective_runtime::tests::original_publisher::original_publisher_rejects_starting_and_future_generations) | test(=objective_runtime::tests::original_publisher::original_publisher_rejects_another_agents_fence) | test(=objective_runtime::tests::original_publisher::original_publisher_rejects_another_spawns_fence_and_identity) | test(=objective_runtime::tests::original_publisher::original_publisher_rejects_zero_spawn_even_with_a_matching_fence) | test(=objective_runtime::tests::original_publisher::original_publisher_rejects_overflow_without_wrapping_or_saturating)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ]
+      },
+      "circuit-source-lease-budget": {
+        "status": "passed",
+        "total_testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped_in_xml": 0,
+        "junit_bytes": 837,
+        "junit_sha256": "162e48f28c4a3c91958962740c8e32636cf6f0daa7647ff74308ae6e859eb5ef",
+        "exact_parent_coverage": true,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=neuron_generation_current::initial_root_tests::ordinary::deployment::ordinary_q24_circuit_dispatches_after_boot_delay_with_original_source_lease) | test(=neuron_generation_current::initial_root_tests::ordinary::deployment::ordinary_q24_circuit_keeps_the_original_source_lease_deadline)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ]
+      },
+      "root-filesystem": {
+        "status": "passed",
+        "total_testcases": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped_in_xml": 0,
+        "junit_bytes": 829,
+        "junit_sha256": "99e60edc9506afe9c45f04460104cf280942664d81d457850a765c1302666889",
+        "exact_parent_coverage": true,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-contracts",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=authority_host_runtime::session::filesystem::tests::original_root_filesystem_preserves_registry_reads_and_denies_control_writes) | test(=authority_host_runtime::session::filesystem::tests::original_root_filesystem_rejects_aliases_and_existing_workspace_before_ownership_change)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ]
+      },
+      "ordinary-a": {
+        "status": "retained-failed",
+        "total_testcases": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped_in_xml": 0,
+        "junit_bytes": 4599,
+        "junit_sha256": "ad6499895331312df148b81b23cb8e0fa258a44b87502c1ac11158af52dc164b",
+        "exact_parent_coverage": true,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-contracts",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ]
+      }
+    },
+    "native_result_sha256": "b6257a1bf209e3e24497a1efe18ef4084a4db9cb3fb2cd87cad5c468ea7f5f1e",
+    "whole_chain_pass_counts": [
+      0,
+      0,
+      0
+    ]
+  },
+  "compile": {
+    "exit_code": 0,
+    "source_unchanged": true,
+    "tests_executed": 0,
+    "result_sha256": "a778a419714d86407d766a799636687fc017073e2b6194e72f0d0093f5ba679d"
+  },
+  "collection": {
+    "at_unix_ms": 1794532599765,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1d27a6199-2564-1cf5",
+    "launch_nonce": "7b8b8781389f49c2dd527fda37b01854",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 520,
+        "stored": 520
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "data_observations": {
+    "sqlite_result_sha256": "bf555a79ca498688df3a2358cbc53a1d06f5fe17d1812bf2ef8d19f2ed331fe3",
+    "journal_outbox_result_sha256": "5a3a0d757d4fee696addb20a5509e1c36995acd37638eb567a619d926a1a0cfe",
+    "original_archive_and_copied_db_wal_unchanged": true,
+    "qualification_inferred": false,
+    "exact_ack_variant_inferred": false,
+    "prior_packager_preflight_error_preserved": "Counted three explicitly metadata-only pinned executables as byte members; failed before archive creation; v3 enumerates exact original exclusions without changing collector or originals",
+    "first_local_launcher_error_preserved": "FileNotFoundError for guessed /usr/local/bin/python3 before diagnostic child start; actual sys.executable successor exited 0"
+  },
+  "draft_pr": {
+    "number": 6284,
+    "head": "3a26e6e9baba163c31d395e69e114af6a5c97efb",
+    "draft": true,
+    "merged": false,
+    "receipt_sha256": "f78c14ebf1a78d1d6e9f514098c0748a3cfdf1bacb3ae0357f0d43e290532609"
+  },
+  "next_template_review": "Prepared-only; no H upload or execution by this evidence task.",
+  "previous_evidence_head": "d427f3356067c28705c544c1bc2d66492f549115"
+}
