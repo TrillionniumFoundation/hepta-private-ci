@@ -108,6 +108,15 @@ slow-timeout = { period = "30s", terminate-after = 16 }
 retries = 0
 
 [[profile.default.overrides]]
+# A separate evaluated-NoUpdate cold case completes real B evaluation,
+# retained-model CURRENT and C before the original lease retirement/read-only path.
+# This exact eight-minute harness changes no product deadline or signed window.
+filter = 'package(codex-hepta-agentd) & test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 16 }
+retries = 0
+
+[[profile.default.overrides]]
 # This opt-in qualification starts real companion windows and performs several
 # original SQLite writer close/reopen and acknowledged receipt transactions.
 # Keep every operation deadline and assertion; bound the complete durable run

@@ -1,4 +1,4 @@
-//! One whole-process cold case. Original successful wait/pidfd objects remain
+//! Whole-process cold cases. Original successful wait/pidfd objects remain
 //! alive across the actual lease retirement; none are reconstructed from JSON.
 
 use std::time::Duration;
@@ -23,6 +23,17 @@ use crate::authority_host_service::generation_publication::head_digest;
 #[ignore = "actual UID0, exact product binaries, original 60s/300s retirement and <=120s cold read; no retries"]
 fn ordinary_main_cold_recovers_completed_c_after_actual_daemon_and_root_retirement()
 -> anyhow::Result<()> {
+    run_whole_original_cold(OriginalBusinessCase::Adopt)
+}
+
+#[test]
+#[ignore = "actual UID0, exact product binaries, original 60s/300s retirement and <=120s cold read; no retries"]
+fn ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement()
+-> anyhow::Result<()> {
+    run_whole_original_cold(OriginalBusinessCase::EvaluatedNoUpdate)
+}
+
+fn run_whole_original_cold(case: OriginalBusinessCase) -> anyhow::Result<()> {
     // SAFETY: these calls only inspect the test process's real kernel UIDs.
     anyhow::ensure!(
         unsafe { (libc::getuid(), libc::geteuid()) } == (0, 0),
@@ -31,7 +42,7 @@ fn ordinary_main_cold_recovers_completed_c_after_actual_daemon_and_root_retireme
     let end = Instant::now()
         .checked_add(Duration::from_secs(480))
         .ok_or_else(|| anyhow::anyhow!("whole cold harness deadline overflow"))?;
-    let original = super::post_a_process::run_original_business_case(OriginalBusinessCase::Adopt)?;
+    let original = super::post_a_process::run_original_business_case(case)?;
     let report = original
         .plan
         .resources
@@ -46,6 +57,7 @@ fn ordinary_main_cold_recovers_completed_c_after_actual_daemon_and_root_retireme
     let archived = original.archive_actual_phase();
     let record = json!({
         "schema":1,
+        "business_case":format!("{case:?}"),
         "source_commit":std::env::var("HEPTA_ORDINARY_SOURCE_COMMIT")?,
         "source_tree":std::env::var("HEPTA_ORDINARY_SOURCE_TREE")?,
         "cold_recovery_completed":result.is_ok() && archived.is_ok(),
