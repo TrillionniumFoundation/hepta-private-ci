@@ -47,8 +47,48 @@ struct LiveRoot {
     // One asynchronous admission token covers the entire observation and
     // consumer barrier. There is no shared payload behind this permit.
     serial: tokio::sync::Semaphore,
+    refresh_diagnostic: arc_swap::ArcSwapOption<RefreshDiagnostic>,
     #[cfg(test)]
     refresh_failed: AtomicBool,
+}
+
+// Only the original refresh execution writes these immutable RAM records.
+// A single Arc load gives one coherent diagnostic record; it is not authority
+// and is not an atomic snapshot with the cache's separate failure-time sample.
+enum RefreshPhase {
+    Sleeping,
+    SerialWait,
+    StreamAwait,
+    Validate,
+    CacheAccept,
+    ConsumerLock,
+    ConsumerSync,
+    FinalCurrent,
+    Completed,
+}
+impl RefreshPhase {
+    fn diagnostic_label(&self) -> &'static str {
+        match self {
+            Self::Sleeping => "sleeping",
+            Self::SerialWait => "serial-wait",
+            Self::StreamAwait => "stream-await",
+            Self::Validate => "validate",
+            Self::CacheAccept => "cache-accept",
+            Self::ConsumerLock => "consumer-lock",
+            Self::ConsumerSync => "consumer-sync",
+            Self::FinalCurrent => "final-current",
+            Self::Completed => "completed",
+        }
+    }
+}
+struct RefreshDiagnostic {
+    phase: RefreshPhase,
+    request_started_ns: Option<u64>,
+    response_ended_ns: Option<u64>,
+    // These are the existing I/O timestamps of the last refresh whose original
+    // final-current check succeeded, not a new completion clock or lease.
+    last_successful_request_started_ns: Option<u64>,
+    last_successful_response_ended_ns: Option<u64>,
 }
 
 // Only operational lifetimes retain this private, exact original File. Fenced
@@ -103,6 +143,52 @@ impl ConsumerSyncJob {
     }
 }
 impl LiveRoot {
+    fn record_refresh_diagnostic(
+        &self,
+        phase: RefreshPhase,
+        request_started_ns: Option<u64>,
+        response_ended_ns: Option<u64>,
+    ) {
+        let previous = self.refresh_diagnostic.load_full();
+        let completed = matches!(&phase, RefreshPhase::Completed);
+        let next = RefreshDiagnostic {
+            phase,
+            request_started_ns,
+            response_ended_ns,
+            last_successful_request_started_ns: if completed {
+                request_started_ns
+            } else {
+                previous
+                    .as_ref()
+                    .and_then(|value| value.last_successful_request_started_ns)
+            },
+            last_successful_response_ended_ns: if completed {
+                response_ended_ns
+            } else {
+                previous
+                    .as_ref()
+                    .and_then(|value| value.last_successful_response_ended_ns)
+            },
+        };
+        self.refresh_diagnostic.store(Some(Arc::new(next)));
+    }
+
+    fn diagnose_refresh_state(&self) {
+        match self.refresh_diagnostic.load_full() {
+            Some(value) => root_session_diagnostic(format_args!(
+                "ROOT_SESSION_DIAGNOSTIC phase=refresh-state-sample refresh_phase={} request_started_ns={:?} response_ended_ns={:?} last_successful_request_started_ns={:?} last_successful_response_ended_ns={:?}",
+                value.phase.diagnostic_label(),
+                value.request_started_ns,
+                value.response_ended_ns,
+                value.last_successful_request_started_ns,
+                value.last_successful_response_ended_ns,
+            )),
+            None => root_session_diagnostic(format_args!(
+                "ROOT_SESSION_DIAGNOSTIC phase=refresh-state-sample refresh_phase=unrecorded"
+            )),
+        }
+    }
+
     fn current(
         &self,
     ) -> Result<(Arc<HostAuthorityObservationResponseV2>, u64), AgentdRootAuthorityError> {
@@ -137,6 +223,7 @@ impl LiveRoot {
                 "ROOT_SESSION_DIAGNOSTIC phase=current-cache class={}",
                 root_session_error_class(*_error),
             ));
+            self.diagnose_refresh_state();
         })?;
         if self
             .proof
@@ -277,6 +364,7 @@ impl AgentdRootAuthoritySession {
             active: AtomicBool::new(false),
             consumers: Mutex::new(Vec::new()),
             serial: tokio::sync::Semaphore::new(1),
+            refresh_diagnostic: arc_swap::ArcSwapOption::from(None),
             #[cfg(test)]
             refresh_failed: AtomicBool::new(false),
         });
@@ -288,6 +376,7 @@ impl AgentdRootAuthoritySession {
             future: Box::pin(async move {
                 let _fence = FenceOnDrop(Arc::clone(&background));
                 loop {
+                    background.record_refresh_diagnostic(RefreshPhase::Sleeping, None, None);
                     tokio::time::sleep(Duration::from_millis(100)).await;
                     if refresh(&background, &stream, &background_file)
                         .await
@@ -296,6 +385,7 @@ impl AgentdRootAuthoritySession {
                                 "ROOT_SESSION_DIAGNOSTIC phase=worker-refresh class={}",
                                 root_session_error_class(*_error),
                             ));
+                            background.diagnose_refresh_state();
                         })
                         .is_err()
                     {
@@ -441,6 +531,7 @@ async fn refresh(
     stream: &RootObservationStream,
     writer_file: &WriterCustody,
 ) -> Result<(), AgentdRootAuthorityError> {
+    live.record_refresh_diagnostic(RefreshPhase::SerialWait, None, None);
     let _serial = live
         .serial
         .acquire()
@@ -461,6 +552,7 @@ async fn refresh(
             root_session_error_class(*_error),
         ));
     })?;
+    live.record_refresh_diagnostic(RefreshPhase::StreamAwait, Some(started), None);
     let observation: HostAuthorityObservationResponseV2 = stream
         .read(&HostAuthorityObservationRequestV2 {
             schema_version: 2,
@@ -479,6 +571,7 @@ async fn refresh(
             root_session_error_class(*_error),
         ));
     })?;
+    live.record_refresh_diagnostic(RefreshPhase::Validate, Some(started), Some(ended));
     live.proof.matches_observation(&observation).inspect_err(|_error| {
         root_session_diagnostic(format_args!(
             "ROOT_SESSION_DIAGNOSTIC phase=refresh-proof started_ns={started} ended_ns={ended} class={}",
@@ -487,6 +580,7 @@ async fn refresh(
     })?;
     let head = observation.revocations.clone();
     let changed = !live.cache.revocations_match(&head);
+    live.record_refresh_diagnostic(RefreshPhase::CacheAccept, Some(started), Some(ended));
     if changed {
         live.cache.begin_update();
     }
@@ -499,6 +593,7 @@ async fn refresh(
         ));
     })?;
     if changed {
+        live.record_refresh_diagnostic(RefreshPhase::ConsumerLock, Some(started), Some(ended));
         let consumers = live
             .consumers
             .lock()
@@ -510,6 +605,7 @@ async fn refresh(
                 ));
             })?
             .clone();
+        live.record_refresh_diagnostic(RefreshPhase::ConsumerSync, Some(started), Some(ended));
         synchronize_consumers(consumers, head, started, writer_file)
             .await
             .inspect_err(|_error| {
@@ -520,6 +616,7 @@ async fn refresh(
             })?;
         live.cache.end_update();
     }
+    live.record_refresh_diagnostic(RefreshPhase::FinalCurrent, Some(started), Some(ended));
     live.current().inspect_err(|_error| {
         root_session_diagnostic(format_args!(
             "ROOT_SESSION_DIAGNOSTIC phase=refresh-final-current started_ns={started} ended_ns={ended} class={}",
@@ -528,6 +625,7 @@ async fn refresh(
     })?;
     #[cfg(test)]
     refresh_completion.complete();
+    live.record_refresh_diagnostic(RefreshPhase::Completed, Some(started), Some(ended));
     Ok(())
 }
 async fn synchronize_consumers(

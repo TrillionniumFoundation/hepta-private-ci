@@ -315,6 +315,16 @@ impl RootObservationCache {
                     now.checked_sub(retained.request_started_ns),
                     now < baseline,
                 ));
+                // A separate sample taken AFTER the failed held-snapshot check.
+                // It is diagnostic data only, never a replacement authorization.
+                let latest_started = self
+                    .retained
+                    .load_full()
+                    .map(|latest| latest.request_started_ns);
+                root_cache_diagnostic(format_args!(
+                    "ROOT_OBSERVATION_CACHE phase=current reason=retained-time-latest-sample held_request_started_ns={} latest_published_request_started_ns={:?}",
+                    retained.request_started_ns, latest_started,
+                ));
                 return Err(AgentdRootAuthorityError::Unavailable);
             }
             let projected = project(&retained.observation, now)?;
