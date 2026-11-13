@@ -1,0 +1,37 @@
+{
+  "assertion_counts": {
+    "bail": 2,
+    "ensure": 32
+  },
+  "checks": {
+    "consumed_current_uses_original_root_factory": true,
+    "existing_signed_ingress_and_task_factory_used": true,
+    "five_ignored_root_cases_identified": true,
+    "fixture_current_not_passed": true,
+    "no_panic_assertions_in_new_cases": true,
+    "normal_result_path_explicitly_joins_before_returning_body_error": true,
+    "parent_complete_prefix_equal": true,
+    "production_dependency_four_postimages_unchanged": true,
+    "remove_exact_mount_restores_parent": true
+  },
+  "delta": {
+    "bytes": 20686,
+    "git_blob": "766ddfdba50c325fe5dac86b69345d7e8a13b44e",
+    "sha256": "ee673d40803de40f63042152ed2414f22357e35c331156d00609992fe249fcc9"
+  },
+  "format": "hepta-root-local-custody-pure-byte-review-v1",
+  "limits": [
+    "No actual post-CAS ACK-loss injection.",
+    "No discarded-process cold recovery entry in v1; an independent v2 is required.",
+    "Artifact, FinalUse and AuthBus use existing engineering fixture owners/issuers.",
+    "Async cancellation has no completed-join evidence.",
+    "No real useful task result, independent evaluation, or Root deployment claim."
+  ],
+  "pure_check_only": true,
+  "rust_compilation_or_execution": false,
+  "source_packet": {
+    "bytes": 55168,
+    "git_blob": "ae05b4ca793a24a164d08e247a8faec62f690750",
+    "sha256": "9975df32025342e8a021dcc22defdde04c9141a4e229792b7e1a31088aeb8d34"
+  }
+}

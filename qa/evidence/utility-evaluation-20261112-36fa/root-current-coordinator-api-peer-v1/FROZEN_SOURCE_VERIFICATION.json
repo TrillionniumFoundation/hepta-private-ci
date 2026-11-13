@@ -1,0 +1,231 @@
+{
+  "schema": "hepta-root-current-coordinator-api-peer-byte-verification-v1",
+  "scope": "Pure frozen-source byte verification; no candidate or runtime execution",
+  "canonical_source": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+  "canonical_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+  "inventory": {
+    "path": "/tmp/hepta-36fa-new-source-materializer-hold-v1/EXPECTED_CANDIDATE.complete.inventory.json",
+    "bytes": 5629701,
+    "sha256": "affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44",
+    "git_blob": "a596ae68859e3263a9ee58e2b5d7334ac9314c34",
+    "prior_native_match": "Parent supplied already verified actual materialization; no second native scan"
+  },
+  "source_rows": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "bytes": 14766,
+      "sha256": "44f703fdf843db13108f1922c6cf6d42bb256898c894943bff033f5c45b799d1",
+      "git_blob": "36d3ae716003a4a6c499e005438ef176daab0826",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "bytes": 11102,
+      "sha256": "834a70cca0d4a7c7487c94371e921cd6738f8e8a972cca192f92f9a2d048877e",
+      "git_blob": "07092ccebbb5642fc42121187f57e842a9073b2a",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_types.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_current_types.rs",
+      "bytes": 7559,
+      "sha256": "0c3861d8a02c4ad9b997e52aabe7ee63527dad37c14031f5e6feca5d7e0bed9c",
+      "git_blob": "6cfb014943ed6256cfd845ca82828bedb2e8a6ee",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial_types.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_current_initial_types.rs",
+      "bytes": 6219,
+      "sha256": "02f2748c219b97c19eb033671010033dfa31caf0a73271179d51effdb9804cad",
+      "git_blob": "58b9b01746fba32e2a9fedf94655121d6e1df45f",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_store.rs",
+      "local_path": "/tmp/hepta-36fa-cross-uid-fixture-input-audit-v1/inputs/neuron_generation_current_store.rs",
+      "bytes": 3029,
+      "sha256": "12dc8352aaa52f7a4ca1c1edbc38d683b019e2030d8a0edc995fc956dbf1683e",
+      "git_blob": "3b70b31993dfa18405848e3b99653aba6020821a",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "bytes": 8895,
+      "sha256": "cbd7ddaf1c024670dfaac8db4c8ec4efd8c1a52035e536c737212f0e7ec799fc",
+      "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs",
+      "bytes": 4749,
+      "sha256": "d2021b15f5a43eac63d8401493e845fa1fc0548b1b0a05e3cffb1051fce4a9bd",
+      "git_blob": "c808361ee7a476fe8304fefb6f4f16e7af379043",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "bytes": 15531,
+      "sha256": "c2d7a6494c8adfa8f1c4b4d7893847c6f0011adf9f2fac9244a205e41d0561e4",
+      "git_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+      "bytes": 7480,
+      "sha256": "34a25b49c3ebb7382914a64efdffec496f2476381e196a0d0572be6a67334f33",
+      "git_blob": "4256c5b8a17c8e523b6438191c582883025e2b92",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs",
+      "local_path": "/tmp/hepta-36fa-cross-uid-fixture-input-audit-v1/inputs/neuron_generation_update_cold.rs",
+      "bytes": 6651,
+      "sha256": "2b4563a5d0235f5232e4ba9400a524d18537fd11bdbab63a55f76303c02355ee",
+      "git_blob": "3fc4af827d28eb54dd5ca13e6ded5deaf5612673",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "bytes": 7338,
+      "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef",
+      "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "bytes": 7927,
+      "sha256": "cc5fd43cdf1b410f98338966a599ecc25e416f6b12cf0d0c85dbcaa9b177cc00",
+      "git_blob": "fb6bede5e306c62320c3a95e113dc60613c41e85",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/circuit_feature_current.rs",
+      "bytes": 16457,
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370",
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "bytes": 8089,
+      "sha256": "361f177e3acefea380d63fc627dd3ab0d92ba14284a8ad41fcae01a63c6111d9",
+      "git_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "bytes": 2003,
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577",
+      "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+      "local_path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/inputs/source/codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+      "bytes": 4962,
+      "sha256": "204bc31e9162b6b52214a569d6fa926f3ece078d0fdc876087eeaf2f7c1142f8",
+      "git_blob": "781485715249d11c05609239a346ede033ccbdf3",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+      "local_path": "/tmp/hepta-36fa-root-current-cross-uid-interface-proposal-v1/inputs/circuit_feature_current_recovery.rs",
+      "bytes": 5610,
+      "sha256": "ab2b7413f4bfea9066dd5c4589060a020f1555ababb1fbc3cec873d42b558a39",
+      "git_blob": "1f5b54fd7f2a69b4b07d96f122d21d195ba55f12",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/circuit_q24_task_profile.rs",
+      "bytes": 7595,
+      "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78",
+      "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/config_q24_circuit_task.rs",
+      "bytes": 1028,
+      "sha256": "3457a2cbfcee2e3d99a317ff7abe2ff4d142217687336b3851259833b6fc26c2",
+      "git_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "canonical_inventory_match": true,
+      "observation": "Exact frozen local bytes; not a new native read"
+    }
+  ],
+  "source_count": 19,
+  "new_actual_full_gets": [
+    {
+      "path": "circuit_feature_current.rs",
+      "bytes": 16457,
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370",
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+      "full_get_equal": true,
+      "original_get_envelope": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/circuit_feature_current.rs.GITHUB_GET.original.json"
+    },
+    {
+      "path": "circuit_q24_task_profile.rs",
+      "bytes": 7595,
+      "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78",
+      "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "full_get_equal": true,
+      "original_get_envelope": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/circuit_q24_task_profile.rs.GITHUB_GET.original.json"
+    },
+    {
+      "path": "config_q24_circuit_task.rs",
+      "bytes": 1028,
+      "sha256": "3457a2cbfcee2e3d99a317ff7abe2ff4d142217687336b3851259833b6fc26c2",
+      "git_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "full_get_equal": true,
+      "original_get_envelope": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/config_q24_circuit_task.rs.GITHUB_GET.original.json"
+    }
+  ],
+  "accepted_old_feature_current_to_actual_0c59": {
+    "before": {
+      "bytes": 16314,
+      "sha256": "78c39ac0b426a42b9e189df6cc1501084a476cdbe1b174925b26b2a2a511d474",
+      "git_blob": "542e4e532443ac2082bd0b8fa7649fcdb25deca9"
+    },
+    "after": {
+      "bytes": 16457,
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370",
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7"
+    },
+    "only_added_exports": [
+      "pub use learning_read::OriginalCircuitPublishedLocalReadV1;",
+      "pub use retained_publication::version::OriginalCircuitPublishedEvidenceReadbackV1;"
+    ],
+    "inverse_full_bytes_equal": true
+  },
+  "rust_formatter_qa_h_or_candidate_main_executed": false
+}

@@ -1,0 +1,310 @@
+{
+  "format": "hepta-root-complete-failed-maintenance-and-repair-readback-v1",
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "job_id": "1a1d3eccd3a-392-231",
+  "terminal_status": "FAILED_MAINTENANCE",
+  "supervisor_exit_code": 1,
+  "fix_returncode": 101,
+  "fmt_dispatched": false,
+  "tests_dispatched": 0,
+  "raw_stream_review": {
+    "actualRootFullGitGETs": 10,
+    "offsetStart": 0,
+    "offsetEnd": 129815,
+    "bytesHexAndTextEqual": true,
+    "completeSupervisedStdout": {
+      "sha": "245955a14617742d2bb8be0249042395f1952033",
+      "bytes": 129815,
+      "sha256": "309f82561f24f38aa5ca57b23b4351811ca806c643a68cc8a1d45ab3cd924dda"
+    },
+    "originalFixExactRange": [
+      850,
+      129340
+    ],
+    "originalErrorsExactRangeInFix": [
+      119641,
+      128490
+    ],
+    "stderrBytes": 0,
+    "independentHRead": false
+  },
+  "original_artifact_readback": {
+    "successfulCompleteOriginalReads": [
+      {
+        "originalSDK": "RUN_ARTIFACTS_json_READ_000000.original.json",
+        "sdkGit": "3a512728716537c1a4968e1bc04cf5a1def72901",
+        "artifactName": "ARTIFACTS.json",
+        "artifactGit": "2f892b28ded54c1fa9b479a22fb544ff8c72d47b",
+        "bytes": 41231,
+        "sha256": "9d4fbfbed0635fdbc68d466549a0f0376aa4331c74e25fab328fe76c21b53b8f",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/ARTIFACTS.json",
+        "version": "2050:51120844:41231:1794557601807034746:1794557601807034746"
+      },
+      {
+        "originalSDK": "RUN_INPUT_IDENTITIES_json_READ_000000_RECOVERY_01.original.json",
+        "sdkGit": "6256167e5ac8340935a203aa40975e0d5b50e449",
+        "artifactName": "INPUT_IDENTITIES.json",
+        "artifactGit": "446d75155db96639bde103157e6fd79e8d7c76bd",
+        "bytes": 6040,
+        "sha256": "27f97c1c2a7256cdbd94e1c998be019ca560da0d499da330eb65670e7bcb04b1",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/INPUT_IDENTITIES.json",
+        "version": "2050:51120837:6040:1794557601802399563:1794557601802399563"
+      },
+      {
+        "originalSDK": "RUN_READONLY_COMMANDS_json_READ_000000.original.json",
+        "sdkGit": "36c5d747a4b784ab066fa712f37ea5d62a94e588",
+        "artifactName": "READONLY_COMMANDS.json",
+        "artifactGit": "e2b5b1d9e7863d3f41219bbbf3f29a297dd88c35",
+        "bytes": 13369,
+        "sha256": "54a10e602b22ccaeec0e95da69805fcde842858c36dfea39a4291d373884bfec",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/READONLY_COMMANDS.json",
+        "version": "2050:51120835:13369:1794557601800299955:1794557601800299955"
+      },
+      {
+        "originalSDK": "RUN_RESULT_json_READ_000000.original.json",
+        "sdkGit": "b983eeb9a7549f060518edb08a977a1eb96384d5",
+        "artifactName": "RESULT.json",
+        "artifactGit": "c9ddc9349881689c2825852c746e8235f83cb921",
+        "bytes": 6574,
+        "sha256": "eeef2fb3eed1359272ced60de73861b79752f86235eb7621f40973b0cbd76401",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/RESULT.json",
+        "version": "2050:51120845:6574:1794557601809140411:1794557601809140411"
+      },
+      {
+        "originalSDK": "RUN_SOURCE_ENTRY_AGENTS_md_READ_000000.original.json",
+        "sdkGit": "0433b57c624616a528e79088b30a70681f86dbf9",
+        "artifactName": "SOURCE_ENTRY.AGENTS.md",
+        "artifactGit": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+        "bytes": 22519,
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_ENTRY.AGENTS.md",
+        "version": "2050:51120583:22519:1794556875737117242:1794556875737117242"
+      },
+      {
+        "originalSDK": "RUN_SOURCE_ENTRY_justfile_READ_000000.original.json",
+        "sdkGit": "86c093bc578090463c6ec0c5b4337f6d18a52a88",
+        "artifactName": "SOURCE_ENTRY.justfile",
+        "artifactGit": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "bytes": 7838,
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_ENTRY.justfile",
+        "version": "2050:51120584:7838:1794556875739527955:1794556875739527955"
+      },
+      {
+        "originalSDK": "RUN_SOURCE_GIT_METADATA_after_json_gz_part_001_b64_READ_000000.original.json",
+        "sdkGit": "97066c8aac6c677ca2d7abab36210923b5db2dff",
+        "artifactName": "SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+        "artifactGit": "5d6f7b41e1c5968dced66a2a2c9dbef890efbf48",
+        "bytes": 1053,
+        "sha256": "03a1491cbe74038417a64f4117fa886705fd666b262b072a1ef2a95a48f158b3",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+        "version": "2050:51120832:1053:1794557601795022468:1794557601795022468"
+      },
+      {
+        "originalSDK": "RUN_SOURCE_GIT_METADATA_before_json_gz_part_001_b64_READ_000000.original.json",
+        "sdkGit": "ae507a2429b7c362ca670fb9e2fe261885681369",
+        "artifactName": "SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+        "artifactGit": "5d6f7b41e1c5968dced66a2a2c9dbef890efbf48",
+        "bytes": 1053,
+        "sha256": "03a1491cbe74038417a64f4117fa886705fd666b262b072a1ef2a95a48f158b3",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+        "version": "2050:51120622:1053:1794556885214167550:1794556885214167550"
+      },
+      {
+        "originalSDK": "RUN_SOURCE_GIT_STATE_before_json_READ_000000.original.json",
+        "sdkGit": "592e54df0a9584cb1df5ff9ee9fbeac5e180836c",
+        "artifactName": "SOURCE_GIT_STATE.before.json",
+        "artifactGit": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+        "bytes": 489,
+        "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_GIT_STATE.before.json",
+        "version": "2050:51120607:489:1794556875808847709:1794556875808847709"
+      },
+      {
+        "originalSDK": "RUN_final_HEAD_working_patch_READ_000000.original.json",
+        "sdkGit": "a27825573e4c19d8a71f4aa848b1a4adee2abb37",
+        "artifactName": "final.HEAD-working.patch",
+        "artifactGit": "10e6100bc347e6929049f151285203371fbf7931",
+        "bytes": 784,
+        "sha256": "012a06d1d77531cd36119b113d316f1078b8d0e269231ca7c1a94bcf17a63ceb",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/final.HEAD-working.patch",
+        "version": "2050:51120817:784:1794557597300884763:1794557597300884763"
+      },
+      {
+        "originalSDK": "RUN_final_git_state_json_READ_000000.original.json",
+        "sdkGit": "d52218813eb9de3c6d15a96d3db65a753bfd02a5",
+        "artifactName": "final.git-state.json",
+        "artifactGit": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+        "bytes": 489,
+        "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/final.git-state.json",
+        "version": "2050:51120802:489:1794557596964039295:1794557596964039295"
+      },
+      {
+        "originalSDK": "RUN_final_postimages_json_gz_part_001_b64_READ_000000.original.json",
+        "sdkGit": "3d2bfb7914cdfb4e9c4fd5983bcb4b100d45e3bc",
+        "artifactName": "final.postimages.json.gz.part-001.b64",
+        "artifactGit": "7cc81e2f84ee9d4a366dea447c702de81764b179",
+        "bytes": 10505,
+        "sha256": "bbcc5b683b462c1d98aa518d44896e05fdd41ed95aa8647858600589c06f8193",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/final.postimages.json.gz.part-001.b64",
+        "version": "2050:51120811:10505:1794557597281104988:1794557597281104988"
+      },
+      {
+        "originalSDK": "RUN_fix_after_git_state_json_READ_000000.original.json",
+        "sdkGit": "ee05b79258e4197e1943406b7533a1acb2c01393",
+        "artifactName": "fix.after.git-state.json",
+        "artifactGit": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+        "bytes": 489,
+        "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/fix.after.git-state.json",
+        "version": "2050:51120758:489:1794557588198484857:1794557588198484857"
+      },
+      {
+        "originalSDK": "RUN_fix_after_postimages_json_gz_part_001_b64_READ_000000_RECOVERY_01.original.json",
+        "sdkGit": "42adeefee75580d112915d4eea4cc3f069d11112",
+        "artifactName": "fix.after.postimages.json.gz.part-001.b64",
+        "artifactGit": "f9bb23ab54557e562b16183105aef1b7f8710690",
+        "bytes": 10509,
+        "sha256": "7b8dfebf75988627fe0ff0f545fefd7e18ada14ccf743f8da27732ae05dd5ad3",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/fix.after.postimages.json.gz.part-001.b64",
+        "version": "2050:51120763:10509:1794557588444227459:1794557588444227459"
+      },
+      {
+        "originalSDK": "RUN_fix_execute_logged_original_json_READ_000000.original.json",
+        "sdkGit": "31150c626b4163d83a3e83e1b9384da607fc19a0",
+        "artifactName": "fix.execute_logged.original.json",
+        "artifactGit": "ff6f6805f6f336ce68825793220204ebb333b1b5",
+        "bytes": 218,
+        "sha256": "aac6faadbd3fceb82a7632103c068be6c57a6b1f2222c633938fe67b4bde9e8f",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/fix.execute_logged.original.json",
+        "version": "2050:51120660:218:1794557584151098721:1794557584151098721"
+      },
+      {
+        "originalSDK": "RUN_fix_terminal_json_READ_000000.original.json",
+        "sdkGit": "8372db062f8840c2d5574b8f67a27dadf591c009",
+        "artifactName": "fix.terminal.json",
+        "artifactGit": "63b4ec2d123e8eddaeaef3bccc1490285eab8df2",
+        "bytes": 1391,
+        "sha256": "85a3a021a3a009ba5f45080390e8b3d9ccdaab37c5c6c569aca3061275692910",
+        "path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/fix.terminal.json",
+        "version": "2050:51120778:1391:1794557592599899218:1794557592599899218"
+      }
+    ],
+    "failedOriginalReads": [
+      {
+        "name": "RUN_INPUT_IDENTITIES_json_READ_000000.original.json",
+        "sha": "358dd47380862dcd2c71355a85aa594fec0757cf",
+        "original": {
+          "content": [
+            {
+              "type": "text",
+              "text": "remote helper on desktop-ts failed with 255\nstdout:\n\nstderr:\nConnection closed by 10.77.0.2 port 2230"
+            }
+          ],
+          "structuredContent": {
+            "error_code": "INVALID_ARGUMENT"
+          },
+          "isError": true
+        },
+        "first_version_observed": null
+      },
+      {
+        "name": "RUN_fix_after_postimages_json_gz_part_001_b64_READ_000000.original.json",
+        "sha": "358dd47380862dcd2c71355a85aa594fec0757cf",
+        "original": {
+          "content": [
+            {
+              "type": "text",
+              "text": "remote helper on desktop-ts failed with 255\nstdout:\n\nstderr:\nConnection closed by 10.77.0.2 port 2230"
+            }
+          ],
+          "structuredContent": {
+            "error_code": "INVALID_ARGUMENT"
+          },
+          "isError": true
+        },
+        "first_version_observed": null
+      }
+    ],
+    "allPositiveSDKPayloadsEqualActualGitArtifactBytes": true,
+    "noHReadsByRoot": true,
+    "rootOfflineFilterCorrection": "Initial broad RUN_*READ_* pattern also matched Git storage response SDK names. JSON parsing refused Action completed. Tight original-native-read suffix pattern corrected this; no native action or primary record changed."
+  },
+  "raw_representation_review": {
+    "sha": "60e6c7fa3302b71a5ebdf6d65aff7a53b44f2a69",
+    "bytes": 3313,
+    "sha256": "ff3abf2464bcbe74e6aaaa7d3990568a5d89fbf8e605ea8e712dbeefd0589a65"
+  },
+  "native_terminal_placement": {
+    "sha": "7649f6f0f4b4fca44abbe883094deb460b4a1180",
+    "bytes": 46525,
+    "sha256": "b9bb478dc206a48b2615e715f2f486f4a9502c8928b98c70ee9b3f4d46e85a7e"
+  },
+  "source_repair_placement": {
+    "sha": "38bce9673a085dd3da42807c41097658c34f9f65",
+    "bytes": 12201,
+    "sha256": "c2c1b20cc6332ec0aadc26a9db8f14b355a3eca90e27d5af91881ae3c7d4dcb5"
+  },
+  "root_actual_full_get_availability": {
+    "logical_entries": 110,
+    "unique_blobs": 100,
+    "all_complete": true,
+    "failures": 0,
+    "maximum_leaf_bytes": 349529
+  },
+  "original_readonly_commands": {
+    "count": 25,
+    "all_returned_zero": true
+  },
+  "original_frozen_input_count": 24,
+  "git_integrity": {
+    "two_raw_metadata_originals_byte_equal": true,
+    "three_raw_state_originals_byte_equal": true,
+    "no_float_reserialization_used": true
+  },
+  "actual_source": {
+    "full_exact_recovered_inventory": {
+      "bytes": 5629749,
+      "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa",
+      "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4"
+    },
+    "file_count": 15237,
+    "actual_producer_physical_tree": "4ed32552042fee522965ea54caf95bbebb31ad43",
+    "root_independent_typed_tree_matches": true,
+    "complete_original_postimages_full_get": true,
+    "changed_paths": [
+      "codex-rs/hepta-learning-ledger/src/witness.rs"
+    ],
+    "witness": {
+      "sha": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+      "bytes": 13300,
+      "sha256": "a7903c5aca69ebda366be3a90869fc83943409c7602da86c4f7f53773eef9154"
+    },
+    "recovered_inventory_provenance": "Exact lossless reconstruction matching three original producer-observed identities; no second native full inventory read."
+  },
+  "source_repair": {
+    "packet": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+    "root_semantic_review": {
+      "sha": "e4d03449d29200b1f8888d0830bb633cabd679bd",
+      "bytes": 5469,
+      "sha256": "7ef7a0c9c45cac4362266eb9fee392add52db0596872cc20937e8adf9775063a"
+    },
+    "root_byte_and_merkle_review": {
+      "sha": "717022c4f4ebeccddb3485f181012cf9efcd03b8",
+      "bytes": 1805,
+      "sha256": "043f14cbb76fac319a6e78e75aef6e0964eeda2126c53ec03dad6d6b61d51ade"
+    },
+    "root_review_script": {
+      "sha": "33fae93e0ab181c4e5d15157e981e6c817d053a7",
+      "bytes": 5154,
+      "sha256": "8d028e14182f06f3d0bc00adfcc707cf234b01e3ee73a58a742b76b911d12dec"
+    },
+    "expected_unapplied_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+    "independent_peer_status": "pending at this checkpoint",
+    "H_application": false
+  },
+  "execution_accounting": "The original single scoped fix attempt and failure are consumed and retained. This review authorizes no second fix or H process. Future apply+fmt-only work requires exact controls and explicit Root engineering approval; such approval is not a runtime Root grant or a public training/service reward receipt.",
+  "early_root_read_resolution": "Eight earlier non-string GET responses occurred before the complete placement was announced; no cause was inferred and originals were not retained by that collector. All eight exact immutable pins are now included in the 100 completed full GETs. The failed early observations are retained in the earlier semantic review."
+}

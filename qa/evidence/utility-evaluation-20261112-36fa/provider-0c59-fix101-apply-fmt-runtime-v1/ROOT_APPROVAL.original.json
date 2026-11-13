@@ -1,0 +1,146 @@
+{
+  "format": "hepta-root-exact-fix101-four-repair-fmt-only-engineering-approval-v1",
+  "status": "ROOT_APPROVED_ONE_EXACT_COMBINED_DISPATCH",
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "authority_scope": "Engineering authorization under the existing user task. This is not a Hepta runtime Root grant, task-owner authorization, utility result, reward-contract change, merge or deployment.",
+  "sole_executor": "/root/native_ci_audit",
+  "request": {
+    "git_blob": "b63bd0d12684a3ba39e63f1f12fef56cb56cb3d9",
+    "bytes": 83679,
+    "sha256": "c90457ea45cc064a01cc332fe0d48992352381218570afe243ca68d2e3c47df9",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "argv": [
+      "-B",
+      "-c",
+      "exact bootstrap ab06aa07a11ab2b6739a7203dab0a1ba6f0deb29 bytes"
+    ],
+    "cwd": "/home/qian-qi",
+    "stdin_git_blob": "347d63ee5af1c0f5826b02add02f2f322a4aefbe",
+    "idempotency_key": "hepta-utility-36fa-provider-0c59-fix101-apply-fmt-v1",
+    "timeout_seconds": 2100,
+    "exact_field_count": 7,
+    "env_override": false
+  },
+  "controls": {
+    "DRIVER": {
+      "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+      "bytes": 34454,
+      "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+    },
+    "BOOTSTRAP": {
+      "git_blob": "ab06aa07a11ab2b6739a7203dab0a1ba6f0deb29",
+      "bytes": 5714,
+      "sha256": "30290adfc825757435059d626819216e764ff461862c20fe9177b745a619fe43"
+    },
+    "STDIN": {
+      "git_blob": "347d63ee5af1c0f5826b02add02f2f322a4aefbe",
+      "bytes": 77588,
+      "sha256": "8d88855f1d67b6e42e06daf6989e4955d9cc6090d6df7ef6cd83f25600dc3223"
+    },
+    "FINAL_CONFIG": {
+      "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+      "bytes": 2798,
+      "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+    },
+    "HOLD_CONFIG": {
+      "git_blob": "0beff4136fc11d35513f2f16d7a26a0c30d77802",
+      "bytes": 2806,
+      "sha256": "16eb91a3a5c6dd64b96dc57b1fb39e589a5e48db0d1500e0ae5e56143e73848c"
+    }
+  },
+  "actual_failed_predecessor": {
+    "job": "1a1d3eccd3a-392-231",
+    "normal": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+    "result": "c9ddc9349881689c2825852c746e8235f83cb921",
+    "fix_returncode": 101,
+    "original_single_fix_consumed": true,
+    "original_fmt_not_attempted": true,
+    "reclassification_forbidden": true
+  },
+  "source_precondition": {
+    "repo": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+    "head": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "head_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+    "physical_tree": "4ed32552042fee522965ea54caf95bbebb31ad43",
+    "inventory": {
+      "bytes": 5629749,
+      "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+      "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+    },
+    "raw_git_metadata": {
+      "bytes": 2642,
+      "git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+      "sha256": "7549fff731bd055a4dbe895bb0a37fa2486a6e2818e302e8af89495436d704e4"
+    },
+    "physical_leaves": 15237
+  },
+  "authorized_sequence": [
+    "Validate the exact four payloads before any control write.",
+    "Create only the frozen fresh control directory and original bootstrap/argv/payload/readback records; write the four fixed inputs using the unchanged complete readback and fsync procedure.",
+    "Exec the exact thin driver; its unchanged main alone takes the original fixed nonblocking EX lease. No second bootstrap lease.",
+    "Run all actual predecessor, current source, full raw Git, runtime, input, formatter-base and live process preconditions.",
+    "Apply only the four full before/after paths in proposal12a664; protect the actual witness postimage without manually rewriting it.",
+    "Verify the complete actual 1eacf expected post-application tree and retain the four application transitions.",
+    "Run exactly one original formatter command with its original deadline and logging.",
+    "Retain all actual source/Git/input/lock audits, full logs, actual postimages and original supervisor outcome, then stop."
+  ],
+  "manual_source_write_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs"
+  ],
+  "repair_proposal": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+  "expected_after_manual_apply_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+  "preserved_manual_witness": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+  "formatter": {
+    "argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "seconds": 900,
+    "scope": "The unchanged original formatter may change its selected source files. Preserve and independently review every actual formatter postimage before any final source freeze; no precomputed formatted tree is asserted."
+  },
+  "budgets": {
+    "preflight_and_apply": 600,
+    "fmt": 900,
+    "shared_recording": 300,
+    "outer": 2100,
+    "maximum_original_log_bytes": 67108864
+  },
+  "forbidden": [
+    "second fix",
+    "behavioral tests or source/native gates in this request",
+    "dependency/tool installation",
+    "source/index/HEAD/ref reset or repair",
+    "merge/deploy/activation",
+    "automatic rollback or cleanup beyond original procedures",
+    "foreign process termination",
+    "new idempotency identity to evade uncertainty",
+    "weakening UID, owner, runtime, original process, raw Git or budget predicates",
+    "classifying formatted source as lint/compile/native qualification success"
+  ],
+  "uncertain_or_failed_submission": "Reconcile only this exact request/key and any original returned job. Preserve all responses, partial staging/source writes/temporary files, errors and Unknowns. Do not issue another first dispatch, renamed key or modified request automatically.",
+  "success_limit": "Even actual normal exit0/APPLIED_AND_FORMATTED_REVIEW_REQUIRED has qualification=false and freeze_approved=false. Historical fix101 remains failed. No lint success or waiver of any later mandatory gate is granted.",
+  "reviewed_evidence": {
+    "root_complete_failure": "118aa3944fd1067e3d98367f34db1796e58bd6c1",
+    "root_source_semantics": "e4d03449d29200b1f8888d0830bb633cabd679bd",
+    "root_source_byte_merkle": "717022c4f4ebeccddb3485f181012cf9efcd03b8",
+    "root_exact_request": "262d90b1be723ea918ebd0c58f3c6e2d273b2031",
+    "root_bootstrap_full_inverse_verified": true,
+    "source_peer": "e1a5f008a69bc7c262d3daf2210e50802e50146c",
+    "control_peer": "46203058e64761727bf0549d676416de6794f2fd",
+    "control_proof": "c4dcf6f8fa5404e119604d4dbc71c200ef03cb48",
+    "launch_peer": "2abb7cf98757c2b520b577a319ad25fe00e24fbc",
+    "author_controls_placement": "8acfe4f76bdd79b71794cdeb05a0f43635be594b",
+    "all32_closed_control_entries_root_full_get": true,
+    "consumer_contract": "0408b91078bff736a637bdca050e7361df70e37f"
+  },
+  "actual_successor_job": null,
+  "actual_successor_result": null,
+  "actual_successor_normal": null
+}

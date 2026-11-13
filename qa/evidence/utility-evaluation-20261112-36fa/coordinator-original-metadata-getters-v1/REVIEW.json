@@ -1,0 +1,65 @@
+{
+  "before_scope": "New coordinator methods have no observed product callers in the changed-source view; existing callers are these mechanism fixtures only. Full native collector still required.",
+  "choice": "Name only the new metadata accessors original_final_use_binding and original_intent_digest. No existing product API or original production function changes.",
+  "format": "hepta-new-api-name-disambiguation-review-v1",
+  "old_initial_and_new_cold_source_unchanged": true,
+  "original_collector_and_ignore_rules_unchanged": true,
+  "original_getter_bodies_parameters_borrow_and_result_unchanged": true,
+  "qualification": false,
+  "replacements": [
+    {
+      "inverse_exact_full_bytes": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+      "replacements": [
+        {
+          "after": "pub fn original_final_use_binding(",
+          "before": "pub fn final_use_binding(",
+          "count": 1
+        },
+        {
+          "after": "pub fn original_intent_digest(",
+          "before": "pub fn intent_digest(",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "inverse_exact_full_bytes": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+      "replacements": [
+        {
+          "after": "custody.original_final_use_binding()",
+          "before": "custody.final_use_binding()",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "inverse_exact_full_bytes": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs",
+      "replacements": [
+        {
+          "after": "old.original_intent_digest()",
+          "before": "old.intent_digest()",
+          "count": 4
+        },
+        {
+          "after": "old.original_final_use_binding()",
+          "before": "old.final_use_binding()",
+          "count": 1
+        },
+        {
+          "after": "recovered.original_final_use_binding()",
+          "before": "recovered.final_use_binding()",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "total_definition_renames": 2,
+  "total_fixture_calls_renamed": 7,
+  "unselected_alternative": {
+    "changes": "Four original production Prepared calls plus one new cold call changed to UFCS; this alternative is retained but not combined.",
+    "packet_computed": "c7c2506637e064dec99ca9d7765ae6c3d3aee65c"
+  }
+}

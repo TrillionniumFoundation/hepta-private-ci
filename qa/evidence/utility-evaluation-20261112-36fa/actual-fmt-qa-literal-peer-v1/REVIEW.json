@@ -1,0 +1,273 @@
+{
+  "classification_counts": {
+    "actual_target_outside_exhaustive_fmt_changes": 8,
+    "classifier_over_existing_marker_parameter": 2,
+    "complete_target_marker_checked_below": 7,
+    "replacement_or_injected_attack_output": 8,
+    "synthetic_unregistered_caller_output": 13
+  },
+  "conclusion": "NO_FMT_INDUCED_MARKER_MIGRATION_IDENTIFIED_IN_REVIEWED_STATIC_TARGETS; EXACT_SCOPE_AND_INVENTORY_REFRESH_REQUIRED",
+  "findings": [
+    {
+      "finding": "All 64 Python inputs were hashed and AST-parsed. The diagnostic searched 11,369 string occurrences / 6,281 unique constant values of at least five characters across all 62 actual pre/post Rust files. It reported 38 occurrences for 14 values; a raw hit is not a failed QA case.",
+      "id": "Q01"
+    },
+    {
+      "finding": "Every one of the 38 hits was classified against its actual use. 13 are synthetic caller output; 8 are replacement/injected output; 2 are classification prefixes; 8 target sources outside the complete fmt transition; the remaining 7 compose actual source markers, covered by 12 targeted before/after span checks. No actual targeted marker count changed.",
+      "id": "Q02"
+    },
+    {
+      "finding": "Selection/NextUse complete predecessor-read markers remain once before journal read and twice in the original finish path. The existing C whitespace-compaction matcher remains the actual matcher; it was not replaced with a looser rule.",
+      "id": "Q03"
+    },
+    {
+      "finding": "The actual Legacy selection branch remains unique and contains exactly one snapshot/training, live, and trainer field occurrence each. Artifact read-order composite remains one exact match before/after. No deletion, replacement, attack assertion or matching rule is proposed here.",
+      "id": "Q04"
+    },
+    {
+      "finding": "All 83 contract attack specifications retain their original unique-function and whitespace-token marker occurrence counts in actual pre/post source. This is an anchor diagnostic; no mutant was executed or rejected by this review.",
+      "id": "Q05"
+    },
+    {
+      "finding": "All 17 ORDINARY_LITERAL_SPECS source paths are outside the 62 actual formatting changes. There is no formatter-based reason to change those strict prefixes, literal values or owner scopes.",
+      "id": "Q06"
+    },
+    {
+      "finding": "Provider contract has 41 paths / 264 scope entries. The 26 paths touched by fmt contain 145 entries. Ordinary contract has 20 paths / 34 entries; 5 fmt-touched paths contain 8 entries. These are affected-path upper bounds; they do not mean all 145 or 8 hashes differ. The sole author recomputes exact changes from actual bytes.",
+      "id": "Q07"
+    },
+    {
+      "finding": "Two ordinary mount parent paths changed bytes, but the native fmt semantic review retained the actual path attributes/module items. Parent-body hash refresh must preserve module identity, test guards, same-function boundaries and all previous forbidden/top-level/literal-call rules.",
+      "id": "Q08"
+    },
+    {
+      "finding": "The exact provider contract hash is currently 2d2bc6b502d70b72ac07b27d6132bade55cf5874923c800ad33e24de993131d1. Its QA import check must follow the final refreshed contract bytes. Whole boundary count/digests must follow final registry bytes; original ORDINARY_NEW_BOUNDARIES [541:569] remains the same 28-item historical slice, while the provider extension is [569:].",
+      "id": "Q09"
+    },
+    {
+      "finding": "The separate coordinator layer requires its exact new boundary/caller registration, Root FQNs and mount inventories. Append-only new entries must not turn ignored cases into default passes or change original stage budgets. This review does not approve the moving registration draft or projected counts.",
+      "id": "Q10"
+    }
+  ],
+  "format": "hepta-actual-f905-qa-literal-independent-review-v1",
+  "frozen_report_inputs": {
+    "FIXED_CONTRACT_ANCHOR_REVIEW.json": {
+      "bytes": 81719,
+      "git_blob": "f8c63afd49411f9e8f9532049cb3adcf65dfe1de",
+      "sha256": "34a83e2b1ff078e66a6a51f5484796707de82e16adb14eded8e1db4e525b6ac9"
+    },
+    "LITERAL_OCCURRENCE_DIAGNOSTIC.json": {
+      "bytes": 54882,
+      "git_blob": "08a12e0633a4685f78353ca7e4bd376d859619f7",
+      "sha256": "c2c5df0edde4223a50942806cf89aa502d6c341962f8d4e9ffa3b7be5cadc615"
+    },
+    "TARGETED_LITERAL_CLASSIFICATION.json": {
+      "bytes": 71394,
+      "git_blob": "6fd3fa092e7b250751afdf7a570629a7244bf033",
+      "sha256": "51e27480e040039f45423738dc4c28e937be8bb245f2fb1f7171848c11aa7c49"
+    }
+  },
+  "limitations": [
+    "No QA, verifier, collector, Rust compiler, formatter, native H job, or source mutation was executed.",
+    "The initial scan covers AST Constant strings, not arbitrary evaluation of every dynamically constructed Python expression.",
+    "The twelve targeted checks close the concrete composite/branch risks found in that diagnostic, not all possible runtime paths.",
+    "The independent 83-attack report verifies source anchor occurrence stability only, not mutant rejection.",
+    "No conclusion is inherited from historical source qualification, and no complete repository scan or final registration approval is asserted.",
+    "An exhaustive scan of constant values is not execution or a proof of every dynamically constructed Python expression. The 98-file local source view is not a full-repository collector run.",
+    "Actual fmt exit 0 and this semantic/static audit do not erase the earlier fix101 failure or establish compilation, native tests, source closure, real utility, or external independent evidence."
+  ],
+  "qa_baseline": {
+    "candidate_coordinator_overlay": "Separate proposed layer, not native application or source qualification.",
+    "description": "The existing 63 QA files plus the provider-local-read QA file; all 64 full bytes match the actual final inventory.",
+    "existing_boundary_count": 621,
+    "existing_protected_row_count": 437,
+    "local": "/tmp/hepta-36fa-coordinator-f905-registration-v1/before/qa/b4-no-bypass",
+    "python_files": 64
+  },
+  "refresh_scope": {
+    "ordinary_17_literal_source_paths_changed": [],
+    "ordinary_mounts_with_changed_parent_bytes": [
+      {
+        "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+        "module_name": "retained",
+        "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "path_literal": "\"cell_q24_candidate_stage_retained.rs\""
+      },
+      {
+        "child": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+        "module_name": "prepared_custody",
+        "parent": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+        "path_literal": "\"circuit_retained_version_prepared.rs\""
+      }
+    ],
+    "ordinary_scope_count_in_changed_files": 8,
+    "ordinary_scope_files_affected_by_actual_fmt": [
+      {
+        "entries": 4,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs"
+      }
+    ],
+    "ordinary_scope_files_total": 20,
+    "ordinary_scopes_total": 34,
+    "provider_scope_count_in_changed_files": 145,
+    "provider_scope_files_affected_by_actual_fmt": [
+      {
+        "entries": 7,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+      },
+      {
+        "entries": 4,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+      },
+      {
+        "entries": 2,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+      },
+      {
+        "entries": 3,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs"
+      },
+      {
+        "entries": 3,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+      },
+      {
+        "entries": 3,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs"
+      },
+      {
+        "entries": 3,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+      },
+      {
+        "entries": 2,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+      },
+      {
+        "entries": 3,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs"
+      },
+      {
+        "entries": 6,
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+      },
+      {
+        "entries": 2,
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+      },
+      {
+        "entries": 15,
+        "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+      },
+      {
+        "entries": 12,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs"
+      },
+      {
+        "entries": 6,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+      },
+      {
+        "entries": 3,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+      },
+      {
+        "entries": 4,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs"
+      },
+      {
+        "entries": 2,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+      },
+      {
+        "entries": 9,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+      },
+      {
+        "entries": 24,
+        "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+      },
+      {
+        "entries": 6,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+      },
+      {
+        "entries": 1,
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+      },
+      {
+        "entries": 16,
+        "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+      },
+      {
+        "entries": 6,
+        "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+      }
+    ],
+    "provider_scope_files_total": 41,
+    "provider_scopes_total": 264
+  },
+  "required_refresh_obligations": [
+    "Recompute affected exact masked/literal scope hashes and module shapes from actual post-format bytes. The affected-path counts are upper bounds, not claims that every contained hash differs.",
+    "After sole-writer contract refresh, synchronize its exact SHA256 in test_resident_provider_local_read_source_closure.py without changing the failure predicate.",
+    "After independent coordinator registration, update full-inventory count 621 and complete boundary digests to the final exact manifest, preserving the historical ORDINARY_NEW_BOUNDARIES slice [541:569] and the full provider extension slice [569:].",
+    "Append actual new Root test FQNs/parent mounts to the existing exact workflow and QA inventories; do not count ignored methods as default passes or alter budgets.",
+    "Retain original source roots, ignored paths, forbidden markers, scope selectors, each occurrence attack, same-function assertions and failure expectations."
+  ],
+  "scope": {
+    "git_ref_write": false,
+    "methods": "Read actual postimage bytes and existing QA syntax. Run only independent audit AST/lexical/byte comparisons; no repository module was imported or invoked.",
+    "native_execution": false,
+    "qa_or_verifier_or_collector_execution": false,
+    "source_or_registry_write": false
+  },
+  "source": {
+    "actual_fmt_packet": {
+      "bytes": 2175219,
+      "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+      "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+    },
+    "actual_formatted_physical_tree": "f905b18e6b05de1582024548179725a05d932536",
+    "actual_full_inventory": {
+      "bytes": 5634549,
+      "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+      "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+    },
+    "current_source_head": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "encoded_native_parts": [
+      "bb27ecb7f6d2d4978be534e1e713c0c427ecd352",
+      "da00d9cd4c72e9931a671fb165c1ea5d233050d2"
+    ],
+    "native_full_readback_review": "e798f72e7815604d024cbde51cebd7a33c3530f1",
+    "packet_persistence": "Raw identity is losslessly reconstructed from two independently base64-encoded gzip chunks, not a claim of standalone raw blob creation.",
+    "separate_fmt_semantic_review": "976863ddbbca0ee4558e7846eddcb458114590cb"
+  }
+}

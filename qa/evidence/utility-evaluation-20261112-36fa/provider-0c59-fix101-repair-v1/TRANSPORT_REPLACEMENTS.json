@@ -1,0 +1,14 @@
+[
+  [
+    "Ok(TaskStream { stream, peer: process.peer.clone(), uid: process::PEER_UID,",
+    "Ok(TaskStream { stream, peer: crate::AgentdRootAuthorityPeer {\n            pid: process.peer.pid, boot_id: process.peer.boot_id.clone(),\n            process_start_ticks: process.peer.process_start_ticks,\n        }, uid: process::PEER_UID,"
+  ],
+  [
+    "Ok(RootResidentLearningConsumerV3 { stream, peer: process.peer.clone(), uid: process::PEER_UID,",
+    "Ok(RootResidentLearningConsumerV3 { stream, peer: crate::AgentdRootAuthorityPeer {\n        pid: process.peer.pid, boot_id: process.peer.boot_id.clone(),\n        process_start_ticks: process.peer.process_start_ticks,\n    }, uid: process::PEER_UID,"
+  ],
+  [
+    "let recipient = if wrong_recipient { peer.peer.clone() } else { process::process(std::process::id())? };",
+    "let recipient = if wrong_recipient {\n            crate::AgentdRootAuthorityPeer {\n                pid: peer.peer.pid, boot_id: peer.peer.boot_id.clone(),\n                process_start_ticks: peer.peer.process_start_ticks,\n            }\n        } else { process::process(std::process::id())? };"
+  ]
+]

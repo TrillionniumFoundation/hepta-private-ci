@@ -1,0 +1,332 @@
+{
+  "cleanup_limit": "Normal Result path awaits cancellation/join; timeout drops the moved JoinHandle and returns Err, Drop only cancels. No terminal guarantee is inferred for timeout or outer cancellation.",
+  "existing_body_preservation": [
+    {
+      "inserted_text": "#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootCircuitTaskCustodyV1;\n#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootCircuitTaskInputsV1;\n#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootCircuitTaskRuntimeV1;\n#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootInitialGenerationCustodyV1;\n#[cfg(target_os = \"linux\")]\npub use neuron_generation_initial::OriginalRootInitialInstallationErrorV1;\n",
+      "layer": "production",
+      "old_full_bytes_recovered_by_removal": true,
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "inserted_text": "\n#[cfg(target_os = \"linux\")]\n#[path = \"neuron_generation_initial_root_custody.rs\"]\nmod root_custody;\n\n#[cfg(target_os = \"linux\")]\npub use root_custody::OriginalRootCircuitTaskCustodyV1;\n#[cfg(target_os = \"linux\")]\npub use root_custody::OriginalRootCircuitTaskInputsV1;\n#[cfg(target_os = \"linux\")]\npub use root_custody::OriginalRootCircuitTaskRuntimeV1;\n#[cfg(target_os = \"linux\")]\npub use root_custody::OriginalRootInitialGenerationCustodyV1;\n#[cfg(target_os = \"linux\")]\npub use root_custody::OriginalRootInitialInstallationErrorV1;\n",
+      "layer": "production",
+      "old_full_bytes_recovered_by_removal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs"
+    },
+    {
+      "inserted_text": "\n#[path = \"neuron_generation_initial_root_custody_support_tests.rs\"]\nmod root_initial_custody;\n",
+      "layer": "tests",
+      "old_full_bytes_recovered_by_removal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs"
+    },
+    {
+      "inserted_text": "\n#[path = \"neuron_generation_initial_root_cold.rs\"]\nmod cold;\n",
+      "layer": "cold",
+      "old_full_bytes_recovered_by_removal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "inserted_text": "\n#[path = \"neuron_generation_initial_root_cold_tests.rs\"]\nmod cold_tests;\n",
+      "layer": "cold",
+      "old_full_bytes_recovered_by_removal": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs"
+    }
+  ],
+  "final_coverage_paths": 9,
+  "fixture_unused_test_current_not_passed_to_coordinator": true,
+  "live_root_factory_called_by_fixture_source": true,
+  "new_production_paths": [
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+  ],
+  "new_test_paths": [
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+  ],
+  "old_body_changes_other_than_exact_mount_exports": false,
+  "operations": [
+    {
+      "after": {
+        "bytes": 72389,
+        "git_blob": "cde2369ef4a39e4074984d85da82e99a1953363d",
+        "sha256": "02abf25d2075f961496d237f90e4bf0bda0bf499b652c6a44415db5cf4361fbd"
+      },
+      "before": {
+        "bytes": 71893,
+        "git_blob": "9c77c4265aef5301d3e2f8a8c414847d0e718396",
+        "sha256": "d0c43440859518c93592252411141dbec6579663530566a3d77663baab8677d8"
+      },
+      "full_local_body_matches_packet": true,
+      "layer": "production",
+      "path": "codex-rs/hepta-agentd/src/lib.rs"
+    },
+    {
+      "after": {
+        "bytes": 9428,
+        "git_blob": "2861558bc7f9dfe833d70c7d72c5742d4e0f5fdd",
+        "sha256": "def4d820837b958a49b0308d4785dd97170a248d40a3fd7c94af8d3031166045"
+      },
+      "before": {
+        "bytes": 8895,
+        "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+        "sha256": "cbd7ddaf1c024670dfaac8db4c8ec4efd8c1a52035e536c737212f0e7ec799fc"
+      },
+      "full_local_body_matches_packet": true,
+      "layer": "production",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs"
+    },
+    {
+      "after": {
+        "bytes": 7763,
+        "git_blob": "76142e204c9e10b5544e5586e08ea197ed2e1059",
+        "sha256": "5adde00da64fe35f190355bcfb5915143829fe6710cab63826ab9c6216bc1891"
+      },
+      "before": null,
+      "full_local_body_matches_packet": true,
+      "layer": "production",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after": {
+        "bytes": 7072,
+        "git_blob": "6cd8470ecba5b966f331fffdea86f0ffdf770c2f",
+        "sha256": "1e08d5dad64b56fe92ab5436be4a7217c0595a6bc90cd0dfbc1b96b559544171"
+      },
+      "before": null,
+      "full_local_body_matches_packet": true,
+      "layer": "production",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs"
+    },
+    {
+      "after": {
+        "bytes": 15934,
+        "git_blob": "34aff1e564ea7d6c0b1c9a4cdb7ab46b4660c0dd",
+        "sha256": "5b991c33123276137b0ea3f76efc91cc6521ef5b6564d02ed15671e2c19bddfb"
+      },
+      "before": {
+        "bytes": 15839,
+        "git_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+        "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714"
+      },
+      "full_local_body_matches_packet": true,
+      "layer": "tests",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs"
+    },
+    {
+      "after": {
+        "bytes": 11218,
+        "git_blob": "cdcd7949e8d620463ddd9abdfdc3dd413cc3e6d9",
+        "sha256": "fff6da8fb5f94f7b8613eda2f8634bb0f8c436248ec4224cee4b132ec09b78ee"
+      },
+      "before": null,
+      "full_local_body_matches_packet": true,
+      "layer": "tests",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 8591,
+        "git_blob": "1166c82d9189461a7d8468347c6018cb4239ba40",
+        "sha256": "0f651b0c3bbf8048c3eba4c4bfc3115d8712e163517a692202c0d857d804d580"
+      },
+      "before": null,
+      "full_local_body_matches_packet": true,
+      "layer": "tests",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 2504,
+        "git_blob": "944a1927f2761000c206d018034b26d01a2ce0df",
+        "sha256": "f85bd6c3e22b917be0c77b5068d52b2e68d623c28314ea068772b96337328e17"
+      },
+      "before": null,
+      "full_local_body_matches_packet": true,
+      "layer": "cold",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs"
+    },
+    {
+      "after": {
+        "bytes": 7920,
+        "git_blob": "f053afb5b973121ddb817ba901689907717e3480",
+        "sha256": "4f096297c2c7952a19a988519b752f8e37681fb76a47a62465ab113bc12b56a0"
+      },
+      "before": null,
+      "full_local_body_matches_packet": true,
+      "layer": "cold",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "after": {
+        "bytes": 7825,
+        "git_blob": "f5a922fd2f565d8f313365f0dae82a86def32e5c",
+        "sha256": "6445995f8114aa6895463108a251e887582d45cb162193b83bf979cc5ec1106a"
+      },
+      "before": {
+        "bytes": 7763,
+        "git_blob": "76142e204c9e10b5544e5586e08ea197ed2e1059",
+        "sha256": "5adde00da64fe35f190355bcfb5915143829fe6710cab63826ab9c6216bc1891"
+      },
+      "full_local_body_matches_packet": true,
+      "layer": "cold",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "after": {
+        "bytes": 11292,
+        "git_blob": "90fe1199cbca514c569fe8092c0015a5767929f4",
+        "sha256": "aafb2d5b9a475c3a4e4b5bbffec8c9d68d037abd9d74e2deaadcd3d23b579dcf"
+      },
+      "before": {
+        "bytes": 11218,
+        "git_blob": "cdcd7949e8d620463ddd9abdfdc3dd413cc3e6d9",
+        "sha256": "fff6da8fb5f94f7b8613eda2f8634bb0f8c436248ec4224cee4b132ec09b78ee"
+      },
+      "full_local_body_matches_packet": true,
+      "layer": "cold",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs"
+    }
+  ],
+  "original_refs": [
+    {
+      "bytes": 8895,
+      "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "sha256": "cbd7ddaf1c024670dfaac8db4c8ec4efd8c1a52035e536c737212f0e7ec799fc"
+    },
+    {
+      "bytes": 14766,
+      "git_blob": "36d3ae716003a4a6c499e005438ef176daab0826",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "sha256": "44f703fdf843db13108f1922c6cf6d42bb256898c894943bff033f5c45b799d1"
+    },
+    {
+      "bytes": 11102,
+      "git_blob": "07092ccebbb5642fc42121187f57e842a9073b2a",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "sha256": "834a70cca0d4a7c7487c94371e921cd6738f8e8a972cca192f92f9a2d048877e"
+    },
+    {
+      "bytes": 6219,
+      "git_blob": "58b9b01746fba32e2a9fedf94655121d6e1df45f",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial_types.rs",
+      "sha256": "02f2748c219b97c19eb033671010033dfa31caf0a73271179d51effdb9804cad"
+    },
+    {
+      "bytes": 4749,
+      "git_blob": "c808361ee7a476fe8304fefb6f4f16e7af379043",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs",
+      "sha256": "d2021b15f5a43eac63d8401493e845fa1fc0548b1b0a05e3cffb1051fce4a9bd"
+    },
+    {
+      "bytes": 7338,
+      "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+    },
+    {
+      "bytes": 7595,
+      "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78"
+    },
+    {
+      "bytes": 1028,
+      "git_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "sha256": "3457a2cbfcee2e3d99a317ff7abe2ff4d142217687336b3851259833b6fc26c2"
+    },
+    {
+      "bytes": 16457,
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370"
+    },
+    {
+      "bytes": 2003,
+      "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577"
+    }
+  ],
+  "packets": [
+    {
+      "bytes": 239054,
+      "git_blob": "3ffcac56096eb06214963ab1fdc5898e2b7eebb2",
+      "layer": "production",
+      "sha256": "bab8ebcc49c41a41b75968b55a02f9b94a77998546410a557779b20885f76c3b"
+    },
+    {
+      "bytes": 55168,
+      "git_blob": "ae05b4ca793a24a164d08e247a8faec62f690750",
+      "layer": "tests",
+      "sha256": "9975df32025342e8a021dcc22defdde04c9141a4e229792b7e1a31088aeb8d34"
+    },
+    {
+      "bytes": 52372,
+      "git_blob": "a7256a2eea8df3af2c927f728b2c38c9342cc830",
+      "layer": "cold",
+      "sha256": "68c56b24feaecb6249dfeb63a9fe05d49431c7bd67f4901d8ec976f91690d53b"
+    }
+  ],
+  "schema": "hepta-root-initial-custody-independent-frozen-layer-review-v1",
+  "scope": "Full packet/raw hash comparisons, exact layer ancestry and insertion inverses only; small literal checks document manually read code. No Rust parser/compiler, formatter, QA, test, H, runtime or source mutation.",
+  "tests": [
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_refuses_another_operation_without_rewriting_current",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_installation_error_retains_original_publication_readback",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_original_artifact_withdrawal_fences_task_installation",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_retains_same_operation_after_installation_error",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    }
+  ]
+}

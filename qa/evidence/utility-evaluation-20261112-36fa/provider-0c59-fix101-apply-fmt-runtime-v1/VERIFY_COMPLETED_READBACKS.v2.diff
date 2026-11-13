@@ -1,0 +1,17 @@
+--- VERIFY_COMPLETED_READBACKS.py
++++ VERIFY_COMPLETED_READBACKS.v2.py
+@@ -1,5 +1,6 @@
+ """Offline validation of already captured originals. No H, Git process, or source writes."""
+ import base64
++import gzip
+ import hashlib
+ import json
+ from pathlib import Path
+@@ -92,6 +93,7 @@
+ assert len(stage_map) == 7
+ staged_expected = {name: base64.b64decode(value, validate=True) for name, value in payload['files'].items()}
+ assert len(staged_expected) == 4
++staged_expected['REPAIR_PROPOSAL.original.json'] = gzip.decompress(staged_expected['REPAIR_PROPOSAL.original.json'])
+ staged_expected['ACTUAL_BOOTSTRAP.py'] = request['args'][-1].encode()
+ staged_expected['ACTUAL_BOOTSTRAP_PAYLOAD.json'] = request['stdin'].encode()
+ staged_expected['ACTUAL_BOOTSTRAP_ARGV.json'] = encode([request['executable'], *request['args']])

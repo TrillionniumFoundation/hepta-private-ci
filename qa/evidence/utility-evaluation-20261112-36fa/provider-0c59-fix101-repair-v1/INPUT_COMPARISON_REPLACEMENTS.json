@@ -1,0 +1,12 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+    "old": "            anyhow::ensure!(previous.input() == &source_a, \"actual A uses this original input\");",
+    "new": "            // Match the original Source input projection, retaining the operation\n            // identity already authenticated by the opaque publication.\n            let expected_input = codex_hepta_neuron::CellStepInputV1 {\n                operation_id: previous.input().operation_id.clone(),\n                scope: source_a.scope.clone(),\n                source_frontier: source_a.source_frontier,\n                objective_digest: source_a.objective_digest,\n                ndu_snapshot_digest: source_a.ndu_snapshot_digest,\n                monotonic_micros: source_a.monotonic_micros,\n                deadline_micros: source_a.deadline_micros,\n                observation: source_a.observation.clone(),\n                candidates: source_a.candidates.clone(),\n            };\n            anyhow::ensure!(previous.input() == &expected_input, \"actual A uses this original input\");"
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+    "old": "        anyhow::ensure!(previous.input() == source_a);",
+    "new": "        // Match the original Source input projection, retaining the operation\n        // identity already authenticated by the opaque publication.\n        let expected_input = codex_hepta_neuron::CellStepInputV1 {\n            operation_id: previous.input().operation_id.clone(),\n            scope: source_a.scope.clone(),\n            source_frontier: source_a.source_frontier,\n            objective_digest: source_a.objective_digest,\n            ndu_snapshot_digest: source_a.ndu_snapshot_digest,\n            monotonic_micros: source_a.monotonic_micros,\n            deadline_micros: source_a.deadline_micros,\n            observation: source_a.observation.clone(),\n            candidates: source_a.candidates.clone(),\n        };\n        anyhow::ensure!(previous.input() == &expected_input);"
+  }
+]

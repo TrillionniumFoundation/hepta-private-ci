@@ -1,0 +1,712 @@
+//! Advance the same Fresh Material/T/B owners through Version and S. The
+//! transport adapters are explicit same-process fixtures. C is installed once
+//! here, but only the original daemon/control path may dispatch its RunStart.
+use super::stages::FreshStages;
+use super::*;
+use crate::AgentdUnixFinalUseGrantProvider;
+use crate::OriginalCircuitEvaluatedLearningReadContextV1 as ReadContext;
+use crate::OriginalCircuitEvaluatedRetentionContextV1 as EvaluatedContext;
+use crate::OriginalCircuitEvaluatedSelectionReceiptV1 as Selection;
+use crate::OriginalCircuitNextUseCommandClientV1 as CompletionClient;
+use crate::OriginalCircuitNextUseCommandContextV1 as CompletionContext;
+use crate::OriginalCircuitNextUseCommandOwnerV1 as CompletionHost;
+use crate::OriginalCircuitNextUseReceiptOwnerV1 as Observer;
+use crate::OriginalCircuitPublishedEvidenceReadbackV1 as Shared;
+use crate::OriginalCircuitRetainedVersionHostV1 as Version;
+use crate::OriginalCircuitSelectionCommandClientV1 as SelectionClient;
+use crate::OriginalCircuitSelectionCommandContextV1 as SelectionContext;
+use crate::OriginalCircuitSelectionCommandOwnerV1 as SelectionHost;
+use crate::OriginalCircuitSelectionReceiptOwnerV1 as Selector;
+use crate::circuit_feature_current::OriginalCircuitCompletionReadinessClientV1;
+use crate::circuit_feature_current::original_evaluated_readiness_fixture as readiness;
+use crate::circuit_feature_current::original_learning_read_fixture as reads;
+use crate::learning_iteration_evidence_client::next_use_command_test_support as completion_commands;
+use crate::learning_iteration_evidence_client::selection_command_test_support as selection_commands;
+use crate::neuron_generation_current::test_support::RECORDS;
+use anyhow::Context as _;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_neuron::JournalScope;
+use codex_hepta_types::Generation;
+use std::io::Read;
+use std::io::Write;
+use std::os::unix::fs::OpenOptionsExt as _;
+use std::os::unix::net::UnixStream;
+use std::time::Duration;
+
+type SelectionPeer =
+    std::thread::JoinHandle<Result<u64, crate::OriginalCircuitSelectionCommandErrorV1>>;
+type CompletionPeer =
+    std::thread::JoinHandle<Result<u64, crate::OriginalCircuitNextUseCommandErrorV1>>;
+type VersionPeer =
+    tokio::task::JoinHandle<Result<u64, crate::OriginalCircuitRetainedVersionErrorV1>>;
+
+/// This owns the original A home even after its task is drained. A caller
+/// running the actual daemon must stop/join that daemon and drop its Version
+/// clone before finish; no task abort is used as a substitute for this custody.
+pub(super) struct FreshPublication {
+    pub(super) stages: Option<FreshStages>,
+    pub(super) version: Option<Arc<Version>>,
+    pub(super) shared: Option<Shared>,
+    pub(super) selection: Option<Selection>,
+    pub(super) selector_host: Option<Arc<SelectionHost<FileAnchorWitnessStore>>>,
+    pub(super) selector_client: Option<SelectionClient>,
+    pub(super) completion: Option<OriginalCircuitCompletionReadinessClientV1>,
+    pub(super) completion_client: Option<CompletionClient>,
+    pub(super) completion_host: Option<Arc<CompletionHost<FileAnchorWitnessStore>>>,
+    completed_c: Option<crate::OriginalCircuitLearningReadbackV1>,
+    pub(super) c_identity: Option<crate::AgentdIdentity>,
+    pub(super) c_request: Option<crate::AuthBusObjectiveIngress>,
+    draining_a: Option<support::Session>,
+    source_home: Option<tempfile::TempDir>,
+    c_home: Option<tempfile::TempDir>,
+    selector_home: Option<tempfile::TempDir>,
+    observer_home: Option<tempfile::TempDir>,
+    selection_peers: Vec<SelectionPeer>,
+    completion_peers: Vec<CompletionPeer>,
+    version_peers: Vec<VersionPeer>,
+    issuer_reply: Option<std::thread::JoinHandle<anyhow::Result<()>>>,
+}
+
+impl FreshPublication {
+    pub(super) async fn new(
+        stages: FreshStages,
+        issuer: AgentdUnixFinalUseGrantProvider,
+    ) -> anyhow::Result<Self> {
+        let mut result = Self {
+            stages: Some(stages),
+            version: None,
+            shared: None,
+            selection: None,
+            selector_host: None,
+            selector_client: None,
+            completion: None,
+            completion_client: None,
+            completion_host: None,
+            completed_c: None,
+            c_identity: None,
+            c_request: None,
+            draining_a: None,
+            source_home: None,
+            c_home: None,
+            selector_home: None,
+            observer_home: None,
+            selection_peers: Vec::new(),
+            completion_peers: Vec::new(),
+            version_peers: Vec::new(),
+            issuer_reply: None,
+        };
+        if let Err(error) = Box::pin(result.install_same_original_c(issuer)).await {
+            let cleanup = result.finish().await;
+            return Err(error.context(format!("same-A Version setup cleanup: {cleanup:?}")));
+        }
+        Ok(result)
+    }
+
+    pub(super) fn stages(&self) -> anyhow::Result<&FreshStages> {
+        self.stages
+            .as_ref()
+            .context("same Fresh original stage set")
+    }
+
+    pub(super) fn host(&self) -> anyhow::Result<Arc<Version>> {
+        Ok(Arc::clone(
+            self.version.as_ref().context("same original Version")?,
+        ))
+    }
+
+    pub(super) fn context(&self) -> anyhow::Result<EvaluatedContext> {
+        let stages = self.stages()?;
+        let original = stages.original()?;
+        Ok(EvaluatedContext::from_original_evaluation(
+            original.material.scope.clone(),
+            original.material.verifier.clone(),
+            stages.training.as_ref().context("actual Fresh T")?,
+            stages.evaluation.as_ref().context("actual original B/E")?,
+        )?)
+    }
+
+    async fn install_same_original_c(
+        &mut self,
+        issuer: AgentdUnixFinalUseGrantProvider,
+    ) -> anyhow::Result<()> {
+        let stages = self.stages.as_mut().context("same Fresh stages")?;
+        let original = stages
+            .original
+            .as_deref_mut()
+            .context("same Fresh material")?;
+        let evaluation = stages
+            .evaluation
+            .as_ref()
+            .context("complete actual B/E before Version")?;
+        anyhow::ensure!(evaluation.snapshot().receipts.len() == 4);
+        anyhow::ensure!(evaluation.snapshot().request.selected_bundle == original.bundle);
+        anyhow::ensure!(matches!(
+            evaluation.receipt().observation,
+            LearningIterationObservationV1::Evaluation {
+                disposition: LearningEvaluationDispositionV1::NoUpdate,
+                ..
+            }
+        ));
+        self.draining_a = original.a.take();
+        let a = self.draining_a.as_mut().context("one original A session")?;
+        anyhow::ensure!(a.retirement.source() == &original.source_a);
+        let completed =
+            a.retirement
+                .drain_completed_task(&a.cell, a.source.as_ref(), &a.runtime.identity)?;
+        let original_source = Arc::clone(&a.source);
+        let original_identity = a.runtime.identity.clone();
+        a.stop().await?;
+        self.source_home = Some(std::mem::replace(
+            &mut a.runtime._temp,
+            tempfile::tempdir()?,
+        ));
+        drop(self.draining_a.take());
+
+        let config_c = support::configuration(
+            &original.baseline,
+            &original.bundle,
+            &original.definition,
+            &original.source_c,
+            2,
+        )?;
+        anyhow::ensure!(
+            config_c.manifest == original.config_a.manifest,
+            "NoUpdate retains the actual original baseline manifest"
+        );
+        anyhow::ensure!(original.source_a.scope.run_id != original.source_c.scope.run_id);
+        let inputs = crate::OriginalCircuitRetainedPublicationInputsV1 {
+            current: original.version.reopen_current()?,
+            authorities: original.version.authorities()?,
+            selection: original.version.retained_publication_selection()?,
+            predecessor: crate::AgentdGenerationUpdatePredecessorFilesV1 {
+                file: original.version.file("target-journal")?,
+                witness: original
+                    .version
+                    .witness("target-witness", &original.config_a)?,
+                config: original.config_a.clone(),
+                max_records: RECORDS,
+            },
+            target: original.version.named_target_create(
+                "resident-fresh-C-journal",
+                "resident-fresh-C-witness",
+                config_c,
+            )?,
+            definition: original.definition.clone(),
+            source: original.source_c.clone(),
+            completed,
+        };
+        let mut c = original
+            .c
+            .take()
+            .context("one pre-held separate C Admission")?;
+        anyhow::ensure!(support::source(&c, [Q / 4, Q])? == original.source_c);
+        // Preserve the actual original C request before the task-input factory
+        // intentionally discards it. Only its three complete model identities
+        // are set, exactly as the existing trusted fixture issuer does.
+        c.request.body.runtime_body_digest = original.definition.runtime.runtime_digest.to_string();
+        c.request.body.model_tuple_digest = original.definition.semantic_digest()?.to_string();
+        c.request.body.artifact_set_digest = original.bundle.digest()?.to_string();
+        c.request.signature_hex = SigningKey::from_bytes(&[91; 32])
+            .sign(
+                &crate::authbus_objective_claims(&c.runtime.identity, &c.request)?.signing_bytes(),
+            )
+            .to_bytes()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect();
+        self.c_request = Some(c.request.clone());
+        self.c_identity = Some(c.runtime.identity.clone());
+        let (task, runtime) = support::retained_version_task_inputs(
+            c,
+            original.definition.clone(),
+            original.source_c.clone(),
+            Arc::clone(&original.baseline),
+            original.bundle.clone(),
+            original_source.as_ref().clone(),
+            original_identity,
+        )?;
+        // This old construction-time state is not the future daemon's state.
+        // Release its locks while retaining all original C files and identity.
+        let RuntimeFixture {
+            _temp,
+            state,
+            registry,
+            identity: _,
+        } = runtime;
+        drop(state);
+        drop(registry);
+        self.c_home = Some(_temp);
+        let version = Version::from_original_evaluated_owners(
+            original.material.clone(),
+            stages
+                .version_dataset
+                .take()
+                .context("one pre-held D readonly client")?,
+            stages
+                .version_trainer
+                .take()
+                .context("one pre-held original T Connection")?,
+            stages
+                .version_evaluator
+                .take()
+                .context("one pre-held original E Connection")?,
+            inputs,
+            task,
+            original.version.retained_artifact_checkpoint()?,
+            issuer,
+            Duration::from_secs(300),
+        )?;
+        self.version = Some(Arc::new(version));
+        Ok(())
+    }
+
+    /// The caller supplies a real UID-0 peer stream. This fixture reply signs
+    /// only the actual prepared binding using the same initial A authority.
+    pub(super) async fn publish_with_original_fixture_root(
+        &mut self,
+        root_stream: UnixStream,
+    ) -> anyhow::Result<()> {
+        anyhow::ensure!(
+            unsafe { libc::geteuid() } == 0,
+            "explicit original UID-0 fixture"
+        );
+        let host = self.host()?;
+        let before = self
+            .stages()?
+            .original()?
+            .version
+            .authority
+            .capacity()?
+            .used_nonces;
+        let prepared = Version::prepare_original_version_fixture(Arc::clone(&host)).await?;
+        anyhow::ensure!(prepared.publication().is_none());
+        let binding = Version::read_original_final_use_binding(Arc::clone(&host)).await?;
+        let grant = self.stages()?.original()?.version.sign(&binding)?;
+        self.issuer_reply = Some(original_root_reply(root_stream, binding, grant));
+        let published = Version::run_original_issuer_fixture(Arc::clone(&host)).await;
+        let root = self
+            .issuer_reply
+            .take()
+            .context("original Root reply worker")?
+            .join()
+            .map_err(|_| anyhow::anyhow!("original Root reply panicked"));
+        published?;
+        root??;
+        let observed = Version::read_original_version_fixture(Arc::clone(&host)).await?;
+        let publication = observed
+            .publication()
+            .context("actual Published original C")?;
+        anyhow::ensure!(publication.bundle_digest() == self.stages()?.original()?.bundle.digest()?);
+        anyhow::ensure!(
+            self.stages()?
+                .original()?
+                .version
+                .authority
+                .capacity()?
+                .used_nonces
+                == before + 1
+        );
+        self.shared = Some(Version::share_original_evaluated_readbacks(host).await?);
+        Ok(())
+    }
+
+    pub(super) async fn complete_original_selection(&mut self) -> anyhow::Result<()> {
+        anyhow::ensure!(self.selector_host.is_none() && self.selection.is_none());
+        let context = self.context()?;
+        let home = tempfile::tempdir()?;
+        let open = |name: &str| -> anyhow::Result<std::fs::File> {
+            Ok(std::fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .open(home.path().join(name))?)
+        };
+        let original = self.stages()?.original()?;
+        let witness = FileAnchorWitnessStore::open(
+            open("selector.witness")?,
+            JournalScope {
+                scope_digest: original.material.scope.binding(),
+                objective_digest: original.material.verifier.objective_digest(),
+            },
+            Generation::new(1)?,
+            16,
+        )?;
+        let selector = Selector::create_evaluated(
+            open("selector.journal")?,
+            witness,
+            crate::OriginalCircuitEvaluatedSelectionReceiptConfigV1 {
+                context,
+                signer: original.credentials.selector.clone(),
+                maximum_signature_lifetime_seconds: 300,
+            },
+            SigningKey::from_bytes(&[46; 32]),
+        )?;
+        self.selector_home = Some(home);
+        let (live, channel) =
+            reads::evaluated_client(ReadContext::for_original_selection(self.context()?)?)?;
+        self.version_peers.push(tokio::spawn(
+            Version::fixture_serve_original_selection_channel(self.host()?, channel),
+        ));
+        let host = Arc::new(Selector::into_evaluated_shared_command_owner(
+            selector,
+            live,
+            self.shared
+                .as_ref()
+                .context("Published original T/E bundle")?
+                .clone(),
+        )?);
+        self.selector_host = Some(Arc::clone(&host));
+        let before = self.original_bytes()?;
+        anyhow::ensure!(
+            SelectionHost::read_original_evaluated_receipt(Arc::clone(&host))
+                .await
+                .is_err(),
+            "a readonly same-host call cannot manufacture an uncompleted S"
+        );
+        anyhow::ensure!(self.original_bytes()? == before);
+        let stages = self.stages()?;
+        let original = stages.original()?;
+        let context = SelectionContext::from_original_evaluation(
+            original.material.scope.clone(),
+            original.material.verifier.clone(),
+            stages.training.as_ref().context("actual original T")?,
+            stages.evaluation.as_ref().context("actual original E")?,
+        )?;
+        let (client, channel) = selection_commands::client(context, false, None)?;
+        self.selector_client = Some(client);
+        self.selection_peers
+            .push(selection_commands::serve(Arc::clone(&host), channel));
+        let selected = self
+            .selector_client
+            .as_ref()
+            .context("actual original S client")?
+            .execute_selection()
+            .await?;
+        let current = SelectionHost::read_original_evaluated_receipt(host).await?;
+        anyhow::ensure!(
+            (current.snapshot(), current.receipt(), current.attestation())
+                == (
+                    selected.snapshot(),
+                    selected.receipt(),
+                    selected.attestation()
+                ),
+            "same-host opaque delivery preserves the actual complete S"
+        );
+        anyhow::ensure!(current.snapshot().receipts.len() == 5);
+        self.selection = Some(current);
+        Ok(())
+    }
+
+    /// Successful NotReady is a real C read and completes this service's
+    /// admission before another lane may start. It never dispatches RunStart.
+    pub(super) async fn hold_original_completion_readiness(&mut self) -> anyhow::Result<()> {
+        anyhow::ensure!(self.completion.is_none());
+        let selected = self
+            .selection
+            .as_ref()
+            .context("actual original S")?
+            .clone();
+        let (client, channel) =
+            readiness::client(ReadContext::for_original_next_use(selected.clone())?)?;
+        self.completion = Some(client);
+        self.version_peers.push(tokio::spawn(
+            Version::fixture_serve_original_evaluated_next_use(
+                self.host()?,
+                selected,
+                channel,
+                true,
+            ),
+        ));
+        anyhow::ensure!(
+            self.completion
+                .as_ref()
+                .context("held original C readiness")?
+                .read_current()
+                .await?
+                .is_none(),
+            "installed C has no invented completion"
+        );
+        Ok(())
+    }
+
+    /// Called only after the same Version's real run_original_c has started its
+    /// daemon. An error loses delivery certainty and never restores the request.
+    pub(super) async fn dispatch_original_c_once(
+        &mut self,
+    ) -> anyhow::Result<crate::ObjectiveStartOutcome> {
+        let request = self
+            .c_request
+            .take()
+            .context("one original signed C RunStart")?;
+        let identity = self
+            .c_identity
+            .as_ref()
+            .context("same original C identity")?;
+        let client = crate::AgentdClient::new(
+            identity.control_socket.clone(),
+            identity.agent_id.clone(),
+            identity.spawn_generation,
+        )?;
+        Ok(client.objective_start(request).await?)
+    }
+
+    /// One actual readiness exchange. The caller owns the original Root/task
+    /// deadline; this method opens no connection, resets no clock, queues no
+    /// retry and never turns NotReady into a completed receipt.
+    pub(super) async fn read_original_c_completion_once(&mut self) -> anyhow::Result<bool> {
+        let current = self
+            .completion
+            .as_ref()
+            .context("same original completion channel")?
+            .read_current()
+            .await?;
+        let Some(current) = current else {
+            return Ok(false);
+        };
+        anyhow::ensure!(matches!(current.observation(),
+            LearningIterationObservationV1::RetainedModelNextUse { retained_bundle, .. }
+            if *retained_bundle == self.stages()?.original()?.bundle.digest()?));
+        if let Some(previous) = &self.completed_c {
+            anyhow::ensure!(
+                previous == &current,
+                "the same actual C completion remains current"
+            );
+        }
+        self.completed_c = Some(current);
+        Ok(true)
+    }
+
+    /// Consume real completed-C readiness, then use the independent original
+    /// Source/Cell read purpose for the Observer. The initial readiness value
+    /// is only a consistency pin; the original Observer rereads C and T/E/S.
+    pub(super) async fn attest_original_c(
+        &mut self,
+    ) -> anyhow::Result<crate::OriginalCircuitNextUseCommandReceiptV1> {
+        anyhow::ensure!(self.completion_host.is_none() && self.completion_client.is_none());
+        let completed = self
+            .completed_c
+            .as_ref()
+            .context("actual original C is still unresolved")?
+            .clone();
+        let selected = self
+            .selection
+            .as_ref()
+            .context("same opaque original S")?
+            .clone();
+        let context = CompletionContext::from_original_evaluated_selection(&selected)?;
+        let home = tempfile::tempdir()?;
+        let open = |name: &str| -> anyhow::Result<std::fs::File> {
+            Ok(std::fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .open(home.path().join(name))?)
+        };
+        let original = self.stages()?.original()?;
+        anyhow::ensure!(
+            original.credentials.observer.principal.principal_id
+                == original.material.initial.owners.next_use_observer,
+            "Observer was fixed in original Material before Training"
+        );
+        let witness = FileAnchorWitnessStore::open(
+            open("observer.witness")?,
+            JournalScope {
+                scope_digest: original.material.scope.binding(),
+                objective_digest: original.material.verifier.objective_digest(),
+            },
+            Generation::new(1)?,
+            16,
+        )?;
+        let observer = Observer::create_evaluated(
+            open("observer.journal")?,
+            witness,
+            crate::OriginalCircuitEvaluatedNextUseReceiptConfigV1 {
+                selection: selected.clone(),
+                signer: original.credentials.observer.clone(),
+                maximum_signature_lifetime_seconds: 300,
+            },
+            SigningKey::from_bytes(&[43; 32]),
+        )?;
+        self.observer_home = Some(home);
+        let (live, channel) =
+            reads::evaluated_client(ReadContext::for_original_next_use(selected.clone())?)?;
+        self.version_peers.push(tokio::spawn(
+            Version::fixture_serve_original_evaluated_next_use(
+                self.host()?,
+                selected,
+                channel,
+                false,
+            ),
+        ));
+        anyhow::ensure!(
+            live.read_current().await? == completed,
+            "separate NextUse purpose reads the same actual C before attestation"
+        );
+        let stages = self.stages()?;
+        let original = stages.original()?;
+        let selector_context = SelectionContext::from_original_evaluation(
+            original.material.scope.clone(),
+            original.material.verifier.clone(),
+            stages.training.as_ref().context("actual original T")?,
+            stages.evaluation.as_ref().context("actual original E")?,
+        )?;
+        let (selector, channel) = selection_commands::evidence_client(&selector_context)?;
+        self.selection_peers
+            .push(selection_commands::serve_evidence(
+                Arc::clone(
+                    self.selector_host
+                        .as_ref()
+                        .context("same actual Selector")?,
+                ),
+                channel,
+            ));
+        let observer = Arc::new(Observer::into_evaluated_shared_command_owner(
+            observer,
+            live,
+            self.shared.as_ref().context("same Published T/E")?.clone(),
+            selector,
+        )?);
+        self.completion_host = Some(Arc::clone(&observer));
+        let (client, channel) = completion_commands::client(context, false, None)?;
+        self.completion_client = Some(client);
+        self.completion_peers
+            .push(completion_commands::serve(observer, channel));
+        let actual = self
+            .completion_client
+            .as_ref()
+            .context("same original Observer command")?
+            .attest_completed_task()
+            .await?;
+        anyhow::ensure!(actual.snapshot().receipts.len() == 6);
+        anyhow::ensure!(
+            LearningIterationCoordinatorV1::from_snapshot(actual.snapshot().clone())?
+                .next_stage()
+                .is_none(),
+            "complete evaluated NoUpdate six-cut chain"
+        );
+        anyhow::ensure!(matches!(actual.receipt().observation,
+            LearningIterationObservationV1::RetainedModelNextUse { retained_bundle, .. }
+            if retained_bundle == self.stages()?.original()?.bundle.digest()?));
+        Ok(actual)
+    }
+
+    pub(super) fn original_bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
+        let stages = self.stages()?;
+        let mut bytes = stages.original_bytes()?;
+        for name in [
+            "current.json",
+            "resident-fresh-C-journal",
+            "resident-fresh-C-witness",
+        ] {
+            bytes.push(stages.original()?.version.bytes(name)?);
+        }
+        if let Some(home) = &self.selector_home {
+            for name in ["selector.journal", "selector.witness"] {
+                bytes.push(std::fs::read(home.path().join(name))?);
+            }
+        }
+        if let Some(home) = &self.observer_home {
+            for name in ["observer.journal", "observer.witness"] {
+                bytes.push(std::fs::read(home.path().join(name))?);
+            }
+        }
+        Ok(bytes)
+    }
+
+    pub(super) async fn finish(mut self) -> anyhow::Result<()> {
+        let mut errors = Vec::new();
+        drop(self.completion.take());
+        drop(self.completion_client.take());
+        for peer in self.completion_peers.drain(..) {
+            match peer.join() {
+                Ok(Ok(_)) => {}
+                Ok(Err(error)) => errors.push(error.to_string()),
+                Err(_) => errors.push("original C Observer peer panicked".into()),
+            }
+        }
+        drop(self.completion_host.take());
+        drop(self.selector_client.take());
+        for peer in self.selection_peers.drain(..) {
+            match peer.join() {
+                Ok(Ok(_)) => {}
+                Ok(Err(error)) => errors.push(error.to_string()),
+                Err(_) => errors.push("original S command peer panicked".into()),
+            }
+        }
+        drop(self.selector_host.take());
+        for peer in self.version_peers.drain(..) {
+            match peer.await {
+                Ok(Ok(_)) => {}
+                Ok(Err(error)) => errors.push(error.to_string()),
+                Err(error) => errors.push(format!("original Version reader join: {error}")),
+            }
+        }
+        drop(self.shared.take());
+        drop(self.version.take());
+        if let Some(peer) = self.issuer_reply.take() {
+            match peer.join() {
+                Ok(Ok(())) => {}
+                Ok(Err(error)) => errors.push(error.to_string()),
+                Err(_) => errors.push("original Root reply panicked".into()),
+            }
+        }
+        if let Some(mut a) = self.draining_a.take() {
+            if let Err(error) = a.stop().await {
+                errors.push(error.to_string());
+            }
+            self.source_home = Some(std::mem::replace(
+                &mut a.runtime._temp,
+                tempfile::tempdir()?,
+            ));
+        }
+        if let Some(stages) = self.stages.take() {
+            if let Err(error) = stages.finish().await {
+                errors.push(error.to_string());
+            }
+        }
+        drop(self.c_home.take());
+        drop(self.source_home.take());
+        anyhow::ensure!(
+            errors.is_empty(),
+            "all Fresh publication peers joined: {errors:?}"
+        );
+        Ok(())
+    }
+}
+
+fn original_root_reply(
+    mut stream: UnixStream,
+    binding: FinalUseBinding,
+    grant: SignedFinalUseGrant,
+) -> std::thread::JoinHandle<anyhow::Result<()>> {
+    std::thread::spawn(move || {
+        stream.set_read_timeout(Some(Duration::from_secs(30)))?;
+        let mut length = [0_u8; 4];
+        stream.read_exact(&mut length)?;
+        let length = u32::from_be_bytes(length) as usize;
+        anyhow::ensure!((1..=4096).contains(&length));
+        let mut bytes = vec![0; length];
+        stream.read_exact(&mut bytes)?;
+        let actual: serde_json::Value = serde_json::from_slice(&bytes)?;
+        anyhow::ensure!(
+            actual
+                == serde_json::json!({
+                    "schema_version": 1, "operation": "runtime.agentd.production_operation", "binding": binding,
+                }),
+            "same prepared original FinalUse binding"
+        );
+        let response = serde_json::to_vec(&serde_json::json!({
+            "schema_version": 1,
+            "revocations": { "authority_epoch": 1, "revision": 1, "revoked_grant_ids": [] },
+            "grant": grant, "denial_reason": null,
+        }))?;
+        stream.write_all(&(response.len() as u32).to_be_bytes())?;
+        stream.write_all(&response)?;
+        let mut extra = [0_u8; 1];
+        anyhow::ensure!(stream.read(&mut extra)? == 0, "one actual FinalUse request");
+        Ok(())
+    })
+}

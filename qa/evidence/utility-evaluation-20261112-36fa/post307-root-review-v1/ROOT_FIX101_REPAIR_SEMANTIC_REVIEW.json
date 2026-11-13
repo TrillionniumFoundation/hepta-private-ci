@@ -1,0 +1,114 @@
+{
+  "format": "hepta-root-fix101-minimal-repair-semantic-review-v1",
+  "status": "SOURCE_REVIEWED_FOR_CONCRETE_SUCCESSOR_PREPARATION_ONLY",
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "original_failed_job": "1a1d3eccd3a-392-231",
+  "original_fix_result": 101,
+  "next_fix_authorized": false,
+  "source_packet": {
+    "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+    "bytes": 152573,
+    "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+  },
+  "actual_baseline": "4ed32552042fee522965ea54caf95bbebb31ad43",
+  "expected_unapplied_successor": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+  "root_direct_git_four_after_blob_reads": true,
+  "github_created_tree_equals_independent_typed_merkle": true,
+  "root_original_source_reads": [
+    {
+      "git_blob": "9d3d24bd5104be99372c8a55859360e792120605",
+      "bytes": 9788,
+      "sha256": "e2e6f4d977f2648aafef7717ce670228856019ff6fa5f201f0571b68db94cefb"
+    },
+    {
+      "git_blob": "68cf423686f24d192d015b0c06e86eea530dfc81",
+      "bytes": 16039,
+      "sha256": "d5fee13397caa51a0f112962c46ad2a39426ac81c1fe65b70c7cee5e32edc232"
+    }
+  ],
+  "semantic_findings": [
+    {
+      "subject": "Private report helper",
+      "finding": "The only visibility delta removes pub(super) from a use inside its existing parent. The child helper is not widened; the local imported call remains. No production API is opened."
+    },
+    {
+      "subject": "Peer identity metadata",
+      "finding": "The existing peer has three public identity fields. The patch copies only these previously held values at three test callsites. The original pidfd creation, process lifetime, boot/start identity, socket peer credentials and UID predicates remain byte-for-byte unchanged. No Clone implementation, capability duplication, procfs rediscovery or guard relaxation is added."
+    },
+    {
+      "subject": "Source to Cell input",
+      "finding": "The two formerly ill-typed comparisons are replaced by the exact original private Source::input projection: eight source fields plus the already authenticated opaque publication's operation ID. Full CellStepInput equality is preserved. This comparison does not independently establish operation ID correctness or lease_duration_ms; those continue to depend on the untouched original owners and source admission."
+    },
+    {
+      "subject": "Actual witness postimage",
+      "finding": "The real fix output changes nonzero remainder to negated is_multiple_of. Whole-file inverse equality shows no other delta. The original pre-subtraction length guard remains. This postimage is protected, not reapplied or reset."
+    }
+  ],
+  "required_before_H_execution": [
+    "independent concrete patch review",
+    "exact bounded apply+fmt-only control review",
+    "Root exact typed request approval"
+  ],
+  "not_claimed": [
+    "H apply",
+    "format success",
+    "lint success",
+    "Rust compile success",
+    "source gate or native qualification",
+    "complete authorized learning chain"
+  ],
+  "byte_and_merkle_review": {
+    "H_dispatched": false,
+    "actual_baseline_tree": "4ed32552042fee522965ea54caf95bbebb31ad43",
+    "actual_witness_preserved": {
+      "bytes": 13300,
+      "git_blob": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+      "sha256": "a7903c5aca69ebda366be3a90869fc83943409c7602da86c4f7f53773eef9154"
+    },
+    "compile_fmt_tests": "not run on repair",
+    "exact_recovered_original_inventory": {
+      "bytes": 5629749,
+      "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+      "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+    },
+    "expected_successor_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+    "file_count": 15237,
+    "format": "hepta-root-pure-fix101-repair-byte-and-merkle-review-v1",
+    "four_exact_manual_repairs": [
+      {
+        "exact_splices": 3,
+        "full_inverse_equal": true,
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs"
+      },
+      {
+        "exact_splices": 1,
+        "full_inverse_equal": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs"
+      },
+      {
+        "exact_splices": 1,
+        "full_inverse_equal": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+      },
+      {
+        "exact_splices": 1,
+        "full_inverse_equal": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs"
+      }
+    ],
+    "inventory_provenance": "Lossless reconstruction equal to original producer-observed bytes/SHA/Git; not a second native inventory read.",
+    "packet": {
+      "bytes": 152573,
+      "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+      "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+    },
+    "qualification": false
+  },
+  "early_root_git_read_observation": {
+    "scope": "Readback-review listed pins were inspected before complete archival placement was announced.",
+    "outcome": "Eight GETs returned non-string content; their original SDK payloads were not retained by the root collector. No 404, transport failure, hash mismatch or H failure cause is inferred. These pins remain pending actual full GET after declared availability.",
+    "pending_pin_count": 8,
+    "previous_verified_primary_and_source_pins_unchanged": true
+  }
+}

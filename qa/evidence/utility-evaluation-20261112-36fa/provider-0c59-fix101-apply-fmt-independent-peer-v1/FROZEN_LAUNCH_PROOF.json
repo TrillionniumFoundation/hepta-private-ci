@@ -1,0 +1,149 @@
+{
+  "all_four_inputs_decoded_and_full_bytes_equal": {
+    "APPROVED_CONFIG.json": {
+      "full_bytes_equal": true,
+      "gzip": false,
+      "raw": {
+        "bytes": 2798,
+        "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+        "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+      },
+      "transport": {
+        "bytes": 2798,
+        "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+        "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+      }
+    },
+    "FAILED_MAINTENANCE_SUPERVISOR.original.json": {
+      "full_bytes_equal": true,
+      "gzip": false,
+      "raw": {
+        "bytes": 910,
+        "git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+        "sha256": "80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa"
+      },
+      "transport": {
+        "bytes": 910,
+        "git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+        "sha256": "80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa"
+      }
+    },
+    "REPAIR_PROPOSAL.original.json": {
+      "full_bytes_equal": true,
+      "gzip": true,
+      "raw": {
+        "bytes": 152573,
+        "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+        "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+      },
+      "transport": {
+        "bytes": 19857,
+        "git_blob": "5c6041825283abac3270eb08d97895aa18db3ff2",
+        "sha256": "a604401c2237f03d215f77538addd62a52db57c07ff12f0d3567c5e12bb97648"
+      }
+    },
+    "driver.py": {
+      "full_bytes_equal": true,
+      "gzip": false,
+      "raw": {
+        "bytes": 34454,
+        "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+        "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+      },
+      "transport": {
+        "bytes": 34454,
+        "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+        "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+      }
+    }
+  },
+  "all_four_inputs_validated_before_create_only_staging": true,
+  "bootstrap": {
+    "bytes": 5714,
+    "git_blob": "ab06aa07a11ab2b6739a7203dab0a1ba6f0deb29",
+    "sha256": "30290adfc825757435059d626819216e764ff461862c20fe9177b745a619fe43"
+  },
+  "bootstrap_has_no_lock_or_inherited_extra_lock_fd": true,
+  "candidate_config": {
+    "bytes": 2798,
+    "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+    "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+  },
+  "candidate_scope": "One exact reviewed four-path repair, then one original fmt --base c0f with 900 seconds; no second fix or tests.",
+  "dispatch_authorized_by_this_review": false,
+  "driver": {
+    "bytes": 34454,
+    "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+    "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+  },
+  "exact_seven_typed_fields": [
+    "args",
+    "cwd",
+    "executable",
+    "host",
+    "idempotency_key",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "exec_and_failure_tail_byte_equal": true,
+  "four_original_helpers_byte_equal": {
+    "check": {
+      "bytes": 79,
+      "git_blob": "219ba50284d72e775a610e8aadfccc5d00c1442e",
+      "sha256": "d3a046c068c682b79bd9a604bfc54604026425c16ae6a2d535ff75b2cd9d2031"
+    },
+    "identity": {
+      "bytes": 192,
+      "git_blob": "6c85a0002430be3a7090a719199bc6b8e7dfb12c",
+      "sha256": "c397e0116ef271d831ca9fda04ece0f131d1109a3e660ccafaee987c22acbe18"
+    },
+    "real_parents": {
+      "bytes": 347,
+      "git_blob": "589c8bceab299c8a22faaf55c2f23ec30a562b0b",
+      "sha256": "3b8238738543b119b99c7c20bce541b566bdc222a7fe4bb186af0d893c5000a1"
+    },
+    "retain": {
+      "bytes": 986,
+      "git_blob": "6e87b67409be9f3a71e7445d137a70a16e0a9ed0",
+      "sha256": "1e52929bf484c6fba03026bc408639bb846886c1a32136ca3752a66efaf11732"
+    }
+  },
+  "full_config_inverse_bytes_equal": true,
+  "full_readback_precedes_exec": true,
+  "no_environment_override": true,
+  "only_two_config_leaf_changes": [
+    {
+      "after": true,
+      "before": false,
+      "path": "/root_execution_approved"
+    },
+    {
+      "after": "ROOT_APPROVED_TO_EXECUTE",
+      "before": "HOLD_ROOT_EXACT_REVIEW_REQUIRED",
+      "path": "/status"
+    }
+  ],
+  "original_bootstrap": {
+    "bytes": 5711,
+    "git_blob": "9ca752893983b582f2394c054e92a0adc265cb8f",
+    "sha256": "be4d44559060e5129818b313c7142aa0fb934ae00c5a1e74f1e11ef8fb6a725a"
+  },
+  "outer_seconds": 2100,
+  "qualification": false,
+  "request_and_stdin_within_unchanged_1_mib": true,
+  "runtime_execution": false,
+  "schema": "hepta-fix101-fmt-only-independent-launch-proof-v1",
+  "scope": "Only bytes, JSON, AST and bounded gzip/base64 of frozen local evidence. No bootstrap/driver/prepare/main/Git/H/source action executed.",
+  "six_explicit_bootstrap_replacements_forward_and_inverse_equal": true,
+  "stdin": {
+    "bytes": 77588,
+    "git_blob": "347d63ee5af1c0f5826b02add02f2f322a4aefbe",
+    "sha256": "8d88855f1d67b6e42e06daf6989e4955d9cc6090d6df7ef6cd83f25600dc3223"
+  },
+  "thin_main_has_one_original_ex_nb_lock_call": true,
+  "typed_request": {
+    "bytes": 83679,
+    "git_blob": "b63bd0d12684a3ba39e63f1f12fef56cb56cb3d9",
+    "sha256": "c90457ea45cc064a01cc332fe0d48992352381218570afe243ca68d2e3c47df9"
+  }
+}

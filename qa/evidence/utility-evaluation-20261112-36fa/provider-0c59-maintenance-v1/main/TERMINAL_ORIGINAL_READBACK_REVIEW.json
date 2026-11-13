@@ -1,0 +1,383 @@
+{
+  "behavioral_tests_dispatched": 0,
+  "compiler_error_count": 6,
+  "compiler_errors": {
+    "bytes": 8849,
+    "git_blob": "f7a4e4776d967a893d9b82d770d1e9f08b305ef4",
+    "name": "fix.compiler_errors.original_excerpt.txt",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/fix.compiler_errors.original_excerpt.txt",
+    "sha256": "7bc50f3563235c302d288104110c2ccd4b36caf836da7fe1364a987897f92e7f"
+  },
+  "decoded_actual_artifacts": [
+    {
+      "bytes": 10505,
+      "decoded_gzip": {
+        "bytes": 7876,
+        "git_blob": "63b6d2c71df0f04639e57736ae94ad3cb9703121",
+        "name": "final.postimages.json.gz",
+        "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/final.postimages.json.gz",
+        "sha256": "12bd727f635fd4ce7cba086b28030ddffc3aedcd34b17ea73a2cd8267cbe1b43"
+      },
+      "decoded_raw": {
+        "bytes": 36709,
+        "git_blob": "786b5872a8064d18f6d391b82c7af3813541c0c1",
+        "name": "final.postimages.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/final.postimages.json",
+        "sha256": "f03d11da7482d4a45e1c92459001b3d3e35a375ded269fb26d634e407cb62d00"
+      },
+      "git_blob": "7cc81e2f84ee9d4a366dea447c702de81764b179",
+      "name": "final.postimages.json.gz.part-001.b64",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/final.postimages.json.gz.part-001.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/final.postimages.json.gz.part-001.b64",
+      "sdk_name": "RUN_final_postimages_json_gz_part_001_b64_READ_000000.original.json",
+      "sha256": "bbcc5b683b462c1d98aa518d44896e05fdd41ed95aa8647858600589c06f8193",
+      "version": "2050:51120811:10505:1794557597281104988:1794557597281104988"
+    },
+    {
+      "bytes": 784,
+      "git_blob": "10e6100bc347e6929049f151285203371fbf7931",
+      "name": "final.HEAD-working.patch",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/final.HEAD-working.patch",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/final.HEAD-working.patch",
+      "sdk_name": "RUN_final_HEAD_working_patch_READ_000000.original.json",
+      "sha256": "012a06d1d77531cd36119b113d316f1078b8d0e269231ca7c1a94bcf17a63ceb",
+      "version": "2050:51120817:784:1794557597300884763:1794557597300884763"
+    },
+    {
+      "bytes": 489,
+      "git_blob": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+      "name": "SOURCE_GIT_STATE.before.json",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_GIT_STATE.before.json",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/SOURCE_GIT_STATE.before.json",
+      "sdk_name": "RUN_SOURCE_GIT_STATE_before_json_READ_000000.original.json",
+      "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660",
+      "version": "2050:51120607:489:1794556875808847709:1794556875808847709"
+    },
+    {
+      "bytes": 1053,
+      "decoded_gzip": {
+        "bytes": 788,
+        "git_blob": "97f706d46e435c0b363ca04b376e76e23e21dbf2",
+        "name": "SOURCE_GIT_METADATA.before.json.gz",
+        "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/SOURCE_GIT_METADATA.before.json.gz",
+        "sha256": "c4f804da8488796b3d31b14107d0b5065d5b4751c14300a9a4b8ed8dcfa6bdb3"
+      },
+      "decoded_raw": {
+        "bytes": 2642,
+        "git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+        "name": "SOURCE_GIT_METADATA.before.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/SOURCE_GIT_METADATA.before.json",
+        "sha256": "7549fff731bd055a4dbe895bb0a37fa2486a6e2818e302e8af89495436d704e4"
+      },
+      "git_blob": "5d6f7b41e1c5968dced66a2a2c9dbef890efbf48",
+      "name": "SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+      "sdk_name": "RUN_SOURCE_GIT_METADATA_before_json_gz_part_001_b64_READ_000000.original.json",
+      "sha256": "03a1491cbe74038417a64f4117fa886705fd666b262b072a1ef2a95a48f158b3",
+      "version": "2050:51120622:1053:1794556885214167550:1794556885214167550"
+    },
+    {
+      "bytes": 1053,
+      "decoded_gzip": {
+        "bytes": 788,
+        "git_blob": "97f706d46e435c0b363ca04b376e76e23e21dbf2",
+        "name": "SOURCE_GIT_METADATA.after.json.gz",
+        "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/SOURCE_GIT_METADATA.after.json.gz",
+        "sha256": "c4f804da8488796b3d31b14107d0b5065d5b4751c14300a9a4b8ed8dcfa6bdb3"
+      },
+      "decoded_raw": {
+        "bytes": 2642,
+        "git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+        "name": "SOURCE_GIT_METADATA.after.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/SOURCE_GIT_METADATA.after.json",
+        "sha256": "7549fff731bd055a4dbe895bb0a37fa2486a6e2818e302e8af89495436d704e4"
+      },
+      "git_blob": "5d6f7b41e1c5968dced66a2a2c9dbef890efbf48",
+      "name": "SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+      "sdk_name": "RUN_SOURCE_GIT_METADATA_after_json_gz_part_001_b64_READ_000000.original.json",
+      "sha256": "03a1491cbe74038417a64f4117fa886705fd666b262b072a1ef2a95a48f158b3",
+      "version": "2050:51120832:1053:1794557601795022468:1794557601795022468"
+    },
+    {
+      "bytes": 13369,
+      "git_blob": "e2b5b1d9e7863d3f41219bbbf3f29a297dd88c35",
+      "name": "READONLY_COMMANDS.json",
+      "original_path": "/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-maintenance-v1/run/READONLY_COMMANDS.json",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/READONLY_COMMANDS.json",
+      "sdk_name": "RUN_READONLY_COMMANDS_json_READ_000000.original.json",
+      "sha256": "54a10e602b22ccaeec0e95da69805fcde842858c36dfea39a4291d373884bfec",
+      "version": "2050:51120835:13369:1794557601800299955:1794557601800299955"
+    }
+  ],
+  "error_slice_in_actual_fix_log": {
+    "end": 128490,
+    "offset": 119641
+  },
+  "failed_artifact_reads_preserved": [
+    {
+      "artifact_name": "fix.after.postimages.json.gz.part-001.b64",
+      "bytes": 213,
+      "first_version_observed": null,
+      "git_blob": "358dd47380862dcd2c71355a85aa594fec0757cf",
+      "sdk_name": "RUN_fix_after_postimages_json_gz_part_001_b64_READ_000000.original.json",
+      "sha256": "703de5066854e27f897a47063a013e37b97f3b75c699e4eac346eb80e59b177e"
+    },
+    {
+      "artifact_name": "INPUT_IDENTITIES.json",
+      "bytes": 213,
+      "first_version_observed": null,
+      "git_blob": "358dd47380862dcd2c71355a85aa594fec0757cf",
+      "sdk_name": "RUN_INPUT_IDENTITIES_json_READ_000000.original.json",
+      "sha256": "703de5066854e27f897a47063a013e37b97f3b75c699e4eac346eb80e59b177e"
+    }
+  ],
+  "fix_log": {
+    "bytes": 128490,
+    "git_blob": "feaf209bf89bcbdc71cdb1787a49c3433745a9cb",
+    "name": "fix.raw.exact_recovered.log",
+    "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/fix.raw.exact_recovered.log",
+    "sha256": "e5f44de8a9cec68f785de568e24a11be0d68f64a35a64b8ac3d0acc2558332e2"
+  },
+  "fix_log_provenance": "Exact bytes recovered from complete actual supervisor stdout; equal to native execute_logged and ARTIFACTS three identities. This is not a second native fix.raw.log file read.",
+  "fix_returncode": 101,
+  "fix_slice_in_actual_supervisor_stdout": {
+    "end": 129340,
+    "offset": 850
+  },
+  "fmt_attempted": false,
+  "format": "hepta-failed-maintenance-original-terminal-readback-v1",
+  "job_id": "1a1d3eccd3a-392-231",
+  "normal": {
+    "bytes": 910,
+    "git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+    "name": "MAIN_STATUS_06.original.json",
+    "sha256": "80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa"
+  },
+  "prior_cloud_reconstruction_assertion": {
+    "correct_schema": "ARTIFACTS.files",
+    "observed": "AssertionError after complete stdout/stderr files were saved",
+    "original_artifacts_unchanged": true,
+    "scope": "Offline analysis only; no native execution affected"
+  },
+  "stream_observations": [
+    {
+      "sdk": {
+        "bytes": 14794,
+        "git_blob": "2c3d83db28c215a1535a19966f7d4ed09808b062",
+        "name": "MAIN_STREAMS_READ_01.original.json",
+        "sha256": "7f837ffd78d380ad79b84dec0e0de2cad24bc1d1aa2b640c991aa6945c7b109a"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 4620,
+        "offset": 0,
+        "size": 4620
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 37374,
+        "git_blob": "21cd7edaf7253eba5e1dfc7ad19fcc1c3ce45de6",
+        "name": "MAIN_STREAMS_READ_02.original.json",
+        "sha256": "378df6a88bde95461ffc44be2aa32e87cce9602c0d9209c994bf58f0bddbd207"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 16683,
+        "offset": 4620,
+        "size": 16683
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 50339,
+        "git_blob": "ed6c6d334d715d05a5575baff07651351ccaf236",
+        "name": "MAIN_STREAMS_READ_03.original.json",
+        "sha256": "2a9b0f27a32a8208f2a0f357061b42ff6465c39be2b7e853fcead78f346730bb"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": false,
+        "next_offset": 33067,
+        "offset": 16683,
+        "size": 44623
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 42460,
+        "git_blob": "4d93cfc071fbe03701b34a9172a0b83d86701cc2",
+        "name": "MAIN_STREAMS_READ_04.original.json",
+        "sha256": "64f8dfbb06e92576399ae6289f76565574d448bde5513087aba10e32841c6f9c"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 46833,
+        "offset": 33067,
+        "size": 46833
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 50038,
+        "git_blob": "82ffd3d6d776ae5da689d43e943b2247a1ade29e",
+        "name": "MAIN_STREAMS_READ_05.original.json",
+        "sha256": "22b2660581bf486d0b350cdf0004b67cb74878f7512b289bf0c599c084af60d5"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": false,
+        "next_offset": 63217,
+        "offset": 46833,
+        "size": 120491
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 50304,
+        "git_blob": "7a742edc3e3bd859ff12ad9542081559bb6dfc0b",
+        "name": "MAIN_STREAMS_READ_06.original.json",
+        "sha256": "d4126a05e5e38007bbb31eac1122c889a475d787dc16797fb5d221234230ab8f"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": false,
+        "next_offset": 79601,
+        "offset": 63217,
+        "size": 129510
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 50308,
+        "git_blob": "097a45699846b18612c5848e738a9426e3dff959",
+        "name": "MAIN_STREAMS_READ_07.original.json",
+        "sha256": "f716d1551327035bf9473a6ca4bb9be9d8cd5541afd86b3ce0517e85774bc49e"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": false,
+        "next_offset": 95985,
+        "offset": 79601,
+        "size": 129815
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 50367,
+        "git_blob": "677827b4e705b62586ee90b7d7261a48c4841058",
+        "name": "MAIN_STREAMS_READ_08.original.json",
+        "sha256": "35737e63c272972aa6f0137d64343dc18f0d5735a1233b56a6fca576109beb06"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": false,
+        "next_offset": 112369,
+        "offset": 95985,
+        "size": 129815
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 50330,
+        "git_blob": "f233645d733707b1a50b9d807f2470b2cb46f25c",
+        "name": "MAIN_STREAMS_READ_09.original.json",
+        "sha256": "2b1d8652c66f334c092ecf2987a2055a37637825b9d54f9eed3dbf87d7fae180"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": false,
+        "next_offset": 128753,
+        "offset": 112369,
+        "size": 129815
+      }
+    },
+    {
+      "sdk": {
+        "bytes": 3815,
+        "git_blob": "90b219b89c30411a645551d6121329f42f9da48e",
+        "name": "MAIN_STREAMS_READ_10.original.json",
+        "sha256": "b4e2ef4f186f9a9b9c3c0115f6f696d297136221aa7c01e567d28c28897cddc5"
+      },
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 129815,
+        "offset": 128753,
+        "size": 129815
+      }
+    }
+  ],
+  "streams": [
+    {
+      "bytes": 129815,
+      "git_blob": "245955a14617742d2bb8be0249042395f1952033",
+      "name": "MAIN_COMPLETE_STDOUT.raw.txt",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_COMPLETE_STDOUT.raw.txt",
+      "sha256": "309f82561f24f38aa5ca57b23b4351811ca806c643a68cc8a1d45ab3cd924dda"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "name": "MAIN_COMPLETE_STDERR.raw.txt",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_COMPLETE_STDERR.raw.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

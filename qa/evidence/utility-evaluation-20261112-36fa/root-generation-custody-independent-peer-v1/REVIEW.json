@@ -1,0 +1,263 @@
+{
+  "author_concurrence_on_cleanup": "ordinary_path explicitly confirmed five-second timeout means Err/terminal unknown, Drop only cancels, and no longer-budget/abort claim or frozen-source change was made.",
+  "base_commit": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+  "byte_chain_review": {
+    "bytes": 14273,
+    "git_blob": "9937b3fb6f4345e24a4fba06d2d1460e4d158881",
+    "local_path": "/tmp/hepta-36fa-root-generation-custody-independent-peer-v1/FROZEN_LAYER_REVIEW.json",
+    "sha256": "6437d98f5066367482a39a663d85377f6860571b117cada9706ba966b1315083"
+  },
+  "concrete_static_blockers": [],
+  "decision": "NO_CONCRETE_STATIC_AUTHORITY_OR_TYPE_BLOCKER_IDENTIFIED_WITH_STATED_MECHANISM_LIMITS",
+  "execution_counts": {
+    "H": 0,
+    "QA": 0,
+    "Rust_compiler": 0,
+    "Rust_tests": 0,
+    "formatter": 0,
+    "source_or_ref_mutations": 0
+  },
+  "findings": [
+    {
+      "conclusion": "from_original_prepared consumes the original PreparedAgentdGenerationInitialV1. The child module legally borrows its private concrete Current and original authorities, validates a StableId, and recovers exactly that operation with prepared.intent_digest(). It compares full FinalUse binding and full target against the opaque original, then reads that protected operation. Original InitialIntent::digest includes operation id, supersedes, complete target, genesis checkpoint and selection. Thus the caller-supplied operation string alone does not construct custody or substitute an authority.",
+      "id": "C01",
+      "subject": "Actual opaque preparation and original operation identity"
+    },
+    {
+      "conclusion": "The new custody has private operation/phase fields and no Clone/serde/from-parts/public Current or journal getter. publish rejects any non-Prepared phase, replaces Prepared with ReadbackRequired before even the Root check or original publish, and never restores Prepared after any error. The consumed original publish performs the actual existing FinalUse claim/CAS. An error can follow a real claim/CAS; retained same-operation readback is not NotApplied. Warm recover is allowed only from ReadbackRequired and delegates to the original recovery with identical concrete Current and authority Arcs, original operation/intent and checked selected/target. No prepare, replacement operation, grant issuer or redispatch fallback is added.",
+      "id": "C02",
+      "subject": "Non-Clone publication state machine and uncertain outcomes"
+    },
+    {
+      "conclusion": "The module is mounted/exported only on Linux and requires both real and effective UID0 at new authority-use boundaries. This additional check does not replace RootAuthorityDirectory or Current validation. Original prepare/publish/recover functions remain whole-byte unchanged. In particular original publish releases the Artifact guard before constructing LiveGenerationCurrent; original recovery releases its initial Artifact revalidation guard before live construction. The original live order Artifact -> selected -> FinalUse, with concrete Current checks before and after, remains unchanged. No new Current-authority callback, proxy store, signer, raw token or owner getter is exposed.",
+      "id": "C03",
+      "subject": "Root boundary and original lock order"
+    },
+    {
+      "conclusion": "into_q24_task consumes custody and only accepts the actual Ready phase. OriginalRootCircuitTaskInputsV1 has no caller-supplied published_task. The original Ready.into_circuit_feature_task consumes the actual journal, publication and fixed feature_current Arc. The coordinator clones that sealed task once for retirement, places the original task into the original CircuitQ24TaskProfileV1, and calls unchanged AgentdConfig::with_q24_circuit_task_profile. Its custody stores the actual factory-returned runtime.cell and runtime.source and the original config identity, rather than constructing a parallel Cell. The old factory uses published.open_cell, feeds cell.writer() to the real channel and returns a clone of that same Cell owner.",
+      "id": "C04",
+      "subject": "Ready -> ordinary factory -> exact retained task and Cell"
+    },
+    {
+      "conclusion": "The new drain method only calls the original task.drain_completed_task with its retained exact Cell/Source/identity. That method requires Arc::ptr_eq(task, cell.task), actual Source publication and Cell commit, repeats Source readback, locks the original journal, checks current, performs durable drain, checks drained, releases the journal lock, rechecks Source, then rechecks original live Current. No opaque completion is synthesized. Drain may have already become durable before a later check errors; the new API explicitly preserves that uncertainty. Returned completion is historical evidence, not a fresh authorization.",
+      "id": "C05",
+      "subject": "Same-Arc drain and original live evidence"
+    },
+    {
+      "conclusion": "The installer consumes the whole custody. Any error retains only OriginalInitialOperation and the original AgentdError in a non-Clone error value. Its public operations are error inspection and same-operation readback; it cannot return Prepared, Ready, the Current Arc, a journal writer, or a new Source/Create attempt. Original factory steps may already have opened or created files; no automatic rollback, reset, retry, or absence-of-effect claim is made. Ordinary task files, source Create/Recover choice and the existing runtime clock remain trusted host inputs under the original factory contract.",
+      "id": "C06",
+      "subject": "Installation errors preserve facts without recreating Ready"
+    },
+    {
+      "conclusion": "The separate a725 increment adds one associated recover_from_original_current method through a private child module. It accepts the concrete Current, original typed authorities, selected material, target and exact recovery operation/intent; first obtains the protected binding/full readback, then calls unchanged recover_agentd_generation_initial_v1. The original recovery rejects Prepared, validates selected digest and complete target, requires the original nonempty regular journal, revalidates Artifact, verifies retained FinalUse/live Current, opens the journal under the actual guard, and checks publication plus journal binding again. The wrapper then compares a second full same-operation readback to the first before retaining Ready. There is no prepare/initialize/publish/new grant fallback.",
+      "id": "C07",
+      "subject": "Separate cold entry closes the missing constructor without granting authority"
+    },
+    {
+      "conclusion": "The new constructor makes recovery possible without the former live custody value. The tests actually drop old custody and reopen the real protected Root directory and concrete Current, then reopen the existing journal. Artifact/FinalUse/clock fixture owners are retained in the same process. This is not an observed Root process restart, independent authority acquisition, or recovery of the full daemon/Source/Cell deployment. After an installation error, the case recovers only generation custody and does not retry Source Create; a later installation must explicitly choose the proper original Source lifecycle.",
+      "id": "C08",
+      "subject": "Cold scope is generation custody, not complete process or task recovery"
+    },
+    {
+      "conclusion": "The fixture obtains RootAuthorityDirectory via its public factory in an actual UID0-owned private directory under /root and calls original prepare_initial. VersionFixture supplies its existing Artifact/FinalUse service, selection, files and explicit engineering issuer; its test CURRENT is never passed to the new coordinator. The normal v1 and cold cases call the actual original signed ObjectiveStart ingress/channel, inspect original completion and unchanged protected publication, and require exactly one consumed nonce. They do not manufacture a successful task response. Both are unexecuted ignored Root mechanisms; they are not deployment trust or a useful-task measurement.",
+      "id": "C09",
+      "subject": "Mechanism coverage uses actual owners and explicit fixture authority"
+    },
+    {
+      "conclusion": "Five v1 cases cover wrong operation, damaged grant with at-most-once publication and pending-recovery rejection, actual factory/drain path, installation error readback, and Artifact withdrawal. Four v2 cases cover existing Current/journal reopen plus task path, Pending rejection without reprepare, Artifact withdrawal after historical Published, and generation recovery after installation error. Original function/test bodies are whole-byte retained: v1 changes only Linux mount/exports and an appended test mount; v2 appends one production and one test child mount. All six new source modules are separately frozen, and new test/helper names end in _tests.rs. No existing test/assertion/limit is deleted.",
+      "id": "C10",
+      "subject": "Negative assertions and unchanged existing bodies"
+    },
+    {
+      "conclusion": "The custody child and task/cold grandchildren are legitimate descendants of neuron_generation_initial and can access the original private Prepared fields without widening them. The existing Cold readback enum derives Eq/PartialEq, original authorities are deliberately Clone over the same Arcs, and Ready-to-task has the retained W: AnchorWitnessStore + Send + static bound; installer keeps the original SW/CW bounds. The new input fields exactly mirror the original task profile except that definition/source enter the consumed Ready and published_task is filled internally. No definite import/visibility/type mismatch was found in this source-only review. This is not a compiler result.",
+      "id": "C11",
+      "subject": "Static type and visibility observations"
+    }
+  ],
+  "independent_full_get_observations": {
+    "bytes": 1321,
+    "git_blob": "b7a23dc38dee32bb7cb27a755e979ac8a7c81cad",
+    "local_path": "/tmp/hepta-36fa-root-generation-custody-independent-peer-v1/INPUT_FULL_GET_OBSERVATIONS.json",
+    "sha256": "3d7bca6b5bb5620c0dbffcf9ec89c4785c17cbbe7b98ffffcc5f83ac08f66dc9"
+  },
+  "layers": [
+    {
+      "bytes": 239054,
+      "git_blob": "3ffcac56096eb06214963ab1fdc5898e2b7eebb2",
+      "layer": "production",
+      "sha256": "bab8ebcc49c41a41b75968b55a02f9b94a77998546410a557779b20885f76c3b"
+    },
+    {
+      "bytes": 55168,
+      "git_blob": "ae05b4ca793a24a164d08e247a8faec62f690750",
+      "layer": "tests",
+      "sha256": "9975df32025342e8a021dcc22defdde04c9141a4e229792b7e1a31088aeb8d34"
+    },
+    {
+      "bytes": 52372,
+      "git_blob": "a7256a2eea8df3af2c927f728b2c38c9342cc830",
+      "layer": "cold",
+      "sha256": "68c56b24feaecb6249dfeb63a9fe05d49431c7bd67f4901d8ec976f91690d53b"
+    }
+  ],
+  "maintenance_separation": "These nine proposal paths are independent of the already frozen four-source fix101 repair and apply4/fmt-only request. They are not inserted into that running/approved source or its results.",
+  "nine_path_coverage": [
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_task.rs",
+    "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold.rs",
+    "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+  ],
+  "original_source_refs": [
+    {
+      "bytes": 8895,
+      "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "sha256": "cbd7ddaf1c024670dfaac8db4c8ec4efd8c1a52035e536c737212f0e7ec799fc"
+    },
+    {
+      "bytes": 14766,
+      "git_blob": "36d3ae716003a4a6c499e005438ef176daab0826",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current.rs",
+      "sha256": "44f703fdf843db13108f1922c6cf6d42bb256898c894943bff033f5c45b799d1"
+    },
+    {
+      "bytes": 11102,
+      "git_blob": "07092ccebbb5642fc42121187f57e842a9073b2a",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs",
+      "sha256": "834a70cca0d4a7c7487c94371e921cd6738f8e8a972cca192f92f9a2d048877e"
+    },
+    {
+      "bytes": 6219,
+      "git_blob": "58b9b01746fba32e2a9fedf94655121d6e1df45f",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_current_initial_types.rs",
+      "sha256": "02f2748c219b97c19eb033671010033dfa31caf0a73271179d51effdb9804cad"
+    },
+    {
+      "bytes": 4749,
+      "git_blob": "c808361ee7a476fe8304fefb6f4f16e7af379043",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs",
+      "sha256": "d2021b15f5a43eac63d8401493e845fa1fc0548b1b0a05e3cffb1051fce4a9bd"
+    },
+    {
+      "bytes": 7338,
+      "git_blob": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "sha256": "094a50bcfc6c1e087ca1bc57213cad25e39fc0975cbd30ed077be8052d173cef"
+    },
+    {
+      "bytes": 7595,
+      "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78"
+    },
+    {
+      "bytes": 1028,
+      "git_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "sha256": "3457a2cbfcee2e3d99a317ff7abe2ff4d142217687336b3851259833b6fc26c2"
+    },
+    {
+      "bytes": 16457,
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "sha256": "bc4d3339aa8bb5db43e2df52a808b768620cc4e64a866b71f1ba307354f74370"
+    },
+    {
+      "bytes": 2003,
+      "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577"
+    }
+  ],
+  "prior_original_api_audit": "3c7a9e150f27567bcfb994449f60b80a2d9bd881",
+  "pure_reproducer": {
+    "bytes": 8356,
+    "git_blob": "131256ca0fe2af90aaa96d3eb3f4f93efc54b124",
+    "local_path": "/tmp/hepta-36fa-root-generation-custody-independent-peer-v1/verify_frozen_layers.py",
+    "sha256": "d5b69d988a41f65b812af8d1e9613e7df11a0596f1df3fae6d8e00204644c4a6"
+  },
+  "pure_work_performed": "Actual full Git GET of all three packets; complete local/remote equality; all embedded before/after bytes and SHA/Git pins; exact three-layer preimage composition; five insertion-only inverses; ten exact original source pins. No reviewed function executed.",
+  "reviewed_at_utc": "2026-11-13T09:00:21.288509+00:00",
+  "reviewer": "/root/evaluation_audit",
+  "schema": "hepta-root-initial-generation-custody-independent-peer-v1",
+  "scope": "Frozen Initial-only local Root custody production v1, its five unexecuted mechanism cases, and separate cold-entry v2 plus four unexecuted mechanism cases. This is not source activation, complete Root integration, cross-UID execution, or external independent task B.",
+  "specific_limits": [
+    {
+      "detail": "RootSession::finish sends cancellation and awaits a JoinHandle with the unchanged five-second timeout. If that timeout expires, the moved handle is dropped and the method returns Err; Drop only signals cancellation. Therefore neither timeout nor arbitrary outer-future cancellation proves worker termination or joined blocking work. The normal non-timeout Result path explicitly awaits the worker before returning. This is the same form as original Session::stop, not a new claimed terminal guarantee; the author confirmed it and kept the frozen packages unchanged.",
+      "name": "Cleanup timeout or outer cancellation"
+    },
+    {
+      "detail": "The code retains ReadbackRequired after any original publish error, but the tests do not inject an actual lost acknowledgement after a committed protected CAS. Damaged-signature rejection does not prove that fault path was exercised.",
+      "name": "ACK uncertainty is represented, not fault-injection coverage"
+    },
+    {
+      "detail": "This unit does not implement Update coordination, cross-UID Current transport, generic authority handoff, full Root/provider lifecycle, registration, or final exact-source gates.",
+      "name": "Initial-only integration"
+    },
+    {
+      "detail": "All nine new methods are ignored Root mechanisms and have not been compiled or run. No total-budget, registry, fmt, Rust, source-closure or real-task pass is inferred. Final public API/caller/protection and Root-test inventory registration remain separate integration work.",
+      "name": "Not executed"
+    }
+  ],
+  "test_methods": [
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_refuses_another_operation_without_rewriting_current",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_installation_error_retains_original_publication_readback",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_custody_original_artifact_withdrawal_fences_task_installation",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    },
+    {
+      "executed": false,
+      "ignored_root_mechanism": true,
+      "method": "root_initial_cold_entry_retains_same_operation_after_installation_error",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs"
+    }
+  ]
+}

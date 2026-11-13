@@ -1,0 +1,190 @@
+{
+  "baseline": {
+    "actual_witness_after_preserved_during_manual_apply": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+    "complete_actual_before_inventory": {
+      "bytes": 5629749,
+      "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+      "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+    },
+    "complete_actual_raw_git_metadata": {
+      "bytes": 2642,
+      "git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+      "sha256": "7549fff731bd055a4dbe895bb0a37fa2486a6e2818e302e8af89495436d704e4"
+    },
+    "head": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "head_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+    "physical_after_consumed_fix": "4ed32552042fee522965ea54caf95bbebb31ad43",
+    "physical_after_exact_manual_repairs_expected_only": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+    "repository": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+    "tracked_physical_leaves": 15237
+  },
+  "concrete_static_blockers": [],
+  "controls": {
+    "exact_bootstrap": {
+      "bytes": 5714,
+      "git_blob": "ab06aa07a11ab2b6739a7203dab0a1ba6f0deb29",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/ACTUAL_BOOTSTRAP.candidate.py",
+      "sha256": "30290adfc825757435059d626819216e764ff461862c20fe9177b745a619fe43"
+    },
+    "exact_stdin": {
+      "bytes": 77588,
+      "git_blob": "347d63ee5af1c0f5826b02add02f2f322a4aefbe",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/ACTUAL_STDIN.candidate.json",
+      "sha256": "8d88855f1d67b6e42e06daf6989e4955d9cc6090d6df7ef6cd83f25600dc3223"
+    },
+    "exact_typed_request": {
+      "bytes": 83679,
+      "git_blob": "b63bd0d12684a3ba39e63f1f12fef56cb56cb3d9",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/ACTUAL_PROCESS_INPUT.candidate.json",
+      "sha256": "c90457ea45cc064a01cc332fe0d48992352381218570afe243ca68d2e3c47df9"
+    },
+    "execution_candidate_config": {
+      "bytes": 2798,
+      "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/APPROVED_CONFIG.candidate.json",
+      "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+    },
+    "hold_config": {
+      "bytes": 2806,
+      "git_blob": "0beff4136fc11d35513f2f16d7a26a0c30d77802",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/WAITING_CONFIG.json",
+      "sha256": "16eb91a3a5c6dd64b96dc57b1fb39e589a5e48db0d1500e0ae5e56143e73848c"
+    },
+    "original_bootstrap": {
+      "bytes": 5711,
+      "git_blob": "9ca752893983b582f2394c054e92a0adc265cb8f",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/ORIGINAL_9101_BOOTSTRAP.py",
+      "sha256": "be4d44559060e5129818b313c7142aa0fb934ae00c5a1e74f1e11ef8fb6a725a"
+    },
+    "original_thin_driver": {
+      "bytes": 28621,
+      "git_blob": "9101b44fb2ab24ae41a1344425dd74b536a40de4",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/ORIGINAL_9101_DRIVER.py",
+      "sha256": "0a7cc51c0ad9e1ef3b68e96f2942c36db04c3d42ee9dfcf8913099ea81a90228"
+    },
+    "thin_driver": {
+      "bytes": 34454,
+      "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/driver-apply-fmt.HOLD.py",
+      "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+    }
+  },
+  "decision": "NO_CONCRETE_STATIC_BLOCKER_IN_THE_EXACT_REVIEWED_CANDIDATE",
+  "dispatch_authorized_by_this_review": false,
+  "execution_observed_for_this_candidate": false,
+  "findings": [
+    {
+      "conclusion": "The actual failed maintenance is required and retained, not bypassed or reclassified. The new proof function consumes eleven fixed original records plus the complete normal supervisor, requires the one fix101/no-timeout stage, no prior fmt or tests, verified full source/Git and 24-input audits, and exact log/postimage/inventory/metadata identities. Historical clean materialization and runtime restoration are used as fixed earlier proof only. Current full b190 inventory and 2642-byte metadata are separately re-read and compared before any repair.",
+      "id": "F01",
+      "subject": "Current failed baseline and historical proof separation"
+    },
+    {
+      "conclusion": "Independently extracted only the exact frozen prove_actual_failed_maintenance AST function and evaluated it against twelve fixed in-memory originals. Its predicates passed; returned inventory, metadata, and witness bytes exactly match retained originals. The reviewed original/successor module, prepare, preflight, stage, bootstrap and main were not loaded or called. This is an evidence-schema result, not a native runtime result.",
+      "id": "F02",
+      "subject": "Actual producer-to-consumer schema"
+    },
+    {
+      "conclusion": "The pinned 3a0 maintenance module and d27 old config remain full-byte fixed. Four thin functions identity/first_read/lock_identity/main are byte- and AST-identical to the original 9101 driver. The new module loader loads definitions under a non-main name; no original maintenance main, fix stage, clean-source initial_preflight or obsolete clean metadata continuity validator is invoked. The unchanged original formatter stage, execute_logged, global guard, environment checks, source capture, artifact retention and finalizers are reused.",
+      "id": "F03",
+      "subject": "Original maintenance behavior"
+    },
+    {
+      "conclusion": "Current source entry snapshots, exact commit/tree/parent, full source inventory and raw Git metadata remain required. Original environment checks retain pinned tools, historical restoration proofs, current archive-v3 identity, target, inherited environment and minimum free space 34359738368 bytes. Both manual apply and formatter admission retain the original active/unreadable same-UID Cargo/formatter guard. Preflight/apply is 600 seconds, one original just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f is 900, shared recording is 300, and outer typed timeout is 2100. No tool install, second fix, test or ref update is introduced.",
+      "id": "F04",
+      "subject": "Guard, runtime, source and budgets"
+    },
+    {
+      "conclusion": "The strict 12a664 proposal is required to contain the sorted exact four reviewed paths, actual complete before identity, complete after bytes and 100644/owned-file constraints. All current full bytes and metadata are rechecked. Each replacement uses a same-directory temporary regular file, full bytes/hash readback, fsync, a second original preimage check, atomic replacement and directory fsync. The only manual source mutation call is os.replace over those four entries; no deletion/reset/rollback. Full actual leaves must equal the exact expected 1eacf tree, unchanged raw Git state, and four-path captured transition. The existing witness postimage is verified and excluded from manual writes.",
+      "id": "F05",
+      "subject": "Closed four-path write set"
+    },
+    {
+      "conclusion": "The unchanged thin main marks post-write/attempt errors Unknown, retains partial writes and temporary records, and always attempts bounded complete-source/Git and original-input audits plus same-lock identity. The original stage retains raw execution/terminal evidence and captures actual before/after inventory/postimages even on formatter failure where retention succeeds. Any incomplete final audit changes status to Unknown; the code does not claim complete retention when a finalizer or outer admission/recording fails. There is no retry or rollback. Formatter changes, including any later witness formatting, are actual retained changes requiring review; manual witness preservation is not a promise that rustfmt cannot touch it.",
+      "id": "F06",
+      "subject": "Failure, timeout and retained postimages"
+    },
+    {
+      "conclusion": "The final typed request has exactly seven fixed fields, no env override, /usr/bin/python3 -B -c with exact ab06 code, /home/qian-qi cwd, desktop host, original 2100-second budget and one fixed key. Both typed request and stdin fit the unchanged 1 MiB bound. All four base64 inputs, including bounded gzip expansion of the full repair proposal, exactly equal frozen driver/normal/packet/config bytes. Six explicit replacements reproduce the complete new bootstrap and inversely restore all 5711 original bytes; all four helpers and exec/failure tail are unchanged. Four inputs are verified before fresh-control creation, written create-only to an owned 0700 directory with 0600/O_EXCL/O_NOFOLLOW files and stable nine-field full readback, then fsynced before exec.",
+      "id": "F07",
+      "subject": "Exact bootstrap and staged control boundary"
+    },
+    {
+      "conclusion": "Bootstrap neither opens the coordination lock nor acquires/inherits another EX lease. After unchanged execv, the unchanged thin main alone opens the fixed pre-existing SOURCE_COORDINATION.lock with O_NOFOLLOW and obtains LOCK_EX|LOCK_NB, checks its fixed identity, holds it across apply/formatter/retention, rechecks it, and closes in finally. This avoids a second self-conflicting EX descriptor. The lock is cooperative; the full source/Git checks remain required.",
+      "id": "F08",
+      "subject": "Exactly one cooperative exclusive lock"
+    },
+    {
+      "conclusion": "Final candidate config differs from HOLD only in status and root_execution_approved, and reverses to the entire original config bytes. Preparation of those two fields is not dispatch authorization. Actual success can only be APPLIED_AND_FORMATTED_REVIEW_REQUIRED with final verified audits; it is neither a compiler pass nor qualification. Root must approve the exact request. Any unknown submission must reconcile the original idempotency key/job rather than resubmit a new attempt.",
+      "id": "F09",
+      "subject": "Approval and output semantics"
+    }
+  ],
+  "independent_evidence": {
+    "control_proof": {
+      "bytes": 11011,
+      "git_blob": "c4dcf6f8fa5404e119604d4dbc71c200ef03cb48",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-independent-peer-v1/FROZEN_CONTROL_PROOF.json",
+      "sha256": "e46324f2465b6bc2198fcd6bdc5f70a930f7e76d298842c30b662862aa2986a6"
+    },
+    "control_verifier": {
+      "bytes": 11874,
+      "git_blob": "fc149b1a5b0a25e8df88282207ecb196da66aea5",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-independent-peer-v1/verify_frozen_control.py",
+      "sha256": "460b225f877c1e30dfb0f79482b5998683663131d6deb71de1fe71d4b1af0b5a"
+    },
+    "four_source_independent_byte_proof": "dffe771bde8567e5cefd11758dcd477462e99730",
+    "four_source_repair_peer": "e1a5f008a69bc7c262d3daf2210e50802e50146c",
+    "independent_actual_get_observations": {
+      "bytes": 3620,
+      "git_blob": "072ec3a6fcff8af05340066502b5376884dc2983",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-independent-peer-v1/INPUT_FULL_GET_OBSERVATIONS.json",
+      "sha256": "d3903cb0d90f18463ae533495ed4c5a3c6cd5b1150653ecfdef2fa2afa028922"
+    },
+    "launch_proof": {
+      "bytes": 5299,
+      "git_blob": "2abb7cf98757c2b520b577a319ad25fe00e24fbc",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-independent-peer-v1/FROZEN_LAUNCH_PROOF.json",
+      "sha256": "2e5da0eb4a555a9499da29daa2ec337546867b23bed9c006fa8f479f97199b75"
+    },
+    "launch_verifier": {
+      "bytes": 9172,
+      "git_blob": "70c3390f74d39b340dad3c0d69b3117ea629a7bc",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-independent-peer-v1/verify_frozen_launch.py",
+      "sha256": "12293aa0478c316cbeb764010fe93933440b6aad787a3c20d8cbaba5426515e2"
+    }
+  },
+  "observations_not_claimed": [
+    "new source application",
+    "formatter completion",
+    "compilation",
+    "Rust or QA pass",
+    "complete native qualification",
+    "real external independent task B",
+    "production CURRENT or full three-UID closure"
+  ],
+  "preserved_historical_failure": {
+    "fix_consumed": true,
+    "fix_returncode": 101,
+    "fix_terminal": "63b4ec2d123e8eddaeaef3bccc1490285eab8df2",
+    "fix_timeout": false,
+    "fmt_previously_run": false,
+    "job": "1a1d3eccd3a-392-231",
+    "new_fix_call_present": false,
+    "normal": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+    "normal_terminal_exit": 1,
+    "reclassified_as_success": false,
+    "result": "c9ddc9349881689c2825852c746e8235f83cb921",
+    "test_commands": 0
+  },
+  "qualification": false,
+  "remaining_execution_conditions": [
+    "Root exact approval for b63bd0d12684a3ba39e63f1f12fef56cb56cb3d9 is separate from this review.",
+    "The new control/run paths must actually be absent, the fixed lock and current source/environment/proofs must pass the real preflight, and the global live process guard must permit the operation.",
+    "Actual apply/fmt/normal result, raw logs, complete final source inventory/postimages, Git metadata and original-input audits must be collected before any runtime conclusion.",
+    "Any actual formatter drift needs source/protection review and exact final-source qualification under the existing gates; this review does not replace those gates."
+  ],
+  "reviewed_at_utc": "2026-11-13T08:52:22.906880+00:00",
+  "reviewer": "/root/evaluation_audit",
+  "schema": "hepta-fix101-apply-fmt-independent-peer-v1",
+  "scope": "Independent complete source/byte/AST review of the fixed thin driver and exact combined bootstrap. Pure fixed-evidence predicate and bounded payload decoding only. No H, Cargo, formatter, QA, runtime preflight, bootstrap/main execution, source write, or ref mutation."
+}

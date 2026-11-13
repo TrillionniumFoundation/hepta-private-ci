@@ -1,0 +1,52 @@
+{
+  "Rust_or_QA_or_gate_execution": false,
+  "actual_cold_process_result": "Unknown",
+  "format": "hepta-root-cold-custody-pure-byte-review-v2",
+  "installation_recovery_scope": "Same generation custody only; no automatic Source Create or Recover fallback",
+  "mechanism_only": true,
+  "new_constructor": "Direct original recovery; same Current/authority Arcs; complete protected readback before/after",
+  "new_test_names": [
+    "root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+    "root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+    "root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+    "root_initial_cold_entry_retains_same_operation_after_installation_error"
+  ],
+  "original_production_and_test_bodies_preserved": true,
+  "parents": [
+    {
+      "added_mount": "\n#[path = \"neuron_generation_initial_root_cold.rs\"]\nmod cold;\n",
+      "after": {
+        "bytes": 7825,
+        "git_blob": "f5a922fd2f565d8f313365f0dae82a86def32e5c",
+        "sha256": "6445995f8114aa6895463108a251e887582d45cb162193b83bf979cc5ec1106a"
+      },
+      "before": {
+        "bytes": 7763,
+        "git_blob": "76142e204c9e10b5544e5586e08ea197ed2e1059",
+        "sha256": "5adde00da64fe35f190355bcfb5915143829fe6710cab63826ab9c6216bc1891"
+      },
+      "exact_prefix_preserved": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs"
+    },
+    {
+      "added_mount": "\n#[path = \"neuron_generation_initial_root_cold_tests.rs\"]\nmod cold_tests;\n",
+      "after": {
+        "bytes": 11292,
+        "git_blob": "90fe1199cbca514c569fe8092c0015a5767929f4",
+        "sha256": "aafb2d5b9a475c3a4e4b5bbffec8c9d68d037abd9d74e2deaadcd3d23b579dcf"
+      },
+      "before": {
+        "bytes": 11218,
+        "git_blob": "cdcd7949e8d620463ddd9abdfdc3dd413cc3e6d9",
+        "sha256": "fff6da8fb5f94f7b8613eda2f8634bb0f8c436248ec4224cee4b132ec09b78ee"
+      },
+      "exact_prefix_preserved": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs"
+    }
+  ],
+  "source_packet": {
+    "bytes": 52372,
+    "git_blob": "a7256a2eea8df3af2c927f728b2c38c9342cc830",
+    "sha256": "68c56b24feaecb6249dfeb63a9fe05d49431c7bd67f4901d8ec976f91690d53b"
+  }
+}

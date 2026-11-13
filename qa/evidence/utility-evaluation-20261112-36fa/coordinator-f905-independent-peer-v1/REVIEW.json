@@ -1,0 +1,66 @@
+{
+  "author_rebase_review": {
+    "bytes": 8232,
+    "git_blob": "9c5777f6ca9a3b9e8c7e267160b2e5bfc610f993",
+    "sha256": "389628cbc55e68a09ff5c257d529b42aab5a1bd77b9a5369bb3b55eb92c497b3"
+  },
+  "concrete_static_blockers": [],
+  "findings": [
+    {
+      "finding": "The full Git source packet was independently fetched and compared byte-for-byte with the frozen local packet. Every base64 before/after body matches all three recorded identities. The independently hashed actual final inventory is 5634549 bytes / SHA256 bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f / Git e1e48f35bb6cf5a3dd86c59472da77df87154b6a. Its 15237 physical leaf identities independently reproduce f905b18e6b05de1582024548179725a05d932536.",
+      "id": "R01"
+    },
+    {
+      "finding": "Only lib.rs has a different existing preimage from the three original coordinator layers. The new lib preimage is exactly the actual fmt afterimage aa4564e6582b4960d581d7c8953f4f404735199e. Its sole insertion is exactly the original 496-byte five-export block, with a separate cfg(target_os = linux) on every export. Removing that insertion recovers every actual formatted byte. No shared-readback, NextUse or S/C export is overwritten.",
+      "id": "R02"
+    },
+    {
+      "finding": "The other eight afterimages are byte-identical to the composition of original production 3ffcac56096eb06214963ab1fdc5898e2b7eebb2, v1 tests ae05b4ca793a24a164d08e247a8faec62f690750 and cold entry a7256a2eea8df3af2c927f728b2c38c9342cc830. The existing neuron_generation_initial.rs and circuit_q24_task_test_support.rs preimages exactly match actual inventory rows and retain their sole original mount/export insertions. All six new paths are absent from the complete actual inventory.",
+      "id": "R03"
+    },
+    {
+      "finding": "Applying only the nine recorded leaf replacements/additions in memory gives exactly 15243 expected leaves and a0bd2241a3a005b68a4682a339d2be016fa3fa72. There are no deletions. This is an independently reproduced candidate projection, not an observed source application or new native inventory.",
+      "id": "R04"
+    },
+    {
+      "finding": "Prior full semantic peer 04aaf3c0a6c17b9be2a987677210e51250bb5ff3 remains applicable to all unchanged coordinator bodies. Original Initial-only single-operation Current/prepared/ready custody, original recovery, same-Arc factory/task/Cell/drain and error-only operation readback are preserved. The rebase introduces no grant, callback, owner getter or authority exception.",
+      "id": "R05"
+    },
+    {
+      "finding": "All prior execution and lifecycle limits remain: none of the nine ignored Root mechanisms has been run by this review; existing-Current/journal reopen is not a demonstrated full Root process restart; the five-second worker timeout returns an error/unknown terminal state, and Drop only cancels. It does not prove a joined worker. This rebase does not repair or conceal these limits.",
+      "id": "R06"
+    },
+    {
+      "finding": "This packet contains only nine Rust paths. CALLERS/protected-body/QA/allowlist and Root workflow registration are separate forthcoming layers owned by ordinary_path. Any expected 39 plus 9 Root parent count is a proposed inventory, not an execution count or permission change. The unchanged original collector and final exact-source gates remain required.",
+      "id": "R07"
+    }
+  ],
+  "format": "hepta-independent-coordinator-actual-f905-rebase-peer-v1",
+  "independent_byte_proof": {
+    "bytes": 7733,
+    "git_blob": "bba53e9d9e795ac7e0051a4c4f2236f748669f7a",
+    "sha256": "e655629775e45bbea83b4c9572f45602b9ad25f81cf1192f8ba4a3d0652c854e"
+  },
+  "not_claimed": [
+    "Applied source",
+    "Formatted new coordinator files",
+    "Compilation",
+    "QA or source gate success",
+    "Native Rust execution",
+    "Full process cold recovery",
+    "External independent B or real utility"
+  ],
+  "proposal": {
+    "bytes": 330014,
+    "git_blob": "773d67128190fd2e1c3271c372f72e2a5537d1e8",
+    "sha256": "2f5471dd1c66d764d5d577449a0cf7db9ac6a1c0fbdb3ae462159b362369c87f"
+  },
+  "qualification": false,
+  "reproducer": {
+    "bytes": 6202,
+    "git_blob": "7be9a43f5eec9a54bcaff4e83c9f3b917f77840c",
+    "sha256": "4734590d8bc07453056e51942a9be1319e8cdd1a41182794d2a43aada1662ba0"
+  },
+  "scope": "Only the immutable nine-path rebase 773d671 onto the actual complete f905 inventory. No source, ref, H, Rust, formatter, QA or gate invocation.",
+  "status": "NO_NEW_STATIC_REBASE_BLOCKER_IDENTIFIED"
+}

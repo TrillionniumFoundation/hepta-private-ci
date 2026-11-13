@@ -1,0 +1,62 @@
+def git(root, *args):
+    return subprocess.check_output(["git", "-C", str(root), *args]).decode().strip()
+
+def identity(root):
+    return {"head": git(root, "rev-parse", "HEAD"),
+            "tree": git(root, "rev-parse", "HEAD^{tree}"),
+            "status": git(root, "status", "--porcelain=v1", "--untracked-files=all")}
+
+def inventory(root):
+    index = {}
+    raw = subprocess.check_output(["git", "-C", str(root), "ls-files", "--stage", "-z"])
+    for row in raw.split(b"\0"):
+        if not row:
+            continue
+        metadata, relative = row.split(b"\t", 1)
+        mode, oid, stage = metadata.decode().split()
+        if stage != "0":
+            raise RuntimeError("unmerged index entry in gate source")
+        index[os.fsdecode(relative)] = (mode, oid)
+    paths = set()
+    for directory, children, files in os.walk(root, followlinks=False):
+        parent = Path(directory)
+        if parent == root:
+            children[:] = [name for name in children if name != ".git"]
+        for name in children[:]:
+            path = parent / name
+            if path.is_symlink():
+                paths.add(path.relative_to(root).as_posix())
+                children.remove(name)
+        paths.update((parent / name).relative_to(root).as_posix() for name in files)
+    entries = []
+    for relative in sorted(paths | set(index)):
+        path = root / relative
+        mode, oid = index.get(relative, (None, None))
+        entry = {"path": relative, "index_mode": mode, "index_blob": oid}
+        try:
+            info = path.lstat()
+        except FileNotFoundError:
+            entry.update(kind="missing", matches_index=False)
+            entries.append(entry)
+            continue
+        entry["permissions"] = stat.S_IMODE(info.st_mode)
+        if stat.S_ISLNK(info.st_mode):
+            data = os.fsencode(os.readlink(path))
+            entry.update(kind="symlink", bytes=len(data), sha256=digest(data),
+                         working_blob=blob_sha(data), stable=True)
+        elif stat.S_ISREG(info.st_mode):
+            sha256, working_blob, stable = file_hashes(path, info)
+            entry.update(kind="file", bytes=info.st_size, sha256=sha256,
+                         working_blob=working_blob, stable=stable)
+        elif mode == "160000" and stat.S_ISDIR(info.st_mode):
+            entry.update(kind="gitlink_directory", stable=True)
+        else:
+            entry.update(kind="unsupported", stable=False)
+        entry["matches_index"] = (
+            oid is not None and entry.get("stable", False)
+            and (entry.get("working_blob") == oid or entry["kind"] == "gitlink_directory")
+        )
+        entries.append(entry)
+    result = {"schema": SCHEMA + ".inventory", "source": identity(root),
+              "tracked_entries": len(index), "filesystem_entries": len(paths), "files": entries}
+    return (json.dumps(result, sort_keys=True, separators=(",", ":")) + "\n").encode()

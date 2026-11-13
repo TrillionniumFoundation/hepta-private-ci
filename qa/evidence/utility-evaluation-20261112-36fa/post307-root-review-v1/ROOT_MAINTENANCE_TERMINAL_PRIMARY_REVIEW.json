@@ -1,0 +1,101 @@
+{
+  "format": "hepta-root-maintenance-terminal-primary-review-v1",
+  "qualification": false,
+  "real_qualified_chains": 0,
+  "job_id": "1a1d3eccd3a-392-231",
+  "actual_root_full_git_gets": [
+    {
+      "name": "RESULT",
+      "git_blob": "c9ddc9349881689c2825852c746e8235f83cb921",
+      "bytes": 6574,
+      "sha256": "eeef2fb3eed1359272ced60de73861b79752f86235eb7621f40973b0cbd76401"
+    },
+    {
+      "name": "EXECUTE_LOGGED",
+      "git_blob": "ff6f6805f6f336ce68825793220204ebb333b1b5",
+      "bytes": 218,
+      "sha256": "aac6faadbd3fceb82a7632103c068be6c57a6b1f2222c633938fe67b4bde9e8f"
+    },
+    {
+      "name": "FIX_TERMINAL",
+      "git_blob": "63b4ec2d123e8eddaeaef3bccc1490285eab8df2",
+      "bytes": 1391,
+      "sha256": "85a3a021a3a009ba5f45080390e8b3d9ccdaab37c5c6c569aca3061275692910"
+    },
+    {
+      "name": "SUPERVISOR_NORMAL",
+      "git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+      "bytes": 910,
+      "sha256": "80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa"
+    }
+  ],
+  "supervisor": {
+    "state": "failed",
+    "exit_code": 1,
+    "timeout": false,
+    "cancelled": false,
+    "automatic_retry": false,
+    "output_complete": true,
+    "output_durable": true,
+    "stdout_bytes": 129815,
+    "stderr_bytes": 0
+  },
+  "original_command": {
+    "argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "returncode": 101,
+    "timeout_seconds": 7200,
+    "raw_log_bytes": 128490,
+    "raw_log_sha256": "e5f44de8a9cec68f785de568e24a11be0d68f64a35a64b8ac3d0acc2558332e2",
+    "tests": false
+  },
+  "attempted": [
+    "fix"
+  ],
+  "not_run": [
+    "fmt"
+  ],
+  "tests_dispatched": 0,
+  "producer_source_retention": {
+    "complete": true,
+    "inventory": {
+      "bytes": 5629749,
+      "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+      "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+    },
+    "postimages": {
+      "HEAD_working_patch_bytes": 784,
+      "HEAD_working_patch_sha256": "012a06d1d77531cd36119b113d316f1078b8d0e269231ca7c1a94bcf17a63ceb",
+      "all_actual_physical_leaf_count": 15237,
+      "all_actual_physical_tree": "4ed32552042fee522965ea54caf95bbebb31ad43",
+      "change_count": 1,
+      "paths": [
+        "codex-rs/hepta-learning-ledger/src/witness.rs"
+      ],
+      "tree_scope": "Every supported physical source leaf, including untracked/ignored files; no Git tree/ref was written.",
+      "untracked_are_in_exact_transition_packet": true
+    }
+  },
+  "root_complete_postimage_readback_status": "pending; producer report does not substitute for root review",
+  "source_branch_unchanged": "cc57c7198db6293ccca562253c42fffbe2a04633",
+  "published_fixed_historical_window": "30717b6b66f1a825c6e3113f26ec9732f5aae8c7",
+  "draft_pr_body": {
+    "sha": "726b27a0824d3ee93bd5b7126c4267eb4abea7f0",
+    "bytes": 32120,
+    "sha256": "af78cf3aa40b9d9c3c36ce9b481b071864bf1ea0a108e94e6358734020082fe1"
+  },
+  "draft_pr_readback": {
+    "sha": "fed136ee8fa82881ad55beada90f09f9daa8820e",
+    "bytes": 50996,
+    "sha256": "41a9bb54fb7325abada02d6b3abefe3ca3a065a918ca54029ec9227d57ee4902"
+  },
+  "new_execution_authorized": false
+}

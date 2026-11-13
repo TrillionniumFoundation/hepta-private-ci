@@ -1,0 +1,75 @@
+{
+  "classification": "Exact recovery from retained base and actual postimage, not a second native read.",
+  "format": "hepta-recovered-actual-inventory-lossless-encoding-v1",
+  "git_leaf_limit": 512000,
+  "gzip": {
+    "bytes": 1265633,
+    "git_blob": "107c7e2e2dae02242bee5cad6f3b4eb5056b04e9",
+    "sha256": "381abec73efc8c28987cff8c81fbf713ed3669c8a9d23444506a75c1ec8614fa"
+  },
+  "matches_actual_artifacts_raw_gzip_and_every_part": true,
+  "original_gzip_operation": "gzip.compress(raw, mtime=0)",
+  "original_split_bytes": 262144,
+  "parts": [
+    {
+      "bytes": 349529,
+      "chars": 349529,
+      "decoded_bytes": 262144,
+      "decoded_offset": 0,
+      "decoded_sha256": "e6a10fbb1ee259de6a165f392817e4437c3e23731045e3170e0ae4bb76d037bd",
+      "git_blob": "bf83d76f98918b9513eed0aeed8c5966addd079b",
+      "name": "recovered-inventory/final.inventory.json.gz.part-001.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-001.b64",
+      "sha256": "38a8cd0025c0cc69e70d86ca71ab86c162e8357b0661b0b86e5f4ad8608ff018"
+    },
+    {
+      "bytes": 349529,
+      "chars": 349529,
+      "decoded_bytes": 262144,
+      "decoded_offset": 262144,
+      "decoded_sha256": "80a8428dd61638159052abf166056e489f11ee88546a28d74c796ca30fef7873",
+      "git_blob": "4370dd0f62f091f86e758732f3c181e8899c5b53",
+      "name": "recovered-inventory/final.inventory.json.gz.part-002.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-002.b64",
+      "sha256": "da8b25b07c267b5c7d13ddb9dc5d3e6911ebf2546b3b9b81c259a70a4a0922d6"
+    },
+    {
+      "bytes": 349529,
+      "chars": 349529,
+      "decoded_bytes": 262144,
+      "decoded_offset": 524288,
+      "decoded_sha256": "e887f30c755bd6a47fdc2910d34cf4f2a5934704577325000bd5862b5c710954",
+      "git_blob": "c3738482250b57345a1fb679385bd491be019db4",
+      "name": "recovered-inventory/final.inventory.json.gz.part-003.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-003.b64",
+      "sha256": "102622f20cd0e0bf9bcf92b1477bb1d526c618f5b938a5e931afe84ddfd6682c"
+    },
+    {
+      "bytes": 349529,
+      "chars": 349529,
+      "decoded_bytes": 262144,
+      "decoded_offset": 786432,
+      "decoded_sha256": "06deb4d8fe28c6ae917d7ff798dfaf8afee736cefdc35be7b38391422c32bf95",
+      "git_blob": "601d7e3442b46acc3917bdf1f7a2228d2ee8cf4d",
+      "name": "recovered-inventory/final.inventory.json.gz.part-004.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-004.b64",
+      "sha256": "8f6a10c6e342acea4c089b623d5c8a444b774f4390a31dd42dff281b7512c401"
+    },
+    {
+      "bytes": 289413,
+      "chars": 289413,
+      "decoded_bytes": 217057,
+      "decoded_offset": 1048576,
+      "decoded_sha256": "c6a08ba13797d3d8fe7cbbf9f9abb4beac1ade7d6792a5f1e5a3d2ebad7ef94d",
+      "git_blob": "66facfafa6c027e6169deb4f24cf084adaffdf60",
+      "name": "recovered-inventory/final.inventory.json.gz.part-005.b64",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-005.b64",
+      "sha256": "d51f0abf95a9567805036304e8061e2b8f480f09bc9e46db4b074d68a6a9fcf2"
+    }
+  ],
+  "raw": {
+    "bytes": 5629749,
+    "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+    "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "actual_artifacts": {
+    "bytes": 63640,
+    "git_blob": "3ec346d2aeabae15ac0dcc3382762467bd72f19c",
+    "sha256": "3562eeccb980b675e88529fd87d27c5bc1ba5e8f6656ca3b8b97e818b4756e47"
+  },
+  "actually_read_inputs": [
+    {
+      "actual_full_gzip_readback": {
+        "bytes": 36005,
+        "git_blob": "1048f9843c6c0c02e23921e99060d01a257d0fe8",
+        "sha256": "dc6855835f5c3b9d8b6b05a28df8515169f50f6f150b02f5e081573c4c8ceb09"
+      },
+      "bytes": 161839,
+      "git_blob": "f199bb572a20d3fe71c65acc4f47448479a2d8e6",
+      "name": "apply.after.postimages.json",
+      "sha256": "a277e83fd28555d9509630333236b18b9509517a56c01b67b921ec9fa98bdf3f"
+    },
+    {
+      "actual_full_gzip_readback": {
+        "bytes": 390123,
+        "git_blob": "412d83a525a167ce682e2a0f0e2cfed2769e6192",
+        "sha256": "ff2796b5ced568d3fa169e77046e2fea7e9f3f4548790260e0c03ec749ce597b"
+      },
+      "bytes": 2175219,
+      "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+      "name": "fmt.after.postimages.json",
+      "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+    }
+  ],
+  "changes": [
+    "stage fmt.after to final",
+    "base inventory from actual apply.before",
+    "four manual paths: exact earlier before rows and original bytes replace formatter before"
+  ],
+  "claim_boundary": "These final-output bytes were reconstructed offline. They are not a second native download or a new observed formatter run. Actual apply/fmt packets and original ARTIFACTS anchor this exact recovery.",
+  "format": "hepta-final-postimages-exact-recovery-v1",
+  "four_before_replacements": [
+    "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+    "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs"
+  ],
+  "gzip": {
+    "bytes": 389345,
+    "git_blob": "86d15b2b0584351e6e8a8dff350a71d2b7c25027",
+    "name": "final.postimages.exact_recovered.json.gz",
+    "sha256": "4a2a3e3d261ea636a83b91015c3663c45c2af0bdf24c9d30a0b81a35d8e3d89d"
+  },
+  "matches_all_original_artifact_pins": true,
+  "new_execution": false,
+  "new_native_read": false,
+  "parts": [
+    {
+      "bytes": 349529,
+      "git_blob": "179b2aa15eeb529d23af0f71c0be9e8f365578ab",
+      "name": "final.postimages.json.gz.part-001.b64",
+      "sha256": "e6a67c8cb7e330cb8791b3e18becdb51145eaa36d51d1c10445ef7520d72aa84"
+    },
+    {
+      "bytes": 169605,
+      "git_blob": "4aaca21d7fcd47c207ff816344d8cfcc811cf9dd",
+      "name": "final.postimages.json.gz.part-002.b64",
+      "sha256": "1aa49c3a1fe7aa69b781e7e3219e023f37e3dfbd3647007364fc81f417ef6d7f"
+    }
+  ],
+  "qualification": false,
+  "raw": {
+    "bytes": 2172527,
+    "git_blob": "02deeeb6bd785472aefdc00ab21166b797f50e28",
+    "name": "final.postimages.exact_recovered.json",
+    "sha256": "a2f49ad1cffea9a91fe29205d51aa0aa2f2e0bc56580c167f201ee64ebf224cd"
+  },
+  "scope": "Single deterministic reconstruction of an original retained output, accepted only after all actual producer raw/gzip/part identities match.",
+  "unchanged_final_after_rows": 62
+}

@@ -1,0 +1,77 @@
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody.rs
+@@ -105,12 +105,12 @@
+     }
+ 
+     #[must_use]
+-    pub fn final_use_binding(&self) -> &FinalUseBinding {
++    pub fn original_final_use_binding(&self) -> &FinalUseBinding {
+         &self.operation.binding
+     }
+ 
+     #[must_use]
+-    pub fn intent_digest(&self) -> Digest32 {
++    pub fn original_intent_digest(&self) -> Digest32 {
+         self.operation.recovery.intent_digest
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_custody_support_tests.rs
+@@ -75,7 +75,7 @@
+     }
+ 
+     fn sign(&self, custody: &Custody) -> anyhow::Result<SignedFinalUseGrant> {
+-        self.providers.sign(custody.final_use_binding())
++        self.providers.sign(custody.original_final_use_binding())
+     }
+ 
+     fn root_bytes(&self) -> anyhow::Result<BTreeMap<String, Vec<u8>>> {
+--- a/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_initial_root_cold_tests.rs
+@@ -24,8 +24,8 @@
+     let mut fixture = RootFixture::new("root-custody-cold-original-task").await?;
+     let mut old = fixture.custody()?;
+     let signed = fixture.sign(&old)?;
+-    let intent = old.intent_digest();
+-    let binding = old.final_use_binding().clone();
++    let intent = old.original_intent_digest();
++    let binding = old.original_final_use_binding().clone();
+     old.publish(&signed)?;
+     let published = old.read_original_operation()?;
+     let before = fixture.root_bytes()?;
+@@ -36,7 +36,7 @@
+         reopened_current(&fixture)?, fixture.providers.authorities()?,
+         fixture.providers.selection()?, fixture.providers.target_reopen()?, recovery(intent),
+     )?;
+-    anyhow::ensure!(recovered.final_use_binding() == &binding);
++    anyhow::ensure!(recovered.original_final_use_binding() == &binding);
+     anyhow::ensure!(recovered.read_original_operation()? == published);
+     anyhow::ensure!(fixture.root_bytes()? == before, "cold entry rewrote protected history");
+     anyhow::ensure!(fixture.generation_bytes()? == target_before, "cold entry replaced the target");
+@@ -68,7 +68,7 @@
+ async fn root_initial_cold_entry_refuses_pending_without_reprepare_or_grant() -> anyhow::Result<()> {
+     let fixture = RootFixture::new("root-custody-cold-pending").await?;
+     let old = fixture.custody()?;
+-    let intent = old.intent_digest();
++    let intent = old.original_intent_digest();
+     drop(old);
+     let before = fixture.root_bytes()?;
+     let target_before = fixture.generation_bytes()?;
+@@ -91,7 +91,7 @@
+     let mut old = fixture.custody()?;
+     let signed = fixture.sign(&old)?;
+     old.publish(&signed)?;
+-    let intent = old.intent_digest();
++    let intent = old.original_intent_digest();
+     let published = old.read_original_operation()?;
+     let selected = fixture.providers.selection()?;
+     drop(old);
+@@ -118,7 +118,7 @@
+     let mut fixture = RootFixture::new("root-custody-cold-install-error").await?;
+     let mut old = fixture.custody()?;
+     let signed = fixture.sign(&old)?;
+-    let intent = old.intent_digest();
++    let intent = old.original_intent_digest();
+     old.publish(&signed)?;
+     let published = old.read_original_operation()?;
+     let (installed, _runtime, _request) = fixture.install(old, 0)?;

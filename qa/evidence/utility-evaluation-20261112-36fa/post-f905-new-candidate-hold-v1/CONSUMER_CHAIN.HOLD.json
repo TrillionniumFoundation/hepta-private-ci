@@ -1,0 +1,232 @@
+{
+  "actual_completed_repair_and_fmt_only": {
+    "actual_formatter_paths": [
+      "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs"
+    ],
+    "applied_existing_paths": [
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs"
+    ],
+    "attempted_commands": [
+      "fmt"
+    ],
+    "fix_dispatched": false,
+    "fmt_returncode": 0,
+    "fmt_timeout_seconds": 900,
+    "historical_fix_lint_success": false,
+    "inventory": {
+      "bytes": 5634549,
+      "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+      "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+    },
+    "job_id": "1a1d41eb3ef-392-2b2",
+    "physical_tree": "f905b18e6b05de1582024548179725a05d932536",
+    "prior_fix_reclassified": false,
+    "raw_git_metadata": {
+      "bytes": 2642,
+      "git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_METADATA.after.json",
+      "sha256": "7549fff731bd055a4dbe895bb0a37fa2486a6e2818e302e8af89495436d704e4"
+    },
+    "raw_git_state": {
+      "bytes": 489,
+      "git_blob": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/final.git-state.json",
+      "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660"
+    },
+    "result": {
+      "bytes": 26765,
+      "git_blob": "23c8f1375aa98a4c166a9ff4245d8500f060d97f",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/RESULT.json",
+      "sha256": "45dcfb960717c209e89eb47d8cf1bb5ebf536ad7548198c1f621e0a754bab640"
+    },
+    "runtime_placement_git_blob": "77aec000a9d4d22e93f1750a19f750f4f1c3a487",
+    "status": "APPLIED_AND_FORMATTED_REVIEW_REQUIRED",
+    "supervisor": {
+      "bytes": 952,
+      "git_blob": "ddcc52ca523df364e431cc051a91a0d532346bd1",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/MAIN_STATUS_02.original.json",
+      "sha256": "5fb2e291c44836036029c1c632f813fa051bd4236ccb33761657a387819ecdd0"
+    }
+  },
+  "consumer_validator_implemented_here": false,
+  "dispatch_authorized": false,
+  "final_qualification": {
+    "canonical_source": null,
+    "fourteen_native_phases_preserved": true,
+    "ledger_already_in_original_ordinary_lib_collection": true,
+    "native_gate_result": null,
+    "root_method_selection": "The original b92 reads the eventual exact workflow AST parents. Preserve existing 39 and reviewed 9 through the workflow source; no driver-filter or phase mutation is proposed.",
+    "source_gate_handoff": null,
+    "source_gate_result": null
+  },
+  "format": "hepta-post-f905-successor-consumer-chain-hold-v1",
+  "historical_failed_fix": {
+    "already_consumed": true,
+    "attempted_count": 1,
+    "execution": {
+      "bytes": 218,
+      "git_blob": "ff6f6805f6f336ce68825793220204ebb333b1b5",
+      "sha256": "aac6faadbd3fceb82a7632103c068be6c57a6b1f2222c633938fe67b4bde9e8f"
+    },
+    "fmt_previously_attempted": false,
+    "job_id": "1a1d3eccd3a-392-231",
+    "original_finished_at": "2026-11-13T08:13:12.599644+00:00",
+    "original_started_at": "2026-11-13T08:01:28.409448+00:00",
+    "reclassified": false,
+    "result": {
+      "bytes": 6574,
+      "git_blob": "c9ddc9349881689c2825852c746e8235f83cb921",
+      "sha256": "eeef2fb3eed1359272ced60de73861b79752f86235eb7621f40973b0cbd76401"
+    },
+    "returncode": 101,
+    "status": "failed",
+    "supervisor": {
+      "bytes": 910,
+      "git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+      "sha256": "80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa"
+    },
+    "terminal": {
+      "bytes": 1391,
+      "git_blob": "63b4ec2d123e8eddaeaef3bccc1490285eab8df2",
+      "sha256": "85a3a021a3a009ba5f45080390e8b3d9ccdaab37c5c6c569aca3061275692910"
+    },
+    "timeout_seconds": 7200
+  },
+  "new_candidate_contract": {
+    "actual_materialization_job": null,
+    "actual_materialization_records": null,
+    "actual_materialization_result": null,
+    "actual_materialization_supervisor": null,
+    "actual_new_raw_git_metadata": null,
+    "actual_new_raw_git_state": null,
+    "actual_new_raw_index": null,
+    "candidate_commit": null,
+    "candidate_tree": null,
+    "clean_donor_commit": "cc57c7198db6293ccca562253c42fffbe2a04633",
+    "clean_donor_leaves": 15188,
+    "clean_donor_repo": "/home/qian-qi/hepta-utility-36fa-native-cc57-isolated-v1",
+    "clean_donor_snapshot_union_objects": 16449,
+    "complete_inventory": null,
+    "final_full_source_map": null,
+    "final_overlay_counts": null,
+    "native_five_field_projection": null,
+    "new_destination_repo": null,
+    "old_experimental_repo_is_not_clean_donor": true,
+    "sole_parent": "cc57c7198db6293ccca562253c42fffbe2a04633"
+  },
+  "new_maintenance_contract": {
+    "actual_attempt_started": false,
+    "approval": null,
+    "create_target_if_absent": false,
+    "existing_target": "/data/hepta-utility-36fa-final-native-target-v1",
+    "fix_argv": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-ledger"
+    ],
+    "fix_seconds": 7200,
+    "fmt_argv": [
+      "just",
+      "fmt",
+      "--base",
+      "c0f78493f815780f68b9bf5e390a21314d79311f"
+    ],
+    "fmt_requires_this_new_fix_normal_zero": true,
+    "fmt_seconds": 900,
+    "historical_fix_consumption_reset": false,
+    "job_id": null,
+    "minimum_target_free_bytes": 34359738368,
+    "new_source_attempt_count": 1,
+    "original_driver": {
+      "bytes": 68496,
+      "git_blob": "3a0f6dec8127aa9587129d6e0f24bad55837ca13",
+      "path": "/tmp/hepta-36fa-provider-0c59-maintenance-successor-v1/driver-maintenance.HOLD.py",
+      "sha256": "d47231764a8d85cf60bba499411a08b316798ac6835ae8e7eae95967a79d5259"
+    },
+    "outer_seconds": 9300,
+    "preflight_seconds": 600,
+    "record_seconds": 300,
+    "request": null,
+    "result": null,
+    "source_gate_or_native_test_authorized": false,
+    "supervisor": null
+  },
+  "original_contract": {
+    "bytes": 5833,
+    "git_blob": "0408b91078bff736a637bdca050e7361df70e37f",
+    "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/SUCCESSOR_CONSUMER_CONTRACT.HOLD.json",
+    "sha256": "a834f928ce47334b398b6c3f0d24aea0ddb57c07ab3abe3fafbc27e2f8c0e766"
+  },
+  "qualification": false,
+  "selected_route": "B_new_independent_clean_candidate",
+  "status": "HOLD_FINAL_SOURCE_AND_ACTUAL_SUCCESSOR_PROOFS_ABSENT"
+}

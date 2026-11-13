@@ -1,0 +1,65 @@
+{
+  "format": "hepta-root-local-custody-test-inventory-v1",
+  "mechanism_only": true,
+  "module_path_sources": [
+    {
+      "bytes": 32937,
+      "git_blob": "82d1dac6aac1b1ebacf565f544a8f2c04d99c2d6",
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "retrieval": "Actual complete Git GET; content-derived byte length, SHA-256 and Git blob verified.",
+      "sha256": "90de5ab09797ebfe6b137b657e120b4b49aa365881bf1a84a4b78f57bf8dbd38"
+    },
+    {
+      "bytes": 38454,
+      "git_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "retrieval": "Actual complete Git GET; content-derived byte length, SHA-256 and Git blob verified.",
+      "sha256": "098d5535c136f987c6ee3f27cb1ea2ab65e4c172e908d1c725dbbe4a1bcaceb3"
+    },
+    {
+      "bytes": 23215,
+      "git_blob": "554460c88675476a7d3fce9cef2bcd91b2d8672c",
+      "path": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+      "retrieval": "Actual complete Git GET; content-derived byte length, SHA-256 and Git blob verified.",
+      "sha256": "372b3e24ed0df8c70e7978da0fa3c170d6a9810e3d6efac4e9cd91d46fc5691d"
+    },
+    {
+      "bytes": 8292,
+      "git_blob": "1aa71b47a97fe177c694f35a3b3daa54a57533cf",
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+      "retrieval": "Actual complete Git GET; content-derived byte length, SHA-256 and Git blob verified.",
+      "sha256": "c88e6d015bd93dcad0d8555d51b46695863094f79b0535183d469e8e0095dcb8"
+    }
+  ],
+  "original_root_case_inventory": "Not edited; Root must separately review/register these five ignored cases.",
+  "parent_mount": {
+    "after": {
+      "bytes": 15934,
+      "git_blob": "34aff1e564ea7d6c0b1c9a4cdb7ab46b4660c0dd",
+      "sha256": "5b991c33123276137b0ea3f76efc91cc6521ef5b6564d02ed15671e2c19bddfb"
+    },
+    "appended_utf8": "\n#[path = \"neuron_generation_initial_root_custody_support_tests.rs\"]\nmod root_initial_custody;\n",
+    "before": {
+      "bytes": 15839,
+      "git_blob": "661ec1c609ba0af1188dad00dd2910c7de4d2020",
+      "sha256": "c7f07bcfff63410b2dd9a7454644eff35f7d819c488e6b416b6a15d88838c714"
+    },
+    "path": "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs"
+  },
+  "production_dependency": {
+    "bytes": 239054,
+    "git_blob": "3ffcac56096eb06214963ab1fdc5898e2b7eebb2",
+    "sha256": "bab8ebcc49c41a41b75968b55a02f9b94a77998546410a557779b20885f76c3b"
+  },
+  "requires_original_root_ignored_selection": true,
+  "selected_or_executed": false,
+  "status": "PREPARED_NOT_COMPILED_OR_EXECUTED",
+  "test_count": 5,
+  "test_fqns": [
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_refuses_another_operation_without_rewriting_current",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_failed_publish_keeps_only_same_operation_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installs_the_original_task_and_drains_its_same_cell",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_installation_error_retains_original_publication_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::tests::root_initial_custody_original_artifact_withdrawal_fences_task_installation"
+  ]
+}

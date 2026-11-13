@@ -1,0 +1,125 @@
+{
+  "actual_operation": "1a1d41eb3ef-392-2b2 / fmt.after",
+  "baseline_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+  "before_full_inventory": {
+    "bytes": 5630117,
+    "git_blob": "b7b9b2378f8a1ca55665370b34fc7fce305b1071",
+    "sha256": "3252aefb758257757dabbff1da828e5aa478ad62fea432b9e52c165f93e5454c"
+  },
+  "complete_raw_file_bodies_verified": 124,
+  "concrete_static_blockers": [],
+  "files_reviewed": 62,
+  "final_full_inventory": {
+    "bytes": 5634549,
+    "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+    "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+  },
+  "final_tree": "f905b18e6b05de1582024548179725a05d932536",
+  "findings": [
+    {
+      "evidence": [
+        "bb27ecb7f6d2d4978be534e1e713c0c427ecd352",
+        "da00d9cd4c72e9931a671fb165c1ea5d233050d2",
+        "e798f72e7815604d024cbde51cebd7a33c3530f1"
+      ],
+      "finding": "The reviewed data are the complete 62 actual formatter transitions, not predicted rustfmt output. Two separately base64-encoded original gzip chunks were independently fetched in full from Git, decoded individually, concatenated, and decompressed. All three raw/gzip/part identity layers match the original producer and the local observed packet.",
+      "id": "F01",
+      "limit": "The raw packet identity 43f7dd7 is not asserted to be a standalone uploaded Git blob. The individual native ASCII paths were not separately transferred; native derived their exact bytes from six pinned-version gzip reads and checked their original artifact pins."
+    },
+    {
+      "finding": "All 124 full file bodies decode strictly and match their original byte count, SHA256 and Git blob identity. All 62 paths are Rust files. Each complete before/after pair agrees with the independently fetched Root source review. The applied tree is 1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1 and the final physical tree is f905b18e6b05de1582024548179725a05d932536. HEAD remains 0c59aaca0b4932507f068c723f73da2f96729b3d.",
+      "id": "F02",
+      "limit": "The all-15237-leaf Merkle and exact full-inventory serialization checks are Root review 292514377a373b68f5aa7e6b82f08bbe8d2675c8, explicitly referenced separately. This peer independently checks the complete 62-file transition and these bindings; it does not claim a second native inventory read."
+    },
+    {
+      "finding": "Across all files, 1635 top-level use-tree leaves are identical as multisets after resolving grouping. Visibility, aliases and attached attributes are part of every key. All 238 module declarations and their attached attributes/visibility are identical as multisets. The three observed module reorderings preserve each #[path] with its own module; none of these records uses macro_use. No new export, owner constructor, authority input or module is introduced by formatting.",
+      "id": "F03"
+    },
+    {
+      "finding": "All comment sequences are byte-identical. All string, raw-string, byte-string and character literal sequences in the remaining bodies are exact, as are numeric-literal sequences. Module-level doc comments still describe the same module; the only changed immediate doc context is reordered following imports. Outer doc prefixes remain equal. Function declaration name sequences are identical. Six files have entirely equal non-whitespace token sequences; eleven have equal remaining tokens after exact root import/module accounting.",
+      "id": "F04",
+      "limit": "This is a lossless custom lexer and concrete manual review, not a compiler AST equivalence proof."
+    },
+    {
+      "finding": "All 250 single-comma differences were inspected in their actual delimiter and enclosing syntax. They are optional final commas in function calls/parameters, multi-element tuples/patterns/types, struct fields/patterns, arrays, one generic argument list, or optional commas after block match arms. No singleton tuple is converted to or from a parenthesized value. No argument/field/element is removed or reordered.",
+      "id": "F05"
+    },
+    {
+      "evidence": "Every hunk is listed by path and index in FROZEN_BYTE_AND_SCOPE_REVIEW.json and RESIDUAL_NONCOMMA_HUNKS.json.",
+      "finding": "All 76 remaining diagnostic token hunks were reviewed. The non-import changes are insertion/removal of a block around the same single tail expression in a closure or match arm, one diverging return arm gaining a block and semicolon, two optional generic trailing-comma/closing-angle reflows, and two nested-call trailing-comma alignment cases. The complete original expressions and their order remain the same. Three function-local use groups are reordered or split into equivalent imports within the same original function scope; none changes name or visibility.",
+      "id": "F06"
+    },
+    {
+      "detail": "Counts include 402 ensure!, 48 assert_eq!, 22 assert!, one assert_ne!, 86 matches!, two select!, and one join!. The preliminary token diagnostic also saw an if followed by unary !(...), which is explicitly excluded from the final macro count.",
+      "finding": "764 macro invocations were independently paired in order. 762 have exactly equal non-whitespace internal token streams. The other two retain the same macro arguments: anyhow::ensure! adds only the final comma inside an existing libc::getsockopt call; vec! adds only the final comma inside an existing CellQ24TrainingSampleV1 struct expression. No macro definition is present in this set. All assertion predicates and messages, guard expressions, error literals, matches!/select!/join! branches, and panic/bail behavior remain present.",
+      "id": "F07"
+    },
+    {
+      "finding": "All four manually repaired files enter fmt with before bytes exactly equal to the approved repair postimages in 12a664ce2905feb8107ae66b303c4975f17a9fe3. The private encode_original_report import stays private; its wire function is not widened. The three AgentdRootAuthorityPeer metadata projections retain the same captured pid, boot_id and process_start_ticks. No Clone implementation, pidfd duplication or peer resampling appears. The original pidfd/SO_PEERCRED/UID/lifetime checks remain unchanged except layout.",
+      "id": "F08"
+    },
+    {
+      "finding": "Both CellStepInput equality repairs preserve all eight fields projected by the original Source::input and the operation_id borrowed from the opaque publication. Formatting does not change either assertion or its surrounding original Source/history/D/T checks.",
+      "id": "F09",
+      "limit": "The projection still does not include lease_duration_ms, and the equality assertion does not independently authenticate operation_id. The original owners and opaque publication remain the source of those guarantees. No stronger claim is made."
+    },
+    {
+      "finding": "The actual fix-produced witness.rs a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d is absent from the exhaustive formatter transition list. Root independently verifies its retained row and full final bytes in the all-source reconstruction. It is preserved, not overwritten with the original pre-fix witness.",
+      "id": "F10"
+    },
+    {
+      "finding": "No change was identified to the actual authority posture, same-Arc T/E binding, published/current checks, original owner acquisition order, slot-take/None fencing, cancellation/readback behavior, per-read and absolute deadline guards, request limits, FD ownership or cleanup order. The actual readback/NextUse branches gain layout-only tail blocks; original four-permit, 128-request and 500ms values/guards are preserved. Test Result cleanup still occurs in the same order and with the same existing limitations.",
+      "id": "F11"
+    },
+    {
+      "finding": "The two learning-ledger snapshot codec files preserve every field, frame/size/semantic validation, malformed-input case and expected error. Their differences are import arrangement, whitespace and optional function-call commas; no ledger event, trusted input, codec limit or assertion changes.",
+      "id": "F12"
+    },
+    {
+      "finding": "The actual fmt operation has return code 0; the earlier single fix operation still has return code 101. Formatting is not a compilation, behavioral test, source gate or deployment result. This review neither reclassifies the old six compiler errors nor asserts their repair has compiled.",
+      "id": "F13",
+      "limit": "The source gate/protected body and literal fingerprints must be regenerated against actual formatted bytes using the unchanged original verifier. No pre-format fingerprints or prior PASS may be reused as final qualification."
+    }
+  ],
+  "following_work": "Ordinary owns the actual-f905 coordinator rebase and exact CALLERS/protection/QA proposal. This peer does not write a parallel registry. Actual final qualification remains future work.",
+  "format": "hepta-actual-fmt62-independent-semantic-peer-v1",
+  "full_source_review": "292514377a373b68f5aa7e6b82f08bbe8d2675c8",
+  "local_diagnostic_scope": "Lexer/delimiter/import enumeration and frozen-byte comparisons assist the complete manual semantic review. They are not Rust parsing, Rust type checking or execution tests.",
+  "native_full_readback_report": "e798f72e7815604d024cbde51cebd7a33c3530f1",
+  "non_formatting_changes_identified": [],
+  "qualification": false,
+  "reproducer": {
+    "bytes": 11640,
+    "git_blob": "018034f6403d35cc4153ca616b4f077634fcd204",
+    "sha256": "a0a7f7735dae59bc661807fd8da4d34e0d10eff0b117d827cb5bff9bd6c1725e"
+  },
+  "reproducible_byte_scope_report": {
+    "bytes": 102907,
+    "git_blob": "6e34e51b45ac71904b76cf48d9b2959f8d9c9987",
+    "sha256": "14668aba6107e0198baf6c584cfe8fced086f7934168cce6ff4ac4a6619d3971"
+  },
+  "scope": "Independent read-only review of actual formatter before/after evidence. No source edits, H, Cargo, Rust, formatter, QA or gate invocation.",
+  "source_leaf_count_from_independently_fetched_root_full_source_review": 15237,
+  "source_packet": {
+    "bytes": 2175219,
+    "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+    "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+  },
+  "source_packet_lossless_git_parts": [
+    {
+      "actual_full_get_equal": true,
+      "bytes": 349529,
+      "git_blob": "bb27ecb7f6d2d4978be534e1e713c0c427ecd352",
+      "name": "fmt.after.postimages.json.gz.b64.part000",
+      "sha256": "57d79a191b6785705d38ec1793a877be11237f77ca03933fdfcfe6ce3929f86f"
+    },
+    {
+      "actual_full_get_equal": true,
+      "bytes": 170641,
+      "git_blob": "da00d9cd4c72e9931a671fb165c1ea5d233050d2",
+      "name": "fmt.after.postimages.json.gz.b64.part001",
+      "sha256": "5ba0aa70e2757d4f22499eaa42012252e86ac6d8e86328a2260a163edcda4aae"
+    }
+  ],
+  "status": "NO_NON_FORMATTING_CHANGE_IDENTIFIED_IN_COMPLETE_62_ACTUAL_TRANSITIONS"
+}

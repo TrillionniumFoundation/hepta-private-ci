@@ -1,0 +1,32 @@
+{
+  "schema": "hepta-custody-peer-input-readbacks-v1",
+  "observations": [
+    {
+      "kind": "production",
+      "path": "/tmp/hepta-36fa-root-generation-custody-coordinator-v1/PRODUCTION_PACKET.json",
+      "bytes": 239054,
+      "sha256": "bab8ebcc49c41a41b75968b55a02f9b94a77998546410a557779b20885f76c3b",
+      "git_blob": "3ffcac56096eb06214963ab1fdc5898e2b7eebb2",
+      "full_get_equal": true,
+      "method": "actual github_fetch complete content compared to frozen local raw bytes"
+    },
+    {
+      "kind": "tests",
+      "path": "/tmp/hepta-36fa-root-generation-custody-tests-v1/SOURCE_PACKET.json",
+      "bytes": 55168,
+      "sha256": "9975df32025342e8a021dcc22defdde04c9141a4e229792b7e1a31088aeb8d34",
+      "git_blob": "ae05b4ca793a24a164d08e247a8faec62f690750",
+      "full_get_equal": true,
+      "method": "actual github_fetch complete content compared to frozen local raw bytes"
+    },
+    {
+      "kind": "cold",
+      "path": "/tmp/hepta-36fa-root-generation-custody-cold-v2/SOURCE_PACKET.json",
+      "bytes": 52372,
+      "sha256": "68c56b24feaecb6249dfeb63a9fe05d49431c7bd67f4901d8ec976f91690d53b",
+      "git_blob": "a7256a2eea8df3af2c927f728b2c38c9342cc830",
+      "full_get_equal": true,
+      "method": "actual github_fetch complete content compared to frozen local raw bytes"
+    }
+  ]
+}

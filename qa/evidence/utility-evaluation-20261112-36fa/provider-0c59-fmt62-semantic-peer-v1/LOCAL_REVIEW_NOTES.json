@@ -1,0 +1,13 @@
+{
+  "format": "hepta-local-fmt62-review-attempt-notes-v1",
+  "initial_base64_interpretation_error": {
+    "attempt": "Concatenate the two separately padded base64 texts before decoding",
+    "cause": "Each native part encodes an independent gzip-byte chunk; concatenate decoded bytes, not padded base64 texts.",
+    "correction": "Read original manifest, strictly decode each part individually, concatenate the decoded gzip bytes, decompress, and check all original raw/gzip/part pins and complete bytes.",
+    "observed_error": "binascii.Error: Excess data after padding",
+    "operation": "local independent evidence decoding only",
+    "outcome": "All exact identities and complete original packet bytes match. No H/source/gate operation was performed or failed."
+  },
+  "preliminary_macro_token_scan": "One Rust if followed by unary !(...) was provisionally counted as a macro-like token shape. Final scanner excludes Rust keywords and independently confirms 764 actual macro invocations. The two substantive changed inner expressions are unchanged.",
+  "truncated_display_outputs": "Some broad read-only display calls were truncated; final review used separately read residual hunks and bounded delimiter/macro contexts. No truncated display is treated as a full-byte equality observation."
+}

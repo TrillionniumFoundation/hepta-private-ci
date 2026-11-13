@@ -1,0 +1,2468 @@
+{
+  "actual_fmt_job": "1a1d41eb3ef-392-2b2",
+  "all_four_repaired_preimages_exact": true,
+  "approved_manual_repair": {
+    "bytes": 152573,
+    "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+    "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+  },
+  "base_full_inventory": {
+    "bytes": 5630117,
+    "git_blob": "b7b9b2378f8a1ca55665370b34fc7fce305b1071",
+    "sha256": "3252aefb758257757dabbff1da828e5aa478ad62fea432b9e52c165f93e5454c"
+  },
+  "baseline_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+  "final_full_inventory": {
+    "bytes": 5634549,
+    "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+    "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+  },
+  "final_tree": "f905b18e6b05de1582024548179725a05d932536",
+  "format": "hepta-actual-fmt62-independent-frozen-byte-and-scope-review-v1",
+  "full_inventory_and_tree_evidence_source": {
+    "review_blob": {
+      "bytes": 23516,
+      "git_blob": "292514377a373b68f5aa7e6b82f08bbe8d2675c8",
+      "sha256": "d3c7d7788c9876ebd855e44b07d2cae9e91d09ff290050f5916c36bd7d6d0e0d"
+    },
+    "scope": "Root independently reconstructed all 15237 original inventory rows and exact producer serialization; this reviewer checks the recorded transition bindings, not a second native full inventory transfer."
+  },
+  "gzip": {
+    "bytes": 390123,
+    "git_blob": "412d83a525a167ce682e2a0f0e2cfed2769e6192",
+    "sha256": "ff2796b5ced568d3fa169e77046e2fea7e9f3f4548790260e0c03ec749ce597b"
+  },
+  "inner_doc_import_order_context_changes": [
+    {
+      "doc": "//! Version export admission over actual original T/E and publication owners.",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs"
+    },
+    {
+      "doc": "//! PublicationFixture is an existing completed mechanism fixture, not the new",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs"
+    },
+    {
+      "doc": "//! Fresh Root ten-owner path. All role credentials and B measurements remain",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs"
+    },
+    {
+      "doc": "//! test inputs. Corruptions edit only untrusted cold expected metadata.",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs"
+    },
+    {
+      "doc": "//! Actual published Version -> original read-only T/E alias mechanisms.",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs"
+    },
+    {
+      "doc": "//! PublicationFixture performs its original T/B/NoUpdate publication. Its",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs"
+    },
+    {
+      "doc": "//! same-process transport and enrolled fixture credentials are explicit;",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs"
+    },
+    {
+      "doc": "//! these tests do not prove Fresh Root execution or public four-slot admission.",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs"
+    },
+    {
+      "doc": "//! Test-only observation of an actual local owner response.",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs"
+    },
+    {
+      "doc": "//! The gate cannot supply or change a response, counter, permit or deadline.",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs"
+    },
+    {
+      "doc": "//! Release/Drop only stops the pause; callers still await the original worker",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs"
+    },
+    {
+      "doc": "//! terminal observation and the original fixture peer joins.",
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs"
+    },
+    {
+      "doc": "//! Staged, mechanism-only B/retention over an actual Fresh Bootstrap T.",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs"
+    },
+    {
+      "doc": "//! Registration precedes T. Neither constructor runs PositiveFixture's",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs"
+    },
+    {
+      "doc": "//! auxiliary Evaluation/Model path. The two real Trainer servers remain owned",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs"
+    },
+    {
+      "doc": "//! by OriginalTrainingPeers outside this fixture and are explicitly joined.",
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs"
+    },
+    {
+      "doc": "//! First test-control admission from pre-held Root policy and complete original",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+    },
+    {
+      "doc": "//! evidence. Pending authenticates the report; only the original E/D commands",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+    },
+    {
+      "doc": "//! can bind its completion claim to the still-live original Source. No new",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+    },
+    {
+      "doc": "//! writer, Source publication, Root intent, lease or Training capability exists here.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+    },
+    {
+      "doc": "//! Actual same-A signatures exercise the first-report verifier. This local",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs"
+    },
+    {
+      "doc": "//! mechanism test supplies trusted fixture policy before encoding the report;",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs"
+    },
+    {
+      "doc": "//! it does not claim three-UID Root admission or execution of E/D/T.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs"
+    },
+    {
+      "doc": "//! Test-control serialization of already held original Material constructor",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs"
+    },
+    {
+      "doc": "//! inputs. The parent verifier, scope and exact freeze predate the report.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs"
+    },
+    {
+      "doc": "//! This is not a production authority format or a way to reconstruct an owner.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs"
+    },
+    {
+      "doc": "//! Advance the same Fresh Material/T/B owners through Version and S. The",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs"
+    },
+    {
+      "doc": "//! transport adapters are explicit same-process fixtures. C is installed once",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs"
+    },
+    {
+      "doc": "//! here, but only the original daemon/control path may dispatch its RunStart.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs"
+    },
+    {
+      "doc": "//! Real Fresh A/Material/T/B/Version/S, with explicit fixture credentials and a",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs"
+    },
+    {
+      "doc": "//! genuine UID-0 issuer socket. This case deliberately leaves C unstarted; the",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs"
+    },
+    {
+      "doc": "//! dual-process daemon/Root case must dispatch its retained signed RunStart.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs"
+    },
+    {
+      "doc": "//! Preserve original Fresh custody while advancing actual Material -> T -> B.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs"
+    },
+    {
+      "doc": "//! Every response is produced by the original owner. This local fixture uses",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs"
+    },
+    {
+      "doc": "//! existing same-process adapters, not public different-UID admission.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs"
+    },
+    {
+      "doc": "//! Staged Fresh mechanism: no completed Positive/Publication fixture is used.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs"
+    },
+    {
+      "doc": "//! Original clocks, role credentials and independently fixed outcomes are test",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs"
+    },
+    {
+      "doc": "//! data, not a real external B measurement or a deployed Root qualification.",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs"
+    },
+    {
+      "doc": "//! Fixed twenty role rights and one original Root pidfd. Old handoff limits",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "doc": "//! and both existing two-right purposes are deliberately unchanged.",
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    }
+  ],
+  "macro_counts": {
+    "anyhow": 61,
+    "assert": 22,
+    "assert_eq": 48,
+    "assert_ne": 1,
+    "bail": 8,
+    "ensure": 402,
+    "eprintln": 1,
+    "format": 67,
+    "join": 1,
+    "json": 28,
+    "matches": 86,
+    "panic": 5,
+    "pin": 1,
+    "println": 2,
+    "select": 2,
+    "unreachable": 1,
+    "vec": 27,
+    "write": 1
+  },
+  "macro_definitions": 0,
+  "macro_internal_changes": [
+    {
+      "after": "( unsafe { libc :: getsockopt ( stream . as_raw_fd ( ) , libc :: SOL_SOCKET , libc :: SO_PEERCRED , ( & mut credentials as * mut libc :: ucred ) . cast ( ) , & mut size , ) } == 0 , \"{}\" , io :: Error :: last_os_error ( ) )",
+      "before": "( unsafe { libc :: getsockopt ( stream . as_raw_fd ( ) , libc :: SOL_SOCKET , libc :: SO_PEERCRED , ( & mut credentials as * mut libc :: ucred ) . cast ( ) , & mut size ) } == 0 , \"{}\" , io :: Error :: last_os_error ( ) )",
+      "index": 15,
+      "name": "ensure",
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs"
+    },
+    {
+      "after": "[ crate :: CellQ24TrainingSampleV1 { input : h . source_input . clone ( ) , target : value / 256 , } ]",
+      "before": "[ crate :: CellQ24TrainingSampleV1 { input : h . source_input . clone ( ) , target : value / 256 } ]",
+      "index": 16,
+      "name": "vec",
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+    }
+  ],
+  "macro_invocation_count": 764,
+  "manual_noncomma_categories": [
+    [
+      0,
+      7,
+      "closure_tail_block"
+    ],
+    [
+      8,
+      9,
+      "match_tail_block"
+    ],
+    [
+      10,
+      11,
+      "match_assignment_tail_block"
+    ],
+    [
+      12,
+      13,
+      "function_local_use_order"
+    ],
+    [
+      14,
+      15,
+      "remove_closure_struct_tail_block"
+    ],
+    [
+      16,
+      19,
+      "closure_tail_block"
+    ],
+    [
+      20,
+      20,
+      "optional_generic_comma_and_joint_closing_angles"
+    ],
+    [
+      21,
+      23,
+      "match_tail_block_and_argument_comma"
+    ],
+    [
+      24,
+      25,
+      "match_tail_block"
+    ],
+    [
+      26,
+      27,
+      "nested_call_optional_argument_comma"
+    ],
+    [
+      28,
+      31,
+      "match_tail_block"
+    ],
+    [
+      32,
+      33,
+      "closure_tail_block"
+    ],
+    [
+      34,
+      37,
+      "match_tail_block"
+    ],
+    [
+      38,
+      39,
+      "function_local_use_expansion_and_order"
+    ],
+    [
+      40,
+      41,
+      "match_tail_block"
+    ],
+    [
+      42,
+      43,
+      "closure_tail_block"
+    ],
+    [
+      44,
+      45,
+      "nested_call_optional_argument_comma"
+    ],
+    [
+      46,
+      47,
+      "match_tail_block"
+    ],
+    [
+      48,
+      48,
+      "optional_generic_comma_and_joint_closing_angles"
+    ],
+    [
+      49,
+      51,
+      "function_local_use_expansion"
+    ],
+    [
+      52,
+      57,
+      "nested_match_tail_blocks"
+    ],
+    [
+      58,
+      59,
+      "closure_tail_block"
+    ],
+    [
+      60,
+      67,
+      "match_tail_blocks"
+    ],
+    [
+      68,
+      71,
+      "closure_tail_blocks"
+    ],
+    [
+      72,
+      73,
+      "diverging_return_block_and_semicolon"
+    ],
+    [
+      74,
+      75,
+      "closure_tail_block"
+    ]
+  ],
+  "manual_noncomma_hunks": 76,
+  "not_claimed": [
+    "Compilation success",
+    "Behavioral test success",
+    "Complete source-gate success",
+    "New fix success",
+    "Root deployment or external independent utility"
+  ],
+  "outer_doc_following_token_prefixes_equal": true,
+  "parts_actual_full_get": [
+    {
+      "actual_full_get_equal": true,
+      "bytes": 349529,
+      "git_blob": "bb27ecb7f6d2d4978be534e1e713c0c427ecd352",
+      "name": "fmt.after.postimages.json.gz.b64.part000",
+      "sha256": "57d79a191b6785705d38ec1793a877be11237f77ca03933fdfcfe6ce3929f86f"
+    },
+    {
+      "actual_full_get_equal": true,
+      "bytes": 170641,
+      "git_blob": "da00d9cd4c72e9931a671fb165c1ea5d233050d2",
+      "name": "fmt.after.postimages.json.gz.b64.part001",
+      "sha256": "5ba0aa70e2757d4f22499eaa42012252e86ac6d8e86328a2260a163edcda4aae"
+    }
+  ],
+  "qualification": false,
+  "raw_packet": {
+    "bytes": 2175219,
+    "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+    "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+  },
+  "raw_packet_storage": "Losslessly reconstructed from two actual full-GET ASCII parts; raw Git identity is not a claimed standalone uploaded blob.",
+  "rows": [
+    {
+      "after": {
+        "bytes": 7783,
+        "git_blob": "7dbd6bdc856fffcd2aa2657f72535a95886c6cc4",
+        "sha256": "671da3ee0159259421c5544270e52f235b672775b29c853a19584c5e1a83144b"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 7038,
+        "git_blob": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+        "sha256": "94fe3e241c8873f008dc9f7d90a2b5d6b58aee17b5761a4ce0dc537b97d66cef"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 20,
+      "macro_internal_token_changes": 0,
+      "macros": 7,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "closure_tail_block",
+          "index": 0
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 1
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 2
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 3
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 4
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 5
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 6
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 7
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 10,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 6810,
+        "git_blob": "232e08dda261e59032cf6ccb987e9cbd86e35e49",
+        "sha256": "ecdd97b0ccc3196af2a3cea155ce8ccc34edb127eb05c99fcde7d31a968158c1"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 6112,
+        "git_blob": "1005fffcd1b2c335ed44b6e4ffdc39956262d114",
+        "sha256": "e45ebd779660e90c3bb0f7da99d16a5a3e17bd36a1b58831723a832d1b3d644a"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 5,
+      "macro_internal_token_changes": 0,
+      "macros": 14,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 7,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 11034,
+        "git_blob": "6290425c5b4338885ce2d7637715940c4fb82d6d",
+        "sha256": "8bdf86b4eea7b9434b1c10ad0092dffd7f50c4d903d3286f399c529aa907daba"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 9939,
+        "git_blob": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8",
+        "sha256": "37a779966a145fc135007bf654f5b5f4e7e78c5d52bd8441dfa96981433d66e7"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 17,
+      "macro_internal_token_changes": 1,
+      "macros": 24,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_tail_block",
+          "index": 8
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 9
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 6,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 12300,
+        "git_blob": "275790050ada76230712c4e8698df53d0e4e711a",
+        "sha256": "e396bea53c666cfd7cb7b48d3a309241805a2b31c139d48fc4bee8fcdb5388d6"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": true,
+      "before": {
+        "bytes": 11200,
+        "git_blob": "5b4dccd277ceba5cdd0c2f8e2668d596e92a284a",
+        "sha256": "05c0c92a5aeff5643d3c95a7426780d9ec160353d3cdd92f67f23f25b2d19c87"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 22,
+      "macro_internal_token_changes": 0,
+      "macros": 11,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_assignment_tail_block",
+          "index": 10
+        },
+        {
+          "classification": "match_assignment_tail_block",
+          "index": 11
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 2,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 12,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 12686,
+        "git_blob": "aa70d902152de9db292956e4dd996212551c7107",
+        "sha256": "e5c4ac78a150daf3417dd2fd0ae29c2ec1e18a968b633cccd2f42d11c20ba1e2"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 12663,
+        "git_blob": "76aaefe1917059fd4004ac938357ce4aed8d8320",
+        "sha256": "1f4b7658e0bb6f8bc59932cf00c9d2b80056af389d1433b3790ecf866ab4ef6a"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 27,
+      "macro_internal_token_changes": 0,
+      "macros": 4,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 5,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 14360,
+        "git_blob": "8239d30746a24cecdf0b469da7c45433733f1098",
+        "sha256": "1d0ae260b8349ebc744df025502e7e6462be223eeba21d291e7f682fc88b0b1f"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 13825,
+        "git_blob": "cff7b7ad3bcd8085fb64b662665b631c77f89004",
+        "sha256": "a79e184e5e81a36c174aa2ba3d658e6cf138de1843148e6f7781e009b5e7d6b4"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 7,
+      "macro_internal_token_changes": 0,
+      "macros": 12,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": true,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 15958,
+        "git_blob": "af904cce49ee4b7c0486b74f6fdcef7579d489c2",
+        "sha256": "ef696ab5c1cb896e085be1bb6e4bd23d6ea1ea5eb928d78aadf3735d2e3fc535"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 15958,
+        "git_blob": "98f631981384dbe739e83c9297547172720f2abb",
+        "sha256": "755ea1d0caab32039eee7e2296dbde98bc39c95a03a9f6ebbc3befefdb8496f3"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 23,
+      "macro_internal_token_changes": 0,
+      "macros": 18,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "function_local_use_order",
+          "index": 12
+        },
+        {
+          "classification": "function_local_use_order",
+          "index": 13
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 1730,
+        "git_blob": "a4eeeebfe708774cf8d2a553d031fdb17969adba",
+        "sha256": "36ab5af1dc36d3bb1e2cbd5ed85871357956117875957495dd82c63f858b8c65"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 1668,
+        "git_blob": "fab5600f505aa7c8c039aa0990ec38ca01d15c83",
+        "sha256": "d110fa42980857036d83bdc0cc2b9319b7749346d52ea1e4fdf6601c60435b30"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 6,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 7557,
+        "git_blob": "cde16a60860fa5eccb1160353d6806f3f9f81477",
+        "sha256": "4de86df4dd59a579f00863e461277946e3f04cbcc69d8b43f50c1fc66fa3f836"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 6928,
+        "git_blob": "265e80b2763cbf4f2a530e2e1400f364ee1b1711",
+        "sha256": "906cee540e75299a35ae50c3d7f1e35656b0d7de0b887e269d64ef32ff5a6db7"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 14,
+      "macro_internal_token_changes": 0,
+      "macros": 14,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 3,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 3633,
+        "git_blob": "451549f4df782233fc42e808f8eebee29f168f6e",
+        "sha256": "fd9011e42ef2a9dc9c99c35c33670f71a906049268e1f7afcc20ff83feb130c3"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 3514,
+        "git_blob": "1030175ebab83b61c966acf8f35cd7e682bfb819",
+        "sha256": "6ce304f8cd01c8e9e534c9433a992cba57a9e49cccf89ffcc1ee7e650c9aac6f"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 12,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 3,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 9145,
+        "git_blob": "3b667897279c79aec9fe1b85901f70ab0eb03b16",
+        "sha256": "0a6e79cbdee0084345fc5b067c110922d755eeac00c172c7befe0f442d3595fc"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 9035,
+        "git_blob": "86a5fbec4ce07b9b6193b0181e979bbf33467541",
+        "sha256": "c08b4199d31c58303d44e7b8a2bfc37e4dfba18406150a7ebba63dbda3c9c8df"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 6,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 4751,
+        "git_blob": "57d162f984ae7d812eb0c1de8e6033d322b3d10f",
+        "sha256": "76d2dc25e862d87046d8bb23366c9bad544318f08eba66d1c6fed6298887ba46"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 4745,
+        "git_blob": "2a3c444f6e2d3816ecc49c22162b5a42b0c2431d",
+        "sha256": "30ac4ed80bcd6f0209e8204ba59cab4e981701187db7d0ae5248dc1e46b9f5da"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 1,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "raw_nonwhitespace_tokens_exact_equal": true,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 5034,
+        "git_blob": "386c3c773866c720cfeb2ad7cb2b7b81065d21af",
+        "sha256": "ba41dc3a6e97225abed0361c77f424090eaea976c8c8766650d96825e5afbb7f"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 4966,
+        "git_blob": "408a068ce11174a962d5878cb706b7233b628514",
+        "sha256": "bbee41be22ee71b4ecb08cfe4d790b77b069381604fb6975789a9c255729e258"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 1,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 7,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 12185,
+        "git_blob": "eee73f62fc021d3004638681e6b78ea462129966",
+        "sha256": "e39a179c370f8433162a3e8dca41f703769b12e823da3467e64957a26177fbe8"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 12126,
+        "git_blob": "5e6221196cb26ce6120040f5b7cd6df5b4f94f1a",
+        "sha256": "820ba4a5c67ff649fd1ae4cf36786d156a310fd3e91e23ca24a423f26503a16f"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 20,
+      "macro_internal_token_changes": 0,
+      "macros": 3,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 6626,
+        "git_blob": "3970dbf29eb46dede4337aca04a0f500163ddd03",
+        "sha256": "cc4a94f932cde080926a8b674272adb55d1b139501cd4cd74c14d5ef54d314f3"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 6140,
+        "git_blob": "124aaacdaaee8d2d297d85e480e57c5eee94ead8",
+        "sha256": "a14281f3efbd98946b6ab6965297a101416f2dbf949ebf4b55a821d218b54d46"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 2,
+      "macro_internal_token_changes": 0,
+      "macros": 9,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 20380,
+        "git_blob": "83cc4158e980804b0e7bd4365e51cf88b43a2196",
+        "sha256": "e65ad37b6d97b3001c09bbbe2e4c219e147740a087f9a5cd9428872f30ec060e"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 18702,
+        "git_blob": "ce32cd8e8df97319823035a41e3c1096a591ced5",
+        "sha256": "ba16b891fbbfabad7010fb3cd325f3cbe953702bfd91971fb4cb1f07e530f4fb"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 20,
+      "macro_internal_token_changes": 0,
+      "macros": 9,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "remove_closure_struct_tail_block",
+          "index": 14
+        },
+        {
+          "classification": "remove_closure_struct_tail_block",
+          "index": 15
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 12,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 20451,
+        "git_blob": "ed556681b4219282ce03e229d8ce8952d0ff0e2f",
+        "sha256": "7dc64a0b751a74470e5a3476460b63af97d804559d73ddd70b44ecc7829c9614"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 18314,
+        "git_blob": "ce0e5c05fac92930f9e2e9fbadf5473788088796",
+        "sha256": "96864c596f1a1f4a68a93c9472989a9b2e7d71bfc6b6e5193106285f51b64414"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 4,
+      "macro_internal_token_changes": 0,
+      "macros": 52,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "closure_tail_block",
+          "index": 16
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 17
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 18
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 19
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 3225,
+        "git_blob": "8a91d5b0e416af513df2810d969c97434e28e5be",
+        "sha256": "dec854db56f3a058bda60cb67d69f1dbee8082c72952bcfe9c8dac08d370dd39"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 3147,
+        "git_blob": "1756083c7bd47e34d5bb2d8f7178a2271ff1e121",
+        "sha256": "862c5b9bdd71019fbc510b51b1cee7119810b6a9fa60c3b2e3b85f9590f6eead"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 9,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 4,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 3833,
+        "git_blob": "d033ad95eabcc985e315d06a2fe45719e79f1eab",
+        "sha256": "c70722550176741b554837aa0da43112bc3127e93c1cbc629a1c97964c1cfeb9"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 3817,
+        "git_blob": "1db1cb54cbeb0601f5d63121e7ecc8cb11bd546a",
+        "sha256": "bf51dc2737fe1bd4a3d3e3bbad29f6f0dc45dc8281c538ea8bc83262d1531391"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 1,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 9143,
+        "git_blob": "007947db1e891643041d03e33dc9991a2698566a",
+        "sha256": "73f0170902760c56c9273f6e5023cba0777f684fe1902902ade1e009daf61349"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 9065,
+        "git_blob": "c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0",
+        "sha256": "1aa3d1697f825e3249641e8fa4ad7470a7f19ff873904725859ce87668b096fe"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 6,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 3455,
+        "git_blob": "55a3240ca2398591e2c2e90ef2de81b2bfeb3360",
+        "sha256": "1acf86a8d800196b4ffe4c87c928a5f038fe2f58e6df70c30c854c672ea609b8"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 3419,
+        "git_blob": "189f28ef8a8cebf02f122cab6a30dadae8471c41",
+        "sha256": "47981925d9bf8c4dd4e15cccbda45404d0e5f0a41db5898a88fd53a641055dbd"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 1,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "raw_nonwhitespace_tokens_exact_equal": true,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 14821,
+        "git_blob": "444fbbb4e48743f51de91d39d77c34b37364b002",
+        "sha256": "9aa9a9a908790683bcab368f9d528707d9dda39c238d30e8a163a1aaa1f16e94"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 13660,
+        "git_blob": "1bf74c7399da89dca3649c9065e774b56bf1553d",
+        "sha256": "4eb855bbf4fde795bf79f0fdd7f4e0a18a6815abb6e87f81483415e8e3a48a72"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 3,
+      "macro_internal_token_changes": 0,
+      "macros": 27,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "optional_generic_comma_and_joint_closing_angles",
+          "index": 20
+        },
+        {
+          "classification": "match_tail_block_and_argument_comma",
+          "index": 21
+        },
+        {
+          "classification": "match_tail_block_and_argument_comma",
+          "index": 22
+        },
+        {
+          "classification": "match_tail_block_and_argument_comma",
+          "index": 23
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 24
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 25
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 3030,
+        "git_blob": "b3ae22835e388ad7ae9b3488f85896f0dcdf2fed",
+        "sha256": "2822d8e9b5f4ada7d0868e11705f3f18e23d49e5e2dd1e9ddece5e96183fe0f8"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 2771,
+        "git_blob": "d33a4dea669aaca0c05cfbe0f6b196b26cc4672a",
+        "sha256": "b131c220db9372d2ab7d4e6ed76ebfa42fd179877993a5906fe12895c132bf15"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 2,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": true,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 27373,
+        "git_blob": "b9a4d5bda8f02c16a198efde82a7d0d589f3d18c",
+        "sha256": "6195fb4dd0704c4d932f33bfb8f4d4af6d966015576b477f7feeb75f5ff899f5"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 23735,
+        "git_blob": "07abfc03d0a7a77261cde6cc9a13ff40439bf218",
+        "sha256": "0180458874b25d1d7be5e0d7b3ebe8ba4bef8b5e4dc3ac92f1fb5b5a191ee533"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 18,
+      "macro_internal_token_changes": 0,
+      "macros": 55,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "nested_call_optional_argument_comma",
+          "index": 26
+        },
+        {
+          "classification": "nested_call_optional_argument_comma",
+          "index": 27
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 4,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 13514,
+        "git_blob": "2dafccfb708098871d5ab4807ec185920c73c544",
+        "sha256": "499c240eb53e179e01b5aa589d5e0c51a1ac74eed28e2fd7499b9b72770cbf80"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 11816,
+        "git_blob": "c473012597dcc29b4f13a3353b27ddc12e42f523",
+        "sha256": "1697d84fc57e7383d5c2e2e17422a57832cdb00a37bc026c102e588f7bb670eb"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 4,
+      "macro_internal_token_changes": 0,
+      "macros": 38,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 24081,
+        "git_blob": "ffafea99606924aa115f6c9ba06f417a7a08618b",
+        "sha256": "1a9f84835d412587b76da140f7e684d4cdbffaaeb988a19ae62dce1fd793cb2b"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 22395,
+        "git_blob": "30769dda72e5fe509bed1e1c8ce251f79f1861d2",
+        "sha256": "07a7bf05f05162d01d0ccde58e53af003a32dd8f35f3644764f2e1af3977e876"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 9,
+      "macro_internal_token_changes": 0,
+      "macros": 56,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_tail_block",
+          "index": 28
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 29
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 8,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 12151,
+        "git_blob": "24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef",
+        "sha256": "da9b6959af1488715c55e0aea8311fbeab1242e40741b6822025f977e52a5359"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 11775,
+        "git_blob": "5abb8031d6b75a4ab2ab60b5393369664bf77284",
+        "sha256": "254ed8de02036c54d54216b04a2393b2eff4cf4ccf161d59b6c11311f179a289"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 16,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_tail_block",
+          "index": 30
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 31
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 3,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 5413,
+        "git_blob": "8b66af8f37a5d06644d18911cd0ebbc2b83da59e",
+        "sha256": "ab8523cbd59b225684e42ce0683eecdb181230bad7781cee2e67bd5a3d7e57b4"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 5093,
+        "git_blob": "aa8ba42344c14662d4f2fdf1fbc37ff7d1b454b9",
+        "sha256": "3ab9aa693eedb68ab1cb47cde01405d56ee4c651eb34e201045b2fbcb3c0e357"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 4,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 12454,
+        "git_blob": "6630261d108788169cfcad798a76e0118374baa1",
+        "sha256": "fda54486eb6058c3910bce1b0b3519642f5b9d3fa5937d517e3586fac8a79a18"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 12361,
+        "git_blob": "9d370f1313023f289593b49bd3df90ff6623fd38",
+        "sha256": "89eb1370bc59d579c2d4abc9da8c31dab65e59a63498def1109658005da9e570"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 23,
+      "macro_internal_token_changes": 0,
+      "macros": 2,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 3,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 26575,
+        "git_blob": "f7da75482e854f7b394b732fc5a9c01de7b7064c",
+        "sha256": "151a83ccbd8acaeea5edad60f4449f8f93e916b740dc3f024836eb1ea3c6b182"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 26241,
+        "git_blob": "c97e922243a7833e7a46cf7aa9680196037fad8b",
+        "sha256": "7a806f9a4c575a58fd0142007ee3302508204c3b65bacd73654ad260093dbd74"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 4,
+      "macro_internal_token_changes": 0,
+      "macros": 9,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 26143,
+        "git_blob": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+        "sha256": "47173c9c24edc6ad2280ed721c0d0855a12ab846bbd47eb4fdcd2d75f07776e4"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 26099,
+        "git_blob": "8d3a17d0957e005131f6a646c09587ed14495670",
+        "sha256": "4e50ba43f55d863289e8f46a76a9777d0a7ba905be04e40290290616501aca06"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 52,
+      "macro_internal_token_changes": 0,
+      "macros": 2,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 4,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 20875,
+        "git_blob": "9d31107258d2987112cdff7edc8baf247d6e467e",
+        "sha256": "052009f2809b1b5901617c560483ffe290334b6fc09a09583b21835bc515aca7"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": true,
+      "before": {
+        "bytes": 19379,
+        "git_blob": "9f5f2659f2672e5774a27164dafdbbbedde40194",
+        "sha256": "68442d5493859e13d1db75b798bd49586f36a3f1475f3ef4b2ea58717ee7f346"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 13,
+      "macro_internal_token_changes": 0,
+      "macros": 40,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "closure_tail_block",
+          "index": 32
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 33
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 13,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 15384,
+        "git_blob": "9d6df799fb4d43473cac60e8fefabc61ea071e0b",
+        "sha256": "def189f2a05d319cd52a9323480da2271d2c325de54eacedee57d868fcff8844"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 15062,
+        "git_blob": "6adad16221dd2ab2526fdb14a0242d833fb0b55a",
+        "sha256": "2d92439bd59e1fcdfac44630a4e334471b2228cf8d7e4d693a486dd15b82c45f"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 21,
+      "macro_internal_token_changes": 0,
+      "macros": 11,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": true,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 20782,
+        "git_blob": "597d4766cdea3a8f21aecb5929bb6a97249373ca",
+        "sha256": "224da0c6e178c547c816c878c469d5f5a2c1909e804ae2b6f595b687bec39a1b"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 20706,
+        "git_blob": "e7249165ebb5ba02eba8d08c040f9d5c971b35f4",
+        "sha256": "15af710be1ec8cf43b5c8f8ec7701368efa1bcf9b0eeccfec741d079a90199b2"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 7,
+      "macro_internal_token_changes": 0,
+      "macros": 30,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 20877,
+        "git_blob": "9ac2c5f5126db83a884089ce13043eb6a6637b96",
+        "sha256": "fcf8db5e0df00ecfc048dd27b2075904c2a0541637c93946c87047818203eb64"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": true,
+      "before": {
+        "bytes": 18129,
+        "git_blob": "76e63cf51d9a200ca4b2d561d5651a815c3673b8",
+        "sha256": "a27ab1903e318e9ff7b65855411be771baff636d846c62ec1c3647ed42794560"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 10,
+      "macro_internal_token_changes": 1,
+      "macros": 21,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 28,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 12039,
+        "git_blob": "3a1ca23dd755c46ae852830b0a27419e58c3cb54",
+        "sha256": "f425edd533db1b7a2bef0d69a9e6b9598a498daad8fc7db75d61670e41e63302"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 10274,
+        "git_blob": "cffa9f294b84565d427be48c5ac099aec3872d9d",
+        "sha256": "4a56fd64e797de3c34c508c2df2c4f30bab5bf95eeaf829f65cf305d09ca0315"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 7,
+      "macro_internal_token_changes": 0,
+      "macros": 28,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_tail_block",
+          "index": 34
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 35
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 4,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 9180,
+        "git_blob": "d40c78a4f85a415a63510ee10d0c8e7ee5f175af",
+        "sha256": "8b615b561e3fcc0da22ead64e39dcf4ed5f477be529ce07aa5b1a643131789ba"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 8572,
+        "git_blob": "57c57a8dca65e231feac0481c4ba31f4a1407ed0",
+        "sha256": "e4a3a2cce89509c7f6ca1cf6595c6e5bc673b634852e3f7810311df9efeeb227"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 5,
+      "macro_internal_token_changes": 0,
+      "macros": 10,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 3,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 20405,
+        "git_blob": "2f35bcacff40827fd96b3d4ce289455929d64a82",
+        "sha256": "d7860ce4fec0525b352c260eea9357b074c4cb0a9bc5103d48b9edf76940ea4c"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 18123,
+        "git_blob": "7348336b0c4f4694cfc17d2db40a0cfb75a797ef",
+        "sha256": "58ba8f337401ade8e57e7fd1b8255eba43494ad8d35171de5e3b0e6c0bb20dc4"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 12,
+      "macro_internal_token_changes": 0,
+      "macros": 53,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_tail_block",
+          "index": 36
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 37
+        },
+        {
+          "classification": "function_local_use_expansion_and_order",
+          "index": 38
+        },
+        {
+          "classification": "function_local_use_expansion_and_order",
+          "index": 39
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 40
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 41
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 9,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 14368,
+        "git_blob": "ebbfa75d55760463c0aa7be190f3d1a88f46a110",
+        "sha256": "be5cd5bdb1678ddf8cfe75e0f869a3f6f9440895c598c1367bf3cd25680e31e3"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 13141,
+        "git_blob": "e2e108a17021f10e18ccd4c873beec6f5fc35e4e",
+        "sha256": "659aeb1b6e5c2c6029d7cff14d0d9e12b6f70619b31a671443534d3de86006b3"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 13,
+      "macro_internal_token_changes": 0,
+      "macros": 11,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "closure_tail_block",
+          "index": 42
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 43
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 29319,
+        "git_blob": "491bbac2876891948de35f11ac790c2500fdfc2f",
+        "sha256": "f31d54f0c4ae278588e50696b93e6b2e6f237efc581caee4bb1af21d7e3c8483"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 25922,
+        "git_blob": "d2a8eefd05f1671373a952f86eeee0cda141d6fc",
+        "sha256": "645714be52a028b04c2d7e7492e9c6b00edc19b3c1327e3ea9248964450d8122"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 32,
+      "macro_internal_token_changes": 0,
+      "macros": 40,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "nested_call_optional_argument_comma",
+          "index": 44
+        },
+        {
+          "classification": "nested_call_optional_argument_comma",
+          "index": 45
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 23,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 3759,
+        "git_blob": "91b0e28e905e0a7ee7d3a9399b2f22e9ec6599bb",
+        "sha256": "fadd33193614ccff9850dfe6964f53afd330c174860050385471166d5f5ab688"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 3330,
+        "git_blob": "eb38fc48ea8e03b6fa4130aad01b813b3bcc54fc",
+        "sha256": "34c0047d5331dff32e0f1100db70b2788c0424c043f77d09a9b6859de3a47675"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 8,
+      "macro_internal_token_changes": 0,
+      "macros": 8,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_tail_block",
+          "index": 46
+        },
+        {
+          "classification": "match_tail_block",
+          "index": 47
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 15896,
+        "git_blob": "2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8",
+        "sha256": "b9986ffa2fb5b676a8f3012472adc296a8fbe5bef30763887f613251851a5927"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 14549,
+        "git_blob": "150d529814964c9121debe523a2202a1dd6439e7",
+        "sha256": "eb19e2eea9b327dc8817245a574bc94f1520799dace71e88820b283709ae4912"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 21,
+      "macro_internal_token_changes": 0,
+      "macros": 24,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "optional_generic_comma_and_joint_closing_angles",
+          "index": 48
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 10049,
+        "git_blob": "d3ebc7198423a48bb50c3f1f55cabe7f5dec2154",
+        "sha256": "c02f20e075afc9066731f6a2e263a7afdb0a5b5bab196b55ef60c82e455721fd"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 8039,
+        "git_blob": "c8ea6587287828b164c306713e8ddd504e554ba1",
+        "sha256": "dbd5853a90af087fb81c54e97479667bf1ffa3aec7f475e8cd3bd6fc8d76f8ed"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 4,
+      "macro_internal_token_changes": 0,
+      "macros": 18,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "function_local_use_expansion",
+          "index": 49
+        },
+        {
+          "classification": "function_local_use_expansion",
+          "index": 50
+        },
+        {
+          "classification": "function_local_use_expansion",
+          "index": 51
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 891,
+        "git_blob": "c08d3169833ab7c657a88e4b5fd4d88e284d58fd",
+        "sha256": "b368d3b7edb889adeb0a8eae792a56eaa5ac4b8b6b996ed445629027da585500"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 891,
+        "git_blob": "e1d0a0f608b8268ec039d7abdf0aab3bcb40a19c",
+        "sha256": "4e7d77389168bc5bd418e455b1c73a1a686bfe970ba388326b44dc41a9b7fffd"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 1,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 7,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 12729,
+        "git_blob": "be7f97f693eda80d2a1b3d5bff06928b707ea3ad",
+        "sha256": "210f14302e8c5d314424c065ceb6084cb9579009642eacda61125a7715f29f6a"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": true,
+      "before": {
+        "bytes": 11406,
+        "git_blob": "e6110871b6207bc1f31f0ced19b20b49830475a9",
+        "sha256": "663fbebc54c14afc412cc53f4db5c4083a2c6b2391aa340b69d3c1ec8da04d85"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 1,
+      "macro_internal_token_changes": 0,
+      "macros": 17,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 4,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 17756,
+        "git_blob": "60af3543dd4ef214483fa8fd31d8e3ecf42afc56",
+        "sha256": "280a9829c60071aa654de75f266983fa6b338fada60a2e5de6bb08e75fdad8e4"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 17756,
+        "git_blob": "943d1919c37b104c74d93b0f48329a38339bfbcc",
+        "sha256": "694ebe296c23a0e6935b71f346ebddd7af0169f41be40ccf8b8c847eb7275c5e"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 43,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 9,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 13856,
+        "git_blob": "2a1d69f09ba69f4234c5ebed898b6d6edecf35c5",
+        "sha256": "4f79cecf37d92f4c0d37f5233dbd9f1a53b393f91b564e460cd4347e7a1e3c5e"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 13212,
+        "git_blob": "52f35e689615144d7764acc189c11180c45600f7",
+        "sha256": "27b82847e4d9f7001dedec9a6d846d83d5a89e0ebac4e948ee57a3fecff49e58"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 16,
+      "macro_internal_token_changes": 0,
+      "macros": 1,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "nested_match_tail_blocks",
+          "index": 52
+        },
+        {
+          "classification": "nested_match_tail_blocks",
+          "index": 53
+        },
+        {
+          "classification": "nested_match_tail_blocks",
+          "index": 54
+        },
+        {
+          "classification": "nested_match_tail_blocks",
+          "index": 55
+        },
+        {
+          "classification": "nested_match_tail_blocks",
+          "index": 56
+        },
+        {
+          "classification": "nested_match_tail_blocks",
+          "index": 57
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 58
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 59
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 4,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 14182,
+        "git_blob": "5256ac6a398a45a7c979c079413e0aab0ac32274",
+        "sha256": "8e706d7a2a07d58352ab2bcf99adbaa286b1b2c8be1dfdf500d2cf7452182aec"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 13851,
+        "git_blob": "691c6f0e780c98fee377c482137b260650458d28",
+        "sha256": "70f7064e84686ac6db1805193ced65a9b35be30f5d899040d3e7c70f63225518"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 21,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "match_tail_blocks",
+          "index": 60
+        },
+        {
+          "classification": "match_tail_blocks",
+          "index": 61
+        },
+        {
+          "classification": "match_tail_blocks",
+          "index": 62
+        },
+        {
+          "classification": "match_tail_blocks",
+          "index": 63
+        },
+        {
+          "classification": "match_tail_blocks",
+          "index": 64
+        },
+        {
+          "classification": "match_tail_blocks",
+          "index": 65
+        },
+        {
+          "classification": "match_tail_blocks",
+          "index": 66
+        },
+        {
+          "classification": "match_tail_blocks",
+          "index": 67
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 4,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 6211,
+        "git_blob": "a6fa98145421623f3e700d9eb6383551f5d59480",
+        "sha256": "1bd04929faf7433970c4e120122c7044d1155061057e694b247df64b90f615c9"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 5937,
+        "git_blob": "0d52084d728eee8a62bce68b99780c12624242d7",
+        "sha256": "9f72fbcb9796952555e93c433912f01ee6611c53782c5eecc39920ba54d3824a"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 11,
+      "macro_internal_token_changes": 0,
+      "macros": 1,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 1171,
+        "git_blob": "60628baacff9eac0e119943d2e81387f5cf18656",
+        "sha256": "66a27fc6ec9e6b0e1513794978b5a0c5c387b292e319a29ea9a29a89ad1dfa12"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 1179,
+        "git_blob": "705311ff2c468d6cfdd131a656a49e3b48b04290",
+        "sha256": "d592c569b55c7cfdd41d53066282a73ad598137f714d6c11421df87cecc05f27"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 5,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": true,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 13337,
+        "git_blob": "466ede358e183096aa432ef0f26752f5b872ca89",
+        "sha256": "3721fb129bbc5c87ae7719ae85842a8e2d1e09286bf1d38ced5198e1277aab01"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 13031,
+        "git_blob": "4f88e588c805271cf8954305bfe09fdfab777bf4",
+        "sha256": "4d0dbed421c0d48b5577d9189166e04fdf1cfbed7acecb0efd11546f1ff4da92"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 18,
+      "macro_internal_token_changes": 0,
+      "macros": 1,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "closure_tail_blocks",
+          "index": 68
+        },
+        {
+          "classification": "closure_tail_blocks",
+          "index": 69
+        },
+        {
+          "classification": "closure_tail_blocks",
+          "index": 70
+        },
+        {
+          "classification": "closure_tail_blocks",
+          "index": 71
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 11855,
+        "git_blob": "141be7d8d99cf93c5d31f3b8dcea946ac789941a",
+        "sha256": "78c2238ef5190be443d1a236aa8c0d48b7696111f9f2d969625ce3224c5add2f"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 11517,
+        "git_blob": "1d4d4f96ba098e5889bdc09832314f1baf973ef9",
+        "sha256": "ea870ae5b1f0a8e1c3cecdc6edfb9a8c0647b02516efcab4606236ec7fb36992"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 13,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "diverging_return_block_and_semicolon",
+          "index": 72
+        },
+        {
+          "classification": "diverging_return_block_and_semicolon",
+          "index": 73
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 4,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 5007,
+        "git_blob": "15337655a529813be1c65f5dfbfe005de10bac1e",
+        "sha256": "958c3e9d7f632c8cdfb13493c1f5a782997270093d7e5c9a43508cbb3d93cdf2"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 4749,
+        "git_blob": "f218ca52852867b7e01dd8b383217ea2540bf1c0",
+        "sha256": "2913893d7f9f55ecf548d0403bef677475e21aacbe4cd16f778ee0db55af1842"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 9,
+      "macro_internal_token_changes": 0,
+      "macros": 7,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 29901,
+        "git_blob": "34265101f3de32b28c6b8a872741096083b7797d",
+        "sha256": "c19e1e813292843e673231a6df4ce1fb1d2a27250dd8930e9e708c7eb4ba863d"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 29901,
+        "git_blob": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9",
+        "sha256": "9b7f43d06c3dfc2d06abb8e10b2d8f866a57eb7de7560054542f353449b5b92a"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 41,
+      "macro_internal_token_changes": 0,
+      "macros": 5,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 14090,
+        "git_blob": "55cd4763f45a1aa85ab70319352250dc803ec572",
+        "sha256": "c14a998ff61b88b6cb86742274fe2c47a4d686939aedf1dcbb7e962e3d8ec5fd"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 14090,
+        "git_blob": "566dbd6971d2fd11434fbf6408c95c9abeb143af",
+        "sha256": "60fa9f9bf92736a7ea4de72b6d4b78893f8486be43b5d835ed191c7648138705"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 87,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 10,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 71893,
+        "git_blob": "aa4564e6582b4960d581d7c8953f4f404735199e",
+        "sha256": "0bcce7c23d08c725d078d341c072b9e5f088efe0101a1b74441c4c3d1de2fd29"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 71893,
+        "git_blob": "9c77c4265aef5301d3e2f8a8c414847d0e718396",
+        "sha256": "d0c43440859518c93592252411141dbec6579663530566a3d77663baab8677d8"
+      },
+      "body_tokens_exact_equal_after_root_items": true,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 788,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 181,
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 0,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 1546,
+        "git_blob": "dcfacc3c5b0ca1c115742986ff453fd412fce991",
+        "sha256": "985a1ec9b9bd0fefb522100c7d2357656f3835c2c3e9c45753065af7ca9aabe5"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 1484,
+        "git_blob": "6e7b2e5e89ab0911193ca41d054f0633ba132767",
+        "sha256": "0a4e8b4bf29d748fba86432243e83f7fcfdca07cf553927eb475bd556a5d1ba4"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 6,
+      "macro_internal_token_changes": 0,
+      "macros": 0,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 14737,
+        "git_blob": "406590d3d6537f2538a4d19615df6193eb415886",
+        "sha256": "9945cf398eae2373f6c6fd3a0fde1586b3d9dee097c4b663cb317368ff5e8dc6"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 12564,
+        "git_blob": "5484a4ba24e3be451eeaa30470cebc0410300ced",
+        "sha256": "4e013fefee86bf5e522ba1aafa8c664dbcfe178c15efbc42b1277c420ce2415a"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 18,
+      "macro_internal_token_changes": 0,
+      "macros": 3,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 2,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 22,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 6820,
+        "git_blob": "844dce8fd782cef7c8270826fcc601d6fc52a9fe",
+        "sha256": "35d12b73833380e889986108f0f67f66c11ea55cefee1b5be13c9794c2178013"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 6195,
+        "git_blob": "1dc042509e0590efc135c1cf89acdb7cfbf331c0",
+        "sha256": "b92c3d06393f686e1fa6c47959ca9db53868a17375cfc733967fe9fcdd8c027e"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 4,
+      "macro_internal_token_changes": 0,
+      "macros": 26,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 11,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 5328,
+        "git_blob": "706b7729e8ce7326f34602670d420c7de2f07ff4",
+        "sha256": "fbe8e3829336784b5e0b077d51f13b8c55faab6ce35b85799803b67496240a7e"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 5029,
+        "git_blob": "955040ae66c1682ead7b7b8dda5379993eb59eb5",
+        "sha256": "9ef39e5c43d879218df8ad98546c31e1a329f8ec55991f7a460a348392ea2254"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 8,
+      "macro_internal_token_changes": 0,
+      "macros": 1,
+      "manual_noncomma_hunks": [
+        {
+          "classification": "closure_tail_block",
+          "index": 74
+        },
+        {
+          "classification": "closure_tail_block",
+          "index": 75
+        }
+      ],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 7,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 7703,
+        "git_blob": "d4467b253a044afb81c146eaaa10a3379e905c47",
+        "sha256": "0c0f8b78891997336c04e8f8d5bea1144728e18fbba6e6c6ba103810754f83eb"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 7783,
+        "git_blob": "7ba6a2daa094bba330ea1ca8b7212a85e5e34273",
+        "sha256": "609ce5d7b8962af57c01364df64328141407553656196bb0a5771afaf9aecea2"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 13,
+      "macro_internal_token_changes": 0,
+      "macros": 1,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 1,
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 2,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    },
+    {
+      "after": {
+        "bytes": 16964,
+        "git_blob": "534bd955863906f6c68f4d0a03127e645b816d6a",
+        "sha256": "c2788cb47a4dc7c35162738e51c2b149579201ba5227aa1ff6fd6fac3783507a"
+      },
+      "approved_manual_repair_postimage_is_exact_formatter_preimage": null,
+      "before": {
+        "bytes": 16695,
+        "git_blob": "3a444d399126d43ff8d1ddd69cb6302dd7a785ed",
+        "sha256": "812d88e15f2ceae8d5828a8e95255acb2b281c99b810d34ab2283690a2831209"
+      },
+      "body_tokens_exact_equal_after_root_items": false,
+      "comments_exact_equal": true,
+      "complete_original_bytes_verified": true,
+      "function_declaration_name_sequence_equal": true,
+      "import_leaves_equal_with_visibility_and_attributes": 20,
+      "macro_internal_token_changes": 0,
+      "macros": 41,
+      "manual_noncomma_hunks": [],
+      "module_items_equal_with_visibility_and_attributes": 0,
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "raw_nonwhitespace_tokens_exact_equal": false,
+      "remaining_numeric_literals_exact_equal": true,
+      "remaining_string_raw_byte_char_literals_exact_equal": true,
+      "single_comma_hunks": 1,
+      "static_semantic_finding": "No non-formatting change identified in the complete actual transition."
+    }
+  ],
+  "scope": "Pure local evidence/token review. No Rust parser, compiler, source gate, behavioral test, formatter, or H execution.",
+  "single_comma_hunks": 250,
+  "source_head_unchanged": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+  "witness_not_in_formatter_changes_and_root_full_inventory_confirms_preserved": true
+}

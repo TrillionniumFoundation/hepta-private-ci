@@ -1,0 +1,159 @@
+{
+  "schema": "hepta-root-current-coordinator-api-independent-review-v1",
+  "status": "IMPLEMENTATION_BOUNDARY_IDENTIFIED_FROZEN_PATCH_STILL_REQUIRED",
+  "scope": "Independent current-source API and custody review for the first trusted Root-local, single-operation coordinator. This is not a review verdict on an as-yet-unfrozen coordinator implementation.",
+  "canonical_source": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+  "canonical_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+  "source_input_verification": {
+    "file": "FROZEN_SOURCE_VERIFICATION.json",
+    "computed_git_blob_at_review_creation": "87d23863e91343bcc4a3053e26e9aa973cae44a7",
+    "bytes": 12380,
+    "sha256": "b4416cdc42f0c0ec6ceed96a3a743d805144156a7550ff007fefde14139d043c",
+    "exact_source_files": 19,
+    "observation_boundary": "Exact existing cloud copies and three complete Git GETs matched the already materialized 0c59 complete inventory; no new H/physical source observation. The inventory identity, rather than the prior c50 proposal, selects the current bytes."
+  },
+  "earlier_reviews_not_repeated_or_overwritten": [
+    "c50a9352a3b3926385c1d741f7b7ecad63d2276f",
+    "33f3c335197a43356421887cba008179d46678c2",
+    "50a182e905aca1e388bafe4dffe28277a7c568d9"
+  ],
+  "actual_baseline_correction": {
+    "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+    "accepted_older_file": "542e4e532443ac2082bd0b8fa7649fcdb25deca9",
+    "actual_0c59_file": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+    "difference": "Only the already integrated OriginalCircuitPublishedLocalReadV1 and OriginalCircuitPublishedEvidenceReadbackV1 exports were added. Removing those exact two lines restores the complete old bytes. Task, current, open_cell and all other old bodies in this file are unchanged.",
+    "evidence": "FEATURE_CURRENT_ACTUAL_BASELINE.diff and the independent inverse full-byte check"
+  },
+  "exact_api_map": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial.rs",
+      "git_blob": "50cfc7f4db648a63e7085522d1bc96c31d16066d",
+      "entry": "prepare_agentd_generation_initial_v1<W>(Arc<RootAuthorityDirectory>, AgentdGenerationUpdateAuthoritiesV1, AgentdSelectedGenerationV1, AgentdGenerationUpdateTargetV1<W>, AgentdGenerationUpdateRequestV1) -> Result<PreparedAgentdGenerationInitialV1<W>, AgentdError>",
+      "consuming_entry": "PreparedAgentdGenerationInitialV1<W>::publish(self, &SignedFinalUseGrant) -> Result<ReadyAgentdGenerationInitialV1<W>, AgentdError>",
+      "custody": "Prepared has private concrete Current Arc, authorities, original prepared fact, original journal and selected payload. The initial factory creates its Current internally. There is no existing public Current getter. Any added initial-session construction must remain a constrained same-module/child seam, preserve original preparation and publication, and retain a reference to this actual Current only for original operation readback."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "git_blob": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+      "entry": "prepare_agentd_generation_{update,drained_update,same_model_task}_v1<Old,New>(Arc<NeuronGenerationCurrentOwnerV1>, AgentdGenerationUpdateAuthoritiesV1, CellGenerationJournalV2<Old>, AgentdSelectedGenerationV1, AgentdGenerationUpdateTargetV1<New>, AgentdGenerationUpdateRequestV1) -> Result<PreparedAgentdGenerationUpdateV1<Old,New>, AgentdError>",
+      "consuming_entry": "PreparedAgentdGenerationUpdateV1<Old,New>::publish(self, &SignedFinalUseGrant) -> Result<ReadyAgentdGenerationUpdateV1<New>, AgentdError>",
+      "custody": "The original old and new journals remain exclusively owned through CAS/readback. Old is dropped only after the original publication succeeds. A wrapper that itself calls preparation can retain the same original input Current Arc; it must not substitute a new Current, witness, journal or callback. The three completion modes and their FinalUse destinations remain distinct."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_initial_bootstrap.rs",
+      "git_blob": "c808361ee7a476fe8304fefb6f4f16e7af379043",
+      "entry": "ReadyAgentdGenerationInitialV1<W>::into_circuit_feature_task(self, CellDefinitionV1, CircuitTaskSourceInputV1) -> Result<PublishedCircuitFeatureTaskV1, AgentdError>",
+      "bounds": "Linux, W: AnchorWitnessStore + Send + 'static",
+      "custody": "Consumes the actual Ready journal/publication and the same private feature_current Arc<LiveGenerationCurrent>. Ready::new first rebinds the journal to that same Arc. No public constructor accepts a digest or generic current authority in place of these owners."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_bootstrap.rs",
+      "git_blob": "4256c5b8a17c8e523b6438191c582883025e2b92",
+      "entry": "ReadyAgentdGenerationUpdateV1<W>::into_circuit_feature_task(self, CellDefinitionV1, CircuitTaskSourceInputV1, PublishedCircuitFeatureCompletionV1) -> Result<PublishedCircuitFeatureTaskV1, AgentdError>",
+      "cold_entry": "recover_circuit_feature_task consumes an already published Ready successor plus real predecessor files, Source readback and identity; it is not a way to invent the predecessor needed before the first publication.",
+      "custody": "The previous completion is the sealed original drain result. A raw history digest, SourcePublication alone, independent peer review, or newly opened equivalent owner cannot replace it."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "git_blob": "ea8581b8ad99b4fbc31e9fb2710c37b9a7b172a7",
+      "entry": "PublishedCircuitFeatureTaskV1::open_cell<W: AnchorWitnessStore>(&self, File, W, usize) -> Result<PublishedCircuitCellOwnerV1<W>, AgentdError>",
+      "custody": "The public task is a Clone wrapper over one private Arc<PublishedTask>. PublishedTask fixes the original journal behind a Mutex<Box<dyn private OriginalVersion>>, the concrete LiveCurrent Arc, publication, complete manifest, definition and Source input. from_initial/from_update are crate-private; from_parts, require_current and OriginalVersion are private. open_cell checks current before/after and retains this same task Arc in the Cell. Cell bounds remain 3..=16."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "git_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "entry": "circuit_q24_task_channel_v1<SW,CW>(&AgentdIdentity, CircuitQ24TaskProfileV1<SW,CW>) -> Result<CircuitQ24TaskRuntimeV1<SW,CW>, AgentdError>",
+      "bounds": "SW and CW: AnchorWitnessStore + Send + 'static",
+      "custody": "Uses profile.published_task directly: validates its bundle, obtains its sealed definition/Source input, opens or recovers the original Source, calls this task.open_cell, and passes cell.writer() into the original AgentdCircuitCellOwnerV1. Runtime retains that exact Cell and the actual Source readback. It does not need a second Cell opened by the coordinator. Original queue 1..=64, record 3..=16, generation, fence, routes and model checks remain in the original factory."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "git_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "entry": "AgentdConfig::with_q24_circuit_task_profile<SW,CW>(self, CircuitQ24TaskProfileV1<SW,CW>) -> Result<AgentdQ24CircuitTaskRuntimeV1<SW,CW>, AgentdError>",
+      "custody": "Requires the original config profile constraints, calls the exact factory, obtains runtime.source() and runtime.cell(), then consumes runtime.install(self). The returned struct contains config, Arc<original Source readback>, and the same Cell clone. A coordinator should retain its task clone and THESE returned readback owners. If it accepts profile-like assembly input, it must fill the published_task internally from its own Ready or privately enforce exact Arc identity, not trust an arbitrary caller-supplied task."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "git_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "entry": "PublishedCircuitCellOwnerV1<W> is a read-only clone of the same journal Arc and task Arc; writer() is crate-private, constructor and committed() are restricted to the parent module.",
+      "custody": "The public read-only Cell is not a CellStateOwner. Its original committed check compares full Source input, original bundle, canonical request digest, no pending inference, actual lookup receipt, Source decision, revision 1, writer epoch and full checkpoint, with current checks around the result. Do not add a public Cell writer or generic evidence callback to the coordinator."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "git_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "entry": "PublishedCircuitFeatureTaskV1::drain_completed_task<CW,SW>(&self, &PublishedCircuitCellOwnerV1<CW>, &CircuitTaskSourceReadbackV1<SW>, &AgentdIdentity) -> Result<PublishedCircuitFeatureCompletionV1, AgentdError>",
+      "custody": "Checks Arc::ptr_eq(task, cell.task) first, reads original Source publication, requires real Cell committed completion, rereads identical Source before drain, locks the original Generation journal, checks current, performs durable drain and verifies is_drained, drops that journal guard, rereads identical Source a third time and checks live current again before returning the sealed historical completion. Drain is not model STOP or new authorization. Errors after a drain may be uncertain about effect and must not be described as rollback."
+    }
+  ],
+  "original_operation_readback_contract": {
+    "current_sources": [
+      "36d3ae716003a4a6c499e005438ef176daab0826",
+      "07092ccebbb5642fc42121187f57e842a9073b2a"
+    ],
+    "fact_types": [
+      "6cfb014943ed6256cfd845ca82828bedb2e8a6ee",
+      "58b9b01746fba32e2a9fedf94655121d6e1df45f"
+    ],
+    "same_operation": "Retain the concrete original Current, operation_id, exact intent_digest and initial/update kind before entering consuming publish. Existing recover_operation or recover_initial_operation followed by the corresponding read_operation reads only the same protected operation and returns the original Prepared/Published fact. No new operation ID is generated on failure.",
+    "prepared_fact_is_not_dispatch": "Both PreparedNeuronGeneration* types are non-Clone, have private fields and authority()==DENY_ALL. Recovering one for original readback is different from reconstructing the already consumed PreparedAgentdGeneration* coordinator. Prepared does not prove the nonce unconsumed, absence of side effects, or permission to republish.",
+    "published_fact_is_not_ready": "The Published record includes the exact consumed signed grant and witness but also reports DENY_ALL. An observed Published result after an error does not alone reconstruct Ready/LiveCurrent. Original recover_agentd_generation_* additionally validates original selection, complete target, existing nonempty journal, current Artifact/FinalUse checks, actual guarded journal open and a second equal original operation readback.",
+    "error_and_unknown": "Original readback errors, mismatches, lock failures or incomplete live construction remain errors/unknown observations; do not convert them to NotApplied or manufacture an active task. Returning an error from publish may follow protected CAS, so no rollback or new publication is inferred.",
+    "forward_recovery_boundary": "The repository separately has explicit forward-recovery APIs requiring another authorized operation/grant. The proposed minimal same-operation readback unit must not call them automatically or claim they do not exist."
+  },
+  "lock_and_lifecycle_invariants": [
+    {
+      "source": "3f83777f4f4a04ffc800d2be4eb5c8b4618bdc75",
+      "rule": "LiveGenerationCurrent checks concrete Current, then Artifact owner -> selected payload -> FinalUse owner, then concrete Current again. Preserve this order and both Current samples. It holds actual selected payload and retained grant/witness, not a caller-supplied boolean or trait callback."
+    },
+    {
+      "sources": ["50cfc7f4db648a63e7085522d1bc96c31d16066d", "2027fb31beefc64477d7682c81b4d521cd988f9d"],
+      "rule": "Original publish holds Artifact only in the original CAS/readback block and releases it before LiveGenerationCurrent::new*. A wrapper must not retain that mutex while calling publish, Live construction, task current checks or the profile factory, which reacquire it."
+    },
+    {
+      "source": "2027fb31beefc64477d7682c81b4d521cd988f9d",
+      "rule": "Original preparation checks old completion, then rebinds the terminal old journal to the concrete Control floor before holding Artifact, avoiding a live-current lock cycle. Keep this original path and exclusive old/new custody through CAS; do not replace it with a generic guard."
+    },
+    {
+      "source": "3fc4af827d28eb54dd5ca13e6ded5deaf5612673",
+      "rule": "Cold preparation needs real existing predecessor files and witness, durable drain and the selected completion mode. Any running owner holding that journal must first release its actual exclusive custody; a live PublishedTask Arc still owns its original journal. A metadata-only completion record does not release the lock or turn OwnerDrained into ModelStopped."
+    },
+    {
+      "sources": ["153381dda993d21b0821d59f6b52e1b971bef98a", "d100d803ff1e44d814c155f0ef29992fe658ae9f"],
+      "rule": "Retain the task and actual factory-returned Source/Cell while performing completion/drain. Preserve original runtime cancellation/shutdown/owner release outside that synchronous proof. Do not add an Arc strong_count threshold, reopen a parallel Cell, synthesize a private receipt, detach an active owner or claim joined termination without observing it."
+    }
+  ],
+  "minimum_implementable_unit_recommendation": {
+    "not_an_existing_api_claim": true,
+    "shape": "A non-Clone, single-operation Root-local coordinator that owns the original PreparedAgentd initial/update state and retains only the same concrete Current plus immutable original operation identity for failure readback. A constrained internal initial seam may capture the Current that original preparation creates; update uses its already supplied Current. Neither path exports owner internals.",
+    "publication": "Consume the original Prepared through its unchanged publish method exactly once. On success consume the original Ready through its unchanged into_circuit_feature_task method. Keep the original private LiveCurrent Arc transitively inside that task; do not construct an alternative authority.",
+    "assembly": "Use a fixed typed set of the original Q24 profile inputs, with the coordinator's own task inserted internally, and call the existing config factory. Retain task.clone() plus the factory's actual source/cell in the Root-local result while transferring the returned config to the existing runtime path. Source Create/Recover stays an explicit original enum.",
+    "retirement": "Delegate completion to original task.drain_completed_task using that retained Cell and Source. Return its opaque completion only after all original checks; do not convert SourcePublication or JSON into completion. Release actual task/runtime owners before a later cold reopen as required by existing locking.",
+    "failure": "A consuming failure result may retain original error plus a non-dispatching same-operation readback handle. It must have no method to mint a grant, replace a journal, change operation ID, reconstruct PreparedAgentd, retry publication or report live Ready from a protected record alone.",
+    "scope_exclusions": "This first local unit does not implement non-Root remote CURRENT service, transport LiveCurrent or PublishedTask across UID, solve a remote same-Arc drain, issue FinalUse, perform ordinary RunStart, prove fresh three-UID utility, or establish any qualification result."
+  },
+  "opaque_inputs_that_must_remain_original": [
+    "Validated RootAuthorityDirectory and production HostAuthorityFrontierStore; the generic store variant is cfg(test) only (3b70b31993dfa18405848e3b99653aba6020821a).",
+    "AgentdSelectedGenerationV1 loaded from original immutable selection files and independent ArtifactSelectionVerifier/SignedArtifactSelection with original Artifact CURRENT and withdrawal cut, then revalidated; no manifest/digest-only substitute (fb6bede5e306c62320c3a95e113dc60613c41e85).",
+    "Concrete FinalUseAuthority/Artifact owner/clock and externally supplied SignedFinalUseGrant for the exact binding. No issuer key, permissive root exception, fresh grant or callback authority is introduced by this coordinator.",
+    "Original exclusively owned Generation journal, independent witness, actual complete target/config and exact record limits. An absent or damaged recovery history is not fresh genesis.",
+    "Ready, its exact LiveCurrent, sealed PublishedTask, actual factory Cell/Source and original private completed Source/Cell receipts. Matching digests are not matching Arc custody.",
+    "For replacement, the original drained predecessor completion and the correct original completion mode/FinalUse destination; neither a model STOP nor an evaluation/adoption claim is invented."
+  ],
+  "candidate_patch_review_followup": [
+    "Check each original publish/Ready/factory/drain body remains unchanged, or enumerate an unavoidable exact adaptation with justification.",
+    "Check no public Current/Live/Cell-writer getter, replacement-authority trait, caller callback, arbitrary operation switch, Clone session or raw completion constructor is added.",
+    "Check the same task enters the actual factory and the returned Cell/Source are those retained for retirement; do not accept a parallel Cell or arbitrary profile task.",
+    "Check publication failure preserves same-operation observation without retry and does not silently drop the only meaningful error or mislabel a post-CAS error as NotApplied.",
+    "Check initial/update Rust private visibility and consuming generic types against these exact APIs, and check Artifact/Live lock scope and old-journal release order.",
+    "Any new mechanism tests must exercise actual original owners and readback errors; static review and source identity checks here are not their execution."
+  ],
+  "execution_and_authority": {
+    "source_or_candidate_modified": false,
+    "h_or_native_called": false,
+    "rust_compiler_formatter_qa_or_gate_run": false,
+    "git_trees_commits_refs_or_pr_written": false,
+    "new_runtime_permission_granted": false,
+    "new_candidate_implementation_reviewed": false,
+    "claim": "Source-backed implementation guidance only; the writer's frozen patch and its eventual real validation remain outstanding."
+  }
+}

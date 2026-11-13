@@ -1,0 +1,89 @@
+{
+  "schema": "hepta-root-current-coordinator-api-peer-readback-v1",
+  "rows": [
+    {
+      "name": "REVIEW.json",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/REVIEW.json",
+      "bytes": 18926,
+      "sha256": "f553db52487e175a2da37424a61d01496ec7bb3cfff5103f56b62445e2714568",
+      "git_blob": "3c7a9e150f27567bcfb994449f60b80a2d9bd881",
+      "actual_created_sha": "3c7a9e150f27567bcfb994449f60b80a2d9bd881",
+      "full_readback_equal": true
+    },
+    {
+      "name": "FROZEN_SOURCE_VERIFICATION.json",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/FROZEN_SOURCE_VERIFICATION.json",
+      "bytes": 12380,
+      "sha256": "b4416cdc42f0c0ec6ceed96a3a743d805144156a7550ff007fefde14139d043c",
+      "git_blob": "87d23863e91343bcc4a3053e26e9aa973cae44a7",
+      "actual_created_sha": "87d23863e91343bcc4a3053e26e9aa973cae44a7",
+      "full_readback_equal": true
+    },
+    {
+      "name": "verify_frozen_inputs.py",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/verify_frozen_inputs.py",
+      "bytes": 5943,
+      "sha256": "9a1a25c327da9715943c2a49fcadc24f779ab5fb13e7654af24508eabe04800b",
+      "git_blob": "0245a1edde7ab5dc1fa62a2ecfa598d9f0e968bc",
+      "actual_created_sha": "0245a1edde7ab5dc1fa62a2ecfa598d9f0e968bc",
+      "full_readback_equal": true
+    },
+    {
+      "name": "FEATURE_CURRENT_ACTUAL_BASELINE.diff",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/FEATURE_CURRENT_ACTUAL_BASELINE.diff",
+      "bytes": 1071,
+      "sha256": "b7bbe21fd550a0b2412e526f9c1423df459d8ebf5fd9313bf47fba1ddaa7b211",
+      "git_blob": "a25cac49dcb2914cd3b1d48c339b5e70d5aac6ea",
+      "actual_created_sha": "a25cac49dcb2914cd3b1d48c339b5e70d5aac6ea",
+      "full_readback_equal": true
+    },
+    {
+      "name": "README.md",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/README.md",
+      "bytes": 2774,
+      "sha256": "eba299d1d8c44a1a360566e13cd07359f6ab3cb376f2c00d15b7e7c0904ed11f",
+      "git_blob": "dd8db2cb583f5b715f03e6201e836ebbea0c9bbb",
+      "actual_created_sha": "dd8db2cb583f5b715f03e6201e836ebbea0c9bbb",
+      "full_readback_equal": true
+    },
+    {
+      "name": "inputs/circuit_feature_current.rs.GITHUB_GET.original.json",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/circuit_feature_current.rs.GITHUB_GET.original.json",
+      "bytes": 34619,
+      "sha256": "4d5c5a838ccd2fa5a22ab01b39344785d03860eb4cb3423f90d84f22932f9735",
+      "git_blob": "d956830210116307aa0db2caf74fcdc2b24abc6a",
+      "actual_created_sha": "d956830210116307aa0db2caf74fcdc2b24abc6a",
+      "full_readback_equal": true
+    },
+    {
+      "name": "inputs/circuit_q24_task_profile.rs.GITHUB_GET.original.json",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/circuit_q24_task_profile.rs.GITHUB_GET.original.json",
+      "bytes": 16425,
+      "sha256": "677a2986d21ffbd51a0bc187272e2e70ac3b559e2305eae4c22690f588cfbdef",
+      "git_blob": "819fc032e61f6dd626b739c86c697b885748414d",
+      "actual_created_sha": "819fc032e61f6dd626b739c86c697b885748414d",
+      "full_readback_equal": true
+    },
+    {
+      "name": "inputs/config_q24_circuit_task.rs.GITHUB_GET.original.json",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/inputs/config_q24_circuit_task.rs.GITHUB_GET.original.json",
+      "bytes": 2961,
+      "sha256": "0e80dc4433d1c560b1924d95596c0a6a872e4bbc11199e674cd4b07921960580",
+      "git_blob": "e3391d0ab51516d41073c70cb9c86eb41fecc48b",
+      "actual_created_sha": "e3391d0ab51516d41073c70cb9c86eb41fecc48b",
+      "full_readback_equal": true
+    },
+    {
+      "name": "MANIFEST.json",
+      "local_path": "/tmp/hepta-36fa-root-current-coordinator-api-peer-v1/MANIFEST.json",
+      "bytes": 4954,
+      "sha256": "280d53f26a0931fd166896dc68aa575bb63273bdc9f564a09b1e8d02de7e57d2",
+      "git_blob": "be8b84a7663953b8b2515abffdf6c81cccac645e",
+      "actual_created_sha": "be8b84a7663953b8b2515abffdf6c81cccac645e",
+      "full_readback_equal": true
+    }
+  ],
+  "row_count": 9,
+  "meaning": "Every listed UTF8 object was actually created and complete GET content exactly compared. This ledger's own subsequent receipt is separate; no self-containing claim.",
+  "operations": "Git blob creation/read only; no source/ref writes."
+}

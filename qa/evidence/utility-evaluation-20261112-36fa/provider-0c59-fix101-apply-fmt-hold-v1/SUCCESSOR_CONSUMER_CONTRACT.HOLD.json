@@ -1,0 +1,93 @@
+{
+  "format": "hepta-fix101-repair-format-consumer-contract-v1",
+  "status": "HOLD_NO_ACTUAL_SUCCESSOR_RESULT",
+  "purpose": "Make the failed original fix, exact reviewed repair, actual formatting and later source qualification distinct verifiable facts.",
+  "historical_fix": {
+    "job_id": "1a1d3eccd3a-392-231",
+    "result_git_blob": "c9ddc9349881689c2825852c746e8235f83cb921",
+    "supervisor_git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+    "command_git_blob": "ff6f6805f6f336ce68825793220204ebb333b1b5",
+    "terminal_git_blob": "63b4ec2d123e8eddaeaef3bccc1490285eab8df2",
+    "returncode": 101,
+    "normal_supervisor_exit_code": 1,
+    "attempted_count": 1,
+    "timeout_seconds": 7200,
+    "consumed": true,
+    "lint_success_established": false,
+    "must_not_reclassify_or_synthesize_success": true
+  },
+  "before_source": {
+    "repo": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+    "head": "0c59aaca0b4932507f068c723f73da2f96729b3d",
+    "head_tree": "4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09",
+    "parents": ["cc57c7198db6293ccca562253c42fffbe2a04633"],
+    "physical_tree": "4ed32552042fee522965ea54caf95bbebb31ad43",
+    "leaf_count": 15237,
+    "inventory": {
+      "bytes": 5629749,
+      "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa",
+      "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4"
+    },
+    "raw_git_metadata_git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+    "metadata_comparison": "Original raw bytes or Python integer-preserving parse only; never round-trip nanosecond numbers through JavaScript Number."
+  },
+  "reviewed_manual_application": {
+    "proposal_git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+    "paths": [
+      "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs"
+    ],
+    "mode_each": "100644",
+    "expected_after_physical_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+    "expected_leaf_count": 15237,
+    "protected_actual_witness_git_blob": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+    "witness_in_manual_application": false,
+    "before_after_full_bytes_required": true,
+    "actual_apply_completion_required": true,
+    "predicted_tree_is_not_actual_success": true
+  },
+  "new_result_requirements": {
+    "format": "hepta-fix101-repair-format-result-v1",
+    "success_status": "APPLIED_AND_FORMATTED_REVIEW_REQUIRED",
+    "supervisor": "Same actual request/key/job; complete durable normal exit0, no timeout/cancel/retry/truncation/log error, full original SDK preserved.",
+    "historical_fix": "Must exactly retain the original failed101 job/result/supervisor/terminal/execute_logged pins, attempted_count1, consumed=true and reclassified=false.",
+    "attempted_commands": ["fmt"],
+    "not_run_commands": [],
+    "stage_count": 1,
+    "fmt_argv": ["just", "fmt", "--base", "c0f78493f815780f68b9bf5e390a21314d79311f"],
+    "fmt_timeout_seconds": 900,
+    "fmt_original_execution": "returncode0, timed_out=false, output_limit_exceeded=false, exact retained full log identity; terminal and execute_logged originals must agree.",
+    "manual_application": "Exactly the four proposal paths, expected full after-apply tree1eacf and original full preimage; retain actual application records/postimages.",
+    "final_audits": ["actual_complete_source_and_git", "original_inputs", "same_source_coordination_lock"],
+    "each_final_audit_status": "verified",
+    "full_source": "Actual final full inventory/postimages/raw Git metadata with original HEAD/index/config/refs equality; changed physical bytes are explicit, never labeled unchanged.",
+    "formatter_changed_paths": "Use the actual fmt stage transition, not the four manual paths or historical witness delta.",
+    "fix_dispatched": false,
+    "prior_fix_reclassified": false,
+    "historical_fix_lint_success": false,
+    "test_commands_dispatched": 0,
+    "source_ref_updates": false,
+    "qualification": false,
+    "freeze_approved": false,
+    "single_lock": "Thin main alone owns the original nonblocking EX lease throughout application, formatting and final audits; bootstrap owns no second lock descriptor."
+  },
+  "consumer_adaptation": {
+    "old_success_only_schema_cannot_be_reused_as_if_fix_passed": true,
+    "explicit_new_result_format_validator_required": true,
+    "canonical_alignment": "Bind the actual new final-format result, same-job normal supervisor and complete final inventory/Git state; preserve historical fix failure as a separate field. Align only an explicitly approved canonical tree with full actual physical equality.",
+    "source_gates": "Bind the eventual actual final source and complete original handoff. Earlier cc57 PASS is historical and does not qualify this source.",
+    "native_gates": "Keep the existing fourteen phases, original stack/filter/time budgets and test collection. The ledger --lib already belongs to the original ordinary collection; no duplicated test phase is introduced here.",
+    "fence_refresh": "Review all actual formatter postimages. Refresh protected hashes/callers/QA from actual formatted bytes through the separately reviewed original workflow before final freeze.",
+    "new_successor_consumer_code_or_execution_in_this_package": false
+  },
+  "actual_successor_job": null,
+  "actual_successor_result": null,
+  "actual_successor_supervisor": null,
+  "actual_after_format_inventory": null,
+  "actual_canonical_commit": null,
+  "actual_source_gate_result": null,
+  "actual_native_gate_result": null,
+  "dispatch_authorized": false
+}

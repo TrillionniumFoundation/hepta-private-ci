@@ -1,0 +1,47 @@
+{
+  "H_dispatched": false,
+  "actual_baseline_tree": "4ed32552042fee522965ea54caf95bbebb31ad43",
+  "actual_witness_preserved": {
+    "bytes": 13300,
+    "git_blob": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+    "sha256": "a7903c5aca69ebda366be3a90869fc83943409c7602da86c4f7f53773eef9154"
+  },
+  "compile_fmt_tests": "not run on repair",
+  "exact_recovered_original_inventory": {
+    "bytes": 5629749,
+    "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+    "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+  },
+  "expected_successor_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+  "file_count": 15237,
+  "format": "hepta-root-pure-fix101-repair-byte-and-merkle-review-v1",
+  "four_exact_manual_repairs": [
+    {
+      "exact_splices": 3,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs"
+    },
+    {
+      "exact_splices": 1,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs"
+    },
+    {
+      "exact_splices": 1,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+    },
+    {
+      "exact_splices": 1,
+      "full_inverse_equal": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs"
+    }
+  ],
+  "inventory_provenance": "Lossless reconstruction equal to original producer-observed bytes/SHA/Git; not a second native inventory read.",
+  "packet": {
+    "bytes": 152573,
+    "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+    "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+  },
+  "qualification": false
+}

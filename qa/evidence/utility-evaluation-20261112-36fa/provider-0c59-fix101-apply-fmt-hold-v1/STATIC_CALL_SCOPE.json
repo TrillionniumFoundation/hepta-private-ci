@@ -1,0 +1,49 @@
+{
+  "H_calls": 0,
+  "actual_original_source_and_git_ns_bytes": "native gzip -> Python bytes/integers, no JavaScript nanosecond reserialization",
+  "added_definitions": [
+    "prove_actual_failed_maintenance"
+  ],
+  "changed_definitions": [
+    "module_from_original",
+    "prepare",
+    "apply_packet",
+    "retain_terminal"
+  ],
+  "current_physical_binding": "actual failed-maintenance final inventory, never the historical clean source argument",
+  "current_subject_is_unqualified": true,
+  "driver_module_executed": false,
+  "format": "hepta-fix101-apply-fmt-static-call-scope-v1",
+  "historical_materialization_validator_reused": true,
+  "never_called": [
+    "original maintenance main",
+    "original initial_preflight",
+    "original validate_config",
+    "original validate_materialization_current",
+    "fix stage",
+    "any test/gate"
+  ],
+  "new_driver": {
+    "bytes": 34454,
+    "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+    "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+  },
+  "only_new_maintenance_stage_call": "m.stage('fmt', m.FMT, FMT_SECONDS)",
+  "original_thin_driver": {
+    "bytes": 28621,
+    "git_blob": "9101b44fb2ab24ae41a1344425dd74b536a40de4",
+    "sha256": "0a7cc51c0ad9e1ef3b68e96f2942c36db04c3d42ee9dfcf8913099ea81a90228"
+  },
+  "removed_definitions": [
+    "prove_actual_clean_source"
+  ],
+  "source_writes": 0,
+  "syntax_compile_only": true,
+  "unchanged_definitions": [
+    "identity",
+    "first_read",
+    "lock_identity",
+    "main"
+  ],
+  "underlying_maintenance_definitions_modified": 0
+}

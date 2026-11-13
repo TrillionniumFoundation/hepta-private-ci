@@ -1,0 +1,263 @@
+{
+  "format": "hepta-evidence-placement-v1",
+  "prefix": "provider-0c59-fix101-repair-v1/",
+  "scope": "Six actual compiler errors repaired in four test/support sources; carry the actual witness postimage unchanged. No H/source commit/ref change, formatting, compilation, test execution, fix retry, coordinator integration, or native authorization.",
+  "manifest": {
+    "bytes": 12144,
+    "sha256": "0df1f7b191b9385f98242faf751f60c5de35a26c5c55dc21f21a1a90f5d061fd",
+    "git_blob": "9bc84b6192fafa2cb625152c292b96b416a0d93c"
+  },
+  "entry_count": 25,
+  "entries": [
+    {
+      "path": "provider-0c59-fix101-repair-v1/SOURCE_PACKET.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+      "bytes": 152573,
+      "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/SOURCE_PACKET.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/REPAIR_DELTA.patch",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fdff123d184fcfe73f59fa407ee01b872696d435",
+      "bytes": 6117,
+      "sha256": "87ee4fd8a9cb70f1359dc7650e13f358505ddccc80bfb3b701866e4d79b3bc12",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/REPAIR_DELTA.patch",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/SOURCE_MAP.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c9d9051c7ec5ef97c97b969db9b575d95a40ef6b",
+      "bytes": 2157,
+      "sha256": "7f8849aa9599c1ccc6abb5b5795f37db0e3a311f278c363ef218d1e49ec5dd04",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/SOURCE_MAP.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/EXACT_INVENTORY_RECOVERY.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "08f80d0099122908722de235a916d58853e3cf4b",
+      "bytes": 1726,
+      "sha256": "1bfb2863b1e6db42ed1e3cc9ed24bd58ee4539f9c0889141ebf58ed7a60f367e",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/EXACT_INVENTORY_RECOVERY.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/EXACT_INVERSE_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b02314ae38d65e7793fc5e6b23cbf0fb215984e",
+      "bytes": 837,
+      "sha256": "429a92bb2fd7127f1bd433dba82159d4cdcb85af6a9e62dc0538cd586e7fc28f",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/EXACT_INVERSE_REVIEW.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/STATIC_CHANGE_REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4d6d0939c72a26a42254d1624f59d95ae46b1e00",
+      "bytes": 4182,
+      "sha256": "164eab5f503ee75743eee383fb3e52c30e4706cc9e69731542f64bd67ad3e0a0",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/STATIC_CHANGE_REVIEW.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/REVIEW.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4c76cb1a23fa5b8ed65e92b1ce015bed4ae088d3",
+      "bytes": 6960,
+      "sha256": "9d1fc039484deda78d4686e8ac950b2c36456755d3a53ac43d1fbe504f04a8a8",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/REVIEW.md",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/freeze_repair.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2dfa31c09eb62d7231ee7fe72d0964d61efc8e56",
+      "bytes": 9940,
+      "sha256": "de4c80ba67640fa46c3391527360bf1d74037faa2e94f14912bfe8f3bc3eb2a5",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/freeze_repair.py",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/ORIGINAL_FOUR_SOURCE_PINS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2c66af1a22d7960c1b20449c4bfedf88f6201723",
+      "bytes": 1179,
+      "sha256": "8ed4774632eb21d01516fb357bed1c4a0b64b9488276ac5187ec887879cb708f",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/ORIGINAL_FOUR_SOURCE_PINS.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/INPUT_COMPARISON_REPLACEMENTS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8d6d8e380a3258eff8a574b72bfeab61ecdc720",
+      "bytes": 2138,
+      "sha256": "7297dbad3d12fa14e7e9c7e8426911c529d2aad886d1294535f6ec2a3d4ef732",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/INPUT_COMPARISON_REPLACEMENTS.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/TRANSPORT_REPLACEMENTS.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dab56ac4c056c9b9ff1c7d4568b75994af7d48c2",
+      "bytes": 1137,
+      "sha256": "f6341014f872733420a7a102cd35642d43a23104e2eff8177724995adf2dfa47",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/TRANSPORT_REPLACEMENTS.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b4dccd277ceba5cdd0c2f8e2668d596e92a284a",
+      "bytes": 11200,
+      "sha256": "05c0c92a5aeff5643d3c95a7426780d9ec160353d3cdd92f67f23f25b2d19c87",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9f5f2659f2672e5774a27164dafdbbbedde40194",
+      "bytes": 19379,
+      "sha256": "68442d5493859e13d1db75b798bd49586f36a3f1475f3ef4b2ea58717ee7f346",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76e63cf51d9a200ca4b2d561d5651a815c3673b8",
+      "bytes": 18129,
+      "sha256": "a27ab1903e318e9ff7b65855411be771baff636d846c62ec1c3647ed42794560",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e6110871b6207bc1f31f0ced19b20b49830475a9",
+      "bytes": 11406,
+      "sha256": "663fbebc54c14afc412cc53f4db5c4083a2c6b2391aa340b69d3c1ec8da04d85",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/after/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/after/codex-rs/hepta-learning-ledger/src/witness.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a45cfde5e0d6c17a8b9502f66c43979f26f6bc4d",
+      "bytes": 13300,
+      "sha256": "a7903c5aca69ebda366be3a90869fc83943409c7602da86c4f7f53773eef9154",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/after/codex-rs/hepta-learning-ledger/src/witness.rs",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-001.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf83d76f98918b9513eed0aeed8c5966addd079b",
+      "bytes": 349529,
+      "sha256": "38a8cd0025c0cc69e70d86ca71ab86c162e8357b0661b0b86e5f4ad8608ff018",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-001.b64",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-002.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4370dd0f62f091f86e758732f3c181e8899c5b53",
+      "bytes": 349529,
+      "sha256": "da8b25b07c267b5c7d13ddb9dc5d3e6911ebf2546b3b9b81c259a70a4a0922d6",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-002.b64",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-003.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c3738482250b57345a1fb679385bd491be019db4",
+      "bytes": 349529,
+      "sha256": "102622f20cd0e0bf9bcf92b1477bb1d526c618f5b938a5e931afe84ddfd6682c",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-003.b64",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-004.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "601d7e3442b46acc3917bdf1f7a2228d2ee8cf4d",
+      "bytes": 349529,
+      "sha256": "8f6a10c6e342acea4c089b623d5c8a444b774f4390a31dd42dff281b7512c401",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-004.b64",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-005.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "66facfafa6c027e6169deb4f24cf084adaffdf60",
+      "bytes": 289413,
+      "sha256": "d51f0abf95a9567805036304e8061e2b8f480f09bc9e46db4b074d68a6a9fcf2",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/recovered-inventory/final.inventory.json.gz.part-005.b64",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/RECOVERED_INVENTORY_ENCODING.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d3191eec38fddc978df9bc1a03e126ce645c058",
+      "bytes": 3501,
+      "sha256": "6b4b6151eef7806c0b95f2f413029add94f213bad3f19dcb1e9f96ba46310f6c",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/RECOVERED_INVENTORY_ENCODING.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/encode_recovered_inventory.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "edb3835b75d86afc4fce976edff7261f99218002",
+      "bytes": 2510,
+      "sha256": "b5a1cc05814e486797f6259e01df8696f2fcc3f1714762d1a8df128c3949b3ea",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/encode_recovered_inventory.py",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/FULL_GIT_READBACK.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be42df37c9d00e6d7b99fb0f58c9a24c8948f4d5",
+      "bytes": 13281,
+      "sha256": "22046702d7f6e125afde1a1b19c297a3c513f8b4f10dd3312bf1119be25bef89",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/FULL_GIT_READBACK.json",
+      "actual_full_Git_GET_equal": true
+    },
+    {
+      "path": "provider-0c59-fix101-repair-v1/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c7f065e4c9cef35164eaccc3e531b9e4aff3d7f",
+      "bytes": 11814,
+      "sha256": "e73b03c195e163f76cb6be94740872a92deb3a6f7e62009a82dd493f4a99efd2",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-fix101-repair-v1/MANIFEST.json",
+      "actual_full_Git_GET_equal": true
+    }
+  ]
+}

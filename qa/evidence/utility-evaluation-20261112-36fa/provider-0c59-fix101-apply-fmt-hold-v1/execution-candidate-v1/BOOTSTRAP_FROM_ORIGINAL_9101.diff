@@ -1,0 +1,46 @@
+--- ORIGINAL_9101_BOOTSTRAP.py
++++ ACTUAL_BOOTSTRAP.candidate.py
+@@ -1,7 +1,7 @@
+ import base64, gzip, hashlib, io, json, os, pathlib, stat, sys, traceback
+ 
+-BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/fresh-maintenance-86dd-v1/source-repair-246d-fmt-control-v1')
+-PINS = {'driver.py': {'bytes': 28621, 'sha256': '0a7cc51c0ad9e1ef3b68e96f2942c36db04c3d42ee9dfcf8913099ea81a90228', 'git_blob': '9101b44fb2ab24ae41a1344425dd74b536a40de4'}, 'SOURCE_GATES_NORMAL.original.json': {'bytes': 952, 'sha256': '6499d8231230665037a977da78fe840177325f93b2b1e62f30a146251895d906', 'git_blob': 'bcc7b94d9f9f721f6592632db5a6408468014270'}, 'NONRUST_PACKET.json': {'bytes': 2209423, 'sha256': '4e735b9402495886f079f5b35026bdc54e56e7ebb1bd179e3de07c25854ce29b', 'git_blob': '35debe83e69774f855ed198d35edaa762ae09573'}, 'APPROVED_CONFIG.json': {'bytes': 2057, 'sha256': 'a05f349b0691b37087527f6b22dad15b3e6850088abd5a88b971f970306399dc', 'git_blob': 'baafb1a5f302f129716ae01ed24dea7b3bf3b5c1'}}
++BASE = pathlib.Path('/home/qian-qi/hepta-utility-36fa-evidence/provider-0c59-fix101-apply-fmt-v1')
++PINS = {'driver.py': {'bytes': 34454, 'sha256': 'a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed', 'git_blob': '0938761e369ddfa215da98b70423cfd5d48ac819'}, 'FAILED_MAINTENANCE_SUPERVISOR.original.json': {'bytes': 910, 'sha256': '80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa', 'git_blob': '5980149603c1ab8f2a4a7aa7f21e9822c28c4c51'}, 'REPAIR_PROPOSAL.original.json': {'bytes': 152573, 'sha256': '84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300', 'git_blob': '12a664ce2905feb8107ae66b303c4975f17a9fe3'}, 'APPROVED_CONFIG.json': {'bytes': 2798, 'sha256': 'e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09', 'git_blob': '38a177082b23477a74fbd2db7d5061c9e9eff79c'}}
+ 
+ created = False
+ 
+@@ -45,14 +45,14 @@
+     raw_input = sys.stdin.buffer.read(1048577)
+     check(len(raw_input) <= 1048576, 'bounded exact input')
+     packet = json.loads(raw_input)
+-    check(set(packet) == {'format', 'files'} and packet['format'] == 'hepta-final-nonrust-format-bootstrap-v1', 'exact bootstrap schema')
++    check(set(packet) == {'format', 'files'} and packet['format'] == 'hepta-fix101-repair-format-bootstrap-v1', 'exact bootstrap schema')
+     check(isinstance(packet['files'], dict) and set(packet['files']) == set(PINS), 'exact four input files')
+     files = {}
+     for name, pin in PINS.items():
+         encoded = packet['files'][name]
+         check(isinstance(encoded, str), 'base64 input required')
+         raw = base64.b64decode(encoded, validate=True)
+-        if name == 'NONRUST_PACKET.json':
++        if name == 'REPAIR_PROPOSAL.original.json':
+             check(type(pin['bytes']) is int and 0 < pin['bytes'] <= 40000000, 'bounded reviewed packet')
+             with gzip.GzipFile(fileobj=io.BytesIO(raw)) as stream:
+                 expanded = stream.read(pin['bytes'] + 1)
+@@ -71,14 +71,14 @@
+             retain('ACTUAL_BOOTSTRAP_ARGV.json', (json.dumps(argv, ensure_ascii=False, sort_keys=True, indent=2) + '\n').encode()),
+             retain('ACTUAL_BOOTSTRAP_PAYLOAD.json', raw_input)]
+     rows += [retain(name, raw) for name, raw in files.items()]
+-    retain('STAGING_READBACK.json', (json.dumps({'format': 'hepta-final-nonrust-format-bootstrap-readback-v1',
++    retain('STAGING_READBACK.json', (json.dumps({'format': 'hepta-fix101-repair-format-bootstrap-readback-v1',
+            'files': rows, 'source_writes_during_staging': False, 'qualification': False}, sort_keys=True, indent=2) + '\n').encode())
+     directory_fd = os.open(BASE, os.O_RDONLY | os.O_DIRECTORY)
+     try:
+         os.fsync(directory_fd)
+     finally:
+         os.close(directory_fd)
+-    print(json.dumps({'event': 'fixed_final_nonrust_format_bootstrap_verified', 'control': str(BASE),
++    print(json.dumps({'event': 'fixed_fix101_repair_format_bootstrap_verified', 'control': str(BASE),
+                       'source_writes_during_staging': False, 'qualification': False}), flush=True)
+     os.execv('/usr/bin/python3', ['/usr/bin/python3', '-B', str(BASE / 'driver.py'),
+              '--config-sha256', PINS['APPROVED_CONFIG.json']['sha256']])

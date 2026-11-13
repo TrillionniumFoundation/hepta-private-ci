@@ -1,0 +1,1379 @@
+{
+  "actual_inventory": {
+    "bytes": 5634549,
+    "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+    "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+  },
+  "classification_counts": {
+    "actual_target_outside_exhaustive_fmt_changes": 8,
+    "classifier_over_existing_marker_parameter": 2,
+    "complete_target_marker_checked_below": 7,
+    "replacement_or_injected_attack_output": 8,
+    "synthetic_unregistered_caller_output": 13
+  },
+  "classifications": [
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 0,
+      "line": 106,
+      "method_identity": {
+        "bytes": 442,
+        "git_blob": "9a73782ff078a4b785878d826c683598386427e3",
+        "sha256": "3dfac7bfda63076285d22bbbfb36680d18d2cf9314c8749e83b61c45b5f95360"
+      },
+      "partial_value": "; }\n    Ok(())",
+      "qa_path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "CurrentCallerMigrationTests.test_runtime_wrapper_cannot_stop_delegating",
+      "source_excerpt": "        for replacement in (\n            \"Ok(())\",\n            \"if false { \" + call + \" } else { Ok(()) }\",\n            \"async fn unused() { \" + call + \"; }\\n    Ok(())\",\n        ):\n            with self.subTest(replacement=replacement):\n                self.rejects(AGENT + \"runtime.rs\", call, replacement)"
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 1,
+      "line": 156,
+      "method_identity": {
+        "bytes": 1945,
+        "git_blob": "b1ccf17975d9bce35331d7bc3a715e3ace7c6f47",
+        "sha256": "4797e8e37e3c9feb4d10b2e9a104244e9e1e5021c163fa83d26e7af50f7643ed"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "EvaluatedNextUseClosureTests.test_actual_readonly_calls_are_closed_and_no_effect_caller_is_claimed",
+      "source_excerpt": "                self.assertEqual(row.product_callers, expected)\n                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[1]\n                for call in (f\"owner.{method}()\", row.symbol + \"()\"):\n                    changed = dict(sources)\n                    changed[AGENT + \"unregistered_evaluated_c.rs\"] = (\n                        f\"fn unexpected(owner: &{row.receiver_type}) {{ {call}; }}\""
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 4648,
+        "index_blob": "bec9a048b3a583811ea824dc8f02bafbed3b35da",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs",
+        "permissions": 420,
+        "sha256": "2610cc9136f5f7631f8452a9693ca707b1ad05ad037cd14a104e241b7e518920",
+        "stable": true,
+        "working_blob": "bec9a048b3a583811ea824dc8f02bafbed3b35da"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 2,
+      "line": 271,
+      "method_identity": {
+        "bytes": 1083,
+        "git_blob": "813a48e8cbee88d93ce5841893c63b5b4b34f2d2",
+        "sha256": "fb3799b40607cdce3df2bfa6fdd1e07f6823585c62cd6e9c56967ebdc8a7b091"
+      },
+      "partial_value": "request.",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs",
+      "scope": "EvaluatedPublishedReadClosureTests.test_fixed_evaluated_request_checks_every_echo_and_original_prefix",
+      "source_excerpt": "    def test_fixed_evaluated_request_checks_every_echo_and_original_prefix(self):\n        for field in (\"schema\", \"operation\", \"request_id\", \"binding\", \"prefix_head\", \"operation_id\", \"mode\"):\n            marker = \"request.\" + field + \" != expected.\" + field\n            self.rejects(PROFILE, \"require_request\", marker)\n            self.rejects(PROFILE, \"require_request\", marker, marker.replace(\"!=\", \"==\"))\n        for marker in (\"schema: 1\", \"operation: EVALUATED_OPERATION.into()\", \"binding: binding.to_string()\", \"context.prefix().head_digest\", \"context.prefix().request.operation_id\", \"mode: context.mode()\"):"
+    },
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 3,
+      "line": 349,
+      "method_identity": {
+        "bytes": 1306,
+        "git_blob": "3b251bf5d24b17234f1d6523e1f08c54ebfdc553",
+        "sha256": "0564c4443d834b65f00d58f1a9b9cbbd49e4172d8fbb01667a54e01b1d6d82b3"
+      },
+      "partial_value": "\n                ",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "EvaluatedPublishedReadClosureTests.test_last_live_tb_then_remote_source_cell_then_journal_order_cannot_move",
+      "source_excerpt": "        first = source.index(evidence, branch, end)\n        second = source.index(\"if self.prepare(source).await? != *observed {\", first, end)\n        guard_end = PROOF._rust_item_end(code, second) + 1\n        changed = source[:first] + source[second:guard_end] + \"\\n                \" + evidence + source[guard_end:]\n        self.verifies(SELECTOR, source)\n        with self.assertRaises(PROOF.VerificationFailure):\n            self.verifies(SELECTOR, changed)"
+    },
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 4,
+      "line": 1347,
+      "method_identity": {
+        "bytes": 2136,
+        "git_blob": "94d522a0609ee4a633e35b38cfe086dae92c9c10",
+        "sha256": "9fd5f4e8d869e31913d4185ff37026c4f39f3160dc8a6ec624d1aefba8afe67f"
+      },
+      "partial_value": "\n                ",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "EvaluatedOrdinaryRetainedClosureTests.test_evaluated_remote_c_finishes_with_actual_source_cell_after_predecessors",
+      "source_excerpt": "        first = code.index(evidence, branch, span[\"end\"])\n        second = code.index(\"if self.prepare(source).await? != *observed {\", first, span[\"end\"])\n        guard_end = PROOF._rust_item_end(code, second) + 1\n        changed = source[:first] + source[second:guard_end] + \"\\n                \" + evidence + source[guard_end:]\n        with self.assertRaises(PROOF.VerificationFailure):\n            self.original_verifies(AGENT + filename, changed)"
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 3268,
+        "index_blob": "b177e6b4a7a9f63844306d051a80b465be59e355",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+        "permissions": 420,
+        "sha256": "89d92ab29fe4634d973840ee7ac663b77d3f530c335e51af47a6608ea86ab9ac",
+        "stable": true,
+        "working_blob": "b177e6b4a7a9f63844306d051a80b465be59e355"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 5,
+      "line": 1411,
+      "method_identity": {
+        "bytes": 1080,
+        "git_blob": "0aca56aeea7121b2c92b9a3c3e1c5f27107186e9",
+        "sha256": "1a9aaf7571bb630253c894b3d613b55ab6b7cbee4e43f1605d2a734a17805b86"
+      },
+      "partial_value": "self,",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "scope": "EvaluatedOrdinaryRetainedClosureTests.test_final_use_and_prepared_custody_are_consumed_by_original_owners",
+      "source_excerpt": "                       \"state.trainer = Some(trainer)\", \"state.evaluator = evaluator\",\n                       \".install_original_selection_reader()\", \".read_original(&state)\"):\n            self.attack(\"circuit_retained_version_effect.rs\", \"publish_original_final_use\", marker)\n        for marker in (\"self,\", \"PreparedOriginalCircuitRetainedPublicationV1::publish_and_retain_original_trainer(\",\n                       \"PreparedOriginalCircuitEvaluatedRetentionV1::publish_and_retain_original_evidence(\",\n                       \"Ok((task, trainer, None))\", \"Ok((task, trainer, Some(evaluator)))\"):\n            self.attack(\"circuit_retained_version_prepared.rs\", \"publish\", marker)"
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 6,
+      "line": 96,
+      "method_identity": {
+        "bytes": 1523,
+        "git_blob": "17f08cb297699042abd3d44e984ce3082f201d27",
+        "sha256": "c703ef1d2762e592a61d6f834905e4a41a9bfe0b5b127655b1f392765987654d"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "EvaluatedRetentionClosureTests.test_only_exact_original_readback_edges_are_open_and_factories_remain_closed",
+      "source_excerpt": "                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_evaluated_retention.rs\"] = (\n                    f\"fn unexpected({receiver}) {{ {call}; }}\""
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 9069,
+        "index_blob": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+        "permissions": 420,
+        "sha256": "b92ee6d8d8e12d97f3bbe46e6f3c1e15bca4f832dcd214adfa2e48c00d4e649f",
+        "stable": true,
+        "working_blob": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 7,
+      "line": 211,
+      "method_identity": {
+        "bytes": 1060,
+        "git_blob": "12395ea8c6e7949c8b9514f860ba7b6541d3ad5e",
+        "sha256": "9c044d4844b1eafaefc0a4807343ff7cf290c163210a89b7a6c6dea09817f4fa"
+      },
+      "partial_value": "self,",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "scope": "EvaluatedRetentionClosureTests.test_continuation_custody_keeps_same_clients_behind_the_internal_consuming_call",
+      "source_excerpt": "    def test_continuation_custody_keeps_same_clients_behind_the_internal_consuming_call(self):\n        for marker in (\n            \"self,\", \"signed: SignedFinalUseGrant\",\n            \"self.publish_and_retain_original_evidence(signed)\", \".await\",\n            \".map(|(task, _trainer, _evaluator)| task)\",\n        ):"
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 9069,
+        "index_blob": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+        "permissions": 420,
+        "sha256": "b92ee6d8d8e12d97f3bbe46e6f3c1e15bca4f832dcd214adfa2e48c00d4e649f",
+        "stable": true,
+        "working_blob": "55e0dada64d1b1ee2e1ba17b82c1bce963f3220f"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 8,
+      "line": 217,
+      "method_identity": {
+        "bytes": 1060,
+        "git_blob": "12395ea8c6e7949c8b9514f860ba7b6541d3ad5e",
+        "sha256": "9c044d4844b1eafaefc0a4807343ff7cf290c163210a89b7a6c6dea09817f4fa"
+      },
+      "partial_value": "self,",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "scope": "EvaluatedRetentionClosureTests.test_continuation_custody_keeps_same_clients_behind_the_internal_consuming_call",
+      "source_excerpt": "        ):\n            self.rejects(PUBLICATION, \"fn publish_original_retained_task(\", marker)\n        for marker in (\n            \"self,\", \"OriginalCellQ24TrainingCommandClientV1,\",\n            \"OriginalCellEvaluationCommandClientV1,\",\n            \"let task = tokio::task::spawn_blocking(\",\n            \"Ok((task, trainer, evaluator))\","
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 9,
+      "line": 135,
+      "method_identity": {
+        "bytes": 2528,
+        "git_blob": "fe9d7800d9e78d89dbb727ad1bbb2c4e9c3c545b",
+        "sha256": "8cb3bb6f7c71e70210a9f32cab4f0bb97de4acbc45428be70db7e6f5d16d5467"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "EvaluatedSelectionClosureTests.test_exact_entrypoints_remain_closed_and_cell_reader_has_one_new_caller",
+      "source_excerpt": "                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[1]\n                for call in (\n                    f\"owner.{method}()\",\n                    f\"OriginalCircuitSelectionReceiptOwnerV1::{method}()\",\n                ):\n                    changed = dict(sources)"
+    },
+    {
+      "category": "classifier_over_existing_marker_parameter",
+      "diagnostic_row": 10,
+      "line": 90,
+      "method_identity": {
+        "bytes": 638,
+        "git_blob": "933dea170df33d69e217ce8faaf7d1f65535e3d6",
+        "sha256": "c885fb0c66aedc674d77883043fc01325afa4e80bba8ba73aba968baa4b9cd0e"
+      },
+      "partial_value": "plan.",
+      "qa_path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "reason": "startswith classifies the already specified marker. This prefix is not itself looked up in the Rust source.",
+      "scope": "LearningEvaluationRecoverySourceClosureTests.test_cell_profile_journals_and_exact_plan_precede_execution",
+      "source_excerpt": "            \"request.plan != &plan.product\",\n        ):\n            with self.subTest(marker=marker):\n                start = source.index(\"fn evaluate_or_readback<\") if marker.startswith((\"plan.\", \"request.\")) else 0\n                offset = source.index(marker, start)\n                self.rejects(CELL, source[:offset] + source[offset + len(marker) :])"
+    },
+    {
+      "category": "classifier_over_existing_marker_parameter",
+      "diagnostic_row": 11,
+      "line": 90,
+      "method_identity": {
+        "bytes": 638,
+        "git_blob": "933dea170df33d69e217ce8faaf7d1f65535e3d6",
+        "sha256": "c885fb0c66aedc674d77883043fc01325afa4e80bba8ba73aba968baa4b9cd0e"
+      },
+      "partial_value": "request.",
+      "qa_path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "reason": "startswith classifies the already specified marker. This prefix is not itself looked up in the Rust source.",
+      "scope": "LearningEvaluationRecoverySourceClosureTests.test_cell_profile_journals_and_exact_plan_precede_execution",
+      "source_excerpt": "            \"request.plan != &plan.product\",\n        ):\n            with self.subTest(marker=marker):\n                start = source.index(\"fn evaluate_or_readback<\") if marker.startswith((\"plan.\", \"request.\")) else 0\n                offset = source.index(marker, start)\n                self.rejects(CELL, source[:offset] + source[offset + len(marker) :])"
+    },
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 12,
+      "line": 195,
+      "method_identity": {
+        "bytes": 963,
+        "git_blob": "859740950740699f3fa091046eec61fb60de77e2",
+        "sha256": "57a7480122b9c4169feae426f5795e1246be64cea365eabce4efbdac861999b0"
+      },
+      "partial_value": "        &self,",
+      "qa_path": "qa/b4-no-bypass/test_original_artifact_channel_source_closure.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "OriginalArtifactChannelClosureTests.test_head_client_cannot_promote_readback_or_retain_a_signing_continuation",
+      "source_excerpt": "            \"if !matches!(&self.origin, Origin::Fresh)\",\n            \"if matches!(&self.origin, Origin::Fresh)\",\n        )\n        self.mutate(CLIENT, \"fn sign_original_registry(\", \"        self,\", \"        &self,\")\n        self.mutate(CLIENT, \"fn sign_original_registry(\", \"claims.require_unsigned_phase()?;\")\n        self.mutate(CLIENT, \"fn read_original_head(\", \"wire::Action::Readback\", \"wire::Action::Sign\")\n        self.mutate("
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 8621,
+        "index_blob": "ce2aabb0fb2948e9691476403b17731becfad375",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+        "permissions": 420,
+        "sha256": "04675236cd230cc42b788b29bd2b1d86f4e15ffd5cd803078fd3371fee4d8aa3",
+        "stable": true,
+        "working_blob": "ce2aabb0fb2948e9691476403b17731becfad375"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 13,
+      "line": 123,
+      "method_identity": {
+        "bytes": 3442,
+        "git_blob": "de8012e68a4dcf85d698c09cfe8db440edcbc7e9",
+        "sha256": "362a96057ef2ed2b87522d9901fa0bd504c08567451fb03bbae43358caf1e6f5"
+      },
+      "partial_value": "self,",
+      "qa_path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+      "scope": "OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature",
+      "source_excerpt": "    def test_one_session_pins_original_windows_pages_and_full_training_signature(self):\n        for path, function, marker in (\n            (CONNECTION, \"fn bind_original_candidate_material(\", \"self,\"),\n            (CONNECTION, \"fn bind_original_candidate_material(\", \"OriginalCellQ24TrainingCommandConnectionV1::bind_original_dataset(\"),\n            (CLIENT, \"fn from_original_connection(\", \"channel.execution_requested = true\"),\n            (CLIENT, \"fn from_original_connection(\", \"pin != &expected\"),"
+    },
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 14,
+      "line": 71,
+      "method_identity": {
+        "bytes": 443,
+        "git_blob": "cdbc4ee174dee5d696c0e026ed9c329d4e0b57ab",
+        "sha256": "a9731ec722de03acf56b41b3683de64803f19b01f6ea4bec0636eeb0d83b3836"
+      },
+      "partial_value": "        &self,\n",
+      "qa_path": "qa/b4-no-bypass/test_original_evaluator_readback_source_closure.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "OriginalEvaluatorReadbackSourceClosureTests.test_consuming_host_requires_actual_training_and_original_panel_history",
+      "source_excerpt": "    def test_consuming_host_requires_actual_training_and_original_panel_history(self):\n        for marker, replacement in (\n            (\"        self,\\n\", \"        &self,\\n\"),\n            (\"training.receipt().observed_unix_seconds\", \"0\"),\n            (\"panel.fenced || receipt.training != *actual.snapshot()\", \"false\"),\n        ):"
+    },
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 15,
+      "line": 96,
+      "method_identity": {
+        "bytes": 1779,
+        "git_blob": "8e58d91fa228fe3dc2c0850e4092dec8e84dfe36",
+        "sha256": "c43a8936839117c1c1b1a7eaa44dac93cbcece89c62e0a1ac954066e512050b0"
+      },
+      "partial_value": "\n    ",
+      "qa_path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "OriginalMaterialCommandClosureTests.test_retained_evidence_getter_never_permits_new_struct_construction",
+      "source_excerpt": "        )\n        original_view = \"&self.evidence[self.evidence.len() - 1]\"\n        self.assertEqual(source.count(original_view), 1)\n        for gap in (\" \", \"\\n    \", \" /* no construction authority */\\n    \"):\n            literal = \"SignedLearningEvidenceV1\" + gap + \"{ ..original }\"\n            with self.subTest(gap=gap, location=\"other function\"):\n                altered = source + ("
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 20959,
+        "index_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "permissions": 420,
+        "sha256": "3acf8e3a56434b003fe68498f67ac1c93daaa98bfd23c5dc624736b8e2372e53",
+        "stable": true,
+        "working_blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 16,
+      "line": 66,
+      "method_identity": {
+        "bytes": 1376,
+        "git_blob": "7e083f21db05452ffee508240eb0a36846cc51cf",
+        "sha256": "43d16a877c74423335b1fc4c57a47b12d51e387302b0a730d2dd06a3968e0aa3"
+      },
+      "partial_value": "self,",
+      "qa_path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "scope": "OriginalMaterialEvidenceClosureTests.test_consuming_custody_factory_and_uninstalled_service_stay_closed",
+      "source_excerpt": "                self.assertIn(identifier, self.manifest[\"privileged_inventory\"][\"required_boundary_ids\"])\n                self.assertEqual(self.boundaries[identifier].product_callers, callers)\n        for marker in (\n            \"self,\",\n            \"source: CircuitTaskSourceReadbackV1<SW>\",\n            \"ledger: std::sync::Arc<std::sync::Mutex<LedgerWriter>>\",\n            \"let config = self.config.clone();\","
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 17,
+      "line": 173,
+      "method_identity": {
+        "bytes": 1476,
+        "git_blob": "5a11ad97108b1c783fb0f5c7dc2cc4f4150756b9",
+        "sha256": "e47adaeb1eaf22d729b5f6c395fc5f2d842043c71826a8f0daf547827897a96e"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalModelRootClosureTests.test_actual_model_edges_are_exact_and_unregistered_owners_stay_closed",
+      "source_excerpt": "                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                receiver = f\"owner: &mut {row.receiver_type}\" if row.receiver_type else \"\"\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_original_model.rs\"] = f\"fn bypass({receiver}) {{ {call}; }}\"\n                with self.assertRaisesRegex(PROOF.VerificationFailure, \"unexpected\"):"
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 18,
+      "line": 124,
+      "method_identity": {
+        "bytes": 1518,
+        "git_blob": "76cb50b35fd85555f80c7bb472ff8ee699a42b43",
+        "sha256": "481e6f728d8778541815609ba5d93e8c6c9b367da3811ab24a83e85e608660af"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalNextUseCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+      "source_excerpt": "                self.assertEqual(row.product_callers, expected)\n                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_next_use_command.rs\"] = f\"fn bypass({receiver}) {{ {call}; }}\""
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 19,
+      "line": 159,
+      "method_identity": {
+        "bytes": 1403,
+        "git_blob": "41a9bde45cfc9f63548b07c02d882c2e614c084e",
+        "sha256": "b8df257d3b765048f4bb54d6972f6856477c0250c40bfde99aa36f750c9a7ea5"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered",
+      "source_excerpt": "                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_ordinary_stage.rs\"] = f\"fn extra({receiver}) {{ {call}; }}\"\n                with self.assertRaisesRegex(PROOF.VerificationFailure, \"unexpected\"):"
+    },
+    {
+      "category": "complete_target_marker_checked_below",
+      "diagnostic_row": 20,
+      "line": 221,
+      "method_identity": {
+        "bytes": 2248,
+        "git_blob": "a59a1b67d90f9f03909294667b125e1f8cd88953",
+        "sha256": "e606ab0a028af8d953c1216543d8783787db6b14ef7aedb53de9e5df33e2c79b"
+      },
+      "partial_value": "self.",
+      "qa_path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "reason": "The partial string is composed into a complete marker or selected inside the original Legacy branch. Exact original target spans are compared separately below.",
+      "scope": "OriginalPublishedReadClosureTests.test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides",
+      "source_excerpt": "                self.rejects(path, function, marker)\n            for marker in (\n                \"ObservationLocation::RemoteOwner | ObservationLocation::EvaluatedOwner\",\n                f\"self.{predecessor}(&source).await?\",\n                f\"{verifier}(&self.config, &self.profile, &before, now()?)?\",\n                \"let bytes = self.journal.read(&self.saved)?;\",\n            ):"
+    },
+    {
+      "category": "complete_target_marker_checked_below",
+      "diagnostic_row": 21,
+      "line": 234,
+      "method_identity": {
+        "bytes": 2248,
+        "git_blob": "a59a1b67d90f9f03909294667b125e1f8cd88953",
+        "sha256": "e606ab0a028af8d953c1216543d8783787db6b14ef7aedb53de9e5df33e2c79b"
+      },
+      "partial_value": "self.",
+      "qa_path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "reason": "The partial string is composed into a complete marker or selected inside the original Legacy branch. Exact original target spans are compared separately below.",
+      "scope": "OriginalPublishedReadClosureTests.test_remote_receipt_owners_keep_real_predecessor_reads_on_both_sides",
+      "source_excerpt": "                )\n            for marker in (\n                \"if self.prepare(source).await? != *observed\",\n                f\"self.{predecessor}(source).await?\",\n                \"if self.journal.read(&self.saved)? != bytes\",\n                \"self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)\",\n            ):"
+    },
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 22,
+      "line": 75,
+      "method_identity": {
+        "bytes": 753,
+        "git_blob": "a5d7eead2210691992ec0f8d7190ebef0727ef5a",
+        "sha256": "d918297f98c8a3a5153b307a9eb513f3719e7f92c2a7828591c18a582aad53e7"
+      },
+      "partial_value": "        &self,\n",
+      "qa_path": "qa/b4-no-bypass/test_original_readback_host_source_closure.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "OriginalReadbackHostSourceClosureTests.test_selector_constructor_keeps_consuming_original_custody",
+      "source_excerpt": "    def test_selector_constructor_keeps_consuming_original_custody(self):\n        self.mutate(SELECTOR, \"        self,\\n\", \"        &self,\\n\")\n        self.mutate(\n            SELECTOR,\n            \"OriginalCellQ24TrainingReadbackConnectionV1::bind_original_training\","
+    },
+    {
+      "category": "complete_target_marker_checked_below",
+      "diagnostic_row": 23,
+      "line": 133,
+      "method_identity": {
+        "bytes": 739,
+        "git_blob": "633644930ed54f45e3f3f24a2b860e3aed7801a5",
+        "sha256": "107d46f093a7c0fdefc9bcad80ac3ed1dfdf2b93a869279fca5f3c11fd10e8b5"
+      },
+      "partial_value": "let before = self.",
+      "qa_path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+      "reason": "The partial string is composed into a complete marker or selected inside the original Legacy branch. Exact original target spans are compared separately below.",
+      "scope": "OriginalRetainedOwnerReadbackClosureTests.test_remote_predecessors_are_live_and_authenticated_before_first_journal_read",
+      "source_excerpt": "            for marker in (\n                \"let observed = self.prepare(&source).await?;\",\n                \"if matches!(source.location(), ObservationLocation::RemoteOwner) {\",\n                \"let before = self.\" + predecessor + \"(&source).await?;\",\n                authenticate + \"(&self.config, &before, now()?)?;\",\n                \"let bytes = self.journal.read(&self.saved)?;\",\n            ):"
+    },
+    {
+      "category": "complete_target_marker_checked_below",
+      "diagnostic_row": 24,
+      "line": 155,
+      "method_identity": {
+        "bytes": 1258,
+        "git_blob": "7a98883333d03107e752551b6aa44e31c8c8c7a2",
+        "sha256": "250a2b2fbad8c54a8e9fa5908f322ea9d3f4db9073c6515859994e777b7fb304"
+      },
+      "partial_value": "self.",
+      "qa_path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+      "reason": "The partial string is composed into a complete marker or selected inside the original Legacy branch. Exact original target spans are compared separately below.",
+      "scope": "OriginalRetainedOwnerReadbackClosureTests.test_both_post_observation_paths_and_final_physical_journal_check_are_required",
+      "source_excerpt": "                marker = \"if self.prepare(source).await? != *observed\"\n                self.rejects(path, function, marker, occurrence=occurrence)\n                self.rejects(path, function, marker, marker.replace(\"!=\", \"==\"), occurrence)\n                self.rejects(path, function, \"self.\" + predecessor + \"(source).await?\", occurrence=occurrence)\n            marker = \"if self.journal.read(&self.saved)? != bytes\"\n            self.rejects(path, function, marker, marker.replace(\"!=\", \"==\"))"
+    },
+    {
+      "category": "complete_target_marker_checked_below",
+      "diagnostic_row": 25,
+      "line": 308,
+      "method_identity": {
+        "bytes": 1853,
+        "git_blob": "600bdeae240a78b61ea0be6714d7037ba31e2500",
+        "sha256": "2d8d5e9bcc177d7e4c5fc74a61cd272c21cdd3600b0f4efd28d770190490ca4d"
+      },
+      "partial_value": "trainer,",
+      "qa_path": "qa/b4-no-bypass/test_original_selection_readback_source_closure.py",
+      "reason": "The partial string is composed into a complete marker or selected inside the original Legacy branch. Exact original target spans are compared separately below.",
+      "scope": "OriginalSelectionReadbackClosureTests.test_service_checks_read_only_request_before_the_same_original_owner",
+      "source_excerpt": "            \"OriginalCircuitSelectionReceiptOwnerV1::attest_original_remote_selection(\",\n            branch=\"OriginalPredecessors::Legacy(trainer) => {\",\n        )\n        for marker in (\"snapshot: &self.context.training,\", \"live: &self.live,\", \"trainer,\"):\n            with self.subTest(original_predecessor=marker):\n                self.mutate(EVALUATED_SERVICE, \"fn observe_original(\", marker,\n                            branch=\"OriginalPredecessors::Legacy(trainer) => {\")"
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 26,
+      "line": 123,
+      "method_identity": {
+        "bytes": 1518,
+        "git_blob": "bf916676c1d88807efca6c9f246e52b1b2724a71",
+        "sha256": "4f68120a103863bb7cba6a9a2424c5b8d13a4bf9b85217ee8f7cace230dc0d55"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalSelectorCommandClosureTests.test_only_concrete_original_owner_edges_open_and_factories_stay_closed",
+      "source_excerpt": "                self.assertEqual(row.product_callers, expected)\n                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_selector_command.rs\"] = f\"fn bypass({receiver}) {{ {call}; }}\""
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 27,
+      "line": 151,
+      "method_identity": {
+        "bytes": 1465,
+        "git_blob": "8982d7e17a7067d02e8bb3789cac96de56a5d3d1",
+        "sha256": "3e123d098f253cfae0a9ad0ab59f484dd9d9f024bc08a499075fc12d58040a57"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalTrainingBootstrapClosureTests.test_only_actual_bootstrap_edges_open_and_host_factories_remain_closed",
+      "source_excerpt": "                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_training_bootstrap.rs\"] = f\"fn unexpected({receiver}) {{ {call}; }}\"\n                with self.assertRaisesRegex(PROOF.VerificationFailure, \"unexpected\"):"
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 28,
+      "line": 116,
+      "method_identity": {
+        "bytes": 1517,
+        "git_blob": "5869fd03f992eb1895f16a4718c4877556d71180",
+        "sha256": "77fc7c7d88ac80d965cf0f3d37d7d6bbf17ec9c18e8f04add9a1c356b8e29951"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalTrainingCommandClosureTests.test_only_concrete_internal_edges_open_host_factories_stay_closed",
+      "source_excerpt": "                self.assertEqual(row.product_callers, expected)\n                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_training_command.rs\"] = f\"fn unexpected({receiver}) {{ {call}; }}\""
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 16041,
+        "index_blob": "94cdad47f9564d1521a7216c8d8d62c422202b85",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+        "permissions": 420,
+        "sha256": "b6ada6b2e9654f9e670a42aa099d49abb73f6f0b90a81361cedbeb0b212702ef",
+        "stable": true,
+        "working_blob": "94cdad47f9564d1521a7216c8d8d62c422202b85"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 29,
+      "line": 137,
+      "method_identity": {
+        "bytes": 876,
+        "git_blob": "99e6eacb9b50874099b11d48b2c4ff701f2437c4",
+        "sha256": "c6368db3d7cd2ee0239f336c245c1cdb802bc7843926724baddd8f3c990dd1e6"
+      },
+      "partial_value": "request_id.checked_add(1)",
+      "qa_path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "scope": "OriginalTrainingCommandClosureTests.test_client_consumes_once_and_pins_complete_original_response",
+      "source_excerpt": "    def test_client_consumes_once_and_pins_complete_original_response(self):\n        for marker in (\"slot.take().ok_or(Error::Unavailable)?\", \"channel.execution_requested = true\",\n                       \"request_id.checked_add(1)\", \"if cancellation\",\n                       \".is_some_and(|flag| flag.load(Ordering::Acquire))\",\n                       \"return Err(Error::Cancelled)\", \".request(&encoded)\",\n                       \"response.require_request(&request)?\", \"if fresh_now < started_at\","
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 30,
+      "line": 127,
+      "method_identity": {
+        "bytes": 1330,
+        "git_blob": "5139968f2de4e23754d12461d5210ac050dac042",
+        "sha256": "ddc23990a5ab7491e7eccf098b14fc50cbe58085971c13508d7c5f1c9a3bb963"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalTrainingConnectionClosureTests.test_only_concrete_initial_handoff_checks_open",
+      "source_excerpt": "                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_initial_trainer.rs\"] = f\"fn extra({receiver}) {{ {call}; }}\"\n                with self.assertRaisesRegex(PROOF.VerificationFailure, \"unexpected\"):"
+    },
+    {
+      "actual_inventory_row": {
+        "bytes": 10825,
+        "index_blob": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+        "index_mode": "100644",
+        "kind": "file",
+        "matches_index": true,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+        "permissions": 420,
+        "sha256": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb",
+        "stable": true,
+        "working_blob": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832"
+      },
+      "category": "actual_target_outside_exhaustive_fmt_changes",
+      "diagnostic_row": 31,
+      "line": 198,
+      "method_identity": {
+        "bytes": 1812,
+        "git_blob": "c0b1a52766163483851dcb26ac3129efe65f7bd5",
+        "sha256": "c64d9a69737b9773b47c1bf24756e8f7ccebbb18f2487dca9fc55999cee07cd6"
+      },
+      "partial_value": "self,",
+      "qa_path": "qa/b4-no-bypass/test_original_training_readback_source_closure.py",
+      "reason": "The test targets this unchanged source. The global substring loss occurred only in unrelated changed files. This establishes no fmt-induced migration, not a prior QA verdict.",
+      "resolved_target": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "scope": "OriginalTrainingReadbackClosureTests.test_original_handoff_and_complete_dataset_training_binding_cannot_be_detached",
+      "source_excerpt": "                \"current < started_at || after != initial_binding\",\n            ),\n            \"fn bind_original_training(\": (\n                \"self,\",\n                \"context.validate()? != self.material.initial\",\n                \"self.peer.check_peer_lifetime()?;\",\n                \"OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(\","
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 32,
+      "line": 92,
+      "method_identity": {
+        "bytes": 1515,
+        "git_blob": "52bce6a74a5d25ee5daa2adb065ba87f62391c3a",
+        "sha256": "44c08a0910cbdf26c23eea767be887b1cda9eee873608bf6148aff39b67c3162"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "OriginalTrainingSourceCaptureClosureTests.test_only_actual_original_read_edges_open_and_new_authority_stays_closed",
+      "source_excerpt": "                self.assertEqual(row.product_callers, expected)\n                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_capture.rs\"] = f\"fn unexpected({receiver}) {{ {call}; }}\""
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 33,
+      "line": 171,
+      "method_identity": {
+        "bytes": 1452,
+        "git_blob": "9c7aa3233aeac9442fb815b0015fe17a77c7f144",
+        "sha256": "8b852683bf2c33a35123933b60ef5b769c65c63f9f74937a9b731f5e7e163d01"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed",
+      "source_excerpt": "                PROOF._verify_boundary(ROOT, row, sources, ())\n                method = row.symbol.rsplit(\"::\", 1)[-1]\n                receiver = f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_resident.rs\"] = f\"fn bypass({receiver}) {{ {call}; }}\"\n                with self.assertRaisesRegex(PROOF.VerificationFailure, \"unexpected\"):"
+    },
+    {
+      "category": "synthetic_unregistered_caller_output",
+      "diagnostic_row": 34,
+      "line": 97,
+      "method_identity": {
+        "bytes": 1670,
+        "git_blob": "56cd283cec61e29c26b3d209fd410bfe1a8e768e",
+        "sha256": "d35566eaf569993ac9dcc86e3a81c664e5b7de809043bdc88559e0d03f0631e2"
+      },
+      "partial_value": "owner.",
+      "qa_path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "reason": "owner. is a generated attack expression, never a source lookup. Its losses in other fixtures do not require a marker migration.",
+      "scope": "RetainedPublicationClosureTests.test_only_original_readback_edge_opens_and_host_factories_stay_closed",
+      "source_excerpt": "                receiver = (\n                    f\"owner: &{row.receiver_type}\" if row.receiver_type else \"\"\n                )\n                call = f\"owner.{method}()\" if row.receiver_type else f\"{method}()\"\n                extra = dict(sources)\n                extra[AGENT + \"unregistered_retained_publication.rs\"] = (\n                    f\"fn unexpected({receiver}) {{ {call}; }}\""
+    },
+    {
+      "category": "complete_target_marker_checked_below",
+      "diagnostic_row": 35,
+      "line": 111,
+      "method_identity": {
+        "bytes": 821,
+        "git_blob": "2ca324a8738408d0d6a6ac66864b41a87154f1c5",
+        "sha256": "950ade1feb5d43e39daa6eb3004a1781ca2b0ea981a7f118368f83dc8976e732"
+      },
+      "partial_value": "\n        ",
+      "qa_path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "reason": "The partial string is composed into a complete marker or selected inside the original Legacy branch. Exact original target spans are compared separately below.",
+      "scope": "RetainedPublicationClosureTests.test_version_final_artifact_read_follows_control_and_source_io",
+      "source_excerpt": "        source = (ROOT / path).read_text()\n        last = \"let last = state.observe_phase()?;\"\n        artifact = \"let after = state.artifacts.read_current()?;\"\n        self.assertIn(last + \"\\n        \" + artifact, source)\n        self.rejects_source(path, source.replace(\n            last + \"\\n        \" + artifact,\n            artifact + \"\\n        \" + last,"
+    },
+    {
+      "category": "complete_target_marker_checked_below",
+      "diagnostic_row": 36,
+      "line": 113,
+      "method_identity": {
+        "bytes": 821,
+        "git_blob": "2ca324a8738408d0d6a6ac66864b41a87154f1c5",
+        "sha256": "950ade1feb5d43e39daa6eb3004a1781ca2b0ea981a7f118368f83dc8976e732"
+      },
+      "partial_value": "\n        ",
+      "qa_path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "reason": "The partial string is composed into a complete marker or selected inside the original Legacy branch. Exact original target spans are compared separately below.",
+      "scope": "RetainedPublicationClosureTests.test_version_final_artifact_read_follows_control_and_source_io",
+      "source_excerpt": "        artifact = \"let after = state.artifacts.read_current()?;\"\n        self.assertIn(last + \"\\n        \" + artifact, source)\n        self.rejects_source(path, source.replace(\n            last + \"\\n        \" + artifact,\n            artifact + \"\\n        \" + last,\n            1,\n        ))"
+    },
+    {
+      "category": "replacement_or_injected_attack_output",
+      "diagnostic_row": 37,
+      "line": 114,
+      "method_identity": {
+        "bytes": 821,
+        "git_blob": "2ca324a8738408d0d6a6ac66864b41a87154f1c5",
+        "sha256": "950ade1feb5d43e39daa6eb3004a1781ca2b0ea981a7f118368f83dc8976e732"
+      },
+      "partial_value": "\n        ",
+      "qa_path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+      "reason": "This string is emitted into the mutant or is replacement indentation; it is not the original span selected for deletion/replacement.",
+      "scope": "RetainedPublicationClosureTests.test_version_final_artifact_read_follows_control_and_source_io",
+      "source_excerpt": "        self.assertIn(last + \"\\n        \" + artifact, source)\n        self.rejects_source(path, source.replace(\n            last + \"\\n        \" + artifact,\n            artifact + \"\\n        \" + last,\n            1,\n        ))\n        for marker in ("
+    }
+  ],
+  "format": "hepta-actual-fmt-targeted-qa-diagnostic-classification-v1",
+  "identified_fmt_induced_marker_migrations": [],
+  "input_diagnostic": {
+    "bytes": 54882,
+    "git_blob": "08a12e0633a4685f78353ca7e4bd376d859619f7",
+    "sha256": "c2c5df0edde4223a50942806cf89aa502d6c341962f8d4e9ffa3b7be5cadc615"
+  },
+  "input_fmt": {
+    "bytes": 2175219,
+    "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+    "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+  },
+  "limitations": [
+    "No QA, verifier, collector, Rust compiler, formatter, native H job, or source mutation was executed.",
+    "The initial scan covers AST Constant strings, not arbitrary evaluation of every dynamically constructed Python expression.",
+    "The twelve targeted checks close the concrete composite/branch risks found in that diagnostic, not all possible runtime paths.",
+    "The independent 83-attack report verifies source anchor occurrence stability only, not mutant rejection.",
+    "No conclusion is inherited from historical source qualification, and no complete repository scan or final registration approval is asserted."
+  ],
+  "required_refresh_obligations": [
+    "Recompute affected exact masked/literal scope hashes and module shapes from actual post-format bytes. The affected-path counts are upper bounds, not claims that every contained hash differs.",
+    "After sole-writer contract refresh, synchronize its exact SHA256 in test_resident_provider_local_read_source_closure.py without changing the failure predicate.",
+    "After independent coordinator registration, update full-inventory count 621 and complete boundary digests to the final exact manifest, preserving the historical ORDINARY_NEW_BOUNDARIES slice [541:569] and the full provider extension slice [569:].",
+    "Append actual new Root test FQNs/parent mounts to the existing exact workflow and QA inventories; do not count ignored methods as default passes or alter budgets.",
+    "Retain original source roots, ignored paths, forbidden markers, scope selectors, each occurrence attack, same-function assertions and failure expectations."
+  ],
+  "targeted_marker_check_count": 12,
+  "targeted_marker_checks": [
+    {
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        20,
+        21
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 15580,
+              "raw": "self.training_evidence(&source).await?",
+              "start": 15542
+            }
+          ],
+          "scope": [
+            15019,
+            16011
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "34265101f3de32b28c6b8a872741096083b7797d",
+            "sha256": "c19e1e813292843e673231a6df4ce1fb1d2a27250dd8930e9e708c7eb4ba863d"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 15580,
+              "raw": "self.training_evidence(&source).await?",
+              "start": 15542
+            }
+          ],
+          "scope": [
+            15019,
+            16011
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9",
+            "sha256": "9b7f43d06c3dfc2d06abb8e10b2d8f866a57eb7de7560054542f353449b5b92a"
+          }
+        }
+      },
+      "function": "readback_source",
+      "marker": "self.training_evidence(&source).await?",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 2,
+        "before": 2
+      },
+      "diagnostic_rows": [
+        20,
+        21
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 18798,
+              "raw": "self.training_evidence(source).await?",
+              "start": 18761
+            },
+            {
+              "end": 19238,
+              "raw": "self.training_evidence(source).await?",
+              "start": 19201
+            }
+          ],
+          "scope": [
+            17837,
+            19519
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "34265101f3de32b28c6b8a872741096083b7797d",
+            "sha256": "c19e1e813292843e673231a6df4ce1fb1d2a27250dd8930e9e708c7eb4ba863d"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 18798,
+              "raw": "self.training_evidence(source).await?",
+              "start": 18761
+            },
+            {
+              "end": 19238,
+              "raw": "self.training_evidence(source).await?",
+              "start": 19201
+            }
+          ],
+          "scope": [
+            17837,
+            19519
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9",
+            "sha256": "9b7f43d06c3dfc2d06abb8e10b2d8f866a57eb7de7560054542f353449b5b92a"
+          }
+        }
+      },
+      "function": "finish_original_readback",
+      "marker": "self.training_evidence(source).await?",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        23
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 15581,
+              "raw": "let before = self.training_evidence(&source).await?;",
+              "start": 15529
+            }
+          ],
+          "scope": [
+            15019,
+            16011
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "34265101f3de32b28c6b8a872741096083b7797d",
+            "sha256": "c19e1e813292843e673231a6df4ce1fb1d2a27250dd8930e9e708c7eb4ba863d"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 15581,
+              "raw": "let before = self.training_evidence(&source).await?;",
+              "start": 15529
+            }
+          ],
+          "scope": [
+            15019,
+            16011
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9",
+            "sha256": "9b7f43d06c3dfc2d06abb8e10b2d8f866a57eb7de7560054542f353449b5b92a"
+          }
+        }
+      },
+      "function": "readback_source",
+      "marker": "let before = self.training_evidence(&source).await?;",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 2,
+        "before": 2
+      },
+      "diagnostic_rows": [
+        24
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 18798,
+              "raw": "self.training_evidence(source).await?",
+              "start": 18761
+            },
+            {
+              "end": 19238,
+              "raw": "self.training_evidence(source).await?",
+              "start": 19201
+            }
+          ],
+          "scope": [
+            17837,
+            19519
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "34265101f3de32b28c6b8a872741096083b7797d",
+            "sha256": "c19e1e813292843e673231a6df4ce1fb1d2a27250dd8930e9e708c7eb4ba863d"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 18798,
+              "raw": "self.training_evidence(source).await?",
+              "start": 18761
+            },
+            {
+              "end": 19238,
+              "raw": "self.training_evidence(source).await?",
+              "start": 19201
+            }
+          ],
+          "scope": [
+            17837,
+            19519
+          ],
+          "source_identity": {
+            "bytes": 29901,
+            "git_blob": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9",
+            "sha256": "9b7f43d06c3dfc2d06abb8e10b2d8f866a57eb7de7560054542f353449b5b92a"
+          }
+        }
+      },
+      "function": "finish_original_readback",
+      "marker": "self.training_evidence(source).await?",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        20,
+        21
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 17458,
+              "raw": "self.predecessors(&source).await?",
+              "start": 17425
+            }
+          ],
+          "scope": [
+            16904,
+            17904
+          ],
+          "source_identity": {
+            "bytes": 26143,
+            "git_blob": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+            "sha256": "47173c9c24edc6ad2280ed721c0d0855a12ab846bbd47eb4fdcd2d75f07776e4"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 17458,
+              "raw": "self.predecessors(&source).await?",
+              "start": 17425
+            }
+          ],
+          "scope": [
+            16904,
+            17904
+          ],
+          "source_identity": {
+            "bytes": 26099,
+            "git_blob": "8d3a17d0957e005131f6a646c09587ed14495670",
+            "sha256": "4e50ba43f55d863289e8f46a76a9777d0a7ba905be04e40290290616501aca06"
+          }
+        }
+      },
+      "function": "readback_source",
+      "marker": "self.predecessors(&source).await?",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 2,
+        "before": 2
+      },
+      "diagnostic_rows": [
+        20,
+        21
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 22850,
+              "raw": "self.predecessors(source).await?",
+              "start": 22818
+            },
+            {
+              "end": 23285,
+              "raw": "self.predecessors(source).await?",
+              "start": 23253
+            }
+          ],
+          "scope": [
+            22068,
+            23566
+          ],
+          "source_identity": {
+            "bytes": 26143,
+            "git_blob": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+            "sha256": "47173c9c24edc6ad2280ed721c0d0855a12ab846bbd47eb4fdcd2d75f07776e4"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 22806,
+              "raw": "self.predecessors(source).await?",
+              "start": 22774
+            },
+            {
+              "end": 23241,
+              "raw": "self.predecessors(source).await?",
+              "start": 23209
+            }
+          ],
+          "scope": [
+            22024,
+            23522
+          ],
+          "source_identity": {
+            "bytes": 26099,
+            "git_blob": "8d3a17d0957e005131f6a646c09587ed14495670",
+            "sha256": "4e50ba43f55d863289e8f46a76a9777d0a7ba905be04e40290290616501aca06"
+          }
+        }
+      },
+      "function": "finish_original_readback",
+      "marker": "self.predecessors(source).await?",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        23
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 17459,
+              "raw": "let before = self.predecessors(&source).await?;",
+              "start": 17412
+            }
+          ],
+          "scope": [
+            16904,
+            17904
+          ],
+          "source_identity": {
+            "bytes": 26143,
+            "git_blob": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+            "sha256": "47173c9c24edc6ad2280ed721c0d0855a12ab846bbd47eb4fdcd2d75f07776e4"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 17459,
+              "raw": "let before = self.predecessors(&source).await?;",
+              "start": 17412
+            }
+          ],
+          "scope": [
+            16904,
+            17904
+          ],
+          "source_identity": {
+            "bytes": 26099,
+            "git_blob": "8d3a17d0957e005131f6a646c09587ed14495670",
+            "sha256": "4e50ba43f55d863289e8f46a76a9777d0a7ba905be04e40290290616501aca06"
+          }
+        }
+      },
+      "function": "readback_source",
+      "marker": "let before = self.predecessors(&source).await?;",
+      "match_kind": "compact_whitespace",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 2,
+        "before": 2
+      },
+      "diagnostic_rows": [
+        24
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 22850,
+              "raw": "self.predecessors(source).await?",
+              "start": 22818
+            },
+            {
+              "end": 23285,
+              "raw": "self.predecessors(source).await?",
+              "start": 23253
+            }
+          ],
+          "scope": [
+            22068,
+            23566
+          ],
+          "source_identity": {
+            "bytes": 26143,
+            "git_blob": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+            "sha256": "47173c9c24edc6ad2280ed721c0d0855a12ab846bbd47eb4fdcd2d75f07776e4"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 22806,
+              "raw": "self.predecessors(source).await?",
+              "start": 22774
+            },
+            {
+              "end": 23241,
+              "raw": "self.predecessors(source).await?",
+              "start": 23209
+            }
+          ],
+          "scope": [
+            22024,
+            23522
+          ],
+          "source_identity": {
+            "bytes": 26099,
+            "git_blob": "8d3a17d0957e005131f6a646c09587ed14495670",
+            "sha256": "4e50ba43f55d863289e8f46a76a9777d0a7ba905be04e40290290616501aca06"
+          }
+        }
+      },
+      "function": "finish_original_readback",
+      "marker": "self.predecessors(source).await?",
+      "match_kind": "compact_whitespace",
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+    },
+    {
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        35,
+        36
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 6171,
+              "raw": "let last = state.observe_phase()?;\n        let after = state.artifacts.read_current()?;",
+              "start": 6084
+            }
+          ],
+          "scope": [
+            5502,
+            6552
+          ],
+          "source_identity": {
+            "bytes": 13337,
+            "git_blob": "466ede358e183096aa432ef0f26752f5b872ca89",
+            "sha256": "3721fb129bbc5c87ae7719ae85842a8e2d1e09286bf1d38ced5198e1277aab01"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 6171,
+              "raw": "let last = state.observe_phase()?;\n        let after = state.artifacts.read_current()?;",
+              "start": 6084
+            }
+          ],
+          "scope": [
+            5502,
+            6552
+          ],
+          "source_identity": {
+            "bytes": 13031,
+            "git_blob": "4f88e588c805271cf8954305bfe09fdfab777bf4",
+            "sha256": "4d0dbed421c0d48b5577d9189166e04fdf1cfbed7acecb0efd11546f1ff4da92"
+          }
+        }
+      },
+      "function": "read_original",
+      "marker": "let last = state.observe_phase()?;\n        let after = state.artifacts.read_current()?;",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+    },
+    {
+      "branch": "OriginalPredecessors::Legacy(trainer) => {",
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        25
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 4181,
+              "raw": "snapshot: &self.context.training,",
+              "start": 4148
+            }
+          ],
+          "scope": [
+            4014,
+            4777
+          ],
+          "source_identity": {
+            "bytes": 9143,
+            "git_blob": "007947db1e891643041d03e33dc9991a2698566a",
+            "sha256": "73f0170902760c56c9273f6e5023cba0777f684fe1902902ade1e009daf61349"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 4162,
+              "raw": "snapshot: &self.context.training,",
+              "start": 4129
+            }
+          ],
+          "scope": [
+            3995,
+            4758
+          ],
+          "source_identity": {
+            "bytes": 9065,
+            "git_blob": "c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0",
+            "sha256": "1aa3d1697f825e3249641e8fa4ad7470a7f19ff873904725859ce87668b096fe"
+          }
+        }
+      },
+      "function": "observe_original",
+      "marker": "snapshot: &self.context.training,",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+    },
+    {
+      "branch": "OriginalPredecessors::Legacy(trainer) => {",
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        25
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 4219,
+              "raw": "live: &self.live,",
+              "start": 4202
+            }
+          ],
+          "scope": [
+            4014,
+            4777
+          ],
+          "source_identity": {
+            "bytes": 9143,
+            "git_blob": "007947db1e891643041d03e33dc9991a2698566a",
+            "sha256": "73f0170902760c56c9273f6e5023cba0777f684fe1902902ade1e009daf61349"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 4200,
+              "raw": "live: &self.live,",
+              "start": 4183
+            }
+          ],
+          "scope": [
+            3995,
+            4758
+          ],
+          "source_identity": {
+            "bytes": 9065,
+            "git_blob": "c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0",
+            "sha256": "1aa3d1697f825e3249641e8fa4ad7470a7f19ff873904725859ce87668b096fe"
+          }
+        }
+      },
+      "function": "observe_original",
+      "marker": "live: &self.live,",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+    },
+    {
+      "branch": "OriginalPredecessors::Legacy(trainer) => {",
+      "counts": {
+        "after": 1,
+        "before": 1
+      },
+      "diagnostic_rows": [
+        25
+      ],
+      "evidence": {
+        "after": {
+          "matches": [
+            {
+              "end": 4248,
+              "raw": "trainer,",
+              "start": 4240
+            }
+          ],
+          "scope": [
+            4014,
+            4777
+          ],
+          "source_identity": {
+            "bytes": 9143,
+            "git_blob": "007947db1e891643041d03e33dc9991a2698566a",
+            "sha256": "73f0170902760c56c9273f6e5023cba0777f684fe1902902ade1e009daf61349"
+          }
+        },
+        "before": {
+          "matches": [
+            {
+              "end": 4229,
+              "raw": "trainer,",
+              "start": 4221
+            }
+          ],
+          "scope": [
+            3995,
+            4758
+          ],
+          "source_identity": {
+            "bytes": 9065,
+            "git_blob": "c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0",
+            "sha256": "1aa3d1697f825e3249641e8fa4ad7470a7f19ff873904725859ce87668b096fe"
+          }
+        }
+      },
+      "function": "observe_original",
+      "marker": "trainer,",
+      "match_kind": "literal",
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+    }
+  ]
+}

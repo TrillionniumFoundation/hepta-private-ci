@@ -1,0 +1,70 @@
+{
+  "all_future_execution_pins": null,
+  "files_to_freeze": [
+    "FINAL_SOURCE_MAP.json",
+    "CANDIDATE_COMMIT.raw",
+    "CANDIDATE_OBJECT_INPUT.json",
+    "EXPECTED_CLEAN_INVENTORY.json",
+    "EXPECTED_NATIVE_FIVE_FIELD.json",
+    "MATERIALIZATION_PACKET.HOLD.json",
+    "STAGE_BASE_001.REQUEST.HOLD.json",
+    "STAGE_BASE_002.REQUEST.HOLD.json",
+    "STAGE_CANDIDATE_001.REQUEST.HOLD.json",
+    "STAGE_CANDIDATE_002.REQUEST.HOLD.json",
+    "STAGE_CANDIDATE_003.REQUEST.HOLD.json",
+    "driver.HOLD.py",
+    "APPROVAL_CANDIDATE_CONFIG.json",
+    "MATERIALIZATION_BOOTSTRAP.candidate.py",
+    "MATERIALIZATION_STDIN.candidate.json",
+    "MATERIALIZATION_PROCESS_INPUT.candidate.json"
+  ],
+  "format": "hepta-selected-route-b-required-immutable-inputs-v1",
+  "maintenance_inputs_after_actual_materialization": [
+    "driver-maintenance.HOLD.py",
+    "MAINTENANCE_CONFIG.HOLD.json",
+    "STAGING_BOOTSTRAP.HOLD.py",
+    "STAGING_PAYLOAD.HOLD.json",
+    "STAGING_REQUEST.HOLD.json",
+    "LAUNCHER.HOLD.py",
+    "PROCESS_INPUT.HOLD.json"
+  ],
+  "materializer_base": {
+    "bytes": 70560,
+    "git_blob": "6d1537fcd58540da64c18916369f4f04d2a0dce1",
+    "path": "/tmp/hepta-36fa-new-source-materializer-hold-v1/driver.HOLD.py",
+    "sha256": "2c4c8582d1940605d1b2138587ee3a73ab4b4d6eb265bfcb03ffd7d291c8b1f6"
+  },
+  "materializer_budget": {
+    "action": 600,
+    "outer": 900,
+    "records": 180
+  },
+  "original_format_base": {
+    "commit": "c0f78493f815780f68b9bf5e390a21314d79311f",
+    "objects": 16094,
+    "shared_donor_objects": 16011,
+    "supplied_objects": 83,
+    "tree": "313ee34febc8ccc54c611ab56286e289518c63cb"
+  },
+  "retained_history_never_overwritten": [
+    "failed fix job 1a1d3eccd3a-392-231",
+    "fmt-only job 1a1d41eb3ef-392-2b2",
+    "0c59 candidate object and experimental repository",
+    "actual f905 physical evidence",
+    "original runtime ENV_READY and restoration records"
+  ],
+  "source_map_and_getter_registration_layers_pending": true,
+  "staging_contract": {
+    "base_part_count": 2,
+    "candidate_part_count": 3,
+    "each_exact_write_request": null,
+    "fit_must_be_measured_not_predicted": true,
+    "maximum_decoded_part": 524288,
+    "mode": 384,
+    "new_gzip_candidate_pin": null,
+    "new_raw_candidate_pin": null,
+    "overflow_action": "Hold and identify the concrete contract gap; no automatic bound or part-count increase.",
+    "transport_request_maximum_bytes": 1048576
+  },
+  "status": "HOLD"
+}

@@ -1,0 +1,99 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs
+@@ -83,7 +83,10 @@
+         })
+     };
+     let task = |stream: UnixStream| -> anyhow::Result<TaskStream> {
+-        Ok(TaskStream { stream, peer: process.peer.clone(), uid: process::PEER_UID,
++        Ok(TaskStream { stream, peer: crate::AgentdRootAuthorityPeer {
++            pid: process.peer.pid, boot_id: process.peer.boot_id.clone(),
++            process_start_ticks: process.peer.process_start_ticks,
++        }, uid: process::PEER_UID,
+             original_task_pidfd: process::pin(process.peer.pid)?, timeout: Duration::from_millis(100), lifetime })
+     };
+     let [experience, dataset, trainer, selector, version, next_use, completion, candidate, evaluator, model] = streams;
+@@ -120,7 +123,10 @@
+ 
+ fn consumer(process: &process::PeerProcess, stream: UnixStream, lifetime: Duration)
+ -> anyhow::Result<RootResidentLearningConsumerV3> {
+-    Ok(RootResidentLearningConsumerV3 { stream, peer: process.peer.clone(), uid: process::PEER_UID,
++    Ok(RootResidentLearningConsumerV3 { stream, peer: crate::AgentdRootAuthorityPeer {
++        pid: process.peer.pid, boot_id: process.peer.boot_id.clone(),
++        process_start_ticks: process.peer.process_start_ticks,
++    }, uid: process::PEER_UID,
+         original_consumer_pidfd: process::pin(process.peer.pid)?, timeout: Duration::from_millis(100), lifetime })
+ }
+ 
+@@ -207,7 +213,12 @@
+         let streams = role_streams(&peer, streams, &original.profile, Duration::from_secs(2))?;
+         let (send, receive) = UnixDatagram::pair()?;
+         let creator = process::pin(std::process::id())?;
+-        let recipient = if wrong_recipient { peer.peer.clone() } else { process::process(std::process::id())? };
++        let recipient = if wrong_recipient {
++            crate::AgentdRootAuthorityPeer {
++                pid: peer.peer.pid, boot_id: peer.peer.boot_id.clone(),
++                process_start_ticks: peer.peer.process_start_ticks,
++            }
++        } else { process::process(std::process::id())? };
+         let recipient_pin = process::pin(recipient.pid)?;
+         crate::send_root_candidate_stage_handoff(send, &creator, recipient, &recipient_pin,
+             &original.profile, streams, Duration::from_secs(1))?;
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs
+@@ -55,7 +55,20 @@
+         anyhow::ensure!(candidate.attestation() == training.attestation());
+         anyhow::ensure!(candidate.authority() == AuthorityPosture::DENY_ALL);
+         anyhow::ensure!(baseline.components() == &material.initial.request.selected_bundle.components);
+-        anyhow::ensure!(previous.input() == source_a);
++        // Match the original Source input projection, retaining the operation
++        // identity already authenticated by the opaque publication.
++        let expected_input = codex_hepta_neuron::CellStepInputV1 {
++            operation_id: previous.input().operation_id.clone(),
++            scope: source_a.scope.clone(),
++            source_frontier: source_a.source_frontier,
++            objective_digest: source_a.objective_digest,
++            ndu_snapshot_digest: source_a.ndu_snapshot_digest,
++            monotonic_micros: source_a.monotonic_micros,
++            deadline_micros: source_a.deadline_micros,
++            observation: source_a.observation.clone(),
++            candidates: source_a.candidates.clone(),
++        };
++        anyhow::ensure!(previous.input() == &expected_input);
+         anyhow::ensure!(source_a.scope.run_id == material.initial.request.source_run_id);
+         anyhow::ensure!(source_a.objective_digest == material.initial.request.envelope.objective_digest);
+         anyhow::ensure!(previous.history_digest().as_str().parse::<Digest32>()?
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs
+@@ -12,7 +12,7 @@
+ 
+ #[path = "circuit_resident_candidate_first_material_wire_tests.rs"]
+ mod wire;
+-pub(super) use wire::encode_original_report;
++use wire::encode_original_report;
+ 
+ /// Complete host-selected request policy, deliberately without a fabricated
+ /// completed_task_receipt. That one claimed field remains Pending until E/D.
+--- a/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs
+@@ -79,7 +79,20 @@
+         // creates no Trainer, internal Material peer, or duplicate writer.
+         let built = async {
+             let previous = execute(&a, 1).await?;
+-            anyhow::ensure!(previous.input() == &source_a, "actual A uses this original input");
++            // Match the original Source input projection, retaining the operation
++            // identity already authenticated by the opaque publication.
++            let expected_input = codex_hepta_neuron::CellStepInputV1 {
++                operation_id: previous.input().operation_id.clone(),
++                scope: source_a.scope.clone(),
++                source_frontier: source_a.source_frontier,
++                objective_digest: source_a.objective_digest,
++                ndu_snapshot_digest: source_a.ndu_snapshot_digest,
++                monotonic_micros: source_a.monotonic_micros,
++                deadline_micros: source_a.deadline_micros,
++                observation: source_a.observation.clone(),
++                candidates: source_a.candidates.clone(),
++            };
++            anyhow::ensure!(previous.input() == &expected_input, "actual A uses this original input");
+             anyhow::ensure!(previous.original_record().snapshot.run_id == run);
+             let before_training = read_receipt(&a, &definition, &previous)?;
+             anyhow::ensure!(before_training.representation.prediction_q24[0] == Q,

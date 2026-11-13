@@ -1,0 +1,174 @@
+error[E0364]: `encode_original_report` is private, and cannot be re-exported
+  --> hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs:15:16
+   |
+15 | pub(super) use wire::encode_original_report;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+note: consider marking `encode_original_report` as `pub` in the imported module
+  --> hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs:15:16
+   |
+15 | pub(super) use wire::encode_original_report;
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/circuit_credit_ledger_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+  = note: `#[warn(clippy::duplicate_mod)]` on by default
+
+warning: file is loaded as a module multiple times: `hepta-agentd/src/neuron_generation_runtime_test_support.rs`
+  |
+  = help: replace all but one `mod` item with `use` items
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+
+error[E0277]: can't compare `codex_hepta_neuron::CellStepInputV1` with `circuit_task::source::CircuitTaskSourceInputV1`
+  --> hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs:82:46
+   |
+82 |             anyhow::ensure!(previous.input() == &source_a, "actual A uses this original input");
+   |                                              ^^ no implementation for `codex_hepta_neuron::CellStepInputV1 == circuit_task::source::CircuitTaskSourceInputV1`
+   |
+help: the trait `PartialEq<circuit_task::source::CircuitTaskSourceInputV1>` is not implemented for `codex_hepta_neuron::CellStepInputV1`
+      but trait `PartialEq<codex_hepta_neuron::CellStepInputV1>` is implemented for it
+  --> hepta-neuron/src/cell_types.rs:62:28
+   |
+62 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |                            ^^^^^^^^^
+   = help: for that trait implementation, expected `codex_hepta_neuron::CellStepInputV1`, found `circuit_task::source::CircuitTaskSourceInputV1`
+   = note: required for `&codex_hepta_neuron::CellStepInputV1` to implement `std::cmp::PartialEq<&circuit_task::source::CircuitTaskSourceInputV1>`
+
+error[E0599]: no method named `clone` found for struct `root_observation_stream::AgentdRootAuthorityPeer` in the current scope
+  --> hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs:86:52
+   |
+86 |         Ok(TaskStream { stream, peer: process.peer.clone(), uid: process::PEER_UID,
+   |                                                    ^^^^^ method not found in `root_observation_stream::AgentdRootAuthorityPeer`
+   |
+  ::: hepta-agentd/src/root_observation_stream.rs:25:1
+   |
+25 | pub struct AgentdRootAuthorityPeer {
+   | ---------------------------------- method `clone` not found for this struct
+   |
+   = help: items from traits can only be used if the trait is implemented and in scope
+   = note: the following trait defines an item `clone`, perhaps you need to implement it:
+           candidate #1: `std::clone::Clone`
+
+error[E0599]: no method named `clone` found for struct `root_observation_stream::AgentdRootAuthorityPeer` in the current scope
+   --> hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs:123:68
+    |
+123 |     Ok(RootResidentLearningConsumerV3 { stream, peer: process.peer.clone(), uid: process::PEER_UID,
+    |                                                                    ^^^^^ method not found in `root_observation_stream::AgentdRootAuthorityPeer`
+    |
+   ::: hepta-agentd/src/root_observation_stream.rs:25:1
+    |
+ 25 | pub struct AgentdRootAuthorityPeer {
+    | ---------------------------------- method `clone` not found for this struct
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+    = note: the following trait defines an item `clone`, perhaps you need to implement it:
+            candidate #1: `std::clone::Clone`
+
+error[E0599]: no method named `clone` found for struct `root_observation_stream::AgentdRootAuthorityPeer` in the current scope
+   --> hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs:210:56
+    |
+210 |         let recipient = if wrong_recipient { peer.peer.clone() } else { process::process(std::process::id())? };
+    |                                                        ^^^^^ method not found in `root_observation_stream::AgentdRootAuthorityPeer`
+    |
+   ::: hepta-agentd/src/root_observation_stream.rs:25:1
+    |
+ 25 | pub struct AgentdRootAuthorityPeer {
+    | ---------------------------------- method `clone` not found for this struct
+    |
+    = help: items from traits can only be used if the trait is implemented and in scope
+    = note: the following trait defines an item `clone`, perhaps you need to implement it:
+            candidate #1: `std::clone::Clone`
+
+error[E0277]: can't compare `codex_hepta_neuron::CellStepInputV1` with `circuit_task::source::CircuitTaskSourceInputV1`
+  --> hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs:58:42
+   |
+58 |         anyhow::ensure!(previous.input() == source_a);
+   |                                          ^^ no implementation for `codex_hepta_neuron::CellStepInputV1 == circuit_task::source::CircuitTaskSourceInputV1`
+   |
+help: the trait `PartialEq<circuit_task::source::CircuitTaskSourceInputV1>` is not implemented for `codex_hepta_neuron::CellStepInputV1`
+      but trait `PartialEq<codex_hepta_neuron::CellStepInputV1>` is implemented for it
+  --> hepta-neuron/src/cell_types.rs:62:28
+   |
+62 | #[derive(Clone, Debug, Eq, PartialEq)]
+   |                            ^^^^^^^^^
+   = help: for that trait implementation, expected `codex_hepta_neuron::CellStepInputV1`, found `circuit_task::source::CircuitTaskSourceInputV1`
+   = note: required for `&codex_hepta_neuron::CellStepInputV1` to implement `std::cmp::PartialEq<&circuit_task::source::CircuitTaskSourceInputV1>`
+   = note: 1 redundant requirement hidden
+   = note: required for `&&codex_hepta_neuron::CellStepInputV1` to implement `std::cmp::PartialEq<&&circuit_task::source::CircuitTaskSourceInputV1>`
+
+warning: unused import: `anyhow::Context`
+  --> hepta-agentd/src/circuit_evaluated_command_roundtrip_tests.rs:17:5
+   |
+17 | use anyhow::Context as _;
+   |     ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `anyhow::Context`
+  --> hepta-agentd/src/circuit_evaluated_version_recovery_support_tests.rs:17:5
+   |
+17 | use anyhow::Context as _;
+   |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+  --> hepta-agentd/src/circuit_evaluated_version_final_use_tests.rs:10:5
+   |
+10 | use anyhow::Context as _;
+   |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs:7:5
+  |
+7 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs:7:5
+  |
+7 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs:6:5
+  |
+6 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `std::os::unix::fs::OpenOptionsExt`
+ --> hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs:7:5
+  |
+7 | use std::os::unix::fs::OpenOptionsExt as _;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs:7:5
+  |
+7 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs:6:5
+  |
+6 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `anyhow::Context`
+ --> hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs:5:5
+  |
+5 | use anyhow::Context as _;
+  |     ^^^^^^^^^^^^^^^
+
+warning: unused import: `std::os::unix::fs::OpenOptionsExt`
+  --> hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs:11:5
+   |
+11 | use std::os::unix::fs::OpenOptionsExt as _;
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Some errors have detailed explanations: E0277, E0364, E0599.
+For more information about an error, try `rustc --explain E0277`.
+warning: `codex-hepta-agentd` (lib test) generated 13 warnings
+error: could not compile `codex-hepta-agentd` (lib test) due to 6 previous errors; 13 warnings emitted
+warning: build failed, waiting for other jobs to finish...
+error: recipe `fix` failed on line 58 with exit code 101

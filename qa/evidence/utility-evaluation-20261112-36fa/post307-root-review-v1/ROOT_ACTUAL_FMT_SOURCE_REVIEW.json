@@ -1,0 +1,497 @@
+{
+  "actual_application_packet": {
+    "bytes": 161839,
+    "git_blob": "f199bb572a20d3fe71c65acc4f47448479a2d8e6",
+    "sha256": "a277e83fd28555d9509630333236b18b9509517a56c01b67b921ec9fa98bdf3f"
+  },
+  "actual_fix_witness_preserved": true,
+  "all_other_rows_byte_structure_unchanged": true,
+  "application_inventory_exact_original_pin": {
+    "bytes": 5630117,
+    "git_blob": "b7b9b2378f8a1ca55665370b34fc7fce305b1071",
+    "sha256": "3252aefb758257757dabbff1da828e5aa478ad62fea432b9e52c165f93e5454c"
+  },
+  "applied_tree": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+  "approved_repair": {
+    "bytes": 152573,
+    "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+    "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+  },
+  "baseline": {
+    "bytes": 5629749,
+    "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+    "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+  },
+  "baseline_tree": "4ed32552042fee522965ea54caf95bbebb31ad43",
+  "current_fmt_returncode": 0,
+  "final_inventory_exact_original_pin": {
+    "bytes": 5634549,
+    "git_blob": "e1e48f35bb6cf5a3dd86c59472da77df87154b6a",
+    "sha256": "bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f"
+  },
+  "final_inventory_provenance": "Lossless reconstruction from exact original b190 baseline plus all four observed apply transitions and all 62 observed formatter transitions. Status is deterministically reconstructed from unchanged original index and observed tracked bytes using original strip semantics, not claimed read from the nine-field Git state. Whole bytes/hash/Git match original producer; not a second full native inventory read.",
+  "final_physical_tree": "f905b18e6b05de1582024548179725a05d932536",
+  "format": "hepta-root-actual-apply-fmt-source-review-v1",
+  "formatter_changes": [
+    {
+      "after": "7dbd6bdc856fffcd2aa2657f72535a95886c6cc4",
+      "before": "bbb07205be86814e6a7bab3aed6f516b7905f69e",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "232e08dda261e59032cf6ccb987e9cbd86e35e49",
+      "before": "1005fffcd1b2c335ed44b6e4ffdc39956262d114",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_lifecycle_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "6290425c5b4338885ce2d7637715940c4fb82d6d",
+      "before": "bd0242ab418b416301e21fdd23eb4cb4b3b66ac8",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_process_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "275790050ada76230712c4e8698df53d0e4e711a",
+      "before": "5b4dccd277ceba5cdd0c2f8e2668d596e92a284a",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "aa70d902152de9db292956e4dd996212551c7107",
+      "before": "76aaefe1917059fd4004ac938357ce4aed8d8320",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "8239d30746a24cecdf0b469da7c45433733f1098",
+      "before": "cff7b7ad3bcd8085fb64b662665b631c77f89004",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_original_ports_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "af904cce49ee4b7c0486b74f6fdcef7579d489c2",
+      "before": "98f631981384dbe739e83c9297547172720f2abb",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "a4eeeebfe708774cf8d2a553d031fdb17969adba",
+      "before": "fab5600f505aa7c8c039aa0990ec38ca01d15c83",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "cde16a60860fa5eccb1160353d6806f3f9f81477",
+      "before": "265e80b2763cbf4f2a530e2e1400f364ee1b1711",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "451549f4df782233fc42e808f8eebee29f168f6e",
+      "before": "1030175ebab83b61c966acf8f35cd7e682bfb819",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "3b667897279c79aec9fe1b85901f70ab0eb03b16",
+      "before": "86a5fbec4ce07b9b6193b0181e979bbf33467541",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "57d162f984ae7d812eb0c1de8e6033d322b3d10f",
+      "before": "2a3c444f6e2d3816ecc49c22162b5a42b0c2431d",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "386c3c773866c720cfeb2ad7cb2b7b81065d21af",
+      "before": "408a068ce11174a962d5878cb706b7233b628514",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "eee73f62fc021d3004638681e6b78ea462129966",
+      "before": "5e6221196cb26ce6120040f5b7cd6df5b4f94f1a",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "3970dbf29eb46dede4337aca04a0f500163ddd03",
+      "before": "124aaacdaaee8d2d297d85e480e57c5eee94ead8",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_connections_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "83cc4158e980804b0e7bd4365e51cf88b43a2196",
+      "before": "ce32cd8e8df97319823035a41e3c1096a591ced5",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "ed556681b4219282ce03e229d8ce8952d0ff0e2f",
+      "before": "ce0e5c05fac92930f9e2e9fbadf5473788088796",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_same_host_sc_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "8a91d5b0e416af513df2810d969c97434e28e5be",
+      "before": "1756083c7bd47e34d5bb2d8f7178a2271ff1e121",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "d033ad95eabcc985e315d06a2fe45719e79f1eab",
+      "before": "1db1cb54cbeb0601f5d63121e7ecc8cb11bd546a",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "007947db1e891643041d03e33dc9991a2698566a",
+      "before": "c09fb46ab3c0b9f17c8831691ba2e7ec7f4860b0",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "55a3240ca2398591e2c2e90ef2de81b2bfeb3360",
+      "before": "189f28ef8a8cebf02f122cab6a30dadae8471c41",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "444fbbb4e48743f51de91d39d77c34b37364b002",
+      "before": "1bf74c7399da89dca3649c9065e774b56bf1553d",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_local_readback_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "b3ae22835e388ad7ae9b3488f85896f0dcdf2fed",
+      "before": "d33a4dea669aaca0c05cfbe0f6b196b26cc4672a",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "b9a4d5bda8f02c16a198efde82a7d0d589f3d18c",
+      "before": "07abfc03d0a7a77261cde6cc9a13ff40439bf218",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_next_use_readback_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "2dafccfb708098871d5ab4807ec185920c73c544",
+      "before": "c473012597dcc29b4f13a3353b27ddc12e42f523",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_export_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "ffafea99606924aa115f6c9ba06f417a7a08618b",
+      "before": "30769dda72e5fe509bed1e1c8ce251f79f1861d2",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_version_shared_readback_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "24fd1c6839e74ce57a7c2ab4ad36a52d93c5ddef",
+      "before": "5abb8031d6b75a4ab2ab60b5393369664bf77284",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "8b66af8f37a5d06644d18911cd0ebbc2b83da59e",
+      "before": "aa8ba42344c14662d4f2fdf1fbc37ff7d1b454b9",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "6630261d108788169cfcad798a76e0118374baa1",
+      "before": "9d370f1313023f289593b49bd3df90ff6623fd38",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "f7da75482e854f7b394b732fc5a9c01de7b7064c",
+      "before": "c97e922243a7833e7a46cf7aa9680196037fad8b",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "d74b9d87d961a1d826d70df3807349a135f87aa5",
+      "before": "8d3a17d0957e005131f6a646c09587ed14495670",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "9d31107258d2987112cdff7edc8baf247d6e467e",
+      "before": "9f5f2659f2672e5774a27164dafdbbbedde40194",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "9d6df799fb4d43473cac60e8fefabc61ea071e0b",
+      "before": "6adad16221dd2ab2526fdb14a0242d833fb0b55a",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "597d4766cdea3a8f21aecb5929bb6a97249373ca",
+      "before": "e7249165ebb5ba02eba8d08c040f9d5c971b35f4",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "9ac2c5f5126db83a884089ce13043eb6a6637b96",
+      "before": "76e63cf51d9a200ca4b2d561d5651a815c3673b8",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "3a1ca23dd755c46ae852830b0a27419e58c3cb54",
+      "before": "cffa9f294b84565d427be48c5ac099aec3872d9d",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "d40c78a4f85a415a63510ee10d0c8e7ee5f175af",
+      "before": "57c57a8dca65e231feac0481c4ba31f4a1407ed0",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_wire_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "2f35bcacff40827fd96b3d4ce289455929d64a82",
+      "before": "7348336b0c4f4694cfc17d2db40a0cfb75a797ef",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_control_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "ebbfa75d55760463c0aa7be190f3d1a88f46a110",
+      "before": "e2e108a17021f10e18ccd4c873beec6f5fc35e4e",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_material_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "491bbac2876891948de35f11ac790c2500fdfc2f",
+      "before": "d2a8eefd05f1671373a952f86eeee0cda141d6fc",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "91b0e28e905e0a7ee7d3a9399b2f22e9ec6599bb",
+      "before": "eb38fc48ea8e03b6fa4130aad01b813b3bcc54fc",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_publication_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "2fe7beaa23f8047beb89c2ae427c7fb0d77b93b8",
+      "before": "150d529814964c9121debe523a2202a1dd6439e7",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "d3ebc7198423a48bb50c3f1f55cabe7f5dec2154",
+      "before": "c8ea6587287828b164c306713e8ddd504e554ba1",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_stage_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "c08d3169833ab7c657a88e4b5fd4d88e284d58fd",
+      "before": "e1d0a0f608b8268ec039d7abdf0aab3bcb40a19c",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "be7f97f693eda80d2a1b3d5bff06928b707ea3ad",
+      "before": "e6110871b6207bc1f31f0ced19b20b49830475a9",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "60af3543dd4ef214483fa8fd31d8e3ecf42afc56",
+      "before": "943d1919c37b104c74d93b0f48329a38339bfbcc",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "2a1d69f09ba69f4234c5ebed898b6d6edecf35c5",
+      "before": "52f35e689615144d7764acc189c11180c45600f7",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "5256ac6a398a45a7c979c079413e0aab0ac32274",
+      "before": "691c6f0e780c98fee377c482137b260650458d28",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "a6fa98145421623f3e700d9eb6383551f5d59480",
+      "before": "0d52084d728eee8a62bce68b99780c12624242d7",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "60628baacff9eac0e119943d2e81387f5cf18656",
+      "before": "705311ff2c468d6cfdd131a656a49e3b48b04290",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "466ede358e183096aa432ef0f26752f5b872ca89",
+      "before": "4f88e588c805271cf8954305bfe09fdfab777bf4",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "141be7d8d99cf93c5d31f3b8dcea946ac789941a",
+      "before": "1d4d4f96ba098e5889bdc09832314f1baf973ef9",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "15337655a529813be1c65f5dfbfe005de10bac1e",
+      "before": "f218ca52852867b7e01dd8b383217ea2540bf1c0",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_readback_support_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "34265101f3de32b28c6b8a872741096083b7797d",
+      "before": "d9f39003a6e792fc1fdb3a0197ea0fc8f07edee9",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "55cd4763f45a1aa85ab70319352250dc803ec572",
+      "before": "566dbd6971d2fd11434fbf6408c95c9abeb143af",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "aa4564e6582b4960d581d7c8953f4f404735199e",
+      "before": "9c77c4265aef5301d3e2f8a8c414847d0e718396",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "dcfacc3c5b0ca1c115742986ff453fd412fce991",
+      "before": "6e7b2e5e89ab0911193ca41d054f0633ba132767",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "406590d3d6537f2538a4d19615df6193eb415886",
+      "before": "5484a4ba24e3be451eeaa30470cebc0410300ced",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "844dce8fd782cef7c8270826fcc601d6fc52a9fe",
+      "before": "1dc042509e0590efc135c1cf89acdb7cfbf331c0",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "706b7729e8ce7326f34602670d420c7de2f07ff4",
+      "before": "955040ae66c1682ead7b7b8dda5379993eb59eb5",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "d4467b253a044afb81c146eaaa10a3379e905c47",
+      "before": "7ba6a2daa094bba330ea1ca8b7212a85e5e34273",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec.rs",
+      "source_mode_and_index_identity_unchanged": true
+    },
+    {
+      "after": "534bd955863906f6c68f4d0a03127e645b816d6a",
+      "before": "3a444d399126d43ff8d1ddd69cb6302dd7a785ed",
+      "complete_raw_before_after_verified": true,
+      "path": "codex-rs/hepta-learning-ledger/src/snapshot_codec_tests.rs",
+      "source_mode_and_index_identity_unchanged": true
+    }
+  ],
+  "formatter_packet": {
+    "bytes": 2175219,
+    "git_blob": "43f7dd7eaa1578a4d6d570252939084f80181685",
+    "sha256": "3309f2099b3545737f390f16928d5d085177e72a6e8194aa018fe5039121dc22"
+  },
+  "local_review_attempt_notes": [
+    "First pure verifier retained old source.status and correctly failed application inventory equality; the original failed script is preserved. No H execution or source change.",
+    "A diagnostic command had a Python SyntaxError before reading; corrected diagnostic showed four source rows already exact and status was the remaining difference."
+  ],
+  "next_requirements": [
+    "Independent semantic review of actual formatter transitions",
+    "Original raw Git, input and lease audit receipts",
+    "Rebind protected source registrations to actual final bytes before exact source gates",
+    "Separately review and apply any later coordinator layer; do not infer compilation or execution"
+  ],
+  "old_fix_lint_success": false,
+  "old_fix_returncode": 101,
+  "qualification": false,
+  "result": {
+    "bytes": 26765,
+    "git_blob": "23c8f1375aa98a4c166a9ff4245d8500f060d97f",
+    "sha256": "45dcfb960717c209e89eb47d8cf1bb5ebf536ad7548198c1f621e0a754bab640"
+  },
+  "scope": "Pure complete raw-byte, exact inventory reconstruction and mode-aware full-tree verification; no Rust semantic proof, build, test, source activation or H execution.",
+  "source_leaf_count": 15237,
+  "tests_dispatched": 0
+}

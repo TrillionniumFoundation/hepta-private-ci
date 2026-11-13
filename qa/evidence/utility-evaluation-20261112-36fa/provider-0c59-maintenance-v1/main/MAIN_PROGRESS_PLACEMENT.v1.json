@@ -1,0 +1,90 @@
+{
+  "format": "hepta-fixed-native-maintenance-progress-placement-v1",
+  "cutoff": "2026-11-13T08:07:27.553Z",
+  "source_repo": "/home/qian-qi/hepta-utility-36fa-provider-0c59-isolated-v1",
+  "job_id": "1a1d3eccd3a-392-231",
+  "latest_status_observation": "running",
+  "latest_complete_stdout_observation_range": {
+    "offset": 0,
+    "next_offset": 16683
+  },
+  "fix_start_observed": "2026-11-13T08:01:32.027363+00:00",
+  "fix_terminal_observed": false,
+  "fmt_start_observed": false,
+  "qualification": false,
+  "scope": "Only the nine explicitly listed completed and full-Git-readback artifacts; no future maintenance terminal or complete raw command log is claimed.",
+  "entries": [
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_ADMISSION.original.json",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_ADMISSION.original.json",
+      "bytes": 6761,
+      "sha256": "d6f6e053494945af509d869ddd367b823e168fea7584879ca46788b0147d1bdc",
+      "git_blob": "bb35e5c8401300692422b1391ce466856c9583fc",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_STATUS_01.original.json",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_STATUS_01.original.json",
+      "bytes": 615,
+      "sha256": "2e35fd1b76cda4a847ccf9dd6ed1f7566268059ffdf353ded5908654a1984a8d",
+      "git_blob": "535b9b237e36371fc246f5ca09409359a1ebb738",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_STREAMS_READ_01.original.json",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_STREAMS_READ_01.original.json",
+      "bytes": 14794,
+      "sha256": "7f837ffd78d380ad79b84dec0e0de2cad24bc1d1aa2b640c991aa6945c7b109a",
+      "git_blob": "2c3d83db28c215a1535a19966f7d4ed09808b062",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_EXACT_REQUEST.original.json",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_EXACT_REQUEST.original.json",
+      "bytes": 5371,
+      "sha256": "c894637387df659ab0b4caf78f2ed376a37de39be96ad2ff444d72a765a93f0a",
+      "git_blob": "c6a5a907647a97204878b5b5371eab540b778403",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_DISPATCH_INTENT.json",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_DISPATCH_INTENT.json",
+      "bytes": 933,
+      "sha256": "5247ef2677b87dc3619365a099717f3141a00ba1b2f8581594df1880626dd8da",
+      "git_blob": "4f3899b0e64ddd6dafc0074e11e9a6f3920873fe",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_STDOUT_000000_004620.raw.txt",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_STDOUT_000000_004620.raw.txt",
+      "bytes": 4620,
+      "sha256": "37459e79b1b481127e49cc41ad1e62e3e296aa5e43ba8d8daf2478b059ab6f2d",
+      "git_blob": "28ed9e93be09f9897e2f30ee039b60978f639506",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_STDERR_000000_000000.raw.txt",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_STDERR_000000_000000.raw.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_STATUS_02.original.json",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_STATUS_02.original.json",
+      "bytes": 615,
+      "sha256": "2e35fd1b76cda4a847ccf9dd6ed1f7566268059ffdf353ded5908654a1984a8d",
+      "git_blob": "535b9b237e36371fc246f5ca09409359a1ebb738",
+      "actual_git_create_and_full_get_equal": true
+    },
+    {
+      "path": "provider-0c59-maintenance-v1/main/MAIN_STREAMS_READ_02.original.json",
+      "local_path": "/tmp/hepta-36fa-provider-0c59-maintenance-runtime-v1/MAIN_STREAMS_READ_02.original.json",
+      "bytes": 37374,
+      "sha256": "378df6a88bde95461ffc44be2aa32e87cce9602c0d9209c994bf58f0bddbd207",
+      "git_blob": "21cd7edaf7253eba5e1dfc7ad19fcc1c3ce45de6",
+      "actual_git_create_and_full_get_equal": true
+    }
+  ]
+}

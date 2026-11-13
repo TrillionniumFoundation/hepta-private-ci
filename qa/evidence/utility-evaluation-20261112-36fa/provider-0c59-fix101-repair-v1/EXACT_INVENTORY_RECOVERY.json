@@ -1,0 +1,40 @@
+{
+  "actual_postimage_packet": {
+    "bytes": 36709,
+    "git_blob": "786b5872a8064d18f6d391b82c7af3813541c0c1",
+    "sha256": "f03d11da7482d4a45e1c92459001b3d3e35a375ded269fb26d634e407cb62d00"
+  },
+  "actual_root_merkle_equal": "4ed32552042fee522965ea54caf95bbebb31ad43",
+  "actual_terminal": {
+    "bytes": 1391,
+    "git_blob": "63b4ec2d123e8eddaeaef3bccc1490285eab8df2",
+    "sha256": "85a3a021a3a009ba5f45080390e8b3d9ccdaab37c5c6c569aca3061275692910"
+  },
+  "all_four_error_sources_equal_0c59_and_actual_final_rows": true,
+  "all_three_observed_identities_equal": true,
+  "base_inventory": {
+    "bytes": 5629701,
+    "git_blob": "a596ae68859e3263a9ee58e2b5d7334ac9314c34",
+    "sha256": "affce692432a4fa61521561e6717a84984f679f3535190b6b88c92cb0f725f44"
+  },
+  "changes": [
+    "codex-rs/hepta-learning-ledger/src/witness.rs"
+  ],
+  "classification": "Exact recovered original inventory; not a second native full read.",
+  "expected_repair_root_merkle": "1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1",
+  "expected_repair_tree_is_not_native_observation": true,
+  "file_count": 15237,
+  "format": "hepta-exact-inventory-recovery-from-actual-postimages-v1",
+  "observed_target": {
+    "bytes": 5629749,
+    "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+    "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+  },
+  "original_porcelain_processing": "subprocess.check_output(...).decode().strip()",
+  "original_serializer": "(json.dumps(inventory, sort_keys=True, separators=(',', ':')) + '\\n').encode()",
+  "recovered": {
+    "bytes": 5629749,
+    "git_blob": "d7e2e31df4c8d463b643874bdcd11309a1df02f4",
+    "sha256": "b19022cb0957b760703a1193f20b0c2934738e68f7c0cf6956fab34468c41dfa"
+  }
+}

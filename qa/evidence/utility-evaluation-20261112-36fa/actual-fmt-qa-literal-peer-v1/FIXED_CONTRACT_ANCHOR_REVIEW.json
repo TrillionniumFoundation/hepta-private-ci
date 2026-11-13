@@ -1,0 +1,3394 @@
+{
+  "attack_cases": 83,
+  "attack_rows": [
+    {
+      "function": "clone",
+      "function_spans": {
+        "after": [
+          1550,
+          1656
+        ],
+        "before": [
+          1550,
+          1656
+        ]
+      },
+      "group": "sealed_clones",
+      "index": 0,
+      "marker": "Arc::clone(&self.original)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1639,
+            "raw": "Arc::clone(&self.original)",
+            "start": 1613
+          }
+        ],
+        "before": [
+          {
+            "end": 1639,
+            "raw": "Arc::clone(&self.original)",
+            "start": 1613
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "clone",
+      "function_spans": {
+        "after": [
+          2320,
+          2426
+        ],
+        "before": [
+          2320,
+          2426
+        ]
+      },
+      "group": "sealed_clones",
+      "index": 1,
+      "marker": "Arc::clone(&self.original)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2409,
+            "raw": "Arc::clone(&self.original)",
+            "start": 2383
+          }
+        ],
+        "before": [
+          {
+            "end": 2409,
+            "raw": "Arc::clone(&self.original)",
+            "start": 2383
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "require_original_shared_readbacks",
+      "function_spans": {
+        "after": [
+          2092,
+          4047
+        ],
+        "before": [
+          2092,
+          3976
+        ]
+      },
+      "group": "original_identity",
+      "index": 0,
+      "marker": "self.version.state.try_lock()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2643,
+            "raw": "self.version.state.try_lock()",
+            "start": 2614
+          }
+        ],
+        "before": [
+          {
+            "end": 2627,
+            "raw": "self.version.state.try_lock()",
+            "start": 2598
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "require_original_shared_readbacks",
+      "function_spans": {
+        "after": [
+          2092,
+          4047
+        ],
+        "before": [
+          2092,
+          3976
+        ]
+      },
+      "group": "original_identity",
+      "index": 1,
+      "marker": "!std::ptr::eq(held_trainer, given_trainer)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3514,
+            "raw": "!std::ptr::eq(held_trainer, given_trainer)",
+            "start": 3472
+          }
+        ],
+        "before": [
+          {
+            "end": 3459,
+            "raw": "!std::ptr::eq(held_trainer, given_trainer)",
+            "start": 3417
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "require_original_shared_readbacks",
+      "function_spans": {
+        "after": [
+          2092,
+          4047
+        ],
+        "before": [
+          2092,
+          3976
+        ]
+      },
+      "group": "original_identity",
+      "index": 2,
+      "marker": "!std::ptr::eq(held_evaluator, given_evaluator)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3576,
+            "raw": "!std::ptr::eq(held_evaluator, given_evaluator)",
+            "start": 3530
+          }
+        ],
+        "before": [
+          {
+            "end": 3521,
+            "raw": "!std::ptr::eq(held_evaluator, given_evaluator)",
+            "start": 3475
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "require_original_shared_readbacks",
+      "function_spans": {
+        "after": [
+          2092,
+          4047
+        ],
+        "before": [
+          2092,
+          3976
+        ]
+      },
+      "group": "original_identity",
+      "index": 3,
+      "marker": "PublicationAccess::Readback",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3754,
+            "raw": "PublicationAccess::Readback",
+            "start": 3727
+          }
+        ],
+        "before": [
+          {
+            "end": 3699,
+            "raw": "PublicationAccess::Readback",
+            "start": 3672
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "require_original_shared_readbacks",
+      "function_spans": {
+        "after": [
+          2092,
+          4047
+        ],
+        "before": [
+          2092,
+          3976
+        ]
+      },
+      "group": "original_identity",
+      "index": 4,
+      "marker": "RetainedVersionFinalUseOutcomeV1::Published",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2524,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 2481
+          },
+          {
+            "end": 3957,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 3914
+          }
+        ],
+        "before": [
+          {
+            "end": 2508,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 2465
+          },
+          {
+            "end": 3886,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 3843
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "require_original_shared_predecessors",
+      "function_spans": {
+        "after": [
+          4744,
+          5642
+        ],
+        "before": [
+          4676,
+          5565
+        ]
+      },
+      "group": "original_identity",
+      "index": 5,
+      "marker": "!std::ptr::eq(original_t, current_t)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 5485,
+            "raw": "!std::ptr::eq(original_t, current_t)",
+            "start": 5449
+          }
+        ],
+        "before": [
+          {
+            "end": 5408,
+            "raw": "!std::ptr::eq(original_t, current_t)",
+            "start": 5372
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "require_original_shared_predecessors",
+      "function_spans": {
+        "after": [
+          4744,
+          5642
+        ],
+        "before": [
+          4676,
+          5565
+        ]
+      },
+      "group": "original_identity",
+      "index": 6,
+      "marker": "!std::ptr::eq(original_e, current_e)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 5525,
+            "raw": "!std::ptr::eq(original_e, current_e)",
+            "start": 5489
+          }
+        ],
+        "before": [
+          {
+            "end": 5448,
+            "raw": "!std::ptr::eq(original_e, current_e)",
+            "start": 5412
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "require_original_local_shared_readbacks",
+      "function_spans": {
+        "after": [
+          10633,
+          11251
+        ],
+        "before": [
+          10343,
+          10927
+        ]
+      },
+      "group": "original_identity",
+      "index": 7,
+      "marker": "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 11048,
+            "raw": "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(",
+            "start": 10979
+          }
+        ],
+        "before": [
+          {
+            "end": 10732,
+            "raw": "OriginalVersionLocalReadBindingV1::require_original_shared_readbacks(",
+            "start": 10663
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 0,
+      "marker": ".take()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4786,
+            "raw": ".take()",
+            "start": 4779
+          }
+        ],
+        "before": [
+          {
+            "end": 4734,
+            "raw": ".take()",
+            "start": 4727
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 1,
+      "marker": "!(1..=128).contains(&slot.next_request_id)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4922,
+            "raw": "!(1..=128).contains(&slot.next_request_id)",
+            "start": 4880
+          }
+        ],
+        "before": [
+          {
+            "end": 4870,
+            "raw": "!(1..=128).contains(&slot.next_request_id)",
+            "start": 4828
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 2,
+      "marker": "request_id.checked_add(1)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 5436,
+            "raw": "request_id.checked_add(1)",
+            "start": 5411
+          }
+        ],
+        "before": [
+          {
+            "end": 5384,
+            "raw": "request_id.checked_add(1)",
+            "start": 5359
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 3,
+      "marker": ".min(self.original.original.original_end())",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 5244,
+            "raw": ".min(self.original.original.original_end())",
+            "start": 5201
+          }
+        ],
+        "before": [
+          {
+            "end": 5192,
+            "raw": ".min(self.original.original.original_end())",
+            "start": 5149
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 4,
+      "marker": "tokio::time::timeout_at(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 6920,
+            "raw": "tokio::time::timeout_at(",
+            "start": 6896
+          }
+        ],
+        "before": [
+          {
+            "end": 6789,
+            "raw": "tokio::time::timeout_at(",
+            "start": 6765
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 5,
+      "marker": "response.require_request(&request)?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7397,
+            "raw": "response.require_request(&request)?",
+            "start": 7362
+          }
+        ],
+        "before": [
+          {
+            "end": 7277,
+            "raw": "response.require_request(&request)?",
+            "start": 7242
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 6,
+      "marker": "self.require_original_window()?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4867,
+            "raw": "self.require_original_window()?",
+            "start": 4836
+          },
+          {
+            "end": 8945,
+            "raw": "self.require_original_window()?",
+            "start": 8914
+          }
+        ],
+        "before": [
+          {
+            "end": 4815,
+            "raw": "self.require_original_window()?",
+            "start": 4784
+          },
+          {
+            "end": 8655,
+            "raw": "self.require_original_window()?",
+            "start": 8624
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 7,
+      "marker": "Instant::now() >= deadline",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7120,
+            "raw": "Instant::now() >= deadline",
+            "start": 7094
+          },
+          {
+            "end": 8284,
+            "raw": "Instant::now() >= deadline",
+            "start": 8258
+          },
+          {
+            "end": 8984,
+            "raw": "Instant::now() >= deadline",
+            "start": 8958
+          }
+        ],
+        "before": [
+          {
+            "end": 7000,
+            "raw": "Instant::now() >= deadline",
+            "start": 6974
+          },
+          {
+            "end": 8124,
+            "raw": "Instant::now() >= deadline",
+            "start": 8098
+          },
+          {
+            "end": 8694,
+            "raw": "Instant::now() >= deadline",
+            "start": 8668
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 3,
+        "before": 3
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original",
+      "function_spans": {
+        "after": [
+          4283,
+          9101
+        ],
+        "before": [
+          4270,
+          8811
+        ]
+      },
+      "group": "local_budget",
+      "index": 8,
+      "marker": "*destination = Some(slot)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 9074,
+            "raw": "*destination = Some(slot)",
+            "start": 9049
+          }
+        ],
+        "before": [
+          {
+            "end": 8784,
+            "raw": "*destination = Some(slot)",
+            "start": 8759
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_original_selection",
+      "function_spans": {
+        "after": [
+          2798,
+          4727
+        ],
+        "before": [
+          2798,
+          4659
+        ]
+      },
+      "group": "local_budget",
+      "index": 9,
+      "marker": ".take()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3067,
+            "raw": ".take()",
+            "start": 3060
+          }
+        ],
+        "before": [
+          {
+            "end": 3067,
+            "raw": ".take()",
+            "start": 3060
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "read_original_selection",
+      "function_spans": {
+        "after": [
+          2798,
+          4727
+        ],
+        "before": [
+          2798,
+          4659
+        ]
+      },
+      "group": "local_budget",
+      "index": 10,
+      "marker": "!(1..=128).contains(&slot.next_request_id)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3232,
+            "raw": "!(1..=128).contains(&slot.next_request_id)",
+            "start": 3190
+          }
+        ],
+        "before": [
+          {
+            "end": 3232,
+            "raw": "!(1..=128).contains(&slot.next_request_id)",
+            "start": 3190
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "read_original_selection",
+      "function_spans": {
+        "after": [
+          2798,
+          4727
+        ],
+        "before": [
+          2798,
+          4659
+        ]
+      },
+      "group": "local_budget",
+      "index": 11,
+      "marker": ".min(self.original.end)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3577,
+            "raw": ".min(self.original.end)",
+            "start": 3554
+          }
+        ],
+        "before": [
+          {
+            "end": 3538,
+            "raw": ".min(self.original.end)",
+            "start": 3515
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "read_original_selection",
+      "function_spans": {
+        "after": [
+          2798,
+          4727
+        ],
+        "before": [
+          2798,
+          4659
+        ]
+      },
+      "group": "local_budget",
+      "index": 12,
+      "marker": "OriginalCircuitSelectionLocalReadbackV1::require_original_selection(self, &value)?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4435,
+            "raw": "OriginalCircuitSelectionLocalReadbackV1::require_original_selection(self, &value)?",
+            "start": 4353
+          }
+        ],
+        "before": [
+          {
+            "end": 4419,
+            "raw": "OriginalCircuitSelectionLocalReadbackV1::require_original_selection(self, &value)?",
+            "start": 4337
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "read_original_selection",
+      "function_spans": {
+        "after": [
+          2798,
+          4727
+        ],
+        "before": [
+          2798,
+          4659
+        ]
+      },
+      "group": "local_budget",
+      "index": 13,
+      "marker": "Instant::now() >= deadline",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4288,
+            "raw": "Instant::now() >= deadline",
+            "start": 4262
+          },
+          {
+            "end": 4616,
+            "raw": "Instant::now() >= deadline",
+            "start": 4590
+          }
+        ],
+        "before": [
+          {
+            "end": 4272,
+            "raw": "Instant::now() >= deadline",
+            "start": 4246
+          },
+          {
+            "end": 4548,
+            "raw": "Instant::now() >= deadline",
+            "start": 4522
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "read_original_selection",
+      "function_spans": {
+        "after": [
+          2798,
+          4727
+        ],
+        "before": [
+          2798,
+          4659
+        ]
+      },
+      "group": "local_budget",
+      "index": 14,
+      "marker": "*restore = Some(slot)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4702,
+            "raw": "*restore = Some(slot)",
+            "start": 4681
+          }
+        ],
+        "before": [
+          {
+            "end": 4634,
+            "raw": "*restore = Some(slot)",
+            "start": 4613
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "function": "open_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          7009,
+          8682
+        ],
+        "before": [
+          6524,
+          8169
+        ]
+      },
+      "group": "local_budget",
+      "index": 15,
+      "marker": "Duration::from_millis(500)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7320,
+            "raw": "Duration::from_millis(500)",
+            "start": 7294
+          }
+        ],
+        "before": [
+          {
+            "end": 6835,
+            "raw": "Duration::from_millis(500)",
+            "start": 6809
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "open_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          7009,
+          8682
+        ],
+        "before": [
+          6524,
+          8169
+        ]
+      },
+      "group": "local_budget",
+      "index": 16,
+      "marker": "Duration::from_secs(300)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7405,
+            "raw": "Duration::from_secs(300)",
+            "start": 7381
+          }
+        ],
+        "before": [
+          {
+            "end": 6920,
+            "raw": "Duration::from_secs(300)",
+            "start": 6896
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "open_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          7009,
+          8682
+        ],
+        "before": [
+          6524,
+          8169
+        ]
+      },
+      "group": "local_budget",
+      "index": 17,
+      "marker": ".try_acquire_owned()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7871,
+            "raw": ".try_acquire_owned()",
+            "start": 7851
+          }
+        ],
+        "before": [
+          {
+            "end": 7347,
+            "raw": ".try_acquire_owned()",
+            "start": 7327
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "open_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          7009,
+          8682
+        ],
+        "before": [
+          6524,
+          8169
+        ]
+      },
+      "group": "local_budget",
+      "index": 18,
+      "marker": "Instant::now() >= admission_end",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 8324,
+            "raw": "Instant::now() >= admission_end",
+            "start": 8293
+          },
+          {
+            "end": 8602,
+            "raw": "Instant::now() >= admission_end",
+            "start": 8571
+          }
+        ],
+        "before": [
+          {
+            "end": 7811,
+            "raw": "Instant::now() >= admission_end",
+            "start": 7780
+          },
+          {
+            "end": 8089,
+            "raw": "Instant::now() >= admission_end",
+            "start": 8058
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "bind_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          784,
+          3630
+        ],
+        "before": [
+          784,
+          3511
+        ]
+      },
+      "group": "readiness",
+      "index": 0,
+      "marker": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1177,
+            "raw": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(",
+            "start": 1098
+          },
+          {
+            "end": 3230,
+            "raw": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(",
+            "start": 3151
+          }
+        ],
+        "before": [
+          {
+            "end": 1177,
+            "raw": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(",
+            "start": 1098
+          },
+          {
+            "end": 3137,
+            "raw": "OriginalCircuitLearningReadClientV1::require_original_local_evaluated_next_use(",
+            "start": 3058
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "function": "bind_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          784,
+          3630
+        ],
+        "before": [
+          784,
+          3511
+        ]
+      },
+      "group": "readiness",
+      "index": 1,
+      "marker": "scope != material.scope",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1344,
+            "raw": "scope != material.scope",
+            "start": 1321
+          }
+        ],
+        "before": [
+          {
+            "end": 1344,
+            "raw": "scope != material.scope",
+            "start": 1321
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "function": "bind_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          784,
+          3630
+        ],
+        "before": [
+          784,
+          3511
+        ]
+      },
+      "group": "readiness",
+      "index": 2,
+      "marker": "initial.snapshot() != &material.initial",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2583,
+            "raw": "initial.snapshot() != &material.initial",
+            "start": 2544
+          }
+        ],
+        "before": [
+          {
+            "end": 2521,
+            "raw": "initial.snapshot() != &material.initial",
+            "start": 2482
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "function": "bind_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          784,
+          3630
+        ],
+        "before": [
+          784,
+          3511
+        ]
+      },
+      "group": "readiness",
+      "index": 3,
+      "marker": "&original_dataset != dataset.snapshot()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2626,
+            "raw": "&original_dataset != dataset.snapshot()",
+            "start": 2587
+          }
+        ],
+        "before": [
+          {
+            "end": 2564,
+            "raw": "&original_dataset != dataset.snapshot()",
+            "start": 2525
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "function": "bind_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          784,
+          3630
+        ],
+        "before": [
+          784,
+          3511
+        ]
+      },
+      "group": "readiness",
+      "index": 4,
+      "marker": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2858,
+            "raw": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+            "start": 2784
+          }
+        ],
+        "before": [
+          {
+            "end": 2765,
+            "raw": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+            "start": 2691
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "function": "bind_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          784,
+          3630
+        ],
+        "before": [
+          784,
+          3511
+        ]
+      },
+      "group": "readiness",
+      "index": 5,
+      "marker": "channel: Mutex::new(None)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3540,
+            "raw": "channel: Mutex::new(None)",
+            "start": 3515
+          }
+        ],
+        "before": [
+          {
+            "end": 3421,
+            "raw": "channel: Mutex::new(None)",
+            "start": 3396
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "function": "bind_original_evaluated_local_read",
+      "function_spans": {
+        "after": [
+          784,
+          3630
+        ],
+        "before": [
+          784,
+          3511
+        ]
+      },
+      "group": "readiness",
+      "index": 6,
+      "marker": "local: Some(local)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3612,
+            "raw": "local: Some(local)",
+            "start": 3594
+          }
+        ],
+        "before": [
+          {
+            "end": 3493,
+            "raw": "local: Some(local)",
+            "start": 3475
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "function": "read_completion_readiness",
+      "function_spans": {
+        "after": [
+          3945,
+          4271
+        ],
+        "before": [
+          3945,
+          4258
+        ]
+      },
+      "group": "readiness",
+      "index": 7,
+      "marker": "self.original.context.mode()? != wire::Mode::NextUse",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4081,
+            "raw": "self.original.context.mode()? != wire::Mode::NextUse",
+            "start": 4029
+          }
+        ],
+        "before": [
+          {
+            "end": 4081,
+            "raw": "self.original.context.mode()? != wire::Mode::NextUse",
+            "start": 4029
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "read_completion_readiness",
+      "function_spans": {
+        "after": [
+          3945,
+          4271
+        ],
+        "before": [
+          3945,
+          4258
+        ]
+      },
+      "group": "readiness",
+      "index": 8,
+      "marker": "LocalReadOperation::CompletionReadiness",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4245,
+            "raw": "LocalReadOperation::CompletionReadiness",
+            "start": 4206
+          }
+        ],
+        "before": [
+          {
+            "end": 4245,
+            "raw": "LocalReadOperation::CompletionReadiness",
+            "start": 4206
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "function": "original_evaluated_next_use_response",
+      "function_spans": {
+        "after": [
+          6997,
+          10614
+        ],
+        "before": [
+          6971,
+          10413
+        ]
+      },
+      "group": "version_current",
+      "index": 0,
+      "marker": "self.read_original(&state)?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7889,
+            "raw": "self.read_original(&state)?",
+            "start": 7862
+          },
+          {
+            "end": 10024,
+            "raw": "self.read_original(&state)?",
+            "start": 9997
+          }
+        ],
+        "before": [
+          {
+            "end": 7863,
+            "raw": "self.read_original(&state)?",
+            "start": 7836
+          },
+          {
+            "end": 9836,
+            "raw": "self.read_original(&state)?",
+            "start": 9809
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "function": "original_evaluated_next_use_response",
+      "function_spans": {
+        "after": [
+          6997,
+          10614
+        ],
+        "before": [
+          6971,
+          10413
+        ]
+      },
+      "group": "version_current",
+      "index": 1,
+      "marker": "before != after",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 10052,
+            "raw": "before != after",
+            "start": 10037
+          }
+        ],
+        "before": [
+          {
+            "end": 9864,
+            "raw": "before != after",
+            "start": 9849
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "function": "original_evaluated_next_use_response",
+      "function_spans": {
+        "after": [
+          6997,
+          10614
+        ],
+        "before": [
+          6971,
+          10413
+        ]
+      },
+      "group": "version_current",
+      "index": 2,
+      "marker": "after.publication().is_none()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 10085,
+            "raw": "after.publication().is_none()",
+            "start": 10056
+          }
+        ],
+        "before": [
+          {
+            "end": 9897,
+            "raw": "after.publication().is_none()",
+            "start": 9868
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "function": "original_evaluated_next_use_response",
+      "function_spans": {
+        "after": [
+          6997,
+          10614
+        ],
+        "before": [
+          6971,
+          10413
+        ]
+      },
+      "group": "version_current",
+      "index": 3,
+      "marker": "cut.require_fresh(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 10172,
+            "raw": "cut.require_fresh(",
+            "start": 10154
+          }
+        ],
+        "before": [
+          {
+            "end": 9984,
+            "raw": "cut.require_fresh(",
+            "start": 9966
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "function": "original_evaluated_next_use_response",
+      "function_spans": {
+        "after": [
+          6997,
+          10614
+        ],
+        "before": [
+          6971,
+          10413
+        ]
+      },
+      "group": "version_current",
+      "index": 4,
+      "marker": "selection.original_receipt_predecessors(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 8559,
+            "raw": "selection\n            .original_receipt_predecessors(",
+            "start": 8506
+          },
+          {
+            "end": 10286,
+            "raw": "selection\n            .original_receipt_predecessors(",
+            "start": 10233
+          }
+        ],
+        "before": [
+          {
+            "end": 8489,
+            "raw": "selection.original_receipt_predecessors(",
+            "start": 8449
+          },
+          {
+            "end": 10085,
+            "raw": "selection.original_receipt_predecessors(",
+            "start": 10045
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "function": "original_evaluated_next_use_response",
+      "function_spans": {
+        "after": [
+          6997,
+          10614
+        ],
+        "before": [
+          6971,
+          10413
+        ]
+      },
+      "group": "version_current",
+      "index": 5,
+      "marker": "RetainedVersionFinalUseOutcomeV1::Published",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7476,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 7433
+          },
+          {
+            "end": 10526,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 10483
+          }
+        ],
+        "before": [
+          {
+            "end": 7450,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 7407
+          },
+          {
+            "end": 10325,
+            "raw": "RetainedVersionFinalUseOutcomeV1::Published",
+            "start": 10282
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "function": "respond",
+      "function_spans": {
+        "after": [
+          4064,
+          5809
+        ],
+        "before": [
+          3993,
+          5436
+        ]
+      },
+      "group": "version_current",
+      "index": 6,
+      "marker": "Instant::now() >= self.end",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4265,
+            "raw": "Instant::now() >= self.end",
+            "start": 4239
+          },
+          {
+            "end": 5726,
+            "raw": "Instant::now() >= self.end",
+            "start": 5700
+          }
+        ],
+        "before": [
+          {
+            "end": 4194,
+            "raw": "Instant::now() >= self.end",
+            "start": 4168
+          },
+          {
+            "end": 5353,
+            "raw": "Instant::now() >= self.end",
+            "start": 5327
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "respond",
+      "function_spans": {
+        "after": [
+          4064,
+          5809
+        ],
+        "before": [
+          3993,
+          5436
+        ]
+      },
+      "group": "version_current",
+      "index": 7,
+      "marker": "!(1..=128).contains(&request_id)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4301,
+            "raw": "!(1..=128).contains(&request_id)",
+            "start": 4269
+          }
+        ],
+        "before": [
+          {
+            "end": 4230,
+            "raw": "!(1..=128).contains(&request_id)",
+            "start": 4198
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "respond",
+      "function_spans": {
+        "after": [
+          4064,
+          5809
+        ],
+        "before": [
+          3993,
+          5436
+        ]
+      },
+      "group": "version_current",
+      "index": 8,
+      "marker": "OriginalVersionLocalReadOperationV1::CompletionReadiness",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4915,
+            "raw": "OriginalVersionLocalReadOperationV1::CompletionReadiness",
+            "start": 4859
+          },
+          {
+            "end": 5289,
+            "raw": "OriginalVersionLocalReadOperationV1::CompletionReadiness",
+            "start": 5233
+          }
+        ],
+        "before": [
+          {
+            "end": 4747,
+            "raw": "OriginalVersionLocalReadOperationV1::CompletionReadiness",
+            "start": 4691
+          },
+          {
+            "end": 5020,
+            "raw": "OriginalVersionLocalReadOperationV1::CompletionReadiness",
+            "start": 4964
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "function": "send_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          2232,
+          6471
+        ],
+        "before": [
+          2189,
+          5671
+        ]
+      },
+      "group": "root_handoff",
+      "index": 0,
+      "marker": "require_root()?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2564,
+            "raw": "require_root()?",
+            "start": 2549
+          }
+        ],
+        "before": [
+          {
+            "end": 2521,
+            "raw": "require_root()?",
+            "start": 2506
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "send_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          2232,
+          6471
+        ],
+        "before": [
+          2189,
+          5671
+        ]
+      },
+      "group": "root_handoff",
+      "index": 1,
+      "marker": "super::root_pair(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2598,
+            "raw": "super::root_pair(",
+            "start": 2581
+          }
+        ],
+        "before": [
+          {
+            "end": 2555,
+            "raw": "super::root_pair(",
+            "start": 2538
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "send_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          2232,
+          6471
+        ],
+        "before": [
+          2189,
+          5671
+        ]
+      },
+      "group": "root_handoff",
+      "index": 2,
+      "marker": "super::require_root_pin(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 2764,
+            "raw": "super::require_root_pin(",
+            "start": 2740
+          },
+          {
+            "end": 2826,
+            "raw": "super::require_root_pin(",
+            "start": 2802
+          }
+        ],
+        "before": [
+          {
+            "end": 2721,
+            "raw": "super::require_root_pin(",
+            "start": 2697
+          },
+          {
+            "end": 2783,
+            "raw": "super::require_root_pin(",
+            "start": 2759
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "send_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          2232,
+          6471
+        ],
+        "before": [
+          2189,
+          5671
+        ]
+      },
+      "group": "root_handoff",
+      "index": 3,
+      "marker": "require_process(&recipient)?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3053,
+            "raw": "require_process(&recipient)?",
+            "start": 3025
+          }
+        ],
+        "before": [
+          {
+            "end": 2981,
+            "raw": "require_process(&recipient)?",
+            "start": 2953
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "send_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          2232,
+          6471
+        ],
+        "before": [
+          2189,
+          5671
+        ]
+      },
+      "group": "root_handoff",
+      "index": 4,
+      "marker": "sockets.insert(wire::socket_identity(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 5612,
+            "raw": "sockets.insert(wire::socket_identity(",
+            "start": 5575
+          }
+        ],
+        "before": [
+          {
+            "end": 4944,
+            "raw": "sockets.insert(wire::socket_identity(",
+            "start": 4907
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "send_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          2232,
+          6471
+        ],
+        "before": [
+          2189,
+          5671
+        ]
+      },
+      "group": "root_handoff",
+      "index": 5,
+      "marker": "now.checked_add(lifetime_ns)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 5792,
+            "raw": "now\n            .checked_add(lifetime_ns)",
+            "start": 5751
+          }
+        ],
+        "before": [
+          {
+            "end": 5111,
+            "raw": "now.checked_add(lifetime_ns)",
+            "start": 5083
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "receive_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          6630,
+          7265
+        ],
+        "before": [
+          5830,
+          6436
+        ]
+      },
+      "group": "root_handoff",
+      "index": 6,
+      "marker": "super::require_root_pin(&sender, root.pid as u32)?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7057,
+            "raw": "super::require_root_pin(&sender, root.pid as u32)?",
+            "start": 7007
+          }
+        ],
+        "before": [
+          {
+            "end": 6257,
+            "raw": "super::require_root_pin(&sender, root.pid as u32)?",
+            "start": 6207
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "receive_root_candidate_stage_handoff",
+      "function_spans": {
+        "after": [
+          6630,
+          7265
+        ],
+        "before": [
+          5830,
+          6436
+        ]
+      },
+      "group": "root_handoff",
+      "index": 7,
+      "marker": "validate_packet(&packet, profile.binding())?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7165,
+            "raw": "validate_packet(&packet, profile.binding())?",
+            "start": 7121
+          }
+        ],
+        "before": [
+          {
+            "end": 6365,
+            "raw": "validate_packet(&packet, profile.binding())?",
+            "start": 6321
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "into_original_streams",
+      "function_spans": {
+        "after": [
+          7317,
+          11521
+        ],
+        "before": [
+          6488,
+          9580
+        ]
+      },
+      "group": "root_handoff",
+      "index": 8,
+      "marker": "validate_packet(&self.packet, profile.binding())?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7570,
+            "raw": "validate_packet(&self.packet, profile.binding())?",
+            "start": 7521
+          }
+        ],
+        "before": [
+          {
+            "end": 6741,
+            "raw": "validate_packet(&self.packet, profile.binding())?",
+            "start": 6692
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "into_original_streams",
+      "function_spans": {
+        "after": [
+          7317,
+          11521
+        ],
+        "before": [
+          6488,
+          9580
+        ]
+      },
+      "group": "root_handoff",
+      "index": 9,
+      "marker": "check_lifetime(&self.sender)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7640,
+            "raw": "check_lifetime(&self.sender)",
+            "start": 7612
+          }
+        ],
+        "before": [
+          {
+            "end": 6811,
+            "raw": "check_lifetime(&self.sender)",
+            "start": 6783
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "into_original_streams",
+      "function_spans": {
+        "after": [
+          7317,
+          11521
+        ],
+        "before": [
+          6488,
+          9580
+        ]
+      },
+      "group": "root_handoff",
+      "index": 10,
+      "marker": "minimum.checked_sub(now)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 8131,
+            "raw": "minimum\n            .checked_sub(now)",
+            "start": 8094
+          }
+        ],
+        "before": [
+          {
+            "end": 7211,
+            "raw": "minimum.checked_sub(now)",
+            "start": 7187
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "into_original_streams",
+      "function_spans": {
+        "after": [
+          7317,
+          11521
+        ],
+        "before": [
+          6488,
+          9580
+        ]
+      },
+      "group": "root_handoff",
+      "index": 11,
+      "marker": "require_timing(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 9108,
+            "raw": "require_timing(",
+            "start": 9093
+          }
+        ],
+        "before": [
+          {
+            "end": 8017,
+            "raw": "require_timing(",
+            "start": 8002
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "function": "receive",
+      "function_spans": {
+        "after": [
+          2380,
+          4256
+        ],
+        "before": [
+          2269,
+          4054
+        ]
+      },
+      "group": "root_handoff",
+      "index": 12,
+      "marker": "libc::MSG_CMSG_CLOEXEC",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3274,
+            "raw": "libc::MSG_CMSG_CLOEXEC",
+            "start": 3252
+          }
+        ],
+        "before": [
+          {
+            "end": 3131,
+            "raw": "libc::MSG_CMSG_CLOEXEC",
+            "start": 3109
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "function": "receive",
+      "function_spans": {
+        "after": [
+          2380,
+          4256
+        ],
+        "before": [
+          2269,
+          4054
+        ]
+      },
+      "group": "root_handoff",
+      "index": 13,
+      "marker": "libc::MSG_TRUNC | libc::MSG_CTRUNC",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3619,
+            "raw": "libc::MSG_TRUNC | libc::MSG_CTRUNC",
+            "start": 3585
+          }
+        ],
+        "before": [
+          {
+            "end": 3456,
+            "raw": "libc::MSG_TRUNC | libc::MSG_CTRUNC",
+            "start": 3422
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    },
+    {
+      "function": "into_candidate_service",
+      "function_spans": {
+        "after": [
+          2298,
+          4895
+        ],
+        "before": [
+          2298,
+          4433
+        ]
+      },
+      "group": "root_service",
+      "index": 0,
+      "marker": "ResidentRootAuthorityV3::perform(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3195,
+            "raw": "ResidentRootAuthorityV3::perform(",
+            "start": 3162
+          },
+          {
+            "end": 4470,
+            "raw": "ResidentRootAuthorityV3::perform(",
+            "start": 4437
+          }
+        ],
+        "before": [
+          {
+            "end": 3127,
+            "raw": "ResidentRootAuthorityV3::perform(",
+            "start": 3094
+          },
+          {
+            "end": 4135,
+            "raw": "ResidentRootAuthorityV3::perform(",
+            "start": 4102
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "into_candidate_service",
+      "function_spans": {
+        "after": [
+          2298,
+          4895
+        ],
+        "before": [
+          2298,
+          4433
+        ]
+      },
+      "group": "root_service",
+      "index": 1,
+      "marker": "ResidentRootAuthorityV3::readonly(&self.owner.authority)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3717,
+            "raw": "ResidentRootAuthorityV3::readonly(&self.owner.authority)",
+            "start": 3661
+          }
+        ],
+        "before": [
+          {
+            "end": 3533,
+            "raw": "ResidentRootAuthorityV3::readonly(&self.owner.authority)",
+            "start": 3477
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "into_candidate_service",
+      "function_spans": {
+        "after": [
+          2298,
+          4895
+        ],
+        "before": [
+          2298,
+          4433
+        ]
+      },
+      "group": "root_service",
+      "index": 2,
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3796,
+            "raw": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(",
+            "start": 3732
+          }
+        ],
+        "before": [
+          {
+            "end": 3612,
+            "raw": "OriginalCellQ24CandidateStageOwnersV1::recover_original_streams(",
+            "start": 3548
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "into_candidate_service",
+      "function_spans": {
+        "after": [
+          2298,
+          4895
+        ],
+        "before": [
+          2298,
+          4433
+        ]
+      },
+      "group": "root_service",
+      "index": 3,
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 3956,
+            "raw": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams(",
+            "start": 3895
+          }
+        ],
+        "before": [
+          {
+            "end": 3741,
+            "raw": "OriginalCellQ24CandidateStageOwnersV1::from_original_streams(",
+            "start": 3680
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "into_candidate_service",
+      "function_spans": {
+        "after": [
+          2298,
+          4895
+        ],
+        "before": [
+          2298,
+          4433
+        ]
+      },
+      "group": "root_service",
+      "index": 4,
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 4271,
+            "raw": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline(",
+            "start": 4197
+          }
+        ],
+        "before": [
+          {
+            "end": 3980,
+            "raw": "OriginalCellQ24CandidateStageOwnersV1::restrict_original_handoff_deadline(",
+            "start": 3906
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "run",
+      "function_spans": {
+        "after": [
+          5581,
+          7780
+        ],
+        "before": [
+          5119,
+          7035
+        ]
+      },
+      "group": "root_service",
+      "index": 5,
+      "marker": "cancellation.clone().drop_guard()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 6168,
+            "raw": "cancellation.clone().drop_guard()",
+            "start": 6135
+          }
+        ],
+        "before": [
+          {
+            "end": 5591,
+            "raw": "cancellation.clone().drop_guard()",
+            "start": 5558
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "run",
+      "function_spans": {
+        "after": [
+          5581,
+          7780
+        ],
+        "before": [
+          5119,
+          7035
+        ]
+      },
+      "group": "root_service",
+      "index": 6,
+      "marker": "tokio::join!(run, server)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 6815,
+            "raw": "tokio::join!(run, server)",
+            "start": 6790
+          }
+        ],
+        "before": [
+          {
+            "end": 6127,
+            "raw": "tokio::join!(run, server)",
+            "start": 6102
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "run",
+      "function_spans": {
+        "after": [
+          5581,
+          7780
+        ],
+        "before": [
+          5119,
+          7035
+        ]
+      },
+      "group": "root_service",
+      "index": 7,
+      "marker": "root_cancellation.cancelled()",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7263,
+            "raw": "root_cancellation.cancelled()",
+            "start": 7234
+          }
+        ],
+        "before": [
+          {
+            "end": 6518,
+            "raw": "root_cancellation.cancelled()",
+            "start": 6489
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "run",
+      "function_spans": {
+        "after": [
+          5581,
+          7780
+        ],
+        "before": [
+          5119,
+          7035
+        ]
+      },
+      "group": "root_service",
+      "index": 8,
+      "marker": "shutdown.0.shutdown(Shutdown::Both)",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7367,
+            "raw": "shutdown.0.shutdown(Shutdown::Both)",
+            "start": 7332
+          },
+          {
+            "end": 7566,
+            "raw": "shutdown.0.shutdown(Shutdown::Both)",
+            "start": 7531
+          }
+        ],
+        "before": [
+          {
+            "end": 6622,
+            "raw": "shutdown.0.shutdown(Shutdown::Both)",
+            "start": 6587
+          },
+          {
+            "end": 6821,
+            "raw": "shutdown.0.shutdown(Shutdown::Both)",
+            "start": 6786
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "run",
+      "function_spans": {
+        "after": [
+          5581,
+          7780
+        ],
+        "before": [
+          5119,
+          7035
+        ]
+      },
+      "group": "root_service",
+      "index": 9,
+      "marker": "work.await",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 7395,
+            "raw": "work.await",
+            "start": 7385
+          },
+          {
+            "end": 7610,
+            "raw": "work.await",
+            "start": 7600
+          }
+        ],
+        "before": [
+          {
+            "end": 6650,
+            "raw": "work.await",
+            "start": 6640
+          },
+          {
+            "end": 6865,
+            "raw": "work.await",
+            "start": 6855
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 2,
+        "before": 2
+      },
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          395,
+          1623
+        ],
+        "before": [
+          395,
+          1561
+        ]
+      },
+      "group": "shared_seals",
+      "index": 0,
+      "marker": "original != expected",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 729,
+            "raw": "original != expected",
+            "start": 709
+          }
+        ],
+        "before": [
+          {
+            "end": 729,
+            "raw": "original != expected",
+            "start": 709
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          395,
+          1623
+        ],
+        "before": [
+          395,
+          1561
+        ]
+      },
+      "group": "shared_seals",
+      "index": 1,
+      "marker": "channel.peer.check_peer_lifetime()?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1051,
+            "raw": "channel.peer.check_peer_lifetime()?",
+            "start": 1016
+          }
+        ],
+        "before": [
+          {
+            "end": 1020,
+            "raw": "channel.peer.check_peer_lifetime()?",
+            "start": 985
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          395,
+          1623
+        ],
+        "before": [
+          395,
+          1561
+        ]
+      },
+      "group": "shared_seals",
+      "index": 2,
+      "marker": "wire::authenticate_receipt(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1108,
+            "raw": "wire::authenticate_receipt(",
+            "start": 1081
+          }
+        ],
+        "before": [
+          {
+            "end": 1077,
+            "raw": "wire::authenticate_receipt(",
+            "start": 1050
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          395,
+          1623
+        ],
+        "before": [
+          395,
+          1561
+        ]
+      },
+      "group": "shared_seals",
+      "index": 3,
+      "marker": "&authenticated != original",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1289,
+            "raw": "&authenticated != original",
+            "start": 1263
+          }
+        ],
+        "before": [
+          {
+            "end": 1258,
+            "raw": "&authenticated != original",
+            "start": 1232
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          395,
+          1623
+        ],
+        "before": [
+          395,
+          1561
+        ]
+      },
+      "group": "shared_seals",
+      "index": 4,
+      "marker": "channel.execution_requested = true",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1545,
+            "raw": "channel.execution_requested = true",
+            "start": 1511
+          }
+        ],
+        "before": [
+          {
+            "end": 1483,
+            "raw": "channel.execution_requested = true",
+            "start": 1449
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          395,
+          1623
+        ],
+        "before": [
+          395,
+          1561
+        ]
+      },
+      "group": "shared_seals",
+      "index": 5,
+      "marker": "Ok(Arc::new(self))",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1617,
+            "raw": "Ok(Arc::new(self))",
+            "start": 1599
+          }
+        ],
+        "before": [
+          {
+            "end": 1555,
+            "raw": "Ok(Arc::new(self))",
+            "start": 1537
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          389,
+          1543
+        ],
+        "before": [
+          389,
+          1481
+        ]
+      },
+      "group": "shared_seals",
+      "index": 6,
+      "marker": "original != expected",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 722,
+            "raw": "original != expected",
+            "start": 702
+          }
+        ],
+        "before": [
+          {
+            "end": 722,
+            "raw": "original != expected",
+            "start": 702
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          389,
+          1543
+        ],
+        "before": [
+          389,
+          1481
+        ]
+      },
+      "group": "shared_seals",
+      "index": 7,
+      "marker": "channel.peer.check_peer_lifetime()?",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1046,
+            "raw": "channel.peer.check_peer_lifetime()?",
+            "start": 1011
+          }
+        ],
+        "before": [
+          {
+            "end": 1015,
+            "raw": "channel.peer.check_peer_lifetime()?",
+            "start": 980
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          389,
+          1543
+        ],
+        "before": [
+          389,
+          1481
+        ]
+      },
+      "group": "shared_seals",
+      "index": 8,
+      "marker": "wire::authenticate_completed(",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1105,
+            "raw": "wire::authenticate_completed(",
+            "start": 1076
+          }
+        ],
+        "before": [
+          {
+            "end": 1074,
+            "raw": "wire::authenticate_completed(",
+            "start": 1045
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          389,
+          1543
+        ],
+        "before": [
+          389,
+          1481
+        ]
+      },
+      "group": "shared_seals",
+      "index": 9,
+      "marker": "&authenticated != original",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1287,
+            "raw": "&authenticated != original",
+            "start": 1261
+          }
+        ],
+        "before": [
+          {
+            "end": 1256,
+            "raw": "&authenticated != original",
+            "start": 1230
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          389,
+          1543
+        ],
+        "before": [
+          389,
+          1481
+        ]
+      },
+      "group": "shared_seals",
+      "index": 10,
+      "marker": "channel.execution_requested = true",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1465,
+            "raw": "channel.execution_requested = true",
+            "start": 1431
+          }
+        ],
+        "before": [
+          {
+            "end": 1403,
+            "raw": "channel.execution_requested = true",
+            "start": 1369
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "function": "seal_original_completed_readback",
+      "function_spans": {
+        "after": [
+          389,
+          1543
+        ],
+        "before": [
+          389,
+          1481
+        ]
+      },
+      "group": "shared_seals",
+      "index": 11,
+      "marker": "Ok(Arc::new(self))",
+      "matched_original_source": {
+        "after": [
+          {
+            "end": 1537,
+            "raw": "Ok(Arc::new(self))",
+            "start": 1519
+          }
+        ],
+        "before": [
+          {
+            "end": 1475,
+            "raw": "Ok(Arc::new(self))",
+            "start": 1457
+          }
+        ]
+      },
+      "original_whitespace_token_pattern_counts": {
+        "after": 1,
+        "before": 1
+      },
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    }
+  ],
+  "changed_or_missing_marker_occurrences": [],
+  "contract": {
+    "bytes": 321192,
+    "git_blob": "5be5932d2523a930c849d9ca300670773f74f6ad",
+    "sha256": "2d2bc6b502d70b72ac07b27d6132bade55cf5874923c800ad33e24de993131d1"
+  },
+  "format": "hepta-fixed-provider-attack-anchors-after-actual-fmt-v1",
+  "ordinary_17_literal_source_paths_changed": [],
+  "ordinary_mounts_with_changed_parent_bytes": [
+    {
+      "child": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_retained.rs",
+      "module_name": "retained",
+      "parent": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "path_literal": "\"cell_q24_candidate_stage_retained.rs\""
+    },
+    {
+      "child": "codex-rs/hepta-agentd/src/circuit_retained_version_prepared.rs",
+      "module_name": "prepared_custody",
+      "parent": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "path_literal": "\"circuit_retained_version_prepared.rs\""
+    }
+  ],
+  "ordinary_scope_count_in_changed_files": 8,
+  "ordinary_scope_files_affected_by_actual_fmt": [
+    {
+      "entries": 4,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs"
+    }
+  ],
+  "ordinary_scope_files_total": 20,
+  "ordinary_scopes_total": 34,
+  "provider_scope_count_in_changed_files": 145,
+  "provider_scope_files_affected_by_actual_fmt": [
+    {
+      "entries": 7,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_candidate_service.rs"
+    },
+    {
+      "entries": 4,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_shared_readback.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_local.rs"
+    },
+    {
+      "entries": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_service.rs"
+    },
+    {
+      "entries": 3,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local.rs"
+    },
+    {
+      "entries": 3,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_local_command.rs"
+    },
+    {
+      "entries": 3,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_local_readback.rs"
+    },
+    {
+      "entries": 3,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_owner_adapter.rs"
+    },
+    {
+      "entries": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_service.rs"
+    },
+    {
+      "entries": 3,
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_local.rs"
+    },
+    {
+      "entries": 6,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_local_read.rs"
+    },
+    {
+      "entries": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs"
+    },
+    {
+      "entries": 15,
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+    },
+    {
+      "entries": 12,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs"
+    },
+    {
+      "entries": 6,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_local_read.rs"
+    },
+    {
+      "entries": 3,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_next_use_readback.rs"
+    },
+    {
+      "entries": 4,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_shared_readback.rs"
+    },
+    {
+      "entries": 2,
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+    },
+    {
+      "entries": 9,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_local_predecessor.rs"
+    },
+    {
+      "entries": 24,
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+    },
+    {
+      "entries": 6,
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs"
+    },
+    {
+      "entries": 1,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_shared_readback.rs"
+    },
+    {
+      "entries": 16,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff.rs"
+    },
+    {
+      "entries": 6,
+      "path": "codex-rs/hepta-agentd/src/root_candidate_stage_handoff_wire.rs"
+    }
+  ],
+  "provider_scope_files_total": 41,
+  "provider_scopes_total": 264,
+  "refresh_scope": "All affected code/literal scope hashes and module-shape descriptions must be recomputed from actual formatted source by the sole registry writer. No selector/forbidden/assertion/ignore relaxation follows from these diagnostics.",
+  "scope": "Pure lexical inspection in unique original functions; no imported QA/collector or verifier invocation and no mutation execution. This independently checks marker occurrence stability, not rejection verdicts."
+}

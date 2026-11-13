@@ -1,0 +1,333 @@
+{
+  "ascii_parts_provenance": "Exact deterministic representation of directly read native gzip bytes; not additional reads of the b64 paths.",
+  "format": "hepta-complete-original-fixed-audit-readback-v1",
+  "input_count": 39,
+  "job_id": "1a1d41eb3ef-392-2b2",
+  "nanosecond_values": "retained raw bytes; Python integer parse only",
+  "original_git_metadata_two_paths_and_previous_failed_final_raw_equal": true,
+  "original_git_state_four_paths_full_raw_equal": true,
+  "read_failures": [],
+  "readonly_command_count": 41,
+  "rows": [
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 354,
+        "git_blob": "ace67fdb3c173c08ed8b62ac5c941e863e649622",
+        "name": "SOURCE_COORDINATION_EX.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_COORDINATION_EX.json",
+        "sha256": "3efc42ccc0f1ec550957a30eb9079cb1740be54be809aa8fa0df87a43117a98e"
+      },
+      "read_sdk": {
+        "bytes": 957,
+        "git_blob": "b378f3665d97e26fcfc2d4b5c73995b8b2163e77",
+        "name": "AUDIT_LEASE_READ_01.original.json",
+        "sha256": "2883fad19a858bfbc8ceadbc3bd727932b4c0cd586c3761e662db242490ba33e"
+      },
+      "version": "2050:51120858:354:1794560146807602266:1794560146807602266"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 489,
+        "git_blob": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+        "name": "SOURCE_GIT_STATE.before.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_STATE.before.json",
+        "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660"
+      },
+      "read_sdk": {
+        "bytes": 1138,
+        "git_blob": "c513f9d9b15911977aa30cb00947682f62b91ea4",
+        "name": "AUDIT_GIT_BEFORE_READ_01.original.json",
+        "sha256": "baa2cdb0d25e83f4a15cc07fe3d670ac12d67fed05d81a5d65991749b3839078"
+      },
+      "version": "2050:51120923:489:1794560147821601083:1794560147821601083"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 489,
+        "git_blob": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+        "name": "apply.after.git-state.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/apply.after.git-state.json",
+        "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660"
+      },
+      "read_sdk": {
+        "bytes": 1136,
+        "git_blob": "de774ff06f8305456f0065da23eaed70d4fd9923",
+        "name": "AUDIT_GIT_APPLY_READ_01.original.json",
+        "sha256": "cebde351d3651afd9701a7424df71c34345870fb898e3e124598d5525cdae692"
+      },
+      "version": "2050:51121046:489:1794560171205610459:1794560171205610459"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 489,
+        "git_blob": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+        "name": "fmt.after.git-state.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/fmt.after.git-state.json",
+        "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660"
+      },
+      "read_sdk": {
+        "bytes": 1134,
+        "git_blob": "47c8202e38223904d9b914de0d2940dfe99c1216",
+        "name": "AUDIT_GIT_FMT_READ_01.original.json",
+        "sha256": "ec3eac288963cb2e390d0d18b773e9fee767d3b12ef25fe6b082622f6ef7bd0d"
+      },
+      "version": "2050:51121086:489:1794560190751497993:1794560190751497993"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 489,
+        "git_blob": "6887b270c7d0c6273c644268d3d260c9aee3aa00",
+        "name": "final.git-state.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/final.git-state.json",
+        "sha256": "34a00b1ea6a7c268b2081a03377d79428ec57fd5586caa89043269ed7fab9660"
+      },
+      "read_sdk": {
+        "bytes": 1130,
+        "git_blob": "47534a0ab2732824ce651debac079f11cd817a97",
+        "name": "AUDIT_GIT_FINAL_READ_01.original.json",
+        "sha256": "11001ee2bee7f673d180785076762c8689d9af459b14a1889815ffa27673f4b1"
+      },
+      "version": "2050:51121210:489:1794560199682778367:1794560199682778367"
+    },
+    {
+      "decoded": {
+        "bytes": 2642,
+        "git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+        "name": "SOURCE_GIT_METADATA.before.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_METADATA.before.json",
+        "sha256": "7549fff731bd055a4dbe895bb0a37fa2486a6e2818e302e8af89495436d704e4"
+      },
+      "derived_exact_native_ascii_parts": [
+        {
+          "bytes": 1053,
+          "git_blob": "5d6f7b41e1c5968dced66a2a2c9dbef890efbf48",
+          "name": "SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+          "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_METADATA.before.json.gz.part-001.b64",
+          "sha256": "03a1491cbe74038417a64f4117fa886705fd666b262b072a1ef2a95a48f158b3"
+        }
+      ],
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 788,
+        "git_blob": "97f706d46e435c0b363ca04b376e76e23e21dbf2",
+        "name": "SOURCE_GIT_METADATA.before.json.gz",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_METADATA.before.json.gz",
+        "sha256": "c4f804da8488796b3d31b14107d0b5065d5b4751c14300a9a4b8ed8dcfa6bdb3"
+      },
+      "read_sdk": {
+        "bytes": 1544,
+        "git_blob": "f5a85b0008f22f0021e6480c9f5ac41360cf890f",
+        "name": "AUDIT_METADATA_BEFORE_READ_01.original.json",
+        "sha256": "6aa767e861d8d19579aa039091384c7be483797901c4e4c0506f729ccd021a34"
+      },
+      "version": "2050:51120930:788:1794560157007216371:1794560157007216371"
+    },
+    {
+      "decoded": {
+        "bytes": 2642,
+        "git_blob": "d13c50e149ba23ff1acbd0f99b29669131c1312b",
+        "name": "SOURCE_GIT_METADATA.after.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_METADATA.after.json",
+        "sha256": "7549fff731bd055a4dbe895bb0a37fa2486a6e2818e302e8af89495436d704e4"
+      },
+      "derived_exact_native_ascii_parts": [
+        {
+          "bytes": 1053,
+          "git_blob": "5d6f7b41e1c5968dced66a2a2c9dbef890efbf48",
+          "name": "SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+          "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_METADATA.after.json.gz.part-001.b64",
+          "sha256": "03a1491cbe74038417a64f4117fa886705fd666b262b072a1ef2a95a48f158b3"
+        }
+      ],
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 788,
+        "git_blob": "97f706d46e435c0b363ca04b376e76e23e21dbf2",
+        "name": "SOURCE_GIT_METADATA.after.json.gz",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/SOURCE_GIT_METADATA.after.json.gz",
+        "sha256": "c4f804da8488796b3d31b14107d0b5065d5b4751c14300a9a4b8ed8dcfa6bdb3"
+      },
+      "read_sdk": {
+        "bytes": 1543,
+        "git_blob": "190d51a915815f055b5b3c6e65e98b5b91a1a177",
+        "name": "AUDIT_METADATA_AFTER_READ_01.original.json",
+        "sha256": "06c0baec7e3b2f1dee7065b2bae2d07ded2fa0204f63962ef12ceb7f6234fd9a"
+      },
+      "version": "2050:51121231:788:1794560205331633850:1794560205331633850"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 9760,
+        "git_blob": "65298e7f8486de9e1bf235c625cb56254025b3d2",
+        "name": "INPUT_IDENTITIES.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/INPUT_IDENTITIES.json",
+        "sha256": "1a31aa65251f038b569f3867541951731588f495c1916062e1f69bc8147df1ad"
+      },
+      "read_sdk": {
+        "bytes": 13498,
+        "git_blob": "a26aeeb54b45657641209da6401e076e1c1fdf7c",
+        "name": "AUDIT_INPUTS_READ_01.original.json",
+        "sha256": "670e8ceec2034674474dee817d52b7082ade2536425082c825b757c154530c6e"
+      },
+      "version": "2050:51121237:9760:1794560205433215874:1794560205433215874"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 22520,
+        "git_blob": "9fbac905be4a6d1fd99f3ddf420a207764675fcb",
+        "name": "READONLY_COMMANDS.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/READONLY_COMMANDS.json",
+        "sha256": "8e637cb2df94c91e825642f65c763b6136e6a0326ef8e0f78b7043338a0aba1e"
+      },
+      "read_sdk": {
+        "bytes": 30514,
+        "git_blob": "8c65a5257694fa81890a4421b496a87cc9f42973",
+        "name": "AUDIT_COMMANDS_READ_01.original.json",
+        "sha256": "67831e2b0a11656ea04ecade2a4a837f5525a727c807d1dd071edb39500dd37b"
+      },
+      "version": "2050:51121233:22520:1794560205419801438:1794560205419801438"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 6702,
+        "git_blob": "c3d4f7fbe5f3d1b47602ac6511006e8467b5e0e8",
+        "name": "ENVIRONMENT_PREFLIGHT.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/ENVIRONMENT_PREFLIGHT.json",
+        "sha256": "965a9e9fba254505bfd9794f6ec9de9863700bdad1a7659ffa6dab6a9eee06fd"
+      },
+      "read_sdk": {
+        "bytes": 9423,
+        "git_blob": "b1111aa0c27013856cf8da198411a8c6897ee01e",
+        "name": "AUDIT_ENVIRONMENT_READ_01.original.json",
+        "sha256": "42cbc94f180f10fc3bee67f8efbebae2ad222a106cee17947746968585c2623d"
+      },
+      "version": "2050:51120993:6702:1794560158295902739:1794560158295902739"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 1382,
+        "git_blob": "1dfdf2450ebcde903eb5cf8f6cbe50ad98f4193d",
+        "name": "FORMATTER_ENVIRONMENT.before-override.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/FORMATTER_ENVIRONMENT.before-override.json",
+        "sha256": "eb8fe090db31cc6c8a3422e8159bce58e1259072fcd5c5822d975b53005976b7"
+      },
+      "read_sdk": {
+        "bytes": 2347,
+        "git_blob": "365daa2f6c46b55a70b73347f30235da8c1ab01b",
+        "name": "AUDIT_FORMATTER_ENV_READ_01.original.json",
+        "sha256": "e5e26da947f9cb6b2a30daa86ffaae603cb87ff41c5df94ea7abeddff72cc954"
+      },
+      "version": "2050:51120984:1382:1794560157297652832:1794560157297652832"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 185,
+        "git_blob": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+        "name": "BUILD_PROCESS_PREFLIGHT.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/BUILD_PROCESS_PREFLIGHT.json",
+        "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0"
+      },
+      "read_sdk": {
+        "bytes": 734,
+        "git_blob": "e43751f988823a8f1c434f182f812818579d5417",
+        "name": "AUDIT_BUILD_PREFLIGHT_READ_01.original.json",
+        "sha256": "b36afdaa8c83c4756c24e5d903e9e6ea2a906e33f7cf23e21d6b0d8c5f060a53"
+      },
+      "version": "2050:51120992:185:1794560158293788730:1794560158293788730"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 185,
+        "git_blob": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+        "name": "APPLY.process-preflight.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/APPLY.process-preflight.json",
+        "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0"
+      },
+      "read_sdk": {
+        "bytes": 734,
+        "git_blob": "5a6e15a19474bb616d982d2d4eba2a58c3fb27c1",
+        "name": "AUDIT_APPLY_PREFLIGHT_READ_01.original.json",
+        "sha256": "f394d325e3286a32d429a57d92cee2430cb7ab1e3a693141a2fa40f6dcc34fce"
+      },
+      "version": "2050:51121006:185:1794560162030757345:1794560162030757345"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 185,
+        "git_blob": "1cb85dc048a8923e7c2242704bd7693012c1bd55",
+        "name": "fmt.process-preflight.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/fmt.process-preflight.json",
+        "sha256": "a6bf8a2b8af1ceadb9d0cdd49ad2b2c08d090d7ad193fdbad85f28d9834c8da0"
+      },
+      "read_sdk": {
+        "bytes": 732,
+        "git_blob": "467c2177d481415afae992a3963703cb3d121068",
+        "name": "AUDIT_FMT_PREFLIGHT_READ_01.original.json",
+        "sha256": "911d95b56e4ab09f5cf5d7ae6dd1c380bc1e87d9519eb01ff980db95828113ac"
+      },
+      "version": "2050:51121064:185:1794560180451549971:1794560180451549971"
+    },
+    {
+      "decoded": {
+        "bytes": 161839,
+        "git_blob": "f199bb572a20d3fe71c65acc4f47448479a2d8e6",
+        "name": "apply.after.postimages.json",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/apply.after.postimages.json",
+        "sha256": "a277e83fd28555d9509630333236b18b9509517a56c01b67b921ec9fa98bdf3f"
+      },
+      "derived_exact_native_ascii_parts": [
+        {
+          "bytes": 48009,
+          "git_blob": "e8100015983fe11bb0ca7f5c7282968e2dc512a1",
+          "name": "apply.after.postimages.json.gz.part-001.b64",
+          "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/apply.after.postimages.json.gz.part-001.b64",
+          "sha256": "ea59383935b656b504987391be092650ec4d42e73c2ee775005d52234b90a8c6"
+        }
+      ],
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 36005,
+        "git_blob": "1048f9843c6c0c02e23921e99060d01a257d0fe8",
+        "name": "apply.after.postimages.json.gz",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/apply.after.postimages.json.gz",
+        "sha256": "dc6855835f5c3b9d8b6b05a28df8515169f50f6f150b02f5e081573c4c8ceb09"
+      },
+      "read_sdk": {
+        "bytes": 48502,
+        "git_blob": "3139d94f863e3fb0f1752b350a5a2fbfe5d8016e",
+        "name": "AUDIT_APPLY_POSTIMAGES_READ_01.original.json",
+        "sha256": "4b49dab2361016f25deeb17c4d7fa4454c5e733a2b53428f085062eff60056f3"
+      },
+      "version": "2050:51121047:36005:1794560171513516213:1794560171513516213"
+    },
+    {
+      "full_zero_to_eof": true,
+      "original": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "name": "fmt.raw.log",
+        "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-runtime-v1/fmt.raw.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "read_sdk": {
+        "bytes": 463,
+        "git_blob": "9d011ad01b720a0add0480ec7bbf73e66993b142",
+        "name": "AUDIT_FMT_RAW_READ_01.original.json",
+        "sha256": "b5cb661c9565aa4cdb3a47b0e1b54cbce2a94de3b60ce330f487fb6f7838659c"
+      },
+      "version": "2050:51121067:0:1794560180542280928:1794560180542280928"
+    }
+  ]
+}

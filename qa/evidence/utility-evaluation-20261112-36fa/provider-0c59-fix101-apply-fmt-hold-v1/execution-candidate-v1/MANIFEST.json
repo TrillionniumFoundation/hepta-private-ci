@@ -1,0 +1,91 @@
+{
+  "actual_execution": null,
+  "decoded_fixed_inputs": {
+    "APPROVED_CONFIG.json": {
+      "bytes": 2798,
+      "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+      "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+    },
+    "FAILED_MAINTENANCE_SUPERVISOR.original.json": {
+      "bytes": 910,
+      "git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+      "sha256": "80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa"
+    },
+    "REPAIR_PROPOSAL.original.json": {
+      "bytes": 152573,
+      "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+      "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+    },
+    "driver.py": {
+      "bytes": 34454,
+      "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+      "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+    }
+  },
+  "dispatch_authorized": false,
+  "entries": [
+    {
+      "bytes": 2798,
+      "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+      "name": "APPROVED_CONFIG.candidate.json",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/APPROVED_CONFIG.candidate.json",
+      "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+    },
+    {
+      "bytes": 5714,
+      "git_blob": "ab06aa07a11ab2b6739a7203dab0a1ba6f0deb29",
+      "name": "ACTUAL_BOOTSTRAP.candidate.py",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/ACTUAL_BOOTSTRAP.candidate.py",
+      "sha256": "30290adfc825757435059d626819216e764ff461862c20fe9177b745a619fe43"
+    },
+    {
+      "bytes": 77588,
+      "git_blob": "347d63ee5af1c0f5826b02add02f2f322a4aefbe",
+      "name": "ACTUAL_STDIN.candidate.json",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/ACTUAL_STDIN.candidate.json",
+      "sha256": "8d88855f1d67b6e42e06daf6989e4955d9cc6090d6df7ef6cd83f25600dc3223"
+    },
+    {
+      "bytes": 83679,
+      "git_blob": "b63bd0d12684a3ba39e63f1f12fef56cb56cb3d9",
+      "name": "ACTUAL_PROCESS_INPUT.candidate.json",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/ACTUAL_PROCESS_INPUT.candidate.json",
+      "sha256": "c90457ea45cc064a01cc332fe0d48992352381218570afe243ca68d2e3c47df9"
+    },
+    {
+      "bytes": 508,
+      "git_blob": "f833c3e7eef130d5ca6d853b62f6d145bd33c420",
+      "name": "CONFIG_FROM_HOLD.diff",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/CONFIG_FROM_HOLD.diff",
+      "sha256": "44b7fc75117abe106443441db42731c9e1747211f104741542516a84241d99af"
+    },
+    {
+      "bytes": 4205,
+      "git_blob": "f66df3ae1f2bc30e6063f471d7dc484d7c225401",
+      "name": "BOOTSTRAP_FROM_ORIGINAL_9101.diff",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/BOOTSTRAP_FROM_ORIGINAL_9101.diff",
+      "sha256": "cbcca372653e77e43bb25a31b55f0d00ff7423e6551e41e23d6ba2692a563d8f"
+    },
+    {
+      "bytes": 5523,
+      "git_blob": "02555074403188c748bc44f3a0fe311a59d5a5f0",
+      "name": "EXACT_LAUNCH_STATIC_REVIEW.json",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/EXACT_LAUNCH_STATIC_REVIEW.json",
+      "sha256": "8091e6d0f48a417942f56c99c43ef00cdb356a76887c3e0db6597ec5e1199f99"
+    },
+    {
+      "bytes": 10622,
+      "git_blob": "2524ab5653cdf7da6f6622b9069f635e10025c7e",
+      "name": "PREPARE_EXECUTION_CANDIDATE.py",
+      "path": "/tmp/hepta-36fa-provider-0c59-fix101-apply-fmt-hold-v1/execution-candidate-v1/PREPARE_EXECUTION_CANDIDATE.py",
+      "sha256": "befc75968f695693d41a66c83e3fb35a782bf600d134f23ae7742dbd90666356"
+    }
+  ],
+  "exact_request": {
+    "bytes": 83679,
+    "git_blob": "b63bd0d12684a3ba39e63f1f12fef56cb56cb3d9",
+    "sha256": "c90457ea45cc064a01cc332fe0d48992352381218570afe243ca68d2e3c47df9"
+  },
+  "format": "hepta-fix101-apply-fmt-execution-candidate-manifest-v1",
+  "status": "HOLD_ROOT_EXACT_REQUEST_APPROVAL_REQUIRED"
+}

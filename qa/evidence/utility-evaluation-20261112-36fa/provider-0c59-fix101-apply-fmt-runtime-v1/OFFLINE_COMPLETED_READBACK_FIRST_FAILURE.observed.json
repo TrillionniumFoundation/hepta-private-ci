@@ -1,0 +1,9 @@
+{
+  "cause": "The first offline verifier omitted the original bootstrap explicit gzip decode for REPAIR_PROPOSAL.original.json.",
+  "correction": "v2 adds only gzip import and the same file-specific gzip decode before comparison. Exact original STAGING_READBACK, request, SDKs, and raw inputs are retained unchanged.",
+  "format": "hepta-offline-readback-audit-correction-v1",
+  "observed_exit_code": 1,
+  "observed_failure": "AssertionError at staged REPAIR_PROPOSAL.original.json: decoded base64 gzip was 19857 bytes but original decoded body pin was 152573 bytes.",
+  "old_verifier_retained": true,
+  "scope": "Cloud-only offline verifier, no H or mutation of native evidence."
+}

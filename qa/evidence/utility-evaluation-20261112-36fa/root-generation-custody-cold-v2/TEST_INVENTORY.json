@@ -1,0 +1,15 @@
+{
+  "authority_scope": "Existing original engineering Artifact/FinalUse fixture instances are retained",
+  "format": "hepta-root-cold-entry-test-inventory-v2",
+  "mechanism": "Actual Current/journal reopen in the same process",
+  "process_restart_test": false,
+  "requires_explicit_root_ignored_selection": true,
+  "status": "PREPARED_NOT_FORMATTED_COMPILED_OR_EXECUTED",
+  "test_count": 4,
+  "test_fqns": [
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_reopens_existing_current_and_runs_the_original_task",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_refuses_pending_without_reprepare_or_grant",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_rechecks_original_artifact_after_published_readback",
+    "runtime::tests::circuit_task_ingress::q24_tests::support::root_initial_custody::cold_tests::root_initial_cold_entry_retains_same_operation_after_installation_error"
+  ]
+}

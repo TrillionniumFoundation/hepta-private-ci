@@ -1,0 +1,163 @@
+{
+  "actual_error_count": 6,
+  "actual_log": "feaf209bf89bcbdc71cdb1787a49c3433745a9cb",
+  "carried_actual_fix_path_count": 1,
+  "field_projection": {
+    "all_original_shared_fields": [
+      "scope",
+      "source_frontier",
+      "objective_digest",
+      "ndu_snapshot_digest",
+      "monotonic_micros",
+      "deadline_micros",
+      "observation",
+      "candidates"
+    ],
+    "operation_id": "retained from opaque publication, not newly derived",
+    "source_lease": "not a CellStepInput field; original production registry/request/lease validation unchanged"
+  },
+  "files": [
+    {
+      "assertion_macro_counts": {
+        "assert": {
+          "after": 5,
+          "before": 5
+        },
+        "assert_eq": {
+          "after": 2,
+          "before": 2
+        },
+        "assert_ne": {
+          "after": 1,
+          "before": 1
+        },
+        "ensure": {
+          "after": 0,
+          "before": 0
+        }
+      },
+      "function_names": [
+        "registration",
+        "material",
+        "root",
+        "input",
+        "role_streams",
+        "transfer",
+        "consumer",
+        "lifetimes",
+        "resident_role_handoff_elapsed_real_time_cannot_renew_any_original_deadline",
+        "resident_role_admission_rejects_actual_uid_pidfd_and_process_start_mismatch",
+        "resident_role_receiver_refuses_another_real_recipient_or_registered_profile"
+      ],
+      "original_function_name_sequence_unchanged": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_provider_transport_tests.rs"
+    },
+    {
+      "assertion_macro_counts": {
+        "assert": {
+          "after": 0,
+          "before": 0
+        },
+        "assert_eq": {
+          "after": 0,
+          "before": 0
+        },
+        "assert_ne": {
+          "after": 0,
+          "before": 0
+        },
+        "ensure": {
+          "after": 34,
+          "before": 34
+        }
+      },
+      "function_names": [
+        "from_original_completion",
+        "from_preheld_objective_and_original_completion",
+        "new",
+        "registration",
+        "complete",
+        "complete_with_shared_original_trainer",
+        "complete_with_trainers",
+        "complete_member",
+        "files",
+        "original_files",
+        "upstream_files",
+        "recover",
+        "finish"
+      ],
+      "original_function_name_sequence_unchanged": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_fresh_training_support_tests.rs"
+    },
+    {
+      "assertion_macro_counts": {
+        "assert": {
+          "after": 0,
+          "before": 0
+        },
+        "assert_eq": {
+          "after": 0,
+          "before": 0
+        },
+        "assert_ne": {
+          "after": 0,
+          "before": 0
+        },
+        "ensure": {
+          "after": 18,
+          "before": 18
+        }
+      },
+      "function_names": [
+        "from_preheld",
+        "require_current",
+        "verify_report",
+        "verify_complete_report",
+        "authentication_digest",
+        "admission_binding",
+        "profile_with_original_authorization",
+        "into_original_root_service"
+      ],
+      "original_function_name_sequence_unchanged": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_first_material_support_tests.rs"
+    },
+    {
+      "assertion_macro_counts": {
+        "assert": {
+          "after": 0,
+          "before": 0
+        },
+        "assert_eq": {
+          "after": 0,
+          "before": 0
+        },
+        "assert_ne": {
+          "after": 0,
+          "before": 0
+        },
+        "ensure": {
+          "after": 16,
+          "before": 16
+        }
+      },
+      "function_names": [
+        "new_with_original_work_deadline",
+        "original_bytes",
+        "finish"
+      ],
+      "original_function_name_sequence_unchanged": true,
+      "path": "codex-rs/hepta-agentd/src/circuit_resident_candidate_provider_unstarted_material_tests.rs"
+    }
+  ],
+  "format": "hepta-six-compiler-error-static-repair-review-v1",
+  "new_permission_or_Clone_impl": false,
+  "not_run": [
+    "Rust compiler",
+    "Rust tests",
+    "QA",
+    "fmt",
+    "fix",
+    "H"
+  ],
+  "repair_path_count": 4
+}

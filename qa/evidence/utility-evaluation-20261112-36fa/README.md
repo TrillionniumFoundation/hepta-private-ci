@@ -1,65 +1,62 @@
-# Utility evaluation evidence: exact source materialization and maintenance start
+# Hepta utility evaluation: actual repair and formatting evidence
 
-## Current evidentiary boundary
+This is a fixed evidence window ending at **2026-11-13 09:29:50 UTC**. It closes the failed original maintenance attempt and the separately reviewed four-source repair plus original formatting run. It also retains explicitly unexecuted Root-custody proposals. Later source registration and execution are outside this window.
 
-The prepared source is [0c59aaca0b4932507f068c723f73da2f96729b3d](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/0c59aaca0b4932507f068c723f73da2f96729b3d), with tree `4b1ef6a81f8fc49d4c267d9e47bc4b8127fc8d09` and sole parent `cc57c7198db6293ccca562253c42fffbe2a04633`. It was actually materialized into a new isolated repository. The source branch and draft PR #6203 still point to cc57; this evidence checkpoint does not advance the source branch.
+**Real qualified task chains: 0. Qualification: false.** No current-source compilation, source-gate pass, ordinary test pass, Root test pass, deployment, model adoption or process-cold recovery is inferred from these commits.
 
-**Qualification remains false. Real authorized A → original Training → independent B → Adopt or evidence-complete NoUpdate → new C → daemon and Root cold-recovery chains remain 0.**
+## What actually ran
 
-This fixed cut contains the completed materialization, the exact maintenance controls and conditional engineering authorization, completed control staging, and the first running maintenance observation. It does not contain or claim a completed fix, fmt, fresh source gate or native qualification run. Later runtime observations belong to later immutable windows.
+| Operation | Original job | Actual result | Meaning |
+| --- | --- | --- | --- |
+| Isolated source materialization | `1a1d3cdda18-392-1e2` | Supervisor exit 0; complete original source `0c59aaca0b4932507f068c723f73da2f96729b3d` | Earlier source preparation only. |
+| Original scoped maintenance | `1a1d3eccd3a-392-231` | Supervisor exit 1; `just fix` return 101; its formatter never ran | The original single fix attempt remains consumed and failed. Its one actual witness change is retained. |
+| Four exact compiler repairs plus original formatter | `1a1d41eb3ef-392-2b2` | Supervisor exit 0; only `just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f` ran, with the original 900-second budget | Four reviewed files were applied, followed by 62 actual formatter transitions. Tests dispatched: 0. The producer result remains `APPLIED_AND_FORMATTED_REVIEW_REQUIRED`. |
 
-## What actually completed
+The formatter's success does not turn the earlier fix into a lint pass. The four compiler repairs have full before/after byte review but have not yet been compiled in this source version.
 
-| Subject | Actual observation | Evidence |
-| --- | --- | --- |
-| Materialization | Job `1a1d3cdda18-392-1e2` ended normally with exit 0, no timeout/cancellation/retry; complete durable stdout 2083 bytes, stderr 0 | [Runtime placement](provider-0c59-isolated-materialization-v1/runtime/PLACEMENT.json) |
-| New source | 15237 physical files; complete original5118 inventory and native five-field inventory match the frozen candidate | [Root materialization review](root-provider-0c59-materialization-review-v1/COMPLETED_MATERIALIZATION_REVIEW.json) |
-| Object closure | 16652 fully verified objects: 14796 blobs, 1852 trees and 4 snapshot commits | [Candidate graph](full-candidate-graph-v1/PLACEMENT.json) |
-| Actual index | 2079344 bytes, 15237 entries; full paths/modes/blob identities/sizes, zero stage/extended/assume flags, footer and cache-tree root independently parsed | [Root index review](root-provider-0c59-materialization-review-v1/INDEX_REVIEW.json) |
-| Original donor | Its 15188 physical files, six complete Git files and original stats, raw index/config/HEAD and zero refs remained equal before/after | [Original result and review](root-provider-0c59-materialization-review-v1/COMPLETED_MATERIALIZATION_REVIEW.json) |
-| Final materialization audits | Donor physical/Git, new source/Git, and inputs/coordination all verified | [Runtime archive](provider-0c59-isolated-materialization-v1/runtime/PLACEMENT.json) |
-| Maintenance control staging | Original job `1a1d3e8c0f4-392-221` ended normally; six controls plus original bootstrap/argv/payload were actually read back in full | [Stage verification](provider-0c59-maintenance-v1/staging/STAGE_COMPLETE_READBACK_VERIFICATION.json) |
-| Maintenance start | Job `1a1d3eccd3a-392-231` was admitted. Original full preflight completed at 08:01:28 UTC; scoped fix was actually attempted at 08:01:32 UTC | [Observed start](provider-0c59-maintenance-observed-start-v1/ROOT_REVIEW.json) |
+The actual physical source contains **15,237 files**. It moved from failed-fix tree `4ed32552042fee522965ea54caf95bbebb31ad43` through four-repair tree `1eacf738a9ee86fe6b7bf2ab5d20a45d63c066f1` to actual formatted tree **`f905b18e6b05de1582024548179725a05d932536`**. Its 5,634,549-byte complete inventory has SHA256 `bc6b9d59143004236665bb9446e2c45d1ac77cd7aaba14ba7cee8f4ea76d003f`.
 
-The four snapshot commits are the candidate, cc57, 246d and the original c0f formatting base. This is a complete snapshot union, not a claim of complete recursive ancestry. All 91 executable/symlink mode rows are preserved. The frozen composition covers 90 Rust files and 20 non-Rust files: 49 additions, 60 modifications and one unchanged coverage row. Canonical source deletions are empty. There are 6666 Rust paths under codex-rs and 6788 across the complete candidate snapshot.
+The original isolated HEAD and index remain at the earlier `0c59` source; this is a recorded dirty physical source, not a clean final candidate. Relative to that HEAD, the full delta is the 62 formatted paths plus the preserved actual witness change.
 
-The physical source and index are actual observations made by the approved producer. Precomputed expected inventories remain separately labelled. The [inventory equivalence package](provider-0c59-isolated-materialization-v1/inventory-pin-equivalence/PLACEMENT.json) proves that previously held bytes match actual producer pins; it does not pretend those inventories were downloaded from H a second time. The actual raw index, by contrast, was fully retrieved in 12 successful fixed-version chunks and independently parsed.
+## Original receipts and independent closure
 
-## Exact maintenance scope
+- [Complete original runtime archive](provider-0c59-fix101-apply-fmt-runtime-v1/PLACEMENT.json), [producer RESULT](provider-0c59-fix101-apply-fmt-runtime-v1/RESULT.json), and [authoritative normal](provider-0c59-fix101-apply-fmt-runtime-v1/MAIN_STATUS_02.original.json).
+- [Root independent runtime closure](post307-root-review-v1/ROOT_ACTUAL_FMT_RUNTIME_CLOSURE_REVIEW.json): all 51 original read SDKs independently decoded, 41 complete binary paths checked, stdout 0 through 1,450 bytes and empty stderr reconstructed against the authoritative terminal.
+- [Root complete source review](post307-root-review-v1/ROOT_ACTUAL_FMT_SOURCE_REVIEW.json): all four actual application transitions equal the approved repair; every byte of all 124 formatter before/after file bodies is checked; the complete mode-aware 15,237-file Merkle tree is independently recomputed.
+- [Independent formatter semantic review](provider-0c59-fmt62-semantic-peer-v1/REVIEW.json): no non-formatting authority, assertion or semantic change identified across all 62 actual transitions. This is a concrete static review, not a Rust compiler or behavioral result.
+- [Exact complete-inventory reconstruction](provider-0c59-fix101-apply-fmt-v1/exact-inventory-recovery/RECOVERY_REVIEW.json): all raw, gzip and bounded-part identities equal the original producer's observations. The status text is deterministically reconstructed from the unchanged index and observed complete transitions using the original serializer. It is not a second native full-inventory read.
+- [Actual source-object availability](provider-0c59-actual-fmt-source-v1/SOURCE_AVAILABILITY_REVIEW.json): the 62 observed formatter postimages were individually created and fully read back as Git blobs, and the preserved witness was fully read back. The actual Git tree reconstructed from those bytes is `f905b18e...`.
 
-The [Root engineering authorization](root-provider-0c59-maintenance-review-v1/EXACT_ORDERED_ENGINEERING_APPROVAL.json) permits only the exact ordered control staging, complete actual readback, and one original scoped maintenance invocation. It is not a Hepta runtime Root grant.
+The original records report all 39 inputs unchanged, all 41 read-only commands returning zero, four identical raw Git states, identical complete raw Git metadata before and after, and the retained cooperative source lease. Root independently checks their full bytes and the original SDK linkage. Process-guard observations are point samples; the source lease is cooperative and is not a claim of system-wide exclusion.
 
-The unchanged original fix command has one appended package:
+The producer lists 217 retained native artifacts. This archive does **not** claim each native path was separately downloaded. In particular, the 555,136-byte HEAD working patch remains retained on the original host with its recorded identity. Actual apply/formatter packages and the exactly reconstructed final transition and inventory are preserved through bounded lossless parts. Original failures, local verifier corrections and their provenance remain in the associated records.
 
-```text
-just fix -p codex-hepta-intelligence-eval -p codex-hepta-agentd -p codex-hepta-learning-ledger
-just fmt --base c0f78493f815780f68b9bf5e390a21314d79311f
-```
+## Root custody candidates remain unexecuted
 
-The original budgets remain fix7200, fmt900, preflight600, shared recording300 and main outer9300 seconds. Fmt can follow only a successful original fix and sufficient recording budget. The existing external target, 32 GiB free-space threshold, original same-UID live process guard and complete source/Git checks remain mandatory.
+The separately frozen production, mechanism-test and cold-entry layers retain one original Initial publication operation. They consume the original Prepared once, preserve same-operation readback on uncertainty, use only the original recovery, and pass the consumed original Ready through the existing task factory. Retirement retains the factory's actual task, Cell and Source.
 
-Of the original controller's 50 definitions, 45 are byte-for-byte and AST identical. The four modified definitions and two narrow new proof adapters bind actual 0c59 materialization, keep 86dd runtime history separate, and validate the actual cc57 archive restoration without rewriting historical ENV. The original main/stage/execution/cleanup/postimage and whole Git metadata finalization logic is unchanged. The launcher retains the same existing coordination-lock inode through EX and inheritable-fd exec.
+The cold entry reopens the concrete original Current and existing journal. Its mechanism cases retain other fixture owners in the same process. It is not evidence of a real Root process restart, independent authority acquisition, daemon/Source/Cell cold recovery, or a real authorized task chain. A five-second fixture shutdown timeout remains an error with terminal state unknown; Drop cancellation alone does not prove a joined worker.
 
-See the [frozen author package](provider-0c59-maintenance-successor-v1/PLACEMENT.json), [independent engineering review](provider-0c59-maintenance-successor-independent-peer-v1/REVIEW.json), and [Root byte review](root-provider-0c59-maintenance-review-v1/CANDIDATE_BYTE_REVIEW.json). Those reviews are engineering reviews, not independent task-B evaluation evidence.
+The actual-format rebase is a nine-path proposal: three existing paths and six new paths, with candidate tree `a0bd2241a3a005b68a4682a339d2be016fa3fa72` and 15,243 files. Its [Root byte review](post307-root-review-v1/ROOT_COORDINATOR_F905_BYTE_REVIEW.json) and [independent review](coordinator-f905-independent-peer-v1/REVIEW.json) do not authorize application. A separate [metadata-getter naming layer](coordinator-original-metadata-getters-v1/REVIEW.json) is preserved as a candidate; it changes only new APIs and their new mechanism callers, keeping original production function bodies unchanged.
 
-The observed running stdout is only the range 0..4620. A stream EOF, a running systemd service's Result=success, or an intermediate zero status is not a command terminal or a qualification pass.
+The newly added public methods currently have mechanism callers and exports but no actual non-test Root-host startup/recovery caller. The normal host integration remains an explicit open item. The existing 39 Root workflow parents and nine proposed additional ignored cases must be fully registered and actually selected under the original exact-JUnit checks. Neither compilation nor an ignored skip will count as a pass.
 
-## Source changes and remaining production work
+## Next engineering boundary
 
-The candidate combines the retained utility/evidence changes, the Material-before-Trainer split, and B's borrowed objective contract. A complete objective payload does not create Source history or a grant; actual D/T, original owner/context and all old lineage checks remain required. Incomplete negative evidence remains distinct from a fully evidenced NoUpdate.
+The [new-source route-B plan](post-f905-new-candidate-hold-v1/PLAN.HOLD.md) remains HOLD. It preserves the original clean `cc57c7198db6293ccca562253c42fffbe2a04633` donor, the original materializer and its sole-parent predicate, and prepares a fresh isolated candidate. The old `0c59/f905` worktree and its records are retained. Final source map, candidate commit, complete inventories, transport sizes and exact typed requests must be frozen before any further execution.
 
-The production CURRENT/task custody interface remains substantive work. A fixture CurrentStore is not the original Root-owned Current owner. The trusted publication owner, original Prepared/Ready, journals, Artifact and FinalUse custody, same task/Cell/Source association, actual drain, new-C execution and cold readback must still form a concrete chain. A separate Root-local coordinator implementation is being prepared outside this frozen source; it is not included or qualified here.
+A new changed-source maintenance attempt needs its own concrete single-attempt contract and original budgets. It cannot reuse the already consumed fix authorization. After actual maintenance, source protections and QA must match the actual resulting bytes, followed by the original final-format, canonical-source, full source-gate and native workflows. Existing guards, permissions, methods, attack assertions, filters and budgets are not waived.
 
-The next acceptance work after actual maintenance is complete postimage review, exact final source composition/alignment, original fresh source gates and original native phases. Old cc57 passes are historical and cannot be inherited by a new source identity. Missing real owner, authorization, outcome, cost, lineage or recovery evidence remains Unknown.
+Engineering review JSON, including fields named Root approval, is coordination evidence. It is not a Hepta runtime Root grant or an authorization from a missing Model, Selector, Version, Training or FinalUse owner.
 
-## Evidence semantics and preservation
+## Utility semantics and remaining goal
 
-Adopt, a complete NoUpdate/Ineligible, InsufficientEvidence/Unknown, and deterministic Objective Fraud remain different outcomes. These engineering receipts do not establish a utility gain, lawful activation, independent judge lineage, or a completed consumer task.
+Complete evidence and all hard constraints are required before Adopt or complete NoUpdate/Ineligible. Missing outcome, cost, provenance, independence, availability or original authority remains InsufficientEvidence/Unknown. A known failure is retained as a failure; it does not by itself establish complete NoUpdate or Objective Fraud.
 
-Prior payloads from [143bcea](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/143bcea947e97914775aef8bcae475e4e24c38b8/qa/evidence/utility-evaluation-20261112-36fa) are preserved exactly apart from this intentionally updated README. The previous README and historical statuses remain available at that commit.
+The remaining real-world chain is still:
 
-Original failed reads are retained. The completed materialization index had one failed read before its same-version missing chunk was obtained. Maintenance staging separately retains its first failed V8-normal read; no version was invented for that failed response. Neither transport recovery reran the process. Pending-plan path corrections and local collector mistakes are [explicitly recorded](root-post-143-stage3-review-v1/COLLECTOR_OBSERVATIONS.json); they are not recast as source or H failures.
+**Authorized real A → original Training owner → independent B → Adopt or complete NoUpdate → actual new consumer C → daemon and Root process-cold recovery.**
 
-The original per-leaf 512000-byte bound is retained. Oversized frozen controls and an original oversized truncated SDK are available through complete lossless packages. Raw originals and original placements remain identified; the specific bounded replacement is explicit. The materialization ARTIFACTS catalog has 267 producer-retained entries; this archive clearly identifies which outputs were actually read off-host and which are catalog references.
+Source-code blob availability does not establish model-material availability, lawful authorization, independent evaluation, actual consumer use or full frozen-contract cost accounting. Those require their own original owners and observations.
 
-The fixed addition plan and full availability record are under `root-post-143-final-cut-v1/`. The content manifest describes all other files and explicitly names its own packaging paths to avoid a hash cycle. Content identities attest to bytes and observed retrieval; they do not by themselves prove lasting availability, task permission or real adoption.
+The preceding published evidence window remains available at [30717b6b](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/30717b6b66f1a825c6e3113f26ec9732f5aae8c7/qa/evidence/utility-evaluation-20261112-36fa/README.md). This increment preserves every earlier non-README evidence file.

@@ -1,0 +1,56 @@
+{
+  "H_dispatched": false,
+  "bootstrap": {
+    "bytes": 5714,
+    "git_blob": "ab06aa07a11ab2b6739a7203dab0a1ba6f0deb29",
+    "sha256": "30290adfc825757435059d626819216e764ff461862c20fe9177b745a619fe43"
+  },
+  "bootstrap_extra_EX_lock_absent": true,
+  "complete_config_byte_inverse_equal": true,
+  "exact_seven_field_request": true,
+  "execv": "os.execv('/usr/bin/python3', ['/usr/bin/python3', '-B', str(BASE / 'driver.py'), '--config-sha256', PINS['APPROVED_CONFIG.json']['sha256']])",
+  "format": "hepta-root-exact-fmt-only-typed-request-byte-review-v1",
+  "four_decoded_inputs_full_equal": [
+    {
+      "bytes": 2798,
+      "git_blob": "38a177082b23477a74fbd2db7d5061c9e9eff79c",
+      "name": "APPROVED_CONFIG.json",
+      "sha256": "e4dc1ec3a312f83ad909e2f135a46002ff856056fe07b3f7e3a16d1b78cdae09"
+    },
+    {
+      "bytes": 910,
+      "git_blob": "5980149603c1ab8f2a4a7aa7f21e9822c28c4c51",
+      "name": "FAILED_MAINTENANCE_SUPERVISOR.original.json",
+      "sha256": "80ba7fc0a3ef6b3531b1dd512af833bece7c46f0e52f381ff76d7f759410a8aa"
+    },
+    {
+      "bytes": 152573,
+      "git_blob": "12a664ce2905feb8107ae66b303c4975f17a9fe3",
+      "name": "REPAIR_PROPOSAL.original.json",
+      "sha256": "84b79dd4fc36e070f57f3de05982cd7a55130b5af67f7890a98ad187a1219300"
+    },
+    {
+      "bytes": 34454,
+      "git_blob": "0938761e369ddfa215da98b70423cfd5d48ac819",
+      "name": "driver.py",
+      "sha256": "a71789407526e0819056f04c002c932eb91b9f006f3a4ab9126e21f8989db0ed"
+    }
+  ],
+  "main_is_only_EX_holder": true,
+  "only_two_config_fields_changed": [
+    "root_execution_approved",
+    "status"
+  ],
+  "qualification": false,
+  "request": {
+    "bytes": 83679,
+    "git_blob": "b63bd0d12684a3ba39e63f1f12fef56cb56cb3d9",
+    "sha256": "c90457ea45cc064a01cc332fe0d48992352381218570afe243ca68d2e3c47df9"
+  },
+  "source_scope": "Four exact reviewed source writes and one original fmt900 after the actual failed source baseline guards; witness protected.",
+  "stdin": {
+    "bytes": 77588,
+    "git_blob": "347d63ee5af1c0f5826b02add02f2f322a4aefbe",
+    "sha256": "8d88855f1d67b6e42e06daf6989e4955d9cc6090d6df7ef6cd83f25600dc3223"
+  }
+}
