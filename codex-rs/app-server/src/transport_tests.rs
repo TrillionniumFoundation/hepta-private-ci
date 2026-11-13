@@ -1,5 +1,11 @@
 use super::*;
+use crate::message_processor::InitializedConnectionSessionState;
+use crate::outgoing_message::ConnectionRequestId;
+use crate::outgoing_message::OutgoingMessageSender;
 use codex_app_server_protocol::ConfigWarningNotification;
+use codex_app_server_protocol::InitializeResponse;
+use codex_app_server_protocol::RemoteControlConnectionStatus;
+use codex_app_server_protocol::RemoteControlStatusChangedNotification;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ServerNotificationEnvelope;
@@ -537,4 +543,188 @@ async fn to_connection_stdio_waits_instead_of_disconnecting_when_writer_queue_is
             ..
         }) if summary == "second"
     ));
+}
+
+fn initialize_remote_control_test_session(connection: &ConnectionState) {
+    assert_eq!(
+        connection
+            .session
+            .initialize(InitializedConnectionSessionState {
+                experimental_api_enabled: true,
+                process_indeterminate_enabled: false,
+                opted_out_notification_methods: HashSet::new(),
+                app_server_client_name: "remote-status-test".to_string(),
+                client_version: "0.0.0".to_string(),
+                request_attestation: false,
+                client_mcp_extensions: connection.session.client_mcp_extensions(),
+            }),
+        Ok(())
+    );
+}
+
+#[tokio::test]
+async fn remote_control_status_queued_before_initialize_cannot_overtake_its_response() {
+    // Exercise both an empty recipient snapshot and a nonempty one. A broadcast
+    // accidentally retained in either path would pick up the late-ready client.
+    for existing_connection_id in [None, Some(ConnectionId(31))] {
+        let late_connection_id = ConnectionId(32);
+        let (outgoing_tx, mut outgoing_rx) = mpsc::channel(/*buffer*/ 4);
+        let outgoing = OutgoingMessageSender::new(
+            outgoing_tx,
+            codex_analytics::AnalyticsEventsClient::disabled(),
+        );
+        let mut connection_states = HashMap::new();
+        let mut outbound_connections = HashMap::new();
+        let mut existing_writer_rx = None;
+
+        if let Some(connection_id) = existing_connection_id {
+            let initialized = Arc::new(AtomicBool::new(/*v*/ true));
+            let experimental_api_enabled = Arc::new(AtomicBool::new(/*v*/ true));
+            let opted_out = Arc::new(RwLock::new(HashSet::new()));
+            let connection = ConnectionState::new(
+                ConnectionOrigin::Stdio,
+                Arc::clone(&initialized),
+                Arc::clone(&experimental_api_enabled),
+                Arc::clone(&opted_out),
+            );
+            initialize_remote_control_test_session(&connection);
+            connection_states.insert(connection_id, connection);
+            let (writer_tx, writer_rx) = mpsc::channel(/*buffer*/ 4);
+            outbound_connections.insert(
+                connection_id,
+                OutboundConnectionState::new(
+                    writer_tx,
+                    initialized,
+                    experimental_api_enabled,
+                    opted_out,
+                    /*disconnect_sender*/ None,
+                ),
+            );
+            existing_writer_rx = Some(writer_rx);
+        }
+
+        let initialized = Arc::new(AtomicBool::new(/*v*/ false));
+        let experimental_api_enabled = Arc::new(AtomicBool::new(/*v*/ true));
+        let opted_out = Arc::new(RwLock::new(HashSet::new()));
+        connection_states.insert(
+            late_connection_id,
+            ConnectionState::new(
+                ConnectionOrigin::Stdio,
+                Arc::clone(&initialized),
+                Arc::clone(&experimental_api_enabled),
+                Arc::clone(&opted_out),
+            ),
+        );
+        let (writer_tx, mut writer_rx) = mpsc::channel(/*buffer*/ 4);
+        outbound_connections.insert(
+            late_connection_id,
+            OutboundConnectionState::new(
+                writer_tx,
+                Arc::clone(&initialized),
+                experimental_api_enabled,
+                opted_out,
+                /*disconnect_sender*/ None,
+            ),
+        );
+        let status = RemoteControlStatusChangedNotification {
+            status: RemoteControlConnectionStatus::Disabled,
+            server_name: "remote-status-test".to_string(),
+            installation_id: "remote-status-installation".to_string(),
+            environment_id: None,
+        };
+
+        // Use the production producer, while intentionally retaining every
+        // envelope in its real channel until initialization has completed.
+        send_remote_control_status_to_initialized_connections(
+            &connection_states,
+            &outgoing,
+            status.clone(),
+        )
+        .await;
+
+        let connection = &connection_states[&late_connection_id];
+        initialize_remote_control_test_session(connection);
+        let request_id = ConnectionRequestId {
+            connection_id: late_connection_id,
+            request_id: RequestId::Integer(7),
+        };
+        let Ok(codex_home) = AbsolutePathBuf::from_absolute_path(std::env::temp_dir()) else {
+            panic!("temporary directory should provide an absolute test path");
+        };
+        let response = InitializeResponse {
+            user_agent: "remote-status-test".to_string(),
+            codex_home,
+            platform_family: std::env::consts::FAMILY.to_string(),
+            platform_os: std::env::consts::OS.to_string(),
+            process_indeterminate: false,
+        };
+        let Ok(expected_response) = serde_json::to_value(&response) else {
+            panic!("initialize response should serialize");
+        };
+        outgoing.send_response(request_id.clone(), response).await;
+        outgoing
+            .send_server_notification_to_connections(
+                &[late_connection_id],
+                ServerNotification::RemoteControlStatusChanged(status.clone()),
+            )
+            .await;
+        initialized.store(true, Ordering::Release);
+
+        // Dequeue only after the same ready transition that the old broadcast
+        // route observed. This is a producer/channel/router test, not a call to
+        // the complete initialize request handler.
+        while let Ok(envelope) = outgoing_rx.try_recv() {
+            route_outgoing_envelope(&mut outbound_connections, envelope).await;
+        }
+        let Ok(first) = writer_rx.try_recv() else {
+            panic!("initialize response must be the first delivered message");
+        };
+        let OutgoingMessage::Response(response) = first.message else {
+            panic!("a pre-initialize notification must not overtake the response");
+        };
+        let Ok(actual_response) = serde_json::to_value(response.result) else {
+            panic!("delivered initialize response should serialize");
+        };
+        assert_eq!(
+            (response.id, actual_response),
+            (request_id.request_id, expected_response)
+        );
+        let Ok(initial_status) = writer_rx.try_recv() else {
+            panic!("initial cached remote-control status should be delivered");
+        };
+        let OutgoingMessage::AppServerNotification(ServerNotificationEnvelope {
+            notification: ServerNotification::RemoteControlStatusChanged(actual_status),
+            ..
+        }) = initial_status.message
+        else {
+            panic!("initial message after the response must carry remote-control status");
+        };
+        assert_eq!(actual_status, status);
+        assert!(matches!(
+            writer_rx.try_recv(),
+            Err(mpsc::error::TryRecvError::Empty)
+        ));
+
+        if let Some(existing_writer_rx) = existing_writer_rx.as_mut() {
+            let Ok(update) = existing_writer_rx.try_recv() else {
+                panic!("already initialized connection should receive the update");
+            };
+            let OutgoingMessage::AppServerNotification(ServerNotificationEnvelope {
+                notification: ServerNotification::RemoteControlStatusChanged(actual_status),
+                ..
+            }) = update.message
+            else {
+                panic!("existing connection should receive remote-control status");
+            };
+            assert_eq!(actual_status, status);
+            assert!(matches!(
+                existing_writer_rx.try_recv(),
+                Err(mpsc::error::TryRecvError::Empty)
+            ));
+        }
+        assert!(matches!(
+            outgoing_rx.try_recv(),
+            Err(mpsc::error::TryRecvError::Empty)
+        ));
+    }
 }
