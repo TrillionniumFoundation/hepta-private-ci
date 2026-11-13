@@ -8,6 +8,7 @@ must be checked against an independent GitHub Actions upload receipt.
 import argparse
 from collections import Counter
 import hashlib
+import io
 import json
 import math
 from pathlib import Path, PurePosixPath
@@ -117,9 +118,12 @@ def audit(zip_path, expected_sha256, expected_model, expected_revision):
     require(archive_path.is_file()
             and 0 < archive_path.stat().st_size <= MAX_ARCHIVE_BYTES,
             "compressed ZIP byte size outside research bound")
-    raw_zip = archive_path.read_bytes()
+    with archive_path.open("rb") as stream:
+        raw_zip = stream.read(MAX_ARCHIVE_BYTES + 1)
+    require(0 < len(raw_zip) <= MAX_ARCHIVE_BYTES,
+            "compressed ZIP byte size outside research bound")
     require(digest(raw_zip) == expected_sha256, "archive upload hash mismatch")
-    with ZipFile(zip_path) as archive:
+    with ZipFile(io.BytesIO(raw_zip)) as archive:
         infos = archive.infolist()
         require(0 < len(infos) <= MAX_MEMBERS, "ZIP member count outside bound")
         seen = set()

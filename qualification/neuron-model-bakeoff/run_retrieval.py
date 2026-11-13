@@ -14,21 +14,28 @@ def score(q, corpus, results):
     corpus_ids = {doc["id"] for doc in corpus}
     require(len(corpus_ids) == len(corpus), "duplicate corpus id")
     require(len({item["id"] for item in q}) == len(q), "duplicate query id")
+    require(len(results) == len(q), "retrieval result count must match query count")
     recalls = []
+    hit_rates = []
     mrrs = []
     ndcgs = []
     for query, top in zip(q, results):
         require(query["split"] == "test" and len(query["relevant_doc_ids"]) > 0, "invalid query split or empty qrels")
         relevance = set(query["relevant_doc_ids"])
+        require(len(relevance) == len(query["relevant_doc_ids"]), "duplicate relevance id")
         require(relevance <= corpus_ids, "relevance ids missing from corpus")
+        require(isinstance(top, (list, tuple)), "retrieval ranking must be a sequence")
+        require(len(set(top)) == len(top), "duplicate retrieval document id")
+        require(set(top) <= corpus_ids, "retrieval document id missing from corpus")
         hits = [1 if identity in relevance else 0 for identity in top[:10]]
-        recalls.append(float(any(hits)))
+        recalls.append(sum(hits) / len(relevance))
+        hit_rates.append(float(any(hits)))
         mrrs.append(next((1.0 / (i + 1) for i, match in enumerate(hits) if match), 0.0))
         dcg = sum(match / __import__("math").log2(i + 2) for i, match in enumerate(hits))
         ideal = sum(1 / __import__("math").log2(i + 2) for i in range(min(len(relevance), 10)))
         ndcgs.append(dcg / ideal)
     n = len(q)
-    return {"n": n, "recall_at_10": sum(recalls) / n, "mrr_at_10": sum(mrrs) / n, "ndcg_at_10": sum(ndcgs) / n}
+    return {"n": n, "recall_at_10": sum(recalls) / n, "hit_rate_at_10": sum(hit_rates) / n, "mrr_at_10": sum(mrrs) / n, "ndcg_at_10": sum(ndcgs) / n}
 
 
 def main():

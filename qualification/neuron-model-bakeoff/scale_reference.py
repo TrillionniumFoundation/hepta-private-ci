@@ -64,7 +64,7 @@ def main():
         assert len(logical_ids) == logical
         tasks = [(i, samples[i % len(samples)]) for i in range(n)]
         times = []
-            def invoke(item):
+        def invoke(item):
             _, row = item
             begin = time.perf_counter()
             infer(row)

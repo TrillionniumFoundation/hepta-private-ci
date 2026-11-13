@@ -1,10 +1,12 @@
 """Synthetic fixtures only; do not treat tests as real Encoder evidence."""
 import hashlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 from zipfile import ZipFile, ZIP_DEFLATED
 
 SCRIPT = Path(__file__).resolve().parents[1] / "hepta-stem-public-artifact-audit.py"
@@ -105,6 +107,39 @@ class PublicReceiptTests(unittest.TestCase):
             self.assertEqual(result["scores_recomputed"]["gated"]["correct"], 2)
             self.assertFalse(result["target_host_e0_verified"])
             self.assertFalse(result["production_promotion_permitted"])
+
+    def test_archive_is_consumed_from_the_exact_hashed_bytes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "public.zip"
+            sha = write_zip(path, archive_files())
+            original = path.read_bytes()
+            digest = LIB.digest
+            replaced = []
+
+            def replace_path_after_hash(payload):
+                value = digest(payload)
+                if payload == original and not replaced:
+                    path.write_bytes(b"changed-after-hash-not-a-zip")
+                    replaced.append(True)
+                return value
+
+            with patch.object(LIB, "digest", side_effect=replace_path_after_hash):
+                result = LIB.audit(path, sha, MODEL, REV)
+            self.assertEqual(replaced, [True])
+            self.assertEqual(result["status"],
+                             "PUBLIC_RESEARCH_ARCHIVE_SELF_CONSISTENT_NOT_E0")
+            self.assertFalse(result["production_promotion_permitted"])
+
+    def test_size_is_bounded_again_after_open(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "public.zip"
+            write_zip(path, archive_files())
+            original = path.read_bytes()
+            grown = original + b"x"
+            with patch.object(LIB, "MAX_ARCHIVE_BYTES", len(original)):
+                with patch.object(Path, "open", return_value=io.BytesIO(grown)):
+                    with self.assertRaisesRegex(ValueError, "byte size"):
+                        LIB.audit(path, hashlib.sha256(grown).hexdigest(), MODEL, REV)
 
     def test_tamper_score_or_source_identity_fails_closed(self):
         with tempfile.TemporaryDirectory() as tmp:

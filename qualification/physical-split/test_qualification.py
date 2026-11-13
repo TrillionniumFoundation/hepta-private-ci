@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts'))
 import hepta_physical_split_qualification as gate
 
 

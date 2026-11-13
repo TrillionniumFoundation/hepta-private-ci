@@ -74,6 +74,14 @@ def load_features(path: Path, *, labelled: bool) -> dict:
     return payload
 
 
+def single_cell_id(data: dict) -> str:
+    cells = data["cell"].tolist()
+    if (not cells or any(type(cell) is not str or not cell.strip() for cell in cells)
+            or len(set(cells)) != 1):
+        raise ValueError("single-Cell Head requires one nonblank string Cell identity")
+    return cells[0]
+
+
 def same_binding(left: dict, right: dict) -> None:
     for key in ("encoder_digest", "scope_digest"):
         if left[key].item() != right[key].item():
@@ -185,7 +193,7 @@ def train_head(head: Head, train: dict, valid: dict, *, steps: int, seed: int, a
     if steps < 1 or steps > 100_000 or not 0 <= alpha <= 1:
         raise ValueError("invalid training budget")
     check_train_valid(train, valid)
-    if len(set(map(str,train["cell"])))!=1 or set(map(str,train["cell"]))!=set(map(str,valid["cell"])):
+    if single_cell_id(train) != single_cell_id(valid):
         raise ValueError("single-Cell Head trainer cannot pool data across cells")
     classes = head.classes
     if np.any(train["y"] < 0) or np.any(train["y"] >= classes) or np.any(valid["y"] < 0) or np.any(valid["y"] >= classes):
@@ -269,7 +277,10 @@ def write_json(path: Path, value: dict) -> None:
 def save_head(head: Head, train: dict, valid: dict, record: dict, out: Path) -> None:
     if out.suffix != '.npz':
         raise ValueError("model artifact must be .npz")
-    meta = {"schema":SCHEMA,"kind":head.kind,"dim":head.dim,"classes":head.classes,"budget":head.budget,"seed":head.seed,"trainable_params":head.nparams,"encoder_digest":str(train["encoder_digest"].item()),"scope_digest":str(train["scope_digest"].item()),"train_file_sha256":record["train_file_sha256"],"valid_file_sha256":record["valid_file_sha256"],"train_groups":record["train_groups"],"valid_groups":record["valid_groups"],"valid_time_max":record["valid_time_max"],"steps":record["steps"],"shadow_only":True}
+    cell_id = single_cell_id(train)
+    if cell_id != single_cell_id(valid):
+        raise ValueError("single-Cell Head artifact cannot pool data across cells")
+    meta = {"schema":SCHEMA,"cell_id":cell_id,"kind":head.kind,"dim":head.dim,"classes":head.classes,"budget":head.budget,"seed":head.seed,"trainable_params":head.nparams,"encoder_digest":str(train["encoder_digest"].item()),"scope_digest":str(train["scope_digest"].item()),"train_file_sha256":record["train_file_sha256"],"valid_file_sha256":record["valid_file_sha256"],"train_groups":record["train_groups"],"valid_groups":record["valid_groups"],"valid_time_max":record["valid_time_max"],"steps":record["steps"],"shadow_only":True}
     out.parent.mkdir(parents=True,exist_ok=True)
     np.savez_compressed(out,**{"p_"+k:v for k,v in head.p.items()},**{"f_"+k:v for k,v in head.frozen.items()},meta=np.array(json.dumps(meta,sort_keys=True)))
 
@@ -279,6 +290,8 @@ def load_head(path: Path) -> tuple[Head,dict]:
         meta=json.loads(str(z["meta"].item()))
         if meta.get("schema")!=SCHEMA or meta.get("shadow_only") is not True:
             raise ValueError("invalid shadow model metadata")
+        if type(meta.get("cell_id")) is not str or not meta["cell_id"].strip():
+            raise ValueError("shadow model is missing a nonblank Cell identity")
         head=Head(meta["kind"],int(meta["dim"]),int(meta["classes"]),int(meta["budget"]),int(meta["seed"]))
         for prefix,target in (("p_",head.p),("f_",head.frozen)):
             for k in target:
@@ -305,12 +318,14 @@ def cmd_predict(args):
     data=load_features(Path(args.input),labelled=False)
     if data["x"].shape[1]!=head.dim or str(data["encoder_digest"].item())!=meta["encoder_digest"] or str(data["scope_digest"].item())!=meta["scope_digest"]:
         raise ValueError("incompatible inference representation")
+    if single_cell_id(data) != meta["cell_id"]:
+        raise ValueError("inference Cell identity does not match the saved Head")
     if set(map(str,data["group"])) & (set(meta["train_groups"]) | set(meta["valid_groups"])):
         raise ValueError("inference group overlaps training or validation")
     if int(min(data["time"])) <= meta["valid_time_max"]:
         raise ValueError("inference future window must follow validation")
     preds=head.probs(data["x"])
-    write_json(Path(args.output),{"schema":SCHEMA,"model_file_sha256":sha(Path(args.model)),"input_sha256":sha(Path(args.input)),"encoder_digest":meta["encoder_digest"],"scope_digest":meta["scope_digest"],"train_groups":meta["train_groups"],"valid_groups":meta["valid_groups"],"valid_time_max":meta["valid_time_max"],"rows":[{"id":str(data["id"][i]),"group":str(data["group"][i]),"time":int(data["time"][i]),"probabilities":[float(z) for z in preds[i]]} for i in range(len(preds))],"production_admitted":False})
+    write_json(Path(args.output),{"schema":SCHEMA,"cell_id":meta["cell_id"],"model_file_sha256":sha(Path(args.model)),"input_sha256":sha(Path(args.input)),"encoder_digest":meta["encoder_digest"],"scope_digest":meta["scope_digest"],"train_groups":meta["train_groups"],"valid_groups":meta["valid_groups"],"valid_time_max":meta["valid_time_max"],"rows":[{"id":str(data["id"][i]),"group":str(data["group"][i]),"time":int(data["time"][i]),"probabilities":[float(z) for z in preds[i]]} for i in range(len(preds))],"production_admitted":False})
 
 
 def _load_predictions(path: Path):
