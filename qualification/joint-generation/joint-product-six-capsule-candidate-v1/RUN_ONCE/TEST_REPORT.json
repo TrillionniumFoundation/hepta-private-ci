@@ -1,0 +1,335 @@
+{
+  "CPU_prefix_seconds": 0.8664491209999999,
+  "CPU_tail": "unknown_not_zero",
+  "I_O_and_hash_scope": {
+    "consumer_hash_CPU_seconds": 0.06001995399999997,
+    "consumer_hash_bytes": 65329274,
+    "consumer_hash_calls": 6672,
+    "consumer_read_bytes": 49820444,
+    "consumer_read_calls": 4019,
+    "consumer_write_bytes": 15139933,
+    "consumer_write_calls": 327,
+    "fixture_write_bytes_cumulative": 12123798,
+    "fixture_write_calls": 394
+  },
+  "candidate_runners_executed": false,
+  "compression": "none; raw stored ZIP concatenation only",
+  "counter_limits": "read counters cover successful materializer read_regular calls; hash counters cover materializer H; writes cover successful materializer _write_file and explicit fixture writes. Independent test reads, metadata, copy-source reads, failure partial writes, report/log and outer runner work are not included, not zero.",
+  "manifest_sha256": "8cca2fd77a3825af017bbe46e957ed0f9fb3b8d437b41a3063c33080a461a15b",
+  "models_executed": false,
+  "negative_cases": [
+    {
+      "exception": "ValueError",
+      "message": "duplicate JSON key",
+      "name": "duplicate_json_key"
+    },
+    {
+      "exception": "ValueError",
+      "message": "manifest version",
+      "name": "unsupported_schema"
+    },
+    {
+      "exception": "ValueError",
+      "message": "manifest schema",
+      "name": "extra_schema_key"
+    },
+    {
+      "exception": "ValueError",
+      "message": "file bytes integer bound",
+      "name": "bool_original_size"
+    },
+    {
+      "exception": "ValueError",
+      "message": "file bytes integer bound",
+      "name": "negative_original_size"
+    },
+    {
+      "exception": "ValueError",
+      "message": "original identity drift",
+      "name": "wrong_original_size"
+    },
+    {
+      "exception": "ValueError",
+      "message": "original identity drift",
+      "name": "wrong_original_hash"
+    },
+    {
+      "exception": "ValueError",
+      "message": "digest syntax",
+      "name": "malformed_hash"
+    },
+    {
+      "exception": "ValueError",
+      "message": "unsafe relative path",
+      "name": "unsafe_destination"
+    },
+    {
+      "exception": "ValueError",
+      "message": "unsafe relative path",
+      "name": "absolute_destination"
+    },
+    {
+      "exception": "ValueError",
+      "message": "duplicate destination",
+      "name": "duplicate_destination"
+    },
+    {
+      "exception": "ValueError",
+      "message": "file count",
+      "name": "missing_destination"
+    },
+    {
+      "exception": "ValueError",
+      "message": "file count",
+      "name": "extra_destination"
+    },
+    {
+      "exception": "ValueError",
+      "message": "capsule fixed mapping",
+      "name": "wrong_capsule_mapping"
+    },
+    {
+      "exception": "ValueError",
+      "message": "capsule fixed mapping",
+      "name": "target_RUN_ONCE_mapping"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record kind/count",
+      "name": "missing_record"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record order/coverage",
+      "name": "duplicate_record"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record kind/count",
+      "name": "extra_record"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record order/coverage",
+      "name": "wrong_record_order"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record order/coverage",
+      "name": "record_offset_gap"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record order/coverage",
+      "name": "record_offset_overlap"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record offset integer bound",
+      "name": "negative_record_offset"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record index integer bound",
+      "name": "bool_record_index"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record bytes integer bound",
+      "name": "oversize_record"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record identity drift",
+      "name": "wrong_record_digest"
+    },
+    {
+      "exception": "ValueError",
+      "message": "record identity drift",
+      "name": "wrong_terminal_length"
+    },
+    {
+      "exception": "ValueError",
+      "message": "original identity drift",
+      "name": "wrong_whole_archive_digest"
+    },
+    {
+      "exception": "ValueError",
+      "message": "whole storage path",
+      "name": "unknown_storage_kind"
+    },
+    {
+      "exception": "ValueError",
+      "message": "whole storage path",
+      "name": "malformed_storage_path"
+    },
+    {
+      "exception": "ValueError",
+      "message": "manifest byte bound",
+      "name": "oversize_manifest"
+    },
+    {
+      "exception": "ValueError",
+      "message": "exact stored path set",
+      "name": "missing_part"
+    },
+    {
+      "exception": "ValueError",
+      "message": "stored content digest",
+      "name": "bit_corrupt_part"
+    },
+    {
+      "exception": "ValueError",
+      "message": "stored file size/type",
+      "name": "truncated_part"
+    },
+    {
+      "exception": "ValueError",
+      "message": "stored file size/type",
+      "name": "oversize_part"
+    },
+    {
+      "exception": "ValueError",
+      "message": "storage tree symlink",
+      "name": "symlink_part"
+    },
+    {
+      "exception": "ValueError",
+      "message": "storage tree symlink",
+      "name": "symlink_source_file"
+    },
+    {
+      "exception": "ValueError",
+      "message": "storage tree symlink",
+      "name": "symlink_source_ancestor"
+    },
+    {
+      "exception": "ValueError",
+      "message": "filesystem symlink",
+      "name": "symlink_package_root"
+    },
+    {
+      "exception": "ValueError",
+      "message": "filesystem symlink",
+      "name": "symlink_output_parent"
+    },
+    {
+      "exception": "FileExistsError",
+      "message": "/workspace/scratch/4f754a4eb697/joint-product-six-capsule-candidate-v1/RUN_ONCE/negative/existing_empty_output",
+      "name": "existing_empty_output"
+    },
+    {
+      "exception": "FileExistsError",
+      "message": "/workspace/scratch/4f754a4eb697/joint-product-six-capsule-candidate-v1/RUN_ONCE/negative/partial_prior_directory",
+      "name": "partial_prior_directory"
+    },
+    {
+      "exception": "ValueError",
+      "message": "filesystem symlink",
+      "name": "existing_output_symlink"
+    },
+    {
+      "exception": "OSError",
+      "message": "injected write failure",
+      "name": "injected_write_failure"
+    },
+    {
+      "exception": "ValueError",
+      "message": "written byte identity",
+      "name": "written_output_drift"
+    },
+    {
+      "exception": "ValueError",
+      "message": "stored content digest",
+      "name": "corrupt_source_file"
+    },
+    {
+      "exception": "ValueError",
+      "message": "exact stored path set",
+      "name": "extra_stored_object"
+    }
+  ],
+  "negative_count": 46,
+  "positive_cases": [
+    {
+      "capsule": "joint-policy-active-channel-fault-candidate-v1",
+      "consumer_CPU_seconds": 0.052000751,
+      "data_bytes": 1925834,
+      "data_files": 43,
+      "receipt_bytes": 8305,
+      "status": "MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED"
+    },
+    {
+      "capsule": "joint-policy-deferred-deadline-candidate-v1",
+      "consumer_CPU_seconds": 0.04799577099999999,
+      "data_bytes": 1938454,
+      "data_files": 42,
+      "receipt_bytes": 8034,
+      "status": "MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED"
+    },
+    {
+      "capsule": "joint-policy-delivery-candidate-v2",
+      "consumer_CPU_seconds": 0.05200300399999999,
+      "data_bytes": 1805215,
+      "data_files": 34,
+      "receipt_bytes": 6421,
+      "status": "MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED"
+    },
+    {
+      "capsule": "joint-policy-live-control-candidate-v1",
+      "consumer_CPU_seconds": 0.051854254000000016,
+      "data_bytes": 1935584,
+      "data_files": 45,
+      "receipt_bytes": 8441,
+      "status": "MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED"
+    },
+    {
+      "capsule": "joint-policy-output-budget-outcome-candidate-v2",
+      "consumer_CPU_seconds": 0.04799364700000003,
+      "data_bytes": 1954764,
+      "data_files": 45,
+      "receipt_bytes": 8727,
+      "status": "MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED"
+    },
+    {
+      "capsule": "joint-policy-reconnect-candidate-v1",
+      "consumer_CPU_seconds": 0.047996205999999986,
+      "data_bytes": 1912999,
+      "data_files": 42,
+      "receipt_bytes": 7877,
+      "status": "MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED"
+    },
+    {
+      "capsule": "joint-policy-delivery-candidate-v2",
+      "case": "retained_validated_bytes_after_source_drift",
+      "data_bytes": 1805215,
+      "data_files": 34,
+      "receipt_bytes": 6421,
+      "status": "MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED"
+    }
+  ],
+  "positive_count": 7,
+  "retained_fixture_and_workspace_bytes": 18247239,
+  "retained_fixture_and_workspace_files": 649,
+  "self_rusage_prefix": [
+    0.7502519999999999,
+    0.15506,
+    19576,
+    0,
+    0,
+    0,
+    13805,
+    0,
+    0,
+    0,
+    57592,
+    0,
+    0,
+    0,
+    5,
+    74
+  ],
+  "shared_lock_created": false,
+  "status": "PASS_PACKAGING_ONLY_NOT_SCIENTIFIC_OR_COMBINED_RUNTIME",
+  "wall_prefix_seconds": 0.8694089979981072
+}

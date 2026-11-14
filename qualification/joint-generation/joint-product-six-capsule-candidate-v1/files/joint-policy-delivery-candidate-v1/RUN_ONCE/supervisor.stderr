@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/4f754a4eb697/joint-policy-delivery-candidate-v1/qualify.py", line 47, in <module>
+    raw=canonical(value);write(mode+'-REQUEST.json',raw,True);bound=convert(raw,expected_artifact_sha256=artifact,sequence=POLICY,now_ns=2)
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/4f754a4eb697/joint-policy-delivery-candidate-v1/content_input.py", line 43, in convert
+    env=MediaEnvelope.parse(value,now_ns=now_ns);CAPABILITIES.require(env)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/4f754a4eb697/joint-policy-delivery-candidate-v1/multimodal_contract.py", line 244, in parse
+    _keys(value, ("schema", "objective_id", "run_id", "artifact_sha256", "budget", "deadline_ns", "decoding", "outputs", "streams", "sync_tolerance_ns"))
+  File "/workspace/scratch/4f754a4eb697/joint-policy-delivery-candidate-v1/multimodal_contract.py", line 43, in _keys
+    raise ContractError("missing or unknown fields")
+contracts.ContractError: missing or unknown fields

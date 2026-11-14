@@ -1,0 +1,10 @@
+{
+  "status": "PRIOR_REVIEW_ATTACHMENT_PROVENANCE_CORRECTION",
+  "affected_file": "PRIOR_SOURCE_REVIEW_6d66a448.json",
+  "affected_file_sha256": "25aa5ea3214e061bf919df423b472ad5cc1876387e45ffda66e4248b38391961",
+  "actual_bound_freeze": "b345cd71f3be3a8ce1468d419e580bafb36a423e5ec7facde4cf10f588e84a80",
+  "intended_prior_freeze": "6d66a4487682497f555af78e5ca2ab5d30941fc7475e140e68b9a9417dde217b",
+  "finding": "Concurrent copy overwrote intended prior-review attachment with final review. This file is NOT the preserved original prior review despite its filename. No independent pre-overwrite digest was captured, so original byteexact preservation is not asserted.",
+  "preserved_evidence": "PRIOR_FREEZE_6d66.json retains old frozen source hashes; final review contains the original gate-before-fd-check finding and its resolution. The initial source review write is recorded in conversation, but no new file is represented as recovered original bytes.",
+  "final_review_validity": "Final source review independently checked final freeze and remains valid. This correction concerns attachment provenance, not runtime bytes or saved execution receipts."
+}

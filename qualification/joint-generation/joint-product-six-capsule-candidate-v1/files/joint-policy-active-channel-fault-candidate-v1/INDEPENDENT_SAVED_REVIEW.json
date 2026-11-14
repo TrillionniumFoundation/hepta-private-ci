@@ -1,0 +1,97 @@
+{
+  "audit_script_sha256": "4e13c131408972225c0fe7428b6baacd569aad838fbf785f45dd8204159012e0",
+  "boundaries": [
+    "Only actual instrumented ack2 localEOF and specific fault-guard refusal; not partialframe, malformed active message, midcompute, all fragments or arbitrary OS crash.",
+    "Fault marker presence failclosed is not authenticated evidence; joint pinned history required. No fault clearing, adoption or automatic replay.",
+    "Same-supervisor epoch/privateFD/trustedroot not production owner auth, remoteclientACK, reboot attestation or hostileFS protection.",
+    "Known fixed JI classword/grayRGB row, no general language/audio/scientific gain or new naturaldata.",
+    "Hard ancestor death/kernel/storage/cleanup remain receiptlimits. Terminal limits posthoc, not strict256/globalquota. No retry/limit escalation observed or authorized."
+  ],
+  "evidence_sha256": {
+    "COST_COVERAGE.json": "7c241534f225dfffe8c3e36ed7aa82dd40370375284836d54173fb0d38d7b8c8",
+    "FREEZE.json": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2",
+    "INDEPENDENT_SOURCE_REVIEW.json": "f64bb5e128a5b83a886236d356eb420de759ea2f6ee3f310935bdab92217f38c",
+    "RUN_ONCE/OUTER_WAIT4_RECEIPT.json": "b14914a7ad9c1a6e18a145e65089de1306b3fbd2f8e49dfe9cad1112db09a600",
+    "RUN_ONCE/RESULT.json": "fbe2764036fd9cda3dbcedc8371b06e029d20dab166afaf24bd36b63674e8df8",
+    "RUN_ONCE/ROLE_RECEIPTS.json": "cd64a3970b2798dc98be6ca5a9a86b7b36bcfb6a0082ab7668ec8cd76e8e3c80",
+    "RUN_ONCE/chain/CLOSE_EVENT.json": "546f9ab9d0fb44aa63f9bc21060e8758ed7d1918b966170cc30e5efd2a9e261d",
+    "RUN_ONCE/chain/HANDOFF.json": "6e92c4ff6cb75cf198fc9c15a0dc1e8ad3ed23ce6b7e851a0dd086e4a523d5aa",
+    "RUN_ONCE/chain/READY.json": "0246dfc9fc99a73ade48f05480c1af18428774c2ba3f20901d3f11a3d9de6a44",
+    "SAVED_FINDINGS.md": "bda829010af13486ed5538f67cabd723923ee1b8b21aead1ae1b904a1a1ec08c"
+  },
+  "method": "Independent saved-only stdlib canonical identity/ref/checksum/fragment/inventory reconstruction, ZIP-NPY full arrays and source control-flow. No candidate/verifier/protocol/model/RNG/optimizer execution.",
+  "notes_and_cost": "SAVED_FINDINGS.md and COST_COVERAGE.json agree with reconstructed evidence and scoped costs; pending independent-review label is historical pre-review status.",
+  "resources_and_cost": {
+    "accounting": "Full subtree includes real serving/prefix and EOF failure, all four coldrestores, supervisor verification/IO/imports/cleanup once. Worker/supervisor values partition subtree; do not add again. Outer prefix extra, finaltailunknown. Earlier tests/reference training/source/review and current audit nonzero additional; cumulativeindex not audited. Float partition rounding harmless, no strict aggregate proof.",
+    "complete_wait": true,
+    "known_lower_bound_CPU_seconds": "0.600685112",
+    "largest_reaped_RSS_kib": 33660,
+    "limits": {
+      "AS": [
+        268435456,
+        268435456
+      ],
+      "CPU": [
+        2,
+        2
+      ],
+      "FSIZE": [
+        2097152,
+        2097152
+      ]
+    },
+    "outer_prefix_CPU_seconds": "0.037065112",
+    "outer_tail": "unknown_not_zero",
+    "role_exits": [
+      0,
+      0
+    ],
+    "supervisor_partition_CPU_seconds_decimal": "0.160144",
+    "terminal_budget_pass": true,
+    "wall_seconds": 0.6062709600082599,
+    "whole_subtree_CPU_seconds": "0.56362",
+    "workers_CPU_seconds_decimal": "0.403476"
+  },
+  "source_freeze_sha256": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2",
+  "status": "PASS_SAVED_SCOPED_REAL_PREFIX_ACTIVE_CHANNEL_EOF",
+  "verified": {
+    "RUN_bytes": 2047757,
+    "RUN_files": 37,
+    "active_EOF": "Saved exact ChannelEOF: EOF before control frame with current identity/manifest/time and unknown_no_automatic_replay. Producer records exact control channel fault; no further output. Frozen executed path has a real os.pipe with only supervisor writer, no command writes; closes write after independently verified ack2 and producer sees actual FrameReader EOF. Not independent syscall tracing or spontaneous network disconnection.",
+    "chronology": {
+      "close_begin_ns": 232533801990515,
+      "close_complete_ns": 232533801998918,
+      "deadline_ns": 232578581817337,
+      "fault_observed_ns": 232533802171494,
+      "producer_pid": 9,
+      "recovery_live_after_ns": 232534023689650,
+      "recovery_live_before_ns": 232534023623591,
+      "recovery_pid": 10,
+      "supervisor_pid": 8
+    },
+    "count_basis": "Saved diagnostic counters and exact source executed path, not instruction tracing. Expected control failure and recovery refusal remain distinct counters; four restores and failed control still cost real CPU.",
+    "counts": {
+      "Actor_predictions": 1,
+      "Adam": 0,
+      "checks": 20,
+      "encoded_rows": 1,
+      "expected_active_control_failures": 1,
+      "fresh_models": 0,
+      "model_restores": 4,
+      "new_reference": 0,
+      "recovery_inference": 0,
+      "recovery_refusals": 1,
+      "selective_serve": 1
+    },
+    "frozen_files": 29,
+    "identity": "Reconstructed current artifact by only replacing old source_freeze, request by only newartifact/run_id/originalclockdeadline; raw/profile-policy identity/spec/namespace and complete route/wire match all fixed saved snapshots. Current root/lock and original epoch bind READY/HANDOFF.",
+    "inventory_complete": true,
+    "joint_verifier": "Complete MIDPOINT_VERIFIED, PRODUCER_FAULT_VERIFIED and HANDOFF independently reconstructed, including external ack2 fixedslot/hash/length, request/artifact/route/wire, root/lock and full fault. Marker alone never interpreted as complete checkpoint.",
+    "journal": "Seven original namespace records (claim plus reserved/generated/fourpiece snapshots) and lock match FAULT_BEFORE and remain byteexact in terminal inventory. Exactly one724B control-fault appended. Six full attempts independently verify inner/outer checksums, routes/wires, phase/index/pending flags, controller1/generator1 and fragmentprefixes. No piece02intent or any cancel-observation/intent/final/ACK created.",
+    "known_result": "34884 known generated wire bytes remain exact old selected reference and route; published prefix text35+image8192=8227. Final saved parts match original fragments, both tickets retained, phasegenerated/index2/no cancellation. Unknown control disposition is not unknown model output and not confirmed user cancel.",
+    "models": "Content78 andActor20 complete NPZ entries, dtype/shape/rawbytes, parameters/optimizer arrays match original and AFTER; all composite artifact array digests independently computed. No Adam/fresh model/reference calls.",
+    "original_inputs_terminal_rehashed": 13,
+    "process_receipts": "Producer9 normalexit0/reaped before supervisor fault verification and recovery10 launch; recoveryexit0; outerreaps supervisor8exit0. Monotonic owned events consistent and fully enclosed by outerevents; not a manualkill qualification.",
+    "recovery": "PID10 cold restores2models and loads exact prior ack2 audit-only; live_before<=live_after<originaldeadline and exact control effect unknown; supervisor disposition required. Thus not masked by readonly/expiry/flock. RECOVER before/after equals terminal fullinventory; no inference or output."
+  }
+}

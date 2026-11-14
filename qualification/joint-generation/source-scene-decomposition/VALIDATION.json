@@ -1,0 +1,2190 @@
+{
+  "all_contrasts": [
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2701",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2702",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 0,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 71
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "direct",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_A",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "calibration_N",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "fair_calibrated_NDU_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": false
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "uncalibrated_NDU_control",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": false,
+      "right": "additive",
+      "right_mechanism": "source",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "additive",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "additive",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2711",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "2712",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    },
+    {
+      "claim": "source_mechanism_increment",
+      "fold": 1,
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "left": "ndu",
+      "left_mechanism": "source",
+      "noise_seed": "pooled",
+      "passed": true,
+      "right": "ndu",
+      "right_mechanism": "direct",
+      "seed": 89
+    }
+  ],
+  "calibration_replication_gate": true,
+  "direct_controls_exactly_reproduced": "All8adapted+4base digests and allmetricrecords exactpreviousfixedCV",
+  "fair_calibrated_NDU_gate": {
+    "direct": false,
+    "source": false
+  },
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 26
+  },
+  "overall_gate": false,
+  "public_boundary": "No weights/privatepaths/privateinputs/per-requestmodeloutputs. AddedFITsource semantic supervision plusrepresentation; notNDU-specific ornewblindholdout",
+  "remote_dependencies": "Parentmodel.py andutility.py exactlymatch executedlegacy bytes at c0a3258998f1df70b3b18e03b71143e097a9c53d",
+  "rust_checks": "Notrun: Python-onlyscope",
+  "saved_result_review_sha256": "f9d3a2802c7a3e4d068e7b2bdca27055c40abd298d89f5ff57f04e6d0a21797f",
+  "saved_result_sha256": "062f20e851a412bcdf06bca7ad5f9e3fe770df5c55bf5dc640d99151fdde448e",
+  "scope": "Independent sourceAST/savedrecord/fullgate review; all120contrasts retained; no numericalreplay",
+  "source_mechanism_gate": true,
+  "source_review_sha256": "d76aaea54e44a21eba8fe30fa0dcaf58f924cb838aba5117cd6d6f762583bbaa",
+  "source_sha256": {
+    "PLAN.md": "a4a650781eb4f6d8bfe797c53341c5b42cd2a9e7cf0bb12e15a46d8ce46869cf",
+    "source_scene.py": "e25ec192976752513a3aa2980f7949a26e84c7bcffe06c3eed86d17c5cce8849",
+    "test_source_scene.py": "98ebb8f1283045672fa5320a51322ae6681a3587879e14aa72c9b575081c134c"
+  },
+  "status": "SOURCE_SUPERVISION_MECHANISM_PASS_FAIR_NDU_FAIL_OVERALL_FALSE"
+}

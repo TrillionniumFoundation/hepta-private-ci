@@ -1,0 +1,102 @@
+{
+  "status": "PASS_INDEPENDENT_SAVED_TRAINING_SESSION_SHARED_ROOT_LEASE_REVIEW",
+  "freeze_sha256": "1d7821a91d10d8a95d8c4fcfcb262aed96fca4da1eacfb921d8a20ffa5135986",
+  "review_mode": "Saved JSON/hash/size/digest/arithmetic/source review only, no candidate import or optimizer/model rerun.",
+  "all_frozen_hashes_reverified": 25,
+  "saved_files_verified_including_outer_receipt": 17,
+  "retained_bytes": 46093,
+  "result_sha256": "3ad72139b1007e484b7b9af959a72492bd01df9d96ab23b637f674dade989975",
+  "outer_receipt_sha256": "d415303696f170beab621490411941512e0162b4a1c83e04c26e794fc5dac2a6",
+  "chronology": {
+    "holder_PID": 6,
+    "contender_PID": 8,
+    "recover_PID": 9,
+    "exit_codes": [
+      -9,
+      0,
+      0
+    ],
+    "order": "holder launch < bound READY verified <= contender launch < contender reap <= own holder SIGKILL/reap <= recover launch < recover reap",
+    "actual_holder_contender_overlap": true,
+    "all_children_reaped": true
+  },
+  "lease": {
+    "device": 27,
+    "inode": 660780,
+    "saved_and_current_identity_equal": true,
+    "holder_checks_and_refusals": [
+      5,
+      9
+    ],
+    "contender_checks_and_refusals": [
+      1,
+      3
+    ],
+    "recover_checks_and_refusals": [
+      6,
+      5
+    ],
+    "all_checks_true": true,
+    "scope": "Training create/load and delivery contention refused before factory/provider; same-instance thread prepare/save/close refused; pending close refused without release; recovery excludes delivery until close, known factory failure releases lock, subsequent metadata delivery constructor succeeds. Transient behavior is saved assertions plus source evidence, not separate syscall trace."
+  },
+  "state": {
+    "checkpoint_bytes": 5899,
+    "checkpoint_sha256": "aa86e020da83e59fd4c2b458bdfd241eb635d2337f460b1684668a6a3fb60e91",
+    "whole_saved_payload_equals_READY_and_recovered": true,
+    "recovered_copy_byteequal_first": true,
+    "outer_checksum_manifest_checksum_source_binding_verified": true,
+    "first_committed_cursor_updates": 1,
+    "first_committed_tokens": {
+      "step0": "committed"
+    },
+    "separate_discarded_pending_updates": 2,
+    "both_models_parameter_digest_independently_recomputed": true,
+    "both_models_dimensions": [
+      3,
+      3,
+      4,
+      2
+    ],
+    "parameter_elements_each": 50,
+    "Adam_m_v_complete_finite_and_steps_verified": [
+      1,
+      2
+    ],
+    "root_files": [
+      ".hepta-writer.lock",
+      "session-first.json",
+      "recovered-copy.json"
+    ],
+    "no_pending_or_concurrent_checkpoint": true,
+    "pending_not_recovered": "Explicit committed snapshot has no pending token or second update. Discarded candidate retained separately in READY; not automatically recomputed."
+  },
+  "work": {
+    "actual_optimizer_steps_including_discarded": 2,
+    "actual_objective_calls": 2,
+    "random_initializations": 1,
+    "allocation_only_restores": 3,
+    "actual_inference_calls": 0,
+    "recovery_new_objective_calls": 0,
+    "known_failed_factory_without_model": 1,
+    "recovery_delivery_metadata_provider_calls": 1,
+    "evidence": "Two separate candidate work receipts each one 50-parameter Adam update; allocation/random count follows audited constructor/restore source paths, not independent global instrumentation. Recovery callback/factory counters zero."
+  },
+  "cost": {
+    "whole_method_subtree_CPU_seconds": 0.464045,
+    "worker_CPU_seconds_already_included": 0.415289,
+    "complete_supervisor_CPU_seconds_already_included": 0.048756,
+    "outer_prefix_CPU_seconds_additional": 0.030114418,
+    "known_lower_bound_CPU_seconds": 0.494159418,
+    "unknown_outer_tail": "not zero",
+    "largest_reaped_process_RSS_kib": 27672,
+    "terminal_budget_pass": true,
+    "scope": "Complete wait4 includes discarded/killed work and supervisor tail. Do not add workers/candidate CPU again. Inner evolving stdout inventory superseded by final outer inventory. Source/review/history extra; RSS not concurrent sum."
+  },
+  "limits": [
+    "Known tiny synthetic local training only, no scientific benefit or production admission.",
+    "Explicit chosen trusted checkpoint, not root latest-head or cross-snapshot token ledger. Uncommitted token can be absent in restored older checkpoint; external callback effects not exactly-once.",
+    "Cooperating stable trusted local root only; no hostile API bypass prevention, distributed locking, owner authority, powerloss/directory-fsync or inherited-FD lifetime guarantee.",
+    "All abort/BaseException/callback/crash timings not newly qualified; original platform/science/data holds and previous provenance correction unchanged."
+  ],
+  "review_outside_freeze": true
+}
