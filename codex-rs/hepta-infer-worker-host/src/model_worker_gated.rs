@@ -629,7 +629,7 @@ mod tests {
                 "model.gated",
                 vec![
                     feature("req.a", ha, selected.weights_digest.clone()),
-                    feature("req.b", hb, selected.weights_digest.clone()),
+                    feature("req.b", hb, selected.weights_digest),
                 ],
             )
             .expect("run actual cpu head");
@@ -859,8 +859,8 @@ mod tests {
             request.authorization.lease_payload_digest = digest;
             request
         };
-        let a = mk("cell.a", "request.a", h_first.clone());
-        let b = mk("cell.b", "request.b", h_second.clone());
+        let a = mk("cell.a", "request.a", h_first);
+        let b = mk("cell.b", "request.b", h_second);
         assert!(std::sync::Arc::ptr_eq(&a.snapshot, &b.snapshot));
 
         // Both reservations are individually valid but the two Cells'
@@ -905,9 +905,7 @@ mod tests {
         // Two equal-content but physically distinct Arc allocations cannot
         // exploit that grant to bypass memory admission before driver entry.
         let mut memory_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("memory driver");
-        memory_driver
-            .register_head(first.clone())
-            .expect("memory head a");
+        memory_driver.register_head(first).expect("memory head a");
         memory_driver
             .register_head(second.clone())
             .expect("memory head b");

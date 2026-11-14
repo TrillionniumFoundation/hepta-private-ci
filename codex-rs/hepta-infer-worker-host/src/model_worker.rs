@@ -775,8 +775,6 @@ pub(crate) use batch::NeuronFeatureBatchItemObservationV2;
 
 #[path = "model_worker_gated.rs"]
 mod gated_cpu;
-pub(crate) use gated_cpu::GatedHeadCandidateV2;
-pub(crate) use gated_cpu::GatedHeadCpuDriverV2;
 
 #[path = "model_worker_shared_v2.rs"]
 mod shared_v2;

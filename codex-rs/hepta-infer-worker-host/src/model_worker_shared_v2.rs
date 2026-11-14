@@ -682,7 +682,7 @@ mod tests {
         );
         // Different Arc buffers cost two SHA-256 evaluations, even if the
         // immutable values and declared digest are identical.
-        let mut c = b.clone();
+        let mut c = b;
         let mut independent = (*c.snapshot).clone();
         independent.features_q24 = Arc::from(c.snapshot.features_q24.as_ref());
         c.snapshot = Arc::new(independent);
@@ -839,7 +839,7 @@ mod tests {
             );
         }
         // Same principal/purpose is not enough: scope is an independent fence.
-        let mut other_scope = same_partition.clone();
+        let mut other_scope = same_partition;
         let mut changed_scope = (*other_scope.snapshot).clone();
         other_scope.scope_id = id("scope.foreign");
         changed_scope.identity.scope_id = other_scope.scope_id.clone();
