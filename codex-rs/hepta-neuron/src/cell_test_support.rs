@@ -130,20 +130,28 @@ pub(crate) fn input(run: &str) -> CellStepInputV1 {
         monotonic_micros: 10,
         deadline_micros: 100,
         observation: b"input".to_vec(),
-        candidates: definition().candidates.iter().map(|c| CellCandidateMaskV1 {
-            candidate_id: c.candidate_id.clone(),
-            allowed: true,
-        }).collect(),
+        candidates: definition()
+            .candidates
+            .iter()
+            .map(|c| CellCandidateMaskV1 {
+                candidate_id: c.candidate_id.clone(),
+                allowed: true,
+            })
+            .collect(),
     }
 }
 
 pub(crate) fn owner(runs: &[&str]) -> CellPartitionOwnerV1 {
     let mut owner = checked(CellPartitionOwnerV1::new(
-        /*max_partitions*/8,
-        /*max_receipts_per_partition*/8,
+        /*max_partitions*/ 8, /*max_receipts_per_partition*/ 8,
     ));
     for run in runs {
-        checked(owner.admit(scope(run), &definition(), d("frontier"), /*writer_epoch*/1));
+        checked(owner.admit(
+            scope(run),
+            &definition(),
+            d("frontier"),
+            /*writer_epoch*/ 1,
+        ));
     }
     owner
 }
@@ -215,8 +223,22 @@ pub(crate) fn proposal(
     request: CellStepInputV1,
 ) -> CellStateProposalV1 {
     let now = request.monotonic_micros;
-    let prepared = checked(prepare_cell_step(&definition(), owner, &Encoder, request, now));
-    let inferred = checked(infer_cell(prepared, owner, &mut Model { calls: 0, latency: 20 }, now + 1));
+    let prepared = checked(prepare_cell_step(
+        &definition(),
+        owner,
+        &Encoder,
+        request,
+        now,
+    ));
+    let inferred = checked(infer_cell(
+        prepared,
+        owner,
+        &mut Model {
+            calls: 0,
+            latency: 20,
+        },
+        now + 1,
+    ));
     checked(decide_cell(inferred, now + 2))
 }
 
@@ -229,14 +251,22 @@ pub(crate) struct RecordedControl {
 
 impl RecordedControl {
     pub(crate) fn new() -> Self {
-        Self { executions: 0, reads: 0, failure: None, receipt: None }
+        Self {
+            executions: 0,
+            reads: 0,
+            failure: None,
+            receipt: None,
+        }
     }
 }
 
 impl NeuronInferenceControlPort for RecordedControl {
-    fn execute_feature(&mut self, request: &NeuronFeatureRequestV1) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+    fn execute_feature(
+        &mut self,
+        request: &NeuronFeatureRequestV1,
+    ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
         self.executions += 1;
-        let receipt = feature_receipt(request, /*latency*/20);
+        let receipt = feature_receipt(request, /*latency*/ 20);
         self.receipt = Some(receipt.clone());
         match self.failure {
             Some(error) => Err(error),
@@ -246,9 +276,11 @@ impl NeuronInferenceControlPort for RecordedControl {
 }
 
 impl CellInferenceReadbackPortV1 for RecordedControl {
-    fn read_feature(&mut self, _: &NeuronFeatureRequestV1) -> Result<Option<NeuronFeatureReceiptV1>, NeuronModelError> {
+    fn read_feature(
+        &mut self,
+        _: &NeuronFeatureRequestV1,
+    ) -> Result<Option<NeuronFeatureReceiptV1>, NeuronModelError> {
         self.reads += 1;
         Ok(self.receipt.clone())
     }
 }
-

@@ -177,12 +177,27 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, &mut messages, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, &mut messages, delta("thread-a", "model output".to_string())).unwrap();
+    observe_for_test(
+        &mut output,
+        &mut messages,
+        delta("unrelated", "discard".to_string()),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut output,
+        &mut messages,
+        delta("thread-a", "model output".to_string()),
+    )
+    .unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
     assert!(
-        observe_for_test(&mut output, &mut messages, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
+        observe_for_test(
+            &mut output,
+            &mut messages,
+            delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))
+        )
+        .is_err()
     );
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);

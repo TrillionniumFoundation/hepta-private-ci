@@ -39,7 +39,11 @@ impl CellDefinitionV1 {
         let mut indices = BTreeSet::new();
         let mut abstain_count = 0;
         let mut bytes = b"hepta.cell.definition.v1".to_vec();
-        for id in [&self.cell_id, &self.runtime.config_id, &self.runtime.model_id] {
+        for id in [
+            &self.cell_id,
+            &self.runtime.config_id,
+            &self.runtime.model_id,
+        ] {
             push_id(&mut bytes, id);
         }
         let r = &self.runtime;
@@ -134,7 +138,10 @@ pub(crate) fn operation_digest(
         input.source_frontier,
         input.objective_digest,
         input.ndu_snapshot_digest,
-        snapshot.checkpoint.as_ref().map_or(Digest32::ZERO, SparseCheckpoint::digest),
+        snapshot
+            .checkpoint
+            .as_ref()
+            .map_or(Digest32::ZERO, SparseCheckpoint::digest),
         Digest32::of_bytes(&input.observation),
         canonical_feature_vector_digest_v1(&encoded.feature_vector_q24),
     ] {
@@ -163,7 +170,10 @@ pub fn canonical_cell_step_request_digest_v1(
     definition: &CellDefinitionV1,
     input: &CellStepInputV1,
 ) -> Result<Digest32, CellExecutionError> {
-    Ok(semantic_request_digest(definition.semantic_digest()?, input))
+    Ok(semantic_request_digest(
+        definition.semantic_digest()?,
+        input,
+    ))
 }
 
 /// Independent of the owner revision: retries cannot acquire new execution
@@ -197,7 +207,10 @@ pub(crate) fn semantic_request_digest(
 /// Inference.control owns a shared request ledger. The same operation label in
 /// different Cell partitions must not collide; a changed snapshot within one
 /// operation must not mint a second request ID to bypass that ledger.
-pub(crate) fn inference_request_id(scope: &CellScopeV1, operation_id: &StableId) -> Result<StableId, CellExecutionError> {
+pub(crate) fn inference_request_id(
+    scope: &CellScopeV1,
+    operation_id: &StableId,
+) -> Result<StableId, CellExecutionError> {
     let mut bytes = b"hepta.cell.inference-request-id.v1".to_vec();
     bytes.extend_from_slice(scope.digest().as_array());
     push_id(&mut bytes, operation_id);

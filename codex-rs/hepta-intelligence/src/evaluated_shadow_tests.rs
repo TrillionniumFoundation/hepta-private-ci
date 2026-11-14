@@ -542,12 +542,8 @@ fn ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_deci
     // public decision label changes; this must not authorize candidate use.
     fixture.qualification.decision.decision.disposition =
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection;
-    let result = run_evaluated_shadow_v1(
-        fixture.request(),
-        &mut ledger,
-        &mut ports,
-        /*now*/ 50,
-    );
+    let result =
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50);
     assert!(
         ports.calls.is_empty(),
         "relabelled qualification reached ports: {:?}; result: {result:?}",

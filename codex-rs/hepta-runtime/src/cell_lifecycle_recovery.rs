@@ -21,7 +21,11 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             return Err(RuntimeCellLifecycleError::Capacity);
         }
         let mut journal = Self {
-            pool, agent_id: plan.agent_id.clone(), writer_epoch, anchor, max_events,
+            pool,
+            agent_id: plan.agent_id.clone(),
+            writer_epoch,
+            anchor,
+            max_events,
         };
         journal.check_scope(plan)?;
         let expected = journal.anchor.current()?;
@@ -31,7 +35,11 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if expected.scope_digest != runtime_cell_lifecycle_journal_scope_v1(&journal.agent_id) {
             return Err(RuntimeCellLifecycleError::ScopeMismatch);
         }
-        let mut tx = journal.pool.begin_with("BEGIN IMMEDIATE").await.map_err(unavailable)?;
+        let mut tx = journal
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
         let (sequence, head) = read_head(&mut tx, &journal.agent_id).await?;
         if sequence == expected.sequence && head == expected.head {
             tx.commit().await.map_err(unavailable)?;
@@ -42,7 +50,10 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             return Err(RuntimeCellLifecycleError::CommitUncertain);
         }
         let actual = RuntimeCellLifecycleAnchorV1 {
-            scope_digest: expected.scope_digest, writer_epoch, sequence, head,
+            scope_digest: expected.scope_digest,
+            writer_epoch,
+            sequence,
+            head,
         };
         verify_chain(&mut tx, &journal.agent_id, actual, max_events).await?;
         if expected.sequence == 0 {
@@ -66,10 +77,13 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if operation != plan.operation_id.as_str() || digest != plan.digest()?.to_string() {
             return Err(RuntimeCellLifecycleError::ScopeMismatch);
         }
-        let event: LifecycleEventV1 = serde_json::from_str(&bytes)
-            .map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
+        let event: LifecycleEventV1 =
+            serde_json::from_str(&bytes).map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
         match event {
-            LifecycleEventV1::Observed { observation, authentication } => {
+            LifecycleEventV1::Observed {
+                observation,
+                authentication,
+            } => {
                 // A self-consistent database suffix proves no physical outcome.
                 // Re-authenticate the entire observation under current trust.
                 crate::cell_lifecycle_transition::validate_observation(plan, &observation)?;
@@ -81,9 +95,13 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             LifecycleEventV1::Created { .. } | LifecycleEventV1::Prepared { .. } => {}
         }
         replay_in(&mut tx, plan, max_events).await?;
-        journal.anchor.compare_and_swap(expected, actual)
+        journal
+            .anchor
+            .compare_and_swap(expected, actual)
             .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
-        tx.commit().await.map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
+        tx.commit()
+            .await
+            .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
         Ok(journal)
     }
 }

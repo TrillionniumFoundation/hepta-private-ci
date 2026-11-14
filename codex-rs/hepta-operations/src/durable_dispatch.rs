@@ -7,6 +7,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_types::Digest32;
 use sqlx::Sqlite;
 use sqlx::Transaction;
@@ -68,19 +69,18 @@ impl DurableOperationStore {
             .ok_or(DurableOperationError::Unavailable(
                 "final-use token already consumed".to_owned(),
             ))?;
-        let entry = authorized
-            .authority
-            .with_dispatch_boundary(token, &authorized.binding, || {
-                // All awaited reads and the FinalUse check precede this fresh
-                // lease check. No await or writer handoff can intervene before
-                // the synchronous adapter entry.
-                let admitted_at = now_millis()?;
-                validate_claim_snapshot(&status, &claim, admitted_at)?;
-                if operation.updated_at_unix_ms > to_u64(admitted_at)? {
-                    return Err(DurableOperationError::ClockRollback);
-                }
-                Ok((admitted_at, effect(&operation.intent)))
-            });
+        let authority: &FinalUseAuthority = &authorized.authority;
+        let entry = authority.with_dispatch_boundary(token, &authorized.binding, || {
+            // All awaited reads and the FinalUse check precede this fresh
+            // lease check. No await or writer handoff can intervene before
+            // the synchronous adapter entry.
+            let admitted_at = now_millis()?;
+            validate_claim_snapshot(&status, &claim, admitted_at)?;
+            if operation.updated_at_unix_ms > to_u64(admitted_at)? {
+                return Err(DurableOperationError::ClockRollback);
+            }
+            Ok((admitted_at, effect(&operation.intent)))
+        });
         let (admitted_at, observation) = match entry {
             Ok(entry) => entry?,
             Err(error) => {

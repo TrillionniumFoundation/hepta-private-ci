@@ -71,13 +71,23 @@ impl CellCompatibilityBundleV1 {
     pub fn digest(&self) -> Result<Digest32, CellBundleError> {
         let c = &self.components;
         let required = [
-            c.base, c.heads, c.composition, c.encoder, c.tokenizer, c.normalizer,
-            c.calibration, c.numeric_profile, c.output_schema, c.state_schema,
+            c.base,
+            c.heads,
+            c.composition,
+            c.encoder,
+            c.tokenizer,
+            c.normalizer,
+            c.calibration,
+            c.numeric_profile,
+            c.output_schema,
+            c.state_schema,
             c.state_semantics,
         ];
         if required.iter().copied().any(Digest32::is_zero)
             || [c.organ_adapter, c.cell_adapter, self.rollback_predecessor]
-                .into_iter().flatten().any(Digest32::is_zero)
+                .into_iter()
+                .flatten()
+                .any(Digest32::is_zero)
         {
             return Err(CellBundleError::EmptyDigest);
         }
@@ -97,8 +107,15 @@ impl CellCompatibilityBundleV1 {
             }
         }
         if let Some(lineage) = &self.training_lineage {
-            for digest in [lineage.source_bundle, lineage.dataset, lineage.update_rule, lineage.evaluation_profile] {
-                if digest.is_zero() { return Err(CellBundleError::EmptyDigest); }
+            for digest in [
+                lineage.source_bundle,
+                lineage.dataset,
+                lineage.update_rule,
+                lineage.evaluation_profile,
+            ] {
+                if digest.is_zero() {
+                    return Err(CellBundleError::EmptyDigest);
+                }
                 bytes.extend_from_slice(digest.as_array());
             }
             if Some(lineage.source_bundle) != self.rollback_predecessor {
@@ -120,7 +137,12 @@ pub struct CellStatePartitionV1 {
 impl CellStatePartitionV1 {
     pub fn digest(&self) -> Digest32 {
         let mut bytes = b"hepta.cell.state-partition.v1\0".to_vec();
-        for id in [&self.principal_id, &self.agent_id, &self.cell_id, &self.run_id] {
+        for id in [
+            &self.principal_id,
+            &self.agent_id,
+            &self.cell_id,
+            &self.run_id,
+        ] {
             append_id(&mut bytes, id);
         }
         Digest32::of_bytes(&bytes)
@@ -129,8 +151,13 @@ impl CellStatePartitionV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CellStateTransitionV1 {
-    Preserve { checkpoint: Digest32 },
-    Reset { initializer: Digest32, target_checkpoint: Digest32 },
+    Preserve {
+        checkpoint: Digest32,
+    },
+    Reset {
+        initializer: Digest32,
+        target_checkpoint: Digest32,
+    },
     Migrate {
         transform: Digest32,
         source_checkpoint: Digest32,
@@ -154,14 +181,30 @@ pub struct CellBundleCutoverPlanV1 {
 }
 
 impl CellBundleCutoverPlanV1 {
-    pub fn operation_id(&self) -> &StableId { &self.operation_id }
-    pub fn state_owner(&self) -> &StableId { &self.state_owner }
-    pub fn state_partition(&self) -> &CellStatePartitionV1 { &self.state_partition }
-    pub fn predecessor_bundle(&self) -> Digest32 { self.predecessor_bundle }
-    pub fn successor_bundle(&self) -> Digest32 { self.successor_bundle }
-    pub fn successor_generation(&self) -> Generation { self.successor_generation }
-    pub fn transition(&self) -> &CellStateTransitionV1 { &self.transition }
-    pub fn plan_digest(&self) -> Digest32 { self.plan_digest }
+    pub fn operation_id(&self) -> &StableId {
+        &self.operation_id
+    }
+    pub fn state_owner(&self) -> &StableId {
+        &self.state_owner
+    }
+    pub fn state_partition(&self) -> &CellStatePartitionV1 {
+        &self.state_partition
+    }
+    pub fn predecessor_bundle(&self) -> Digest32 {
+        self.predecessor_bundle
+    }
+    pub fn successor_bundle(&self) -> Digest32 {
+        self.successor_bundle
+    }
+    pub fn successor_generation(&self) -> Generation {
+        self.successor_generation
+    }
+    pub fn transition(&self) -> &CellStateTransitionV1 {
+        &self.transition
+    }
+    pub fn plan_digest(&self) -> Digest32 {
+        self.plan_digest
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -209,22 +252,42 @@ pub fn prepare_cell_bundle_cutover_v1(
             bytes.push(0);
             vec![*checkpoint]
         }
-        CellStateTransitionV1::Reset { initializer, target_checkpoint } => {
+        CellStateTransitionV1::Reset {
+            initializer,
+            target_checkpoint,
+        } => {
             bytes.push(1);
             vec![*initializer, *target_checkpoint]
         }
-        CellStateTransitionV1::Migrate { transform, source_checkpoint, target_checkpoint, qualification } => {
+        CellStateTransitionV1::Migrate {
+            transform,
+            source_checkpoint,
+            target_checkpoint,
+            qualification,
+        } => {
             bytes.push(2);
-            vec![*transform, *source_checkpoint, *target_checkpoint, *qualification]
+            vec![
+                *transform,
+                *source_checkpoint,
+                *target_checkpoint,
+                *qualification,
+            ]
         }
     };
     if state_digests.iter().copied().any(Digest32::is_zero) {
         return Err(CellBundleError::InvalidStateTransition);
     }
-    for digest in state_digests { bytes.extend_from_slice(digest.as_array()); }
+    for digest in state_digests {
+        bytes.extend_from_slice(digest.as_array());
+    }
     Ok(CellBundleCutoverPlanV1 {
-        operation_id, state_owner, state_partition, predecessor_bundle,
-        successor_bundle, successor_generation: successor.generation, transition,
+        operation_id,
+        state_owner,
+        state_partition,
+        predecessor_bundle,
+        successor_bundle,
+        successor_generation: successor.generation,
+        transition,
         plan_digest: Digest32::of_bytes(&bytes),
     })
 }
@@ -236,8 +299,12 @@ pub fn validate_cell_bundle_readback_v1(
 ) -> Result<(), CellBundleError> {
     let checkpoint = match plan.transition {
         CellStateTransitionV1::Preserve { checkpoint } => checkpoint,
-        CellStateTransitionV1::Reset { target_checkpoint, .. }
-        | CellStateTransitionV1::Migrate { target_checkpoint, .. } => target_checkpoint,
+        CellStateTransitionV1::Reset {
+            target_checkpoint, ..
+        }
+        | CellStateTransitionV1::Migrate {
+            target_checkpoint, ..
+        } => target_checkpoint,
     };
     if receipt.operation_id != plan.operation_id
         || receipt.state_owner != plan.state_owner

@@ -110,8 +110,13 @@ impl CircuitWriterV2 {
         if fence.owner_epoch == 0 || fence.generation == 0 {
             return Err(TaskFlowError::StaleFence);
         }
-        Ok(Self { owner_id: fence.owner_id.clone(), owner_epoch: fence.owner_epoch,
-            generation: fence.generation, fencing_token: fence.fencing_token.clone(), expires_at_ms })
+        Ok(Self {
+            owner_id: fence.owner_id.clone(),
+            owner_epoch: fence.owner_epoch,
+            generation: fence.generation,
+            fencing_token: fence.fencing_token.clone(),
+            expires_at_ms,
+        })
     }
 }
 
@@ -132,11 +137,21 @@ pub struct CircuitRunV2 {
 }
 
 impl CircuitRunV2 {
-    pub fn run_id(&self) -> &str { &self.run_id }
-    pub fn revision(&self) -> u64 { self.revision }
-    pub fn stop_reason(&self) -> Option<CircuitStopReasonV2> { self.stop_reason }
-    pub fn activations(&self) -> &BTreeMap<u64, CircuitActivationV2> { &self.activations }
-    pub fn budget(&self) -> &CircuitBudgetV2 { &self.instances[&0].budget }
+    pub fn run_id(&self) -> &str {
+        &self.run_id
+    }
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+    pub fn stop_reason(&self) -> Option<CircuitStopReasonV2> {
+        self.stop_reason
+    }
+    pub fn activations(&self) -> &BTreeMap<u64, CircuitActivationV2> {
+        &self.activations
+    }
+    pub fn budget(&self) -> &CircuitBudgetV2 {
+        &self.instances[&0].budget
+    }
     pub fn outcome(&self) -> Option<CircuitExitV2> {
         let root = &self.instances[&0];
         match root.exit.as_ref() {
@@ -145,8 +160,15 @@ impl CircuitRunV2 {
         }
     }
     pub fn unresolved(&self) -> usize {
-        self.activations.values().filter(|a| matches!(a.status,
-            CircuitActivationStatusV2::InFlight | CircuitActivationStatusV2::Indeterminate)).count()
+        self.activations
+            .values()
+            .filter(|a| {
+                matches!(
+                    a.status,
+                    CircuitActivationStatusV2::InFlight | CircuitActivationStatusV2::Indeterminate
+                )
+            })
+            .count()
     }
     pub(crate) fn state_digest(&self) -> Result<Sha256Digest, TaskFlowError> {
         hash("hepta.circuit.state.v2", self)
@@ -189,11 +211,20 @@ pub struct CircuitCompletionV2 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum CircuitEventV2 {
-    Advance { quantum: u16 },
-    Complete { completion: CircuitCompletionV2 },
-    MarkIndeterminate { activation_id: u64, observation_digest: Sha256Digest },
+    Advance {
+        quantum: u16,
+    },
+    Complete {
+        completion: CircuitCompletionV2,
+    },
+    MarkIndeterminate {
+        activation_id: u64,
+        observation_digest: Sha256Digest,
+    },
     /// The registered computation owner reconciles the original invocation.
-    Reconcile { completion: CircuitCompletionV2 },
+    Reconcile {
+        completion: CircuitCompletionV2,
+    },
     Cancel,
 }
 

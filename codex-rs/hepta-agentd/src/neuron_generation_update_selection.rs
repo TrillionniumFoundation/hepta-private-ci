@@ -12,6 +12,7 @@ use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::load_selected_candidate;
 use codex_hepta_neuron::CellBackendManifestV2;
 use codex_hepta_types::AuthorityPosture;
@@ -105,7 +106,8 @@ impl AgentdSelectedGenerationV1 {
         if !metadata.is_file() || metadata.len() != signed.encoded_size_bytes {
             return Err(invalid("generation payload file differs from selection"));
         }
-        let current = owner.current_registry_view(now).map_err(invalid)?;
+        let current: VerifiedCurrentRegistryViewV1 =
+            owner.current_registry_view(now).map_err(invalid)?;
         let verified = verifier.verify(&signed, &current, now).map_err(invalid)?;
         let selection = verified.selection_digest();
         let mut candidate =
@@ -186,7 +188,8 @@ impl AgentdSelectedGenerationV1 {
         {
             return Err(invalid("generation selection withdrawal cut changed"));
         }
-        let current = owner.current_registry_view(now).map_err(invalid)?;
+        let current: VerifiedCurrentRegistryViewV1 =
+            owner.current_registry_view(now).map_err(invalid)?;
         let verified = self
             .verifier
             .verify(&self.signed, &current, now)

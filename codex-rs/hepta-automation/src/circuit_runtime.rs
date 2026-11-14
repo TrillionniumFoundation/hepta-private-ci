@@ -36,9 +36,13 @@ impl CircuitRunV2 {
         if start.lease_duration_ms == 0 || start.lease_duration_ms > 3_600_000 {
             return Err(invalid("invalid circuit lease duration"));
         }
-        let expires = start.created_at_ms.checked_add(start.lease_duration_ms)
+        let expires = start
+            .created_at_ms
+            .checked_add(start.lease_duration_ms)
             .ok_or_else(|| invalid("lease overflow"))?;
-        start.created_at_ms.checked_add(definition.limits.max_elapsed_ms)
+        start
+            .created_at_ms
+            .checked_add(definition.limits.max_elapsed_ms)
             .ok_or_else(|| invalid("deadline overflow"))?;
         let mut run = Self {
             owner_agent_id: fence.owner_agent_id.as_str().to_string(),
@@ -54,18 +58,29 @@ impl CircuitRunV2 {
             next_activation: 1,
             stop_reason: None,
         };
-        run.instances.insert(0, CircuitInstanceV2 {
-            program_id: definition.entry_program.clone(),
-            parent_activation: None,
-            child_depth: 0,
-            budget: CircuitBudgetV2::new(definition.limits.work_budget),
-            exit: None,
-            returned: false,
-            progress: BTreeMap::new(),
-        });
+        run.instances.insert(
+            0,
+            CircuitInstanceV2 {
+                program_id: definition.entry_program.clone(),
+                parent_activation: None,
+                child_depth: 0,
+                budget: CircuitBudgetV2::new(definition.limits.work_budget),
+                exit: None,
+                returned: false,
+                progress: BTreeMap::new(),
+            },
+        );
         let entry = &definition.program(&definition.entry_program)?.entry_node;
-        run.enqueue(definition, /*instance_id*/ 0, entry, /*round*/ 0, Vec::new(),
-            start.input_digest.clone(), start.created_at_ms, /*edge_id*/ None)?;
+        run.enqueue(
+            definition,
+            /*instance_id*/ 0,
+            entry,
+            /*round*/ 0,
+            Vec::new(),
+            start.input_digest.clone(),
+            start.created_at_ms,
+            /*edge_id*/ None,
+        )?;
         Ok(run)
     }
 
@@ -78,7 +93,9 @@ impl CircuitRunV2 {
         event: &CircuitEventV2,
         now_ms: u64,
     ) -> Result<(Self, Vec<CircuitDispatchV2>), TaskFlowError> {
-        if hash("hepta.circuit.definition.v2", definition)? != self.definition_digest || now_ms < self.last_observed_ms {
+        if hash("hepta.circuit.definition.v2", definition)? != self.definition_digest
+            || now_ms < self.last_observed_ms
+        {
             return Err(invalid("circuit definition mismatch or time regression"));
         }
         if self.outcome().is_some() {
@@ -86,13 +103,16 @@ impl CircuitRunV2 {
         }
         let mut next = self.clone();
         next.last_observed_ms = now_ms;
-        next.revision = next.revision.checked_add(1).ok_or_else(|| invalid("circuit revision overflow"))?;
+        next.revision = next
+            .revision
+            .checked_add(1)
+            .ok_or_else(|| invalid("circuit revision overflow"))?;
         if now_ms - self.created_at_ms >= definition.limits.max_elapsed_ms {
             next.stop(definition, Stop::Deadline)?;
         }
-        if next.activations.values().any(|a| a.status == Status::Joining
-            && a.join_deadline_ms.is_some_and(|end| now_ms >= end))
-        {
+        if next.activations.values().any(|a| {
+            a.status == Status::Joining && a.join_deadline_ms.is_some_and(|end| now_ms >= end)
+        }) {
             next.stop(definition, Stop::JoinTimeout)?;
         }
         let mut dispatches = Vec::new();
@@ -108,11 +128,15 @@ impl CircuitRunV2 {
                     if next.stop_reason.is_some() {
                         break;
                     }
-                    let ready = next.activations.values()
+                    let ready = next
+                        .activations
+                        .values()
                         .filter(|a| a.status == Status::Ready && a.ready_at_ms <= now_ms)
                         .min_by_key(|a| (a.ready_at_ms, a.activation_id))
                         .map(|a| a.activation_id);
-                    let Some(id) = ready else { break; };
+                    let Some(id) = ready else {
+                        break;
+                    };
                     next.activate(definition, id, &mut dispatches)?;
                     next.finish_instances(definition)?;
                 }
@@ -123,9 +147,14 @@ impl CircuitRunV2 {
             CircuitEventV2::Reconcile { completion } => {
                 next.complete(definition, completion, Status::Indeterminate)?;
             }
-            CircuitEventV2::MarkIndeterminate { activation_id, observation_digest } => {
+            CircuitEventV2::MarkIndeterminate {
+                activation_id,
+                observation_digest,
+            } => {
                 digest(observation_digest)?;
-                let activation = next.activations.get_mut(activation_id)
+                let activation = next
+                    .activations
+                    .get_mut(activation_id)
                     .ok_or_else(|| invalid("unknown activation"))?;
                 if activation.status != Status::InFlight {
                     return Err(invalid("only in-flight work can become indeterminate"));
@@ -144,13 +173,20 @@ impl CircuitRunV2 {
                 // It has never crossed the commit/return boundary, so no backend
                 // could have received it. Cancel and refund it atomically.
                 let instance_id = activation.instance_id;
-                next.instances.get_mut(&instance_id).ok_or_else(|| invalid("unknown instance"))?
-                    .budget.settle(dispatch.activation_id, /*actual_work*/ 0)?;
-                let activation = next.activations.get_mut(&dispatch.activation_id)
+                next.instances
+                    .get_mut(&instance_id)
+                    .ok_or_else(|| invalid("unknown instance"))?
+                    .budget
+                    .settle(dispatch.activation_id, /*actual_work*/ 0)?;
+                let activation = next
+                    .activations
+                    .get_mut(&dispatch.activation_id)
                     .ok_or_else(|| invalid("unknown cancelled dispatch"))?;
                 activation.status = Status::Cancelled;
-                activation.receipt_digest = Some(hash("hepta.circuit.pre-dispatch-cancel.v2",
-                    &dispatch.invocation_digest)?);
+                activation.receipt_digest = Some(hash(
+                    "hepta.circuit.pre-dispatch-cancel.v2",
+                    &dispatch.invocation_digest,
+                )?);
             } else {
                 admitted.push(dispatch);
             }

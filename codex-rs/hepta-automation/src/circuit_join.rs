@@ -37,14 +37,18 @@ pub struct CircuitJoinEnvelopeV2 {
 impl CircuitJoinEnvelopeV2 {
     pub fn canonical_bytes(&self) -> Result<Vec<u8>, TaskFlowError> {
         text(&self.node_id)?;
-        if self.round >= 4_096 || self.causal_parents.is_empty()
+        if self.round >= 4_096
+            || self.causal_parents.is_empty()
             || self.causal_parents.len() > 4_096
             || self.causal_parents.contains(&0)
-            || self.arrival_input_digests.is_empty() || self.arrival_input_digests.len() > 256
+            || self.arrival_input_digests.is_empty()
+            || self.arrival_input_digests.len() > 256
         {
             return Err(invalid("join envelope exceeds the bounded profile"));
         }
-        for value in &self.arrival_input_digests { digest(value)?; }
+        for value in &self.arrival_input_digests {
+            digest(value)?;
+        }
         let bytes = serde_json::to_vec(self)
             .map_err(|e| TaskFlowError::Corrupt(format!("join envelope serialization: {e}")))?;
         if bytes.len() > 131_072 {
@@ -58,8 +62,13 @@ impl CircuitRunV2 {
     /// Read the completed join's exact frozen bytes. Run state is constructed by
     /// the reducer or canonical durable replay, never by unchecked Deserialize.
     pub fn join_output_bytes(&self, activation_id: u64) -> Result<Vec<u8>, TaskFlowError> {
-        let activation = self.activations.get(&activation_id).ok_or_else(|| invalid("unknown join"))?;
-        if activation.status != CircuitActivationStatusV2::Completed || activation.arrivals.is_empty() {
+        let activation = self
+            .activations
+            .get(&activation_id)
+            .ok_or_else(|| invalid("unknown join"))?;
+        if activation.status != CircuitActivationStatusV2::Completed
+            || activation.arrivals.is_empty()
+        {
             return Err(invalid("join output is not completed and frozen"));
         }
         let envelope = CircuitJoinEnvelopeV2 {
@@ -71,7 +80,9 @@ impl CircuitRunV2 {
         let bytes = envelope.canonical_bytes()?;
         let digest = Sha256Digest::for_bytes(&bytes);
         if digest != activation.input_digest || activation.output_digest.as_ref() != Some(&digest) {
-            return Err(TaskFlowError::Corrupt("join output differs from its frozen input".to_string()));
+            return Err(TaskFlowError::Corrupt(
+                "join output differs from its frozen input".to_string(),
+            ));
         }
         Ok(bytes)
     }
@@ -85,7 +96,8 @@ impl AutomationStore {
         run_id: &str,
         activation_id: u64,
     ) -> Result<Vec<u8>, TaskFlowError> {
-        self.bounded_circuit_run(run_id).await?
+        self.bounded_circuit_run(run_id)
+            .await?
             .ok_or_else(|| TaskFlowError::Conflict("unknown circuit run".to_string()))?
             .join_output_bytes(activation_id)
     }

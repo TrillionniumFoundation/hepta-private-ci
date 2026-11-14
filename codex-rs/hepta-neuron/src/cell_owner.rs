@@ -1,11 +1,11 @@
 //! Bounded in-memory state owner for qualification and embedded runs.
 //! Durable hosts can use CellOwnerJournalV1 or implement the same owner contract.
 
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
-use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 use crate::cell_binding::inference_request_id;
 use crate::cell_inference::feature_request;
+use codex_hepta_infer_core::neuron_feature_request_digest_v1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::cell_types::*;
 
@@ -26,7 +26,9 @@ impl CellPartitionOwnerV1 {
         max_partitions: usize,
         max_receipts_per_partition: usize,
     ) -> Result<Self, CellExecutionError> {
-        if !(1..=1024).contains(&max_partitions) || !(1..=4096).contains(&max_receipts_per_partition) {
+        if !(1..=1024).contains(&max_partitions)
+            || !(1..=4096).contains(&max_receipts_per_partition)
+        {
             return Err(CellExecutionError::CapacityExceeded);
         }
         Ok(Self {
@@ -73,14 +75,26 @@ impl CellPartitionOwnerV1 {
     }
 
     pub(crate) fn pending_count(&self) -> usize {
-        self.partitions.iter().filter(|p| p.pending.is_some()).count()
+        self.partitions
+            .iter()
+            .filter(|p| p.pending.is_some())
+            .count()
     }
 
-    pub(crate) fn check_admission(&self, admission: &CellInferenceAdmissionV1) -> Result<(), CellExecutionError> {
-        let partition = self.partitions.iter()
+    pub(crate) fn check_admission(
+        &self,
+        admission: &CellInferenceAdmissionV1,
+    ) -> Result<(), CellExecutionError> {
+        let partition = self
+            .partitions
+            .iter()
             .find(|p| p.snapshot.scope == admission.snapshot.scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
-        if let Some(receipt) = partition.receipts.iter().find(|r| r.operation_id == admission.operation_id) {
+        if let Some(receipt) = partition
+            .receipts
+            .iter()
+            .find(|r| r.operation_id == admission.operation_id)
+        {
             return if receipt.semantic_request_digest == admission.semantic_request_digest {
                 Err(CellExecutionError::OperationAlreadyCommitted)
             } else {
@@ -102,11 +116,14 @@ impl CellPartitionOwnerV1 {
         if admission.semantic_request_digest.is_zero()
             || admission.admitted_at_micros == 0
             || admission.admitted_at_micros >= admission.deadline_micros
-            || admission.model_request.request_id != inference_request_id(&admission.snapshot.scope, &admission.operation_id)?
+            || admission.model_request.request_id
+                != inference_request_id(&admission.snapshot.scope, &admission.operation_id)?
         {
             return Err(CellExecutionError::InvalidInput);
         }
-        if partition.receipts.len() == self.max_receipts_per_partition || partition.snapshot.revision == u64::MAX {
+        if partition.receipts.len() == self.max_receipts_per_partition
+            || partition.snapshot.revision == u64::MAX
+        {
             return Err(CellExecutionError::CapacityExceeded);
         }
         neuron_feature_request_digest_v1(&feature_request(&admission.model_request))
@@ -119,10 +136,14 @@ impl CellPartitionOwnerV1 {
         proposal: &CellStateProposalV1,
         now_micros: u64,
     ) -> Result<Option<CellDecisionReceiptV1>, CellExecutionError> {
-        let partition = self.partitions.iter()
+        let partition = self
+            .partitions
+            .iter()
             .find(|p| p.snapshot.scope == proposal.snapshot.scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
-        if let Some(receipt) = partition.receipts.iter()
+        if let Some(receipt) = partition
+            .receipts
+            .iter()
             .find(|r| r.operation_id == proposal.receipt.operation_id)
         {
             return if receipt == &proposal.receipt {
@@ -132,15 +153,21 @@ impl CellPartitionOwnerV1 {
             };
         }
         if now_micros < proposal.tick.monotonic_micros
-            || now_micros < proposal.decided_at_micros || now_micros < proposal.settled_at_micros
+            || now_micros < proposal.decided_at_micros
+            || now_micros < proposal.settled_at_micros
         {
             return Err(CellExecutionError::DeadlineExceeded);
         }
         if partition.snapshot != proposal.snapshot {
             return Err(CellExecutionError::CommitConflict);
         }
-        let pending = partition.pending.as_ref().ok_or(CellExecutionError::InferenceNotAdmitted)?;
-        if now_micros < pending.admitted_at_micros || proposal.decided_at_micros < pending.admitted_at_micros {
+        let pending = partition
+            .pending
+            .as_ref()
+            .ok_or(CellExecutionError::InferenceNotAdmitted)?;
+        if now_micros < pending.admitted_at_micros
+            || proposal.decided_at_micros < pending.admitted_at_micros
+        {
             return Err(CellExecutionError::DeadlineExceeded);
         }
         if pending.operation_id != proposal.receipt.operation_id
@@ -166,7 +193,9 @@ impl CellPartitionOwnerV1 {
         source_frontier: Digest32,
         writer_epoch: u64,
     ) -> Result<(), CellExecutionError> {
-        let partition = self.partitions.iter()
+        let partition = self
+            .partitions
+            .iter()
             .find(|p| &p.snapshot.scope == scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
         if partition.pending.is_some() {
@@ -190,7 +219,9 @@ impl CellPartitionOwnerV1 {
         writer_epoch: u64,
     ) -> Result<(), CellExecutionError> {
         self.check_reset(scope, source_frontier, writer_epoch)?;
-        let partition = self.partitions.iter_mut()
+        let partition = self
+            .partitions
+            .iter_mut()
             .find(|p| &p.snapshot.scope == scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
         let revision = partition.snapshot.revision + 1;
@@ -203,18 +234,29 @@ impl CellPartitionOwnerV1 {
 }
 
 impl CellStateOwnerV1 for CellPartitionOwnerV1 {
-    fn admit_inference(&mut self, admission: CellInferenceAdmissionV1) -> Result<(), CellExecutionError> {
+    fn admit_inference(
+        &mut self,
+        admission: CellInferenceAdmissionV1,
+    ) -> Result<(), CellExecutionError> {
         self.check_admission(&admission)?;
-        let partition = self.partitions.iter_mut()
+        let partition = self
+            .partitions
+            .iter_mut()
             .find(|p| p.snapshot.scope == admission.snapshot.scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
         partition.pending = Some(admission);
         Ok(())
     }
 
-    fn pending_inference(&self, scope: &CellScopeV1) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError> {
-        self.partitions.iter().find(|p| &p.snapshot.scope == scope)
-            .map(|p| p.pending.clone()).ok_or(CellExecutionError::ScopeMismatch)
+    fn pending_inference(
+        &self,
+        scope: &CellScopeV1,
+    ) -> Result<Option<CellInferenceAdmissionV1>, CellExecutionError> {
+        self.partitions
+            .iter()
+            .find(|p| &p.snapshot.scope == scope)
+            .map(|p| p.pending.clone())
+            .ok_or(CellExecutionError::ScopeMismatch)
     }
 
     fn lookup(
@@ -223,17 +265,27 @@ impl CellStateOwnerV1 for CellPartitionOwnerV1 {
         operation_id: &StableId,
         semantic_request_digest: Digest32,
     ) -> Result<Option<CellDecisionReceiptV1>, CellExecutionError> {
-        let partition = self.partitions.iter()
+        let partition = self
+            .partitions
+            .iter()
             .find(|p| &p.snapshot.scope == scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
-        match partition.receipts.iter().find(|r| &r.operation_id == operation_id) {
+        match partition
+            .receipts
+            .iter()
+            .find(|r| &r.operation_id == operation_id)
+        {
             Some(receipt) if receipt.semantic_request_digest == semantic_request_digest => {
                 Ok(Some(receipt.clone()))
             }
             Some(_) => Err(CellExecutionError::OperationConflict),
             None => match &partition.pending {
-                Some(pending) if &pending.operation_id == operation_id
-                    && pending.semantic_request_digest != semantic_request_digest => Err(CellExecutionError::OperationConflict),
+                Some(pending)
+                    if &pending.operation_id == operation_id
+                        && pending.semantic_request_digest != semantic_request_digest =>
+                {
+                    Err(CellExecutionError::OperationConflict)
+                }
                 Some(_) => Err(CellExecutionError::InferencePending),
                 None => Ok(None),
             },
@@ -241,7 +293,8 @@ impl CellStateOwnerV1 for CellPartitionOwnerV1 {
     }
 
     fn snapshot(&self, scope: &CellScopeV1) -> Result<CellOwnerSnapshotV1, CellExecutionError> {
-        self.partitions.iter()
+        self.partitions
+            .iter()
             .find(|p| &p.snapshot.scope == scope)
             .map(|p| p.snapshot.clone())
             .ok_or(CellExecutionError::ScopeMismatch)
@@ -256,7 +309,9 @@ impl CellStateOwnerV1 for CellPartitionOwnerV1 {
             return Ok(receipt);
         }
         let proposal = proposal.settle_at(now_micros)?;
-        let partition = self.partitions.iter_mut()
+        let partition = self
+            .partitions
+            .iter_mut()
             .find(|p| p.snapshot.scope == proposal.snapshot.scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
         let revision = partition.snapshot.revision + 1;
@@ -275,16 +330,30 @@ impl CellStateOwnerV1 for CellPartitionOwnerV1 {
         operation_id: &StableId,
         operation_digest: Digest32,
     ) -> Result<Option<CellDecisionReceiptV1>, CellExecutionError> {
-        let partition = self.partitions.iter()
+        let partition = self
+            .partitions
+            .iter()
             .find(|p| &p.snapshot.scope == scope)
             .ok_or(CellExecutionError::ScopeMismatch)?;
-        match partition.receipts.iter().find(|r| &r.operation_id == operation_id) {
-            Some(receipt) if receipt.operation_digest == operation_digest => Ok(Some(receipt.clone())),
+        match partition
+            .receipts
+            .iter()
+            .find(|r| &r.operation_id == operation_id)
+        {
+            Some(receipt) if receipt.operation_digest == operation_digest => {
+                Ok(Some(receipt.clone()))
+            }
             Some(_) => Err(CellExecutionError::OperationConflict),
             None => match &partition.pending {
-                Some(pending) if &pending.operation_id == operation_id
-                    && pending.model_request.input_digest != operation_digest => Err(CellExecutionError::OperationConflict),
-                Some(pending) if &pending.operation_id == operation_id => Err(CellExecutionError::InferencePending),
+                Some(pending)
+                    if &pending.operation_id == operation_id
+                        && pending.model_request.input_digest != operation_digest =>
+                {
+                    Err(CellExecutionError::OperationConflict)
+                }
+                Some(pending) if &pending.operation_id == operation_id => {
+                    Err(CellExecutionError::InferencePending)
+                }
                 Some(_) | None => Ok(None),
             },
         }

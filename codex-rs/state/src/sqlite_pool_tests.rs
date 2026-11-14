@@ -7,7 +7,8 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
 #[tokio::test]
-async fn refused_commit_keeps_reused_pool_readable_without_reopening_write_gate() -> anyhow::Result<()> {
+async fn refused_commit_keeps_reused_pool_readable_without_reopening_write_gate()
+-> anyhow::Result<()> {
     let home = unique_temp_dir();
     std::fs::create_dir(&home)?;
     let home = scopeguard::guard(home, |home| {
@@ -18,9 +19,10 @@ async fn refused_commit_keeps_reused_pool_readable_without_reopening_write_gate(
     let commit_allowed = Arc::new(AtomicBool::new(/*v*/ true));
     let guard = Arc::clone(&commit_allowed);
     let pool = sqlite
-        .open_durable_evidence_pool_guarded(&canonical_home.join("refused-commit.sqlite3"), move || {
-            guard.load(Ordering::Acquire)
-        })
+        .open_durable_evidence_pool_guarded(
+            &canonical_home.join("refused-commit.sqlite3"),
+            move || guard.load(Ordering::Acquire),
+        )
         .await?;
     sqlx::query("CREATE TABLE guarded_effect (value INTEGER NOT NULL)")
         .execute(&pool)

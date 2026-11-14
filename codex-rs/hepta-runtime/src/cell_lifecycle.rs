@@ -83,7 +83,12 @@ impl RuntimeCellLifecyclePlanV1 {
             return Err(RuntimeCellLifecycleError::InvalidPlan);
         }
         let mut bytes = b"hepta.runtime.cell-lifecycle-plan.v1\0".to_vec();
-        for id in [&self.operation_id, &self.agent_id, &self.cns_id, &self.observer_id] {
+        for id in [
+            &self.operation_id,
+            &self.agent_id,
+            &self.cns_id,
+            &self.observer_id,
+        ] {
             push_id(&mut bytes, id);
         }
         bytes.push(match self.change {
@@ -99,9 +104,14 @@ impl RuntimeCellLifecyclePlanV1 {
             }
         }
         for digest in [
-            self.observer_trust, self.principal_scope, self.predecessor_topology,
-            self.successor_topology, self.predecessor_state_root, self.successor_state_root,
-            self.successor_bundle, self.handoff.plan_digest,
+            self.observer_trust,
+            self.principal_scope,
+            self.predecessor_topology,
+            self.successor_topology,
+            self.predecessor_state_root,
+            self.successor_state_root,
+            self.successor_bundle,
+            self.handoff.plan_digest,
         ] {
             if digest.is_zero() {
                 return Err(RuntimeCellLifecycleError::InvalidPlan);
@@ -116,8 +126,10 @@ impl RuntimeCellLifecyclePlanV1 {
             bytes.extend_from_slice(digest.as_array());
         }
         for value in [
-            self.predecessor_generation.get(), self.successor_generation.get(),
-            self.created_at_ms, self.deadline_ms,
+            self.predecessor_generation.get(),
+            self.successor_generation.get(),
+            self.created_at_ms,
+            self.deadline_ms,
         ] {
             bytes.extend_from_slice(&value.to_be_bytes());
         }
@@ -299,8 +311,12 @@ pub(crate) fn intent(
         &prepared_revision.to_be_bytes(),
     ]);
     Ok(RuntimeCellLifecycleIntentV1 {
-        operation_id: plan.operation_id.clone(), plan_digest,
-        stage, semantic_operation, prepared_revision, attempt_digest,
+        operation_id: plan.operation_id.clone(),
+        plan_digest,
+        stage,
+        semantic_operation,
+        prepared_revision,
+        attempt_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
 }
