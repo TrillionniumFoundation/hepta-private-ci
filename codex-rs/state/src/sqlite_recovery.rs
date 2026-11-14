@@ -18,6 +18,10 @@ use std::sync::Arc;
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 
+#[cfg(windows)]
+#[path = "sqlite_recovery_windows.rs"]
+mod windows;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]
@@ -80,6 +84,8 @@ pub struct ExistingSqliteRecoveryGuard {
 #[derive(Debug)]
 struct RecoveryGuardInner {
     database_path: PathBuf,
+    #[cfg(windows)]
+    windows: windows::RetainedDatabase,
     #[cfg(unix)]
     parent: RetainedObject,
     #[cfg(unix)]
@@ -91,8 +97,9 @@ struct RecoveryGuardInner {
 impl SqliteConfig {
     /// Retain the parent, database, WAL, SHM, and rollback-journal identities.
     ///
-    /// Opening descriptors is read-only and uses `O_NOFOLLOW`; this operation
-    /// never creates, truncates, renames, chmods, checkpoints, or opens SQLite.
+    /// Opens read-only handles without following symlinks or Windows reparse
+    /// points. This operation never creates, truncates, renames, changes access
+    /// permissions, checkpoints, or opens SQLite.
     pub fn bind_existing_recovery_database(
         &self,
         path: &Path,
@@ -168,7 +175,20 @@ impl ExistingSqliteRecoveryGuard {
         Ok(guard)
     }
 
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
+        let windows = windows::RetainedDatabase::bind(database_path)?;
+        let guard = Self {
+            inner: Arc::new(RecoveryGuardInner {
+                database_path: database_path.to_path_buf(),
+                windows,
+            }),
+        };
+        guard.revalidate()?;
+        Ok(guard)
+    }
+
+    #[cfg(not(any(unix, windows)))]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let _ = database_path;
         Err(SqliteRecoveryError::Indeterminate)
@@ -198,7 +218,12 @@ impl ExistingSqliteRecoveryGuard {
         Ok(())
     }
 
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
+        self.inner.windows.revalidate()
+    }
+
+    #[cfg(not(any(unix, windows)))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         Err(SqliteRecoveryError::Indeterminate)
     }
@@ -397,7 +422,7 @@ fn sqlite_sidecar_path(database_path: &Path, suffix: &str) -> PathBuf {
     PathBuf::from(path)
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn indeterminate(_: std::io::Error) -> SqliteRecoveryError {
     SqliteRecoveryError::Indeterminate
 }

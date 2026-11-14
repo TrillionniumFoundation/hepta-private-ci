@@ -36,6 +36,7 @@ use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::user_input::UserInput;
 use codex_utils_path_uri::PathUri;
 use core_test_support::PathExt;
+use core_test_support::history_annotations;
 use core_test_support::is_remote_test_environment;
 use core_test_support::responses;
 use core_test_support::responses::ev_assistant_message;
@@ -281,7 +282,12 @@ async fn assert_user_turn_local_image_resizes_to(
     .await;
 
     let request = mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.image", "user.text"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["user.text", "user.image", "user.text"]
+    ));
     let body = request.body_json();
     let input = body
         .get("input")
@@ -305,7 +311,10 @@ async fn assert_user_turn_local_image_resizes_to(
             assert_eq!(resize_notice_indices, Vec::<usize>::new());
         }
         ResizeNoticeExpectation::Enabled => {
-            assert!(request.has_content_kinds(&["images.resize_notice"]));
+            assert!(history_annotations::has_content_kinds(
+                &history,
+                &["images.resize_notice"]
+            ));
             assert_eq!(resize_notice_indices, vec![image_message_index + 1]);
             assert_developer_text_message(
                 &input[image_message_index + 1],

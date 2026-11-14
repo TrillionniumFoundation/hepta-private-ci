@@ -3,6 +3,7 @@ use crate::config::NetworkMode;
 use crate::mitm_hook::HookEvaluation;
 use crate::mitm_hook::MitmHookActions;
 use crate::policy::normalize_host;
+use crate::rama_ext::TunnelTarget;
 use crate::reasons::REASON_METHOD_NOT_ALLOWED;
 use crate::reasons::REASON_MITM_HOOK_DENIED;
 use crate::responses::blocked_text_response;
@@ -21,14 +22,13 @@ use rama_core::Layer;
 use rama_core::Service;
 use rama_core::bytes::Bytes;
 use rama_core::error::BoxError;
-use rama_core::extensions::ExtensionsMut;
 use rama_core::extensions::ExtensionsRef;
 use rama_core::futures::stream::Stream as FuturesStream;
+use rama_core::io::Io;
+use rama_core::io::PrefixedIo;
+use rama_core::io::StackReader;
 use rama_core::rt::Executor;
 use rama_core::service::service_fn;
-use rama_core::stream::PeekStream;
-use rama_core::stream::StackReader;
-use rama_core::stream::Stream;
 use rama_http::Body;
 use rama_http::BodyDataStream;
 use rama_http::HeaderMap;
@@ -36,16 +36,15 @@ use rama_http::HeaderValue;
 use rama_http::Request;
 use rama_http::Response;
 use rama_http::StatusCode;
-use rama_http::Uri;
 use rama_http::header::HOST;
 use rama_http::layer::remove_header::RemoveRequestHeaderLayer;
 use rama_http::layer::remove_header::RemoveResponseHeaderLayer;
 use rama_http_backend::server::HttpServer;
-use rama_net::proxy::ProxyTarget;
 use rama_net::stream::SocketInfo;
-use rama_net::tls::server::TlsPeekStream;
+use rama_net::uri::Uri;
+use rama_tls::server::TlsPrefixedIo;
+use rama_tls::server::TlsServerConfig;
 use rama_tls_rustls::dep::rustls;
-use rama_tls_rustls::server::TlsAcceptorData;
 use rama_tls_rustls::server::TlsAcceptorLayer;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -101,10 +100,10 @@ const TLS_PREFIX_FIRST_BYTE_TIMEOUT: Duration = Duration::from_millis(250);
 ///
 /// The first-byte timeout preserves server-first protocols. Once the client starts a possible TLS
 /// prefix, all five record-header bytes are accumulated so fragmented handshakes cannot bypass
-/// interception. Every byte read is replayed through `TlsPeekStream`.
-pub(crate) async fn peek_tls_prefix<S>(mut stream: S) -> Result<(bool, TlsPeekStream<S>)>
+/// interception. Every byte read is replayed through `TlsPrefixedIo`.
+pub(crate) async fn peek_tls_prefix<S>(mut stream: S) -> Result<(bool, TlsPrefixedIo<S>)>
 where
-    S: Stream + Unpin + ExtensionsMut,
+    S: Io + Unpin + ExtensionsRef,
 {
     let mut peek_buf = [0_u8; TLS_PREFIX_LEN];
     let mut bytes_read =
@@ -137,7 +136,7 @@ where
     }
     let mut peek = StackReader::new(peek_buf);
     peek.skip(offset);
-    Ok((is_tls, PeekStream::new(peek, stream)))
+    Ok((is_tls, PrefixedIo::new(peek, stream)))
 }
 
 impl std::fmt::Debug for MitmState {
@@ -171,8 +170,8 @@ impl MitmState {
         })
     }
 
-    fn tls_acceptor_data_for_host(&self, host: &str) -> Result<TlsAcceptorData> {
-        self.ca.tls_acceptor_data_for_host(host)
+    fn tls_server_config_for_host(&self, host: &str) -> Result<TlsServerConfig> {
+        self.ca.tls_server_config_for_host(host)
     }
 
     pub(crate) fn inspect_enabled(&self) -> bool {
@@ -187,30 +186,28 @@ impl MitmState {
 /// Terminate a raw client stream with a generated leaf cert and proxy inner HTTPS traffic.
 pub(crate) async fn mitm_stream<S>(stream: S) -> Result<()>
 where
-    S: Stream + Unpin + ExtensionsMut,
+    S: Io + Unpin + ExtensionsRef,
 {
     let mitm = stream
         .extensions()
-        .get::<Arc<MitmState>>()
-        .cloned()
+        .get_arc::<MitmState>()
         .context("missing MITM state")?;
     let app_state = stream
         .extensions()
-        .get::<Arc<NetworkProxyState>>()
-        .cloned()
+        .get_arc::<NetworkProxyState>()
         .context("missing app state")?;
     let target = stream
         .extensions()
-        .get::<ProxyTarget>()
+        .get_ref::<TunnelTarget>()
         .context("missing proxy target")?
         .0
         .clone();
     let target_host = normalize_host(&target.host.to_string());
     let target_port = target.port;
-    let acceptor_data = mitm.tls_acceptor_data_for_host(&target_host)?;
+    let acceptor_data = mitm.tls_server_config_for_host(&target_host)?;
     let mode = stream
         .extensions()
-        .get::<NetworkMode>()
+        .get_ref::<NetworkMode>()
         .copied()
         .unwrap_or(NetworkMode::Full);
     let upstream = if mitm.allow_upstream_proxy {
@@ -235,13 +232,7 @@ where
         upstream,
     });
 
-    let executor = stream
-        .extensions()
-        .get::<Executor>()
-        .cloned()
-        .unwrap_or_default();
-
-    let http_service = HttpServer::auto(executor).service(
+    let http_service = HttpServer::auto(Executor::default()).service(
         (
             RemoveResponseHeaderLayer::hop_by_hop(),
             RemoveRequestHeaderLayer::hop_by_hop(),
@@ -360,7 +351,7 @@ async fn evaluate_mitm_policy(
     let log_path = path_for_log(req.uri());
     let client = req
         .extensions()
-        .get::<SocketInfo>()
+        .get_ref::<SocketInfo>()
         .map(|info| info.peer_addr().to_string());
 
     if let Some(request_host) = extract_request_host(req) {
@@ -593,7 +584,7 @@ fn extract_request_host(req: &Request) -> Option<String> {
         .get(HOST)
         .and_then(|v| v.to_str().ok())
         .map(ToString::to_string)
-        .or_else(|| req.uri().authority().map(|a| a.as_str().to_string()))
+        .or_else(|| req.uri().authority().map(|a| a.to_string()))
 }
 
 fn authority_header_value(host: &str, port: u16) -> String {
@@ -617,14 +608,11 @@ fn build_https_uri(authority: &str, path: &str) -> Result<Uri> {
 }
 
 fn path_and_query(uri: &Uri) -> String {
-    uri.path_and_query()
-        .map(rama_http::uri::PathAndQuery::as_str)
-        .unwrap_or("/")
-        .to_string()
+    uri.request_target().into_owned()
 }
 
 fn path_for_log(uri: &Uri) -> String {
-    uri.path().to_string()
+    uri.path_or_root().into_owned()
 }
 
 #[cfg(test)]

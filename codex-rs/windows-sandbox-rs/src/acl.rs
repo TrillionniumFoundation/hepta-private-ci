@@ -2,9 +2,13 @@ use crate::winutil::to_wide;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::ffi::c_void;
+use std::fs::OpenOptions;
+use std::os::windows::fs::OpenOptionsExt;
+use std::os::windows::io::AsRawHandle;
 use std::path::Path;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
+use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
 use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
 use windows_sys::Win32::Foundation::LocalFree;
@@ -29,6 +33,7 @@ use windows_sys::Win32::Security::GENERIC_MAPPING;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetAclInformation;
 use windows_sys::Win32::Security::MapGenericMask;
+use windows_sys::Win32::Security::NO_PROPAGATE_INHERIT_ACE;
 use windows_sys::Win32::Storage::FileSystem::CreateFileW;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
@@ -270,12 +275,10 @@ pub unsafe fn dacl_has_write_allow_for_sid(p_dacl: *mut ACL, psid: *mut c_void) 
     false
 }
 
-pub unsafe fn dacl_has_write_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Write.mask())
-}
-
-pub unsafe fn dacl_has_read_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Read.mask())
+#[derive(Clone, Copy)]
+enum DenyAceScope {
+    File,
+    Directory,
 }
 
 // SAFETY: callers retain a valid ACL (or null) and valid SID throughout this query.
@@ -283,6 +286,7 @@ unsafe fn dacl_has_complete_deny_for_sid(
     p_dacl: *mut ACL,
     psid: *mut c_void,
     mut required_mask: u32,
+    scope: DenyAceScope,
 ) -> bool {
     if p_dacl.is_null() {
         return false;
@@ -307,6 +311,11 @@ unsafe fn dacl_has_complete_deny_for_sid(
     // same specific/standard rights without changing the mask we install.
     // SAFETY: both pointers refer to initialized stack values retained for the call.
     MapGenericMask(&mut required_mask, &mapping);
+    let inheritance = (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) as u8;
+    let known_flags = inheritance | INHERIT_ONLY_ACE | NO_PROPAGATE_INHERIT_ACE as u8;
+    let mut effective = 0;
+    let mut child_files = 0;
+    let mut child_directories = 0;
     for i in 0..info.AceCount {
         let mut p_ace: *mut c_void = std::ptr::null_mut();
         if GetAce(p_dacl as *const ACL, i, &mut p_ace) == 0 {
@@ -319,19 +328,39 @@ unsafe fn dacl_has_complete_deny_for_sid(
         if hdr.AceType != ACCESS_DENIED_ACE_TYPE || (hdr.AceFlags & INHERITED_ACE) != 0 {
             return false;
         }
-        // Match the constructor's effective, recursively inheritable scope.
-        // Inherit-only, no-propagate, or missing child scope is insufficient.
-        if hdr.AceFlags != (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) as u8 {
-            continue;
+        if hdr.AceFlags & !known_flags != 0 {
+            return false;
         }
         let ace = &*(p_ace as *const ACCESS_DENIED_ACE);
         let base = p_ace as usize;
         let sid_ptr =
             (base + std::mem::size_of::<ACE_HEADER>() + std::mem::size_of::<u32>()) as *mut c_void;
+        if EqualSid(sid_ptr, psid) == 0 {
+            continue;
+        }
         let mut mask = ace.Mask;
         // SAFETY: both pointers refer to initialized stack values retained for the call.
         MapGenericMask(&mut mask, &mapping);
-        if EqualSid(sid_ptr, psid) != 0 && (mask & required_mask) == required_mask {
+        // Windows can split generic permissions into an effective-only ACE
+        // with mapped rights and an inherit-only ACE with generic rights.
+        // Combine only this SID's leading explicit denies, independently for
+        // the current object and each recursively inheritable child scope.
+        if hdr.AceFlags & INHERIT_ONLY_ACE == 0 {
+            effective |= mask;
+        }
+        if hdr.AceFlags & NO_PROPAGATE_INHERIT_ACE as u8 == 0 {
+            if hdr.AceFlags & OBJECT_INHERIT_ACE as u8 != 0 {
+                child_files |= mask;
+            }
+            if hdr.AceFlags & CONTAINER_INHERIT_ACE as u8 != 0 {
+                child_directories |= mask;
+            }
+        }
+        if effective & required_mask == required_mask
+            && (matches!(scope, DenyAceScope::File)
+                || (child_files & required_mask == required_mask
+                    && child_directories & required_mask == required_mask))
+        {
             return true;
         }
     }
@@ -599,19 +628,32 @@ impl DenyAceKind {
         }
     }
 
-    unsafe fn already_present(self, p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-        match self {
-            Self::Read => dacl_has_read_deny_for_sid(p_dacl, psid),
-            Self::Write => dacl_has_write_deny_for_sid(p_dacl, psid),
-        }
+    unsafe fn already_present(
+        self,
+        p_dacl: *mut ACL,
+        psid: *mut c_void,
+        scope: DenyAceScope,
+    ) -> bool {
+        dacl_has_complete_deny_for_sid(p_dacl, psid, self.mask(), scope)
     }
 }
 
 unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Result<bool> {
+    // Classify and query the same opened object: a separate path metadata
+    // lookup could otherwise apply file-only coverage to a directory's DACL.
+    let file = OpenOptions::new()
+        .access_mode(READ_CONTROL)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+        .open(path)?;
+    let scope = if file.metadata()?.is_dir() {
+        DenyAceScope::Directory
+    } else {
+        DenyAceScope::File
+    };
     let mut p_sd: *mut c_void = std::ptr::null_mut();
     let mut p_dacl: *mut ACL = std::ptr::null_mut();
-    let code = GetNamedSecurityInfoW(
-        to_wide(path).as_ptr(),
+    let code = GetSecurityInfo(
+        file.as_raw_handle() as HANDLE,
         1,
         DACL_SECURITY_INFORMATION,
         std::ptr::null_mut(),
@@ -625,11 +667,11 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
             LocalFree(p_sd as HLOCAL);
         }
         return Err(anyhow!(
-            "GetNamedSecurityInfoW failed for {}: {code}",
+            "GetSecurityInfo failed for {}: {code}",
             path.display()
         ));
     }
-    let result = if kind.already_present(p_dacl, psid) {
+    let result = if kind.already_present(p_dacl, psid, scope) {
         Ok(false)
     } else {
         let trustee = TRUSTEE_W {

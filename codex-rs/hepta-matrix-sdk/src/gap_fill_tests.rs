@@ -3,6 +3,8 @@ use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
 use codex_hepta_matrix_protocol::MatrixDeviceId;
 use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
 use codex_hepta_matrix_protocol::MatrixUserId;
+use matrix_sdk::deserialized_responses::ThreadSummary;
+use matrix_sdk::deserialized_responses::ThreadSummaryStatus;
 use matrix_sdk::deserialized_responses::TimelineEvent;
 use pretty_assertions::assert_eq;
 use serde_json::Value;
@@ -358,14 +360,12 @@ fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
         vec![event("$visible")],
         vec![],
     );
-    let mut large = event("$bundled");
-    large["content"]["body"] = json!("x".repeat(MAX_BYTES + 1));
-    let bundled = page("unused", /*end*/ None, vec![large], vec![])
-        .chunk
-        .pop()
-        .expect("bundle");
-    assert!(bundled.raw().json().get().len() > MAX_BYTES);
-    enriched.chunk[0].bundled_latest_thread_event = Some(Box::new(bundled));
+    // SDK 0.19 caches a compact thread summary outside the raw event. Full
+    // bundled replies are now part of raw JSON and are checked below.
+    enriched.chunk[0].thread_summary = ThreadSummaryStatus::Some(ThreadSummary {
+        latest_reply: Some("$bundled".try_into().expect("event ID")),
+        num_replies: 2,
+    });
     let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
     assert_eq!(
         append(&mut accumulator, enriched),
@@ -376,6 +376,28 @@ fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
         accumulator.pages[0].chunk[0].json().get().len(),
         accumulator.observation.event_bytes
     );
+}
+
+#[test]
+fn sdk_bundled_event_is_included_in_raw_byte_bounds() {
+    let mut bundled = event("$bundled");
+    bundled["content"]["body"] = json!("x".repeat(MAX_EVENT_BYTES));
+    let mut visible = event("$visible");
+    visible["unsigned"] = json!({"m.relations": {"m.thread": {
+        "latest_event": bundled,
+        "count": 1,
+        "current_user_participated": false,
+    }}});
+    let enriched = page("s-source", Some("t-target"), vec![visible], vec![]);
+    assert!(enriched.chunk[0].bundled_latest_thread_event().is_some());
+    assert!(enriched.chunk[0].raw().json().get().len() > MAX_EVENT_BYTES);
+    let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
+    let before = snapshot(&accumulator);
+    assert_eq!(
+        append(&mut accumulator, enriched),
+        Err(GapFillError::Bounds)
+    );
+    assert_eq!(snapshot(&accumulator), before);
 }
 
 #[test]

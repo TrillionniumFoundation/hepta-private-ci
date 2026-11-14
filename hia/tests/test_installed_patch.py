@@ -42,24 +42,34 @@ def sha256(path: Path) -> str:
         return hashlib.file_digest(source, "sha256").hexdigest()
 
 
-def inspect_binary(binary: Path, report: dict, native: bool = True) -> None:
+def inspect_binary(
+    binary: Path, report: dict, native: bool = True,
+    required_symbols: tuple[str, ...] = (NATIVE_SYMBOL,),
+) -> None:
     nm = shutil.which("nm")
     readelf = shutil.which("readelf")
     if nm is None or readelf is None:
         raise RuntimeError("nm and readelf are required for the installed-binary gate")
     nm_command = [nm, "--defined-only", "--extern-only", str(binary)]
     symbols = subprocess.run(nm_command, capture_output=True, text=True, timeout=60)
-    definitions = [
-        line for line in symbols.stdout.splitlines()
-        if re.fullmatch(rf"\s*[0-9a-fA-F]+\s+T\s+{NATIVE_SYMBOL}\s*", line)
-    ]
+    by_symbol = {
+        symbol: [
+            line for line in symbols.stdout.splitlines()
+            if re.fullmatch(rf"\s*[0-9a-fA-F]+\s+T\s+{re.escape(symbol)}\s*", line)
+        ]
+        for symbol in required_symbols
+    }
+    definitions = [line for entries in by_symbol.values() for line in entries]
     report["symbol_check"] = {
         "command": nm_command,
         "returncode": symbols.returncode,
         "definitions": definitions,
+        "definitions_by_symbol": by_symbol,
         "symbol_table_sha256": hashlib.sha256(symbols.stdout.encode()).hexdigest(),
         "stderr": symbols.stderr,
-        "passed": symbols.returncode == 0 and len(definitions) == int(native),
+        "passed": symbols.returncode == 0 and all(
+            len(entries) == int(native) for entries in by_symbol.values()
+        ),
     }
     if not report["symbol_check"]["passed"]:
         raise RuntimeError(f"nm did not confirm the expected native={native} symbol profile")
@@ -81,7 +91,18 @@ def inspect_binary(binary: Path, report: dict, native: bool = True) -> None:
         raise RuntimeError("readelf failed or the executable depends on a HIA shared library")
 
 
-def run_case(binary: Path, reference: Path, work: Path, preserve: bool, environment: dict, report: dict) -> None:
+def run_case(
+    binary: Path, reference: Path, work: Path, preserve: bool, environment: dict, report: dict,
+    *, dispatch: str = "stdin",
+) -> None:
+    if dispatch == "stdin":
+        arguments = []
+        patch_input = PATCH.encode()
+    elif dispatch == "codex_arg1":
+        arguments = ["--codex-run-as-apply-patch", PATCH]
+        patch_input = None
+    else:
+        raise RuntimeError(f"unknown patch invocation: {dispatch}")
     work.mkdir()
     early_candidate = "“token”".encode()
     exact_candidate = b'"token"'
@@ -103,6 +124,7 @@ def run_case(binary: Path, reference: Path, work: Path, preserve: bool, environm
     expected += b"changed" + ending + unchanged_tail + original_ending
     case = {
         "name": "preserve_crlf" if preserve else "legacy_lf_replacement",
+        "dispatch": dispatch,
         "preserve_line_endings": "1" if preserve else "0",
         "input_bytes": len(original),
         "input_sha256": hashlib.sha256(original).hexdigest(),
@@ -114,12 +136,12 @@ def run_case(binary: Path, reference: Path, work: Path, preserve: bool, environm
     child_environment["CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS"] = case["preserve_line_endings"]
     started = time.monotonic()
     result = subprocess.run(
-        [str(binary)], input=PATCH.encode(), capture_output=True, cwd=work,
+        [str(binary), *arguments], input=patch_input, capture_output=True, cwd=work,
         env=child_environment, timeout=60,
     )
     actual = target.read_bytes()
     case.update({
-        "command": [str(binary)],
+        "command": [str(binary), *arguments],
         "cwd": str(work),
         "patch": PATCH,
         "returncode": result.returncode,
@@ -138,12 +160,12 @@ def run_case(binary: Path, reference: Path, work: Path, preserve: bool, environm
     reference_target = reference_work / "large.txt"
     reference_target.write_bytes(original)
     original_result = subprocess.run(
-        [str(reference)], input=PATCH.encode(), capture_output=True, cwd=reference_work,
+        [str(reference), *arguments], input=patch_input, capture_output=True, cwd=reference_work,
         env=child_environment, timeout=60,
     )
     original_output = reference_target.read_bytes()
     case["original_rust"] = {
-        "command": [str(reference)],
+        "command": [str(reference), *arguments],
         "returncode": original_result.returncode,
         "stdout": original_result.stdout.decode("utf-8", errors="replace"),
         "stderr": original_result.stderr.decode("utf-8", errors="replace"),

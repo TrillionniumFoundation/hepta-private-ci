@@ -3,9 +3,9 @@ use codex_file_system::MAX_WALK_DIRECTORIES;
 use codex_file_system::MAX_WALK_ENTRIES;
 use codex_file_system::MAX_WALK_RESPONSE_BYTES;
 use codex_file_system::WALK_RESPONSE_ITEM_OVERHEAD_BYTES;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 use codex_protocol::models::PermissionProfile;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 use codex_protocol::permissions::ReadDenyMatcher;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
@@ -19,7 +19,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 use tokio::io;
 use tokio::io::AsyncReadExt;
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 use tokio::io::AsyncSeekExt;
 use tokio_util::io::ReaderStream;
 use tokio_util::sync::CancellationToken;
@@ -47,6 +47,14 @@ use crate::WriteFileOptions;
 use crate::no_follow;
 use crate::regular_file;
 use crate::sandboxed_file_system::SandboxedFileSystem;
+
+#[cfg(target_os = "linux")]
+#[path = "local_file_system_linux.rs"]
+mod linux;
+#[cfg(target_os = "linux")]
+use linux::secure_open_unique_without_symlinks;
+#[cfg(target_os = "linux")]
+use linux::stable_file_path_from_raw_fd;
 
 const MAX_READ_FILE_BYTES: u64 = 512 * 1024 * 1024;
 
@@ -144,14 +152,14 @@ impl LocalFileSystem {
         file_system.read_file(path, options, sandbox).await
     }
 
-    /// Performs the bounded skill/resource read on a Darwin stable handle.
+    /// Performs the bounded skill/resource read on a verified stable handle.
     ///
-    /// The generic `ExecutorFileSystem` fallback is intentionally stream-based,
-    /// which is sufficient for ordinary sandbox reads but cannot establish the
-    /// pathname/inode provenance required by an authorized read.  On macOS we
-    /// therefore keep the operation local and fail closed unless the kernel
-    /// probe proves both `O_NOFOLLOW_ANY` and Darwin `O_UNIQUE` semantics.
-    #[cfg(target_os = "macos")]
+    /// Ordinary stream reads cannot establish the pathname/inode binding this
+    /// operation requires. Linux uses `openat2` to reject symlinks throughout
+    /// the resolved path and verifies the opened inode and link count. Darwin
+    /// uses `O_NOFOLLOW_ANY` and `O_UNIQUE`. Both require the runtime probe and
+    /// read only from the handle whose identity passed the policy checks.
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     async fn read_file_bounded_authorized(
         &self,
         path: &PathUri,
@@ -298,16 +306,29 @@ impl ExecutorFileSystem for LocalFileSystem {
         Box::pin(LocalFileSystem::read_file(self, path, options, sandbox))
     }
 
-    #[cfg(target_os = "macos")]
     fn read_file_bounded_authorized<'a>(
         &'a self,
         path: &'a PathUri,
         sandbox: &'a FileSystemSandboxContext,
         max_bytes: usize,
     ) -> ExecutorFileSystemFuture<'a, Vec<u8>> {
-        Box::pin(LocalFileSystem::read_file_bounded_authorized(
-            self, path, sandbox, max_bytes,
-        ))
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        {
+            Box::pin(LocalFileSystem::read_file_bounded_authorized(
+                self, path, sandbox, max_bytes,
+            ))
+        }
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        {
+            // The generic stream fallback cannot satisfy the stable-handle capability.
+            let _ = (path, sandbox, max_bytes);
+            Box::pin(async {
+                Err(io::Error::new(
+                    io::ErrorKind::Unsupported,
+                    "bounded authorized file reads are unsupported",
+                ))
+            })
+        }
     }
 
     fn read_file_stream<'a>(
@@ -1235,7 +1256,7 @@ fn reject_platform_sandbox_context(sandbox: Option<&FileSystemSandboxContext>) -
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn authorized_read_limit(max_bytes: usize) -> io::Result<u64> {
     max_bytes
         .checked_add(1)
@@ -1246,14 +1267,14 @@ fn authorized_read_limit(max_bytes: usize) -> io::Result<u64> {
         .ok_or_else(|| authorized_read_error(io::ErrorKind::InvalidInput))
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct UniqueFileIdentity {
     device: u64,
     inode: u64,
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 async fn unique_file_identity(file: &tokio::fs::File) -> io::Result<UniqueFileIdentity> {
     use std::os::unix::fs::MetadataExt;
 
@@ -1267,7 +1288,7 @@ async fn unique_file_identity(file: &tokio::fs::File) -> io::Result<UniqueFileId
     })
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn unique_std_file_identity(file: &std::fs::File) -> io::Result<UniqueFileIdentity> {
     use std::os::unix::fs::MetadataExt;
 
@@ -1281,7 +1302,7 @@ fn unique_std_file_identity(file: &std::fs::File) -> io::Result<UniqueFileIdenti
     })
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 async fn secure_reopen_final_path(path: &Path) -> io::Result<tokio::fs::File> {
     let path = path.to_path_buf();
     let file = tokio::task::spawn_blocking(move || secure_open_unique_without_symlinks(&path))
@@ -1291,7 +1312,7 @@ async fn secure_reopen_final_path(path: &Path) -> io::Result<tokio::fs::File> {
     Ok(tokio::fs::File::from_std(file))
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 async fn secure_reopen_matching_identity(
     path: &Path,
     expected_identity: UniqueFileIdentity,
@@ -1315,13 +1336,13 @@ fn secure_open_unique_without_symlinks(path: &Path) -> io::Result<std::fs::File>
     const O_UNIQUE: libc::c_int = 0x0000_2000;
 
     let mut options = std::fs::OpenOptions::new();
-    options
-        .read(true)
-        .custom_flags(libc::O_NONBLOCK | libc::O_CLOEXEC | libc::O_NOFOLLOW_ANY | O_UNIQUE);
+    options.read(true).custom_flags(
+        libc::O_NONBLOCK | libc::O_CLOEXEC | libc::O_NOCTTY | libc::O_NOFOLLOW_ANY | O_UNIQUE,
+    );
     options.open(path)
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 static STABLE_HANDLE_AUTHORIZED_READ_AVAILABLE: LazyLock<bool> = LazyLock::new(|| {
     use std::os::unix::fs::DirBuilderExt;
     use std::os::unix::fs::symlink;
@@ -1345,8 +1366,9 @@ static STABLE_HANDLE_AUTHORIZED_READ_AVAILABLE: LazyLock<bool> = LazyLock::new(|
         std::fs::write(&original_path, b"probe")?;
         std::fs::hard_link(&original_path, &hardlink_path)?;
 
-        // O_UNIQUE may be silently ignored on unsupported Darwin versions;
-        // require the multi-link open to fail before enabling the seam.
+        // Require both the single-link check and the platform's rejection of
+        // symlink ancestors to work before advertising this capability. This
+        // also catches Darwin kernels that silently ignore O_UNIQUE.
         let hardlink_was_rejected = secure_open_unique_without_symlinks(&original_path).is_err();
         std::fs::remove_file(&hardlink_path)?;
 
@@ -1370,17 +1392,17 @@ static STABLE_HANDLE_AUTHORIZED_READ_AVAILABLE: LazyLock<bool> = LazyLock::new(|
     result
 });
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 pub(crate) fn stable_handle_authorized_read_available() -> bool {
     *STABLE_HANDLE_AUTHORIZED_READ_AVAILABLE
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(not(any(target_os = "linux", target_os = "macos")))]
 pub(crate) fn stable_handle_authorized_read_available() -> bool {
     false
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn authorize_stable_file_path(
     final_path: &Path,
     sandbox: &FileSystemSandboxContext,
@@ -1422,14 +1444,14 @@ fn authorize_stable_file_path(
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn stable_file_path(file: &tokio::fs::File) -> io::Result<AbsolutePathBuf> {
     use std::os::fd::AsRawFd;
 
     stable_file_path_from_raw_fd(file.as_raw_fd())
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn stable_file_path_from_fd(file: &std::fs::File) -> io::Result<AbsolutePathBuf> {
     use std::os::fd::AsRawFd;
 
@@ -1455,7 +1477,7 @@ fn stable_file_path_from_raw_fd(fd: std::os::fd::RawFd) -> io::Result<AbsolutePa
         .map_err(|_| authorized_read_error(io::ErrorKind::PermissionDenied))
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn redact_file_access_error(error: io::Error) -> io::Error {
     if error.kind() == io::ErrorKind::NotFound {
         authorized_read_error(io::ErrorKind::NotFound)
@@ -1464,7 +1486,7 @@ fn redact_file_access_error(error: io::Error) -> io::Error {
     }
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn authorized_read_error(kind: io::ErrorKind) -> io::Error {
     let message = match kind {
         io::ErrorKind::NotFound => "No such file or directory",
@@ -1575,7 +1597,7 @@ fn system_time_to_unix_ms(time: SystemTime) -> i64 {
 #[path = "local_file_system_path_uri_tests.rs"]
 mod path_uri_tests;
 
-#[cfg(all(test, target_os = "macos"))]
+#[cfg(all(test, any(target_os = "linux", target_os = "macos")))]
 #[path = "local_file_system_authorized_read_tests.rs"]
 mod authorized_read_tests;
 

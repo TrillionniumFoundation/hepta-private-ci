@@ -21,6 +21,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
 use codex_utils_image::data_url_from_bytes;
 use core_test_support::TempDirExt;
+use core_test_support::history_annotations;
 use core_test_support::responses;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -384,8 +385,16 @@ async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::R
     .await;
 
     let request = resumed_mock.single_request();
-    assert!(request.has_content_kinds(&["images.resize_notice"]));
-    assert!(request.has_content_kinds(&["user.image"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&resumed.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["images.resize_notice"]
+    ));
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["user.image"]
+    ));
     let input = request.input();
     let image_message_indices = input
         .iter()

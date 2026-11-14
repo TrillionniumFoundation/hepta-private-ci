@@ -20,6 +20,7 @@ use codex_skills_extension::install;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use codex_utils_path_uri::PathUri;
 use core_test_support::create_directory_symlink;
+use core_test_support::history_annotations;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
@@ -148,7 +149,12 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
         }),
         "expected skill instructions in user input, got {user_texts:?}"
     );
-    assert!(request.has_content_kinds(&["skills.selected_skill_instructions"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["skills.selected_skill_instructions"]
+    ));
 
     Ok(())
 }

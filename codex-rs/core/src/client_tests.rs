@@ -4,7 +4,6 @@ use super::ModelClient;
 use super::PendingUnauthorizedRetry;
 use super::Prompt;
 use super::UnauthorizedRecoveryExecution;
-use super::WebsocketConnectionIdentity;
 use super::X_CODEX_INSTALLATION_ID_HEADER;
 use super::X_CODEX_PARENT_THREAD_ID_HEADER;
 use super::X_CODEX_TURN_METADATA_HEADER;
@@ -22,7 +21,6 @@ use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
 use codex_api::ApiError;
 use codex_api::ResponseEvent;
-use codex_api::RetryConfig;
 use codex_api::TransportError;
 use codex_extension_api::EphemeralModelInputContributor;
 use codex_extension_api::ExtensionData;
@@ -76,7 +74,6 @@ use futures::StreamExt;
 use pretty_assertions::assert_eq;
 use serde_json::json;
 use std::collections::BTreeMap;
-use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::path::PathBuf;
 use std::pin::Pin;
@@ -226,6 +223,104 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
     );
 }
 
+#[test]
+fn first_party_wire_without_content_kinds_retains_other_item_metadata() {
+    let mut client = test_model_client(SessionSource::Exec);
+    Arc::get_mut(&mut client.state)
+        .expect("fresh model client has unique state")
+        .content_item_kinds_enabled = false;
+    let provider =
+        ModelProviderInfo::create_openai_provider(Some("https://api.openai.com/v1".to_string()))
+            .to_api_provider(Some(AuthMode::ApiKey))
+            .expect("first-party provider should build");
+    let mut item: ResponseItem = serde_json::from_value(serde_json::json!({
+        "type": "message",
+        "role": "user",
+        "content": [{ "type": "input_text", "text": "keep local annotations" }],
+        "internal_chat_message_metadata_passthrough": {
+            "turn_id": "original-turn",
+            "create_time": 1_785_276_138.5,
+            "content_item_kinds": ["user.text"],
+        },
+    }))
+    .expect("annotated response item");
+    let original = item.clone();
+    client.prepare_response_items_for_request(std::slice::from_mut(&mut item), &provider);
+    let wire = serde_json::to_value(&item).expect("serialize request item");
+    assert_eq!(
+        wire["internal_chat_message_metadata_passthrough"],
+        serde_json::json!({ "turn_id": "original-turn", "create_time": 1_785_276_138.5 })
+    );
+    assert_eq!(
+        serde_json::to_value(original).expect("serialize original item")["internal_chat_message_metadata_passthrough"]
+            ["content_item_kinds"],
+        serde_json::json!(["user.text"])
+    );
+}
+
+#[test]
+fn responses_lite_generated_instructions_follow_resolved_endpoint_metadata_policy() {
+    let client = test_model_client(SessionSource::Exec);
+    let model_info = ModelInfo {
+        use_responses_lite: true,
+        ..test_model_info()
+    };
+    let prompt = Prompt {
+        base_instructions: BaseInstructions {
+            text: "test instructions".to_string(),
+            ..BaseInstructions::default()
+        },
+        ..Prompt::default()
+    };
+    let metadata = CodexResponsesMetadata::new(
+        TEST_INSTALLATION_ID.to_string(),
+        "test-session".to_string(),
+        "test-thread".to_string(),
+        "test-window".to_string(),
+    );
+    for (endpoint, auth_mode, expected_metadata) in [
+        (
+            "https://api.openai.com/v1",
+            AuthMode::ApiKey,
+            Some(json!({"content_item_kinds": ["model.base_instructions"]})),
+        ),
+        ("https://proxy.example.com/v1", AuthMode::ApiKey, None),
+        (CHATGPT_CODEX_BASE_URL, AuthMode::Chatgpt, None),
+    ] {
+        let provider = ModelProviderInfo::create_openai_provider(Some(endpoint.to_string()))
+            .to_api_provider(Some(auth_mode))
+            .expect("resolved provider should build");
+        let request = client
+            .build_responses_request(
+                &prompt,
+                &model_info,
+                /*effort*/ None,
+                Default::default(),
+                /*service_tier*/ None,
+                &metadata,
+                &provider,
+            )
+            .expect("Responses Lite request should build");
+        let input = serde_json::to_value(request.input).expect("input should serialize");
+        let mut instructions = json!({
+            "type": "message",
+            "role": "developer",
+            "content": [{"type": "input_text", "text": "test instructions"}],
+        });
+        if let Some(expected_metadata) = expected_metadata {
+            instructions["internal_chat_message_metadata_passthrough"] = expected_metadata;
+        }
+        assert_eq!(
+            input,
+            json!([
+                {"type": "additional_tools", "role": "developer", "tools": []},
+                instructions,
+            ]),
+            "resolved endpoint: {endpoint}"
+        );
+    }
+}
+
 struct TransportSelectionEphemeralContributor {
     active: bool,
 }
@@ -304,80 +399,8 @@ fn websocket_transport_gate_uses_exact_active_turn_contributors() {
     ));
 }
 
-#[test]
-fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics() {
-    let provider = codex_api::Provider {
-        name: "provider-a".to_string(),
-        base_url: "https://deployment.example.test/v1".to_string(),
-        query_params: Some(HashMap::from([(
-            "api-version".to_string(),
-            "2026-08-01".to_string(),
-        )])),
-        headers: http::HeaderMap::new(),
-        retry: RetryConfig {
-            max_attempts: 1,
-            base_delay: Duration::from_millis(1),
-            retry_429: false,
-            retry_5xx: false,
-            retry_transport: false,
-        },
-        stream_idle_timeout: Duration::from_secs(5),
-    };
-    let mut metadata_a = CodexResponsesMetadata::new(
-        "installation-a".to_string(),
-        "session-a".to_string(),
-        "thread-a".to_string(),
-        "window-a".to_string(),
-    );
-    metadata_a.sandbox_mode = Some("workspace-write".to_string());
-    metadata_a.turn_started_at_unix_ms = Some(1);
-    let identity_a =
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
-            .expect("identity a");
-
-    let mut volatile_metadata = metadata_a.clone();
-    volatile_metadata.session_id = "session-after-restart".to_string();
-    volatile_metadata.window_id = "window-after-restart".to_string();
-    volatile_metadata.turn_started_at_unix_ms = Some(2);
-    assert_eq!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(
-            &provider,
-            Some("feature-a"),
-            &volatile_metadata,
-        )
-        .expect("volatile identity")
-    );
-
-    let mut changed_metadata = metadata_a.clone();
-    changed_metadata.sandbox_mode = Some("danger-full-access".to_string());
-    assert_ne!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(
-            &provider,
-            Some("feature-a"),
-            &changed_metadata,
-        )
-        .expect("changed compatibility identity")
-    );
-    assert_ne!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
-            .expect("changed beta identity")
-    );
-
-    let mut changed_provider = provider;
-    changed_provider.base_url = "https://other.example.test/v1".to_string();
-    assert_ne!(
-        identity_a,
-        WebsocketConnectionIdentity::from_provider(
-            &changed_provider,
-            Some("feature-a"),
-            &metadata_a,
-        )
-        .expect("changed provider identity")
-    );
-}
+#[path = "client/websocket_connection_tests.rs"]
+mod websocket_connection;
 
 #[tokio::test]
 async fn compact_uses_bearer_after_agent_identity_session_fallback() -> anyhow::Result<()> {
@@ -871,14 +894,16 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
     let api_stream = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item))])
         .chain(futures::stream::pending());
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseStreamContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     let observed = stream
@@ -924,14 +949,16 @@ async fn response_stream_records_last_model_feedback_ids() {
         }),
     ]);
     let (mut stream, _) = super::map_response_events(
-        Some("req-123".to_string()),
         api_stream,
-        test_session_telemetry(),
-        InferenceTraceAttempt::disabled(),
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseStreamContext {
+            upstream_request_id: Some("req-123".to_string()),
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     while stream.next().await.is_some() {}
@@ -1060,14 +1087,16 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         message: SENTINEL.to_string(),
     })]);
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        provider,
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ true,
-        /*encoded_request_observer*/ None,
+        super::ResponseStreamContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider,
+            provider_attempt: None,
+            redact_provider_errors: true,
+            encoded_request_observer: None,
+        },
     );
     let error = stream
         .next()
@@ -1244,14 +1273,16 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
     };
 
     let (stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseStreamContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     // Fill the mapper channel with non-terminal events, then yield one output
@@ -1448,3 +1479,6 @@ async fn non_chatgpt_codex_endpoints_omit_attestation_generation() {
     );
     assert_eq!(attestation_calls.load(Ordering::Relaxed), 0);
 }
+
+#[path = "client_tool_metadata_tests.rs"]
+mod tool_metadata;

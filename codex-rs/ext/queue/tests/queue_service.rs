@@ -111,7 +111,7 @@ impl ThreadLifecycleContributor<codex_core::config::Config> for InstalledQueue {
         }
     }
 
-    fn on_thread_idle<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+    fn on_thread_idle_ready<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
         if self
             .skip_next_idle
             .lock()
@@ -124,7 +124,7 @@ impl ThreadLifecycleContributor<codex_core::config::Config> for InstalledQueue {
         match self.service.get() {
             Some(service) => <QueuedItemService as ThreadLifecycleContributor<
                 codex_core::config::Config,
-            >>::on_thread_idle(service.as_ref(), input),
+            >>::on_thread_idle_ready(service.as_ref(), input),
             None => Box::pin(async {}),
         }
     }
@@ -153,22 +153,53 @@ fn install_registered_queue(
     Ok(service)
 }
 
+fn python_hook_command(script_path: &Path) -> String {
+    static PYTHON: OnceLock<String> = OnceLock::new();
+    let python = PYTHON.get_or_init(|| {
+        let program = if cfg!(windows) { "python" } else { "python3" };
+        let output = std::process::Command::new(program)
+            .args(["-I", "-c", "import sys; print(sys.executable)"])
+            .output()
+            .unwrap_or_else(|error| panic!("resolve queue hook Python interpreter: {error}"));
+        assert!(
+            output.status.success(),
+            "resolve queue hook Python interpreter: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let executable = String::from_utf8(output.stdout)
+            .unwrap_or_else(|error| panic!("decode queue hook Python interpreter: {error}"));
+        let executable = executable.trim().to_string();
+        assert!(Path::new(&executable).is_absolute());
+        executable
+    });
+    let script = script_path.to_str().unwrap_or_else(|| {
+        panic!(
+            "queue hook script path is not UTF-8: {}",
+            script_path.display()
+        )
+    });
+    if cfg!(windows) {
+        // These fixtures select cmd.exe with TestCodexBuilder::with_windows_cmd_shell.
+        format!("\"{python}\" -I \"{script}\"")
+    } else {
+        let python = python.replace('\'', "'\\''");
+        let script = script.replace('\'', "'\\''");
+        format!("'{python}' -I '{script}'")
+    }
+}
+
 fn write_rejecting_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_prompt_hook.py");
-    let log_path = home.join("queue_prompt_hook.log");
-    let script = format!(
-        r#"import json
+    let script_path = home.join("queue prompt hook.py");
+    let script = r#"import json
 from pathlib import Path
 import sys
 
 payload = json.load(sys.stdin)
-with Path(r"{log_path}").open("a", encoding="utf-8") as log:
+with Path(__file__).with_name("queue_prompt_hook.log").open("a", encoding="utf-8") as log:
     log.write(payload["prompt"] + "\n")
 if payload["prompt"] == "blocked":
-    print(json.dumps({{"decision": "block", "reason": "blocked by queue hook"}}))
-"#,
-        log_path = log_path.display(),
-    );
+    print(json.dumps({"decision": "block", "reason": "blocked by queue hook"}))
+"#;
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
     let hooks = serde_json::json!({
@@ -176,7 +207,7 @@ if payload["prompt"] == "blocked":
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }
@@ -186,29 +217,23 @@ if payload["prompt"] == "blocked":
 }
 
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
-    let entered_path = home.join("queue_blocking_prompt_hook.entered");
-    let release_path = home.join("queue_blocking_prompt_hook.release");
-    let script = format!(
-        r#"import json
+    let script_path = home.join("queue blocking prompt hook.py");
+    let script = r#"import json
 from pathlib import Path
 import sys
 import time
 
 payload = json.load(sys.stdin)
 if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
-    Path(r"{entered_path}").write_text("entered", encoding="utf-8")
+    Path(__file__).with_name("queue_blocking_prompt_hook.entered").write_text("entered", encoding="utf-8")
     deadline = time.monotonic() + 20
-    while not Path(r"{release_path}").exists():
+    while not Path(__file__).with_name("queue_blocking_prompt_hook.release").exists():
         if time.monotonic() >= deadline:
             raise RuntimeError("timed out waiting to release queue persistence hook")
         time.sleep(0.01)
     if payload["prompt"] == "delay exact rejection":
-        print(json.dumps({{"decision": "block", "reason": "delayed queue rejection"}}))
-"#,
-        entered_path = entered_path.display(),
-        release_path = release_path.display(),
-    );
+        print(json.dumps({"decision": "block", "reason": "delayed queue rejection"}))
+"#;
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
     let hooks = serde_json::json!({
@@ -216,7 +241,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": format!("python3 {}", script_path.display()),
+                    "command": python_hook_command(&script_path),
                 }]
             }]
         }
@@ -645,7 +670,7 @@ async fn emit_idle_with_cause(
 ) {
     let session_store = ExtensionData::new("session");
     let thread_store = ExtensionData::new(thread_id.to_string());
-    <QueuedItemService as ThreadLifecycleContributor<()>>::on_thread_idle(
+    <QueuedItemService as ThreadLifecycleContributor<()>>::on_thread_idle_ready(
         service,
         ThreadIdleInput {
             cause,
@@ -837,6 +862,7 @@ async fn caller_abort_after_core_started_keeps_exact_authority_until_persistence
     let response =
         responses::mount_sse_once(&server, responses::sse_completed("one-cancel-safe-owner")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_blocking_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -948,6 +974,7 @@ async fn core_error_after_started_never_releases_ambiguous_dispatch() -> anyhow:
     let response =
         responses::mount_sse_once(&server, responses::sse_completed("must-not-run")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_blocking_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -2345,6 +2372,7 @@ async fn rejected_queue_messages_remain_durable_and_block_followups() -> anyhow:
     let (installed, extensions) = registered_queue_extensions();
     let test = test_codex()
         .with_extensions(extensions)
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_rejecting_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)
@@ -2399,6 +2427,7 @@ async fn explicitly_started_rejected_queue_messages_remain_durable() -> anyhow::
     let responses =
         responses::mount_sse_once(&server, responses::sse_completed("unexpected-turn")).await;
     let test = test_codex()
+        .with_windows_cmd_shell()
         .with_pre_build_hook(write_rejecting_prompt_hook)
         .with_config(trust_discovered_hooks)
         .with_config(|config| config.include_environment_context = false)

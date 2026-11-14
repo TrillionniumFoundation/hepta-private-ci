@@ -24,6 +24,7 @@ use core_test_support::apps_test_server::AppsTestServer;
 use core_test_support::apps_test_server::SEARCH_CALENDAR_CREATE_TOOL;
 use core_test_support::apps_test_server::SEARCH_CALENDAR_NAMESPACE;
 use core_test_support::apps_test_server::apps_enabled_builder;
+use core_test_support::history_annotations;
 use core_test_support::responses;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex::test_codex;
@@ -115,7 +116,9 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
 
     test.submit_turn("hello").await?;
 
-    let body = response_mock.single_request().body_json();
+    let request = response_mock.single_request();
+    history_annotations::assert_metadata_is_private(&request);
+    let body = request.body_json();
     assert!(body.get("instructions").is_none());
     assert!(body.get("tools").is_none());
 
@@ -133,9 +136,6 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
                 "type": "input_text",
                 "text": "test instructions",
             }],
-            "internal_chat_message_metadata_passthrough": {
-                "content_item_kinds": ["model.base_instructions"],
-            },
         })
     );
 
@@ -271,7 +271,12 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["user.image", "images.preparation_error"]
+    ));
     let user_content = request
         .input()
         .into_iter()

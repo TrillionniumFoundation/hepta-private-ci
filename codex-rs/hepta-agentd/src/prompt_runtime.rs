@@ -10,11 +10,16 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::collections::VecDeque;
 use std::fmt;
+#[cfg(not(windows))]
 use std::fs::File;
+#[cfg(not(windows))]
 use std::fs::OpenOptions;
+#[cfg(not(windows))]
 use std::io::Read;
+#[cfg(not(windows))]
 use std::io::Write;
 use std::path::Path;
+#[cfg(not(windows))]
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -824,6 +829,13 @@ struct StoredObservation {
     truncation_observed: bool,
 }
 
+#[cfg(windows)]
+#[path = "prompt_runtime_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::PromptRuntimeStore;
+
+#[cfg(not(windows))]
 struct PromptRuntimeStore {
     root: PathBuf,
     _lock: File,
@@ -831,6 +843,7 @@ struct PromptRuntimeStore {
     fail_directory_sync_after_rename_once: AtomicBool,
 }
 
+#[cfg(not(windows))]
 impl PromptRuntimeStore {
     fn open(directory: &Path) -> Result<(Self, PromptRuntimeState), AgentdPromptRuntimeError> {
         prepare_state_directory(directory)?;
@@ -1165,6 +1178,7 @@ fn parse_id(value: String) -> Result<StableId, AgentdPromptRuntimeError> {
     StableId::new(value).map_err(|_| AgentdPromptRuntimeError::CorruptState)
 }
 
+#[cfg(not(windows))]
 fn prepare_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
     if let Err(error) = std::fs::create_dir(path)
         && error.kind() != std::io::ErrorKind::AlreadyExists
@@ -1186,9 +1200,9 @@ fn set_private_directory_permissions(path: &Path) -> Result<(), AgentdPromptRunt
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn set_private_directory_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    Ok(())
+    Err(AgentdPromptRuntimeError::Unavailable)
 }
 
 #[cfg(unix)]
@@ -1198,9 +1212,9 @@ fn set_private_file_permissions(path: &Path) -> Result<(), AgentdPromptRuntimeEr
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn set_private_file_permissions(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    Ok(())
+    Err(AgentdPromptRuntimeError::Unavailable)
 }
 
 #[cfg(unix)]
@@ -1210,9 +1224,9 @@ fn sync_state_directory(path: &Path) -> Result<(), AgentdPromptRuntimeError> {
         .map_err(|_| AgentdPromptRuntimeError::IndeterminateDurability)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn sync_state_directory(_path: &Path) -> Result<(), AgentdPromptRuntimeError> {
-    Ok(())
+    Err(AgentdPromptRuntimeError::Unavailable)
 }
 
 fn validate_thread_id(thread_id: &str) -> Result<(), AgentdPromptRuntimeError> {

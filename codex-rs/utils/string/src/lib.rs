@@ -1,5 +1,11 @@
 #[cfg(feature = "hia-native")]
 mod hia_native;
+#[cfg(feature = "hia-native")]
+mod hia_native_ascii_json;
+#[cfg(feature = "hia-native")]
+mod hia_native_markdown;
+#[cfg(feature = "hia-native")]
+mod hia_native_metric;
 mod json;
 mod truncate;
 
@@ -38,28 +44,47 @@ pub fn take_bytes_at_char_boundary(s: &str, maxb: usize) -> &str {
 #[path = "hia_native_tests.rs"]
 mod hia_native_tests;
 
+#[cfg(all(test, feature = "hia-native"))]
+#[path = "hia_native_metric_tests.rs"]
+mod hia_native_metric_tests;
+
+#[cfg(test)]
+#[path = "markdown_location_tests.rs"]
+mod markdown_location_tests;
+
+#[cfg(test)]
+#[path = "ascii_json_tests.rs"]
+mod ascii_json_tests;
+
 /// Sanitize a tag value to comply with metric tag validation rules:
 /// only ASCII alphanumeric, '.', '_', '-', and '/' are allowed.
 pub fn sanitize_metric_tag_value(value: &str) -> String {
-    const MAX_LEN: usize = 256;
-    let sanitized: String = value
-        .chars()
-        .map(|ch| {
-            if ch.is_ascii_alphanumeric() || matches!(ch, '.' | '_' | '-' | '/') {
-                ch
-            } else {
-                '_'
-            }
-        })
-        .collect();
-    let trimmed = sanitized.trim_matches('_');
-    if trimmed.is_empty() || trimmed.chars().all(|ch| !ch.is_ascii_alphanumeric()) {
-        return "unspecified".to_string();
+    #[cfg(feature = "hia-native")]
+    {
+        hia_native_metric::sanitize_metric_tag_value(value)
     }
-    if trimmed.len() <= MAX_LEN {
-        trimmed.to_string()
-    } else {
-        trimmed[..MAX_LEN].to_string()
+    #[cfg(not(feature = "hia-native"))]
+    {
+        const MAX_LEN: usize = 256;
+        let sanitized: String = value
+            .chars()
+            .map(|ch| {
+                if ch.is_ascii_alphanumeric() || matches!(ch, '.' | '_' | '-' | '/') {
+                    ch
+                } else {
+                    '_'
+                }
+            })
+            .collect();
+        let trimmed = sanitized.trim_matches('_');
+        if trimmed.is_empty() || trimmed.chars().all(|ch| !ch.is_ascii_alphanumeric()) {
+            return "unspecified".to_string();
+        }
+        if trimmed.len() <= MAX_LEN {
+            trimmed.to_string()
+        } else {
+            trimmed[..MAX_LEN].to_string()
+        }
     }
 }
 
@@ -80,30 +105,38 @@ pub fn find_uuids(s: &str) -> Vec<String> {
 /// Convert a markdown-style `#L..` location suffix into a terminal-friendly
 /// `:line[:column][-line[:column]]` suffix.
 pub fn normalize_markdown_hash_location_suffix(suffix: &str) -> Option<String> {
-    let fragment = suffix.strip_prefix('#')?;
-    let (start, end) = match fragment.split_once('-') {
-        Some((start, end)) => (start, Some(end)),
-        None => (fragment, None),
-    };
-    let (start_line, start_column) = parse_markdown_hash_location_point(start)?;
-    let mut normalized = String::from(":");
-    normalized.push_str(start_line);
-    if let Some(column) = start_column {
-        normalized.push(':');
-        normalized.push_str(column);
+    #[cfg(feature = "hia-native")]
+    {
+        hia_native_markdown::normalize_markdown_hash_location_suffix(suffix)
     }
-    if let Some(end) = end {
-        let (end_line, end_column) = parse_markdown_hash_location_point(end)?;
-        normalized.push('-');
-        normalized.push_str(end_line);
-        if let Some(column) = end_column {
+    #[cfg(not(feature = "hia-native"))]
+    {
+        let fragment = suffix.strip_prefix('#')?;
+        let (start, end) = match fragment.split_once('-') {
+            Some((start, end)) => (start, Some(end)),
+            None => (fragment, None),
+        };
+        let (start_line, start_column) = parse_markdown_hash_location_point(start)?;
+        let mut normalized = String::from(":");
+        normalized.push_str(start_line);
+        if let Some(column) = start_column {
             normalized.push(':');
             normalized.push_str(column);
         }
+        if let Some(end) = end {
+            let (end_line, end_column) = parse_markdown_hash_location_point(end)?;
+            normalized.push('-');
+            normalized.push_str(end_line);
+            if let Some(column) = end_column {
+                normalized.push(':');
+                normalized.push_str(column);
+            }
+        }
+        Some(normalized)
     }
-    Some(normalized)
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn parse_markdown_hash_location_point(point: &str) -> Option<(&str, Option<&str>)> {
     let point = point.strip_prefix('L')?;
     match point.split_once('C') {

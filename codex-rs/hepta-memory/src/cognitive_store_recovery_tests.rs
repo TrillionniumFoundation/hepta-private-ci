@@ -239,6 +239,36 @@ async fn post_rename_publication_failure_is_indeterminate_and_retains_candidate(
 }
 
 #[tokio::test]
+async fn unresolved_active_pointer_preserves_candidate_without_cleanup()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = TempDir::new()?;
+    let owner = agent_id(79);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await?;
+    let fence = recovery_authority(&owner).fencing_token_digest()?;
+    let root = store.path().parent().ok_or("cognitive root")?.to_path_buf();
+    let candidate = root.join(recovered_database_filename(&anchor, &fence));
+    std::fs::copy(store.path(), &candidate)?;
+    protect_database_file(&candidate)?;
+    publish_active_database(&root, &candidate)?;
+    std::fs::write(
+        root.join(super::super::COGNITIVE_ACTIVE_DB_POINTER),
+        [0xff_u8],
+    )?;
+    let before = capture_recovery_tree(&root);
+    let error = reconcile_failed_recovery_candidate(
+        &root,
+        &candidate,
+        CognitiveRecoveryError::Unavailable(
+            "injected failure after pointer publication".to_string(),
+        ),
+    );
+    assert!(matches!(error, CognitiveRecoveryError::Indeterminate(_)));
+    assert_eq!(capture_recovery_tree(&root), before);
+    Ok(())
+}
+
+#[tokio::test]
 async fn writable_recovery_requires_exclusive_store_fence() {
     let temp = TempDir::new().expect("temp dir");
     let owner = agent_id(90);

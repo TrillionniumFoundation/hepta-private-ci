@@ -188,6 +188,21 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
                 responses::ev_assistant_message("msg-browser-mcp-done", "Done"),
                 responses::ev_completed("resp-browser-mcp-done"),
             ]),
+            responses::sse(vec![
+                responses::ev_response_created("resp-browser-mcp-refresh-call"),
+                responses::ev_function_call_with_namespace(
+                    "browser-mcp-refresh-call",
+                    &namespace,
+                    "echo",
+                    &json!({"message": "browser use after refresh"}).to_string(),
+                ),
+                responses::ev_completed("resp-browser-mcp-refresh-call"),
+            ]),
+            responses::sse(vec![
+                responses::ev_response_created("resp-browser-mcp-refresh-done"),
+                responses::ev_assistant_message("msg-browser-mcp-refresh-done", "Done"),
+                responses::ev_completed("resp-browser-mcp-refresh-done"),
+            ]),
         ],
     )
     .await;
@@ -218,6 +233,43 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
             .and_then(serde_json::Value::as_str)
             .is_some_and(|output| output.contains("ECHOING: browser use works"))
     );
+
+    // A changed cwd invalidates the ordinary runtime projection. Executor-owned
+    // discovery must remain present when that dirty runtime is republished.
+    let refreshed_cwd = TempDir::new()?;
+    let request_id = app_server
+        .send_turn_start_request(TurnStartParams {
+            thread_id: thread_id.clone(),
+            cwd: Some(refreshed_cwd.path().to_path_buf()),
+            input: vec![UserInput::Text {
+                text: "Use the executor browser after changing cwd".to_string(),
+                text_elements: Vec::new(),
+            }],
+            ..Default::default()
+        })
+        .await?;
+    let _: TurnStartResponse =
+        timeout(DEFAULT_READ_TIMEOUT, app_server.read_response(request_id)).await??;
+    timeout(
+        DEFAULT_READ_TIMEOUT,
+        app_server.read_stream_until_notification_message("turn/completed"),
+    )
+    .await??;
+    let requests = response_mock.requests();
+    assert_eq!(requests.len(), 4);
+    assert!(requests[2].tool_by_name(&namespace, "echo").is_some());
+    let output = requests[3].function_call_output("browser-mcp-refresh-call");
+    assert!(
+        output
+            .get("output")
+            .and_then(serde_json::Value::as_str)
+            .is_some_and(|output| output.contains("ECHOING: browser use after refresh"))
+    );
+    assert!(requests.iter().all(|request| {
+        request
+            .tool_by_name("mcp__policy_unlisted", "echo")
+            .is_none()
+    }));
 
     let servers = mcp_server_statuses(&mut app_server, thread_id).await?;
     assert!(

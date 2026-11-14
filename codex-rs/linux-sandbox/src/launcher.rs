@@ -35,8 +35,10 @@ struct SystemBwrapCapabilities {
     supports_ro_bind_fd: bool,
 }
 
-pub(crate) fn exec_bwrap(mut argv: Vec<String>, preserved_files: Vec<File>) -> ! {
+pub(crate) fn exec_bwrap(mut argv: Vec<String>, mut preserved_files: Vec<File>) -> ! {
     argv.insert(1, "--as-pid-1".to_string());
+    crate::parent_lifetime::preserve_for_inner_stage(&mut argv, &mut preserved_files)
+        .unwrap_or_else(|error| panic!("failed to preserve bubblewrap parent lifetime: {error}"));
 
     match preferred_bwrap_launcher() {
         BubblewrapLauncher::System(launcher) => {

@@ -1,0 +1,140 @@
+hia-asm.v1 hepta.hia.program.v8 codex_markdown_location
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  entry_input_size:usize = buffer.len(source)
+  entry_output_size:usize = buffer.len(output)
+  entry_workspace_size:usize = buffer.len(workspace)
+  entry_maximum:usize = const() {"value":4096}
+  entry_state_size:usize = const() {"value":2}
+  entry_input_ok:bool = compare.le(entry_input_size,entry_maximum)
+  entry_output_ok:bool = compare.ge(entry_output_size,entry_input_size)
+  entry_workspace_ok:bool = compare.ge(entry_workspace_size,entry_state_size)
+  entry_buffers_ok:bool = bool.and(entry_output_ok,entry_workspace_ok)
+  branch entry_input_ok capacity(source,output,workspace,entry_buffers_ok) invalid()
+block capacity(c_source:readbuf,c_output:mutbuf,c_workspace:mutbuf,c_ok:bool)
+  branch c_ok state(c_source,c_output,c_workspace) short_output()
+block state(s_source:readbuf,s_output:mutbuf,s_workspace:mutbuf)
+  state_phase_at:usize = const() {"value":0}
+  state_final_at:usize = const() {"value":1}
+  state_phase:u8 = buffer.load(s_workspace,state_phase_at)
+  state_final:u8 = buffer.load(s_workspace,state_final_at)
+  state_last_phase:u8 = const() {"value":6}
+  state_one:u8 = const() {"value":1}
+  state_phase_ok:bool = compare.le(state_phase,state_last_phase)
+  state_final_ok:bool = compare.le(state_final,state_one)
+  state_valid:bool = bool.and(state_phase_ok,state_final_ok)
+  state_zero:usize = const() {"value":0}
+  state_validate:u8 = const() {"value":0}
+  branch state_valid scan(s_source,s_output,s_workspace,state_zero,state_phase,state_zero,state_validate) invalid()
+block scan(l_source:readbuf,l_output:mutbuf,l_workspace:mutbuf,l_index:usize,l_phase:u8,l_count:usize,l_pass:u8)
+  scan_size:usize = buffer.len(l_source)
+  scan_more:bool = compare.lt(l_index,scan_size)
+  branch scan_more character(l_source,l_output,l_workspace,l_index,l_phase,l_count,l_pass) end_chunk(l_source,l_output,l_workspace,l_phase,l_count,l_pass)
+block character(b_source:readbuf,b_output:mutbuf,b_workspace:mutbuf,b_index:usize,b_phase:u8,b_count:usize,b_pass:u8)
+  character_byte:u8 = buffer.load(b_source,b_index)
+  character_step:usize = const() {"value":1}
+  character_next:usize = int.add.checked(b_index,character_step)
+  character_hash_phase:u8 = const() {"value":0}
+  character_needs_hash:bool = compare.eq(b_phase,character_hash_phase)
+  branch character_needs_hash hash(b_source,b_output,b_workspace,character_next,b_count,b_pass,character_byte) point(b_source,b_output,b_workspace,character_next,b_phase,b_count,b_pass,character_byte)
+block hash(h_source:readbuf,h_output:mutbuf,h_workspace:mutbuf,h_next:usize,h_count:usize,h_pass:u8,h_byte:u8)
+  hash_hash_byte:u8 = const() {"value":35}
+  hash_colon_byte:u8 = const() {"value":58}
+  hash_start_l:u8 = const() {"value":1}
+  hash_matches:bool = compare.eq(h_byte,hash_hash_byte)
+  branch hash_matches emit(h_source,h_output,h_workspace,h_next,hash_start_l,h_count,h_pass,hash_colon_byte) invalid_format()
+block point(p_source:readbuf,p_output:mutbuf,p_workspace:mutbuf,p_next:usize,p_phase:u8,p_count:usize,p_pass:u8,p_byte:u8)
+  point_start_l:u8 = const() {"value":1}
+  point_end_l:u8 = const() {"value":4}
+  point_is_start:bool = compare.eq(p_phase,point_start_l)
+  point_is_end:bool = compare.eq(p_phase,point_end_l)
+  point_needs_l:bool = bool.or(point_is_start,point_is_end)
+  branch point_needs_l line_marker(p_source,p_output,p_workspace,p_next,p_count,p_pass,p_byte,point_is_start) body(p_source,p_output,p_workspace,p_next,p_phase,p_count,p_pass,p_byte)
+block line_marker(m_source:readbuf,m_output:mutbuf,m_workspace:mutbuf,m_next:usize,m_count:usize,m_pass:u8,m_byte:u8,m_start:bool)
+  line_marker_l_byte:u8 = const() {"value":76}
+  line_marker_start_line:u8 = const() {"value":2}
+  line_marker_end_line:u8 = const() {"value":5}
+  line_marker_next_phase:u8 = select(m_start,line_marker_start_line,line_marker_end_line)
+  line_marker_matches:bool = compare.eq(m_byte,line_marker_l_byte)
+  branch line_marker_matches scan(m_source,m_output,m_workspace,m_next,line_marker_next_phase,m_count,m_pass) invalid_format()
+block body(v_source:readbuf,v_output:mutbuf,v_workspace:mutbuf,v_next:usize,v_phase:u8,v_count:usize,v_pass:u8,v_byte:u8)
+  body_start_line:u8 = const() {"value":2}
+  body_start_column:u8 = const() {"value":3}
+  body_end_l:u8 = const() {"value":4}
+  body_end_line:u8 = const() {"value":5}
+  body_end_column:u8 = const() {"value":6}
+  body_dash:u8 = const() {"value":45}
+  body_c:u8 = const() {"value":67}
+  body_colon:u8 = const() {"value":58}
+  body_in_start_line:bool = compare.eq(v_phase,body_start_line)
+  body_in_start_column:bool = compare.eq(v_phase,body_start_column)
+  body_in_end_line:bool = compare.eq(v_phase,body_end_line)
+  body_in_start:bool = bool.or(body_in_start_line,body_in_start_column)
+  body_in_line:bool = bool.or(body_in_start_line,body_in_end_line)
+  body_is_dash:bool = compare.eq(v_byte,body_dash)
+  body_is_c:bool = compare.eq(v_byte,body_c)
+  body_split_range:bool = bool.and(body_in_start,body_is_dash)
+  body_split_column:bool = bool.and(body_in_line,body_is_c)
+  body_column_phase:u8 = select(body_in_start_line,body_start_column,body_end_column)
+  body_after_column:u8 = select(body_split_column,body_column_phase,v_phase)
+  body_next_phase:u8 = select(body_split_range,body_end_l,body_after_column)
+  body_mapped:u8 = select(body_split_column,body_colon,v_byte)
+  jump emit(v_source,v_output,v_workspace,v_next,body_next_phase,v_count,v_pass,body_mapped)
+block emit(e_source:readbuf,e_output:mutbuf,e_workspace:mutbuf,e_next:usize,e_phase:u8,e_count:usize,e_pass:u8,e_byte:u8)
+  emit_writing:u8 = const() {"value":1}
+  emit_write:bool = compare.eq(e_pass,emit_writing)
+  branch emit_write store(e_source,e_output,e_workspace,e_next,e_phase,e_count,e_pass,e_byte) advance(e_source,e_output,e_workspace,e_next,e_phase,e_count,e_pass)
+block store(w_source:readbuf,w_output:mutbuf,w_workspace:mutbuf,w_next:usize,w_phase:u8,w_count:usize,w_pass:u8,w_byte:u8)
+  _ = buffer.store(w_output,w_count,w_byte)
+  jump advance(w_source,w_output,w_workspace,w_next,w_phase,w_count,w_pass)
+block advance(a_source:readbuf,a_output:mutbuf,a_workspace:mutbuf,a_next:usize,a_phase:u8,a_count:usize,a_pass:u8)
+  advance_step:usize = const() {"value":1}
+  advance_count:usize = int.add.checked(a_count,advance_step)
+  jump scan(a_source,a_output,a_workspace,a_next,a_phase,advance_count,a_pass)
+block end_chunk(f_source:readbuf,f_output:mutbuf,f_workspace:mutbuf,f_phase:u8,f_count:usize,f_pass:u8)
+  end_chunk_final_at:usize = const() {"value":1}
+  end_chunk_final:u8 = buffer.load(f_workspace,end_chunk_final_at)
+  end_chunk_nonfinal:u8 = const() {"value":0}
+  end_chunk_start_line:u8 = const() {"value":2}
+  end_chunk_start_column:u8 = const() {"value":3}
+  end_chunk_end_line:u8 = const() {"value":5}
+  end_chunk_end_column:u8 = const() {"value":6}
+  end_chunk_more_chunks:bool = compare.eq(end_chunk_final,end_chunk_nonfinal)
+  end_chunk_sl:bool = compare.eq(f_phase,end_chunk_start_line)
+  end_chunk_sc:bool = compare.eq(f_phase,end_chunk_start_column)
+  end_chunk_el:bool = compare.eq(f_phase,end_chunk_end_line)
+  end_chunk_ec:bool = compare.eq(f_phase,end_chunk_end_column)
+  end_chunk_start_ok:bool = bool.or(end_chunk_sl,end_chunk_sc)
+  end_chunk_end_ok:bool = bool.or(end_chunk_el,end_chunk_ec)
+  end_chunk_complete:bool = bool.or(end_chunk_start_ok,end_chunk_end_ok)
+  end_chunk_valid:bool = bool.or(end_chunk_more_chunks,end_chunk_complete)
+  branch end_chunk_valid finish(f_source,f_output,f_workspace,f_phase,f_count,f_pass,end_chunk_final) invalid_format()
+block finish(q_source:readbuf,q_output:mutbuf,q_workspace:mutbuf,q_phase:u8,q_count:usize,q_pass:u8,q_final:u8)
+  finish_writing:u8 = const() {"value":1}
+  finish_wrote:bool = compare.eq(q_pass,finish_writing)
+  branch finish_wrote persist(q_workspace,q_phase,q_count,q_final) replay(q_source,q_output,q_workspace)
+block replay(r_source:readbuf,r_output:mutbuf,r_workspace:mutbuf)
+  replay_phase_at:usize = const() {"value":0}
+  replay_original_phase:u8 = buffer.load(r_workspace,replay_phase_at)
+  replay_zero:usize = const() {"value":0}
+  replay_writing:u8 = const() {"value":1}
+  jump scan(r_source,r_output,r_workspace,replay_zero,replay_original_phase,replay_zero,replay_writing)
+block persist(t_workspace:mutbuf,t_phase:u8,t_count:usize,t_final:u8)
+  persist_phase_at:usize = const() {"value":0}
+  persist_finished:u8 = const() {"value":7}
+  persist_one:u8 = const() {"value":1}
+  persist_final_chunk:bool = compare.eq(t_final,persist_one)
+  persist_next_phase:u8 = select(persist_final_chunk,persist_finished,t_phase)
+  _ = buffer.store(t_workspace,persist_phase_at,persist_next_phase)
+  persist_length:u32 = int.cast(t_count) {"mode":"wrap"}
+  ret(persist_length)
+block invalid()
+  invalid_code:u32 = const() {"value":4294967295}
+  ret(invalid_code)
+block short_output()
+  short_output_code:u32 = const() {"value":4294967294}
+  ret(short_output_code)
+block invalid_format()
+  invalid_format_code:u32 = const() {"value":4294967293}
+  ret(invalid_format_code)
+end

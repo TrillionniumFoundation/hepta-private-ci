@@ -57,6 +57,9 @@ impl MatrixSdkPaths {
         config: &MatrixSidecarConfig,
     ) -> Result<Self, MatrixSidecarConfigError> {
         config.validate(layout)?;
+        // This directory identifies persisted sessions and encryption keys. Keep
+        // the existing path across SDK upgrades; SQLite applies schema migrations
+        // in place instead of silently creating a new, unauthenticated store.
         let root = layout.matrix_root().join("matrix-sdk-0.18");
         let state = root.join("state");
         let cache = root.join("cache");

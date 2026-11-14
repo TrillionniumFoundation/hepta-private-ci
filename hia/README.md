@@ -1,15 +1,18 @@
 # Codex in HIA
 
-This directory contains HIA implementations of Codex's patch-line matching and
-UTF-8 prefix-boundary functions. The compiler is pinned to
-[`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
-at `f33d8da316de8fdf27b504371f1a5310997ff548`. The components execute their
-algorithms as native machine code produced from `.hepta` source.
+This directory contains HIA implementations of Codex's patch-line matching,
+UTF-8 prefix selection, metric-tag sanitizing, Markdown location suffix
+normalization and ASCII JSON string-fragment encoding. The compiler is
+pinned to [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
+at `f33d8da316de8fdf27b504371f1a5310997ff548`. These algorithms execute as
+native machine code compiled from `.hepta` source.
 
-The `hia-native` Cargo feature connects the actual patch-update matcher and
-public string-prefix API to HIA machine code on Linux x86-64 GNU. Their Rust
-adapters frame borrowed inputs and check native results. Static archives are
-verified at build time and incorporated into the caller binary.
+The `hia-native` Cargo feature connects 5 actual production algorithms
+to HIA machine code on Linux x86-64 GNU. Rust adapters frame borrowed inputs,
+check native results and preserve the surrounding public interfaces. Static
+archives are verified at build time and incorporated into the caller binary.
+The full-input UTF-8 validation module is a separately tested diagnostic
+component; the production prefix caller uses the constant-size entry.
 
 The feature remains opt-in. Other owners listed in
 [`migration.json`](migration.json), other platforms, and the default release
@@ -24,16 +27,22 @@ dispatch still need migration. The whole-product state is therefore:
 
 ## Implemented components
 
-| HIA module | Original source/function | Behavior implemented |
-| --- | --- | --- |
-| [`seek_sequence.hepta`](seek_sequence.hepta) | [`seek_sequence`](../codex-rs/apply-patch/src/seek_sequence.rs) | Exact, trailing-whitespace, trimmed and Unicode punctuation matching; original pass precedence, first match, empty patterns, start bounds, EOF behavior and both line-ending modes. |
-| [`utf8_boundaries.hepta`](utf8_boundaries.hepta) | [`take_bytes_at_char_boundary`](../codex-rs/utils/string/src/lib.rs) | The largest complete UTF-8 prefix within a byte budget, plus complete validation of the incoming UTF-8 bytes. |
-| [`utf8_prefix.hepta`](utf8_prefix.hepta) | The public string-prefix caller | Constant-size boundary selection for an already-valid Rust `&str`, preserving borrowing and allocation-free calls for arbitrarily large strings. |
+| HIA module                                               | Original source/function                                                            | Behavior implemented                                                                                                                                                                                                |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`seek_sequence.hepta`](seek_sequence.hepta)             | [`seek_sequence`](../codex-rs/apply-patch/src/seek_sequence.rs)                     | Exact, trailing-whitespace, trimmed and Unicode punctuation matching; original pass precedence, first match, empty patterns, start bounds, EOF behavior and both line-ending modes.                                 |
+| [`utf8_boundaries.hepta`](utf8_boundaries.hepta)         | [`take_bytes_at_char_boundary`](../codex-rs/utils/string/src/lib.rs)                | The largest complete UTF-8 prefix within a byte budget, plus complete validation of the incoming UTF-8 bytes.                                                                                                       |
+| [`utf8_prefix.hepta`](utf8_prefix.hepta)                 | The public string-prefix caller                                                     | Constant-size boundary selection for an already-valid Rust `&str`, preserving borrowing and allocation-free calls for arbitrarily large strings.                                                                    |
+| [`metric_tag.hepta`](metric_tag.hepta)                   | [`sanitize_metric_tag_value`](../codex-rs/utils/string/src/lib.rs)                  | ASCII character filtering, one replacement per disallowed Unicode scalar, trimming, the original empty/default decision and 256-byte output limit; bounded streaming state accepts arbitrarily large valid strings. |
+| [`markdown_location.hepta`](markdown_location.hepta)     | [`normalize_markdown_hash_location_suffix`](../codex-rs/utils/string/src/lib.rs)    | Streaming location grammar, the first range separator and first column separator per endpoint; original empty/nonnumeric acceptance and byte preservation.                                                          |
+| [`ascii_json_fragment.hepta`](ascii_json_fragment.hepta) | [`AsciiJsonFormatter::write_string_fragment`](../codex-rs/utils/string/src/json.rs) | ASCII preservation and lowercase Unicode escapes, including surrogate pairs, with canonical UTF-8 validation and bounded borrowed windows. Serde still owns the surrounding JSON format.                            |
 
 The UTF-8 input checks reject overlong encodings, surrogate encodings, values
 above U+10FFFF, lone continuation bytes and truncated sequences. They scan the
 entire input before publishing a result, including bytes beyond the requested
-prefix. These checks and both component algorithms are written in HIA.
+prefix. These full-input checks belong to `utf8_boundaries`; the production
+prefix and metric callers accept already-valid Rust strings. The JSON fragment
+encoder performs its own incremental validation. All listed component algorithms
+are implemented in HIA; the surrounding Rust owners remain tracked separately.
 
 ### Native buffer interface
 
@@ -58,20 +67,28 @@ component's `u32` result and has no equivalent pointer/alias admission wrapper.
 For both build modes a successful caller observes zero high bits and one of
 these low-bit results:
 
-| Component result | Meaning |
-| --- | --- |
-| `16` for `seek_sequence`, `8` for either UTF-8 module | Number of output bytes written. |
-| `0xffffffff` | Invalid input frame or UTF-8. |
-| `0xfffffffe` | Output capacity is too small. |
+| Component result                                      | Meaning                                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `16` for `seek_sequence`, `8` for either UTF-8 module | Number of output bytes written.                                                       |
+| `0` for a nonfinal `metric_tag` call                  | The input chunk was consumed; more chunks may follow.                                 |
+| `1` through `256` for a final `metric_tag` call       | Number of final ASCII output bytes.                                                   |
+| `0..4096` for `markdown_location`                     | Current-frame output length.                                                          |
+| `8..12296` for `ascii_json_fragment`                  | Eight-byte consumed-length header plus escaped fragment.                              |
+| `0xffffffff`                                          | Invalid frame/state; also invalid UTF-8 for the original matching/validation entries. |
+| `0xfffffffe`                                          | Insufficient output or workspace capacity.                                            |
+| `0xfffffffd`                                          | Invalid location format, or invalid UTF-8 in the JSON fragment encoder.               |
 
 Caller allocations must stay live for the call and mutable ranges must be
 disjoint. The direct seed wrapper and bootstrap compiler profile have a
 1,048,576-byte capacity. The production B3 ELF entry receives the actual live
 buffer extent; that compiler capacity is not a maximum file size. The patch
 adapter checks all length arithmetic and uses fallible allocation. All modules
-leave the source and workspace unchanged. Module errors leave the output
-unchanged; successful calls preserve output bytes beyond the result length.
-The workspace is reserved and may have length zero.
+leave the source unchanged. The patch and UTF-8 modules leave workspace
+unchanged, reserve it for future use and accept length zero. Their successful
+calls preserve output bytes beyond the result length. The metric module uses
+its workspace and output buffer as streaming state, as described below.
+Returned errors leave the current call's output and workspace unchanged.
+Earlier successful streaming calls and external writer effects remain committed.
 
 `seek_sequence` accepts four little-endian `u64` fields: line count, pattern
 count, start and flags. Bit 0 of flags enables EOF behavior; bit 1 selects
@@ -94,6 +111,59 @@ the caller checks the returned offset before borrowing the original prefix.
 This entry requires a valid original UTF-8 string. It does not claim full
 validation of bytes outside its small window; the byte-oriented
 `utf8_boundaries` entry supplies that separate contract.
+
+`metric_tag` requires a 256-byte output buffer and a 32-byte workspace,
+initially zeroed. The caller keeps both buffers between chunks, sends at most
+1 MiB of source per call and sets workspace byte 24 to `1` for the final chunk.
+Chunks may split a UTF-8 sequence, but their complete input must be a valid
+UTF-8 string. Continuation bytes do not create additional replacement
+characters; this entry does not validate arbitrary byte strings.
+
+Workspace offsets 0, 8 and 16 hold little-endian `u64` values: the retained
+character count saturated at 257, the last non-underscore position saturated
+at 257, and whether any ASCII alphanumeric character has occurred. Byte 24 is
+the final-chunk flag; byte 25 records finalization. Bytes 26 through 31 are
+reserved and preserved. Invalid states, invalid flag values, calls after
+finalization and short buffers are rejected before changing either buffer.
+Successful calls may update bytes within the first 256 output bytes even when
+the final result is shorter; output beyond byte 255 is preserved. The caller
+uses only the returned final prefix.
+
+The HIA implementation retains ASCII letters, digits and `._-/`, replaces each
+other Unicode scalar with `_`, trims leading and trailing `_`, and emits
+`unspecified` if the entire input contains no ASCII letter or digit. Otherwise
+it returns the first 256 bytes of the trimmed result. The default decision
+considers the entire string, including characters beyond the output limit.
+The Rust adapter only frames chunks, checks native status/length and converts
+the final ASCII bytes to a Rust string.
+
+`markdown_location` borrows at most 4,096 bytes per frame and requires output
+capacity at least that frame's length. Its two-byte workspace starts at zero:
+byte 0 is the grammar phase (0 through 6, or 7 after finalization), and byte 1
+is the final-frame flag. The return value is the current frame's output length,
+which may be zero. The adapter concatenates only successful frame outputs.
+
+The state machine requires `#L`, converts `#` to `:` and omits the initial `L`
+of each endpoint. It accepts the original empty and nonnumeric bodies. The first hyphen
+introduces an end point that must begin with `L`; the first `C` in each endpoint
+becomes `:`. Later `C` and hyphen bytes are retained. Windows may split UTF-8
+scalars because non-syntax bytes are copied unchanged. Invalid format returns
+`0xfffffffd`; a frame is fully checked before either buffer changes.
+
+`ascii_json_fragment` borrows at most 4,096 bytes and requires an output
+buffer of `8 + 3 * frame_length` bytes. The first eight output bytes hold the
+consumed input length as a little-endian `u64`; subsequent bytes are the escaped
+fragment. Its two-byte workspace starts at zero: byte 0 records finalization
+and byte 1 requests the final frame. Successful calls return at least eight.
+
+ASCII bytes pass through the fragment encoder. Other Unicode scalars become
+lowercase `\uXXXX` escapes or UTF-16 surrogate pairs. The HIA code validates
+canonical UTF-8 before emitting. A nonfinal trailing partial scalar is left
+unconsumed and borrowed again with more bytes; an invalid sequence or a final
+partial scalar returns `0xfffffffd` without writing either buffer. The Rust
+adapter writes successful fragments through the existing `io::Write` contract.
+Serde retains surrounding JSON structure and control-character escaping;
+already completed writer effects are not rolled back if a later write fails.
 
 ## Build
 
@@ -190,28 +260,37 @@ corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
 ### Observed validation
 
-Both the direct native development build and the final B3-produced components
-have completed real original-source comparisons on the desktop host with Rust
-1.95.0. The final native self-host build passed the following checks; the
-recorded results and artifact identities are in
-[`verification.json`](verification.json).
+The current 6-module B3 build was checked on Linux x86-64 GNU with
+Rust 1.96.1. [`verification.json`](verification.json) records the original-source
+oracles, exact source/artifact/report hashes, caller suites and the separately
+scoped consumer and installation checkpoints.
 
-| Component | Observed checks |
-| --- | --- |
-| Patch-line matching | 2,327 valid cases, 86 invalid cases and 135 buffer-boundary calls; all matched the original Rust behavior and buffer contract. |
-| UTF-8 boundaries | All six tests passed with zero skips: 75,109 native calls, 2,093 original Rust comparisons and 56 Core VM comparisons. |
-| Static patch caller | Eight tests passed, including multi-megabyte lines/patterns, an offset table exceeding 1 MiB, both modes, EOF and maximum start values. |
-| Static string caller | Five tests passed: 18,559 original Rust comparisons, 9 MB input, 2,048 allocation-free calls and eight concurrent callers. |
-| Real Cargo callers | 122 tests passed with `hia-native`; 117 passed with the default feature set; zero skipped in either run. |
-| Installed patch executable | Two 2 MiB file updates passed against the original Rust CLI, with identical file bytes, exit status, stdout and stderr in both line-ending modes. The copied executable defines the native HIA symbol and has no HIA shared-library dependency. |
-| Build and artifact identity | 46 checks passed, including altered sources/compiler images, malformed receipts, weak/undefined symbols and duplicate archive members. |
-| Native lint gate | Strict Clippy passed for both production caller crates with `hia-native` enabled. |
+| Component                          | Observed checks                                                                                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Patch-line matching                | 2,327 valid cases, 86 invalid cases and 135 buffer-boundary calls against the actual Rust source.                                                                                                                              |
+| Full UTF-8 validation              | 75,109 native calls, 2,093 original Rust comparisons and 56 Core VM comparisons.                                                                                                                                               |
+| Production string prefix           | 5 tests; 18,559 Rust comparisons and 2,048 allocation-free calls, including large inputs and concurrent callers.                                                                                                               |
+| Metric tags                        | 6 tests; 40,992 Rust comparisons; 10,535 ABI calls covering streaming state, capacity and finalization.                                                                                                                        |
+| Markdown locations                 | 7 tests; 164,791 Rust comparisons; 1,289 ABI calls including 523 error/no-write cases and 170 streams.                                                                                                                         |
+| ASCII JSON fragments               | 7 tests; 27,075 comparisons through the actual full string crate; 957 ABI calls including 659 error/no-write cases and 90 streams.                                                                                             |
+| Real Cargo callers                 | 135 passed with `hia-native`; 125 passed with default features; zero skipped in both caller runs.                                                                                                                              |
+| Build and artifact identity        | 52 receipt/admission checks passed, including all 6 modules, source/compiler mutations, malformed receipts, symbol checks and archive-member checks.                                                                           |
+| Native lint gate                   | The listed production caller crates passed strict `cargo clippy --all-targets` with `hia-native` enabled and warnings denied.                                                                                                  |
+| Relocated full CLI                 | Help/version and four 2 MiB patch updates matched the default Rust CLI through both patch dispatch paths and line-ending modes. The copied native executable defines all 5 production symbols and needs no HIA shared library. |
+| Native Core consumers              | 3,872 executed tests passed; 9 were skipped and are not counted as qualified. Exact commands and log hashes are recorded separately.                                                                                           |
+| Native CLI, arg0 and TUI consumers | 4,473 executed tests passed; 6 were skipped and are not counted as qualified. Exact commands and log hashes are recorded separately.                                                                                           |
+| Full default Linux workspace       | 19,370 executed tests passed; 53 preexisting skips remain outside qualification. The 301 protocol tests and strict protocol Clippy also passed; source snapshots agree before/after tests and lint/format.                     |
 
-The native B1–B3 compiler generations reproduced identical bytes, and both
-components emitted by B3 passed their original Rust comparisons. This establishes
-the three-generation compiler rebuild and the two component behavior checks.
-The current production callers have additional static-link and whole-crate
-gates below. Full compiler/runtime and wider Codex qualification remain pending. `migration.json` records these scopes separately.
+B1, B2 and B3 reproduce identical compiler bytes. The component reports bind
+their HIA sources, original Rust sources, adapters and tested static archives
+to the current build. Raw diagnostic and namespaced shared-library identities
+are recorded separately; streaming ABI checks use the namespaced entries.
+
+The full CLI check proves symbol retention, relocated startup and patch
+behavior for that binary. It does not execute every linked algorithm. The
+consumer commands and their exact test summaries are recorded separately
+under `product_integration_gates`; neither checkpoint establishes whole-product
+HIA ownership, default release dispatch or cross-platform qualification.
 
 ## Remaining implementation map
 
@@ -229,26 +308,26 @@ workspace member crates. `migration.json` lists all 198 paths and assigns each
 of the 4,404 Rust files to its nearest ancestor manifest exactly once. The
 pinned Git tree is the complete source-path inventory.
 
-| Capability | Current owners | Required next implementation |
-| --- | --- | --- |
-| Model transport | `codex-api`, `codex-client`, `http-client`, `websocket-client`, provider crates | HTTP/TLS, SSE/WebSocket events, retry, cancellation and provider request behavior. |
-| Authentication and identity | `login`, `keyring-store`, `secrets`, `aws-auth`, `workload-identity`, `agent-identity` | Login, refresh, storage, redaction and platform identity interfaces. |
-| Threads and turns | `core`, `core-api`, `protocol`, `thread-store` | Turn state, ordered events, incremental context and concurrent ownership. |
-| History and recovery | `state`, `history`, `message-history`, `rollout`, `thread-store` | Existing session/database formats, atomic persistence, resume and crash recovery. |
-| Tools, processes and files | `tools`, `exec`, `exec-server`, `shell-command`, `file-system`, code-mode crates | Tool execution, PTY/pipes, process groups, cancellation and owned file effects. |
-| Permissions and sandboxing | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap` | Existing authorization decisions, isolation and denial behavior on each platform. |
-| MCP | `codex-mcp`, `rmcp-client`, `mcp-server` | Initialization, catalogs, calls, notifications, cancellation and transports. |
-| App Server v2 | `app-server`, protocol/transport/client/daemon crates | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations. |
-| CLI and TUI | `cli`, `tui`, `arg0`, terminal utilities | Flags, exit status, terminal event/rendering paths and existing snapshots. |
-| SDK and frontends | `sdk/`, `codex-cli/`, `apps/` | Public client interfaces, frontend lifecycle and packaging. |
-| Patch application | `apply-patch`, `file-search` | Matching is connected behind `hia-native`; parser and file-update owners still need migration. |
-| String utilities | `utils/string` | Prefix selection is connected behind `hia-native`; truncation and remaining helpers still need migration. |
-| Hepta cells and adapters | `hepta-*` crates | Existing cell, Agentd, Codex adapter, identity, recovery and learning/adoption boundaries. |
-| Platforms and release | Linux/macOS/Windows integrations, build and release paths | Supported architectures, packages, clean installation and end-to-end platform tests. |
-| HIA toolchain | The pinned Hepta compiler and runtime | Required host interfaces, broader platform support and complete compiler/runtime ownership. |
+| Capability                  | Current owners                                                                         | Required next implementation                                                                                                                                                                                     |
+| --------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Model transport             | `codex-api`, `codex-client`, `http-client`, `websocket-client`, provider crates        | HTTP/TLS, SSE/WebSocket events, retry, cancellation and provider request behavior.                                                                                                                               |
+| Authentication and identity | `login`, `keyring-store`, `secrets`, `aws-auth`, `workload-identity`, `agent-identity` | Login, refresh, storage, redaction and platform identity interfaces.                                                                                                                                             |
+| Threads and turns           | `core`, `core-api`, `protocol`, `thread-store`                                         | Turn state, ordered events, incremental context and concurrent ownership.                                                                                                                                        |
+| History and recovery        | `state`, `history`, `message-history`, `rollout`, `thread-store`                       | Existing session/database formats, atomic persistence, resume and crash recovery.                                                                                                                                |
+| Tools, processes and files  | `tools`, `exec`, `exec-server`, `shell-command`, `file-system`, code-mode crates       | Tool execution, PTY/pipes, process groups, cancellation and owned file effects.                                                                                                                                  |
+| Permissions and sandboxing  | `execpolicy`, `sandboxing`, platform sandboxes, `network-proxy`, `bwrap`               | Existing authorization decisions, isolation and denial behavior on each platform.                                                                                                                                |
+| MCP                         | `codex-mcp`, `rmcp-client`, `mcp-server`                                               | Initialization, catalogs, calls, notifications, cancellation and transports.                                                                                                                                     |
+| App Server v2               | `app-server`, protocol/transport/client/daemon crates                                  | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations.                                                                                                                                |
+| CLI and TUI                 | `cli`, `tui`, `arg0`, terminal utilities                                               | Flags, exit status, terminal event/rendering paths and existing snapshots.                                                                                                                                       |
+| SDK and frontends           | `sdk/`, `codex-cli/`, `apps/`                                                          | Public client interfaces, frontend lifecycle and packaging.                                                                                                                                                      |
+| Patch application           | `apply-patch`, `file-search`                                                           | Matching is connected behind `hia-native`; parser and file-update owners still need migration.                                                                                                                   |
+| String utilities            | `utils/string`                                                                         | Prefix selection, metric tags, Markdown location suffixes and JSON string fragments are connected behind `hia-native`; middle truncation, UUID helpers and complete owner/default/platform qualification remain. |
+| Hepta cells and adapters    | `hepta-*` crates                                                                       | Existing cell, Agentd, Codex adapter, identity, recovery and learning/adoption boundaries.                                                                                                                       |
+| Platforms and release       | Linux/macOS/Windows integrations, build and release paths                              | Supported architectures, packages, clean installation and end-to-end platform tests.                                                                                                                             |
+| HIA toolchain               | The pinned Hepta compiler and runtime                                                  | Required host interfaces, broader platform support and complete compiler/runtime ownership.                                                                                                                      |
 
-All complete capability migrations remain pending. The two connected functions
-advance the patch and string rows; their entire crates and default release
+All 15 complete capability migrations remain pending. The 5 connected
+algorithms advance individual owners; their complete crates and default release
 dispatch have not been migrated.
 
 The search implementation preserves the original four-pass search complexity.
@@ -270,7 +349,6 @@ function; tests and the default platform path still retain it. Global deletion
 requires the remaining default-release and platform gates. The wider capability
 map determines the rest of the repository cleanup.
 
-
 ## Build and test the production callers
 
 After the native build above, select the verified static artifacts:
@@ -280,6 +358,12 @@ export CODEX_HIA_NATIVE_LIB_DIR="$native_output"
 
 python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --report "$build_parent/receipt-tests.json"
 python3 -B hia/tests/test_native_string_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/string-caller-tests.json"
+python3 -B hia/tests/test_native_metric_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/metric-caller-tests.json"
+python3 -B hia/tests/test_metric_tag_abi.py --library-dir "$native_output" --report "$build_parent/metric-abi-tests.json"
+python3 -B hia/tests/test_native_markdown_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/markdown-caller-tests.json"
+python3 -B hia/tests/test_markdown_location_abi.py --library-dir "$native_output" --report "$build_parent/markdown-abi-tests.json"
+python3 -B hia/tests/test_native_ascii_json_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/ascii-json-caller-tests.json"
+python3 -B hia/tests/test_ascii_json_abi.py --library-dir "$native_output" --report "$build_parent/ascii-json-abi-tests.json"
 
 "$rustc_binary" --edition=2024 --test --cfg 'feature="hia-native"' hia/tests/native_patch_caller.rs -L "native=$native_output" -l static=codex_hia_seek_sequence -o "$build_parent/patch-caller-tests"
 "$build_parent/patch-caller-tests"
@@ -294,6 +378,15 @@ python3 -B ../hia/tests/test_installed_patch.py \
   --binary "$build_parent/hia-apply_patch" \
   --reference-binary "${CARGO_TARGET_DIR:-target}/debug/apply_patch" \
   --report "$build_parent/installed-patch.json"
+
+# Preserve both full binaries before changing the feature selection.
+cargo build --locked -p codex-cli --features hia-native --bin codex
+cp "${CARGO_TARGET_DIR:-target}/debug/codex" "$build_parent/hia-codex"
+cargo build --locked -p codex-cli --bin codex
+python3 -B ../hia/tests/test_installed_codex.py \
+  --binary "$build_parent/hia-codex" \
+  --reference-binary "${CARGO_TARGET_DIR:-target}/debug/codex" \
+  --report "$build_parent/installed-codex.json"
 ```
 
 The static callers need no HIA shared-library directory at runtime. Build-time

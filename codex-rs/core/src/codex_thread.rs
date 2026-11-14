@@ -2,6 +2,7 @@ use crate::agent::AgentStatus;
 use crate::config::ConstraintResult;
 use crate::context::ContextualUserFragment;
 use crate::elicitation::ElicitationRegistration;
+use crate::session::HistoryMutation;
 use crate::session::SessionIo;
 use crate::session::SessionSettingsUpdate;
 use crate::session::new_submission_id;
@@ -261,8 +262,12 @@ impl CodexThread {
         }
     }
 
+    /// Queues an operation and returns its event correlation ID. Standalone
+    /// settings, rollback, manual compaction, and mailbox input wait for ordered handling,
+    /// including an in-progress Finish. Their normal result remains on the
+    /// event stream; compaction does not wait for its model task to finish.
     pub async fn submit(&self, op: Op) -> CodexResult<String> {
-        self.io.submit(op).await
+        self.submit_with_trace(op, /*trace*/ None).await
     }
 
     /// Returns the session telemetry handle for thread-scoped production instrumentation.
@@ -341,10 +346,38 @@ impl CodexThread {
         op: Op,
         trace: Option<W3cTraceContext>,
     ) -> CodexResult<String> {
+        if let Op::InterAgentCommunication { communication } = op {
+            return self
+                .io
+                .submit_mailbox_after_terminalization(
+                    &self.session,
+                    communication,
+                    trace,
+                    None,
+                    None,
+                )
+                .await;
+        }
+        if let Op::ThreadSettings { thread_settings } = op {
+            return self
+                .io
+                .submit_thread_settings_after_terminalization(&self.session, thread_settings, trace)
+                .await;
+        }
+        let mutation = match op {
+            Op::ThreadRollback { num_turns } => HistoryMutation::Rollback { num_turns },
+            Op::Compact => HistoryMutation::Compact,
+            op => {
+                return self
+                    .io
+                    .submit_with_trace(
+                        op, trace, /*parent_turn_id*/ None, /*root_turn_id*/ None,
+                    )
+                    .await;
+            }
+        };
         self.io
-            .submit_with_trace(
-                op, trace, /*parent_turn_id*/ None, /*root_turn_id*/ None,
-            )
+            .submit_history_mutation_after_terminalization(&self.session, mutation, trace)
             .await
     }
 
@@ -396,10 +429,7 @@ impl CodexThread {
                 ));
             }
         };
-        self.session
-            .services
-            .agent_control
-            .ensure_execution_capacity_for_turn_start(self)
+        self.ensure_turn_start_capacity_after_finish(&mode)
             .await
             .map_err(UserMessageAdmissionError::Admission)?;
 
@@ -410,7 +440,12 @@ impl CodexThread {
             .register(submission_id.clone(), client_user_message_id, state);
         let submission = self
             .io
-            .submit_turn_input_with_id(submission_id, request, mode.clone())
+            .submit_turn_input_after_terminalization(
+                self.session.as_ref(),
+                submission_id,
+                request,
+                mode.clone(),
+            )
             .await
             .map_err(UserMessageAdmissionError::Admission)?;
 
@@ -752,13 +787,16 @@ impl CodexThread {
         mode: TurnInputMode,
     ) -> CodexResult<TurnInputSubmission> {
         if !matches!(mode, TurnInputMode::Steer { .. }) {
-            self.session
-                .services
-                .agent_control
-                .ensure_execution_capacity_for_turn_start(self)
-                .await?;
+            self.ensure_turn_start_capacity_after_finish(&mode).await?;
         }
-        self.io.submit_turn_input(request, mode).await
+        self.io
+            .submit_turn_input_after_terminalization(
+                self.session.as_ref(),
+                new_submission_id(),
+                request,
+                mode,
+            )
+            .await
     }
 
     /// Persist whether this thread is eligible for future memory generation.

@@ -4,12 +4,12 @@ mod render;
 use render::rewrite_terms;
 use render::slugify_name;
 use render::yaml_string;
-use serde_yaml::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::path::Path;
 use std::path::PathBuf;
+use yaml_serde::Value as YamlValue;
 
 const COMMAND_SKILL_PREFIX: &str = "source-command";
 const MAX_SKILL_NAME_LEN: usize = 64;
@@ -314,7 +314,7 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
+    let parsed: YamlValue = yaml_serde::from_str(raw_frontmatter).ok()?;
     let mapping = parsed.as_mapping()?;
     mapping.iter().find_map(|(key, value)| {
         if key.as_str()?.trim() == "description" {
@@ -436,3 +436,7 @@ fn contains_numbered_argument_placeholder(template: &str) -> bool {
 #[cfg(test)]
 #[path = "command_migration_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "command_yaml_tests.rs"]
+mod yaml_tests;

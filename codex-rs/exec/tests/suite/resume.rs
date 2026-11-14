@@ -3,6 +3,7 @@ use anyhow::Context;
 use codex_core::config::ConfigBuilder;
 use codex_core::init_state_db;
 use codex_protocol::ThreadId;
+use codex_state::StateRuntime;
 use core_test_support::responses;
 use core_test_support::skip_if_no_network;
 use core_test_support::test_codex_exec::test_codex_exec;
@@ -76,6 +77,32 @@ fn extract_conversation_id(path: &std::path::Path) -> String {
         .and_then(|v| v.as_str())
         .unwrap_or_default()
         .to_string()
+}
+
+/// Remove only rebuildable metadata; a real thread deletion permanently seals its identity.
+async fn remove_thread_index_row(
+    state_db: &StateRuntime,
+    thread_id: ThreadId,
+) -> anyhow::Result<()> {
+    assert!(state_db.get_thread(thread_id).await?.is_some());
+    let sqlite = state_db.sqlite();
+    let pool = sqlite.open_read_write_pool(&sqlite.state_db_path()).await?;
+    let removed = sqlx::query("DELETE FROM threads WHERE id = ?")
+        .bind(thread_id.to_string())
+        .execute(&pool)
+        .await?
+        .rows_affected();
+    pool.close().await;
+    assert_eq!(removed, 1);
+    assert!(state_db.get_thread(thread_id).await?.is_none());
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?,
+        "missing-index fixture must not create a hard-delete tombstone"
+    );
+    Ok(())
 }
 
 fn last_user_image_count(path: &std::path::Path) -> usize {
@@ -273,7 +300,7 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    remove_thread_index_row(&state_db, thread_id).await?;
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -336,7 +363,7 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    remove_thread_index_row(&state_db, newer_thread_id).await?;
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;

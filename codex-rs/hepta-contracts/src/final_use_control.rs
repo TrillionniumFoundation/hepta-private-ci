@@ -955,7 +955,12 @@ mod tests {
             ack: ack_a,
         };
         let partial = verifier
-            .verify(&feed_verifier, &signed_update, &[signed_a.clone()], 2_100)
+            .verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed_a),
+                2_100,
+            )
             .unwrap();
         assert!(!partial.converged());
         assert_eq!(partial.missing_nodes, vec!["node-b"]);
@@ -1070,7 +1075,12 @@ mod tests {
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         assert_eq!(
-            verifier.verify(&feed_verifier, &signed_update, &[signed.clone()], 2_000),
+            verifier.verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed),
+                2_000
+            ),
             Err(FinalUseControlError::RevocationFeedStale)
         );
 

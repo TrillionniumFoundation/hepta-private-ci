@@ -95,8 +95,45 @@ fn intersection(
 
 #[test]
 fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
-    let temp = TempDir::new().expect("workspace");
-    let root = canonical(&temp);
+    const WORKSPACE_ENV: &str = "CODEX_PROTOCOL_TEST_INTERSECTION_WORKSPACE";
+    let Some(workspace_root) = std::env::var_os(WORKSPACE_ENV) else {
+        // A workspace created inside the ambient TMPDIR also inherits its write
+        // grant. Bind a separate sibling temp directory in an isolated process
+        // so this test exercises workspace narrowing and temp preservation.
+        let fixture = TempDir::new().expect("permission fixture");
+        let workspace_root = fixture.path().join("workspace");
+        let temp_root = fixture.path().join("temp");
+        std::fs::create_dir(&workspace_root).expect("workspace fixture directory");
+        std::fs::create_dir(&temp_root).expect("temporary fixture directory");
+        let workspace_root = workspace_root.canonicalize().expect("canonical workspace");
+        let temp_root = temp_root
+            .canonicalize()
+            .expect("canonical temporary directory");
+        let output = std::process::Command::new(std::env::current_exe().expect("test binary"))
+            .env(WORKSPACE_ENV, &workspace_root)
+            .env("TMPDIR", &temp_root)
+            .arg("--exact")
+            .arg("permission_profile_intersection::tests::effective_workspace_intersection_preserves_network_metadata_and_temp")
+            .output()
+            .expect("run isolated permission fixture");
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        assert!(
+            output.status.success(),
+            "permission fixture failed\nstdout:\n{stdout}\nstderr:\n{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert!(
+            stdout.contains("1 passed; 0 failed;"),
+            "the isolated permission fixture did not execute its test: {stdout}"
+        );
+        return;
+    };
+    let root = absolute(Path::new(&workspace_root))
+        .canonicalize()
+        .expect("canonical workspace fixture");
+    let temp_root = absolute(Path::new(
+        &std::env::var_os("TMPDIR").expect("isolated temporary directory"),
+    ));
     let project = root.join("project");
     std::fs::create_dir(project.as_path()).expect("project directory");
     let gitdir = root.join("external-gitdir");
@@ -122,6 +159,10 @@ fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
     );
     assert_eq!(result.network_sandbox_policy(), Restricted);
     assert!(policy.entries.contains(&special(Tmpdir, Write)));
+    assert_eq!(
+        policy.resolve_access_with_cwd(temp_root.as_path(), root.as_path()),
+        Write
+    );
     for name in [".git", ".agents", ".codex"] {
         let protected = project.join(name);
         assert!(!policy.can_write_path_with_cwd(protected.as_path(), root.as_path()));

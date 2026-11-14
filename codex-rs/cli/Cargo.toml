@@ -5,10 +5,12 @@ edition.workspace = true
 license.workspace = true
 build = "build.rs"
 default-run = "codex"
+# Entry wrappers share main.rs; build only the declared executables.
+autobins = false
 
 [[bin]]
 name = "codex"
-path = "src/main.rs"
+path = "src/codex.rs"
 
 [[bin]]
 name = "hepta"
@@ -22,6 +24,10 @@ path = "src/bin/logs_client.rs"
 name = "codex_cli"
 path = "src/lib.rs"
 doctest = false
+
+[features]
+# Static HIA components are currently qualified for Linux x86-64 GNU.
+hia-native = ["codex-arg0/hia-native", "codex-tui/hia-native"]
 
 [lints]
 workspace = true

@@ -508,9 +508,7 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
     file.write_all(&bytes)
         .and_then(|()| file.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
+    codex_utils_path::publish_file_with_sync(&next, path)
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)
 }
 
