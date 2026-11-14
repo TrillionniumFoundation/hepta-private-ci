@@ -1,0 +1,120 @@
+name: RBE OpenSSH image preparation
+
+on:
+  push:
+    branches: [codex/rbe-openssh-image-r2-20261105]
+    paths:
+      - .github/rbe-openssh/**
+      - .github/workflows/hepta-rbe-openssh-image.yml
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact reviewed source SHA on the dedicated image branch
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# This serializes this repository's reviewed publisher. GHCR does not promise
+# atomic create-only tags against an unrelated package writer.
+concurrency:
+  group: hepta-rbe-openssh-image-publication
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.ref == 'refs/heads/codex/rbe-openssh-image-r2-20261105' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.source_sha == github.sha))
+    name: Build and qualify image (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 21
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - name: Check out the exact reviewed workflow source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Build one native OCI image and verify baseline preservation
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          RBE_ARCH: ${{ matrix.arch }}
+          RBE_EVIDENCE: ${{ runner.temp }}/hepta-rbe-build-${{ matrix.arch }}
+        run: python3 -B .github/rbe-openssh/build_image.py "$RBE_ARCH"
+      - name: Preserve original image, complete logs, and terminal evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-rbe-build-${{ matrix.arch }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-rbe-build-${{ matrix.arch }}/
+            !${{ runner.temp }}/hepta-rbe-build-${{ matrix.arch }}/oci/**
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+  publish:
+    needs: build
+    if: >-
+      needs.build.result == 'success' &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.ref == 'refs/heads/codex/rbe-openssh-image-r2-20261105' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.source_sha == github.sha))
+    name: Publish and test anonymous pull (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 21
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - name: Check out the same exact reviewed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Read this workflow run's verified platform artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: hepta-rbe-build-${{ matrix.arch }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-rbe-build-input-${{ matrix.arch }}
+      - name: Publish those exact bytes, then separately check anonymous digest pull
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RBE_ARCH: ${{ matrix.arch }}
+          RBE_BUILD_INPUT: ${{ runner.temp }}/hepta-rbe-build-input-${{ matrix.arch }}
+          RBE_EVIDENCE: ${{ runner.temp }}/hepta-rbe-publish-${{ matrix.arch }}
+        run: python3 -B .github/rbe-openssh/publish_image.py "$RBE_ARCH"
+      - name: Preserve successful, rejected, and unknown publication evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-rbe-publish-${{ matrix.arch }}-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-rbe-publish-${{ matrix.arch }}/
+            !${{ runner.temp }}/hepta-rbe-publish-${{ matrix.arch }}/oci/**
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
