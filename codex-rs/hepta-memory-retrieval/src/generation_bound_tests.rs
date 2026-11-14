@@ -222,7 +222,7 @@ fn ood_and_insufficient_coverage_abstain_explicitly() {
         RecallDispositionV1::Abstained(RecallAbstentionReasonV1::InsufficientChannelCoverage)
     );
 
-    let mut ood_policy = policy();
+    let mut ood_policy = policy;
     ood_policy.minimum_distinct_channels = 1;
     ood_policy.channel_weights = vec![RetrievalChannelWeightV1 {
         channel: RetrievalChannelV1::Lexical,

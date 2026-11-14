@@ -1,4 +1,6 @@
 use super::*;
+use crate::ContradictionEvidenceV1;
+use crate::ContradictionPolarityV1;
 use crate::RecallAbstentionReasonV1;
 use crate::RecallDispositionV1;
 use crate::RetrievalChannelV1;
@@ -325,7 +327,7 @@ fn recall_input() -> (MemoryCueV1, RetrievalPolicyV1, Vec<FastMemoryCandidateV1>
                 normalized_score: FixedQ32::ONE,
                 ood: ProbabilityQ32::ZERO,
                 support_digest: digest("source-support"),
-                contradiction_group_digest: None,
+                contradiction_evidence: None,
                 generation_vector_digest: snapshot().vector_digest,
             },
         })
@@ -361,8 +363,14 @@ fn associations_only_permute_eligible_results_and_preserve_abstention() {
             .collect::<Vec<_>>(),
         vec![id("memory:1")]
     );
-    for row in &mut candidates {
-        row.candidate.contradiction_group_digest = Some(digest("contradiction"));
+    for (row, polarity) in candidates.iter_mut().zip([
+        ContradictionPolarityV1::Supports,
+        ContradictionPolarityV1::Opposes,
+    ]) {
+        row.candidate.contradiction_evidence = Some(ContradictionEvidenceV1 {
+            proposition_digest: digest("contradiction"),
+            polarity,
+        });
     }
     let abstained = memory
         .rerank(&cue, &policy, &[1.0, 0.0], &candidates)

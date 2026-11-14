@@ -1271,16 +1271,6 @@ fn support_for_entry(entry: &CandidateUnionEntryV1) -> EngramSupportV1 {
     }
 }
 
-fn contradiction_population_count(entries: &[CandidateUnionEntryV1]) -> usize {
-    let mut groups = BTreeMap::<Digest32, usize>::new();
-    for entry in entries {
-        for group in &entry.contradiction_evidence {
-            *groups.entry(*group).or_insert(0) += 1;
-        }
-    }
-    groups.values().filter(|count| **count > 1).count()
-}
-
 fn abs_fixed(value: FixedQ32) -> Result<FixedQ32, EngramErrorV1> {
     if value.raw() == i64::MIN {
         return Err(EngramErrorV1::Arithmetic);
