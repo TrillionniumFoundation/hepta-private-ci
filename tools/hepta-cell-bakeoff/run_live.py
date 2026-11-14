@@ -79,7 +79,6 @@ def option_features(model, state: str, options: list[str]):
 
 
 def fit_encoder_head(entry: dict, root: Path, gold: Path, out: Path, reviewed_remote_code: bool):
-    import numpy as np
     train_bytes = bakeoff.jsonl_bytes(gold)
     train_sha256 = hashlib.sha256(train_bytes).hexdigest()
     bakeoff.require(train_sha256 == entry.get("train_data_sha256"), "training corpus SHA mismatch")
@@ -96,6 +95,7 @@ def fit_encoder_head(entry: dict, root: Path, gold: Path, out: Path, reviewed_re
     steps, seed, lr = entry.get("head_steps"), entry.get("head_seed"), entry.get("head_lr")
     bakeoff.require(type(steps) is int and 1 <= steps <= 100000, "missing bounded training steps")
     bakeoff.require(type(seed) is int and type(lr) in (int, float) and 0 < lr <= 1, "invalid head hyperparameters")
+    import numpy as np
     model = load_encoder(root, reviewed_remote_code=reviewed_remote_code)
     samples = [(option_features(model, r["state"], r["options"]), r["options"].index(r["label"]))
                for r in train]

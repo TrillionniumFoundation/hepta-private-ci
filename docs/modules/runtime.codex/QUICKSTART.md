@@ -23,7 +23,7 @@ just test --locked -p codex-hepta-agentd \
   --test-threads=1
 ```
 
-Use `.github/workflows/runtime-codex-qualification.yml` as the executable reference for a clean exact-head environment. That workflow binds the candidate SHA/tree, runs the focused suites, emits a canonical receipt, and attests the receipt on a push.
+The former runtime.codex qualification workflow is archived and is not an active CI entrypoint. Consult `.github/workflows/blocking-ci.yml` and `.github/workflows/hepta-architecture-convergence.yml` for current CI setup and applicable checks. The focused commands above do not create an attestation or establish target-host qualification.
 
 ## What the product E2E proves
 

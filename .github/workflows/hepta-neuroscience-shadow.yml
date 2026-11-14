@@ -41,6 +41,53 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Prepare native helper build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Resolve repository-pinned V8 for the helper dependency graph
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Prepare and verify the exact-source joint-process helper
+        id: q24_helpers
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -B scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/q24-temporal-helpers" \
+            --github-env "$GITHUB_ENV"
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/q24-temporal-helpers" \
+            > "$RUNNER_TEMP/q24-temporal-helpers-before.json"
       - name: Check Q24 read-only temporal credit against native tests
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-neuron --lib
+      - name: Reverify the original helper after native tests
+        if: always() && steps.q24_helpers.outcome == 'success'
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -B scripts/hepta_cell_test_helpers.py --verify-only \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/q24-temporal-helpers" \
+            > "$RUNNER_TEMP/q24-temporal-helpers-after.json"
+      - name: Retain helper preparation and verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: q24-temporal-helpers-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/q24-temporal-helpers
+            ${{ runner.temp }}/q24-temporal-helpers-before.json
+            ${{ runner.temp }}/q24-temporal-helpers-after.json
+            !${{ runner.temp }}/q24-temporal-helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14

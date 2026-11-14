@@ -130,7 +130,7 @@ symbol = "RevalidatingCandidate::with_current"
 call_pattern = '\bcandidate\s*\.\s*with_current\s*\('
 definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
-product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs","codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs","codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs","codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs","codex-rs/hepta-agentd/src/cell_split_owner.rs"]
 caller_markers = ["VerifiedCurrentRegistryViewV1", "with_current"]
 
 [[boundary]]
@@ -15941,3 +15941,11 @@ required_function_order = [{ function = "fn response(", sequence = ["spawn_gener
 path = "codex-rs/hepta-agent-protocol/src/q24_initial_task_progress.rs"
 required = ["#[serde(deny_unknown_fields)]", "pub struct Q24OriginalInitialTaskCompletionV1", "pub admission: ObjectiveAdmissionPublication", "pub observation: Q24OriginalTaskObservationV1", "pub circuit_revision: u64", "pub circuit_history_digest: String", "#[serde(tag = \"status\", rename_all = \"snake_case\", deny_unknown_fields)]", "pub enum Q24OriginalInitialTaskProgressV1", "InFlight {}", "Completed {", "data: Box<Q24OriginalInitialTaskCompletionV1>"]
 forbidden = ["ObjectiveRunAdmission", "SigningKey", "impl From", "pub owner:", "pub capability:", "Option<"]
+
+# Read-only Cell Split artifact verification consumes the opaque current-view capability.
+# This closed caller inventory does not install a product adapter or confer split authority.
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/cell_split_owner.rs"
+required = ["pub fn verify_current_child_artifact(", "candidate: &mut RevalidatingCandidate", "current: VerifiedCurrentRegistryViewV1"]
+forbidden = ["with_unverified_current", "VerifiedCurrentRegistryViewV1::new"]
+required_function_order = [{ function = "fn verify_current_child_artifact(", sequence = ["self.validate()?;", "let manifest = &candidate.spec().manifest;", "if current.receipt().binding != self.artifact_storage_binding_digest", "manifest.artifact_id != self.child_artifact_id", "manifest.predecessor_id.as_ref() != Some(&self.predecessor_artifact_id)", "manifest.generation != self.child_generation", "manifest.content_digest != self.child_artifact_digest", "return Err(CellSplitErrorV1::Conflict);", "let actual = candidate", ".with_current(current, Digest32::of_bytes)", ".map_err(|_| CellSplitErrorV1::Conflict)?;", "if actual != self.child_artifact_digest", "return Err(CellSplitErrorV1::Conflict);", "Ok(())"], top_level = ["self.validate()?;", "let manifest = &candidate.spec().manifest;", "if current.receipt().binding != self.artifact_storage_binding_digest", "let actual = candidate", ".with_current(current, Digest32::of_bytes)", "if actual != self.child_artifact_digest", "Ok(())"] }]
