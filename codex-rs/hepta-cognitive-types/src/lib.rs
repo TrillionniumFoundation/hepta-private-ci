@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+pub mod consumer_adapters;
+pub mod contract;
 pub mod hnmf;
 pub mod hnmf_learning;
 pub mod lane_c;
