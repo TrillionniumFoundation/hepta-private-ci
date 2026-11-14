@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "identity": "hcsn-c2-original-parent-state-audit-20261114-c06d-v1",
+  "status": "HOLD_INTENT_NOT_EXECUTED",
+  "parent_pr": 6309,
+  "parent_head": "55ee98291d1468408b49950ade8e3e1b21f01d7a",
+  "source_path": "qualification/hcsn_c2_original_parent_state_audit_20261114_c06d/audit_original_parents.py",
+  "host": "desktop",
+  "idempotency_key": "hcsn-c2-original-parent-state-audit-20261114-c06d-v1",
+  "runtime_requirements": {
+    "python": "existing campaign runtime",
+    "torch_load_weights_only": true,
+    "memory_max_bytes": 4294967296,
+    "threads": 1,
+    "network_during_audit": false
+  },
+  "exact_scope": {
+    "parent_files": 6,
+    "torch_loads": 6,
+    "model_constructions": 0,
+    "forward_calls": 0,
+    "backward_calls": 0,
+    "optimizer_constructions": 0,
+    "optimizer_calls": 0,
+    "file_writes": "durable job stdout/stderr only"
+  },
+  "admission": {
+    "verify_source_git_blob_before_execution": true,
+    "verify_all_six_sha256_before_torch_import": true,
+    "verify_all_six_sha256_after_load": true,
+    "require_cpu_tensors": true,
+    "require_no_nonfinite_tensor_values": true
+  },
+  "does_not_grant": [
+    "cursor completeness when the original checkpoint has no cursor key",
+    "next loss or gradient equality",
+    "checkpoint continuation",
+    "remaining-wall or resource freeze",
+    "full training replay",
+    "production adoption"
+  ]
+}
