@@ -1,0 +1,413 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-18T16:46:01Z",
+  "generated_at_utc": "2026-10-18T16:52:11.373Z",
+  "agent": "/root/ci_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "One terminal observation of run39140341757 and Laya job117713314446; no full CI refresh or rerun.",
+  "run": {
+    "id": 39140341757,
+    "name": "Future OOD and harness receipt contracts",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "updated_at": "2026-10-18T16:42:39Z",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39140341757"
+  },
+  "job": {
+    "id": 117713314446,
+    "name": "laya-reader-intake",
+    "status": "completed",
+    "conclusion": "success",
+    "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "started_at": "2026-10-18T16:24:39Z",
+    "completed_at": "2026-10-18T16:27:02Z",
+    "runner_name": "GitHub Actions 1000168266",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1,
+        "started_at": "2026-10-18T16:24:40Z",
+        "completed_at": "2026-10-18T16:24:41Z"
+      },
+      {
+        "name": "Checkout exact research source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2,
+        "started_at": "2026-10-18T16:24:41Z",
+        "completed_at": "2026-10-18T16:25:07Z"
+      },
+      {
+        "name": "Verify exact checkout",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3,
+        "started_at": "2026-10-18T16:25:07Z",
+        "completed_at": "2026-10-18T16:25:07Z"
+      },
+      {
+        "name": "Install pinned CPU runtime",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4,
+        "started_at": "2026-10-18T16:25:07Z",
+        "completed_at": "2026-10-18T16:25:41Z"
+      },
+      {
+        "name": "Apply audited Torch CSE compatibility patch",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5,
+        "started_at": "2026-10-18T16:25:41Z",
+        "completed_at": "2026-10-18T16:25:45Z"
+      },
+      {
+        "name": "Download only the pinned public checkpoint revision",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-18T16:25:45Z",
+        "completed_at": "2026-10-18T16:25:49Z"
+      },
+      {
+        "name": "Run the registered Reader evaluator",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7,
+        "started_at": "2026-10-18T16:25:49Z",
+        "completed_at": "2026-10-18T16:26:59Z"
+      },
+      {
+        "name": "Retain only non-weight receipts",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8,
+        "started_at": "2026-10-18T16:26:59Z",
+        "completed_at": "2026-10-18T16:27:00Z"
+      },
+      {
+        "name": "Post Checkout exact research source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 16,
+        "started_at": "2026-10-18T16:27:00Z",
+        "completed_at": "2026-10-18T16:27:00Z"
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 17,
+        "started_at": "2026-10-18T16:27:00Z",
+        "completed_at": "2026-10-18T16:27:00Z"
+      }
+    ]
+  },
+  "sibling_contract": {
+    "id": 117713314606,
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-18T16:42:07Z",
+    "completed_at": "2026-10-18T16:42:38Z"
+  },
+  "pagination": {
+    "jobs_total": 2,
+    "jobs_received": 2,
+    "jobs_pages": 1,
+    "jobs_filter": "latest",
+    "artifacts_total": 1,
+    "artifacts_received": 1,
+    "artifacts_pages": 1,
+    "complete": true
+  },
+  "urls": [
+    {
+      "kind": "run",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39140341757",
+      "observed_at_utc": "2026-10-18T16:46:01.572Z"
+    },
+    {
+      "kind": "jobs",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39140341757/jobs?filter=latest&per_page=100&page=1",
+      "observed_at_utc": "2026-10-18T16:46:01.884Z"
+    },
+    {
+      "kind": "artifacts",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39140341757/artifacts?per_page=100&page=1",
+      "observed_at_utc": "2026-10-18T16:46:01.544Z"
+    }
+  ],
+  "artifact": {
+    "id": 12143240868,
+    "name": "hepta-real-reader-intake-f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "size_bytes": 58507,
+    "api_digest": "sha256:ef233e2a0fdd42359d62b577a65fccd879c02d75ecabce73a1693c26858424d8",
+    "downloaded_sha256": "ef233e2a0fdd42359d62b577a65fccd879c02d75ecabce73a1693c26858424d8",
+    "downloaded_bytes": 58507,
+    "exact_sha256_and_size_match": true,
+    "created_at": "2026-10-18T16:27:00Z",
+    "expires_at": "2026-11-01T16:27:00Z",
+    "expired": false,
+    "source_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "local_zip": "/dev/shm/hepta-ci-delivery-855e2f95cede/laya-final-1646/artifact-12143240868.zip",
+    "members": [
+      {
+        "name": "hepta-reader-report.json",
+        "bytes": 55545,
+        "sha256": "ccc8fa237aca5c85a2d8118e87ef54310f88d9bc096c6c51c20352dfc37c19fe"
+      },
+      {
+        "name": "hepta-reader-summary.json",
+        "bytes": 1940,
+        "sha256": "b8d434c9fd6520ec38c39d8404efd902b40119eb47ad3746a340ff6500359330"
+      },
+      {
+        "name": "hepta-runtime-receipt.json",
+        "bytes": 574,
+        "sha256": "74f61ce81c7a1595b1ac5d33c63ee3de2bea4a314e0f6f83601a2a1efdb3c90e"
+      }
+    ]
+  },
+  "fresh_execution_assessment": {
+    "classification": "FRESH_REAL_TYPED_READER_EXECUTION_CONFIRMED_FROM_EXACT_SOURCE_LOG_AND_HASH_VERIFIED_RECEIPTS",
+    "new_reader_predict_calls_in_this_ci_job": 64,
+    "new_model_calls_performed_by_auditor": 0,
+    "not_historical_replay": true,
+    "evidence": [
+      "Exact checkout and clean-state check completed at f191cd081ba16fed8827a18093b5a5b39e9a36cd.",
+      "Workflow created a fresh checkpoint directory and downloaded the pinned public revision.",
+      "Registered CLI source loads local laya with device=cpu, model.eval(), requires_grad_(False); run_reader invokes agent.predict once for each assigned row.",
+      "Model file fingerprint is checked before/after admission and again after collection in the exact source.",
+      "Log emitted reader_status=evaluated, not the exit2/unavailable fallback; report and summary both record64 calls with64 distinct row keys."
+    ],
+    "success_fallback_caveat": "Workflow can complete successfully after evaluator exit2 by recording INCOMPLETE; this execution used the evaluated path, confirmed by log and artifact."
+  },
+  "experiment": {
+    "kind": "Frozen typed-choice Reader evidence diagnostic; not training or parameter-learning evidence",
+    "model_repo": "convaiinnovations/laya",
+    "model_revision": "c5d78730f3493e4fe16d61507ef4b78eef7318cf",
+    "model_snapshot_sha256": "ac8e18d65b026edf4d2c856ba7e3aa72df28fc8ec0f6a771f3b7ff1f372da036",
+    "frozen_manifest_sha256": "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89",
+    "assignment_seed": 17,
+    "repository_evidence_base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "repository_base_note": "This field binds the frozen repository evidence corpus; execution source is the separately verified f191cd head.",
+    "unique_tasks": 16,
+    "arms": [
+      "none",
+      "distractor",
+      "withheld",
+      "full"
+    ],
+    "calls_per_case": 4,
+    "presentations": 1,
+    "expected_calls": 64,
+    "actual_calls": 64,
+    "raw_evidence_class": "local_typed_reader_model_if_checkpoint_confirmed",
+    "claim_boundary": "repository_evidence_choice_diagnostics_only_not_fbsde_reasoning_gain",
+    "comparison_type": "paired_cases_equal_forward_call_count_not_equal_tokens_or_flops",
+    "descriptive_not_statistically_qualified": true,
+    "metrics": {
+      "distractor": {
+        "samples": 16,
+        "evidence_condition_accuracy": 0.375,
+        "top1_gold_fraction": 0.3125,
+        "reported_input_tokens": 3063,
+        "p50_wall_ms": 988.65595,
+        "p95_wall_ms": 1066.74349
+      },
+      "full": {
+        "samples": 16,
+        "evidence_condition_accuracy": 1,
+        "top1_gold_fraction": 1,
+        "reported_input_tokens": 3513,
+        "p50_wall_ms": 1091.63138,
+        "p95_wall_ms": 1236.34172
+      },
+      "none": {
+        "samples": 16,
+        "evidence_condition_accuracy": 0.125,
+        "top1_gold_fraction": 0.4375,
+        "reported_input_tokens": 2683,
+        "p50_wall_ms": 891.5689150000001,
+        "p95_wall_ms": 957.28784
+      },
+      "withheld": {
+        "samples": 16,
+        "evidence_condition_accuracy": 0.125,
+        "top1_gold_fraction": 0.5625,
+        "reported_input_tokens": 3163,
+        "p50_wall_ms": 1001.83997,
+        "p95_wall_ms": 1091.04916
+      }
+    },
+    "scoring_note": "evidence_condition_accuracy expects UNKNOWN for unsupported none/distractor/withheld arms; top1_gold_fraction measures agreement with repository gold and is a distinct metric."
+  },
+  "measured_resources": {
+    "reported_input_tokens": 12422,
+    "prediction_wall_seconds": 63.78450276,
+    "evaluation_total_wall_seconds": 63.7905,
+    "job_elapsed_seconds": 143,
+    "evaluator_step_elapsed_seconds": 70,
+    "runtime": {
+      "laya_version": "0.3.20",
+      "match_count": 1,
+      "patch_id": "torch-cutedsl-cse-two-args-v1",
+      "patch_path": "_inductor/codegen/cutedsl/cutedsl_kernel.py",
+      "patched_sha256": "7c8094f25f41c42df4438a394c56de8e380974690454d4518624234933de304f",
+      "production_selection_authority": false,
+      "python_version": "3.12.3",
+      "runtime_kind": "real_reader_cpu",
+      "schema": "hepta.sngr.runtime-compatibility-receipt.v1",
+      "source_sha256": "bf60bb964eb96f78131f5344a48eff99adf6be03369226234530bb8b8a0b297b",
+      "torch_version": "2.11.0+cpu",
+      "transformers_version": "4.57.6"
+    },
+    "omp_threads": 2,
+    "mkl_threads": 2,
+    "source": "Artifact per-row timing/input-token receipts and workflow/job timestamps; no estimate is substituted for absent FLOPs/energy/money."
+  },
+  "receipt_arithmetic_verification": {
+    "all_receipt_count_score_token_checks_pass": true,
+    "unique_tasks": 16,
+    "rows": 64,
+    "arm_metrics": {
+      "distractor": {
+        "samples": 16,
+        "evidence_condition_accuracy": 0.375,
+        "top1_gold_fraction": 0.3125,
+        "reported_input_tokens": 3063,
+        "p50_wall_ms": 988.65595,
+        "p95_wall_ms": 1066.74349
+      },
+      "full": {
+        "samples": 16,
+        "evidence_condition_accuracy": 1,
+        "top1_gold_fraction": 1,
+        "reported_input_tokens": 3513,
+        "p50_wall_ms": 1091.63138,
+        "p95_wall_ms": 1236.34172
+      },
+      "none": {
+        "samples": 16,
+        "evidence_condition_accuracy": 0.125,
+        "top1_gold_fraction": 0.4375,
+        "reported_input_tokens": 2683,
+        "p50_wall_ms": 891.5689150000001,
+        "p95_wall_ms": 957.28784
+      },
+      "withheld": {
+        "samples": 16,
+        "evidence_condition_accuracy": 0.125,
+        "top1_gold_fraction": 0.5625,
+        "reported_input_tokens": 3163,
+        "p50_wall_ms": 1001.83997,
+        "p95_wall_ms": 1091.04916
+      }
+    },
+    "reported_input_tokens_total": 12422,
+    "sum_prediction_wall_ms": 63784.50276,
+    "report_total_wall_seconds": 63.7905,
+    "independent_factual_gold_review_performed": false,
+    "new_model_invocations_during_this_read": 0
+  },
+  "unresolved_scientific_requirements": [
+    "This run contains no40-sample independent calibration and no72-call nine-arm experiment;64 four-arm calls do not satisfy that acceptance target.",
+    "Same16 registered tasks and one answer-order presentation; no new independent holdout, counterbalanced-position analysis or injection arm in this run.",
+    "Independent factual gold/source/citation-chain review and statistical confidence qualification were not performed in this terminal read.",
+    "Runtime warns choice:11+ checkpoint temperature0.10058280825614929 is clamped to0.5; affected confidence remains uncalibrated.",
+    "Receipts do not provide full device CPU model, peak memory, measured FLOPs, energy or monetary cost; per-prompt digests and complete raw probability vectors are not recorded in sample rows.",
+    "Comparison fixes forward call count, not tokens/FLOPs/energy."
+  ],
+  "log_excerpts": [
+    {
+      "line": 4887,
+      "text": "2026-10-18T16:25:06.6179239Z f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+    },
+    {
+      "line": 4894,
+      "text": "2026-10-18T16:25:06.6182042Z [command]/usr/bin/git checkout --progress --force f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+    },
+    {
+      "line": 4915,
+      "text": "2026-10-18T16:25:07.0573023Z f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+    },
+    {
+      "line": 4937,
+      "text": "2026-10-18T16:25:07.1932161Z   EXPECTED_SHA: f191cd081ba16fed8827a18093b5a5b39e9a36cd"
+    },
+    {
+      "line": 5080,
+      "text": "2026-10-18T16:25:41.6922014Z \u001b[36;1mprint(f\"torch_cse_compatibility_smoke=ok:{CuteDSLTemplateKernel.__name__}\")\u001b[0m"
+    },
+    {
+      "line": 5092,
+      "text": "2026-10-18T16:25:45.2743453Z torch_cse_compatibility_smoke=ok:CuteDSLTemplateKernel"
+    },
+    {
+      "line": 5165,
+      "text": "2026-10-18T16:25:54.1882640Z /home/runner/.local/lib/python3.12/site-packages/laya/agent.py:928: RuntimeWarning: laya: this checkpoint ships invalid temperatures or values outside [0.5, 5]; using choice:11+=0.10058280825614929 -> 0.5. Treat confidence from the affected entries as uncalibrated."
+    },
+    {
+      "line": 5167,
+      "text": "2026-10-18T16:26:59.8293583Z reader_status=evaluated"
+    },
+    {
+      "line": 5198,
+      "text": "2026-10-18T16:27:00.4921413Z SHA256 digest of uploaded artifact zip is ef233e2a0fdd42359d62b577a65fccd879c02d75ecabce73a1693c26858424d8"
+    },
+    {
+      "line": 5200,
+      "text": "2026-10-18T16:27:00.7204765Z Artifact hepta-real-reader-intake-f191cd081ba16fed8827a18093b5a5b39e9a36cd.zip successfully finalized. Artifact ID 12143240868"
+    }
+  ],
+  "source_files": [
+    {
+      "path": ".github/workflows/hepta-future-ood-harness-contract.yml",
+      "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f191cd081ba16fed8827a18093b5a5b39e9a36cd/.github/workflows/hepta-future-ood-harness-contract.yml"
+    },
+    {
+      "path": "scripts/hepta_sngr_reader_eval.py",
+      "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f191cd081ba16fed8827a18093b5a5b39e9a36cd/scripts/hepta_sngr_reader_eval.py",
+      "relevant_lines": {
+        "real_load": [
+          360,
+          377
+        ],
+        "predict": [
+          428,
+          485
+        ],
+        "file_fingerprint": [
+          645,
+          669
+        ]
+      }
+    }
+  ],
+  "failure_assessment": {
+    "new_failure_observed": false,
+    "contract_patch_failure_observed": false,
+    "local_failure_reproduction_needed": false,
+    "note": "Both target run jobs finished success. This does not establish all required CI or scientific qualification."
+  },
+  "authority": {
+    "report_production_selection_authority": false,
+    "runtime_production_selection_authority": false,
+    "production_activation_allowed": false,
+    "research_state": "SHADOW_ONLY / DENY_ALL / NO_GO"
+  },
+  "required_contexts_rechecked": false,
+  "full_ci_matrix_refreshed": false,
+  "remote_mutations_performed": false,
+  "rerun_or_dispatch": false,
+  "blob_uploads_performed": false
+}

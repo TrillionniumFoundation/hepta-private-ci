@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.audit-initial-publication-receipt.v1",
+  "observed_utc": "2026-10-18 17:35:44 UTC",
+  "scope": "Read-back receipt for the first published 85-file audit snapshot. Later appendices, if present, are separate descendant commits.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch_ref": "refs/heads/codex/hepta-audit-checkpoint-20261018-855e2f95cede",
+  "published_commit": "699c86fef7d145a52587e1317d693b16ab755e2d",
+  "published_root_tree": "d91c6222b4cd1d2f3722f741c65096b14b48d08e",
+  "published_audit_subtree": "808adbe8698fd763699c633f18868efbf165630c",
+  "published_file_count": 85,
+  "all_file_sizes_modes_and_git_blob_shas_verified": true,
+  "only_added_paths_beneath": "qualification/ci-audit/2026-10-18-855e2f95cede/",
+  "main_observed_before_publish": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "subjects": [
+    {
+      "pr": 2599,
+      "head": "19c5cd41c17dd42da7afac96203a4bc7901e23a6",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "draft": false,
+      "state": "open",
+      "merged": false,
+      "mergeable_state": "blocked"
+    },
+    {
+      "pr": 2714,
+      "head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+      "base": "e08323af4805ed9a8d14afabf2212923195f2156",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable_state": "unstable"
+    }
+  ],
+  "merge_count": 0,
+  "forced_ref_updates": 0,
+  "production_activation_allowed": false
+}
