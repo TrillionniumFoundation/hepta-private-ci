@@ -142,6 +142,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
+      CARGO_BUILD_JOBS: "2"
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -161,7 +162,7 @@ jobs:
           # Reclaim only fixed SDK paths on the ephemeral hosted Linux runner.
           # Preserve the checkout, Cargo/V8 artifacts, and exhaustive test selection.
           printf '%s\n' 'Runner disk before native prerequisites:'
-          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-before.txt"
           if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" || "${RUNNER_OS:-}" != "Linux" ]]; then
             echo "Not a GitHub-hosted Linux runner: no SDK directories removed"
           else
@@ -180,7 +181,7 @@ jobs:
             done
           fi
           printf '%s\n' 'Runner disk after reclaiming unused tools:'
-          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-reclaim.txt"
           free_kib="$(df -Pk "$RUNNER_TEMP" | awk 'NR==2 {print $4}')"
           if ! [[ "$free_kib" =~ ^[0-9]+$ ]] || (( free_kib < 6 * 1024 * 1024 )); then
             echo '::error::Less than 6 GiB free for exact-SHA native reverse-consumer tests'
@@ -246,6 +247,13 @@ jobs:
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
+      - name: Record scoped native disk usage after consumer tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-tests.txt"
+
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -254,6 +262,7 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/scoped-disk-*.txt
             ${{ runner.temp }}/impact-helper-build.json*
             ${{ runner.temp }}/impact-test-helpers
             !${{ runner.temp }}/impact-test-helpers/bin/**
