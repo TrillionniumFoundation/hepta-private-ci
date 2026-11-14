@@ -1,0 +1,11 @@
+# R18 frozen protocol: asymmetric two-dimensional nonconvex NDU
+
+Parent R17 SHA 9c2ac1e0814f3160038fffc5e599d8698b46ccfc. A high-precision numerical pilot and rational gradient candidate were explored BEFORE this freeze. This is not blind preregistration.
+
+Known independent, equiprobable X, P0, epsilon1 and epsilon2, each binary (16 leaves). Two preference flips, gamma=.9, entropic risks .5 and 1. Stage P1/20, terminal (H2-X-1)^2+P2/50, regularizer (a^2+b^2)/4 outside risk. Forward H1=aX; H2=bH1+(a-b)^2/4+epsilon2/10. This changes R17's noise symmetry and target.
+
+Use two quotient variables t=ab and d=(a-b)^2/4. Feasible wedge: d>=0 and t+d>=0. J=C(t,d)+t/2+d exactly; C Hessian globally bounded below by 81/50 times the identity. THIS IS A TRUE TWO-DIMENSIONAL EXACT CONVEX QUOTIENT, not a one-dimensional symmetry reduction nor general deep-neural global optimization. Certify rational candidate with outward integer intervals, exp/log Taylor remainders, global cost/weight error, strict off-diagonal optimality and ablations a=b / b=0. No floating solver verdict is proof.
+
+Freeze 64 fits: two target variants shift=1 (primary) and shift=0 (ablation); 8 initializations (0,0),(.1,.1),(-.1,-.1),(1,1),(-1,-1),(2,-2),(1,-1),(2,2), four methods Adam, BFGS, L-BFGS-B, trust-exact, 0.75 CPU-second fit cap. Same initial bytes and full 16-branch known-law objective within each pair; no certificate labels in fit. Final qualification only AFTER sealing every fit, using distance <1e-6 to the relevant certified global set and cost gap <1e-9. The different-target ablation requires its own certificate; otherwise label only numerical diagnostics. No favorable seed/budget selection.
+
+Retain ALL initial/final weights, every optimizer checkpoint, risk/preference branch data, process logs, independently replayed scores, failed stationary points, exact source hashes and abnormal execution. Run math and tamper checks and report whole-child CPU/wall separately from fits. Unknown FLOPs/energy/GPU remain null. No production, main, CURRENT, native contract or historical gate change. This limited discrete-state nonlinear-parameter NDU proof does not establish generic nonlinear FBSDE, viscosity PDE, unknown world model or LLM generalization. Hosted CI requires separate verification.
