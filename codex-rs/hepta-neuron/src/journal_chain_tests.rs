@@ -1,5 +1,7 @@
 use super::*;
 
+use pretty_assertions::assert_eq;
+
 fn complete_chain() -> (Fixture, JournalAnchor, SparseSignalReceipt) {
     let fixture = Fixture::new();
     checked(
