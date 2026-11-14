@@ -1,0 +1,83 @@
+--- a/experiments/hcsn_distributional_v2/renewal_event_oracle.py
++++ b/experiments/hcsn_distributional_v2/renewal_event_oracle.py
+@@ -110,6 +110,27 @@
+     if not _killed_masses_are_subsets(state.active, state.no_fire_active,
+                                      state.no_fire_refractory):
+         raise ValueError('Killed state is not a subset of unconditional physical state')
++    # At absolute physical time zero there have been no exponentially timed
++    # transitions: a persisted checkpoint must be a true initial() state,
++    # not an invented historical FIRE/reset record with matching mass sums.
++    if state.time == 0:
++        # Accept only local binary64 rounding at the initialization point.
++        # The earlier subset check alone is one-sided, while exact equality
++        # would reject the upstream legitimate one-ULP checkpoint witness.
++        refractory = 1. - state.active
++        active_slack = 8 * max(math.ulp(state.active),
++                               math.ulp(state.no_fire_active))
++        refractory_slack = 8 * max(math.ulp(refractory),
++                                   math.ulp(state.no_fire_refractory))
++        if (abs(state.no_fire_active - state.active) > active_slack or
++                abs(state.no_fire_refractory - refractory) > refractory_slack or
++                state.ever_fired != 0 or state.expected_count != 0):
++            raise ValueError('Invalid initial renewal checkpoint at time zero')
++    elif state.ever_fired == 0 or state.expected_count == 0:
++        # Under finite strictly positive FIRE/recovery rates, any elapsed
++        # physical time gives positive first-fire probability and mean count.
++        # Real transitions already fail closed if these increments underflow.
++        raise ValueError('Impossible positive-time renewal checkpoint')
+     if dt == 0:
+         return state
+     try:
+--- /dev/null
++++ b/experiments/hcsn_distributional_v2/P2_INITIAL_CHECKPOINT_CAUSAL_GATE.md
+@@ -0,0 +1,50 @@
++# HCSN P2 initial checkpoint causal-state admission (research only)
++
++**Draft / DENY_ALL / not production-qualified.** `all_blockers_closed=false`; `production_activation_allowed=false`. Target immutable parent is PR #4484 HEAD `7018f35f11dbb3ffdba77301904a3ef9d8cc4ab1`. This change is confined to the two-state constant-rate CTMC research oracle; it does not change the physical SNN, model training, real recovery, authority, Rust/GPU or main.
++
++## Exact mathematical invariants
++
++For an initial `RenewalState.initial(a)`, the physical clock is zero and no exponential transition has occurred, so `ever_fired=expected_count=0`, and the killed no-fire populations must equal their unconditional initial populations (up to at most local floating-point representational slack). The previous probability sum/subset checks do not establish this time-origin invariant.
++
++With **strictly positive** fire and recovery rates, any positive elapsed physical time carries strictly positive first-event probability and expected event count in real arithmetic, for any initial active probability in [0,1]. Real transitions which lose these strictly positive increments at binary64 precision already fail closed in the parent; persisted checkpoints should not be permitted to bypass that policy by supplying zero counters.
++
++## Negative controls on unchanged exact parent
++
++Parent source Git blob: `179e432ea91a2360cea65aaffd3b633ffcac7879` (byte-exact reconstructed file).
++
++Five forged persisted checkpoints satisfy the old unit-mass/subset/broad-count checks yet violate time origin or positive-time event causality:
++
++1. At time zero: entire population marked already fired.
++2. At time zero: strictly positive expected count with zero fire probability.
++3. At time zero: killed conditional populations altered despite no time passing.
++4. At positive time: no first event ever recorded.
++5. At positive time: tiny positive `ever_fired` but zero expected count (the original 1e-11 count allowance admits this).
++
++The new seven-method focused suite against exact unmodified parent: **5 expected failures** and two passes. They are negative controls, not successful assertions.
++
++## Scoped change and executed evidence
++
++Reject invalid time-zero state *after* the inherited mass and subset checks, *before* the `dt==0` return. Allow ULP-scale absolute deviations, instead of insisting on exact equality: the inherited legitimate one-ULP example must remain admissible. Reject positive-time checkpoints with zero event probability or zero expected count. Retain existing overflow/roundoff fail-closed checks.
++
++Local Linux x86-64, Python 3.13.5, NumPy 2.3.5, SciPy 1.17.0:
++
++- New seven methods + inherited seven methods: **14/14 PASS**, zero skipped.
++- Inherited tests include 5,000 actually propagated random transitions and 64 independent SciPy matrix-exponential comparisons; new tests include another 1,000 reachable propagated transitions.
++- Valid zero-time states and a one-ULP initial-state variation remain admitted.
++- `python -m compileall -q experiments/hcsn_distributional_v2` PASS.
++- Patched source blob `3600c52b6bde619072577f86672bc549c7888e98`; new test blob `1b248ea4315b7bc5ed9c0059355659ee315ab4cc`; exact inherited test blob `8ba50b013636603629b87762e5d96f11f26a6777`.
++
++Local relevant-module reconstruction **is not a full checkout or repository-wide CI**. The mathematical condition is a necessary check for this constant-rate model, not a proof of long-memory performance or global numerical bounds.
++
++Reproduce from the exact parent + patch:
++
++```sh
++python -m unittest -v \
++  experiments.hcsn_distributional_v2.test_renewal_subset_local_ulp_gate \
++  experiments.hcsn_distributional_v2.test_renewal_initial_checkpoint_gate
++python -m compileall -q experiments/hcsn_distributional_v2
++```
++
++## Remaining P0–P5
++
++P0: complete He–Xiong coupled obstacle/QVI/interval and low-precision proofs. P1: matched-information Call/Risk/Margin gains. P2: real sampled-event Selective Copy/MQAR/overwrite/recovery wins. P3: genuinely paired four-modal encoder evaluation. P4: native Rust/GPU 64–4096 Cell full-cost/energy/recovery qualification. P5: equal-quality and matched-compute SSM/Transformer net advantage. No production admission or promotion.
