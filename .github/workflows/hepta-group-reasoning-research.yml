@@ -1,0 +1,94 @@
+name: Hepta group reasoning (research only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/group*.py'
+      - 'qualification/stem-cell-v1/test_group*.py'
+      - 'qualification/stem-cell-v1/*native*bridge.py'
+      - 'qualification/stem-cell-v1/build_group_native.py'
+      - 'codex-rs/hepta-ndu/src/bin/ndu-group-replay.rs'
+      - '.github/workflows/hepta-group-reasoning-research.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: group-research-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install bounded CPU research dependencies
+        run: |
+          python -m pip install 'torch==2.6.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'transformers==4.57.1' 'numpy==2.5.4' 'safetensors==0.8.0'
+      - name: Build exact native source in isolated workspace
+        run: python qualification/stem-cell-v1/build_group_native.py --repo . --output '${{ runner.temp }}/native-group' --clippy
+      - name: Run retained and added tests with actual native replay
+        env:
+          HEPTA_NDU_GROUP_REPLAY_BINARY: ${{ runner.temp }}/native-group/target/debug/ndu-group-replay
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          python - <<'PY'
+          import torch._dynamo  # Resolve lazy framework setup outside a workload scope.
+          import unittest
+          suite = unittest.defaultTestLoader.discover('qualification/stem-cell-v1', pattern='test_*.py')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          raise SystemExit(not result.wasSuccessful())
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: group-native-source-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/native-group/build-receipt.json
+            ${{ runner.temp }}/native-group/source-hashes.json
+          if-no-files-found: warn
+
+  pretrained:
+    needs: regression
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [41, 47, 53]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install 'torch==2.6.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'transformers==4.57.1' 'numpy==2.5.4' 'safetensors==0.8.0'
+      - name: Train frozen-Encoder group and retain unfavorable arms
+        env:
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          python qualification/stem-cell-v1/build_group_native.py --repo . --output '${{ runner.temp }}/native-group'
+          python qualification/stem-cell-v1/group_campaign.py --acquire --snapshot '${{ runner.temp }}/granite' --output '${{ runner.temp }}/observed' --seed '${{ matrix.seed }}' --native-binary '${{ runner.temp }}/native-group/target/debug/ndu-group-replay'
+          python -S qualification/stem-cell-v1/group_campaign_review.py '${{ runner.temp }}/observed' --output '${{ runner.temp }}/observed/independent-review.json'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: group-pretrained-${{ matrix.seed }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/observed/*.json
+          if-no-files-found: warn
