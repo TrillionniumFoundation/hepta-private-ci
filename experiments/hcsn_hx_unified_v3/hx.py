@@ -75,11 +75,59 @@ class HX:
 def _exp_cdf(exponent: float, argument: float) -> float:
     """Evaluate exp(exponent) Phi(argument) without avoidable overflow."""
     log_value = exponent + float(log_ndtr(argument))
-    if log_value < -745:
-        return 0.0
+    # Delegate negative-side underflow to exp: values below -745 can
+    # still round to the smallest positive f64 subnormal.
     if log_value > 709:
         raise OverflowError('HX normal-tail combination outside finite f64 domain')
     return math.exp(log_value)
+
+
+def _log_asset_ratio(asset: float, asset_boundary: float) -> float:
+    """Stable log(asset / boundary) for validated positive, finite inputs.
+
+    Preserve the existing quotient-based rounding in the regular domain.
+    On a finite-operand quotient overflow, subtract finite individual logs
+    instead of feeding infinity into first-passage normal-tail formulae.
+    """
+    ratio = asset / asset_boundary
+    if math.isfinite(ratio):
+        return math.log(ratio)
+    v = math.log(asset) - math.log(asset_boundary)
+    if not math.isfinite(v):
+        raise ArithmeticError('HX log asset/boundary ratio unresolved in f64')
+    return v
+
+
+def _first_passage_factors(p: HX, v: float, tau: float) -> tuple[float, float]:
+    """Joint HX first-hit probability F and discounted first-hit factor G.
+
+    For a nonnegative discount, 0 <= G <= F <= 1 is mandatory. Separate
+    normal-tail evaluations can violate this ordering by f64 roundoff near
+    the absorbing boundary; this reference explicitly refuses such inputs.
+    A refusal is NOT a certified interval estimate or permission to clamp.
+    tau > 0 and asset > boundary are validated by public callers.
+    """
+    u=p.volatility*math.sqrt(tau)
+    a,zhat=p.a,p.zhat
+    if (not all(math.isfinite(t) for t in (v,u,a,zhat))
+            or v<0 or u<=0):
+        raise ArithmeticError('HX first-passage scaled state unresolved in f64')
+    # Preserve the original multiplication order on the ordinary path.
+    h1=(-v-a*u*u)/u
+    h2=(-v+a*u*u)/u
+    q1=(-v-zhat*u*u)/u
+    q2=(-v+zhat*u*u)/u
+    first=float(ndtr(h1))
+    if first == 0.:
+        # ndtr can erase a representable subnormal tail; log_ndtr retains
+        # it. Recover only this zero case; never clamp an unordered F/G.
+        first=_exp_cdf(0.,h1)
+    F=first+_exp_cdf(-2*a*v,h2)
+    G=(_exp_cdf((-a+zhat)*v,q1)
+       +_exp_cdf((-a-zhat)*v,q2))
+    if not (math.isfinite(F) and math.isfinite(G) and 0<=G<=F<=1):
+        raise ArithmeticError('HX F/G first-passage ordering unresolved in f64')
+    return F,G
 
 
 def _b_and_B(p: HX, t: float):
@@ -133,7 +181,69 @@ def boundary(p: HX) -> float:
     return asset_boundary
 
 
-def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = None) -> float:
+def _coupon_survival_annuity(p: HX, x: float, tau: float) -> float:
+    """Integrate E[int_0^min(hit,tau) exp(-q*t) dt] directly.
+
+    Uses reflected survival probabilities, not a difference of discounted
+    passage probabilities. Adaptive error estimates are diagnostic, not
+    rigorous enclosures. This slow research path has no production claim.
+    """
+    import warnings
+    from scipy.integrate import IntegrationWarning, quad
+
+    sigma=p.volatility
+    drift=p.rate-p.payout-.5*sigma*sigma
+    q=p.q
+    if not all(math.isfinite(z) for z in (x,drift,q)) or q <= 0:
+        raise ArithmeticError('HX coupon transformed parameters unresolved')
+    upper=math.sqrt(tau)
+    transition=x/sigma
+    if not math.isfinite(transition) or transition <= 0:
+        raise ArithmeticError('HX coupon time scale unresolved')
+    def integrand(s):
+        if s == 0:
+            return 0.
+        scaled_time=sigma*s
+        if not math.isfinite(scaled_time) or scaled_time <= 0:
+            raise ArithmeticError('HX coupon survival time scale unresolved')
+        a=x/scaled_time
+        b=drift*s/sigma
+        log_first=float(log_ndtr(a+b))
+        log_second=-2*(drift/sigma)*(x/sigma)+float(log_ndtr(-a+b))
+        delta=log_second-log_first
+        if not math.isfinite(delta) or delta >= 0:
+            raise ArithmeticError('HX coupon survival cancellation unresolved')
+        survival=math.exp(log_first)*(-math.expm1(delta))
+        return 2*s*math.exp(-q*s*s)*survival
+    # Resolve both first-passage and discount boundary layers. Whole-interval
+    # adaptive quadrature can otherwise miss a narrow positive contribution
+    # and misleadingly report zero estimated error.
+    scales=[transition,1/math.sqrt(q)]
+    if drift:
+        drift_scale=math.sqrt(x)/math.sqrt(abs(drift))
+        if not math.isfinite(drift_scale) or drift_scale <= 0:
+            raise ArithmeticError('HX coupon drift time scale unresolved')
+        scales.append(drift_scale)
+    cuts=sorted({0.,upper,*[z for scale in scales for z in (scale,4*scale,8*scale)
+                          if 0<z<upper]})
+    total=error=0.
+    with warnings.catch_warnings():
+        warnings.simplefilter('error',IntegrationWarning)
+        try:
+            for lo,hi in zip(cuts,cuts[1:]):
+                val,err=quad(integrand,lo,hi,epsabs=1e-11*min(tau,1.),epsrel=2e-10,limit=200)
+                total+=val
+                error+=err
+        except IntegrationWarning as exc:
+            raise ArithmeticError('HX coupon survival integration unresolved') from exc
+    if not (math.isfinite(total) and math.isfinite(error) and 0 <= total <= tau+error
+            and error <= (len(cuts)-1)*max(1e-11*min(tau,1.),2e-10*abs(total))):
+        raise ArithmeticError('HX coupon survival integral outside diagnostic budget')
+    return total
+
+
+def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = None,
+               *, direct_coupon_survival: bool = False) -> float:
     """Finite-maturity defaultable bond, published equation (8), including endpoints."""
     b=boundary(p) if asset_boundary is None else asset_boundary
     if not (math.isfinite(asset) and math.isfinite(tau) and math.isfinite(b)
@@ -144,14 +254,37 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
         return recovery
     if tau==0:
         return p.per_bond_principal
-    v=math.log(asset/b)
-    u=p.volatility*math.sqrt(tau)
-    h1=(-v-p.a*u*u)/u
-    h2=(-v+p.a*u*u)/u
-    q1=(-v-p.zhat*u*u)/u
-    q2=(-v+p.zhat*u*u)/u
-    F=float(ndtr(h1))+_exp_cdf(-2*p.a*v,h2)
-    G=_exp_cdf((-p.a+p.zhat)*v,q1)+_exp_cdf((-p.a-p.zhat)*v,q2)
+    F,G=_first_passage_factors(p,_log_asset_ratio(asset,b),tau)
+    # Explicit slow research opt-in; never propagated to equity_resolvent
+    # or mechanism_channels. Default formula/refusal policy is unchanged.
+    if direct_coupon_survival:
+        coupon_pv=(p.per_bond_coupon*_coupon_survival_annuity(p,_log_asset_ratio(asset,b),tau)
+                   if p.per_bond_coupon else 0.)
+        return (coupon_pv+math.exp(-p.q*tau)*p.per_bond_principal*(1-F)
+                +recovery*G)
+    qt=p.q*tau
+    # For q*tau below the conservative f64 danger band, coupon/q-sized
+    # terms can cancel catastrophically EVEN when exp(-q*tau) is < 1.
+    # For F=G=0, use the exact no-hit cashflow with the stable expm1
+    # annuity and its zero-product limit. With any resolved first-hit mass,
+    # rounded F-G cannot safely determine stopped coupon duration, so
+    # refuse instead of returning an unsupported bond price.
+    # The 2**-26 cutoff is heuristic numerical safety, not a certified
+    # all-domain error bound. Ordinary q*tau pricing remains identical.
+    if p.per_bond_coupon>0 and qt<2.0**-26:
+        if F!=0.0 or G!=0.0:
+            raise ArithmeticError('HX stopped coupon unresolved at small discount product')
+        lost=-math.expm1(-qt)
+        annuity=tau if qt==0.0 else tau*(lost/qt)
+        try:
+            value=math.fsum((p.per_bond_principal,
+                             -p.per_bond_principal*lost,
+                             p.per_bond_coupon*annuity))
+        except (OverflowError,ValueError) as exc:
+            raise ArithmeticError('HX stopped coupon cashflow unresolved in f64') from exc
+        if not math.isfinite(value):
+            raise ArithmeticError('HX stopped coupon cashflow unresolved in f64')
+        return value
     base=p.per_bond_coupon/p.q
     return base+math.exp(-p.q*tau)*(p.per_bond_principal-base)*(1-F)+(recovery-base)*G
 
@@ -311,10 +444,7 @@ def default_probability(p: HX, asset: float, tau: float, asset_boundary: float |
         return 1.0
     if tau==0:
         return 0.0
-    v=math.log(asset/b)
-    u=p.volatility*math.sqrt(tau)
-    result=float(ndtr((-v-p.a*u*u)/u))+_exp_cdf(-2*p.a*v,(-v+p.a*u*u)/u)
-    return result
+    return _first_passage_factors(p,_log_asset_ratio(asset,b),tau)[0]
 
 
 def discounted_default_factor(p: HX, asset: float, tau: float,
@@ -328,10 +458,7 @@ def discounted_default_factor(p: HX, asset: float, tau: float,
         return 1.0
     if tau==0:
         return 0.0
-    v=math.log(asset/b)
-    u=p.volatility*math.sqrt(tau)
-    return (_exp_cdf((-p.a+p.zhat)*v,(-v-p.zhat*u*u)/u)
-            +_exp_cdf((-p.a-p.zhat)*v,(-v+p.zhat*u*u)/u))
+    return _first_passage_factors(p,_log_asset_ratio(asset,b),tau)[1]
 
 
 def mechanism_channels(p: HX, asset: float, asset_boundary: float | None = None) -> HXChannels:

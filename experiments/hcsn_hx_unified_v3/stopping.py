@@ -6,6 +6,7 @@ Infinite horizon, constant parameters; not coupled with task-model dynamics.
 """
 
 from dataclasses import dataclass
+from decimal import Decimal, localcontext
 import math
 
 from scipy.optimize import brentq
@@ -30,42 +31,42 @@ class Stop:
 
     @property
     def kappa(self):
-        # Positive root of .5*sigma^2*k^2 + mu*k = rho. Avoid
-        # overflowing 2*rho, (scale+mu), or sigma**2 when the root
-        # itself is finite. A finite input does not imply a resolvable
-        # binary64 root: refuse genuinely out-of-range results.
-        root_q=math.sqrt(2.)*math.sqrt(self.discount)
-        noise=root_q*self.diffusion
-        # A nonzero subnormal noise product can already have lost enough
-        # relative precision to corrupt a finite root. Normalize these
-        # products as well as zero/overflow; do not reuse their rounded value.
-        if float.fromhex('0x1.0p-1022') <= noise < math.inf:
-            scale=math.hypot(self.drift,noise)
-            if self.drift>=0:
-                k=self.discount/(scale/2.+self.drift/2.)
-            else:
-                k=(scale/self.diffusion-self.drift/self.diffusion)/self.diffusion
+        """Positive diffusion characteristic root, with resolved f64 arithmetic.
+
+        kappa solves drift*kappa + .5*diffusion**2*kappa**2 = discount.
+        Form dimensionless drift/diffusion first: squaring a large finite
+        diffusion, forming 2*discount, or adding two near-maximum drifts can
+        overflow even when the true positive kappa is representable.
+        All branches are algebraically equivalent in exact arithmetic.
+        """
+        noise = math.sqrt(2.) * math.sqrt(self.discount)
+        scaled_drift = self.drift / self.diffusion
+        if not math.isfinite(scaled_drift):
+            # A positive drift dominates diffusion by >max_f64; the
+            # volatility correction is below f64 relative resolution.
+            if self.drift <= 0:
+                raise ArithmeticError('Negative-drift kappa scale unresolved in f64')
+            root = self.discount / self.drift
         else:
-            # The noise product overflowed, vanished, or became subnormal.
-            # Normalize by sigma without using that rounded product. This
-            # repairs this intermediate, not all finite-domain roundoff.
-            drift_scaled=self.drift/self.diffusion
-            if not math.isfinite(drift_scaled):
-                # Here mu/sigma is far larger than sqrt(2*rho), so the
-                # positive-drift root is rho/mu to sub-ULP accuracy.
-                k=self.discount/self.drift if self.drift>0 else math.nan
+            scale = math.hypot(scaled_drift, noise)
+            if self.drift < 0:
+                # Avoid both sigma**2 overflow and (scale-mu) overflow.
+                root = scale / self.diffusion - scaled_drift / self.diffusion
+            elif self.drift == 0:
+                root = noise / self.diffusion
+            elif scaled_drift > noise:
+                # Rationalize the small root in the drift-dominated regime.
+                z = noise / scaled_drift
+                root = (self.discount * (2 / (math.hypot(1., z) + 1))) / self.drift
             else:
-                scale_scaled=math.hypot(drift_scaled,root_q)
-                if drift_scaled>=0:
-                    if drift_scaled>root_q*1e8:
-                        k=self.discount/self.drift
-                    else:
-                        k=(root_q/self.diffusion)*(root_q/(scale_scaled+drift_scaled))
-                else:
-                    k=(scale_scaled-drift_scaled)/self.diffusion
-        if not math.isfinite(k) or k<=0:
-            raise ArithmeticError('Stopping characteristic exponent unresolved in f64')
-        return k
+                # Diffusion-dominated positive drift, with no subtraction.
+                root = noise * (noise / (scale + scaled_drift)) / self.diffusion
+        # Refuse nonrepresentable and severely quantized subnormal roots.
+        # This is a necessary f64 resolution guard, not interval certification.
+        if (not math.isfinite(root) or root <= 0
+                or math.ulp(root) > 1e-9 * root):
+            raise ArithmeticError('Stopping characteristic root unresolved in f64')
+        return root
 
     @property
     def delay_discount(self):
@@ -73,14 +74,33 @@ class Stop:
 
 
 def one_shot_boundary(p: Stop) -> float:
-    return p.cost+1/p.kappa
+    """Finite, strictly distinguishable f64 threshold of the one-shot oracle.
+
+    A finite characteristic root does not imply 1/kappa or its sum with
+    cost is representable. Do not return infinite or cost-rounded boundaries
+    as if they solved the stopping problem.
+    """
+    displacement=1/p.kappa
+    b=p.cost+displacement
+    if not (math.isfinite(displacement) and math.isfinite(b) and b>p.cost):
+        raise ArithmeticError('One-shot boundary unresolved in f64')
+    # A finite, strictly greater boundary can still quantize away a
+    # material fraction of the optimal one-shot firing reward at large
+    # absolute cost. Match the scalar renewal f64 resolution policy.
+    # This is a fail-closed tolerance guard, not a certified interval.
+    if math.ulp(b)>1e-8*displacement:
+        raise ArithmeticError('One-shot boundary resolution unresolved at cost scale')
+    return b
 
 
 def one_shot_value(p: Stop, x: float) -> float:
     if not math.isfinite(x):
         raise ValueError('State must be finite')
     b=one_shot_boundary(p)
-    return x-p.cost if x>=b else (b-p.cost)*math.exp(-p.kappa*(b-x))
+    value=x-p.cost if x>=b else (b-p.cost)*math.exp(-p.kappa*(b-x))
+    if not math.isfinite(value):
+        raise ArithmeticError('One-shot value unresolved in f64')
+    return value
 
 
 def regenerative_boundary(p: Stop) -> float:
@@ -125,9 +145,23 @@ def regenerative_boundary(p: Stop) -> float:
                 raise ArithmeticError('Renewal Lambert-W inverse unresolved')
             residual=-math.log1p(-t)-t-h
             t-=residual*(1-t)/t
-    b=p.cost+t/k
-    if not math.isfinite(b) or not b>p.cost:
+    # A large renewal loss sends the true W0 root toward the upper
+    # endpoint without ever reaching it. In binary64, 1+W0 rounds to
+    # exactly 1 once the remaining gap is sub-ULP. That is not a solved
+    # interior smooth-fit root: reject rather than silently treating the
+    # one-shot limit as the finite-renewal optimum.
+    if not (math.isfinite(t) and 0 < t < 1):
+        raise ArithmeticError('Renewal Lambert-W root unresolved inside (0, 1)')
+    displacement=t/k
+    b=p.cost+displacement
+    if not (math.isfinite(displacement) and displacement>0
+            and math.isfinite(b) and b>p.cost):
         raise ArithmeticError('Non-positive or unresolved firing reward at boundary')
+    # The independent solver already rejects absolute-cost ULPs that swamp
+    # a meaningful share of the reward. Apply the same f64 admission policy
+    # to the main Lambert-W path; b>cost alone does not suffice.
+    if math.ulp(b)>1e-8*displacement:
+        raise ArithmeticError('Regenerative boundary resolution unresolved at cost scale')
     return b
 
 
@@ -143,39 +177,164 @@ def regenerative_value(p: Stop, x: float, *, boundary: float | None = None) -> f
     if denom <= 0:
         raise ValueError('Renewal series not contractive')
     amplitude=(b-p.cost)/denom
+    if not math.isfinite(amplitude):
+        raise ArithmeticError('Regenerative reward amplitude unresolved in f64')
     # Immediate FIRE above the chosen threshold, followed by actual reset value.
-    if x>=b:
-        return x-p.cost+p.delay_discount*amplitude*hr
-    return amplitude*math.exp(-p.kappa*(b-x))
+    value=(x-p.cost+p.delay_discount*amplitude*hr if x>=b else
+           amplitude*math.exp(-p.kappa*(b-x)))
+    if not math.isfinite(value):
+        raise ArithmeticError('Regenerative value unresolved in f64')
+    return value
 
 
 def regenerative_boundary_independent(p: Stop) -> float:
-    """Numerically independent root of the smooth-fit boundary condition."""
+    """Independent scalar smooth-fit oracle, never a global QVI certificate.
+
+    The legacy f64 Brent residual t+exp(-h-t)-1 loses the O(h) boundary
+    separation at the Lambert-W branch point and can silently return cost.
+    For small h, solve the *exponential* smooth-fit equation independently
+    in adaptive-precision Decimal, without using the primary W or log-series
+    inversion. For regular h solve the nondimensional smooth-fit displacement
+    t, so Brent's relative tolerance is not amplified by a large cost offset.
+    Reject unresolved f64 reward representation in either regime. This remains
+    an offline diagnostic, not certification of the finance HX system.
+    """
     k=p.kappa
-    def residual(b):
-        return k*(b-p.cost)+p.delay_discount*math.exp(-k*(b-p.reset))-1
-    left=p.cost
-    right=p.cost+1/k
-    if residual(left)>=0 or residual(right)<=0:
-        raise ArithmeticError('Root bracket invalid')
-    return brentq(residual,left,right,xtol=1e-13,rtol=1e-13)
+    gap=p.cost-p.reset
+    delay=p.discount*p.refractory
+    lost=k*gap
+    if (not all(math.isfinite(v) for v in (k,gap,delay,lost))
+            or k<=0 or gap<=0 or lost<=0
+            or (p.refractory>0 and delay<=0)):
+        raise ArithmeticError('Independent renewal exponent unresolved in f64')
+    h=math.fsum((lost,delay))
+    if not math.isfinite(h) or h<=0:
+        raise ArithmeticError('Independent renewal exponent unresolved in f64')
+    if h <= 1e-4:
+        with localcontext() as ctx:
+            # At small h the exponential smooth-fit residual is O(h), while
+            # the root is O(sqrt(h)). Use enough decimal places to resolve
+            # the former, including legal subnormal binary64 loss scales.
+            ctx.prec=max(90,int(-math.log10(h))+85)
+            d=Decimal.from_float
+            hd=d(k)*(d(p.cost)-d(p.reset))+d(p.discount)*d(p.refractory)
+            if not hd>0:
+                raise ArithmeticError('Non-positive independent renewal loss')
+            t=(2*hd).sqrt()
+            for _ in range(20):
+                e=(-(hd+t)).exp()
+                slope=1-e
+                if slope<=0:
+                    raise ArithmeticError('Unresolved independent smooth-fit slope')
+                move=(t+e-1)/slope
+                t-=move
+                if abs(move)<Decimal(10)**(-ctx.prec+20):
+                    break
+            if not 0<t<1:
+                raise ArithmeticError('Independent root outside proper renewal domain')
+            if abs(t+(-(hd+t)).exp()-1)>Decimal(10)**(-ctx.prec+15):
+                raise ArithmeticError('Independent smooth-fit residual unresolved')
+            displacement=float(t/d(k))
+            boundary=float(d(p.cost)+t/d(k))
+    else:
+        # Solve dimensionless t=k*(b-cost), not large absolute b. Brent's
+        # rtol on b could exceed the entire displacement for a large cost.
+        # expm1 preserves the strictly negative left residual at h>0.
+        def residual(t):
+            return t+math.expm1(-h-t)
+        if not residual(0.)<0:
+            raise ArithmeticError('Independent dimensionless root left bracket invalid')
+        # Roundoff may erase the strictly positive residual at t=1 for
+        # very large h. Refuse instead of treating rounded t=1 as interior.
+        if residual(1.)<=0:
+            raise ArithmeticError('Independent dimensionless root right bracket unresolved')
+        t=brentq(residual,0.,1.,xtol=5e-15,rtol=8e-15)
+        if not math.isfinite(t) or not 0<t<1:
+            raise ArithmeticError('Independent dimensionless root unresolved')
+        displacement=t/k
+        boundary=p.cost+displacement
+    # For either branch, b>cost alone is insufficient: if one cost ULP
+    # materially exceeds the firing reward resolution, refuse explicitly.
+    # This is a numerical admission policy, not a certified interval bound.
+    if (not math.isfinite(boundary) or not boundary>p.cost
+            or not math.isfinite(displacement) or displacement<=0
+            or math.ulp(boundary)>1e-8*displacement):
+        raise ArithmeticError('Independent boundary resolution unresolved at cost scale')
+    return boundary
+
+def _obstacle_from_value(p: Stop, x: float, b: float, val: float) -> float:
+    """Stable exact *fixed-threshold* obstacle identity, not an optimality proof.
+
+    For x<b, D*V(reset)/V(x) = exp(-rho*tau-kappa*(x-reset)).
+    Subtracting D*V(reset)-V(x) directly loses O(1) obstacle values when
+    V(x) is large. The expm1 factor preserves small renewal differences.
+    For x>=b, the threshold policy fires immediately, so the obstacle is
+    exactly zero by construction; this does not verify an optimal policy.
+    Deep below reset, V(x) underflows while expm1(-h) overflows even if
+    D*V(reset)-V(x) is finite. In that far tail, compute the two bounded
+    continuation values separately; their ratio exceeds exp(36), so the
+    subtraction is not the near-reset cancellation that expm1 protects.
+    """
+    if x>=b:
+        return 0.0
+    h=math.fsum((p.discount*p.refractory,p.kappa*(x-p.reset)))
+    if not math.isfinite(h):
+        raise ArithmeticError('Renewal obstacle exponent unresolved in f64')
+    try:
+        if h < -36.:
+            # Since rho*tau >= 0 and kappa > 0, h<0 entails x<reset.
+            # Here V(x)/(D*V(reset)) = exp(h) < exp(-36), so a direct
+            # difference avoids 0*infinity without cancellation.
+            discounted_reset=p.delay_discount*regenerative_value(p,p.reset,boundary=b)
+            delta=math.fsum((discounted_reset,-val))
+        else:
+            delta=val*math.expm1(-h)
+        obstacle=math.fsum((x-p.cost,delta))
+    except (OverflowError, ValueError) as exc:
+        raise ArithmeticError('Renewal obstacle subtraction unresolved') from exc
+    if not math.isfinite(obstacle):
+        raise ArithmeticError('Renewal obstacle outside finite f64 domain')
+    return obstacle
+
+
+def regenerative_obstacle(p: Stop, x: float, *, boundary: float | None = None) -> float:
+    """Read out the fixed-threshold intervention residual without cancellation.
+
+    Structural policy evidence only; a small obstacle alone never closes QVI.
+    """
+    b=regenerative_boundary(p) if boundary is None else boundary
+    val=regenerative_value(p,x,boundary=b)
+    return _obstacle_from_value(p,x,b,val)
 
 
 def qvi(p: Stop, x: float, *, boundary: float | None = None) -> dict[str,float|bool]:
-    """Classical max{L V-rho V, x-K + D V(reset)-V}=0 reference.
+    """Sampled QVI; refuse unresolvable absolute generator error.
 
-    The active right/left second derivatives are only used within their open
-    regions; do not interpret the branch junction as a classical C2 point.
+    This verifies finite diagnostics in its stated f64 domain, not an
+    interval-certified coupled QVI. Continuation residuals above 1e-9
+    cannot be passed off as zero merely because model values are huge.
     """
     b=regenerative_boundary(p) if boundary is None else boundary
     if not (math.isfinite(x) and math.isfinite(b) and b>p.cost and b>p.reset):
         raise ValueError('Invalid QVI input')
     val=regenerative_value(p,x,boundary=b)
-    reset_val=regenerative_value(p,p.reset,boundary=b)
-    obstacle=x-p.cost+p.delay_discount*reset_val-val
+    obstacle=_obstacle_from_value(p,x,b,val)
     if x<b:
-        generator=(p.drift*p.kappa + .5*p.diffusion**2*p.kappa**2 - p.discount)*val
+        k=p.kappa
+        # (sigma*k)^2/2 preserves a finite term when sigma**2 or k**2
+        # would individually overflow/underflow. math.fsum mitigates the
+        # cancellation of mu*k + diffusion_term - discount.
+        noise=p.diffusion*k/math.sqrt(2.)
+        contributions=(p.drift*k,noise*noise,-p.discount)
+        if not all(math.isfinite(v) for v in contributions):
+            raise ArithmeticError('Continuation generator terms unresolved')
+        residual=math.fsum(contributions)
+        generator=residual*val
+        if not math.isfinite(generator) or abs(generator)>1e-9:
+            raise ArithmeticError('Continuation generator not resolved at 1e-9 absolute scale')
     else:
         generator=p.drift-p.discount*val
+        if not math.isfinite(generator):
+            raise ArithmeticError('Firing-region generator unresolved in f64')
     return dict(value=val,obstacle=obstacle,generator=generator,
                 complementarity=max(obstacle,generator),fire=x>=b)

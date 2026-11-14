@@ -1,0 +1,215 @@
+{
+  "base_commit": "97ef824020c4416a02332b2a8216956b1d6ca209",
+  "baseline_hx_sha256": "6722d2d5d9070452779252508fc1dbbffa8b65e22e619aa5845353e092561423",
+  "global_status": "NOT_CERTIFIED",
+  "raw_binary64_params": {
+    "rate": "3602879701896397/72057594037927936",
+    "payout": "1080863910568919/36028797018963968",
+    "volatility": "1/4",
+    "maturity": "2/1",
+    "principal": "60/1",
+    "coupon": "4/1",
+    "tax_shield": "1/4",
+    "recovery": "5404319552844595/9007199254740992",
+    "shock_intensity": "1/1",
+    "sale_fraction": "1080863910568919/72057594037927936"
+  },
+  "raw_boundary_hex": "0x1.02802e507a1c8p+6",
+  "raw_cases": [
+    {
+      "power": 20,
+      "asset_hex": "0x1.02803e787d018p+6",
+      "asset_exact": "568449607727619/8796093022208",
+      "raw_equity": 1.7001866581267677e-10,
+      "raw_equity_exact": "2991/17592186044416",
+      "seconds": 5.4541975259780884e-05
+    },
+    {
+      "power": 30,
+      "asset_hex": "0x1.02802e54841d4p+6",
+      "asset_exact": "1136898132283509/17592186044416",
+      "raw_equity": 1.0658141036401503e-14,
+      "raw_equity_exact": "3/281474976710656",
+      "seconds": 3.809700137935579e-05
+    },
+    {
+      "power": 40,
+      "asset_hex": "0x1.02802e507b1f0p+6",
+      "asset_exact": "284224532806431/4398046511104",
+      "raw_equity": -3.552713678800501e-15,
+      "raw_equity_exact": "-1/281474976710656",
+      "seconds": 3.4451979445293546e-05
+    },
+    {
+      "power": 48,
+      "asset_hex": "0x1.02802e507a1d8p+6",
+      "asset_exact": "568449065612347/8796093022208",
+      "raw_equity": -1.0658141036401503e-14,
+      "raw_equity_exact": "-3/281474976710656",
+      "seconds": 3.390101483091712e-05
+    },
+    {
+      "power": 52,
+      "asset_hex": "0x1.02802e507a1c9p+6",
+      "asset_exact": "4547592524898761/70368744177664",
+      "raw_equity": 3.197442310920451e-14,
+      "raw_equity_exact": "9/281474976710656",
+      "seconds": 3.338101669214666e-05
+    }
+  ],
+  "root_exact_model": "[64.625176675274906828187513711591921019254964837952140851940174645973099211 +/- 4.69e-73]",
+  "root_binary_params": "[64.625176675274907422673732809241183706892609031388877482789470213775036922 +/- 4.41e-73]",
+  "A7_boundary_value_ball": "[3.4795719058744137187536487424835697632206557273924003354050e-14 +/- 5.92e-73]",
+  "truth_cases": [
+    {
+      "power": 20,
+      "exact_model_equity": "[1.6987430234092140730528562224451389245556156326066922469236872956136e-10 +/- 5.61e-78]",
+      "binary_param_root_equity": "[1.6987430233764425542812278822723901014871514743347523713858452207028e-10 +/- 4.79e-78]",
+      "binary_param_fixed_boundary_equity": "[1.69874302303276882325419903827030293971122147335060556624603475373560e-10 +/- 8.05e-79]",
+      "literal_A7_at_raw_boundary": "[1.69909097985911346781817758742587412008803993688560499522094450e-10 +/- 5.65e-73]",
+      "raw_minus_literal": "[1.09567826765425693424856003506337991196006311439500477905550e-13 +/- 5.65e-73]",
+      "literal_minus_binary_root": "[3.4795648267091353694970515348401860088846255085262383509928e-14 +/- 6.35e-73]",
+      "binary_param_minus_exact_model": "[-3.27715187716283401727488230684641582719398755378420749108e-21 +/- 3.81e-78]",
+      "boundary_offset": "[3.4795682634464456397854915557118037681846353499942897490974e-14 +/- 5.92e-73]",
+      "literal_green_identity_residual": "[+/- 5.30e-73]",
+      "seconds": 0.0031805869948584586
+    },
+    {
+      "power": 30,
+      "exact_model_equity": "[1.6200516786449961641283016272683636538746111025202947832038e-16 +/- 3.21e-75]",
+      "binary_param_root_equity": "[1.6200516466414151834609628763119820529933661696997542354959e-16 +/- 5.23e-75]",
+      "binary_param_fixed_boundary_equity": "[1.62005131102190008694791582662366711323148258320999369885338e-16 +/- 8.18e-76]",
+      "literal_A7_at_raw_boundary": "[3.4957724154275702482920021030139345763444619539770765504987e-14 +/- 6.02e-73]",
+      "raw_minus_literal": "[-2.4299583117874199694853157016467470763444619539770765504987e-14 +/- 6.02e-73]",
+      "literal_minus_binary_root": "[3.4795718989611560964573924742508147558145282922800790081438e-14 +/- 6.71e-73]",
+      "binary_param_minus_exact_model": "[-3.20035809806673387509563816008812449328205405477079e-24 +/- 3.24e-75]",
+      "boundary_offset": "[3.4795719023173512474225229447476979052121471281449766135102e-14 +/- 2.48e-73]",
+      "literal_green_identity_residual": "[+/- 5.35e-73]",
+      "seconds": 0.004061756015289575
+    },
+    {
+      "power": 40,
+      "exact_model_equity": "[1.5461596745204450141970596918801074435484375560039147718952721e-22 +/- 5.43e-84]",
+      "binary_param_root_equity": "[1.5461284094709523234742180452365290981681498708320082824063101e-22 +/- 4.99e-84]",
+      "binary_param_fixed_boundary_equity": "[1.54580044819828006323978876889430015916576429063277337408940483e-22 +/- 5.43e-85]",
+      "literal_A7_at_raw_boundary": "[3.4795719213289445167555748955379746195362593915837500049641e-14 +/- 5.07e-73]",
+      "raw_minus_literal": "[-3.8348432892089946096911370293270371195362593915837500049641e-14 +/- 5.07e-73]",
+      "literal_minus_binary_root": "[3.4795719058676604220460516607957941671709684099022512966440e-14 +/- 3.50e-73]",
+      "binary_param_minus_exact_model": "[-3.12650494926907228416466435783453802876851719064894889619e-27 +/- 6.25e-84]",
+      "boundary_offset": "[3.4795719058709400347727742631400869305932577999261070986364e-14 +/- 6.73e-73]",
+      "literal_green_identity_residual": "[+/- 5.30e-73]",
+      "seconds": 0.0021644850203301758
+    },
+    {
+      "power": 48,
+      "exact_model_equity": "[2.78586402041932530689682290645330130216871033989768216476508e-27 +/- 8.09e-87]",
+      "binary_param_root_equity": "[2.77260850650072866593277744871910352731425944204099903251175e-27 +/- 8.70e-87]",
+      "binary_param_fixed_boundary_equity": "[2.62492121864762499342770654585884203317436687985573371030221e-27 +/- 3.06e-87]",
+      "literal_A7_at_raw_boundary": "[3.4795719058746627730264578849439477475792095300803326574354e-14 +/- 5.70e-73]",
+      "raw_minus_literal": "[-4.5453860095148130518331442863111352475792095300803326574354e-14 +/- 5.70e-73]",
+      "literal_minus_binary_root": "[3.4795719058743855121758078120773544698343376197276012314912e-14 +/- 6.11e-73]",
+      "binary_param_minus_exact_model": "[-1.32555139185966409640454577341977748544508978566831322533e-29 +/- 4.15e-86]",
+      "boundary_offset": "[3.4795719058744002809045931224446049769246236458770152207474e-14 +/- 2.49e-73]",
+      "literal_green_identity_residual": "[+/- 5.36e-73]",
+      "seconds": 0.0021097819844726473
+    },
+    {
+      "power": 52,
+      "exact_model_equity": "[5.932592161428676318551622733679001918139944822720015860314e-29 +/- 2.70e-87]",
+      "binary_param_root_equity": "[5.740505369822360902505414863914688951335359392788835116478e-29 +/- 5.52e-87]",
+      "binary_param_fixed_boundary_equity": "[2.8583445381805322402843944127445951218791879867633278960465e-29 +/- 5.81e-88]",
+      "literal_A7_at_raw_boundary": "[3.4795719058744157372326209467604692318077702507550799772942e-14 +/- 4.90e-73]",
+      "raw_minus_literal": "[-2.821295949539649008125617426589067318077702507550799772942e-15 +/- 4.90e-73]",
+      "literal_minus_binary_root": "[3.4795719058744099967272511243995667263929063360661286419348e-14 +/- 4.18e-73]",
+      "binary_param_minus_exact_model": "[-1.92086791606315416046207869764312966804585429931180743836e-30 +/- 5.17e-87]",
+      "boundary_offset": "[3.4795719058744128788880827662282289474133575061599580981062e-14 +/- 1.89e-73]",
+      "literal_green_identity_residual": "[+/- 5.27e-73]",
+      "seconds": 0.0027030060009565204
+    }
+  ],
+  "warm_timing": {
+    "fast_module_import_seconds": 0.0004114439943805337,
+    "ball_import_seconds": 0.02749199900426902,
+    "old_wrapper_setup_seconds": 0.00044086898560635746,
+    "precompute_seconds": 0.002392021007835865,
+    "fast_seconds_per_call_batches": [
+      2.968254993902519e-07,
+      2.249060053145513e-07,
+      2.1851150086149572e-07,
+      2.3060449166223407e-07,
+      2.271945122629404e-07
+    ],
+    "ball_seconds_per_call_batches": [
+      0.0007132646001991816,
+      0.000820652549737133,
+      0.0008414044990786351,
+      0.000784398999530822,
+      0.0007761480490444228
+    ],
+    "median_fast_seconds_per_call": 2.271945122629404e-07,
+    "median_ball_seconds_per_call": 0.000784398999530822,
+    "charged_setup_seconds": 0.0028034650022163987,
+    "estimated_warm_break_even_calls": 4,
+    "direct_crossing_checks": [
+      {
+        "calls": 3,
+        "charged_fast_total_seconds": 0.00280762100010179,
+        "observed_old_calls_seconds": 0.0026516929792705923,
+        "fast_lower": false
+      },
+      {
+        "calls": 4,
+        "charged_fast_total_seconds": 0.0028066700033377856,
+        "observed_old_calls_seconds": 0.0034488620003685355,
+        "fast_lower": true
+      },
+      {
+        "calls": 5,
+        "charged_fast_total_seconds": 0.0028066700033377856,
+        "observed_old_calls_seconds": 0.0047607829910703,
+        "fast_lower": true
+      }
+    ],
+    "elapsed_inprocess_seconds": 0.1461537549912464
+  },
+  "cold_components_seconds": {
+    "proof": 0.094,
+    "generation": 0.067,
+    "fast_first_process": 0.026,
+    "ball_first_process": 0.066
+  },
+  "cold_workloads": [
+    {
+      "calls": 128,
+      "fast_pipeline_seconds": 0.175,
+      "ball_seconds": 0.176,
+      "interpretation": "near timing noise, not robust win"
+    },
+    {
+      "calls": 256,
+      "fast_pipeline_seconds": 0.163,
+      "ball_seconds": 0.267,
+      "interpretation": "single observed workload improvement, not universal crossover"
+    }
+  ],
+  "preserved_failures": [
+    "Original raw formula remains negative at powers40 and48; no clipping.",
+    "Initial normality proof used unrounded h1/h2 boxes; reviewer required and final precompute added explicit RN interval induction.",
+    "/usr/bin/time unavailable (not a denial); built-in bash time used; no install/bypass."
+  ],
+  "not_included": [
+    "delta=0 extension and its separate failed guessed-root-bracket experiments",
+    "compiled coupon candidate",
+    "venv/build artifacts",
+    "training or full-repository/HIA validation"
+  ],
+  "local_evidence_manifest_sha256": "4cf604ce087f8fbedb28e55819c4f2d086e76075fb8fcc91d08958ec7bf5b0db",
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "machine": "x86_64",
+    "float_info": "sys.float_info(max=1.7976931348623157e+308, max_exp=1024, max_10_exp=308, min=2.2250738585072014e-308, min_exp=-1021, min_10_exp=-307, dig=15, mant_dig=53, epsilon=2.220446049250313e-16, radix=2, rounds=1)",
+    "rounding_premise": "IEEE RN mode unchanged during call; startup probes only, not adversarial fenv attestation"
+  },
+  "python_flint": "0.9.0",
+  "flint": "3.6.0"
+}
