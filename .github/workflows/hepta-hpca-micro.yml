@@ -1,0 +1,39 @@
+name: Hepta HPCA microqualification
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hpca-neuroscience-20261110/**"
+      - ".github/workflows/hepta-hpca-micro.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hpca-qualification-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Sparse checkout exact source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            qualification/hpca-neuroscience-20261110
+          sparse-checkout-cone-mode: true
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Contract and negative-control tests
+        run: python3 -m unittest discover -s qualification/hpca-neuroscience-20261110 -p "test_*.py" -v
+      - name: Heldout paired microdiagnostics
+        run: python3 qualification/hpca-neuroscience-20261110/run.py --out hpca-result.json
+      - name: Retain complete synthetic results
+        uses: actions/upload-artifact@v4
+        with:
+          name: hpca-micro-result
+          path: hpca-result.json
+          retention-days: 14
