@@ -178,6 +178,9 @@ common:ci-windows --test_env=CODEX_BAZEL_TEST_SKIP_FILTERS=suite::code_mode::cod
 common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
+# Tests that explicitly require native host tools can use the Linux sandbox.
+# Keep remote execution first and retain sandboxing for local execution.
+common:ci-linux --strategy=TestRunner=remote,linux-sandbox
 
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel
