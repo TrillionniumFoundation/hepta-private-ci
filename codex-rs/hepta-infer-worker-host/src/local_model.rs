@@ -12,3 +12,7 @@ include!("local_model/reservations.rs");
 include!("local_model/worker.rs");
 include!("local_model/helpers.rs");
 include!("local_model/tests.rs");
+
+#[cfg(test)]
+#[path = "local_model/reservation_accounting_tests.rs"]
+mod reservation_accounting_tests;

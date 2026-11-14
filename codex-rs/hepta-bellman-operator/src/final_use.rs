@@ -329,8 +329,8 @@ pub fn fit_transition_model_verified_v3(
         &control,
     )?;
     for estimate in &model.estimates {
-        let support = usize::try_from(estimate.sample_count)
-            .map_err(|_| FinalUseError::Arithmetic)?;
+        let support =
+            usize::try_from(estimate.sample_count).map_err(|_| FinalUseError::Arithmetic)?;
         if support < profile.minimum_support_per_state_action() {
             return Err(FinalUseError::Binding("world minimum support"));
         }
@@ -367,8 +367,8 @@ fn validate_tabular_error_budget(
     artifact: &TabularOperatorArtifactV1,
     maximum_absolute_error: FixedQ32,
 ) -> Result<(), FinalUseError> {
-    let budget = u128::try_from(maximum_absolute_error.raw())
-        .map_err(|_| FinalUseError::Arithmetic)?;
+    let budget =
+        u128::try_from(maximum_absolute_error.raw()).map_err(|_| FinalUseError::Arithmetic)?;
     for cell in &artifact.cells {
         let mean = i128::from(cell.mean_target.raw());
         let lower = (mean - i128::from(cell.minimum_target.raw())).unsigned_abs();
@@ -384,8 +384,7 @@ fn validate_world_uncertainty_budget(
     model: &TabularWorldModelV1,
     maximum_uncertainty: FixedQ32,
 ) -> Result<(), FinalUseError> {
-    let budget = u64::try_from(maximum_uncertainty.raw())
-        .map_err(|_| FinalUseError::Arithmetic)?;
+    let budget = u64::try_from(maximum_uncertainty.raw()).map_err(|_| FinalUseError::Arithmetic)?;
     for estimate in &model.estimates {
         let maximum_probability = estimate
             .branches

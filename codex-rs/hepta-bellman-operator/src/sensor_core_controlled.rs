@@ -51,10 +51,9 @@ pub fn build_sensor_core_controlled_v2(
         .windows(2)
         .find(|adjacent| adjacent[0].point_id == adjacent[1].point_id)
     {
-        return Err(OperatorClosureError::DuplicateSensorId(
-            adjacent[0].point_id.to_string(),
-        )
-        .into());
+        return Err(
+            OperatorClosureError::DuplicateSensorId(adjacent[0].point_id.to_string()).into(),
+        );
     }
     let dimensions = design.candidates[0].coordinates.len();
     if !(1..=MAX_DIMENSIONS).contains(&dimensions) {
@@ -166,10 +165,8 @@ pub fn build_sensor_core_controlled_v2(
         return Err(OperatorClosureError::MeshRatio.into());
     }
 
-    let hull_digest = digest_sensor_points(
-        b"hepta.bellman-operator.sensor-hull.v2",
-        &selected_points,
-    )?;
+    let hull_digest =
+        digest_sensor_points(b"hepta.bellman-operator.sensor-hull.v2", &selected_points)?;
     let mut bytes = b"hepta.bellman-operator.sensor-core.v2".to_vec();
     push_id(&mut bytes, design.sensor_core_id.as_str())?;
     bytes.extend_from_slice(design.state_axis_digest.as_array());
@@ -242,7 +239,7 @@ fn checkpoint_increment(
     *operations = operations
         .checked_add(1)
         .ok_or(OperatorClosureError::Arithmetic)?;
-    if *operations % CHECKPOINT_INTERVAL == 0 {
+    if (*operations).is_multiple_of(CHECKPOINT_INTERVAL) {
         control.checkpoint(*operations)?;
     }
     Ok(())

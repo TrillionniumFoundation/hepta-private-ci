@@ -130,7 +130,7 @@ fn manifest_bridge_binds_base_weights_and_private_head() {
 
 #[test]
 fn legacy_model_manifest_bridge_preserves_runtime_identity() {
-    let model = crate::model_worker::ModelManifest {
+    let model = crate::model_manifest::ModelManifest {
         model_id: "base.1".into(),
         model_digest: "a".repeat(64),
         weights_digest: "b".repeat(64),
@@ -159,7 +159,7 @@ fn legacy_model_manifest_bridge_preserves_runtime_identity() {
 
 #[test]
 fn worker_legacy_manifest_bridge_requires_explicit_composition_fields() {
-    let model = crate::model_worker::ModelManifest {
+    let model = crate::model_manifest::ModelManifest {
         model_id: "base.1".into(),
         model_digest: "a".repeat(64),
         weights_digest: "b".repeat(64),
@@ -317,7 +317,7 @@ fn missing_handle_blocks_attach_and_detach_without_dropping_cell() {
 
 #[test]
 fn model_manifest_normalizer_mismatch_is_rejected_before_driver_dispatch() {
-    let model = crate::model_worker::ModelManifest {
+    let model = crate::model_manifest::ModelManifest {
         model_id: "base.1".into(),
         model_digest: "a".repeat(64),
         weights_digest: "b".repeat(64),

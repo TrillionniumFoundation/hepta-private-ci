@@ -48,6 +48,13 @@ impl VerifiedModelManifest {
         envelope: ModelManifestEnvelope,
         grant: &VerifiedResourceGrant,
     ) -> Result<Self, LocalModelError> {
+        let manifest = Self { envelope };
+        manifest.validate_for(grant)?;
+        Ok(manifest)
+    }
+
+    fn validate_for(&self, grant: &VerifiedResourceGrant) -> Result<(), LocalModelError> {
+        let envelope = &self.envelope;
         let claims = grant.claims();
         if envelope.schema_version != MANIFEST_SCHEMA
             || envelope.maximum_memory_bytes == 0
@@ -66,7 +73,7 @@ impl VerifiedModelManifest {
             return Err(LocalModelError::ManifestBinding);
         }
         validate_digest(&envelope.manifest_digest, "manifest")?;
-        Ok(Self { envelope })
+        Ok(())
     }
 
     #[must_use]
@@ -187,6 +194,7 @@ pub struct UnverifiedModelHandle {
 #[derive(Clone, Debug)]
 pub struct AttestedModelHandle {
     opaque_id: String,
+    manifest: VerifiedModelManifest,
     model_id: String,
     model_digest: String,
     device_id: String,
@@ -212,6 +220,7 @@ impl AttestedModelHandle {
         }
         Ok(Self {
             opaque_id: handle.opaque_id,
+            manifest: manifest.clone(),
             model_id: manifest.envelope.model_id.clone(),
             model_digest: handle.model_digest,
             device_id: handle.device_id,
@@ -291,10 +300,7 @@ pub trait LocalModelDriver: Send + Sync {
         deadline: TrustedDeadline,
     ) -> DriverFuture<'a, DriverRunObservation>;
 
-    fn inspect<'a>(
-        &'a self,
-        operation: &'a OperationId,
-    ) -> DriverFuture<'a, DriverReconciliation>;
+    fn inspect<'a>(&'a self, operation: &'a OperationId) -> DriverFuture<'a, DriverReconciliation>;
 
     fn unload<'a>(
         &'a self,

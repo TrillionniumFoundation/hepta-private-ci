@@ -16,8 +16,8 @@ use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorPredictionV1;
 use crate::WorkControlV1;
-use crate::fit_tabular_operator;
 use crate::fit_tabular_operator_controlled_v3;
+use crate::learned::fit_tabular_operator;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,

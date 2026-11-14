@@ -255,7 +255,7 @@ fn fit_tabular_operator_inner(
     let mut completed_cells = 0_usize;
     for sensor_id in &plan.sensor_ids {
         for action_id in &plan.action_ids {
-            if completed_cells % 256 == 0 {
+            if completed_cells.is_multiple_of(256) {
                 checkpoint(
                     control,
                     plan.samples

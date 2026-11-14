@@ -20,10 +20,7 @@ pub struct RuntimeLimitsV1 {
 }
 
 impl RuntimeLimitsV1 {
-    pub fn new(
-        max_duration_millis: u64,
-        max_operations: u64,
-    ) -> Result<Self, ProfileError> {
+    pub fn new(max_duration_millis: u64, max_operations: u64) -> Result<Self, ProfileError> {
         if max_duration_millis == 0
             || max_duration_millis > MAX_PROFILE_DURATION_MILLIS
             || max_operations == 0
@@ -152,9 +149,7 @@ impl TrainingProfileV1 {
         self.digest
     }
 
-    pub fn start_work(
-        &self,
-    ) -> Result<(WorkControlV1, WorkCancellationV1), WorkControlError> {
+    pub fn start_work(&self) -> Result<(WorkControlV1, WorkCancellationV1), WorkControlError> {
         self.runtime.start()
     }
 }
@@ -261,9 +256,7 @@ impl WorldModelProfileV1 {
         self.digest
     }
 
-    pub fn start_work(
-        &self,
-    ) -> Result<(WorkControlV1, WorkCancellationV1), WorkControlError> {
+    pub fn start_work(&self) -> Result<(WorkControlV1, WorkCancellationV1), WorkControlError> {
         self.runtime.start()
     }
 }

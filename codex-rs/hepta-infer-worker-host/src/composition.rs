@@ -72,7 +72,7 @@ impl CompositionManifestV1 {
     }
 
     pub fn from_model_manifest(
-        manifest: &crate::model_worker::ModelManifest,
+        manifest: &crate::model_manifest::ModelManifest,
         cell_id: String,
         normalization_digest: String,
         head_digest: String,
@@ -519,7 +519,7 @@ impl<D: CompositionDriver> CompositionWorker<D> {
 
     pub fn attach_model_manifest(
         &mut self,
-        manifest: &crate::model_worker::ModelManifest,
+        manifest: &crate::model_manifest::ModelManifest,
         cell_id: String,
         normalization_digest: String,
         head_digest: String,

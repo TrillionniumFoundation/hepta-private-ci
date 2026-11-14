@@ -239,7 +239,8 @@ fn child_original_pairs(
         if header.is_null()
             || (*header).cmsg_level != libc::SOL_SOCKET
             || (*header).cmsg_type != libc::SCM_RIGHTS
-            || (*header).cmsg_len != libc::CMSG_LEN(mem::size_of::<RawFd>() as u32) as _
+            || (*header).cmsg_len as u64
+                != u64::from(libc::CMSG_LEN(mem::size_of::<RawFd>() as u32))
             || !libc::CMSG_NXTHDR(&message, header).is_null()
         {
             return Err(io::Error::from_raw_os_error(libc::EPROTO));

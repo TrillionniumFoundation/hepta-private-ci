@@ -20,6 +20,9 @@ pub mod model_worker;
 /// Composition-aware shared encoder residency seam (qualification only).
 pub mod composition;
 
+/// Identity data shared by composition and the optional legacy model driver.
+pub mod model_manifest;
+
 pub mod final_use_authorizer;
 pub mod governed_app_server;
 pub mod native_app_server;

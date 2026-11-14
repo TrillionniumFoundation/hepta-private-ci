@@ -44,11 +44,11 @@ pub use loaded::LoadedTabularOperatorV1;
 pub use loaded::TabularPayloadError;
 pub use loaded::TabularPayloadPinV1;
 pub use loaded::encode_tabular_payload_v1;
+mod final_use;
 mod learned_strict;
 mod reference;
 mod sensor_core_controlled;
 mod world_model;
-mod final_use;
 
 pub use authenticated::AuthenticatedApplicabilityAdmissionV2;
 pub use authenticated::AuthenticatedOperatorError;
@@ -78,11 +78,9 @@ pub use learned::TabularOperatorCellV1;
 pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
-pub use learned::fit_tabular_operator_controlled_v3;
 #[cfg(feature = "compatibility-api")]
 pub use learned::fit_tabular_operator;
-#[cfg(not(feature = "compatibility-api"))]
-pub(crate) use learned::fit_tabular_operator;
+pub use learned::fit_tabular_operator_controlled_v3;
 #[cfg(feature = "compatibility-api")]
 pub use learned::predict_tabular_operator;
 
@@ -118,9 +116,9 @@ pub use world_model::TransitionEstimateV1;
 pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
-pub use world_model::fit_transition_model_controlled_v3;
 #[cfg(feature = "compatibility-api")]
 pub use world_model::fit_transition_model;
+pub use world_model::fit_transition_model_controlled_v3;
 #[cfg(feature = "compatibility-api")]
 pub use world_model::predict_transition;
 

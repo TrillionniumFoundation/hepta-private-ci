@@ -31,6 +31,11 @@ pub struct ResourceManager {
 }
 
 struct ResourceState {
+    worker_id: String,
+    issuer_id: String,
+    authority_epoch: u64,
+    device_id: String,
+    device_lease_id: String,
     generation: u64,
     maximum_memory: u64,
     maximum_models: usize,
@@ -55,6 +60,11 @@ impl ResourceManager {
         }
         Ok(Self {
             inner: Arc::new(Mutex::new(ResourceState {
+                worker_id: claims.worker_subject.clone(),
+                issuer_id: claims.issuer_id.clone(),
+                authority_epoch: claims.authority_epoch,
+                device_id: claims.device_id.clone(),
+                device_lease_id: claims.device_lease_id.clone(),
                 generation: claims.worker_generation,
                 maximum_memory: claims.maximum_aggregate_memory_bytes,
                 maximum_models: claims.maximum_models,
@@ -74,6 +84,33 @@ impl ResourceManager {
         self.inner
             .lock()
             .map_err(|_| LocalModelError::StatePoisoned)
+    }
+
+    fn validate_worker(&self, worker_id: &str, generation: u64) -> Result<(), LocalModelError> {
+        let state = self.lock()?;
+        if state.worker_id != worker_id || state.generation != generation {
+            return Err(LocalModelError::GrantBinding);
+        }
+        Ok(())
+    }
+
+    fn validate_grant(&self, grant: &VerifiedResourceGrant) -> Result<(), LocalModelError> {
+        let state = self.lock()?;
+        let claims = grant.claims();
+        if state.worker_id != claims.worker_subject
+            || state.generation != claims.worker_generation
+            || state.issuer_id != claims.issuer_id
+            || state.authority_epoch != claims.authority_epoch
+            || state.device_id != claims.device_id
+            || state.device_lease_id != claims.device_lease_id
+            || state.maximum_memory != claims.maximum_aggregate_memory_bytes
+            || state.maximum_models != claims.maximum_models
+            || state.maximum_concurrency != claims.maximum_concurrency
+            || state.maximum_total_usage != claims.maximum_total_usage_tokens
+        {
+            return Err(LocalModelError::GrantBinding);
+        }
+        Ok(())
     }
 
     pub fn reserve_load(
@@ -104,6 +141,7 @@ impl ResourceManager {
             manager: self.clone(),
             model_id: model_id.to_string(),
             reserved_bytes: bytes,
+            dispatched: false,
             finished: false,
         })
     }
@@ -130,6 +168,8 @@ impl ResourceManager {
         Ok(RunReservation {
             manager: self.clone(),
             transient_bytes,
+            dispatched: false,
+            finished: false,
         })
     }
 

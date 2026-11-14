@@ -17,12 +17,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-const SENSOR_CASES: &[(usize, usize)] = &[
-    (1_024, 64),
-    (4_096, 128),
-    (8_192, 192),
-    (16_384, 256),
-];
+const SENSOR_CASES: &[(usize, usize)] = &[(1_024, 64), (4_096, 128), (8_192, 192), (16_384, 256)];
 const TABULAR_CASES: &[(usize, usize)] = &[(100_000, 5), (500_000, 3), (1_000_000, 2)];
 const MAX_RSS_KIB: u64 = 6 * 1024 * 1024;
 
@@ -72,8 +67,8 @@ fn run_sensor(candidate_count: usize, requested_count: usize) -> Duration {
         .saturating_add(requested.saturating_mul(requested));
     let (control, _) = WorkControlV1::new(120_000, max_operations.max(10_000)).unwrap();
     let started = Instant::now();
-    let manifest = build_sensor_core_controlled_v2(design, &control)
-        .expect("sensor-core qualification");
+    let manifest =
+        build_sensor_core_controlled_v2(design, &control).expect("sensor-core qualification");
     assert_eq!(manifest.selected_points.len(), requested_count);
     started.elapsed()
 }
@@ -116,8 +111,8 @@ fn run_tabular(sample_count: usize, iteration: usize) -> Duration {
     };
     let max_operations = sample_count_u64.saturating_add(4_096);
     let (control, _) = WorkControlV1::new(300_000, max_operations).unwrap();
-    let artifact = fit_tabular_operator_strict_controlled_v3(plan, &control)
-        .expect("tabular qualification");
+    let artifact =
+        fit_tabular_operator_strict_controlled_v3(plan, &control).expect("tabular qualification");
     assert_eq!(artifact.cells.len(), 1);
     assert_eq!(
         usize::try_from(artifact.cells[0].sample_count).expect("cell count"),
@@ -190,7 +185,12 @@ fn main() -> ExitCode {
             _ => 300_000,
         };
         passed &= p99 <= limit;
-        let mut row = duration_row("tabular-fit-end-to-end", "sampleCount", sample_count, &values);
+        let mut row = duration_row(
+            "tabular-fit-end-to-end",
+            "sampleCount",
+            sample_count,
+            &values,
+        );
         row.pop();
         write!(&mut row, ",\"p99LimitMillis\":{limit}}}").expect("JSON row");
         rows.push(row);

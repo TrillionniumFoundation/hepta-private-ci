@@ -21,6 +21,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
         if generation == 0 || maximum_in_flight == 0 || maximum_in_flight > 256 {
             return Err(LocalModelError::InvalidGrant("worker configuration"));
         }
+        resources.validate_worker(&worker_id, generation)?;
         Ok(Self {
             worker_id,
             generation,
@@ -41,7 +42,9 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
         deadline: TrustedDeadline,
     ) -> Result<AttestedModelHandle, LocalModelError> {
         grant.revalidate(&self.worker_id, self.generation)?;
+        self.resources.validate_grant(grant)?;
         deadline.ensure_live()?;
+        manifest.validate_for(grant)?;
         let request_id = format!("local-load:{}", operation.as_str());
         let payload = digest(
             &[
@@ -65,7 +68,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
             self.stop_before_dispatch(&request_id, "cancelled before local load")?;
             return Err(LocalModelError::Cancelled);
         }
-        let reservation = match self.resources.reserve_load(
+        let mut reservation = match self.resources.reserve_load(
             &manifest.envelope.model_id,
             manifest.envelope.maximum_memory_bytes,
         ) {
@@ -80,7 +83,10 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
             operation.as_str(),
             &manifest.envelope.manifest_digest,
             grant.witness_digest(),
+            cancellation,
+            &deadline,
         )?;
+        reservation.mark_dispatched();
         match self
             .driver
             .load(&operation, &manifest, grant, cancellation, deadline)
@@ -116,6 +122,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
                 Ok(handle)
             }
             Err(DriverError::Rejected(reason)) => {
+                reservation.release_rejected();
                 self.settle(
                     &request_id,
                     operation.as_str(),
@@ -153,6 +160,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
         deadline: TrustedDeadline,
     ) -> Result<LocalExecutionObservation, LocalModelError> {
         grant.revalidate(&self.worker_id, self.generation)?;
+        self.resources.validate_grant(grant)?;
         deadline.ensure_live()?;
         if grant.claims.model_id != model_id
             || input.maximum_tokens > grant.claims.maximum_tokens_per_request
@@ -166,6 +174,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
             .get(model_id)
             .map(|loaded| loaded.handle.clone())
             .ok_or(LocalModelError::ModelNotLoaded)?;
+        handle.manifest.validate_for(grant)?;
         if handle.model_id != model_id
             || handle.model_digest != grant.claims.model_digest
             || handle.device_id != grant.claims.device_id
@@ -194,9 +203,9 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
             self.stop_before_dispatch(&request_id, "cancelled before local inference")?;
             return Err(LocalModelError::Cancelled);
         }
-        let transient = u64::try_from(input.bytes.len())
-            .map_err(|_| LocalModelError::ArithmeticOverflow)?;
-        let _run_reservation = match self.resources.reserve_run(transient) {
+        let transient =
+            u64::try_from(input.bytes.len()).map_err(|_| LocalModelError::ArithmeticOverflow)?;
+        let mut run_reservation = match self.resources.reserve_run(transient) {
             Ok(value) => value,
             Err(error) => {
                 self.stop_before_dispatch(&request_id, "local run resource admission failed")?;
@@ -208,13 +217,23 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
             operation.as_str(),
             input.digest(),
             grant.witness_digest(),
+            cancellation,
+            &deadline,
         )?;
+        run_reservation.mark_dispatched();
         match self
             .driver
             .run(&operation, &handle, input, cancellation, deadline)
             .await
         {
-            Ok(observed) => self.commit_run(&operation, &request_id, model_id, observed),
+            Ok(observed) => {
+                let terminal = observed.terminal_observed;
+                let result = self.commit_run(&operation, &request_id, model_id, observed);
+                if result.is_ok() && terminal {
+                    run_reservation.complete()?;
+                }
+                result
+            }
             Err(DriverError::Rejected(reason)) => {
                 let observed = self.settle(
                     &request_id,
@@ -225,6 +244,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
                     None,
                     true,
                 )?;
+                run_reservation.complete()?;
                 Err(LocalModelError::DriverRejected(format!(
                     "{reason}; terminal={:?}",
                     observed.status
@@ -255,6 +275,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
         deadline: TrustedDeadline,
     ) -> Result<(), LocalModelError> {
         grant.revalidate(&self.worker_id, self.generation)?;
+        self.resources.validate_grant(grant)?;
         deadline.ensure_live()?;
         let handle = self
             .models
@@ -263,6 +284,10 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
             .get(model_id)
             .map(|loaded| loaded.handle.clone())
             .ok_or(LocalModelError::ModelNotLoaded)?;
+        handle.manifest.validate_for(grant)?;
+        if handle.model_id != model_id {
+            return Err(LocalModelError::DriverAttestation);
+        }
         let request_id = format!("local-unload:{}", operation.as_str());
         let payload = digest(
             &[
@@ -284,6 +309,10 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
                 Err(LocalModelError::ReconciliationRequired)
             };
         }
+        if cancellation.is_cancelled() {
+            self.stop_before_dispatch(&request_id, "cancelled before local unload")?;
+            return Err(LocalModelError::Cancelled);
+        }
         let unload = match self.resources.begin_unload(model_id) {
             Ok(value) => value,
             Err(error) => {
@@ -291,12 +320,17 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
                 return Err(error);
             }
         };
-        self.dispatch(
+        if let Err(error) = self.dispatch(
             &request_id,
             operation.as_str(),
             &handle.attestation_digest,
             grant.witness_digest(),
-        )?;
+            cancellation,
+            &deadline,
+        ) {
+            unload.abort_before_dispatch()?;
+            return Err(error);
+        }
         match self
             .driver
             .unload(&operation, &handle, cancellation, deadline)
@@ -415,9 +449,13 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
         payload_digest: String,
     ) -> Result<codex_hepta_infer_core::durable_control::native::NativeRunRecord, LocalModelError>
     {
-        self.control
+        let mut control = self
+            .control
             .lock()
-            .map_err(|_| LocalModelError::StatePoisoned)?
+            .map_err(|_| LocalModelError::StatePoisoned)?;
+        let existed = control.native_record(request_id).is_some();
+        // Preserve exact request validation before distinguishing a duplicate.
+        let record = control
             .reserve_native(
                 NativeRequest {
                     request_id: request_id.to_string(),
@@ -428,7 +466,11 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
                 },
                 self.maximum_in_flight,
             )
-            .map_err(LocalModelError::Journal)
+            .map_err(LocalModelError::Journal)?;
+        if existed && record.state == NativeReservationState::Reserved {
+            return Err(LocalModelError::ReconciliationRequired);
+        }
+        Ok(record)
     }
 
     fn dispatch(
@@ -437,11 +479,23 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
         operation_id: &str,
         context_digest: &str,
         grant_witness: &str,
+        cancellation: &CancellationToken,
+        deadline: &TrustedDeadline,
     ) -> Result<(), LocalModelError> {
-        self.control
+        let before_dispatch = if cancellation.is_cancelled() {
+            Err(LocalModelError::Cancelled)
+        } else {
+            deadline.ensure_live()
+        };
+        if let Err(error) = before_dispatch {
+            self.stop_before_dispatch(request_id, "cancelled or expired before local dispatch")?;
+            return Err(error);
+        }
+        let (_, pre_effect) = self
+            .control
             .lock()
             .map_err(|_| LocalModelError::StatePoisoned)?
-            .dispatch_native(
+            .dispatch_native_with_pre_effect_abort(
                 request_id,
                 NativeDispatch {
                     thread_id: operation_id.to_string(),
@@ -463,8 +517,26 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
                     codex_authority_witness_sha256: None,
                 },
             )
-            .map(|_| ())
-            .map_err(LocalModelError::Journal)
+            .map_err(LocalModelError::Journal)?;
+        let before_effect = if cancellation.is_cancelled() {
+            Err(LocalModelError::Cancelled)
+        } else {
+            deadline.ensure_live()
+        };
+        if let Err(error) = before_effect {
+            self.control
+                .lock()
+                .map_err(|_| LocalModelError::StatePoisoned)?
+                .abort_native_before_effect(
+                    pre_effect,
+                    "cancelled or expired before local driver".to_string(),
+                )
+                .map_err(LocalModelError::Journal)?;
+            return Err(error);
+        }
+        // The same live call now crosses the trusted driver boundary. No await
+        // occurs between this check, the reservation handoff and driver entry.
+        Ok(())
     }
 
     fn stop_before_dispatch(&self, request_id: &str, reason: &str) -> Result<(), LocalModelError> {
@@ -510,7 +582,7 @@ impl<D: LocalModelDriver> ExperimentalLocalModelWorker<D> {
             model_provider: LOCAL_PROVIDER.to_string(),
             status: native_status,
             boundary_status: boundary,
-            output: output_digest.clone().unwrap_or_default(),
+            output: output_digest.unwrap_or_default(),
             observed_output_tokens: usage,
             terminal_observed: terminal,
             stop_reason: if terminal {

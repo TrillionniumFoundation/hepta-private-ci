@@ -10,6 +10,7 @@ use codex_hepta_types::StableId;
 use crate::InferenceControlModelPort;
 use crate::NeuronModelError;
 use crate::NeuronModelPort;
+use crate::NeuronShadowConfigV1;
 use crate::cell_inference::ReceiptPort;
 use crate::cell_inference::admission_for_step;
 use crate::cell_inference::feature_request;
@@ -223,8 +224,11 @@ impl CellBatchQueueV1 {
                     .queue_age_micros
                     .checked_add(host_queue_age_micros)
                     .ok_or(CellExecutionError::CapacityExceeded)?;
-                validate_model_output(&prepared.definition.runtime, &output)
-                    .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
+                validate_model_output(
+                    &NeuronShadowConfigV1::from(&prepared.definition.runtime),
+                    &output,
+                )
+                .map_err(|_| CellExecutionError::ModelBindingMismatch)?;
                 Ok(InferredCellStepV1 {
                     prepared,
                     output,

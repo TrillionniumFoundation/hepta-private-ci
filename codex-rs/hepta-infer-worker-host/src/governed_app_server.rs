@@ -7,16 +7,19 @@
 
 use std::error::Error as StdError;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
-use tokio::time::{Instant, sleep};
+use tokio::time::Instant;
+use tokio::time::sleep;
 use tokio_util::sync::CancellationToken;
 
-use crate::native_app_server::{
-    AppServerModelDriver, NativeAdmission, NativeIntelligenceRunBinding, NativeRunOutput,
-};
+use crate::native_app_server::AppServerModelDriver;
+use crate::native_app_server::NativeAdmission;
+use crate::native_app_server::NativeIntelligenceRunBinding;
+use crate::native_app_server::NativeRunOutput;
 
 type Result<T> = std::result::Result<T, Box<dyn StdError + Send + Sync>>;
 
@@ -122,9 +125,7 @@ impl HostedWorkerMetrics {
             self.inner
                 .indeterminate_returns
                 .fetch_add(1, Ordering::Relaxed);
-            self.inner
-                .held_reservations
-                .fetch_add(1, Ordering::Relaxed);
+            self.inner.held_reservations.fetch_add(1, Ordering::Relaxed);
         }
         if output.observed_output_tokens.is_none() {
             self.inner.missing_usage.fetch_add(1, Ordering::Relaxed);
@@ -255,13 +256,10 @@ impl GovernedAppServerWorker {
                     .inner
                     .cancellation_returns
                     .fetch_add(1, Ordering::Relaxed);
-                self.metrics
-                    .inner
-                    .cancellation_latency_micros
-                    .store(
-                        u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
-                        Ordering::Relaxed,
-                    );
+                self.metrics.inner.cancellation_latency_micros.store(
+                    u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
+                    Ordering::Relaxed,
+                );
                 break;
             }
             let remaining = deadline.saturating_duration_since(Instant::now());
@@ -332,13 +330,7 @@ impl GovernedAppServerWorker {
             }
             None => {
                 self.driver
-                    .run(
-                        control,
-                        admission,
-                        prompt,
-                        context_query,
-                        cancellation,
-                    )
+                    .run(control, admission, prompt, context_query, cancellation)
                     .await
             }
         }
@@ -353,8 +345,7 @@ mod tests {
     fn reconciliation_policy_is_bounded() {
         assert!(HostedReconcilePolicy::new(Duration::ZERO, Duration::ZERO).is_err());
         assert!(
-            HostedReconcilePolicy::new(Duration::from_secs(31), Duration::from_millis(20))
-                .is_err()
+            HostedReconcilePolicy::new(Duration::from_secs(31), Duration::from_millis(20)).is_err()
         );
         assert!(
             HostedReconcilePolicy::new(Duration::from_secs(2), Duration::from_secs(3)).is_err()

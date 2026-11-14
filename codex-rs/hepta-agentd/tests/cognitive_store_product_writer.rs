@@ -48,8 +48,10 @@ use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
+#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::LocalLeaseOutboxError;
 use codex_hepta_memory::LocalOutcomeState;
+#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_memory::ProductionWriterError;
 use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;

@@ -413,6 +413,9 @@ pub(crate) unsafe fn received_descriptors(message: &libc::msghdr) -> (Vec<OwnedF
     let mut valid = true;
     // libc uses size_t or socklen_t for these lengths. Normalize them before
     // the existing checked arithmetic over the retained Rust buffer.
+    #[cfg(target_env = "gnu")]
+    let control_len = message.msg_controllen;
+    #[cfg(not(target_env = "gnu"))]
     let control_len = message.msg_controllen as usize;
     // SAFETY: recvmsg initialized a kernel-bounded ancillary chain in the
     // aligned buffer retained by the caller throughout this traversal.

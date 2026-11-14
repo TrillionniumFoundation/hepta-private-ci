@@ -102,7 +102,8 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_bellman_operator::verify_tabular_operator_plan_v3;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator_verified_v3;
     let _ = codex_hepta_bellman_operator::revalidate_tabular_candidate_for_publication_v3;
-    let _ = codex_hepta_bellman_operator::PublicationReadyTabularCandidateV3::prepare_pinned_payload;
+    let _ =
+        codex_hepta_bellman_operator::PublicationReadyTabularCandidateV3::prepare_pinned_payload;
     let _ = codex_hepta_bellman_operator::PreparedTabularPayloadV3::into_loaded;
     let _ = codex_hepta_bellman_operator::verify_world_model_dataset_v3;
     let _ = codex_hepta_bellman_operator::fit_transition_model_verified_v3;

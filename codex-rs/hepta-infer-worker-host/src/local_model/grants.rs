@@ -1,19 +1,30 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::future::Future;
 use std::pin::Pin;
-use std::sync::{Arc, Mutex, MutexGuard};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
-use codex_hepta_infer_core::durable_control::native::{
-    NativeBoundaryStatus, NativeDispatch, NativeOwnerAuthority, NativeRequest,
-    NativeReservationState, NativeRunOutput, NativeRunStatus,
-};
-use ed25519_dalek::{Signature, VerifyingKey};
-use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
+use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
+use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+use codex_hepta_infer_core::durable_control::native::NativeRequest;
+use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
+use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use ed25519_dalek::Signature;
+use ed25519_dalek::VerifyingKey;
+use serde::Deserialize;
+use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 use tokio::time::Instant;
 use tokio_util::sync::CancellationToken;
 
@@ -23,8 +34,7 @@ const MAX_INPUT_BYTES: usize = 8 * 1024 * 1024;
 const MAX_TOKENS: u64 = 1_000_000;
 const LOCAL_PROVIDER: &str = "local-model-driver";
 
-type DriverFuture<'a, T> =
-    Pin<Box<dyn Future<Output = Result<T, DriverError>> + Send + 'a>>;
+type DriverFuture<'a, T> = Pin<Box<dyn Future<Output = Result<T, DriverError>> + Send + 'a>>;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -183,7 +193,11 @@ impl ResourceGrantVerifier {
         {
             return Err(LocalModelError::GrantBinding);
         }
-        if self.revocations.revoked_grant_ids.contains(&claims.grant_id) {
+        if self
+            .revocations
+            .revoked_grant_ids
+            .contains(&claims.grant_id)
+        {
             return Err(LocalModelError::GrantRevoked);
         }
         let now = unix_time_ms()?;

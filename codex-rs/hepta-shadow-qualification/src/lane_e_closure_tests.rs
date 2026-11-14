@@ -1,8 +1,9 @@
 use codex_hepta_bellman_operator::BellmanReferenceCellV1;
 use codex_hepta_bellman_operator::BellmanReferencePlanV1;
+use codex_hepta_bellman_operator::WorkControlV1;
 use codex_hepta_bellman_operator::WorldModelSampleV1;
 use codex_hepta_bellman_operator::evaluate_bellman_reference;
-use codex_hepta_bellman_operator::fit_transition_model;
+use codex_hepta_bellman_operator::fit_transition_model_controlled_v3;
 use codex_hepta_intelligence_eval::ClusterAssignment;
 use codex_hepta_intelligence_eval::ClusterConfidencePlan;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
@@ -422,7 +423,9 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     };
     assert!(!dataset.authority.grants_any());
 
-    let world_model = match fit_transition_model(
+    let (world_control, _) = WorkControlV1::new(10_000, 16_384)
+        .unwrap_or_else(|error| panic!("world-model work control failed: {error}"));
+    let world_model = match fit_transition_model_controlled_v3(
         id("world-model-1"),
         dataset.dataset_digest,
         vec![WorldModelSampleV1 {
@@ -433,6 +436,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
             outcome: FixedQ32::from_raw(100),
             evidence_digest: outcome_digest,
         }],
+        &world_control,
     ) {
         Ok(model) => model,
         Err(error) => panic!("world-model fit failed: {error}"),
