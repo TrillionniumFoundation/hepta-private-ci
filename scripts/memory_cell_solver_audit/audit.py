@@ -6,6 +6,14 @@ import hashlib
 import json
 from pathlib import Path
 
+from receipt_bindings import (
+    apply_model_edits,
+    verify_format,
+    verify_gate,
+    verify_qualification,
+    verify_recipe,
+)
+
 
 def identity(path):
     raw = Path(path).read_bytes()
@@ -39,7 +47,7 @@ def audit(evidence, expected):
         checks.append({"name": name, "passed": bool(passed), "detail": detail})
 
     result = {
-        "schema": "hepta.memory-cell.repair-hosted-audit.v1",
+        "schema": "hepta.memory-cell.repair-hosted-audit.v2",
         "checks": checks,
         "trajectories": trajectories,
         "model_queries_run_by_auditor": 0,
@@ -58,7 +66,11 @@ def audit(evidence, expected):
             (evidence / "source.txt").read_text().splitlines()
             == [expected["head"], expected["tree"]],
         )
+        if not checks[-1]["passed"]:
+            raise ValueError("evidence source identity check failed")
         protocol, freeze = read(root / "protocol.json"), read(root / "freeze.json")
+        verify_recipe(protocol, expected)
+        check("independently_pinned_recipe", True)
         check(
             "frozen_protocol_bytes",
             identity(root / "protocol.json") == freeze["protocol"],
@@ -120,10 +132,15 @@ def audit(evidence, expected):
         )
         costs = Counter()
         successes = Counter()
+        qualified_runtimes = {}
         for task in protocol["task_order"]:
             path = root / "tasks" / task
             qualification = read(path / "qualification/qualification.json")
             profile = read(path / "runtime-profile.json")
+            qualified_runtimes[task] = verify_qualification(
+                path, task, protocol["tasks"][task], expected
+            )
+            check(task + ":frozen_qualification_binding", True)
             check(
                 task + ":qualified_runtime",
                 qualification["accepted"] is True
@@ -179,6 +196,7 @@ def audit(evidence, expected):
             current_files = dict(
                 read(root / "tasks" / task / "task-input.json")["files"]
             )
+            bound_candidates = set()
             for response_path in sorted(responses):
                 generation = response_path.parent
                 response, request = (
@@ -224,32 +242,26 @@ def audit(evidence, expected):
                 )
                 if candidate_path.exists():
                     candidate = read(candidate_path)
-                    edits = json.loads(response["choices"][0]["message"]["content"])[
-                        "edits"
-                    ]
-                    proposed = dict(current_files)
-                    for edit in edits:
-                        value = proposed[edit["path"]]
-                        if edit["old"] is None:
-                            if value is not None:
-                                raise ValueError("candidate created an existing file")
-                            proposed[edit["path"]] = edit["new"]
-                        else:
-                            if not edit["old"] or value.count(edit["old"]) != 1:
-                                raise ValueError(
-                                    "candidate edit is not a single exact span"
-                                )
-                            proposed[edit["path"]] = value.replace(
-                                edit["old"], edit["new"], 1
-                            )
-                    reconstructed = dict(frozen_input["files"])
-                    reconstructed.update(
-                        {item["path"]: item["content"] for item in candidate["files"]}
+                    proposed = apply_model_edits(
+                        response["choices"][0]["message"]["content"],
+                        current_files,
+                        frozen_input["files"],
                     )
+                    wanted_candidate = {
+                        "schema": "hepta.memory-cell.implementation-candidate.v1",
+                        "files": [
+                            {"path": item, "content": proposed[item]}
+                            for item in sorted(proposed)
+                            if proposed[item] is not None
+                            and proposed[item] != frozen_input["files"][item]
+                        ],
+                    }
                     check(
                         name + ":actual_model_edits:" + generation.name,
-                        reconstructed == proposed,
+                        candidate == wanted_candidate,
                     )
+                    if candidate == wanted_candidate:
+                        bound_candidates.add(candidate_path)
                     current_files = proposed
             check(
                 name + ":model_cost_counts",
@@ -287,6 +299,23 @@ def audit(evidence, expected):
                     and gate["accepted"] == attempt["accepted"],
                 )
                 if gate["accepted"]:
+                    if attempt_root / "candidate.json" not in bound_candidates:
+                        raise ValueError(
+                            "successful gate lacks its model-response candidate"
+                        )
+                    verify_gate(
+                        gate_root,
+                        attempt_root / "candidate.json",
+                        task,
+                        arm,
+                        attempt["number"],
+                        protocol["tasks"][task],
+                        expected,
+                        qualified_runtimes[task],
+                    )
+                    check(
+                        name + ":candidate_gate_binding:" + str(attempt["number"]), True
+                    )
                     accepted_attempts.append(attempt["number"])
                     if task == "ruff":
                         semantic = complete_semantics(
@@ -362,6 +391,8 @@ def audit(evidence, expected):
             study_execution_complete=not summary.get("execution_error")
             and not unexecuted,
         )
+        verify_format(evidence, expected)
+        check("explicit_final_formatter_exit_and_log", True)
         check(
             "final_format_and_clean_source",
             (evidence / "final-format.log").is_file()
@@ -371,6 +402,10 @@ def audit(evidence, expected):
     except Exception as error:
         check("complete_readable_evidence", False, f"{type(error).__name__}: {error}")
     result["accepted"] = bool(checks) and all(row["passed"] for row in checks)
+    result["audit_status"] = (
+        "CONSISTENT" if result["accepted"] else "HOLD_INCOMPLETE_OR_INCONSISTENT"
+    )
+    result["historical_results_recertified"] = False
     result["checks_passed"] = sum(row["passed"] for row in checks)
     result["checks_total"] = len(checks)
     result["scope"] = (

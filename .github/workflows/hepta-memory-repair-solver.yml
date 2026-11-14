@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/memory_cell_solver/**"
+      - "scripts/memory_cell_solver_audit/**"
       - "scripts/memory_cell_evaluation/**"
       - ".github/workflows/hepta-memory-repair-solver.yml"
   workflow_dispatch:
@@ -102,6 +103,11 @@ jobs:
         run: |
           set -euo pipefail
           python -B -m unittest discover -s scripts/memory_cell_solver -p 'test_*.py' -v 2>&1 | tee "$REPAIR_EVIDENCE/solver-unit-tests.log"
+      - name: Synthetic receipt binding regressions without model execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s scripts/memory_cell_solver_audit -p 'test_*.py' -v 2>&1 | tee "$REPAIR_EVIDENCE/audit-unit-tests.log"
       - name: Restore original sources, qualify new runtime profiles, freeze study
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         env:
@@ -135,7 +141,41 @@ jobs:
           mkdir "$RUNNER_TEMP/hepta-repair-tools"
           tar -xzf "$REPAIR_EVIDENCE/dotslash.tar.gz" -C "$RUNNER_TEMP/hepta-repair-tools"
           export PATH="$RUNNER_TEMP/hepta-repair-tools:$PATH"
+          set +e
           just fmt --base 1823dc1dc82b3c4ad7d980d80863bbc763c36941 2>&1 | tee "$REPAIR_EVIDENCE/final-format.log"
+          format_status=("${PIPESTATUS[@]}")
+          set -e
+          python3 -I -S -B - "$REPAIR_EVIDENCE" "${format_status[0]}" "${format_status[1]}" <<'PY'
+          import hashlib, json, os, sys
+          from pathlib import Path
+          evidence = Path(sys.argv[1])
+          log_path = evidence / "final-format.log"
+          digest = hashlib.sha256()
+          size = 0
+          with log_path.open("rb") as stream:
+              before = os.fstat(stream.fileno())
+              while chunk := stream.read(1024 * 1024):
+                  digest.update(chunk)
+                  size += len(chunk)
+              after = os.fstat(stream.fileno())
+          def identity(stat):
+              return (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+          if identity(before) != identity(after) or size != before.st_size:
+              raise SystemExit("final formatting log changed while reading")
+          receipt = {
+              "schema": "hepta.memory-cell.final-format.v1",
+              "argv": ["just", "fmt", "--base", "1823dc1dc82b3c4ad7d980d80863bbc763c36941"],
+              "command_returncode": int(sys.argv[2]),
+              "log_returncode": int(sys.argv[3]),
+              "log": {"bytes": size, "sha256": digest.hexdigest()},
+          }
+          with (evidence / "final-format-result.json").open("x", encoding="utf-8") as stream:
+              stream.write(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          PY
+          if (( format_status[1] != 0 )); then
+            exit "${format_status[1]}"
+          fi
+          exit "${format_status[0]}"
       - name: Retain final source state without further tests
         if: always()
         shell: bash
