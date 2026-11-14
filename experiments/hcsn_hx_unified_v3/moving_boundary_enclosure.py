@@ -43,13 +43,15 @@ def linear_boundary_first_hit(x, b, mu, sigma, c, T, q=0, *, dps=100):
             return normal((-gap-drift*T)/z) + mp.exp(-2*drift*gap/sigma**2)*normal((-gap+drift*T)/z)
         p = F(nu)
         s = mp.sqrt(nu**2+2*q*sigma**2)
-        g = mp.exp(-(nu+s)*gap/sigma**2)*F(-s)
+        # Rationalize nu+s when negative drift would cancel the discount.
+        rate = 2*q/(s-nu) if nu < 0 else (nu+s)/sigma**2
+        g = mp.exp(-rate*gap)*F(-s)
         if not (mp.isfinite(p) and mp.isfinite(g) and 0 <= g <= p <= 1):
             raise ArithmeticError("invalid first-hit probability ordering")
-        # Necessary first-event discount envelope for any positive gap,
-        # positive horizon and q>0: 0 < F-G <= F*(-expm1(-q*T)).
-        # A rounded F==G or excessive difference is not a valid probability;
-        # do not clamp away a numerical loss of significance.
+        # For a positive horizon, gap and discount, the stopped discount loss
+        # D=E[(1-exp(-q*tau)) 1(tau<=T)] is strictly positive and at most
+        # F(T)*(-expm1(-q*T)). F-G may silently lose significance even in mpf.
+        # Reject unresolved rather than promoting false zero/oversized loss.
         if q > 0:
             loss = p - g
             upper = p * (-mp.expm1(-q * T))
