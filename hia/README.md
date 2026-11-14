@@ -5,11 +5,13 @@ UTF-8 prefix selection, metric-tag sanitizing, Markdown location suffix
 normalization, ASCII JSON string-fragment encoding, middle truncation and token
 arithmetic. The compiler is
 pinned to [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
-at `f33d8da316de8fdf27b504371f1a5310997ff548`. These algorithms execute as
+at `0de5657a80f96b138525ac7ee9ce11712a83a10d`. These algorithms execute as
 native machine code compiled from `.hepta` source.
 
-The current build contains 7 HIA modules. It adds middle truncation and token
-arithmetic to the 5 production algorithms in the inherited six-module checkpoint.
+The current build contains 8 HIA modules for 6 production algorithm groups.
+Token arithmetic uses a separate typed scalar entry, and character counting
+uses checked unaligned 64-bit reads. These changes optimize the existing five
+truncation APIs; they do not add another migrated owner.
 The `hia-native` Cargo feature connects these routines to HIA machine code on
 Linux x86-64 GNU. Rust adapters frame borrowed inputs, check native results
 and preserve the surrounding public interfaces. Static
@@ -39,7 +41,8 @@ dispatch still need migration. The whole-product state is therefore:
 | [`metric_tag.hepta`](metric_tag.hepta)                   | [`sanitize_metric_tag_value`](../codex-rs/utils/string/src/lib.rs)                  | ASCII character filtering, one replacement per disallowed Unicode scalar, trimming, the original empty/default decision and 256-byte output limit; bounded streaming state accepts arbitrarily large valid strings. |
 | [`markdown_location.hepta`](markdown_location.hepta)     | [`normalize_markdown_hash_location_suffix`](../codex-rs/utils/string/src/lib.rs)    | Streaming location grammar, the first range separator and first column separator per endpoint; original empty/nonnumeric acceptance and byte preservation.                                                          |
 | [`ascii_json_fragment.hepta`](ascii_json_fragment.hepta) | [`AsciiJsonFormatter::write_string_fragment`](../codex-rs/utils/string/src/json.rs) | ASCII preservation and lowercase Unicode escapes, including surrogate pairs, with canonical UTF-8 validation and bounded borrowed windows. Serde still owns the surrounding JSON format.                            |
-| [`truncate.hepta`](truncate.hepta) | [`truncate.rs`](../codex-rs/utils/string/src/truncate.rs) | UTF-8 middle truncation, removed Unicode-scalar counts, token markers and saturating byte/token arithmetic through 5 public APIs. |
+| [`truncate.hepta`](truncate.hepta) | [`truncate.rs`](../codex-rs/utils/string/src/truncate.rs) | UTF-8 middle truncation, removed Unicode-scalar counts and token markers; strict byte and trusted string entries. |
+| [`token_budget.hepta`](token_budget.hepta) | The three public token/byte arithmetic helpers | Full-width saturating arithmetic through a typed `u64, u64 -> u64` native entry, without buffer framing. |
 
 The truncation APIs are `truncate_middle_chars`,
 `truncate_middle_with_token_budget`, `approx_token_count`,
@@ -56,7 +59,7 @@ are implemented in HIA; the surrounding Rust owners remain tracked separately.
 
 ### Native buffer interface
 
-Each shared object exposes the same HIA signature:
+The seven buffer components expose this HIA signature:
 
 ```text
 f0(source:readbuf, output:mutbuf, workspace:mutbuf) -> u32
@@ -198,6 +201,30 @@ Markers do not consume the prefix/suffix budget. Character markers count Unicode
 scalars; token markers use the original byte-budget arithmetic. Saturation and
 the original `None` result when rendered text equals the input are preserved.
 
+### Typed scalar interface
+
+`token_budget` exports `codex_hia_token_budget(value: u64, operation: u64) -> u64`.
+Operation `0` computes saturating multiplication by four; operation `1` computes
+saturating addition of three followed by division by four. Every other full
+64-bit operation value traps before returning. `u64::MAX` remains a valid input
+and result, so there is no reserved error sentinel. Rust uses a private typed
+operation enum; all three public arithmetic helpers execute this HIA entry.
+The original buffer operations 2/3 retain their separate tested ABI.
+
+`toolchain.json` explicitly locks this scalar profile. The builder checks the
+assembled entry signature and export, admits the pinned two-argument native
+wrapper, and requires its relocation section to be empty. It removes only that
+empty section when namespacing the object, then proves `.text` is unchanged.
+The shared Cargo admission helper keeps its existing six-section, unique-export,
+no-import and exact-source/compiler/archive checks. Unknown profiles and a
+buffer entry whose first defined function is not `f0` are rejected.
+
+The character counter uses v9 `buffer.load.u64.le` only after proving at least
+eight source bytes remain. The instruction checks the live borrowed extent
+and accepts unaligned offsets; the shorter tail retains individual byte reads.
+The build preserves each checked source's v8 or v9 schema when requesting ELF
+emission. It does not silently reinterpret one schema as another.
+
 ## Build
 
 Use Linux x86-64, Python, GNU `ld`, `objcopy`, `ar`, and a clean checkout of the Hepta revision
@@ -291,38 +318,63 @@ original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
-### Current seven-module component validation
+### Current eight-module component validation
 
-The current pinned B1/B2/B3 build and component checks ran on Linux x86-64 GNU
+The current v9 B1/B2/B3 build and component checks ran on Linux x86-64 GNU
 with Rust 1.96.1. The truncation oracle binds all 815 original production tokens
 to the source at `a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095`.
 
 | Current check | Observed result |
 | --- | --- |
 | Original Rust truncation oracle | 7 tests; 229,173 public-API comparisons, including Unicode boundaries, saturation, marker collisions, large inputs and concurrency. |
-| Truncation ABI | 2,888 calls; 757 error/no-write cases, 288 strict/trusted plan comparisons and 1,024 concurrent calls. The 645 raw/scalar error cases remain covered; 112 trusted-capacity cases were added. |
-| Seven-module artifact admission | 54 receipt/admission checks passed. |
-| String owner | 38 native and 26 default tests passed, with zero skips; native and default strict Clippy passed. |
+| Truncation ABI | 2,888 calls; 757 error/no-write cases, 288 strict/trusted plan comparisons and 1,024 concurrent calls. |
+| Typed scalar ABI | 74,552 native calls: 74,536 valid results and 16 invalid-operation traps; full-width limits, random values and 16,384 concurrent calls. |
+| Scalar build admission | 114 checks covering actual compiler/ELF/source identities, v8/v9 preservation, entry profiles, wrapper shape and rejected mutations. |
+| Cargo artifact admission | 56 checks with the original matching module as mutation target, repeated with the scalar module; the shared Cargo helper is unchanged. |
+| String owner | 38 native and 26 default tests passed, zero skips; both modes passed strict all-target Clippy. Formatting and scoped fix made no source changes. |
+| Unchanged components | All five compiled artifacts for each of the six unchanged buffer modules and the scalar module are byte-identical between the f33 and v9 builds. |
+| Development build | The explicit seed-only path built all eight modules; it remains separate from production selfhost qualification. |
 
-The four-crate consumer build was terminated by SIGKILL while compiling
-`rama-net`, before any consumer tests executed. Consumer acceptance remains
-pending actual CI. Current seven-module full-workspace and installed-CLI
-acceptance have not passed; inherited results below do not satisfy those gates.
+Current eight-module consumers and installed-CLI CI must run on the published
+source. The completed seven-module CI below does not replace that gate. The
+local consumer attempt remains a recorded `rama-net` compiler SIGKILL; no local
+consumer pass is claimed.
 
-The external `performance/v3/report.json` microbenchmark uses equal Rust
-optimization levels and three alternating-order samples per case. Scalar
-helpers take 150–157 ns versus 0.54–0.81 ns in the original Rust; approximately
-1 MiB character truncation takes 3.35–3.40 ms and remains 2.78–3.88 times slower.
-Large under-budget token calls are approximately 1.03–1.08 times the Rust cost
-after removing an unnecessary comparison. These bounded local measurements do
-not establish whole-product performance; scalar and character-path gaps remain.
+The bounded optimized public-API benchmark records scalar helpers at 6.24–9.28 ns
+versus 0.56–0.88 ns for the original Rust. Approximately 1 MiB character
+truncation at budget 512 takes 1.61 ms for ASCII and 2.07 ms for Unicode,
+respectively 1.26 and 2.39 times the Rust cost. Character truncation at budget
+zero still costs 1.87–3.00 ms, approximately 41–50 times the reference. Small
+inputs also retain overhead. Large unchanged token calls were approximately
+1.00–1.03 times the Rust cost. All 17 cases used equal per-pair iteration counts,
+three alternating samples and identical Rust optimization levels; each case
+finished within three seconds. These measurements do not qualify whole-product
+performance. Exact source, artifact, raw-output and report identities are in
+[`verification.json`](verification.json#native_optimization).
+
+### Published seven-module CI checkpoint: a3f319cf
+
+The [push workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43648398946)
+and [PR workflow](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43648457597)
+both completed successfully for `a3f319cfba26b3206d9bfecbdefed2515ce4a19c`.
+The exact-head push run passed 139 native patch/string tests, 319 native
+truncation-consumer tests, 4,473 native CLI/arg0/TUI tests with six existing
+skips, and 444 default owner/consumer tests without HIA artifacts. Compiler and
+component oracles, receipt checks, actual namespace startup, and relocated
+apply_patch/full Codex executable qualification also passed. The full CLI gate
+retained the required truncation symbol and checked startup and large patch
+behavior; it did not execute every linked algorithm.
+
+This is source-bound evidence for the seven-module checkpoint. It does not
+qualify the current scalar entry, current compiler pin, full workspace,
+default native dispatch or other platforms.
 
 ### Inherited six-module checkpoint: a2014bc6
 
 The following results belong to published commit
 `a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095`, with 6 HIA modules and 5 connected
 production algorithms. They are historical evidence, not a rerun against the
-current seven-module candidate. [`verification.json`](verification.json)
+current eight-module candidate. [`verification.json`](verification.json)
 retains the separately scoped source, artifact and report identities.
 
 | Component                          | Observed checks                                                                                                                                                                                                                |
@@ -426,6 +478,9 @@ python3 -B hia/tests/test_native_ascii_json_caller.py --library-dir "$native_out
 python3 -B hia/tests/test_ascii_json_abi.py --library-dir "$native_output" --report "$build_parent/ascii-json-abi-tests.json"
 python3 -B hia/tests/test_native_truncate_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/truncate-caller-tests.json"
 python3 -B hia/tests/test_truncate_abi.py --library-dir "$native_output" --report "$build_parent/truncate-abi-tests.json"
+python3 -B hia/tests/test_token_budget_abi.py --library-dir "$native_output" --report "$build_parent/token-budget-abi-tests.json"
+python3 -B hia/tests/test_scalar_build_admission.py --artifacts "$native_output" --report "$build_parent/scalar-admission-tests.json"
+python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --mutation-module token_budget --report "$build_parent/scalar-receipt-tests.json"
 
 "$rustc_binary" --edition=2024 --test --cfg 'feature="hia-native"' hia/tests/native_patch_caller.rs -L "native=$native_output" -l static=codex_hia_seek_sequence -o "$build_parent/patch-caller-tests"
 "$build_parent/patch-caller-tests"
