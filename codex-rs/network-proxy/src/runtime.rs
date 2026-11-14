@@ -229,6 +229,9 @@ where
     }
 }
 
+#[cfg(test)]
+type DnsLookupForTest = fn(&str, u16) -> std::io::Result<Vec<SocketAddr>>;
+
 pub struct NetworkProxyState {
     state: Arc<RwLock<ConfigState>>,
     reloader: Arc<dyn ConfigReloader>,
@@ -239,6 +242,8 @@ pub struct NetworkProxyState {
     execution_attributions: Arc<Mutex<HashMap<String, ExecutionAttribution>>>,
     environment_id: Option<Arc<str>>,
     execution_id: Option<Arc<str>>,
+    #[cfg(test)]
+    dns_lookup_for_test: Option<DnsLookupForTest>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -274,6 +279,8 @@ impl Clone for NetworkProxyState {
             execution_attributions: self.execution_attributions.clone(),
             environment_id: self.environment_id.clone(),
             execution_id: self.execution_id.clone(),
+            #[cfg(test)]
+            dns_lookup_for_test: self.dns_lookup_for_test,
         }
     }
 }
@@ -359,6 +366,8 @@ impl NetworkProxyState {
             execution_attributions: Arc::new(Mutex::new(HashMap::new())),
             environment_id: None,
             execution_id: None,
+            #[cfg(test)]
+            dns_lookup_for_test: None,
         }
     }
 
@@ -584,6 +593,10 @@ impl NetworkProxyState {
                 port,
                 DNS_LOOKUP_TIMEOUT,
                 |host, port| async move {
+                    #[cfg(test)]
+                    if let Some(lookup) = self.dns_lookup_for_test {
+                        return lookup(&host, port);
+                    }
                     lookup_host((host.as_str(), port))
                         .await
                         .map(Iterator::collect)
@@ -1047,6 +1060,14 @@ fn unix_timestamp() -> i64 {
 }
 
 #[cfg(test)]
+impl NetworkProxyState {
+    /// Supplies fixture DNS answers through the normal timeout and IP classification.
+    pub(crate) fn set_dns_lookup_for_test(&mut self, lookup: DnsLookupForTest) {
+        self.dns_lookup_for_test = Some(lookup);
+    }
+}
+
+#[cfg(test)]
 pub(crate) fn network_proxy_state_for_policy(
     mut config: crate::config::NetworkProxyConfig,
 ) -> NetworkProxyState {
@@ -1483,7 +1504,8 @@ mod tests {
 
     #[tokio::test]
     async fn host_blocked_subdomain_wildcards_exclude_apex() {
-        let state = network_proxy_state_for_policy(network_settings(&["*.openai.com"], &[]));
+        let mut state = network_proxy_state_for_policy(network_settings(&["*.openai.com"], &[]));
+        state.set_dns_lookup_for_test(|_, port| Ok(vec![([8, 8, 8, 8], port).into()]));
 
         assert_eq!(
             state
@@ -1500,7 +1522,8 @@ mod tests {
 
     #[tokio::test]
     async fn host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist() {
-        let state = network_proxy_state_for_policy(network_settings(&["*"], &["evil.example"]));
+        let mut state = network_proxy_state_for_policy(network_settings(&["*"], &["evil.example"]));
+        state.set_dns_lookup_for_test(|_, port| Ok(vec![([8, 8, 8, 8], port).into()]));
 
         assert_eq!(
             state

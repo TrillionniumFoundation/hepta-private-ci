@@ -1056,7 +1056,9 @@ mod tests {
             ..NetworkProxyConfig::default()
         };
         settings.set_allowed_domains(vec!["api.github.com".to_string()]);
-        let state = state_for_settings(settings);
+        let mut state = state_for_settings(settings);
+        Arc::make_mut(&mut state)
+            .set_dns_lookup_for_test(|_, port| Ok(vec![([8, 8, 8, 8], port).into()]));
         let request =
             TcpRequest::new(HostWithPort::try_from("api.github.com:443").expect("valid authority"));
         request.extensions().insert_arc(state.clone());
@@ -1091,7 +1093,9 @@ mod tests {
             ..NetworkProxyConfig::default()
         };
         settings.set_allowed_domains(vec!["api.github.com".to_string()]);
-        let state = state_for_settings(settings);
+        let mut state = state_for_settings(settings);
+        Arc::make_mut(&mut state)
+            .set_dns_lookup_for_test(|_, port| Ok(vec![([8, 8, 8, 8], port).into()]));
         let request =
             TcpRequest::new(HostWithPort::try_from("api.github.com:80").expect("valid authority"));
         request.extensions().insert_arc(state.clone());
