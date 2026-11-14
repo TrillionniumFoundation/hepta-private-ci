@@ -1,5 +1,9 @@
+#[cfg(feature = "hia-native")]
+mod hia_native;
 mod json;
 mod truncate;
+#[cfg(feature = "hia-native")]
+pub use hia_native::take_bytes_at_char_boundary;
 
 pub use json::to_ascii_json_string;
 pub use truncate::approx_bytes_for_tokens;
@@ -9,6 +13,7 @@ pub use truncate::truncate_middle_chars;
 pub use truncate::truncate_middle_with_token_budget;
 
 // Truncate a &str to a byte budget at a char boundary (prefix)
+#[cfg(not(feature = "hia-native"))]
 #[inline]
 pub fn take_bytes_at_char_boundary(s: &str, maxb: usize) -> &str {
     if s.len() <= maxb {

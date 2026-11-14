@@ -137,6 +137,20 @@
         "production_dispatch": {
           "status": "pending"
         }
+      },
+      "experimental_caller": {
+        "crate": "codex-apply-patch",
+        "feature": "hia-native",
+        "status": "opt_in_native_hia_elf",
+        "validation": {
+          "host": "desktop",
+          "target": "x86_64-unknown-linux-gnu",
+          "scope": "complete feature-enabled crate suite",
+          "passed": 99,
+          "failed": 0,
+          "skipped": 0
+        },
+        "release_qualified": false
       }
     },
     {
@@ -183,6 +197,20 @@
         "production_dispatch": {
           "status": "pending"
         }
+      },
+      "experimental_caller": {
+        "crate": "codex-utils-string",
+        "feature": "hia-native",
+        "status": "opt_in_native_hia_elf",
+        "validation": {
+          "host": "desktop",
+          "target": "x86_64-unknown-linux-gnu",
+          "scope": "complete feature-enabled crate suite",
+          "passed": 21,
+          "failed": 0,
+          "skipped": 0
+        },
+        "release_qualified": false
       }
     }
   ],

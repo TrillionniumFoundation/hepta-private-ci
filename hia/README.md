@@ -265,4 +265,36 @@ source-level parity and oversize boundary are tested independently in
 hia/tests/native_patch_caller.rs, using the actual namespaced HIA ELF.
 
 This is Linux x86-64 only. Runtime packaging, cancellation/deadline behavior,
-large-input strategy, full crate tests and any other Codex owner remain pending.
+large-input strategy and other Codex owners remain pending. The complete
+`codex-apply-patch` feature-enabled crate suite passed 99/99 tests on desktop
+with the B3-emitted native matcher. An initial real Cargo run caught an invalid
+`try_fold` accumulator type in the experimental adapter; it was fixed before
+the passing run. The workflow now gates the same real crate suite in addition
+to the narrower original-source oracle.
+
+## Experimental Codex UTF-8 public caller integration
+
+The `codex-utils-string` `hia-native` feature uses the namespaced B3-produced
+`libcodex_hia_utf8_boundaries.so` for the **public**
+`take_bytes_at_char_boundary(&str, usize) -> &str` call. Its small Rust adapter
+only frames borrowed bytes, invokes the native ABI and checks that the returned
+index preserves Rust's slice/UTF-8 boundary contract. The UTF-8 scanning and
+boundary selection execute in HIA machine code. Without the feature, the
+unmodified original Rust function remains the default and the original-source
+oracle is still extractable.
+
+On Linux x86-64, set `CODEX_HIA_NATIVE_LIB_DIR` at build time and make that
+native directory available to the runtime dynamic loader (`LD_LIBRARY_PATH`
+or explicit package rpath). A missing native artifact is a build error, not a
+silent fallback. Input frames larger than the pinned 1 MiB limit panic rather
+than misrepresent the original result or use the Rust algorithm unnoticed.
+This limitation makes this an experimental, explicitly selected feature, **not**
+a release-wide migration. The feature-enabled string crate passed its complete
+21/21 tests on desktop, including original behavior comparisons, the exact
+native frame boundary and oversize rejection. Its CI counterpart now runs from
+the real workspace and links the namespaced native ELF.
+
+Both native caller features still need proper package/linker installation,
+Linux and other supported-platform qualification, caller-wide cancellation and
+bounded-cost policy, and clean-install end-to-end acceptance before replacing
+the corresponding Rust production owners or removing legacy code.

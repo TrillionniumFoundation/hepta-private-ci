@@ -5,13 +5,13 @@ on:
     paths:
       - hia/**
       - codex-rs/apply-patch/**
-      - codex-rs/utils/string/src/lib.rs
+      - codex-rs/utils/string/**
       - .github/workflows/codex-hia-native.yml
   pull_request:
     paths:
       - hia/**
       - codex-rs/apply-patch/**
-      - codex-rs/utils/string/src/lib.rs
+      - codex-rs/utils/string/**
       - .github/workflows/codex-hia-native.yml
   workflow_dispatch:
 
@@ -21,7 +21,7 @@ permissions:
 jobs:
   native-components:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       HEPTA_SOURCE: ${{ github.workspace }}/Hepta
@@ -105,6 +105,25 @@ jobs:
                   raise SystemExit(f"required verification was skipped: {field}")
           PY
 
+      - name: Install scoped Codex test runners
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,cargo-nextest
+
+      - name: Test complete opt-in Codex apply-patch and string crates
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        env:
+          CODEX_HIA_NATIVE_LIB_DIR: ${{ runner.temp }}/hia-native
+          LD_LIBRARY_PATH: ${{ runner.temp }}/hia-native
+        run: |
+          set -euo pipefail
+          cd codex
+          just test -p codex-apply-patch --features codex-apply-patch/hia-native \
+            2>&1 | tee "$RUNNER_TEMP/hia-apply-patch-crate.log"
+          just test -p codex-utils-string --features codex-utils-string/hia-native \
+            2>&1 | tee "$RUNNER_TEMP/hia-string-crate.log"
+
       - name: Test real native patch caller and ABI rejection boundary
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -128,6 +147,8 @@ jobs:
             ${{ runner.temp }}/hia-native/build.json
             ${{ runner.temp }}/hia-toolchain.log
             ${{ runner.temp }}/hia-patch-caller.log
+            ${{ runner.temp }}/hia-apply-patch-crate.log
+            ${{ runner.temp }}/hia-string-crate.log
             ${{ runner.temp }}/hia-build.log
             ${{ runner.temp }}/hia-seek-sequence.json
             ${{ runner.temp }}/hia-seek-sequence.log

@@ -37,12 +37,13 @@ pub(super) fn seek_sequence_checked(
         .checked_add(1)
         .and_then(|n| n.checked_mul(8))
         .ok_or_else(|| frame_error("offset table overflow"))?;
+    let initial_size = 32usize
+        .checked_add(offset_bytes)
+        .ok_or_else(|| frame_error("input length overflow"))?;
     let total = lines
         .iter()
         .chain(pattern)
-        .try_fold(32usize.checked_add(offset_bytes), |size, line| {
-            size.and_then(|n| n.checked_add(line.len()))
-        })
+        .try_fold(initial_size, |size, line| size.checked_add(line.len()))
         .ok_or_else(|| frame_error("input length overflow"))?;
     if total > BUFFER_LIMIT {
         return Err(frame_error("input exceeds locked 1 MiB source buffer"));
