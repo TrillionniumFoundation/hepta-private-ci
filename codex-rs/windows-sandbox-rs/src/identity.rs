@@ -214,6 +214,27 @@ pub(crate) fn require_logon_sandbox_creds_with_lease(
     let needed_write = write_roots_override
         .map(<[PathBuf]>::to_vec)
         .unwrap_or_else(|| gather_write_roots_for_permissions(permissions, command_cwd, env_map));
+    // Preserve the caller's lack of a read override for the full-read profile.
+    // Turning these resolved defaults into an explicit override would tell the
+    // helper to install capability-root ACLs while the runner uses normal reads.
+    let original_read_scope = crate::read_capability::read_scope_for_setup(
+        &crate::setup::SandboxSetupRequest {
+            permissions,
+            command_cwd,
+            env_map,
+            codex_home,
+            proxy_enforced,
+        },
+        &crate::setup::SetupRootOverrides {
+            read_roots: read_roots_override.map(<[PathBuf]>::to_vec),
+            deny_read_paths: Some(deny_read_paths_override.to_vec()),
+            ..crate::setup::SetupRootOverrides::default()
+        },
+    );
+    let setup_read_roots = match original_read_scope {
+        crate::WindowsSandboxReadScope::FullDisk => None,
+        crate::WindowsSandboxReadScope::CapabilityRoots => Some(needed_read),
+    };
     let network_identity = SandboxNetworkIdentity::from_permissions(permissions, proxy_enforced);
     let marker = load_marker(codex_home)?;
     let desired_offline_proxy_settings = desired_offline_proxy_settings(
@@ -268,7 +289,7 @@ pub(crate) fn require_logon_sandbox_creds_with_lease(
                 proxy_enforced,
             },
             crate::setup::SetupRootOverrides {
-                read_roots: Some(needed_read.clone()),
+                read_roots: setup_read_roots.clone(),
                 read_roots_include_platform_defaults,
                 write_roots: Some(needed_write.clone()),
                 deny_read_paths: Some(deny_read_paths_override.to_vec()),
@@ -289,7 +310,7 @@ pub(crate) fn require_logon_sandbox_creds_with_lease(
             proxy_enforced,
         },
         crate::setup::SetupRootOverrides {
-            read_roots: Some(needed_read),
+            read_roots: setup_read_roots,
             read_roots_include_platform_defaults,
             write_roots: Some(needed_write),
             deny_read_paths: Some(deny_read_paths_override.to_vec()),

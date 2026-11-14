@@ -34,7 +34,7 @@ use codex_windows_sandbox::StdinMode;
 use codex_windows_sandbox::WindowsSandboxTokenMode;
 use codex_windows_sandbox::allow_null_device;
 use codex_windows_sandbox::create_readonly_token_with_caps_and_user_from;
-use codex_windows_sandbox::create_workspace_write_token_with_caps_and_user_from;
+use codex_windows_sandbox::create_workspace_write_token_for_read_scope;
 use codex_windows_sandbox::decode_bytes;
 use codex_windows_sandbox::encode_bytes;
 use codex_windows_sandbox::get_current_token_for_restriction;
@@ -243,6 +243,17 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
         &req.env,
     )
     .context("resolve permission profile token mode")?;
+    if req.read_scope == codex_windows_sandbox::WindowsSandboxReadScope::FullDisk {
+        anyhow::ensure!(
+            req.permission_profile
+                .to_runtime_permissions()
+                .0
+                .has_full_disk_read_access()
+                && req.read_cap_sids.is_empty()
+                && matches!(token_mode, WindowsSandboxTokenMode::WritableRootsCapability),
+            "full-disk token reads require the permission profile's full-disk read grant"
+        );
+    }
     let mut cap_psids: Vec<LocalSid> = Vec::new();
     for sid in &req.cap_sids {
         cap_psids.push(
@@ -286,10 +297,11 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
                 )
             }
             WindowsSandboxTokenMode::WritableRootsCapability => {
-                create_workspace_write_token_with_caps_and_user_from(
+                create_workspace_write_token_for_read_scope(
                     base.raw(),
                     &cap_psid_ptrs,
                     &additional_restricting_sid_ptrs,
+                    req.read_scope,
                 )
             }
         }

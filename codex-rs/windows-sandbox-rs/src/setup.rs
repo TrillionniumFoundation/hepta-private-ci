@@ -26,6 +26,8 @@ use crate::logging::current_log_file_path;
 use crate::logging::log_note;
 use crate::path_normalization::canonical_path_key;
 use crate::path_normalization::canonicalize_path;
+use crate::read_capability::WindowsSandboxReadScope;
+use crate::read_capability::read_scope_for_setup;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
 use crate::setup_error::SetupErrorCode;
 use crate::setup_error::SetupFailure;
@@ -342,6 +344,7 @@ fn run_setup_refresh_inner(
     if !request.permissions.is_enforceable_by_windows_sandbox() {
         anyhow::bail!("unsupported filesystem permissions for Windows sandbox setup");
     }
+    let read_scope = read_scope_for_setup(&request, &overrides);
     let (read_roots, write_roots) = build_payload_roots(&request, &overrides);
     let deny_read_paths = build_payload_deny_read_paths(overrides.deny_read_paths);
     let deny_write_paths = build_payload_deny_write_paths(&request, overrides.deny_write_paths);
@@ -355,6 +358,7 @@ fn run_setup_refresh_inner(
         codex_home: request.codex_home.to_path_buf(),
         command_cwd: request.command_cwd.to_path_buf(),
         read_roots,
+        read_scope,
         write_roots,
         deny_read_paths,
         deny_write_paths,
@@ -697,6 +701,7 @@ struct ElevationPayload {
     codex_home: PathBuf,
     command_cwd: PathBuf,
     read_roots: Vec<PathBuf>,
+    read_scope: WindowsSandboxReadScope,
     write_roots: Vec<PathBuf>,
     #[serde(default)]
     deny_read_paths: Vec<PathBuf>,
@@ -1115,6 +1120,7 @@ fn run_elevated_setup_inner(
             format!("failed to create sandbox dir {}: {err}", sbx_dir.display()),
         )
     })?;
+    let read_scope = read_scope_for_setup(&request, &overrides);
     let (read_roots, write_roots) = build_payload_roots(&request, &overrides);
     let deny_read_paths = build_payload_deny_read_paths(overrides.deny_read_paths);
     let deny_write_paths = build_payload_deny_write_paths(&request, overrides.deny_write_paths);
@@ -1128,6 +1134,7 @@ fn run_elevated_setup_inner(
         codex_home: request.codex_home.to_path_buf(),
         command_cwd: request.command_cwd.to_path_buf(),
         read_roots,
+        read_scope,
         write_roots,
         deny_read_paths,
         deny_write_paths,
@@ -1197,6 +1204,7 @@ pub fn run_elevated_provisioning_setup(
         codex_home: codex_home.to_path_buf(),
         command_cwd: codex_home.to_path_buf(),
         read_roots: Vec::new(),
+        read_scope: WindowsSandboxReadScope::CapabilityRoots,
         write_roots: Vec::new(),
         deny_read_paths: Vec::new(),
         deny_write_paths: Vec::new(),

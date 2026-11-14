@@ -4,11 +4,47 @@ use crate::setup::SandboxSetupRequest;
 use crate::setup::SetupRootOverrides;
 use crate::setup::build_payload_roots;
 use anyhow::Result;
+use serde::Deserialize;
+use serde::Serialize;
 use std::path::Path;
 use windows_sys::Win32::Security::Cryptography::BCRYPT_SHA256_ALGORITHM;
 use windows_sys::Win32::Security::Cryptography::BCryptCloseAlgorithmProvider;
 use windows_sys::Win32::Security::Cryptography::BCryptHash;
 use windows_sys::Win32::Security::Cryptography::BCryptOpenAlgorithmProvider;
+
+/// Which read authorization the request already permits.
+///
+/// Missing wire values retain the stricter capability-root check. Full-disk
+/// reads do not grant writes, deletion, ownership, or DACL changes.
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum WindowsSandboxReadScope {
+    #[default]
+    CapabilityRoots,
+    FullDisk,
+}
+
+pub(crate) struct ReadAccessPlan {
+    pub(crate) scope: WindowsSandboxReadScope,
+    pub(crate) capability_sids: Vec<String>,
+}
+
+pub(crate) fn read_scope_for_setup(
+    request: &SandboxSetupRequest<'_>,
+    overrides: &SetupRootOverrides,
+) -> WindowsSandboxReadScope {
+    if request.permissions.has_full_disk_read_access()
+        && request
+            .permissions
+            .uses_write_capabilities_for_cwd(request.command_cwd, request.env_map)
+        && overrides.read_roots.is_none()
+        && overrides.deny_read_paths.as_ref().is_none_or(Vec::is_empty)
+    {
+        WindowsSandboxReadScope::FullDisk
+    } else {
+        WindowsSandboxReadScope::CapabilityRoots
+    }
+}
 
 /// Identifies a read root independently of CODEX_HOME and writable-root caps.
 ///
@@ -70,15 +106,20 @@ pub fn read_cap_sid_for_root(root: &Path) -> Result<String> {
     Ok(format!("S-1-5-21-{a}-{b}-{c}-{d}"))
 }
 
-pub(crate) fn read_cap_sids_for_setup(
+pub(crate) fn read_access_for_setup(
     request: &SandboxSetupRequest<'_>,
     overrides: &SetupRootOverrides,
-) -> Result<Vec<String>> {
-    if !request
-        .permissions
-        .uses_write_capabilities_for_cwd(request.command_cwd, request.env_map)
+) -> Result<ReadAccessPlan> {
+    let scope = read_scope_for_setup(request, overrides);
+    if scope == WindowsSandboxReadScope::FullDisk
+        || !request
+            .permissions
+            .uses_write_capabilities_for_cwd(request.command_cwd, request.env_map)
     {
-        return Ok(Vec::new());
+        return Ok(ReadAccessPlan {
+            scope,
+            capability_sids: Vec::new(),
+        });
     }
     let (roots, _) = build_payload_roots(request, overrides);
     let mut sids = roots
@@ -87,7 +128,10 @@ pub(crate) fn read_cap_sids_for_setup(
         .collect::<Result<Vec<_>>>()?;
     sids.sort();
     sids.dedup();
-    Ok(sids)
+    Ok(ReadAccessPlan {
+        scope,
+        capability_sids: sids,
+    })
 }
 
 #[cfg(test)]

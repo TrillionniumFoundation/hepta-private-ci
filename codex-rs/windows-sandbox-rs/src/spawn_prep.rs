@@ -19,7 +19,7 @@ use crate::identity::SandboxIdentityRequest;
 use crate::identity::require_logon_sandbox_creds_with_lease;
 use crate::logging::log_start;
 use crate::path_normalization::canonicalize_path;
-use crate::read_capability::read_cap_sids_for_setup;
+use crate::read_capability::read_access_for_setup;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
 use crate::sandbox_account::SandboxAccountLease;
 use crate::sandbox_utils::ensure_codex_home_exists;
@@ -58,6 +58,7 @@ pub(crate) struct ElevatedSpawnContext {
     pub(crate) sandbox_creds: SandboxCreds,
     pub(crate) cap_sids: Vec<String>,
     pub(crate) read_cap_sids: Vec<String>,
+    pub(crate) read_scope: crate::WindowsSandboxReadScope,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -399,7 +400,7 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         },
         account_lease,
     )?;
-    let read_cap_sids = read_cap_sids_for_setup(
+    let read_access = read_access_for_setup(
         &SandboxSetupRequest {
             permissions: &permissions,
             command_cwd: cwd,
@@ -441,7 +442,8 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         logs_base_dir,
         sandbox_creds,
         cap_sids,
-        read_cap_sids,
+        read_cap_sids: read_access.capability_sids,
+        read_scope: read_access.scope,
     })
 }
 

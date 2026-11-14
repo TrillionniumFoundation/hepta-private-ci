@@ -403,6 +403,26 @@ pub unsafe fn create_workspace_write_token_with_caps_and_user_from(
         base_token,
         psid_capabilities,
         additional_restricting_sids,
+        crate::WindowsSandboxReadScope::CapabilityRoots,
+    )
+}
+
+/// Creates a capability-only workspace token for an explicitly resolved read scope.
+///
+/// # Safety
+/// The base token and SID pointers must remain valid. The caller must authorize
+/// the read scope from the permission profile, and close the returned handle.
+pub unsafe fn create_workspace_write_token_for_read_scope(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+    additional_restricting_sids: &[*mut c_void],
+    read_scope: crate::WindowsSandboxReadScope,
+) -> Result<HANDLE> {
+    crate::workspace_token::create_workspace_token(
+        base_token,
+        psid_capabilities,
+        additional_restricting_sids,
+        read_scope,
     )
 }
 

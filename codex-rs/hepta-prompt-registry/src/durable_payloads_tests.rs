@@ -253,6 +253,9 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
     file.write_all(&bytes).must("legacy bytes");
     file.sync_all().must("legacy sync");
     directory.sync_all().must("legacy directory sync");
+    // The legacy writer has completed its handoff. Windows does not replace
+    // an existing destination while that file still has an open handle.
+    drop(file);
     let owner = DurablePromptRegistry::open_state_dir(&path, 64).must("migration");
     assert_eq!(owner.registry().must("registry"), &core);
     let manifest: serde_json::Value =

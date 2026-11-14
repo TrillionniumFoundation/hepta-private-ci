@@ -14,6 +14,7 @@ use codex_windows_sandbox::SETUP_VERSION;
 use codex_windows_sandbox::SetupErrorCode;
 use codex_windows_sandbox::SetupErrorReport;
 use codex_windows_sandbox::SetupFailure;
+use codex_windows_sandbox::WindowsSandboxReadScope;
 use codex_windows_sandbox::add_deny_write_ace;
 use codex_windows_sandbox::convert_string_sid_to_sid;
 use codex_windows_sandbox::ensure_allow_mask_aces_with_inheritance;
@@ -90,6 +91,8 @@ struct Payload {
     codex_home: PathBuf,
     command_cwd: PathBuf,
     read_roots: Vec<PathBuf>,
+    #[serde(default)]
+    read_scope: WindowsSandboxReadScope,
     write_roots: Vec<PathBuf>,
     #[serde(default)]
     deny_read_paths: Vec<PathBuf>,
@@ -216,6 +219,11 @@ fn apply_read_acls(
                 root.display()
             ),
         )?;
+        codex_windows_sandbox::trace_sandbox_phase(
+            &format!("account-read ACL grant begin: {}", root.display()),
+            None,
+        );
+        let started = std::time::Instant::now();
         let result = unsafe {
             ensure_allow_mask_aces_with_inheritance(
                 root,
@@ -224,6 +232,15 @@ fn apply_read_acls(
                 inheritance,
             )
         };
+        codex_windows_sandbox::trace_sandbox_phase(
+            &format!(
+                "account-read ACL grant end: {} elapsed_ms={} success={}",
+                root.display(),
+                started.elapsed().as_millis(),
+                result.is_ok()
+            ),
+            None,
+        );
         if let Err(err) = result {
             refresh_errors.push(format!(
                 "grant {access_label} ACE failed on {} for sandbox_group: {err}",
@@ -521,45 +538,50 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
     Ok(())
 }
 
+fn apply_account_read_acls(
+    read_roots: &[PathBuf],
+    sandbox_group_psid: *mut c_void,
+    log: &mut dyn Write,
+    refresh_errors: &mut Vec<String>,
+) -> Result<()> {
+    if !read_roots.is_empty() {
+        let identities = ["S-1-5-32-545", "S-1-5-11", "S-1-1-0"]
+            .map(codex_windows_sandbox::LocalSid::from_string)
+            .into_iter()
+            .collect::<Result<Vec<_>>>()?;
+        let rx_psids = identities
+            .iter()
+            .map(codex_windows_sandbox::LocalSid::as_ptr)
+            .collect::<Vec<_>>();
+        let subjects = ReadAclSubjects {
+            sandbox_group_psid,
+            rx_psids: &rx_psids,
+        };
+        apply_read_acls(
+            read_roots,
+            &subjects,
+            log,
+            refresh_errors,
+            FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+            "read",
+            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
+        )?;
+    }
+    Ok(())
+}
+
 fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
     let _read_acl_guard = acquire_read_acl_mutex()?;
     log_line(log, "read-acl-only mode: applying read ACLs")?;
     let sandbox_group_sid = resolve_sandbox_users_group_sid()?;
     let sandbox_group_psid = sid_bytes_to_psid(&sandbox_group_sid)?;
     let mut refresh_errors: Vec<String> = Vec::new();
-    if !payload.read_roots.is_empty() {
-        let users_sid = resolve_sid("Users")?;
-        let users_psid = sid_bytes_to_psid(&users_sid)?;
-        let auth_sid = resolve_sid("Authenticated Users")?;
-        let auth_psid = sid_bytes_to_psid(&auth_sid)?;
-        let everyone_sid = resolve_sid("Everyone")?;
-        let everyone_psid = sid_bytes_to_psid(&everyone_sid)?;
-        let rx_psids = vec![users_psid, auth_psid, everyone_psid];
-        let subjects = ReadAclSubjects {
-            sandbox_group_psid,
-            rx_psids: &rx_psids,
-        };
-        apply_read_acls(
-            &payload.read_roots,
-            &subjects,
-            log,
-            &mut refresh_errors,
-            FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-            "read",
-            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
-        )?;
-        unsafe {
-            if !users_psid.is_null() {
-                LocalFree(users_psid as HLOCAL);
-            }
-            if !auth_psid.is_null() {
-                LocalFree(auth_psid as HLOCAL);
-            }
-            if !everyone_psid.is_null() {
-                LocalFree(everyone_psid as HLOCAL);
-            }
-        }
-    }
+    apply_account_read_acls(
+        &payload.read_roots,
+        sandbox_group_psid,
+        log,
+        &mut refresh_errors,
+    )?;
     unsafe {
         if !sandbox_group_psid.is_null() {
             LocalFree(sandbox_group_psid as HLOCAL);
@@ -811,7 +833,19 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
         )?;
     }
 
-    read_capability_acl::apply(&payload.read_roots, sandbox_group_psid)?;
+    match payload.read_scope {
+        WindowsSandboxReadScope::CapabilityRoots => {
+            read_capability_acl::apply(&payload.read_roots, sandbox_group_psid)?;
+        }
+        WindowsSandboxReadScope::FullDisk => {
+            apply_account_read_acls(
+                &payload.read_roots,
+                sandbox_group_psid,
+                log,
+                &mut refresh_errors,
+            )?;
+        }
+    }
 
     if refresh_only {
         setup_runtime_bin::ensure_codex_app_runtime_paths_readable(

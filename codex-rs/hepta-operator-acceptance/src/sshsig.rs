@@ -25,7 +25,9 @@ pub(crate) fn keygen_command() -> Result<Command, AcceptanceError> {
     let mut command = Command::new("/usr/bin/ssh-keygen");
     command.env_clear().env("LANG", "C").env("LC_ALL", "C");
     #[cfg(windows)]
-    command.env("SystemRoot", windows::windows_directory()?);
+    command
+        .env("SystemRoot", windows::windows_directory()?)
+        .env("ProgramData", windows::program_data_directory()?);
     Ok(command)
 }
 

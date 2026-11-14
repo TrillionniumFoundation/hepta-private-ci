@@ -161,7 +161,7 @@ mod windows_impl {
             },
             &account_lease,
         )?;
-        let read_cap_sids = crate::read_capability::read_cap_sids_for_setup(
+        let read_access = crate::read_capability::read_access_for_setup(
             &crate::setup::SandboxSetupRequest {
                 permissions: &permissions,
                 command_cwd: cwd,
@@ -215,7 +215,8 @@ mod windows_impl {
                 codex_home: sandbox_base.clone(),
                 real_codex_home: codex_home.to_path_buf(),
                 cap_sids,
-                read_cap_sids,
+                read_cap_sids: read_access.capability_sids,
+                read_scope: read_access.scope,
                 network_proxy_restricting_sid,
                 timeout_ms,
                 tty: false,

@@ -95,18 +95,33 @@ fn windows_owner_lock_and_namespace_anchor_survive_root_rename()
         AuthorityLeaseRegistry::open_state_dir(&root, "security-authority".into(), initial),
         Err(AuthorityLeaseError::StateLocked)
     ));
-    std::fs::rename(&root, &moved)?;
-    let replacement = StateDirectory::open_or_create(&root)?;
+    // Windows refuses a directory rename while its owner lock file is open.
+    // Assert that fence before exercising the permitted shutdown/move/reopen
+    // handoff; do not drop the lock to make a live owner movable.
+    let move_error = std::fs::rename(&root, &moved)
+        .err()
+        .ok_or_else(|| std::io::Error::other("live owner directory unexpectedly moved"))?;
+    assert_eq!(move_error.kind(), std::io::ErrorKind::PermissionDenied);
+    assert!(!moved.exists());
     registry.put_lease(lease(), 0)?;
-    assert!(!replacement.entry_exists("authority-leases.json")?);
     let frontier = registry.frontier()?;
     let expected = registry
         .read_lease("lease-one")?
         .ok_or_else(|| std::io::Error::other("written lease is missing"))?;
+    let retained = StateDirectory::open_existing(&root)?;
+    let before = codex_utils_path::windows_private_fs::snapshot_private_file(retained.as_file())?;
     drop(registry);
+    std::fs::rename(&root, &moved)?;
+    let replacement = StateDirectory::open_or_create(&root)?;
+    assert!(before.same_file(
+        &codex_utils_path::windows_private_fs::snapshot_private_file(retained.as_file())?
+    ));
     let reopened =
         AuthorityLeaseRegistry::open_state_dir(&moved, "security-authority".into(), frontier)?;
     assert_eq!(reopened.frontier()?, frontier);
     assert_eq!(reopened.read_lease("lease-one")?, Some(expected));
+    reopened.revoke("lease-one", 1, [9; 32])?;
+    assert!(reopened.read_revocation("lease-one")?.is_some());
+    assert!(!replacement.entry_exists("authority-leases.json")?);
     Ok(())
 }

@@ -1,4 +1,5 @@
 use super::create_workspace_token;
+use crate::WindowsSandboxReadScope;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
 use crate::private_object_capabilities::private_object_capabilities;
@@ -46,7 +47,12 @@ fn workspace_token_separates_object_write_caps_from_read_and_route_sids() -> Res
     let read = LocalSid::from_string("S-1-5-21-111-222-333-445")?;
     let route = LocalSid::from_string("S-1-5-21-111-222-333-446")?;
     let token = Token(unsafe {
-        create_workspace_token(base.0, &[write.as_ptr()], &[read.as_ptr(), route.as_ptr()])?
+        create_workspace_token(
+            base.0,
+            &[write.as_ptr()],
+            &[read.as_ptr(), route.as_ptr()],
+            WindowsSandboxReadScope::CapabilityRoots,
+        )?
     });
     let information = unsafe { TokenInformation::query(token.0, TokenRestrictedSids)? };
     let mut actual = unsafe { information.group_sids()? };
@@ -78,7 +84,12 @@ fn workspace_token_rejects_ambient_user_group_and_logon_restrictions() -> Result
     };
     for mut identity in identities {
         let result = unsafe {
-            create_workspace_token(base.0, &[write.as_ptr()], &[identity.as_mut_ptr().cast()])
+            create_workspace_token(
+                base.0,
+                &[write.as_ptr()],
+                &[identity.as_mut_ptr().cast()],
+                WindowsSandboxReadScope::CapabilityRoots,
+            )
         };
         match result {
             Ok(handle) => {
@@ -114,8 +125,14 @@ fn current_read_root_allows_reading_without_write_or_delete() -> Result<()> {
         ensure_allow_write_aces(&writable, &[write.as_ptr()])?;
     }
     let base = Token(unsafe { get_current_token_for_restriction()? });
-    let token =
-        Token(unsafe { create_workspace_token(base.0, &[write.as_ptr()], &[read.as_ptr()])? });
+    let token = Token(unsafe {
+        create_workspace_token(
+            base.0,
+            &[write.as_ptr()],
+            &[read.as_ptr()],
+            WindowsSandboxReadScope::CapabilityRoots,
+        )?
+    });
     anyhow::ensure!(
         unsafe { ImpersonateLoggedOnUser(token.0) } != 0,
         "impersonate workspace token failed"

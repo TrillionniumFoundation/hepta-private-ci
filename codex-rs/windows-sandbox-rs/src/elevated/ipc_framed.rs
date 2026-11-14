@@ -67,6 +67,9 @@ pub struct SpawnRequest {
     pub cap_sids: Vec<String>,
     /// Current read-root identities. These never receive default-DACL write grants.
     pub read_cap_sids: Vec<String>,
+    /// Full-disk reads require an explicit profile grant; absent values fail closed.
+    #[serde(default)]
+    pub read_scope: crate::WindowsSandboxReadScope,
     /// Optional managed-network identity added only to the child's restricting SID set.
     #[serde(default)]
     pub network_proxy_restricting_sid: Option<String>,
@@ -230,6 +233,7 @@ mod tests {
                     real_codex_home: PathBuf::from(r"C:\Users\codex"),
                     cap_sids: vec!["S-1-15-3-1024-1".to_string()],
                     read_cap_sids: vec!["S-1-5-21-9-8-7-6".to_string()],
+                    read_scope: crate::WindowsSandboxReadScope::CapabilityRoots,
                     network_proxy_restricting_sid: Some("S-1-5-21-100-200-300-400".to_string()),
                     timeout_ms: Some(1000),
                     tty: false,
@@ -246,6 +250,23 @@ mod tests {
         assert_eq!(None, encoded["payload"].get("sandbox_policy_cwd"));
         assert_eq!(None, encoded["payload"].get("permission_profile_cwd"));
 
+        let mut old_encoded = encoded.clone();
+        old_encoded["payload"]
+            .as_object_mut()
+            .expect("spawn payload")
+            .remove("read_scope");
+        let old_decoded: FramedMessage =
+            serde_json::from_value(old_encoded).expect("deserialize previous spawn request");
+        let Message::SpawnRequest {
+            payload: old_payload,
+        } = old_decoded.message
+        else {
+            panic!("unexpected message");
+        };
+        assert_eq!(
+            old_payload.read_scope,
+            crate::WindowsSandboxReadScope::CapabilityRoots
+        );
         let decoded: FramedMessage = serde_json::from_value(encoded).expect("deserialize");
         let Message::SpawnRequest { payload } = decoded.message else {
             panic!("unexpected message");

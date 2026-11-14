@@ -269,13 +269,18 @@ impl TrustFixture {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
         let key = root.join("operator-key");
-        let status = crate::sshsig::keygen_command()
+        let generated = crate::sshsig::keygen_command()
             .expect("trusted system ssh-keygen")
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
-            .status()
+            .output()
             .expect("start test key generation");
-        assert!(status.success());
+        assert!(
+            generated.status.success(),
+            "generate test-only Ed25519 key: status {:?}; stderr {}",
+            generated.status,
+            String::from_utf8_lossy(&generated.stderr),
+        );
         let public = std::fs::read_to_string(key.with_extension("pub")).expect("public key");
         let fields = public.split_ascii_whitespace().collect::<Vec<_>>();
         assert_eq!(fields.first().copied(), Some("ssh-ed25519"));

@@ -112,6 +112,7 @@ pub(super) async fn start(
                 real_codex_home: options.codex_home,
                 cap_sids: elevated.cap_sids,
                 read_cap_sids: elevated.read_cap_sids,
+                read_scope: elevated.read_scope,
                 network_proxy_restricting_sid: options.network_proxy_restricting_sid,
                 timeout_ms: options.timeout_ms,
                 tty: options.tty,

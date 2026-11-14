@@ -279,6 +279,44 @@ foreach ($root in @($env:BOUNDARY_WORKSPACE, $env:BOUNDARY_TEMP)) {
     [IO.Directory]::Delete((Join-Path $root 'delete-dir'))
 }
 $outsideRead = [IO.File]::ReadAllText((Join-Path $env:BOUNDARY_OUTSIDE 'keep.txt'))
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+public static class BoundaryFileAccess {
+    [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
+    private static extern SafeFileHandle CreateFileW(string path, uint access, uint share,
+        IntPtr security, uint disposition, uint flags, IntPtr template);
+    [DllImport("kernel32.dll", SetLastError=true)]
+    private static extern bool WriteFile(SafeFileHandle file, byte[] data, uint count,
+        out uint written, IntPtr overlapped);
+    public static int OpenError(string path, uint mask) {
+        using (var file = CreateFileW(path, mask, 7, IntPtr.Zero, 3, 0x02000000, IntPtr.Zero)) {
+            return file.IsInvalid ? Marshal.GetLastWin32Error() : 0;
+        }
+    }
+    public static int MaximumWriteError(string path) {
+        using (var file = CreateFileW(path, 0x02000000, 7, IntPtr.Zero, 3, 0, IntPtr.Zero)) {
+            if (file.IsInvalid) return Marshal.GetLastWin32Error();
+            uint written;
+            return WriteFile(file, new byte[] { 120 }, 1, out written, IntPtr.Zero)
+                ? 0 : Marshal.GetLastWin32Error();
+        }
+    }
+}
+'@
+$writeMasks = @(0x2, 0x4, 0x10, 0x100, 0x40, 0x10000, 0x40000, 0x80000,
+    0x3, 0x100100, 0x130089, 0x50000, 0x1A0089)
+$openRefused = @(
+    foreach ($path in @((Join-Path $env:BOUNDARY_OUTSIDE 'keep.txt'),
+                        $env:BOUNDARY_OUTSIDE,
+                        (Join-Path $env:BOUNDARY_ALIAS 'keep.txt'),
+                        $env:BOUNDARY_ALIAS,
+                        $env:BOUNDARY_HARDLINK)) {
+        foreach ($mask in $writeMasks) { [BoundaryFileAccess]::OpenError($path, $mask) }
+    }
+)
+$maximumWrite = [BoundaryFileAccess]::MaximumWriteError((Join-Path $env:BOUNDARY_OUTSIDE 'keep.txt'))
 $operations = @(
     { [IO.File]::WriteAllText((Join-Path $env:BOUNDARY_OUTSIDE 'keep.txt'), 'overwritten') },
     { [IO.File]::WriteAllText((Join-Path $env:BOUNDARY_OUTSIDE 'created.txt'), 'outside') },
@@ -294,7 +332,8 @@ for ($index = 0; $index -lt $operations.Length; $index++) {
         $refused[$index] = $cause.HResult -band 0xFFFF
     }
 }
-@{ outside_read = $outsideRead; refused = $refused } | ConvertTo-Json -Compress
+@{ outside_read = $outsideRead; refused = $refused; open_refused = $openRefused;
+   maximum_write = $maximumWrite } | ConvertTo-Json -Compress
 "#;
     let mut env_map = std::collections::HashMap::from([
         (
@@ -308,6 +347,31 @@ for ($index = 0; $index -lt $operations.Length; $index++) {
     ]);
     let system_root = std::env::var("SystemRoot")?;
     env_map.insert("SystemRoot".to_owned(), system_root.clone());
+    let permissions = crate::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+        &permission_profile,
+        &workspace_roots,
+    )?;
+    crate::run_elevated_setup(
+        crate::SandboxSetupRequest {
+            permissions: &permissions,
+            command_cwd: &allowed[0],
+            env_map: &env_map,
+            codex_home: codex_home.path(),
+            proxy_enforced: false,
+        },
+        crate::SetupRootOverrides::default(),
+    )?;
+    // Add ordinary aliases after grants exist. Their resolved target keeps its
+    // original descriptor; a writable path spelling must not grant target rights.
+    let alias = allowed[0].join("outside-alias");
+    let hardlink = allowed[0].join("outside-hardlink.txt");
+    std::os::windows::fs::symlink_dir(&outside, &alias)?;
+    std::fs::hard_link(outside.join("keep.txt"), &hardlink)?;
+    env_map.insert("BOUNDARY_ALIAS".to_owned(), alias.display().to_string());
+    env_map.insert(
+        "BOUNDARY_HARDLINK".to_owned(),
+        hardlink.display().to_string(),
+    );
     let powershell = std::path::Path::new(&system_root)
         .join("System32")
         .join("WindowsPowerShell")
@@ -342,8 +406,12 @@ for ($index = 0; $index -lt $operations.Length; $index++) {
     struct BoundaryObservation {
         outside_read: String,
         refused: [Option<i32>; 4],
+        open_refused: Vec<i32>,
+        maximum_write: i32,
     }
     let observation: BoundaryObservation = serde_json::from_slice(&output.stdout)?;
+    assert_eq!(observation.open_refused, vec![5; 65]);
+    assert_eq!(observation.maximum_write, 5);
     let outside_read = observation.outside_read;
     let refused = observation
         .refused

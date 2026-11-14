@@ -77,6 +77,7 @@ fn retry_uses_original_unified_exec_request_and_stops_after_second_failure() {
             real_codex_home: PathBuf::from(r"C:\Users\codex"),
             cap_sids: vec!["S-1-15-3-1024-1".to_string()],
             read_cap_sids: vec!["S-1-5-21-9-8-7-6".to_string()],
+            read_scope: crate::WindowsSandboxReadScope::CapabilityRoots,
             network_proxy_restricting_sid: Some("S-1-5-21-100-200-300-400".to_string()),
             timeout_ms: Some(5_000),
             tty: true,

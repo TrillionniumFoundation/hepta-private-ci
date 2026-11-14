@@ -39,8 +39,11 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
+use windows_sys::Win32::System::Com::CoTaskMemFree;
 use windows_sys::Win32::System::SystemInformation::GetSystemDirectoryW;
 use windows_sys::Win32::System::SystemInformation::GetWindowsDirectoryW;
+use windows_sys::Win32::UI::Shell::FOLDERID_ProgramData;
+use windows_sys::Win32::UI::Shell::SHGetKnownFolderPath;
 
 use crate::AcceptanceError;
 use crate::ceremony::random_hex;
@@ -51,6 +54,48 @@ pub(super) fn system_directory() -> io::Result<PathBuf> {
 
 pub(super) fn windows_directory() -> io::Result<PathBuf> {
     system_path(GetWindowsDirectoryW)
+}
+
+pub(super) fn program_data_directory() -> io::Result<PathBuf> {
+    // Win32-OpenSSH requires ProgramData during initialization, before its
+    // standard streams exist. Obtain the machine path from Windows, never
+    // from an inherited environment variable or a path search.
+    let mut pointer = ptr::null_mut();
+    // SAFETY: the known-folder identifier and output pointer are live. Windows
+    // returns a NUL-terminated allocation that must be freed with CoTaskMemFree.
+    let status = unsafe {
+        SHGetKnownFolderPath(
+            &FOLDERID_ProgramData,
+            /*dwflags*/ 0,
+            ptr::null_mut(),
+            &mut pointer,
+        )
+    };
+    let result = if status < 0 || pointer.is_null() {
+        Err(io::Error::other(format!(
+            "Windows ProgramData query failed with HRESULT {status:#010x}"
+        )))
+    } else {
+        let mut length = 0;
+        // SAFETY: successful SHGetKnownFolderPath returns a valid NUL-terminated
+        // UTF-16 string; the bound also rejects an unsupported oversized path.
+        while length < 32_768 && unsafe { *pointer.add(length) } != 0 {
+            length += 1;
+        }
+        if length == 0 || length == 32_768 {
+            Err(io::Error::other(
+                "Windows ProgramData path is out of bounds",
+            ))
+        } else {
+            // SAFETY: the preceding scan established these initialized units.
+            let units = unsafe { std::slice::from_raw_parts(pointer, length) };
+            Ok(PathBuf::from(OsString::from_wide(units)))
+        }
+    };
+    // SAFETY: the API requires freeing this allocation even on failure; NULL
+    // is explicitly accepted by CoTaskMemFree.
+    unsafe { CoTaskMemFree(pointer.cast()) };
+    result
 }
 
 fn system_path(query: unsafe extern "system" fn(*mut u16, u32) -> u32) -> io::Result<PathBuf> {

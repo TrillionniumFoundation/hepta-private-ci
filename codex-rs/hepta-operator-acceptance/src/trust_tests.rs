@@ -130,9 +130,14 @@ impl TrustFixture {
             .expect("trusted system ssh-keygen")
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
-            .status()
+            .output()
             .expect("start ssh-keygen");
-        assert!(generated.success(), "generate test-only Ed25519 key");
+        assert!(
+            generated.status.success(),
+            "generate test-only Ed25519 key: status {:?}; stderr {}",
+            generated.status,
+            String::from_utf8_lossy(&generated.stderr),
+        );
 
         let public =
             std::fs::read_to_string(key.with_extension("pub")).expect("read generated public key");

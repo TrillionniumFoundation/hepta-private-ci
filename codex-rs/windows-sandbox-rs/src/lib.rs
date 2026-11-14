@@ -91,6 +91,8 @@ mod process;
 #[cfg(target_os = "windows")]
 mod read_capability;
 #[cfg(target_os = "windows")]
+pub use read_capability::WindowsSandboxReadScope;
+#[cfg(target_os = "windows")]
 mod read_capability_acl;
 #[cfg(target_os = "windows")]
 pub use read_capability_acl::grant_read_capability_for_root;
@@ -355,6 +357,8 @@ pub use token::create_readonly_token_with_cap_from;
 pub use token::create_readonly_token_with_caps_and_user_from;
 #[cfg(target_os = "windows")]
 pub use token::create_readonly_token_with_caps_from;
+#[cfg(target_os = "windows")]
+pub use token::create_workspace_write_token_for_read_scope;
 #[cfg(target_os = "windows")]
 pub use token::create_workspace_write_token_with_caps_and_user_from;
 #[cfg(target_os = "windows")]

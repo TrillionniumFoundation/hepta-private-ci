@@ -1,3 +1,4 @@
+use crate::read_capability::WindowsSandboxReadScope;
 use crate::token::enable_single_privilege;
 use crate::token::get_logon_sid_bytes;
 use crate::token::get_user_sid_bytes;
@@ -17,8 +18,9 @@ use windows_sys::Win32::Security::IsValidSid;
 use windows_sys::Win32::Security::LUA_TOKEN;
 use windows_sys::Win32::Security::SID_AND_ATTRIBUTES;
 use windows_sys::Win32::Security::TokenGroups;
+use windows_sys::Win32::Security::WRITE_RESTRICTED;
 
-/// Restricts every access check, including DELETE and FILE_DELETE_CHILD.
+/// Restricts access to capability grants using the request's read scope.
 ///
 /// Read capabilities and network route markers may satisfy only the explicit
 /// object grants made for those identities. They never receive default-DACL
@@ -32,6 +34,7 @@ pub(crate) unsafe fn create_workspace_token(
     base: HANDLE,
     write_capabilities: &[*mut c_void],
     additional_restricting_sids: &[*mut c_void],
+    read_scope: WindowsSandboxReadScope,
 ) -> Result<HANDLE> {
     anyhow::ensure!(
         !write_capabilities.is_empty(),
@@ -67,10 +70,16 @@ pub(crate) unsafe fn create_workspace_token(
         }
     }
     let mut token = 0;
+    let flags = DISABLE_MAX_PRIVILEGE
+        | LUA_TOKEN
+        | match read_scope {
+            WindowsSandboxReadScope::CapabilityRoots => 0,
+            WindowsSandboxReadScope::FullDisk => WRITE_RESTRICTED,
+        };
     if unsafe {
         CreateRestrictedToken(
             base,
-            DISABLE_MAX_PRIVILEGE | LUA_TOKEN,
+            flags,
             /*disablesidcount*/ 0,
             std::ptr::null(),
             /*deleteprivilegecount*/ 0,
@@ -107,3 +116,7 @@ pub(crate) unsafe fn create_workspace_token(
 #[cfg(test)]
 #[path = "workspace_token_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "workspace_access_tests.rs"]
+mod access_tests;
