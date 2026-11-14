@@ -79,6 +79,25 @@ to produce a new artifact and inspect the **actual current SHA's** job conclusio
 before any claim. Its access token is read-only and not persisted; it grants no
 producer/consumer authority.
 
+## Failure diagnostics
+
+Masked mean pooling guarantees neither an amplitude bound nor compatibility
+with the projector's per-coordinate `[-8,8]` input contract. A rejection keeps
+the original exception, failure exit and false acceptance fields.
+
+If projection rejects a captured feature, the new failure record adds only a
+bounded numeric diagnostic: the current input index, completed input count,
+shape, feature-byte digest, finite extrema, nonfinite count and first index,
+and the count and first coordinate outside the existing Q24 input limit.
+It retains neither full feature vectors nor input text. Other failure stages
+have no feature diagnostic. Synthetic encoder doubles test this recorder and
+the unchanged Q24 rejection; they are not pretrained execution evidence.
+
+These optional diagnostics apply to the new attempt only. Earlier failure
+archives without coordinates or extrema remain unchanged and cannot be
+retrospectively populated from a later run. No normalization, clipping, input
+selection, model pin or Q24 threshold is changed.
+
 ## Still blocking E0
 
 1. The diagnostic projector is **not** a data-trained, independently selected,

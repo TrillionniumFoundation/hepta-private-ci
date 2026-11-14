@@ -12,6 +12,7 @@ import hashlib
 import importlib.abc
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import resource
@@ -262,6 +263,7 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
     require(str(torch.__version__).startswith("2.10.0"), "Torch version drift")
     output.mkdir(parents=True)
     started = time.perf_counter_ns()
+    projection_failure = None
     try:
         hf_source = sources.modules["hf_encoder_kernel"]["snapshot"].parent
         snapshot = ensure_snapshot(output, hf_source=hf_source)
@@ -296,7 +298,32 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
                 require(feature.ndim == 1 and len(feature) == WIDTH,
                         "non-768 actual encoder result")
                 vector = feature.tolist()
-                projected = projection.project_float32(vector)
+                try:
+                    projected = projection.project_float32(vector)
+                except ValueError:
+                    finite = [value for value in vector if math.isfinite(value)]
+                    outside = [(index, value) for index, value in enumerate(vector)
+                               if math.isfinite(value) and abs(value) > 8]
+                    projection_failure = {
+                        "schema": "hepta.e0.projection-input-diagnostic.v1",
+                        "input_index": len(values),
+                        "completed_inputs": len(values),
+                        "feature_shape": [len(vector)],
+                        "feature_f32_sha256": feature_hash(vector),
+                        "finite_values": len(finite),
+                        "nonfinite_values": len(vector) - len(finite),
+                        "finite_minimum": min(finite, default=None),
+                        "finite_maximum": max(finite, default=None),
+                        "first_nonfinite_index": next(
+                            (index for index, value in enumerate(vector)
+                             if not math.isfinite(value)), None),
+                        "q24_input_limit": 8,
+                        "outside_input_bound_count": len(outside),
+                        "first_outside_input_bound": (
+                            {"index": outside[0][0], "value": outside[0][1]}
+                            if outside else None),
+                    }
+                    raise
                 elapsed = time.perf_counter_ns() - tick
                 require(len(projected) == NATIVE_WIDTH, "native width bound violated")
                 logits = control_readout(native_bridge, projected)
@@ -365,7 +392,9 @@ def _run_bound(*, output: Path, sources: ProjectSourceLoader) -> dict:
         (output / "FAILED.json").open("x", encoding="utf-8").write(
             json.dumps({"schema": SCHEMA, "completed": False,
                         "error_type": type(exc).__name__, "e0_accepted": False,
-                        "production_authorized": False}, indent=2) + "\n")
+                        "production_authorized": False,
+                        "projection_input_diagnostic": projection_failure},
+                       indent=2, allow_nan=False) + "\n")
         raise
 
 

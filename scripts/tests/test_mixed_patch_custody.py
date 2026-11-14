@@ -240,7 +240,7 @@ class MixedPatchParserRegressionTests(unittest.TestCase):
             b"line\n",
             b"without final newline",
             b"crlf\r\n",
-            b"caf\xc3\xa9\n\n",
+            b"\x63\x61\x66\xc3\xa9\n\n",
             b"embedded\rcarriage\n",
         ):
             with self.subTest(raw=raw):

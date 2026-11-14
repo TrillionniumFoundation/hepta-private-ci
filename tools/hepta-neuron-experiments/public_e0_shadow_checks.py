@@ -178,5 +178,145 @@ class ProjectSourceBindingTests(unittest.TestCase):
             self.assertFalse(snapshot.exists())
 
 
+
+class E0ProjectionDiagnosticsTests(unittest.TestCase):
+    """Synthetic encoder doubles exercise failure records, never model execution."""
+
+    class Feature(list):
+        ndim = 1
+
+        def tolist(self):
+            return list(self)
+
+    def invoke(self, output, vectors, snapshot_error=None):
+        self.forward = mock.Mock(
+            side_effect=[(self.Feature(vector), 12) for vector in vectors])
+        self.guard = mock.Mock()
+        checkpoint = types.SimpleNamespace(
+            head=types.SimpleNamespace(
+                register_forward_pre_hook=mock.Mock(return_value=self.guard)))
+        encoder = types.SimpleNamespace(config=types.SimpleNamespace(hidden_size=768))
+        modules = {
+            "torch": types.SimpleNamespace(
+                __version__="2.10.0", set_num_threads=mock.Mock()),
+            "transformers": types.SimpleNamespace(
+                __version__="4.57.1",
+                AutoTokenizer=types.SimpleNamespace(
+                    from_pretrained=mock.Mock(return_value=object()))),
+            "hf_encoder_kernel": types.SimpleNamespace(
+                snapshot_digest=mock.Mock(return_value=e0.SNAPSHOT_SHA256),
+                vectorize_case=self.forward,
+                verify_loaded_safetensors=mock.Mock()),
+            "hf_complete_checkpoint": types.SimpleNamespace(
+                TIED_ALIASES={},
+                load_complete_mlm=mock.Mock(return_value=(
+                    checkpoint, encoder,
+                    {"checkpoint_parameters": 1, "feature_parameters": 1}))),
+        }
+        sources = types.SimpleNamespace(
+            modules={"hf_encoder_kernel": {
+                "snapshot": output.parent / "synthetic" / "hf_encoder_kernel.py"}},
+            loaded_sources=lambda: [])
+
+        def pinned_file(path):
+            return (e0.MODEL_WEIGHT_SHA256 if path.name == "model.safetensors"
+                    else "b" * 64)
+
+        with mock.patch.dict(sys.modules, modules), \
+                mock.patch.object(e0, "ensure_snapshot",
+                                  return_value=output.parent / "synthetic-snapshot",
+                                  side_effect=snapshot_error), \
+                mock.patch.object(e0, "file_sha256", side_effect=pinned_file):
+            return e0._run_bound(output=output, sources=sources)
+
+    def expected_diagnostic(self, vector, completed, **observed):
+        return {
+            "schema": "hepta.e0.projection-input-diagnostic.v1",
+            "input_index": completed,
+            "completed_inputs": completed,
+            "feature_shape": [768],
+            "feature_f32_sha256": e0.feature_hash(vector),
+            "q24_input_limit": 8,
+            **observed,
+        }
+
+    def test_projection_rejection_retains_bounded_current_input_diagnostic(self):
+        vector = [0.0] * 768
+        vector[7], vector[767] = -9.0, 10.0
+        for completed in (0, 1):
+            with self.subTest(completed=completed), tempfile.TemporaryDirectory() as td:
+                output = Path(td) / "attempt"
+                with self.assertRaisesRegex(ValueError, r"Q24 input outside \[-8,8\]"):
+                    self.invoke(output, [[0.0] * 768] * completed + [vector])
+                raw = (output / "FAILED.json").read_bytes()
+                record = json.loads(raw)
+                self.assertEqual(record.get("projection_input_diagnostic"),
+                                 self.expected_diagnostic(
+                                     vector, completed, finite_values=768,
+                                     nonfinite_values=0, finite_minimum=-9.0,
+                                     finite_maximum=10.0, first_nonfinite_index=None,
+                                     outside_input_bound_count=2,
+                                     first_outside_input_bound={
+                                         "index": 7, "value": -9.0}))
+                self.assertEqual(
+                    {key: record[key] for key in (
+                        "schema", "completed", "error_type",
+                        "e0_accepted", "production_authorized")},
+                    {"schema": e0.SCHEMA, "completed": False,
+                     "error_type": "ValueError", "e0_accepted": False,
+                     "production_authorized": False})
+                self.assertLess(len(raw), 2048)
+                self.assertFalse((output / "shadow.json").exists())
+                self.assertEqual(self.forward.call_count, completed + 1)
+                self.guard.remove.assert_called_once()
+
+    def test_nonfinite_rejection_record_contains_no_nonfinite_json_number(self):
+        vector = [0.0] * 768
+        vector[17] = float("nan")
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "attempt"
+            with self.assertRaisesRegex(ValueError, "non-finite numeric feature"):
+                self.invoke(output, [vector])
+            raw = (output / "FAILED.json").read_text()
+            record = json.loads(raw)
+            self.assertEqual(record.get("projection_input_diagnostic"),
+                             self.expected_diagnostic(
+                                 vector, 0, finite_values=767, nonfinite_values=1,
+                                 finite_minimum=0.0, finite_maximum=0.0,
+                                 first_nonfinite_index=17,
+                                 outside_input_bound_count=0,
+                                 first_outside_input_bound=None))
+            self.assertNotIn("NaN", raw)
+            self.assertFalse((output / "shadow.json").exists())
+
+    def test_failure_before_projection_does_not_invent_feature_diagnostic(self):
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "attempt"
+            failure = ValueError("synthetic checkpoint preparation failed")
+            with self.assertRaises(ValueError) as raised:
+                self.invoke(output, [], snapshot_error=failure)
+            self.assertIs(raised.exception, failure)
+            record = json.loads((output / "FAILED.json").read_text())
+            self.assertIsNone(record.get("projection_input_diagnostic"))
+            self.assertFalse(record["completed"])
+            self.forward.assert_not_called()
+            self.assertFalse((output / "shadow.json").exists())
+
+    def test_successful_synthetic_route_keeps_original_shadow_semantics(self):
+        vectors = [[0.0] * 768, [0.125] * 768, [0.0] * 768]
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "attempt"
+            result = self.invoke(output, vectors)
+            self.assertEqual(result, json.loads((output / "shadow.json").read_text()))
+            self.assertEqual(result["actual_hf_forward_calls"], 3)
+            self.assertTrue(result["repeat_input_exact"])
+            self.assertTrue(result["distinct_input_survived"])
+            self.assertFalse(result["e0_accepted"])
+            self.assertFalse(result["production_authorized"])
+            self.assertNotIn("projection_input_diagnostic", result)
+            self.assertFalse((output / "FAILED.json").exists())
+            self.guard.remove.assert_called_once()
+
+
 if __name__ == "__main__":
     unittest.main()
