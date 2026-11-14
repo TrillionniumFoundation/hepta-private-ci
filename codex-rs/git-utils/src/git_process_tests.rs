@@ -37,19 +37,19 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     };
     #[cfg(windows)]
     let mut command = {
-        let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
-        };
-        command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+        // Spawn this same test executable as the wrapper rather than building
+        // a nested PowerShell -Command string. Start-Process joins its argument
+        // array, which loses quoting for child scripts on Windows.
+        let mut command = Command::new(std::env::current_exe().expect("test executable"));
+        command.args(["--exact", WINDOWS_PROCESS_TREE_HELPER, "--nocapture"]);
+        command.env(WINDOWS_PROCESS_TREE_ROLE, "wrapper");
+        command.env(
+            WINDOWS_PROCESS_TREE_LIFETIME,
+            match wrapper_lifetime {
+                GitWrapperLifetime::WaitForChild => "wait",
+                GitWrapperLifetime::ExitBeforeTimeout => "exit",
+            },
+        );
         command
     };
     command
@@ -115,6 +115,85 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .stderr(Stdio::null())
         .status();
     panic!("Git wrapper child process {child_pid} survived timeout cleanup");
+}
+
+#[cfg(windows)]
+const WINDOWS_PROCESS_TREE_HELPER: &str = "git_process::tests::windows_process_tree_helper";
+#[cfg(windows)]
+const WINDOWS_PROCESS_TREE_ROLE: &str = "CODEX_GIT_PROCESS_TREE_TEST_ROLE";
+#[cfg(windows)]
+const WINDOWS_PROCESS_TREE_LIFETIME: &str = "CODEX_GIT_PROCESS_TREE_TEST_LIFETIME";
+
+#[cfg(windows)]
+fn wait_for_test_file(path: &std::path::Path) {
+    let deadline = std::time::Instant::now() + Duration::from_secs(30);
+    while !path.exists() {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "process-tree helper timed out waiting for {}",
+            path.display()
+        );
+        std::thread::sleep(Duration::from_millis(25));
+    }
+}
+
+/// Child and wrapper are separate OS processes inside the actual Windows
+/// job object. The helper stays a normal passing test without the role env.
+#[cfg(windows)]
+#[test]
+fn windows_process_tree_helper() {
+    let Ok(role) = std::env::var(WINDOWS_PROCESS_TREE_ROLE) else {
+        return;
+    };
+    let child_pid_file =
+        std::path::PathBuf::from(std::env::var_os("CHILD_PID_FILE").expect("child PID path"));
+    let child_ready_file =
+        std::path::PathBuf::from(std::env::var_os("CHILD_READY_FILE").expect("child ready path"));
+    let release_child_file = std::path::PathBuf::from(
+        std::env::var_os("RELEASE_CHILD_FILE").expect("release child path"),
+    );
+    let child_survived_file = std::path::PathBuf::from(
+        std::env::var_os("CHILD_SURVIVED_FILE").expect("child survived path"),
+    );
+    let release_wrapper_file = std::path::PathBuf::from(
+        std::env::var_os("RELEASE_WRAPPER_FILE").expect("release wrapper path"),
+    );
+    match role.as_str() {
+        "wrapper" => {
+            let mut child =
+                std::process::Command::new(std::env::current_exe().expect("test executable"));
+            child
+                .args(["--exact", WINDOWS_PROCESS_TREE_HELPER, "--nocapture"])
+                .env(WINDOWS_PROCESS_TREE_ROLE, "child")
+                .stdin(Stdio::null())
+                // Retain the wrapper's pipes in the descendant even if the
+                // wrapper exits first: the caller must time out and terminate
+                // the tree while wait_with_output still awaits pipe EOF.
+                .stdout(Stdio::inherit())
+                .stderr(Stdio::inherit());
+            let mut child = child.spawn().expect("spawn contained child");
+            std::fs::write(&child_pid_file, child.id().to_string())
+                .expect("record contained child PID");
+            match std::env::var(WINDOWS_PROCESS_TREE_LIFETIME)
+                .expect("wrapper lifetime")
+                .as_str()
+            {
+                "wait" => {
+                    child.wait().expect("wait for contained child");
+                }
+                "exit" => wait_for_test_file(&release_wrapper_file),
+                lifetime => panic!("unexpected wrapper lifetime {lifetime}"),
+            }
+        }
+        "child" => {
+            std::fs::write(&child_ready_file, "ready").expect("signal child readiness");
+            wait_for_test_file(&release_child_file);
+            std::thread::sleep(Duration::from_secs(1));
+            std::fs::write(&child_survived_file, "survived").expect("record surviving child");
+            std::thread::sleep(Duration::from_secs(60));
+        }
+        role => panic!("unexpected process-tree helper role {role}"),
+    }
 }
 
 #[tokio::test]
