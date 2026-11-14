@@ -1,7 +1,7 @@
-//! Compile-time linkage contract for every Lane E operation registered in the
-//! closed-world implementation matrix. The test intentionally performs no
-//! authority-bearing action; it proves that mapped symbols are public and
-//! available to a real cross-crate consumer.
+//! Compile-time linkage contract for the default Lane E production surface.
+//! Compatibility-only Bellman/operator entry points are intentionally excluded;
+//! the default cross-crate consumer links canonical profiles, one-shot final-use
+//! capabilities and opaque pinned loading.
 
 use codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1;
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreError;
@@ -85,23 +85,28 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
     let _ = codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
 
-    let _ = codex_hepta_bellman_operator::build_targets;
     let _ = codex_hepta_bellman_operator::validate_applicability_certificate;
     let _ = codex_hepta_bellman_operator::build_sensor_core;
+    let _ = codex_hepta_bellman_operator::build_sensor_core_controlled_v2;
     let _ = codex_hepta_bellman_operator::evaluate_bellman_reference;
     let _ = codex_hepta_bellman_operator::admit_operator_regularity;
-    let _ = codex_hepta_bellman_operator::fit_transition_model;
-    let _ = codex_hepta_bellman_operator::predict_transition;
-    let _ = codex_hepta_bellman_operator::fit_tabular_operator;
-    let _ = codex_hepta_bellman_operator::predict_tabular_operator;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
+    let _ = codex_hepta_bellman_operator::fit_tabular_operator_strict_controlled_v3;
     let _ = codex_hepta_bellman_operator::predict_tabular_operator_indexed_v2;
     let _ = codex_hepta_bellman_operator::validate_applicability_with_signed_evidence_v2;
     let _ = codex_hepta_bellman_operator::admit_operator_regularity_with_signed_evidence_v2;
-    let _ = codex_hepta_bellman_operator::verify_tabular_operator_plan_v2;
-    let _ = codex_hepta_bellman_operator::fit_tabular_operator_verified_v2;
-    let _ = codex_hepta_bellman_operator::verify_world_model_dataset_v2;
-    let _ = codex_hepta_bellman_operator::fit_transition_model_verified_v2;
+    let _ = codex_hepta_bellman_operator::RuntimeLimitsV1::new;
+    let _ = codex_hepta_bellman_operator::TrainingProfileV1::new;
+    let _ = codex_hepta_bellman_operator::WorldModelProfileV1::new;
+    let _ = codex_hepta_bellman_operator::WorkControlV1::new;
+    let _ = codex_hepta_bellman_operator::verify_tabular_operator_plan_v3;
+    let _ = codex_hepta_bellman_operator::fit_tabular_operator_verified_v3;
+    let _ = codex_hepta_bellman_operator::revalidate_tabular_candidate_for_publication_v3;
+    let _ = codex_hepta_bellman_operator::PublicationReadyTabularCandidateV3::prepare_pinned_payload;
+    let _ = codex_hepta_bellman_operator::PreparedTabularPayloadV3::into_loaded;
+    let _ = codex_hepta_bellman_operator::verify_world_model_dataset_v3;
+    let _ = codex_hepta_bellman_operator::fit_transition_model_verified_v3;
+    let _ = codex_hepta_bellman_operator::revalidate_world_model_candidate_for_publication_v3;
 
     let _ = codex_hepta_intelligence_eval::estimate_ope;
     let _ = codex_hepta_intelligence_eval::estimate_cluster_intervals;

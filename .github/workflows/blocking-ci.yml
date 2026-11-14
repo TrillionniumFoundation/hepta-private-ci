@@ -135,6 +135,17 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
+  learning-operator-qualification:
+    name: learning.operator qualification
+    needs: scope
+    if: needs.scope.outputs.learning == 'true' || needs.scope.outputs.full_repo == 'true'
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/learning-operator-required.yml
+    secrets: inherit
+
   hepta-scoped:
     name: Hepta scoped native checks
     needs: scope
@@ -433,6 +444,7 @@ jobs:
       - repo-checks
       - rust-ci
       - sdk
+      - learning-operator-qualification
       - hepta-scoped
       - ledgerwriter-owner-replay
       - lightweight
@@ -446,6 +458,7 @@ jobs:
       - name: Require successful applicable dependencies
         env:
           NEEDS: ${{ toJSON(needs) }}
+          LEARNING: ${{ needs.scope.outputs.learning }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
           LEDGERWRITER_REPLAY_REQUESTED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
@@ -456,6 +469,7 @@ jobs:
             python3 - <<'PY'
           import json
           import os
+          learning = os.environ["LEARNING"] == "true"
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           replay_requested = os.environ["LEDGERWRITER_REPLAY_REQUESTED"] == "true"
@@ -466,6 +480,8 @@ jobs:
               allowed.append("hepta-contract-gate")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+          if not (learning or full):
+              allowed.append("learning-operator-qualification")
           if not (native and not full):
               allowed.append("hepta-scoped")
           if not (not native and not full):
