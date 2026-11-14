@@ -110,6 +110,28 @@ def main():
                 subprocess.run(command, check=True, capture_output=True, timeout=60)
                 row["link_command"] = command
                 row["linker_role"] = "links HIA-emitted object; no C/Rust code generation"
+                # Each HIA component exports f0. Rename the generated ELF entry
+                # for simultaneous linkage; all algorithm code remains HIA.
+                public_symbol = f"codex_hia_{name}"
+                named_obj = output / f"{name}.namespaced.o"
+                objcopy_command = ["objcopy", f"--redefine-sym=f0={public_symbol}",
+                                   str(obj), str(named_obj)]
+                subprocess.run(objcopy_command, check=True, capture_output=True, timeout=60)
+                named_library = output / f"lib{public_symbol}.so"
+                named_link_command = [
+                    "ld", "-m", "elf_x86_64", "-shared", "-z", "defs", "-z",
+                    "noexecstack", "-z", "relro", "-z", "now", "--build-id=none",
+                    str(named_obj), "-o", str(named_library),
+                ]
+                subprocess.run(named_link_command, check=True, capture_output=True, timeout=60)
+                row["codex_link_abi"] = {
+                    "symbol": public_symbol, "library": named_library.name,
+                    "object_sha256": digest(named_obj),
+                    "library_sha256": digest(named_library),
+                    "objcopy_command": objcopy_command,
+                    "link_command": named_link_command,
+                    "scope": "ELF namespaced symbol; HIA-compiled machine implementation",
+                }
             row["library_sha256"] = digest(library)
             row["library_bytes"] = library.stat().st_size
             row["build_status"] = "built_not_yet_behaviorally_verified"

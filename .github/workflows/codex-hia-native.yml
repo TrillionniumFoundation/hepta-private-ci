@@ -4,13 +4,13 @@ on:
   push:
     paths:
       - hia/**
-      - codex-rs/apply-patch/src/seek_sequence.rs
+      - codex-rs/apply-patch/**
       - codex-rs/utils/string/src/lib.rs
       - .github/workflows/codex-hia-native.yml
   pull_request:
     paths:
       - hia/**
-      - codex-rs/apply-patch/src/seek_sequence.rs
+      - codex-rs/apply-patch/**
       - codex-rs/utils/string/src/lib.rs
       - .github/workflows/codex-hia-native.yml
   workflow_dispatch:
@@ -105,6 +105,18 @@ jobs:
                   raise SystemExit(f"required verification was skipped: {field}")
           PY
 
+      - name: Test real native patch caller and ABI rejection boundary
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          libdir="$RUNNER_TEMP/hia-native"
+          "$RUSTC" --edition=2024 --test --cfg 'feature="hia-native"' \
+            codex/hia/tests/native_patch_caller.rs \
+            -L "native=$libdir" -l dylib=codex_hia_seek_sequence \
+            -o "$RUNNER_TEMP/hia-patch-caller-tests"
+          LD_LIBRARY_PATH="$libdir" "$RUNNER_TEMP/hia-patch-caller-tests" --nocapture \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-caller.log"
+
       - name: Upload original build and test results
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -115,6 +127,7 @@ jobs:
           path: |
             ${{ runner.temp }}/hia-native/build.json
             ${{ runner.temp }}/hia-toolchain.log
+            ${{ runner.temp }}/hia-patch-caller.log
             ${{ runner.temp }}/hia-build.log
             ${{ runner.temp }}/hia-seek-sequence.json
             ${{ runner.temp }}/hia-seek-sequence.log

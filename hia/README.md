@@ -240,3 +240,29 @@ The present candidate has no legacy paths ready for retirement. Completing
 production dispatch is the next prerequisite for removing either original
 function; the wider capability map determines the rest of the repository
 cleanup.
+
+
+## Experimental Codex patch-caller integration
+
+The native-selfhost build also emits ELF namespaced shared libraries,
+libcodex_hia_seek_sequence.so and libcodex_hia_utf8_boundaries.so. These are
+derived from the B3-emitted objects with GNU objcopy symbol renaming and GNU ld.
+This permits both components in a single process without f0 symbol collision.
+The original f0 shared libraries remain available for original-Rust comparison.
+
+The opt-in codex-apply-patch hia-native feature routes the actual file-update
+seek_sequence call sites through the HIA-produced machine implementation. Its
+Rust adapter only constructs and decodes the established borrowed-buffer ABI.
+Set CODEX_HIA_NATIVE_LIB_DIR to the native build output when building with this
+feature, and make that directory available to the dynamic loader at runtime.
+
+If framing exceeds the locked 1 MiB capacity, native patch matching raises a
+ComputeReplacements error rather than silently reporting "no match". The
+original Rust matcher remains the default implementation while this feature
+undergoes whole-crate, full apply-patch and platform acceptance. No production
+release is migrated merely by introducing the feature. The native caller's
+source-level parity and oversize boundary are tested independently in
+hia/tests/native_patch_caller.rs, using the actual namespaced HIA ELF.
+
+This is Linux x86-64 only. Runtime packaging, cancellation/deadline behavior,
+large-input strategy, full crate tests and any other Codex owner remain pending.
