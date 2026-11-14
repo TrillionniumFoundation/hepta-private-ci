@@ -99,7 +99,8 @@ class ComparatorSourceIntentTest(unittest.TestCase):
                     "passed": True,
                     "max_abs_error_hex": "0x0.0p+0",
                     "sum_abs_error_hex": "0x0.0p+0",
-                    "threshold_hex": "0x1.0p-10",
+                    "max_abs_threshold_hex": "0x1.0000000000000p-10",
+                    "sum_abs_threshold_hex": "0x1.0000000000000p-10",
                 }
                 for name in ("candidate", "oracle")
             },
@@ -120,6 +121,16 @@ class ComparatorSourceIntentTest(unittest.TestCase):
         cancelled["signed_error_cancellation_used"] = True
         with self.assertRaisesRegex(ValueError, "cancellation"):
             validate_future_manifest(cancelled)
+        forged_pass = copy.deepcopy(manifest)
+        forged_pass["separate_error_gates"]["candidate"]["max_abs_error_hex"] = (
+            "0x1.0000000000000p-9"
+        )
+        with self.assertRaisesRegex(ValueError, "did not pass independently"):
+            validate_future_manifest(forged_pass)
+        noncanonical = copy.deepcopy(manifest)
+        noncanonical["separate_error_gates"]["oracle"]["sum_abs_error_hex"] = "0x0p+0"
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            validate_future_manifest(noncanonical)
         not_exact = copy.deepcopy(manifest)
         not_exact["byte_exact_pairs"][2]["cold_loader_sha256"] = "b" * 64
         with self.assertRaisesRegex(ValueError, "not byte exact"):
