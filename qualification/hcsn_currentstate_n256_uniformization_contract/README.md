@@ -8,6 +8,8 @@ This stage performs no N256 propagation, matrix exponential, Poisson recurrence,
 
 The first local assertions-enabled fixture retained a RED: its intended non-contiguous-event mutation instead made a zero-width interval, so the fail-closed implementation rejected earlier than the test's expected error label. The repair changes only the synthetic mutation from a zero-width interval to an overlapping positive-width interval. It changes no source input, bound, count, or gate; that RED executed zero dynamics or numerical-provider calls.
 
+The first exact-head hosted run is also retained as RED. Both normal and optimized suites (4/4 each) and compilation passed, then the final verifier was launched by file path and could not resolve the repository-root `qualification` package. The repair changes only that workflow command to module-mode startup. The RED performed zero dynamics, matrix exponentials, Poisson recurrences, candidate/oracle calls, model calls, or optimizer steps.
+
 The bounded result is:
 
 - 255 exact generator rows;
