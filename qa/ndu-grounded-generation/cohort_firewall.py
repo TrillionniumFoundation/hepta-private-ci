@@ -47,8 +47,28 @@ class CohortContractError(ValueError):
     pass
 
 
+def read_bounded_bytes(path, maximum, *, label="evidence input"):
+    """Read one bounded regular descriptor; later paths cannot replace these bytes."""
+    if type(maximum) is not int or maximum <= 0:
+        raise CohortContractError("invalid evidence byte limit")
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
+    flags |= getattr(os, "O_NONBLOCK", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    with os.fdopen(os.open(path, flags), "rb") as handle:
+        metadata = os.fstat(handle.fileno())
+        if not stat.S_ISREG(metadata.st_mode):
+            raise CohortContractError(f"{label} must be a regular file")
+        if metadata.st_size > maximum:
+            raise CohortContractError(f"{label} byte limit exceeded")
+        raw = handle.read(maximum + 1)
+    if len(raw) > maximum:
+        raise CohortContractError(f"{label} byte limit exceeded")
+    return raw
+
+
 def decode_unambiguous_json(raw):
     """Reject ambiguous source evidence before normalizing a manifest."""
+
     def unique_pairs(pairs):
         result = {}
         for name, value in pairs:
@@ -72,12 +92,62 @@ def decode_unambiguous_json(raw):
         return number
 
     try:
-        return json.loads(raw, object_pairs_hook=unique_pairs,
-                          parse_constant=reject_constant, parse_float=finite_float)
+        return json.loads(
+            raw,
+            object_pairs_hook=unique_pairs,
+            parse_constant=reject_constant,
+            parse_float=finite_float,
+        )
     except CohortContractError:
         raise
-    except (UnicodeDecodeError, json.JSONDecodeError, RecursionError, ValueError) as error:
+    except (
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+        RecursionError,
+        ValueError,
+    ) as error:
         raise CohortContractError("invalid cohort JSON bytes") from error
+
+
+# Preserve the earlier identity-only API. CLI admission still additionally
+# checks the complete 256+384 roster and candidate JPEG bytes below.
+ORIGINAL_HISTORICAL_SHA256 = {
+    schema: value["sha256"] for schema, value in PINNED_HISTORIES.items()
+}
+
+
+def verify_frozen_history_pins(raw_documents, documents):
+    """Bind original history to the published, preregistered raw bytes.
+
+    This remains an image-provenance guard, not independent signer custody,
+    entity/pretraining disjointness, real learning efficacy or authority.
+    """
+    if len(raw_documents) != 2 or len(documents) != 2:
+        raise CohortContractError(
+            "v2 requires both original v1 and historical exclusions"
+        )
+    seen = set()
+    for index, (raw, document) in enumerate(zip(raw_documents, documents)):
+        if not isinstance(raw, bytes) or not isinstance(document, dict):
+            raise CohortContractError(
+                f"history:{index}: invalid original history input"
+            )
+        schema = document.get("schema")
+        if (
+            not isinstance(schema, str)
+            or schema not in ORIGINAL_HISTORICAL_SHA256
+            or schema in seen
+        ):
+            raise CohortContractError(
+                f"history:{index}: duplicated or unknown original history schema"
+            )
+        if hashlib.sha256(raw).hexdigest() != ORIGINAL_HISTORICAL_SHA256[schema]:
+            raise CohortContractError(
+                f"history:{index}: original frozen SHA256 mismatch"
+            )
+        seen.add(schema)
+    if seen != set(ORIGINAL_HISTORICAL_SHA256):
+        raise CohortContractError("original historical evidence set is incomplete")
 
 
 def _checked_image(row, origin, *, allow_image_id=False):
@@ -91,23 +161,32 @@ def _checked_image(row, origin, *, allow_image_id=False):
         identifier = f"coco:val2017:{image_id}"
     if not isinstance(identifier, str) or not identifier.strip():
         raise CohortContractError(f"{origin}: missing source_id")
-    if (len(identifier) > 256 or identifier != identifier.strip()
-            or any(ord(char) < 32 or ord(char) == 127 for char in identifier)):
+    if (
+        len(identifier) > 256
+        or identifier != identifier.strip()
+        or any(ord(char) < 32 or ord(char) == 127 for char in identifier)
+    ):
         raise CohortContractError(f"{origin}: noncanonical source_id")
     if allow_image_id and "image_id" in row:
         image_id = row["image_id"]
-        if (type(image_id) is not int or image_id < 0
-                or identifier != f"coco:val2017:{image_id}"):
+        if (
+            type(image_id) is not int
+            or image_id < 0
+            or identifier != f"coco:val2017:{image_id}"
+        ):
             raise CohortContractError(f"{origin}: source_id/image_id mismatch")
     keys = ("image_sha256", "decoded_rgb_sha256", "dhash64")
     for key, rule in zip(keys, (HEX256, HEX256, HEX64)):
         if not isinstance(row.get(key), str) or not rule.fullmatch(row[key]):
             raise CohortContractError(f"{origin}: missing or invalid {key}")
-    return {"origin": origin, "source_id": identifier,
-            # Only a four-split manifest carries score/journal task identity.
-            # Historical image-exclusion wrappers carry source identity only.
-            **({} if allow_image_id else {"task_id": row["task_id"]}),
-            **{key: row[key] for key in keys}}
+    return {
+        "origin": origin,
+        "source_id": identifier,
+        # Only a four-split manifest carries score/journal task identity.
+        # Historical image-exclusion wrappers carry source identity only.
+        **({} if allow_image_id else {"task_id": row["task_id"]}),
+        **{key: row[key] for key in keys},
+    }
 
 
 def load_sources(document, origin, *, historical=False):
@@ -115,41 +194,53 @@ def load_sources(document, origin, *, historical=False):
         raise CohortContractError(f"{origin}: manifest is not an object")
     if document.get("schema") == "hepta.ndu.historical-exclusions.v1":
         if not historical:
-            raise CohortContractError(f"{origin}: an exclusions wrapper cannot be a candidate cohort")
+            raise CohortContractError(
+                f"{origin}: an exclusions wrapper cannot be a candidate cohort"
+            )
         sample = document.get("source_sample")
         images = sample.get("images") if isinstance(sample, dict) else None
         if not isinstance(images, list) or not images:
             raise CohortContractError(f"{origin}: empty historical exclusions")
         if len(images) > MAX_HISTORICAL_SOURCES:
             raise CohortContractError(f"{origin}: historical source limit exceeded")
-        return [_checked_image(item, f"{origin}:prior:{n}", allow_image_id=True)
-                for n, item in enumerate(images)]
+        return [
+            _checked_image(item, f"{origin}:prior:{n}", allow_image_id=True)
+            for n, item in enumerate(images)
+        ]
     if document.get("schema") != "hepta.grounded-cohort.v1":
         raise CohortContractError(f"{origin}: unsupported manifest schema")
     splits = document.get("splits")
     if not isinstance(splits, dict) or set(splits) != set(SPLITS):
-        raise CohortContractError(f"{origin}: require exactly four original-source splits")
+        raise CohortContractError(
+            f"{origin}: require exactly four original-source splits"
+        )
     sources = []
     task_ids = set()
     for split in SPLITS:
         part = splits[split]
         if not isinstance(part, dict) or not isinstance(part.get("sources"), list):
             raise CohortContractError(f"{origin}:{split}: malformed source list")
-        if type(part.get("count")) is not int or part["count"] != len(part["sources"]) or not part["sources"]:
+        if (
+            type(part.get("count")) is not int
+            or part["count"] != len(part["sources"])
+            or not part["sources"]
+        ):
             raise CohortContractError(f"{origin}:{split}: empty or incorrect count")
         if len(part["sources"]) > MAX_CANDIDATE_SOURCES:
             raise CohortContractError(f"{origin}:{split}: source limit exceeded")
         for n, item in enumerate(part["sources"]):
             task_id = item.get("task_id") if isinstance(item, dict) else None
             if not isinstance(task_id, str) or not TASK_ID_RE.fullmatch(task_id):
-                raise CohortContractError(f"{origin}:{split}:{n}: missing or noncanonical task_id")
+                raise CohortContractError(
+                    f"{origin}:{split}:{n}: missing or noncanonical task_id"
+                )
             if task_id in task_ids:
-                raise CohortContractError(f"{origin}:{split}:{n}: duplicate task_id across source splits")
+                raise CohortContractError(
+                    f"{origin}:{split}:{n}: duplicate task_id across source splits"
+                )
             task_ids.add(task_id)
             sources.append(_checked_image(item, f"{origin}:{split}:{n}"))
     return sources
-
-
 
 
 def verify_pinned_history_bytes(raw_documents, documents):
@@ -162,7 +253,7 @@ def verify_pinned_history_bytes(raw_documents, documents):
     receipts = {}
     for index, (raw, document) in enumerate(zip(raw_documents, documents, strict=True)):
         schema = document.get("schema") if isinstance(document, dict) else None
-        expected = PINNED_HISTORIES.get(schema)
+        expected = PINNED_HISTORIES.get(schema) if isinstance(schema, str) else None
         if expected is None or schema in seen:
             raise CohortContractError(
                 f"history:{index}: duplicate or unknown pinned historical schema"
@@ -170,7 +261,7 @@ def verify_pinned_history_bytes(raw_documents, documents):
         sha = hashlib.sha256(raw).hexdigest()
         if sha != expected["sha256"]:
             raise CohortContractError(
-                f"history:{index}: independently pinned historical SHA256 mismatch"
+                f"history:{index}: independently pinned historical SHA256 mismatch (original frozen SHA256 mismatch)"
             )
         count = len(load_sources(document, f"history:{index}", historical=True))
         if count != expected["sources"]:
@@ -254,7 +345,9 @@ def _verify_candidate_image_bytes_from_fd(candidate, directory_fd):
                 or Path(name).name != name
                 or "\\" in name
             ):
-                raise CohortContractError(f"{origin}: require safe image_filename basename")
+                raise CohortContractError(
+                    f"{origin}: require safe image_filename basename"
+                )
             dimensions = row.get("image_size")
             if (
                 not isinstance(dimensions, list)
@@ -262,9 +355,14 @@ def _verify_candidate_image_bytes_from_fd(candidate, directory_fd):
                 or any(type(n) is not int or not 1 <= n <= 20000 for n in dimensions)
                 or dimensions[0] * dimensions[1] > MAX_IMAGE_PIXELS
             ):
-                raise CohortContractError(f"{origin}: require bounded image_size [width,height]")
+                raise CohortContractError(
+                    f"{origin}: require bounded image_size [width,height]"
+                )
             expected_bytes = row.get("image_bytes")
-            if type(expected_bytes) is not int or not 0 < expected_bytes <= MAX_IMAGE_BYTES:
+            if (
+                type(expected_bytes) is not int
+                or not 0 < expected_bytes <= MAX_IMAGE_BYTES
+            ):
                 raise CohortContractError(f"{origin}: missing/invalid image_bytes")
             flags = os.O_RDONLY | os.O_NOFOLLOW | getattr(os, "O_NONBLOCK", 0)
             try:
@@ -273,7 +371,9 @@ def _verify_candidate_image_bytes_from_fd(candidate, directory_fd):
                 ) as opened:
                     metadata = os.fstat(opened.fileno())
                     if not stat.S_ISREG(metadata.st_mode):
-                        raise CohortContractError(f"{origin}: image must be a regular file")
+                        raise CohortContractError(
+                            f"{origin}: image must be a regular file"
+                        )
                     if metadata.st_size > MAX_IMAGE_BYTES:
                         raise CohortContractError(f"{origin}: image exceeds byte limit")
                     raw = opened.read(MAX_IMAGE_BYTES + 1)
@@ -281,12 +381,14 @@ def _verify_candidate_image_bytes_from_fd(candidate, directory_fd):
                     raise CohortContractError(f"{origin}: image exceeds byte limit")
                 with Image.open(BytesIO(raw)) as picture:
                     if picture.format != "JPEG" or list(picture.size) != dimensions:
-                        raise ValueError("image format or dimensions differ from annotation")
+                        raise ValueError(
+                            "image format or dimensions differ from annotation"
+                        )
                     rgb = ImageOps.exif_transpose(picture).convert("RGB")
                     tiny = list(
-                        rgb.convert("L").resize(
-                            (9, 8), Image.Resampling.LANCZOS
-                        ).getdata()
+                        rgb.convert("L")
+                        .resize((9, 8), Image.Resampling.LANCZOS)
+                        .getdata()
                     )
                     bits = 0
                     for y in range(8):
@@ -299,15 +401,23 @@ def _verify_candidate_image_bytes_from_fd(candidate, directory_fd):
                         "image_bytes": len(raw),
                         "dhash64": f"{bits:016x}",
                         "decoded_rgb_sha256": hashlib.sha256(
-                            canonical([rgb.width, rgb.height, "RGB"])
-                            + rgb.tobytes()
+                            canonical([rgb.width, rgb.height, "RGB"]) + rgb.tobytes()
                         ).hexdigest(),
                     }
-            except (OSError, ValueError, OverflowError, Image.DecompressionBombError) as exc:
-                raise CohortContractError(f"{origin}: invalid candidate JPEG: {exc}") from exc
+            except (
+                OSError,
+                ValueError,
+                OverflowError,
+                Image.DecompressionBombError,
+            ) as exc:
+                raise CohortContractError(
+                    f"{origin}: invalid candidate JPEG: {exc}"
+                ) from exc
             for key, value in observed.items():
                 if row.get(key) != value:
-                    raise CohortContractError(f"{origin}: actual image bytes disagree with {key}")
+                    raise CohortContractError(
+                        f"{origin}: actual image bytes disagree with {key}"
+                    )
             validated += 1
             total_bytes += len(raw)
     return {
@@ -352,19 +462,28 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
             raise CohortContractError("historical source limit exceeded")
     if require_complete_history:
         if len(kinds) != 2 or {k[0] for k in kinds} != {
-                "hepta.grounded-cohort.v1", "hepta.ndu.historical-exclusions.v1"}:
-            raise CohortContractError("v2 requires both original v1 and historical exclusions")
+            "hepta.grounded-cohort.v1",
+            "hepta.ndu.historical-exclusions.v1",
+        }:
+            raise CohortContractError(
+                "v2 requires both original v1 and historical exclusions"
+            )
         for schema, count, doc in kinds:
             if schema == "hepta.grounded-cohort.v1":
-                if (count != 256 or tuple(doc["splits"][s]["count"] for s in SPLITS)
-                        != V1_SPLIT_COUNTS):
+                if (
+                    count != 256
+                    or tuple(doc["splits"][s]["count"] for s in SPLITS)
+                    != V1_SPLIT_COUNTS
+                ):
                     raise CohortContractError("incomplete original v1 source roster")
             elif count != 384:
                 raise CohortContractError("incomplete 384-source historical exclusions")
     if require_complete_history:
         historical_ids = [row["source_id"] for row in old_sources]
         if len(set(historical_ids)) != len(historical_ids):
-            raise CohortContractError("duplicate identities in historical source roster")
+            raise CohortContractError(
+                "duplicate identities in historical source roster"
+            )
     # A task key is a global score/journal join identity, not just a
     # split-local label. Reuse across source-disjoint cohorts can silently
     # alias old and new evaluation rows even when every image hash differs.
@@ -377,8 +496,9 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
             historical_task_ids.add(task_id)
     if any(row["task_id"] in historical_task_ids for row in new_sources):
         raise CohortContractError("candidate task_id aliases historical cohort")
-    comparisons = (len(new_sources) * (len(new_sources) - 1) // 2
-                   + len(new_sources) * len(old_sources))
+    comparisons = len(new_sources) * (len(new_sources) - 1) // 2 + len(
+        new_sources
+    ) * len(old_sources)
     if comparisons > MAX_PAIR_COMPARISONS:
         raise CohortContractError("pairwise source comparison budget exceeded")
     violations = []
@@ -388,23 +508,33 @@ def check_cohort(candidate, history, *, max_hamming=4, require_complete_history=
         if reasons:
             if len(violations) >= MAX_VIOLATIONS:
                 raise CohortContractError("source collision evidence limit exceeded")
-            violations.append({"candidate": entry["origin"],
-                               "prior": prior["origin"], "reasons": reasons})
+            violations.append(
+                {
+                    "candidate": entry["origin"],
+                    "prior": prior["origin"],
+                    "reasons": reasons,
+                }
+            )
 
     for n, entry in enumerate(new_sources):
         for prior in new_sources[:n]:
             record_collision(entry, prior)
         for prior in old_sources:
             record_collision(entry, prior)
-    return {"schema": "hepta.ndu-cohort-firewall.v2", "status": "pass" if not violations else "fail",
-            "candidate_sources": len(new_sources), "historical_sources": len(old_sources),
-            "max_dhash_distance": max_hamming, "violations": violations,
-            "historical_roster_shape_confirmed": bool(require_complete_history),
-            "independent_history_trust_established": False,
-            "observable_image_identity_disjoint": not bool(violations),
-            "real_world_entity_disjointness_attested": False,
-            "foundation_pretraining_contamination_excluded": False,
-            "scope": "source_id/byte/RGB/dHash only; entity and pretraining claims remain unproven"}
+    return {
+        "schema": "hepta.ndu-cohort-firewall.v2",
+        "status": "pass" if not violations else "fail",
+        "candidate_sources": len(new_sources),
+        "historical_sources": len(old_sources),
+        "max_dhash_distance": max_hamming,
+        "violations": violations,
+        "historical_roster_shape_confirmed": bool(require_complete_history),
+        "independent_history_trust_established": False,
+        "observable_image_identity_disjoint": not bool(violations),
+        "real_world_entity_disjointness_attested": False,
+        "foundation_pretraining_contamination_excluded": False,
+        "scope": "source_id/byte/RGB/dHash only; entity and pretraining claims remain unproven",
+    }
 
 
 def validate_output_destination(output, input_paths, *, protected_image_dir=None):
@@ -418,7 +548,9 @@ def validate_output_destination(output, input_paths, *, protected_image_dir=None
             raise CohortContractError("output path must not be a symlink")
         if output.exists():
             if not output.is_file() or output.stat().st_nlink != 1:
-                raise CohortContractError("output path must be an unlinked regular file")
+                raise CohortContractError(
+                    "output path must be an unlinked regular file"
+                )
         resolved_output = output.resolve(strict=False)
         if protected_image_dir is not None:
             protected_root = Path(protected_image_dir).resolve(strict=False)
@@ -435,9 +567,7 @@ def validate_output_destination(output, input_paths, *, protected_image_dir=None
         raise CohortContractError("cannot verify safe output path") from error
 
 
-def write_receipt_atomically(
-    dest, result, input_paths, *, protected_image_dir=None
-):
+def write_receipt_atomically(dest, result, input_paths, *, protected_image_dir=None):
     """Publish without following a late-swapped symlink or mutating a hardlink.
 
     A shared hostile parent directory is not a security boundary: keep inputs
@@ -456,8 +586,13 @@ def write_receipt_atomically(
     temporary = None
     try:
         with tempfile.NamedTemporaryFile(
-                mode="w", encoding="utf-8", dir=dest.parent,
-                prefix=".hepta-ndu-firewall-", suffix=".tmp", delete=False) as handle:
+            mode="w",
+            encoding="utf-8",
+            dir=dest.parent,
+            prefix=".hepta-ndu-firewall-",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
             temporary = Path(handle.name)
             handle.write(json.dumps(result, sort_keys=True, indent=2) + "\n")
             handle.flush()
@@ -476,62 +611,71 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--historical", action="append", required=True)
-    parser.add_argument("--historical-sha256", action="append", default=[],
-                        help="externally pinned raw SHA256 per --historical, same order")
-    parser.add_argument("--image-dir", help="required for PASS: exact candidate JPEG directory")
+    parser.add_argument(
+        "--historical-sha256",
+        action="append",
+        default=[],
+        help="externally pinned raw SHA256 per --historical, same order",
+    )
+    parser.add_argument(
+        "--image-dir", help="required for PASS: exact candidate JPEG directory"
+    )
     parser.add_argument("--output", required=True)
     parser.add_argument("--max-dhash-distance", type=int, default=4)
     args = parser.parse_args(argv)
     dest = Path(args.output)
     try:
         validate_output_destination(
-            dest, [Path(args.candidate), *(Path(item) for item in args.historical)],
+            dest,
+            [Path(args.candidate), *(Path(item) for item in args.historical)],
             protected_image_dir=args.image_dir,
         )
     except CohortContractError as error:
         # A denial receipt cannot safely be written to an aliased output.
-        print(json.dumps({"status": "fail", "error": str(error),
-                          "output_written": False}, sort_keys=True))
+        print(
+            json.dumps(
+                {"status": "fail", "error": str(error), "output_written": False},
+                sort_keys=True,
+            )
+        )
         return 2
     try:
+        # Preserve the published v2 distance floor; relaxed library calls are
+        # diagnostics and cannot receive a CLI admission receipt.
+        if not 4 <= args.max_dhash_distance <= 64:
+            raise CohortContractError(
+                "v2 CLI requires --max-dhash-distance between 4 and 64"
+            )
         if len(args.historical) != len(args.historical_sha256):
-            raise CohortContractError("each historical manifest requires an out-of-band SHA256")
+            raise CohortContractError(
+                "each historical manifest requires an out-of-band SHA256"
+            )
 
-        def read_bounded(path):
-            # O_NONBLOCK prevents a FIFO from stalling before its type can be
-            # checked. The opened descriptor, rather than a pathname stat,
-            # supplies the canonical type and size of the bytes being read.
-            flags = os.O_RDONLY | getattr(os, "O_BINARY", 0)
-            flags |= getattr(os, "O_NONBLOCK", 0)
-            flags |= getattr(os, "O_NOFOLLOW", 0)
-            with os.fdopen(os.open(path, flags), "rb") as handle:
-                metadata = os.fstat(handle.fileno())
-                if not stat.S_ISREG(metadata.st_mode):
-                    raise CohortContractError("cohort manifest must be a regular file")
-                if metadata.st_size > MAX_INPUT_BYTES:
-                    raise CohortContractError("cohort manifest byte limit exceeded")
-                raw = handle.read(MAX_INPUT_BYTES + 1)
-            if len(raw) > MAX_INPUT_BYTES:
-                raise CohortContractError("cohort manifest byte limit exceeded")
-            return raw
-
-        candidate = decode_unambiguous_json(read_bounded(args.candidate))
+        candidate = decode_unambiguous_json(
+            read_bounded_bytes(args.candidate, MAX_INPUT_BYTES, label="cohort manifest")
+        )
         history = []
         history_bytes = []
         for path, expected in zip(args.historical, args.historical_sha256):
             if not isinstance(expected, str) or not HEX256.fullmatch(expected):
-                raise CohortContractError("invalid externally supplied historical SHA256")
-            raw = read_bounded(path)
+                raise CohortContractError(
+                    "invalid externally supplied historical SHA256"
+                )
+            raw = read_bounded_bytes(path, MAX_INPUT_BYTES, label="cohort manifest")
             if hashlib.sha256(raw).hexdigest() != expected:
                 raise CohortContractError("historical SHA256 mismatch")
             history.append(decode_unambiguous_json(raw))
             history_bytes.append(raw)
         pinned_receipts = verify_pinned_history_bytes(history_bytes, history)
-        result = check_cohort(candidate, history,
-                              max_hamming=args.max_dhash_distance,
-                              require_complete_history=True)
+        result = check_cohort(
+            candidate,
+            history,
+            max_hamming=args.max_dhash_distance,
+            require_complete_history=True,
+        )
         result["caller_pinned_historical_bytes"] = True
         result["historical_bytes_match_frozen_original_roots"] = pinned_receipts
+        result["original_frozen_histories_verified"] = True
         if result["status"] == "pass":
             result["candidate_image_custody"] = verify_candidate_image_bytes(
                 candidate, args.image_dir
@@ -542,17 +686,26 @@ def main(argv=None):
                 "reason": "candidate image identity already overlaps original history",
             }
     except (OSError, json.JSONDecodeError, CohortContractError) as exc:
-        result = {"schema": "hepta.ndu-cohort-firewall.v2", "status": "fail",
-                  "error": str(exc), "observable_image_identity_disjoint": False}
+        result = {
+            "schema": "hepta.ndu-cohort-firewall.v2",
+            "status": "fail",
+            "error": str(exc),
+            "observable_image_identity_disjoint": False,
+        }
     try:
         write_receipt_atomically(
-            dest, result,
+            dest,
+            result,
             [Path(args.candidate), *(Path(item) for item in args.historical)],
             protected_image_dir=args.image_dir,
         )
     except (CohortContractError, OSError) as error:
-        print(json.dumps({"status": "fail", "error": str(error),
-                          "output_written": False}, sort_keys=True))
+        print(
+            json.dumps(
+                {"status": "fail", "error": str(error), "output_written": False},
+                sort_keys=True,
+            )
+        )
         return 2
     print(json.dumps({"status": result["status"], "output": str(dest)}, sort_keys=True))
     return 0 if result["status"] == "pass" else 2

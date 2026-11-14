@@ -58,10 +58,13 @@ supplemental audit, **not** a replacement for v1's frozen score report.
 `cohort_firewall.py` requires a candidate four-split manifest and **both**
 original historical source rosters: the 256-source v1 cohort in its original
 128/32/32/64 split sizes and the 384-image exclusions wrapper. The CLI refuses
-missing history and requires a raw SHA256 pin for each history file, supplied
-from an independently controlled record. Computing a pin from untrusted data
-at run time is **not independent authentication**; even a matching caller pin
-cannot prove entity independence, pretraining decontamination, or signer custody. It accepts existing
+missing history and requires a raw SHA256 pin for each history file. The
+CLI also compares the raw bytes with the two immutable original-publication
+digests: v1 `71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d`
+and pre-v1 `4c2b88f85c9ef5fea08790775a652798a72e9281bed1534561f14c681e7bba9d`.
+A caller rehashing a replacement 256+384 history cannot pass this check.
+The pinned identities still do **not** prove independent signer custody,
+real-world entity independence or pretraining decontamination. It accepts existing
 `hepta.grounded-cohort.v1` manifests and the 384-image
 `hepta.ndu.historical-exclusions.v1` wrapper. It fails closed if any candidate
 source collides with another candidate or historical source by:
@@ -69,7 +72,9 @@ source collides with another candidate or historical source by:
 - full source ID;
 - exact original-image SHA256;
 - decoded RGB SHA256;
-- 64-bit perceptual dHash with Hamming distance at most four.
+- 64-bit perceptual dHash with Hamming distance at most four. The CLI
+  rejects lower distance thresholds; library-only relaxed comparisons are
+  non-qualifying diagnostics.
 
 Missing fields, unsupported schemas, inconsistent historical image/source IDs,
 missing source groups, invalid counts, missing pins, altered pinned historical
