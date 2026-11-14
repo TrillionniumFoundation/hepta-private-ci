@@ -1,0 +1,64 @@
+{
+  "configuration": {
+    "latent_seed_base": 86242001,
+    "measured_episodes": 5,
+    "measurement_design_added_after_model_freeze": true,
+    "order": "Counts ascending, then training seeds ascending; rotate the four variants by (count_index+seed_index) modulo four. Across the twenty count/seed groups each variant appears in each position five times.",
+    "parallel_measurement_workers": 1,
+    "performance_scope": "Python/PyTorch reference implementation, exact-event baseline kernels, real sampled RR events, full task loop and model-only timing separately.",
+    "policy_instance_counts": [
+      64,
+      256,
+      1024,
+      4096
+    ],
+    "query_seed_base": 86243001,
+    "real_future_window": false,
+    "scenario_seed": 86241001,
+    "task_superiority_test": false,
+    "torch_threads": 1,
+    "training_seeds": [
+      101,
+      211,
+      307,
+      401,
+      503
+    ],
+    "units": "Independent policy states and task ledgers in one CPU batch with shared checkpoint weights; not Hepta Cells.",
+    "variants": [
+      "rr_full",
+      "ctrnn_state_cpu",
+      "alif",
+      "resource_lif"
+    ],
+    "warmup_episodes": 2,
+    "weights_or_architectures_retuned": false
+  },
+  "created_at_utc": "2026-10-29T14:45:10.723941+00:00",
+  "decision": "Retain every architecture, every training seed and all four actual scales. Use two warmup plus five measured complete episodes per condition to bound measurement runtime. No fastest-seed selection.",
+  "planning_only_extrapolation": {
+    "method": "Episode cost linear in policy count; a planning approximation, not measured scale performance. Ignores process startup, cache and allocation nonlinearities, and training-dependent dynamics.",
+    "unmeasured_4096_seconds_per_batch_episode": {
+      "alif": 10.405057130666666,
+      "ctrnn_state_cpu": 7.693509034666666,
+      "resource_lif": 8.951323647999999,
+      "rr_full": 26.576876416
+    },
+    "unmeasured_80_condition_total_minutes_2_warmup_20_measured": 130.57558964694445,
+    "unmeasured_80_condition_total_minutes_2_warmup_5_measured": 41.54677852402778
+  },
+  "production_checkpoints_opened_for_design": false,
+  "production_or_holdout_task_data_opened_for_design": false,
+  "schema": "rrsnn-v4-policy-benchmark-design-1",
+  "sizing_evidence_sha256": "6190faa53c091ffe07c312b7c4bf325b4eb0f5f72663c8f551c86a44fe22d81d",
+  "sources_sha256": {
+    "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+    "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "policy_benchmark.py": "538db3796a1548d6920c2282367efeaf78f77489c84b083c7548f06a77a2235e",
+    "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+    "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4"
+  },
+  "tail_qualification": "Five complete-episode samples and fifty-five inner batched calls per condition provide descriptive p95/p99 values only, without precise tail or SLA inference. Every reported production scale will be actually executed; planning extrapolations are not scale measurements."
+}

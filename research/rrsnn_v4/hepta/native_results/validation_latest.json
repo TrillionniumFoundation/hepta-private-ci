@@ -1,0 +1,139 @@
+{
+  "schema": "rrsnn.native-owner-crash-validation.v1",
+  "functional": {
+    "binary_digest": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+    "device_metadata_digest": "70dfd96939459a14a366b66920ee35288d902f9811361bade22f3e54d95ffb9f",
+    "native_profile": "upstream Q24 V1; stochastic RR state is not registered by this harness",
+    "result": {
+      "checks": [
+        "corrupt model receipt rejected before commit",
+        "stale checkpoint rejected before model invocation",
+        "independent witness writer fenced",
+        "actual owner clean recovery and continuation",
+        "all output authority denied"
+      ],
+      "first_checkpoint": "5544bdaf82e12f2be6b18c207358d8590b912e074bb03e1f3603f5ffef81f5ae",
+      "passed": 5,
+      "scope": "real upstream owner components with executed fixed projection; no production qualification",
+      "second_checkpoint": "2137992bdb116a63eb692e637b0ac7c3fae0d7d5d8ca661e088d42ccb29485eb"
+    },
+    "weights_digest": "b463e04751d1c391b2a0c3487d5d33ded623adb9cad3cfa8f2a919feea531d23"
+  },
+  "crashes": [
+    {
+      "phase": "before_witness",
+      "committing_sequence": 1,
+      "actual_sigkill_returncode": -9,
+      "recovery": {
+        "binary_digest": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+        "device_metadata_digest": "70dfd96939459a14a366b66920ee35288d902f9811361bade22f3e54d95ffb9f",
+        "native_profile": "upstream Q24 V1; stochastic RR state is not registered by this harness",
+        "result": {
+          "journal_bytes": 568,
+          "model_calls": 0,
+          "reason": "first commit has no witness; bootstrap rejects nonempty journal; recovery requires an anchor",
+          "recovered": false,
+          "source_behavior_preserved": true
+        },
+        "weights_digest": "b463e04751d1c391b2a0c3487d5d33ded623adb9cad3cfa8f2a919feea531d23"
+      }
+    },
+    {
+      "phase": "after_witness",
+      "committing_sequence": 1,
+      "actual_sigkill_returncode": -9,
+      "recovery": {
+        "binary_digest": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+        "device_metadata_digest": "70dfd96939459a14a366b66920ee35288d902f9811361bade22f3e54d95ffb9f",
+        "native_profile": "upstream Q24 V1; stochastic RR state is not registered by this harness",
+        "result": {
+          "model_calls_during_recovery": 0,
+          "next_checkpoint": "2137992bdb116a63eb692e637b0ac7c3fae0d7d5d8ca661e088d42ccb29485eb",
+          "next_model_calls": 1,
+          "next_sequence": 2,
+          "recovered": true,
+          "recovered_digest": "5544bdaf82e12f2be6b18c207358d8590b912e074bb03e1f3603f5ffef81f5ae",
+          "recovered_sequence": 1
+        },
+        "weights_digest": "b463e04751d1c391b2a0c3487d5d33ded623adb9cad3cfa8f2a919feea531d23"
+      }
+    },
+    {
+      "phase": "before_witness",
+      "committing_sequence": 2,
+      "actual_sigkill_returncode": -9,
+      "recovery": {
+        "binary_digest": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+        "device_metadata_digest": "70dfd96939459a14a366b66920ee35288d902f9811361bade22f3e54d95ffb9f",
+        "native_profile": "upstream Q24 V1; stochastic RR state is not registered by this harness",
+        "result": {
+          "model_calls_during_recovery": 0,
+          "next_checkpoint": "e85cd5c22b07e582de5e355f529f4205e5218457a59a6624c5748d3fc12e12d2",
+          "next_model_calls": 1,
+          "next_sequence": 3,
+          "recovered": true,
+          "recovered_digest": "2137992bdb116a63eb692e637b0ac7c3fae0d7d5d8ca661e088d42ccb29485eb",
+          "recovered_sequence": 2
+        },
+        "weights_digest": "b463e04751d1c391b2a0c3487d5d33ded623adb9cad3cfa8f2a919feea531d23"
+      }
+    },
+    {
+      "phase": "after_witness",
+      "committing_sequence": 2,
+      "actual_sigkill_returncode": -9,
+      "recovery": {
+        "binary_digest": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+        "device_metadata_digest": "70dfd96939459a14a366b66920ee35288d902f9811361bade22f3e54d95ffb9f",
+        "native_profile": "upstream Q24 V1; stochastic RR state is not registered by this harness",
+        "result": {
+          "model_calls_during_recovery": 0,
+          "next_checkpoint": "e85cd5c22b07e582de5e355f529f4205e5218457a59a6624c5748d3fc12e12d2",
+          "next_model_calls": 1,
+          "next_sequence": 3,
+          "recovered": true,
+          "recovered_digest": "2137992bdb116a63eb692e637b0ac7c3fae0d7d5d8ca661e088d42ccb29485eb",
+          "recovered_sequence": 2
+        },
+        "weights_digest": "b463e04751d1c391b2a0c3487d5d33ded623adb9cad3cfa8f2a919feea531d23"
+      }
+    }
+  ],
+  "all_expected_behaviors_reproduced": true,
+  "all_recovery_cases_passed": false,
+  "production_qualified": false,
+  "blocker": "first journal commit before initial witness publication has no public anchored recovery route",
+  "binary_sha256": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+  "host": {
+    "schema": "rrsnn.native-component-host.v1",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "affinity": [
+      8
+    ],
+    "pid": 34,
+    "cpu_identity_sha256": "63d749ca596c043099db76a34ecd3e76d8840d82d9f1a750a6bd02310998a934",
+    "memory_limits": {
+      "cpu.max": "800000 100000\n",
+      "cpu.stat": "usage_usec 123788164262\nuser_usec 109206589269\nsystem_usec 14581574992\nnice_usec 0\nnr_periods 600933\nnr_throttled 23400\nthrottled_usec 3306231560\nnr_bursts 0\nburst_usec 0\n",
+      "memory.max": "8589934592\n",
+      "memory.current": "6721675264\n",
+      "memory.events": "low 0\nhigh 0\nmax 1889300\noom 1\noom_kill 1\noom_group_kill 0\n",
+      "memory.stat": "anon 107380736\nfile 5487050752\nkernel 1125769216\nkernel_stack 770048\npagetables 3801088\nsec_pagetables 0\npercpu 6908\nsock 0\nvmalloc 4096\nshmem 0\nfile_mapped 3780608\nfile_dirty 61685760\nfile_writeback 0\nswapcached 0\nanon_thp 0\nfile_thp 715128832\nshmem_thp 0\ninactive_anon 107061248\nactive_anon 86016\ninactive_file 848277504\nactive_file 4638773248\nunevictable 0\nslab_reclaimable 1120002840\nslab_unreclaimable 1132640\nslab 1121135480\nworkingset_refault_anon 0\nworkingset_refault_file 79134655\nworkingset_activate_anon 0\nworkingset_activate_file 32201284\nworkingset_restore_anon 0\nworkingset_restore_file 21066393\nworkingset_nodereclaim 0\npgdemote_kswapd 0\npgdemote_direct 0\npgdemote_khugepaged 0\npgdemote_proactive 0\npgscan 140660699\npgsteal 90753354\npswpin 0\npswpout 0\npgscan_kswapd 2690685\npgscan_direct 137970014\npgscan_khugepaged 0\npgscan_proactive 0\npgsteal_kswapd 2400423\npgsteal_direct 88352931\npgsteal_khugepaged 0\npgsteal_proactive 0\npgfault 2146440579\npgmajfault 2829151\npgrefill 65802603\npgactivate 39953769\npgdeactivate 64521162\npglazyfree 152\npglazyfreed 0\nswpin_zero 0\nswpout_zero 0\nthp_fault_alloc 11559\nthp_collapse_alloc 235\nthp_swpout 0\nthp_swpout_fallback 0\n"
+    },
+    "disk_free_bytes": 447369216,
+    "dot_identity_verified": false,
+    "production_target_attested": false,
+    "rlimit_nofile": [
+      16384,
+      16384
+    ],
+    "scope": "local scratch executor; no remote identity or private credentials inferred"
+  },
+  "upstream": {
+    "commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "manifest_sha256": "317539083a5b5b055402cdbdc3f343172e94d1514ecdd4550d4dcc1b387949d1",
+    "unchanged_source_files": 62
+  }
+}

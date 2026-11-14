@@ -1,0 +1,158 @@
+{
+  "schema": "rr-snn-frozen-fit-optimization-audit-1",
+  "training": {
+    "episodes": 128,
+    "seeds": [
+      10000,
+      10127
+    ],
+    "horizon": 4
+  },
+  "objective": {
+    "regularization": 0.01,
+    "appliedOncePerNeuronVector": true,
+    "fixedUpChannelConstantsCancel": true,
+    "optimizerGradientDivisionByRecordCountDoesNotChangeMinimizer": true
+  },
+  "geometry": {
+    "objective": "lambda/2 * ||theta||^2 + sum(E_r * exp(f_r.theta) - N_r * f_r.theta)",
+    "hessian": "lambda * I + sum(E_r * exp(f_r.theta) * f_r * f_r^T)",
+    "domain": "intersection of the closed slabs -40 <= f_r.theta <= 40",
+    "strongConvexity": "E_r >= 0 and lambda > 0 imply Hessian >= lambda * I",
+    "objectiveBound": "F(theta)-F*_D <= ||gradient F(theta)||^2/(2*lambda)",
+    "parameterBound": "||theta-theta*_D|| <= ||gradient F(theta)||/lambda",
+    "appliesToConstrainedOptimum": true,
+    "floatingPointQualification": "Computed gradients and bounds use Float64; this is not a directed-rounding interval certificate."
+  },
+  "units": [
+    {
+      "unit": 0,
+      "records": 1142,
+      "regularizedPulseNll": 177.2048859148202,
+      "gradient": [
+        -0.00003149561192805628,
+        -0.000003697925747447872,
+        -0.00001057972169515864,
+        -0.000014309848907934075,
+        -0.0000033401302254598697
+      ],
+      "gradientL2": 0.000036517214877291805,
+      "gradientLInfinity": 0.00003149561192805628,
+      "gradientArchiveMaxDiff": 0,
+      "logRateRange": [
+        0.15167890575662646,
+        0.955391246319819
+      ],
+      "hessian": [
+        [
+          441.0061929808651,
+          36.997243395881895,
+          171.99425183450404,
+          128.96592611171886,
+          50.24313266786219
+        ],
+        [
+          36.997243395881895,
+          57.82679488693297,
+          0,
+          4.618902687705843,
+          2.382952058463636
+        ],
+        [
+          171.99425183450404,
+          0,
+          172.00425183450403,
+          56.23308530122761,
+          22.95386662755746
+        ],
+        [
+          128.96592611171886,
+          4.618902687705843,
+          56.23308530122761,
+          73.76502479204736,
+          16.851821382792455
+        ],
+        [
+          50.24313266786219,
+          2.382952058463636,
+          22.95386662755746,
+          16.851821382792455,
+          11.730340034162243
+        ]
+      ],
+      "strongConvexityLowerBound": 0.01,
+      "objectiveGapUpperBound": 6.667534911971509e-8,
+      "objectiveGapUpperBoundPerTrainingEpisode": 5.209011649977741e-10,
+      "parameterL2DistanceUpperBound": 0.0036517214877291805
+    },
+    {
+      "unit": 1,
+      "records": 1203,
+      "regularizedPulseNll": 289.10964790908577,
+      "gradient": [
+        -0.0000018028658290702992,
+        0.0000018349708235665396,
+        -0.000005916784176496215,
+        -1.477933373184026e-7,
+        -8.883035433338016e-7
+      ],
+      "gradientL2": 0.000006514346027642444,
+      "gradientLInfinity": 0.000005916784176496215,
+      "gradientArchiveMaxDiff": 0,
+      "logRateRange": [
+        -0.07204429609738096,
+        0.8168639989068694
+      ],
+      "hessian": [
+        [
+          384.00943239761403,
+          5.001342112171308,
+          162.99623582900344,
+          93.60755384959019,
+          43.1590553463301
+        ],
+        [
+          5.001342112171308,
+          47.94505203852457,
+          0,
+          -1.9228470932487054,
+          -1.4316595722445928
+        ],
+        [
+          162.99623582900344,
+          0,
+          163.00623582900343,
+          43.53865854584326,
+          20.490289081756632
+        ],
+        [
+          93.60755384959019,
+          -1.9228470932487054,
+          43.53865854584326,
+          50.24067355493439,
+          12.550256716790454
+        ],
+        [
+          43.1590553463301,
+          -1.4316595722445928,
+          20.490289081756632,
+          12.550256716790454,
+          9.57316624584303
+        ]
+      ],
+      "strongConvexityLowerBound": 0.01,
+      "objectiveGapUpperBound": 2.1218352083930442e-9,
+      "objectiveGapUpperBoundPerTrainingEpisode": 1.6576837565570658e-11,
+      "parameterL2DistanceUpperBound": 0.0006514346027642443
+    }
+  ],
+  "scope": {
+    "trainOnly": true,
+    "refitted": false,
+    "heldoutUsed": false,
+    "freeGenerationUsed": false,
+    "modelOrProtocolChanged": false,
+    "calibrationPassed": null,
+    "utilitySuperiorityEstablished": false
+  }
+}

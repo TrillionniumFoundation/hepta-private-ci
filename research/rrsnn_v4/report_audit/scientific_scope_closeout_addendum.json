@@ -1,0 +1,71 @@
+{
+  "schema": "rrsnn_v4.scientific_scope_closeout_addendum.v1",
+  "created_at_utc": "2026-10-29T16:45:01.734991+00:00",
+  "status": "three_nonblocking_clarifications_applied",
+  "authorization": "Parent accepted the three identified wording clarifications and authorized only these document edits plus an independent addendum.",
+  "prior_review": {
+    "path": "report_audit/scientific_scope_closeout_review.json",
+    "sha256": "d70200a60e053bc46f24da751da79e8e242484fe1184ead53e06f21f60dedb85",
+    "preserved_unchanged": true
+  },
+  "changes": [
+    {
+      "file": "REPORT_TEMPLATE.zh-CN.md",
+      "purpose": "Clarify validation-only selection across five training seeds.",
+      "before": "次对照 `alif_analog` 由五 seed 验证 NLL 最小值选出，选择规则、全部检查点和次对照在 heldout 执行前已发布。",
+      "after": "次对照 `alif_analog` 按五个训练 seed 的平均 `best_validation_nll` 最小值选择，选择规则、全部检查点和次对照在 heldout 执行前已发布。"
+    },
+    {
+      "file": "MATHEMATICAL_SCOPE.zh-CN.md",
+      "purpose": "Separate the finite-chain infinite-series identity from its numerical implementation.",
+      "before": "矩阵指数与 uniformization 的一致性证明针对**这个有限生成矩阵**。",
+      "after": "矩阵指数与 uniformization 无限级数的恒等表示针对**这个有限生成矩阵**；实现中的核对是包含 Poisson 尾部截断与浮点计算的数值一致性核对。"
+    },
+    {
+      "file": "MATHEMATICAL_SCOPE.zh-CN.md",
+      "purpose": "Define the emission-time variable in the unchanged utility formula and its delivery time.",
+      "before": "任务输出则是有标识的通信行动：携带信息项目身份、发出时刻、到达时刻和质量，实际进入延迟为 0.1 的输出队列。",
+      "after": "任务输出则是有标识的通信行动：携带信息项目身份、发出时刻 \\(t_i\\)、到达时刻 \\(t_i+0.1\\) 和质量，实际进入延迟为 0.1 的输出队列，并须在终点 4 时已到达才计入交付效用。"
+    }
+  ],
+  "document_sha256": {
+    "REPORT_TEMPLATE.zh-CN.md": {
+      "before": "440fcd77243d24742c3bf71cddba0e6a050da0edacf545a7f144a69a3f33f78c",
+      "after": "a327206f9649f4759a53d6f28b63f3ba2fe1bce51bf01f988afde586e7929cd0"
+    },
+    "MATHEMATICAL_SCOPE.zh-CN.md": {
+      "before": "c2a5c57e2de689b6f227acc48772b72edbd397e87ef028d05443b6e3eccbd30e",
+      "after": "181130078ba4edec6932c25ee234d6b5fac6cb8f8656c28ed0fb6cd180eacb29"
+    }
+  },
+  "verification": {
+    "exactly_three_text_replacements": true,
+    "reversing_only_recorded_replacements_restores_original_bytes": true,
+    "existing_display_math_blocks_unchanged": true,
+    "frozen_source_count": 14,
+    "all_frozen_sources_match_before_and_after": true,
+    "frozen_source_sha256": {
+      "__init__.py": "227d288ec36b913d650a35915373df53b20d7c22cf3547f6106ffece9af6f0cb",
+      "aggregate.py": "eb4157f0f149089a35e66a51f1fd4a808aeab53e8edc5acef8f0eee43dffe671",
+      "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+      "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+      "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+      "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+      "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+      "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+      "train.py": "0abc20779fc64aa1ec0ff0d24ec1b6fe4ad84a585f60ec22b8d53a9c66860825",
+      "train_matrix.py": "39aad256271acc8763db88b96992824382fd44492b48cbe971329eefa108c31a",
+      "validate_baselines.py": "e676aa43ad32c3133f1adee2bd8a1e852df7c103b580671364a3f302ef53a6e4",
+      "validate_models.py": "ab79f903c340473ee959056f91c384769f93ca5a4464d9d870818b271145fe82",
+      "validate_task.py": "3f44689c64369cbe5a8ed9d0ddcf0f9020e9ebd034c6dff93c694bc3772b46d7",
+      "validate_training.py": "c5f4f84a31214533e5cb82d3adb08b6644fa2e1f467becd8025a9496a3269855"
+    },
+    "prior_review_unchanged": true
+  },
+  "scope": "Only report wording changed. Existing equations, frozen code, weights, results, comparison directions and thresholds remain unchanged; the earlier scientific-scope disposition and unclosed production/theory qualifications remain in effect.",
+  "execution_limits": [
+    "No Torch import or actor execution.",
+    "No training, experiment, statistical analysis or completed validation was rerun.",
+    "No result file or frozen source was written."
+  ]
+}

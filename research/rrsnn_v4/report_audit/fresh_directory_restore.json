@@ -1,0 +1,103 @@
+{
+  "schema": "rrsnn-v4-delivery-restoration-1",
+  "started_at_utc": "2026-10-29T17:38:52.909439+00:00",
+  "source_root": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/rrsnn_v4",
+  "destination": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery",
+  "executable": "/tmp/rrsnn-venv/bin/python",
+  "commands": [
+    {
+      "command": [
+        "/tmp/rrsnn-venv/bin/python",
+        "-c",
+        "import importlib.util,json,pathlib,runpy,sys\nname=sys.argv[1]; expected=pathlib.Path(sys.argv[2])/(name.rsplit('.',1)[1]+'.py')\nspec=importlib.util.find_spec(name)\nif spec is None or pathlib.Path(spec.origin).resolve()!=expected: raise RuntimeError('Wrong module origin')\nprint(json.dumps({'resolved_module_file':spec.origin}),flush=True)\nsys.argv=[name,'--verify-only']; namespace=runpy.run_module(name,run_name='__main__')\nif pathlib.Path(namespace['__file__']).resolve()!=expected: raise RuntimeError('Wrong executed module')\nprint(json.dumps({'executed_module_file':namespace['__file__']}),flush=True)\n",
+        "rrsnn_v4.build_closeout",
+        "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4"
+      ],
+      "cwd": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery",
+      "module": "rrsnn_v4.build_closeout",
+      "exit_code": 0,
+      "stdout": "{\"resolved_module_file\": \"/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4/build_closeout.py\"}\n{\"read_only_evidence_verification\": \"passed\", \"reports_rewritten\": false}\n{\"executed_module_file\": \"/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4/build_closeout.py\"}\n",
+      "stderr": "",
+      "restored_tree_unchanged": true
+    },
+    {
+      "command": [
+        "/tmp/rrsnn-venv/bin/python",
+        "-c",
+        "import importlib.util,json,pathlib,runpy,sys\nname=sys.argv[1]; expected=pathlib.Path(sys.argv[2])/(name.rsplit('.',1)[1]+'.py')\nspec=importlib.util.find_spec(name)\nif spec is None or pathlib.Path(spec.origin).resolve()!=expected: raise RuntimeError('Wrong module origin')\nprint(json.dumps({'resolved_module_file':spec.origin}),flush=True)\nsys.argv=[name,'--verify-only']; namespace=runpy.run_module(name,run_name='__main__')\nif pathlib.Path(namespace['__file__']).resolve()!=expected: raise RuntimeError('Wrong executed module')\nprint(json.dumps({'executed_module_file':namespace['__file__']}),flush=True)\n",
+        "rrsnn_v4.delivery_behavior_diagnostic",
+        "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4"
+      ],
+      "cwd": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery",
+      "module": "rrsnn_v4.delivery_behavior_diagnostic",
+      "exit_code": 0,
+      "stdout": "{\"resolved_module_file\": \"/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4/delivery_behavior_diagnostic.py\"}\n{\"verified\": true, \"raw_files\": 180, \"result_sha256\": \"25d5c7fd79cd72fdbdc761afa1b23f330f6d807a8fd324c482a631eaa912171b\"}\n{\"executed_module_file\": \"/dev/shm/rrsnn-v4-recovery-g38d3wgp/restored_delivery/rrsnn_v4/delivery_behavior_diagnostic.py\"}\n",
+      "stderr": "",
+      "restored_tree_unchanged": true
+    }
+  ],
+  "source_commit": "fa46e1413cdf10402892bd6ca84bf4fbeeae9c9c",
+  "restore_script_sha256": "47930c2448d19c5db3bbd2e71e6cdc397fac5d5e8c499aaf3dc741581f39f681",
+  "scope": "Same-environment new-directory restoration from locally available files whose Git blobs match a supplied independently remote-verified map; not a fresh remote download, new-environment rebuild, retraining, actor run, or production qualification.",
+  "archive_commit_scope": "Archive commits are historical minimum evidence snapshots and may precede the final supplied source commit.",
+  "source_permissions_scope": "Local ordinary source permissions are copied; the supplied Git blob map verifies content, not Git tree modes.",
+  "published_paths": {
+    "path": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/rrsnn_v4/resource_audit/final_restore_published_paths.json",
+    "sha256": "e43899c995fe2e5bc02ce3a56cb8364c36e0e3dfc977eaa0bcab2c3862f2958a",
+    "entries": 179
+  },
+  "git_backed_files": {
+    "files_created": 179,
+    "identical_existing": 0,
+    "members_verified": 179,
+    "bytes_verified": 7311608
+  },
+  "archives": {
+    "core": {
+      "path": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/RR_SNN_V4_Core_Raw_20261029.zip",
+      "archive_sha256": "239e3ba9f786929135a505d001148df5cb82116d0422e8e483f9da37ca272792",
+      "manifest_sha256": "3a9ff67a82b800e124109d9644c5512e1d638ea8105a5e459484fb7bd2383fd2",
+      "metadata_sha256": {
+        "RAW_MANIFEST_core.json": "3a9ff67a82b800e124109d9644c5512e1d638ea8105a5e459484fb7bd2383fd2",
+        "RESTORE_core.txt": "327ca824627979466176aebedc07f88a3d17548cf6352f74cc6b72a793f6d356"
+      },
+      "source_commit": "8dc406ac222aea1609d7ee89979ad6d7b9fd1028",
+      "published_paths_sha256": "da7379c6f932c2147284b9728a20dfc0d2159b09fc68eca01daaf0e981d8764a",
+      "counts": {
+        "files_created": 3088,
+        "identical_existing": 0,
+        "members_verified": 3088,
+        "bytes_verified": 91929644
+      }
+    },
+    "resources": {
+      "path": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/RR_SNN_V4_Resources_Raw_20261029.zip",
+      "archive_sha256": "3a993c1060e2e4ff7ec769513d99bc7773acb0ce0e3a97183d8c6e03d3105e82",
+      "manifest_sha256": "579e09a5f97ccba18bfa25d65a52d4417735f7c7079abc2e757724274c29ca12",
+      "metadata_sha256": {
+        "RAW_MANIFEST_resources.json": "579e09a5f97ccba18bfa25d65a52d4417735f7c7079abc2e757724274c29ca12",
+        "RESTORE_resources.txt": "327ca824627979466176aebedc07f88a3d17548cf6352f74cc6b72a793f6d356"
+      },
+      "source_commit": "c210500bd975a100c2723b83ac17891c397f4b0c",
+      "published_paths_sha256": "40ef89fe41df322a866fa95853b320d9d8d15aec8a0c65cb837556c7e131f253",
+      "counts": {
+        "files_created": 145,
+        "identical_existing": 0,
+        "members_verified": 145,
+        "bytes_verified": 6826997
+      }
+    }
+  },
+  "preserved_elf_permissions": {
+    "rrsnn_v4/hepta/crate_validation_build/bin/hepta-neuron-unit-tests": "0o755",
+    "rrsnn_v4/hepta/native_build/target/release/rrsnn-native-bootstrap-repair": "0o755",
+    "rrsnn_v4/hepta/native_build/target/release/rrsnn-native-owner": "0o755",
+    "rrsnn_v4/hepta/rr_bridge_build/bin/rrsnn-rr-feature-broker": "0o755"
+  },
+  "restored_files": 3412,
+  "restored_objects": 3943,
+  "restored_tree_fingerprint_sha256": "f91b33d45aade93017e7d302148e6103d1b881d8f6458d23eca3cd008def3231",
+  "result_files_not_rewritten": true,
+  "status": "passed",
+  "finished_at_utc": "2026-10-29T17:38:59.921237+00:00"
+}
