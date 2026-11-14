@@ -17,6 +17,13 @@
 //! 0xffff_fffd for malformed UTF-8. Capacity checks precede operation checks,
 //! which precede UTF-8 validation. Errors never write output or workspace;
 //! workspace is read-only on success as well. The native call retains no data.
+//!
+//! Public arithmetic helpers use a separate scalar HIA entry,
+//! `codex_hia_token_budget(value: u64, operation: u64) -> u64`: operation 0 is
+//! saturating multiplication by four, and operation 1 is saturating addition of
+//! three followed by division by four. Every u64 input value is valid. Other
+//! operation values trap; the private enum restricts safe Rust calls to 0 or 1.
+//! The original framed operations 2 and 3 remain available and unchanged.
 
 const OUTPUT_SIZE: usize = 40;
 const REQUEST_SIZE: usize = 16;
@@ -26,8 +33,12 @@ const REQUEST_SIZE: usize = 16;
 enum Operation {
     Characters = 4,
     Tokens = 5,
-    BytesForTokens = 2,
-    TokensForBytes = 3,
+}
+
+#[repr(u64)]
+enum BudgetOperation {
+    BytesForTokens = 0,
+    TokensForBytes = 1,
 }
 
 unsafe extern "C" {
@@ -39,6 +50,7 @@ unsafe extern "C" {
         workspace: *mut u8,
         workspace_len: u64,
     ) -> u64;
+    fn codex_hia_token_budget(value: u64, operation: u64) -> u64;
 }
 
 fn invoke(source: &str, operation: Operation, budget: usize) -> [u64; 5] {
@@ -83,9 +95,6 @@ fn truncate(source: &str, operation: Operation, budget: usize) -> (String, Optio
     let expected_kind = match operation {
         Operation::Characters => 1,
         Operation::Tokens => 2,
-        Operation::BytesForTokens | Operation::TokensForBytes => {
-            panic!("HIA scalar operation cannot render a truncation marker")
-        }
     };
     assert_eq!(kind, expected_kind, "HIA marker kind is invalid");
     let Ok(prefix) = usize::try_from(prefix) else {
@@ -104,9 +113,6 @@ fn truncate(source: &str, operation: Operation, budget: usize) -> (String, Optio
     let marker = match operation {
         Operation::Characters => format!("…{removed_units} chars truncated…"),
         Operation::Tokens => format!("…{removed_units} tokens truncated…"),
-        Operation::BytesForTokens | Operation::TokensForBytes => {
-            panic!("HIA scalar operation cannot render a truncation marker")
-        }
     };
     let mut result = String::with_capacity(before.len() + marker.len() + after.len() + 1);
     result.push_str(before);
@@ -131,8 +137,15 @@ pub(super) fn truncate_middle_with_token_budget(
     (result, count)
 }
 
+fn token_budget(value: usize, operation: BudgetOperation) -> u64 {
+    // SAFETY: the qualified HIA scalar entry accepts every u64 value. This
+    // private enum supplies only its two valid operations. No pointer or state
+    // crosses the ABI, and HIA owns the complete saturated calculation.
+    unsafe { codex_hia_token_budget(value as u64, operation as u64) }
+}
+
 pub(super) fn approx_bytes_for_tokens(tokens: usize) -> usize {
-    let [bytes, _, _, _, _] = invoke("", Operation::BytesForTokens, tokens);
+    let bytes = token_budget(tokens, BudgetOperation::BytesForTokens);
     match usize::try_from(bytes) {
         Ok(bytes) => bytes,
         Err(_) => panic!("HIA byte count does not fit usize"),
@@ -140,6 +153,5 @@ pub(super) fn approx_bytes_for_tokens(tokens: usize) -> usize {
 }
 
 pub(super) fn approx_tokens_from_byte_count(bytes: usize) -> u64 {
-    let [tokens, _, _, _, _] = invoke("", Operation::TokensForBytes, bytes);
-    tokens
+    token_budget(bytes, BudgetOperation::TokensForBytes)
 }

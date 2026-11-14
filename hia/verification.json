@@ -1,7 +1,7 @@
 {
   "schema": "codex.hia.component-verification.v2",
   "codex_baseline": "732e934ba496d90fbe042b8d41d479ef901643e5",
-  "hepta_revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+  "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
   "target": "x86_64-unknown-linux-gnu",
   "build_mode": "native-selfhost",
   "build_status": "built",
@@ -9,17 +9,17 @@
   "compiler_generations": [
     {
       "generation": "B1",
-      "sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
       "host_compiler_modules_loaded": []
     },
     {
       "generation": "B2",
-      "sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
       "host_compiler_modules_loaded": []
     },
     {
       "generation": "B3",
-      "sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+      "sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
       "host_compiler_modules_loaded": []
     }
   ],
@@ -29,21 +29,47 @@
       "core_sha256": "b7503d955cefee04d2cecff7c6679c8e485c9e95c13cd36384180f12faa998a1",
       "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
       "library_bytes": 33576,
+      "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
         "symbol": "codex_hia_seek_sequence",
+        "library": "libcodex_hia_seek_sequence.so",
         "object": "seek_sequence.namespaced.o",
         "archive": "libcodex_hia_seek_sequence.a",
         "archive_member": "hia.o",
         "archive_bytes": 23264,
         "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1",
-        "object_sha256": "8be4b6180caf305f3f608545266ebb59ff334848158367b531500b9f0d8797f6",
         "text_sha256": "99dfa1bef8c197e0a7b53f375f034392396e4f44e1efc68745e07f192980931f",
         "defined_symbols": [
           "codex_hia_seek_sequence"
         ],
         "undefined_symbols": [],
-        "library": "libcodex_hia_seek_sequence.so",
-        "library_sha256": "f28e5222725077e92fbb07ef35da711f6c29e36217a79d2ac7fe8cfa76ca9498"
+        "object_sha256": "8be4b6180caf305f3f608545266ebb59ff334848158367b531500b9f0d8797f6",
+        "library_sha256": "f28e5222725077e92fbb07ef35da711f6c29e36217a79d2ac7fe8cfa76ca9498",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_seek_sequence",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/seek_sequence.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/seek_sequence.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/seek_sequence.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_seek_sequence.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
     "utf8_boundaries": {
@@ -51,21 +77,47 @@
       "core_sha256": "60769338473242d4b88c290eb6413c972a7d6e9927c9d989ce3adee5645de0b5",
       "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
       "library_bytes": 17192,
+      "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
         "symbol": "codex_hia_utf8_boundaries",
+        "library": "libcodex_hia_utf8_boundaries.so",
         "object": "utf8_boundaries.namespaced.o",
         "archive": "libcodex_hia_utf8_boundaries.a",
         "archive_member": "hia.o",
         "archive_bytes": 7874,
         "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17",
-        "object_sha256": "8bf83079c457edf7af1bcad77f0863bca3e26029a5863186fd8e0e088b878f79",
         "text_sha256": "2d71a9e6d46f975030fb48b07b87b30591787509939727c8251cf381410929e5",
         "defined_symbols": [
           "codex_hia_utf8_boundaries"
         ],
         "undefined_symbols": [],
-        "library": "libcodex_hia_utf8_boundaries.so",
-        "library_sha256": "c13a6b566910eaba52b0d7bfba1f2c562e6c8b6e543435c7e6487f37d3bd84e8"
+        "object_sha256": "8bf83079c457edf7af1bcad77f0863bca3e26029a5863186fd8e0e088b878f79",
+        "library_sha256": "c13a6b566910eaba52b0d7bfba1f2c562e6c8b6e543435c7e6487f37d3bd84e8",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_utf8_boundaries",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/utf8_boundaries.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/utf8_boundaries.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/utf8_boundaries.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_utf8_boundaries.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
     "utf8_prefix": {
@@ -73,21 +125,47 @@
       "core_sha256": "1fb0f643c5a5e4d84a741644b249ff5ee79934a5c1cb703628e21cc21a4eeb0b",
       "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
       "library_bytes": 17192,
+      "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
         "symbol": "codex_hia_utf8_prefix",
+        "library": "libcodex_hia_utf8_prefix.so",
         "object": "utf8_prefix.namespaced.o",
         "archive": "libcodex_hia_utf8_prefix.a",
         "archive_member": "hia.o",
         "archive_bytes": 5718,
         "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
-        "object_sha256": "d3bd3368110567e86ee960df7ae070e16f51089c5d5ccdc5ed07a1c81400a0f1",
         "text_sha256": "53a871c90469ac7abc422832ae38af75ef3ba02799933a8ef4a10f9cff9082a1",
         "defined_symbols": [
           "codex_hia_utf8_prefix"
         ],
         "undefined_symbols": [],
-        "library": "libcodex_hia_utf8_prefix.so",
-        "library_sha256": "1eb95d9b14f6b640ea8d825d4b41d966bcd7d3465568ac36057b900b7f2653c8"
+        "object_sha256": "d3bd3368110567e86ee960df7ae070e16f51089c5d5ccdc5ed07a1c81400a0f1",
+        "library_sha256": "1eb95d9b14f6b640ea8d825d4b41d966bcd7d3465568ac36057b900b7f2653c8",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_utf8_prefix",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/utf8_prefix.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/utf8_prefix.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/utf8_prefix.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_utf8_prefix.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
     "metric_tag": {
@@ -95,21 +173,47 @@
       "core_sha256": "9651924c897e3f4bdc276d698da9ff606a8f334c022b4cff42f4a206198c41d9",
       "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
       "library_bytes": 21288,
+      "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
         "symbol": "codex_hia_metric_tag",
+        "library": "libcodex_hia_metric_tag.so",
         "object": "metric_tag.namespaced.o",
         "archive": "libcodex_hia_metric_tag.a",
         "archive_member": "hia.o",
         "archive_bytes": 11046,
         "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae",
-        "object_sha256": "d9677eb3edb8b33580276d191663f7b8796c378948a01360c2ed2fd64ad44b2d",
         "text_sha256": "39bf34094d4040e2f90d63902683c7c661972f7af5ab282814204f6f58e2f548",
         "defined_symbols": [
           "codex_hia_metric_tag"
         ],
         "undefined_symbols": [],
-        "library": "libcodex_hia_metric_tag.so",
-        "library_sha256": "aca8249178a5aa60182120ba9b668aa4ba7ec994e0694d4f098718a671347f61"
+        "object_sha256": "d9677eb3edb8b33580276d191663f7b8796c378948a01360c2ed2fd64ad44b2d",
+        "library_sha256": "aca8249178a5aa60182120ba9b668aa4ba7ec994e0694d4f098718a671347f61",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_metric_tag",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/metric_tag.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/metric_tag.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/metric_tag.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_metric_tag.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
     "markdown_location": {
@@ -117,21 +221,47 @@
       "core_sha256": "09f1ca5eb6f6f48a2fd9afdb90a330023d5506d1fd453a77af4ebcceb44ffc4f",
       "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
       "library_bytes": 21288,
+      "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
         "symbol": "codex_hia_markdown_location",
+        "library": "libcodex_hia_markdown_location.so",
         "object": "markdown_location.namespaced.o",
         "archive": "libcodex_hia_markdown_location.a",
         "archive_member": "hia.o",
         "archive_bytes": 9044,
         "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
-        "object_sha256": "669a7edf77c4b867a78ca81f31dc1b35cf97ccd16d07d4307e75e2d7abf5e401",
         "text_sha256": "ec108fdeef45b4987f982b3486fbf56fa588208cd845d94719431b2c63b9dc22",
         "defined_symbols": [
           "codex_hia_markdown_location"
         ],
         "undefined_symbols": [],
-        "library": "libcodex_hia_markdown_location.so",
-        "library_sha256": "e9407071eb36013c150ce005d83fec0e57fa36ab7daa3dccb06034c732d011b7"
+        "object_sha256": "669a7edf77c4b867a78ca81f31dc1b35cf97ccd16d07d4307e75e2d7abf5e401",
+        "library_sha256": "e9407071eb36013c150ce005d83fec0e57fa36ab7daa3dccb06034c732d011b7",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_markdown_location",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/markdown_location.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/markdown_location.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/markdown_location.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_markdown_location.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
     "ascii_json_fragment": {
@@ -139,53 +269,154 @@
       "core_sha256": "75109c1a75aac0f1a2d4294d0ef1fc94598f68a8cb3c1f0272428562548775af",
       "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
       "library_bytes": 25384,
+      "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
         "symbol": "codex_hia_ascii_json_fragment",
+        "library": "libcodex_hia_ascii_json_fragment.so",
         "object": "ascii_json_fragment.namespaced.o",
         "archive": "libcodex_hia_ascii_json_fragment.a",
         "archive_member": "hia.o",
         "archive_bytes": 13534,
         "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
-        "object_sha256": "6f26f5ae6c0426b20125f267f8ebf70440ea69672f72a08a9eab0781145cdcdb",
         "text_sha256": "12d5d738d58d36ef581e2b569d02ec7d8d3ee53bb42e188bda22f54d04c4a626",
         "defined_symbols": [
           "codex_hia_ascii_json_fragment"
         ],
         "undefined_symbols": [],
-        "library": "libcodex_hia_ascii_json_fragment.so",
-        "library_sha256": "cbd9f78f814faf93704450fa9940ca83d660abeadbf4f516f25ec97c4b697fee"
+        "object_sha256": "6f26f5ae6c0426b20125f267f8ebf70440ea69672f72a08a9eab0781145cdcdb",
+        "library_sha256": "cbd9f78f814faf93704450fa9940ca83d660abeadbf4f516f25ec97c4b697fee",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_ascii_json_fragment",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/ascii_json_fragment.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/ascii_json_fragment.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/ascii_json_fragment.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_ascii_json_fragment.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     },
     "truncate": {
-      "source_sha256": "84f44d4ff275748fd6180356f3944d3ff447803290a5d0e111c02dd8d883372d",
-      "core_sha256": "e883a0604a62b9a3888f26c157f5080fa50c825cebcedc8cb03af39542a655b2",
-      "library_sha256": "35ac311af5f96115fe0322885e75bf289ac16bdcac52b9ef9d624716aef083ba",
+      "source_sha256": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
+      "core_sha256": "1c86814c9ea51255b047a7489c65a8c6d69fa19458b03a2f1971d75fea2df2ef",
+      "library_sha256": "d79583344ca287f8404e715120301f843cc3bc3339dabd4968c5e28d25009b21",
       "library_bytes": 29480,
+      "entry_profile": "borrowed-buffers-u32-v1",
       "static_link": {
         "symbol": "codex_hia_truncate",
+        "library": "libcodex_hia_truncate.so",
         "object": "truncate.namespaced.o",
         "archive": "libcodex_hia_truncate.a",
         "archive_member": "hia.o",
-        "archive_bytes": 18588,
-        "archive_sha256": "328c0512e38843712c064eb9c00285cfb5963758d32550574f2cf59875488aa2",
-        "object_sha256": "45dc0810e11f5b045fcab295913280babaa3b66e0460557500e19170a4f1f78c",
-        "text_sha256": "8fa4a7938084b9760a39620cc2a77b892ae6e39ed4817513275372c60bcd676c",
+        "archive_bytes": 17372,
+        "archive_sha256": "3dd358a5be6db2db8860e4e6e8a7d58d30ce104256d272b5304c1db8d0d865ff",
+        "text_sha256": "09ea035298b3436d9adb0ba61ca88786e2085f456bf21831115fea57284ac437",
         "defined_symbols": [
           "codex_hia_truncate"
         ],
         "undefined_symbols": [],
-        "library": "libcodex_hia_truncate.so",
-        "library_sha256": "dfdfc56d0e3962ab50de1c2a89f0c23f2abea1e134e44e0446d1dadd0b29b80e"
+        "object_sha256": "4c029de0fef846892e4c1f7b36083387499ff781c6bf793eea1d2601b69c69d8",
+        "library_sha256": "a5b5bfa2bc52aef5c9b289377d5de44455d5df5b09cb1eeaf2c7a7931376ac3d",
+        "objcopy_command": [
+          "objcopy",
+          "--redefine-sym=f0=codex_hia_truncate",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/truncate.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/truncate.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/truncate.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_truncate.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
+    },
+    "token_budget": {
+      "source_sha256": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
+      "core_sha256": "ffc698feae31f988f9a23946a49862d31f778b06b8bf869aae3dc6a88c4eb007",
+      "library_sha256": "424b0fc4529a7877bf4c94879c5db965930ab66fb58ca398be92600d0926565e",
+      "library_bytes": 13096,
+      "entry_profile": "u64-pair-to-u64-v1",
+      "static_link": {
+        "symbol": "codex_hia_token_budget",
+        "library": "libcodex_hia_token_budget.so",
+        "object": "token_budget.namespaced.o",
+        "archive": "libcodex_hia_token_budget.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 1512,
+        "archive_sha256": "791efb6220129bdeb722e27b9457e718f51219a162e6c45619462f84601c6eec",
+        "text_sha256": "8024ce6daffa847925b915729d01da6b0f5928ab0e3c6de9a04087273b39212e",
+        "defined_symbols": [
+          "codex_hia_token_budget"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "35c8c5d16c6b6961f3accf97fda1d801036440760f97fec0f6f898e556976d0d",
+        "library_sha256": "a2dcde98c7faa6af9aff1c198d7a260bb7bfbcf0291e03157f377bc146f4dcbf",
+        "objcopy_command": [
+          "objcopy",
+          "--remove-section=.rela.text",
+          "--redefine-sym=f0=codex_hia_token_budget",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/token_budget.o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/token_budget.namespaced.o"
+        ],
+        "link_command": [
+          "ld",
+          "-m",
+          "elf_x86_64",
+          "-shared",
+          "-z",
+          "defs",
+          "-z",
+          "noexecstack",
+          "-z",
+          "relro",
+          "-z",
+          "now",
+          "--build-id=none",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/token_budget.namespaced.o",
+          "-o",
+          "/workspace/scratch/9f380f39cb05/combined-native-build-v1/libcodex_hia_token_budget.so"
+        ],
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "810405b463614dc9258676504c279296a25fb7e26fd1b441e8be55e34092e67e",
-    "build_driver_sha256": "eee6e29b460792f2d878900a538367eb054f4343b1ca92588bfad6f0905cf791",
+    "toolchain_lock_sha256": "1c145301d5dcd2bf695466ee83ec00f616c65905f6a4da34eca146fef9a0d634",
+    "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
-    "compiler_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0"
+    "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "0d5ba49613918fa9ccdcedc23ad7f86546de2b984110ad19efdfda8a9714e048",
+  "build_report_sha256": "d4b610babb20b4d297da41f19cf533a67fb215c1e231bf0be685db3dfe881dbe",
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
@@ -414,7 +645,8 @@
     ],
     "helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "build_report_sha256": "0d5ba49613918fa9ccdcedc23ad7f86546de2b984110ad19efdfda8a9714e048",
-    "whole_codex_rewritten": false
+    "whole_codex_rewritten": false,
+    "checkpoint_scope": "Published seven-module a3f319cfba26b3206d9bfecbdefed2515ce4a19c checkpoint; current eight-module receipt checks are recorded under native_optimization."
   },
   "cargo_crate_tests": {
     "packages": [
@@ -699,7 +931,7 @@
     "native_windows_runtime": "pending",
     "checkpoint_scope": "Inherited six-module checkpoint at a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095; not a seven-module qualification."
   },
-  "scope": "Linux x86-64 GNU; seven B3 modules and six opt-in production algorithm groups (truncate supplies five public APIs). The new component and string owner pass their recorded gates. Inherited six-module product/workspace proofs are explicitly scoped by inherited_checkpoint. Current consumers/installation, performance, default native dispatch, other platforms and whole compiler/runtime ownership remain unqualified.",
+  "scope": "Linux x86-64 GNU; eight B3 modules and six opt-in production algorithm groups. The separate scalar entry and v9 word loads optimize the existing five truncation APIs. Current local component/string-owner gates passed; current consumer and installed CLI CI, full workspace, performance, default dispatch, complete owners and other platforms remain open.",
   "evidence_reports": {
     "build": {
       "sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195",
@@ -775,20 +1007,20 @@
     }
   },
   "current_source_inputs": {
-    "hia/toolchain.json": "810405b463614dc9258676504c279296a25fb7e26fd1b441e8be55e34092e67e",
-    "hia/build.py": "eee6e29b460792f2d878900a538367eb054f4343b1ca92588bfad6f0905cf791",
+    "hia/toolchain.json": "1c145301d5dcd2bf695466ee83ec00f616c65905f6a4da34eca146fef9a0d634",
+    "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "codex-rs/utils/string/src/lib.rs": "2c68d499ce4f3778490364ab0326cdc0c2a78603c4d27ee60c1a7c7826abe17c",
     "codex-rs/utils/string/src/json.rs": "799b4f220ede9ba62ebb9fe90f66397dbdf35271a1ae289c5e78607260f24a0b",
     "codex-rs/utils/string/src/hia_native_ascii_json.rs": "9a5b3fb5fd581012de872c3835f10d69a2be9b28fb594ee64f653bfd97cdcc39",
     "codex-rs/utils/string/src/ascii_json_tests.rs": "7e52a8777264b1b13528bf9b81ab5998674239f30425592e97349633c5cc9d05",
-    "codex-rs/utils/string/build.rs": "d3b09d5f3ff27fd1dfeee3a8df38ce55ea07dca564c7bc492e0f5af875ffa7f6",
+    "codex-rs/utils/string/build.rs": "315b128aaef52ef17bcd0168e4dab0c7989b23b6f295791c9d9026d7e8f83a48",
     "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
     "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
-    "hia/tests/test_installed_codex.py": "0bba2daf481bf2873677a7d9a31ac27600d94672672ca7fdce7e8e165a0f6500",
-    ".github/workflows/codex-hia-native.yml": "6dd3c3e2f82451c36d1862e44d1fab316b3a4f1bc38f7b527be8ddade35743aa",
+    "hia/tests/test_installed_codex.py": "b022c119816c1846705d4f2f5c721dde3e84ea59bfb41509a3ae9961e989fcde",
+    ".github/workflows/codex-hia-native.yml": "1f5f9ca1e6989913038ae508b66344f43d776d9b4a566ff01c751b5b854b1731",
     "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
@@ -802,13 +1034,17 @@
     "codex-rs/utils/string/src/hia_native_markdown.rs": "f893ae0c4ee9677a7556be5ca27c058584bd7e6d05530ec9ecd82b64bd66e7e1",
     "hia/tests/native_markdown_caller.rs": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
     "codex-rs/protocol/src/permission_profile_intersection_tests.rs": "b5616c6bb461def702004e14a4f1fb4224165dceb1e619c24c719cc8b45d7c70",
-    "hia/truncate.hepta": "84f44d4ff275748fd6180356f3944d3ff447803290a5d0e111c02dd8d883372d",
+    "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
     "codex-rs/utils/string/src/truncate.rs": "cfeba2400aa9e7439ece0c23d6a4291d4c106777f3159f2e5f8fd89e7ec24551",
-    "codex-rs/utils/string/src/hia_native_truncate.rs": "60865eb473f876d56235dbc5e8053cfd861d0291c62628ffdc9435591a6bab20",
+    "codex-rs/utils/string/src/hia_native_truncate.rs": "4b7beaa71d688157b018dc2ca282ced7707470c9cc027c3d51fe87e40908cf63",
     "codex-rs/utils/string/src/truncate_native_tests.rs": "b6113c90f484104f909c3636fc08c29da7249007c693c88d0871034441f7fdbc",
     "hia/tests/native_truncate_caller.rs": "de88b426d2330a5013fc3a2fb0fab300a51382ef45bd0f735257284138c7c451",
-    "hia/tests/test_native_truncate_caller.py": "9c982e6496ebe09f4a55fb7302e9e694b8bbf79be4bd41f6c4b3f663141a21e8",
-    "hia/tests/test_truncate_abi.py": "c9d7a2ade87809136d92e731681fba498a2cf3ad06942dc9364f3868bbd3049a"
+    "hia/tests/test_native_truncate_caller.py": "48c85d7a30d0b261b8831eb46c83c16514eda1f2826c0c184384962aeaf0f9b6",
+    "hia/tests/test_truncate_abi.py": "c9d7a2ade87809136d92e731681fba498a2cf3ad06942dc9364f3868bbd3049a",
+    "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
+    "hia/tests/test_token_budget_abi.py": "af2b3e5cd8b12577175c07797917f28db6713ecc683bf081d2dcf7403359a4ba",
+    "hia/tests/test_scalar_build_admission.py": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
+    "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5"
   },
   "workspace_requalification": {
     "status": "passed",
@@ -932,13 +1168,13 @@
       "workspace_requalification"
     ],
     "build_report_sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195",
-    "scope": "These records predate truncate and retain their recorded source/artifact identities. They do not qualify the current seven-module consumer, installation or full-workspace build."
+    "scope": "These six-module records retain their own source/artifact identities. They do not qualify the current eight-module consumer, installation or workspace build."
   },
   "truncate_increment": {
     "base_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
     "target": "x86_64-unknown-linux-gnu",
     "rust_version": "1.96.1",
-    "status": "component_and_string_owner_passed_consumer_and_performance_qualification_open",
+    "status": "component_string_owner_and_published_native_ci_passed_performance_and_global_gates_open",
     "build_report_sha256": "0d5ba49613918fa9ccdcedc23ad7f86546de2b984110ad19efdfda8a9714e048",
     "source_inputs_at_differential": {
       "public_source_sha256": "c7bcdcf3c306662d4d8bc9c46793d86b789e97b8e0c393ae98e4fa65b9e0af64",
@@ -1177,7 +1413,7 @@
       "scope": "The differential and performance runs precede mechanical rustfmt changes to these two files; HIA and adapter bytes are unchanged. Final owner tests and strict lint use the formatted source. GitHub CI repeats the full differential on the published source."
     },
     "consumer_qualification": {
-      "status": "pending_github_ci",
+      "status": "published_head_native_ci_passed",
       "local_attempt": {
         "argv": [
           "just",
@@ -1213,7 +1449,65 @@
         "default callers and truncation consumers without HIA artifacts",
         "full native CLI/arg0/TUI owners",
         "relocated native/default CLI with codex_hia_truncate symbol"
-      ]
+      ],
+      "published_ci": {
+        "source_commit": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+        "source_tree": "a24b6b1c9ff0d755becace258584253efe83f371",
+        "pull_request": 6342,
+        "native_modules": 7,
+        "workflows": [
+          {
+            "id": 43648398946,
+            "event": "push",
+            "head_sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_by": "2026-11-14T22:53:17Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43648398946"
+          },
+          {
+            "id": 43648457597,
+            "event": "pull_request",
+            "head_sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_by": "2026-11-14T22:59:24Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43648457597"
+          }
+        ],
+        "exact_head_push_tests": [
+          {
+            "scope": "native apply-patch/string",
+            "passed": 139,
+            "skipped": 0
+          },
+          {
+            "scope": "native output-truncation/protocol/context-fragments",
+            "passed": 319,
+            "skipped": 0
+          },
+          {
+            "scope": "native CLI/arg0/TUI",
+            "passed": 4473,
+            "skipped": 6
+          },
+          {
+            "scope": "default apply-patch/string and truncation consumers without HIA artifacts",
+            "passed": 444,
+            "skipped": 0
+          }
+        ],
+        "installed_patch_and_codex_steps": "passed",
+        "installed_scope": "relocated startup, required native symbols, and 2 MiB patch parity; does not exercise every linked algorithm",
+        "push_log_sha256": "5549d9ffe1cab1a80d5d1e4b28326e15f3bc9d88788a15611117af10012880c0",
+        "result_artifact": {
+          "id": 14135489057,
+          "digest": "sha256:eff7fc5ec3e3f89617fe895984e9a817f147ae4c4e88140a35eda0b6e0c3165f"
+        },
+        "whole_workspace_qualified": false,
+        "default_dispatch_migrated": false,
+        "retirement_ready": false
+      }
     },
     "performance": {
       "qualified": false,
@@ -1366,7 +1660,7 @@
       "repair": "Ubuntu 24.04 distribution-maintained bwrap-userns-restrict AppArmor profile; global restriction remains enabled and namespace smoke must pass.",
       "inherited_successful_fix_commit": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
       "inherited_successful_fix_run": 43640802512,
-      "scope": "That run qualifies its own six-module source only. The new seven-module branch must pass its own CI."
+      "scope": "The earlier repair and the seven-module a3f319cf published CI each retain their own source scopes. The current eight-module build must pass its own CI."
     },
     "publication_changes_after_owner_tests": [
       ".github/workflows/codex-hia-native.yml",
@@ -1376,6 +1670,341 @@
     ],
     "whole_codex_rewritten": false,
     "default_native_dispatch_migrated": false,
+    "legacy_retirement_ready": false,
+    "checkpoint_scope": "Published seven-module source a3f319cfba26b3206d9bfecbdefed2515ce4a19c; this record does not qualify the current eight-module source."
+  },
+  "native_optimization": {
+    "base_commit": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+    "target": "x86_64-unknown-linux-gnu",
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "rust_version": "1.96.1",
+    "status": "current_component_and_string_owner_passed_consumer_ci_and_performance_open",
+    "source_snapshot": {
+      "files": 9822,
+      "sha256": "3df8ad067237b0a3e6f0ec2ab6905b355b14550b31e34ccfe323bbab31a8b424"
+    },
+    "source_inputs_at_differential": {
+      "public_source_sha256": "cfeba2400aa9e7439ece0c23d6a4291d4c106777f3159f2e5f8fd89e7ec24551",
+      "extracted_source_sha256": "2484fd678a35ac3ecf6c2f86490f32fbed3f68862b0336cd56e0a1a17df696f9",
+      "adapter_sha256": "4b7beaa71d688157b018dc2ca282ced7707470c9cc027c3d51fe87e40908cf63",
+      "hia_source_sha256": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
+      "test_source_sha256": "de88b426d2330a5013fc3a2fb0fab300a51382ef45bd0f735257284138c7c451",
+      "archive_sha256": "3dd358a5be6db2db8860e4e6e8a7d58d30ce104256d272b5304c1db8d0d865ff",
+      "token_budget_source_sha256": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
+      "token_budget_archive_sha256": "791efb6220129bdeb722e27b9457e718f51219a162e6c45619462f84601c6eec",
+      "build_report_sha256": "d4b610babb20b4d297da41f19cf533a67fb215c1e231bf0be685db3dfe881dbe",
+      "original_revision": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "original_blob": "fa5b871774c242fb1380b927dd34fd7f73d3680b",
+      "original_production_tokens_sha256": "4e7972a26775f1ac20903b977becb011a5283bb56bfbf9311ca483593a21b485"
+    },
+    "build_report_sha256": "d4b610babb20b4d297da41f19cf533a67fb215c1e231bf0be685db3dfe881dbe",
+    "original_rust": {
+      "tests_passed": 7,
+      "skipped": 0,
+      "comparisons": 229173
+    },
+    "typed_abi": {
+      "abi": "SysV AMD64 (value:u64, operation:u64) -> u64",
+      "operations": {
+        "0": "min(value * 4, u64::MAX)",
+        "1": "min(value + 3, u64::MAX) / 4",
+        "other": "SIGILL"
+      },
+      "explicit_calls": 14,
+      "boundary_values": 9069,
+      "boundary_calls": 18138,
+      "random_values": 20000,
+      "random_calls": 40000,
+      "concurrent_calls": 16384,
+      "concurrent_workers": 8,
+      "successful_native_calls": 74536,
+      "unknown_operation_trap_calls": 16,
+      "native_calls": 74552,
+      "skipped": 0
+    },
+    "truncate_abi": {
+      "schema": "codex.hia.truncate-abi.v2",
+      "passed": true,
+      "native_calls": 2888,
+      "error_no_write_cases": 757,
+      "valid_plans": 22,
+      "trusted_plan_comparisons": 288,
+      "concurrent_calls": 512,
+      "skipped": 0,
+      "trusted_concurrent_calls": 512,
+      "raw_and_scalar_error_no_write_cases": 645,
+      "trusted_capacity_error_no_write_cases": 112,
+      "library_sha256": "a5b5bfa2bc52aef5c9b289377d5de44455d5df5b09cb1eeaf2c7a7931376ac3d",
+      "request_size": 16,
+      "output_size": 40,
+      "input_contract": "operations 0/1 validate arbitrary bytes; operations 4/5 require valid UTF-8 borrowed from Rust &str; all requests are unaligned and read-only",
+      "error_contract": "all returned errors preserve source, request and complete output buffers"
+    },
+    "build_admission_checks": 114,
+    "cargo_receipt_checks": {
+      "seek_sequence": 56,
+      "token_budget": 56,
+      "shared_cargo_helper_changed": false
+    },
+    "owner_tests": {
+      "native_passed": 38,
+      "default_without_hia_artifacts_passed": 26,
+      "skipped": 0
+    },
+    "unchanged_artifacts": {
+      "count": 35,
+      "scope": "All five compiled artifacts for the six unchanged buffer modules and scalar module are identical between the f33 scalar build and current v9 build. The word-load truncation component changed as intended.",
+      "report_sha256": "4214ef1ce467fb9bb8326671efb1255b63e78b2dc262ff896fac1417c3e4a5cf"
+    },
+    "gates": {
+      "native-build": {
+        "command": "python3 -B hia/build.py --hepta-root /workspace/scratch/9f380f39cb05/v9-truncate-experiment/Hepta --output /workspace/scratch/9f380f39cb05/combined-native-build-v1",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "f2055870de0735602a5eb6f38b2a76f150edd15374e6ef50dcb3f0c1c7b4df1f"
+      },
+      "seed-build": {
+        "command": "python3 -B hia/build.py --hepta-root /workspace/scratch/9f380f39cb05/v9-truncate-experiment/Hepta --output /workspace/scratch/9f380f39cb05/combined-seed-build-v1 --seed-only",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "a82df498ac31f64ffe8c2619d9858f26d3e18d7cb6e0ecfbeb74c2c4eae5437c"
+      },
+      "original-rust": {
+        "command": "python3 -B hia/tests/test_native_truncate_caller.py --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1 --rustc /workspace/scratch/9f380f39cb05/tools/rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc --report /workspace/scratch/9f380f39cb05/qualification/combined/original-rust-report-v1.json",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "0b460530f9a264a052b20af0edbcd18effa7afabdafa58fb87fcb65a58999cd4"
+      },
+      "typed-abi": {
+        "command": "python3 -B hia/tests/test_token_budget_abi.py --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1 --report /workspace/scratch/9f380f39cb05/qualification/combined/typed-abi-report-v1.json",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "abb8b130a7df97d39d625654175f756b77c9f879da0dce4b871be0fca9b2305b"
+      },
+      "truncate-abi": {
+        "command": "python3 -B hia/tests/test_truncate_abi.py --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1 --report /workspace/scratch/9f380f39cb05/qualification/combined/truncate-abi-report-v1.json",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "99c9099781c981f3ce498690510933d60677a27205e4aa8d40ffd30b95ffe560"
+      },
+      "build-admission": {
+        "command": "python3 -B hia/tests/test_scalar_build_admission.py --artifacts /workspace/scratch/9f380f39cb05/combined-native-build-v1 --report /workspace/scratch/9f380f39cb05/qualification/combined/build-admission-report-v1.json",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "b7861480b94e40c92600fdb0ae25f61dcaeeccd573ff7202736df205bccce4a5"
+      },
+      "receipt-default": {
+        "command": "python3 -B hia/tests/test_build_receipt.py --artifacts /workspace/scratch/9f380f39cb05/combined-native-build-v1 --rustc /workspace/scratch/9f380f39cb05/tools/rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc --report /workspace/scratch/9f380f39cb05/qualification/combined/receipt-default-report-v1.json",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "2e949b302f3fc370a17da819f5c4f5ec49a6d1a87f5674a4595369e5783f21e4"
+      },
+      "receipt-typed": {
+        "command": "python3 -B hia/tests/test_build_receipt.py --artifacts /workspace/scratch/9f380f39cb05/combined-native-build-v1 --mutation-module token_budget --rustc /workspace/scratch/9f380f39cb05/tools/rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc --report /workspace/scratch/9f380f39cb05/qualification/combined/receipt-typed-report-v1.json",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "f83c72df9dc08846a44aee80a29e28381e8aabc82f08cd7681cf81ce4157f5ea"
+      },
+      "native-string-tests": {
+        "command": "just test -p codex-utils-string --features hia-native --locked",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "11219d338b41ef3f66a1c134ae9f477a146ad4d8d5682719c863b493c16ae22a"
+      },
+      "default-string-tests": {
+        "command": "env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-utils-string --locked",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "b084c7bc461624662f8e3635b1924e0d64653300332e10758aa41af0ba9b8d2f"
+      },
+      "native-strict-clippy": {
+        "command": "cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-utils-string --all-targets --locked --features hia-native -- -D warnings",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "edfc03762d310c0807ba24df8e76f068b5b5671385411bb8047c83be69e394c3"
+      },
+      "default-strict-clippy": {
+        "command": "env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-utils-string --all-targets --locked -- -D warnings",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "c66316b7c15c8631f41f9ca6abf9d90d18976925828a956d0724025179ae86b6"
+      },
+      "format": {
+        "command": "just fmt",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "clippy-fix": {
+        "command": "just fix -p codex-utils-string --features hia-native",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "bdee4aa5454e0734956e0c837c1706c95825b6686f83d3102b1ff86c47dcfce0"
+      },
+      "performance-prepare": {
+        "command": "python3 -B /workspace/scratch/9f380f39cb05/performance/combined-v1/run_benchmark.py prepare --library-dir /workspace/scratch/9f380f39cb05/combined-native-build-v1",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "96bb4ebc946980956c459ec44127338f6cccd91121256b8fd88447e737129926"
+      },
+      "performance-measure": {
+        "command": "python3 -B /workspace/scratch/9f380f39cb05/performance/combined-v1/run_benchmark.py measure",
+        "exit": 0,
+        "source_unchanged": true,
+        "log_sha256": "7192824939883d83ce76af959e9d2be134dc200d13151a7b8d346e7e7f29e89e"
+      }
+    },
+    "reports": {
+      "receipt-default-report-v1.json": "972b688f4fc3db3bce85833f46a5ea33be694e720355d4beb0928b258d7b184c",
+      "truncate-abi-report-v1.json": "38f64ff4d50b644efdca6a2b2a6d11a449b36d881c020fe07605f9dbb237742b",
+      "original-rust-report-v1.json": "31258b1d7e41889861e07f4397885e613f6d0babe5669b0c68a788489fdf5c0c",
+      "typed-abi-report-v1.json": "63081afef2516559ad79dbce81b8d2345ab3c5d7be2c484535db4e835c42a1f7",
+      "unchanged-artifacts-report-v1.json": "4214ef1ce467fb9bb8326671efb1255b63e78b2dc262ff896fac1417c3e4a5cf",
+      "receipt-typed-report-v1.json": "ff7b6496a0a0e27a739d8ba93abaf77ecaf459654ac6800739717a61fa3e6903",
+      "build-admission-report-v1.json": "b2ad93d0c46d98dc05a6fde90122bbdf81ca8271839ae92ad3db1ece42c0c6d4"
+    },
+    "performance": {
+      "qualified": false,
+      "method": "same optimized Rust public APIs; original source token-bound; actual B3 native HIA static archive; black_box inputs and results; 3 alternating-order samples per case; equal iterations per pair",
+      "report_sha256": "b83538199ad0906598935fc5386b9891e57a27a95443a40c5822840ac18f2aee",
+      "raw_sha256": "cee2e5391ab7e52d4184d6c091b3551800aabace89de36b7157d710bffad704c",
+      "binary_sha256": "cf2ba2d8ea1237f804d2ef97640979a9b7cdeae9d2decf21c04f78624e047c2f",
+      "cases": {
+        "bytes_for_17_tokens": {
+          "input_bytes": 0,
+          "budget": 17,
+          "native_ns": 7.3042275,
+          "original_rust_ns": 0.601329,
+          "native_to_original_ratio": 12.146807321782251
+        },
+        "tokens_for_65_bytes": {
+          "input_bytes": 0,
+          "budget": 65,
+          "native_ns": 9.2802005,
+          "original_rust_ns": 0.5578885,
+          "native_to_original_ratio": 16.634507612184155
+        },
+        "saturated_bytes_for_tokens": {
+          "input_bytes": 0,
+          "budget": 4611686018427387904,
+          "native_ns": 6.235631,
+          "original_rust_ns": 0.880882,
+          "native_to_original_ratio": 7.078849380507264
+        },
+        "token_count_small_unicode": {
+          "input_bytes": 132,
+          "budget": 0,
+          "native_ns": 8.959920335972118,
+          "original_rust_ns": 0.8576460501761176,
+          "native_to_original_ratio": 10.447107328404531
+        },
+        "chars_small_ascii": {
+          "input_bytes": 116,
+          "budget": 48,
+          "native_ns": 449.8202676864245,
+          "original_rust_ns": 209.94773741236457,
+          "native_to_original_ratio": 2.1425344861084126
+        },
+        "chars_small_unicode": {
+          "input_bytes": 132,
+          "budget": 48,
+          "native_ns": 578.551,
+          "original_rust_ns": 169.2921,
+          "native_to_original_ratio": 3.4174719316494984
+        },
+        "tokens_small_unicode": {
+          "input_bytes": 132,
+          "budget": 8,
+          "native_ns": 270.19880994049703,
+          "original_rust_ns": 181.3559677983899,
+          "native_to_original_ratio": 1.4898809960357746
+        },
+        "tokens_under_budget_small_unicode": {
+          "input_bytes": 132,
+          "budget": 34,
+          "native_ns": 204.5163,
+          "original_rust_ns": 15.3502,
+          "native_to_original_ratio": 13.323363864965929
+        },
+        "chars_zero_budget_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 0,
+          "native_ns": 1873297.7272727273,
+          "original_rust_ns": 46066.0,
+          "native_to_original_ratio": 40.66551745913966
+        },
+        "chars_zero_budget_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 0,
+          "native_ns": 3004638.153846154,
+          "original_rust_ns": 59646.38461538462,
+          "native_to_original_ratio": 50.37418735805768
+        },
+        "chars_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 512,
+          "native_ns": 1606037.3333333333,
+          "original_rust_ns": 1270297.8333333333,
+          "native_to_original_ratio": 1.2642998288983935
+        },
+        "chars_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 512,
+          "native_ns": 2067840.4615384615,
+          "original_rust_ns": 865391.9230769231,
+          "native_to_original_ratio": 2.3894843554654424
+        },
+        "tokens_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 128,
+          "native_ns": 641.625,
+          "original_rust_ns": 2177892.6875,
+          "native_to_original_ratio": 0.0002946081795869017
+        },
+        "tokens_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 128,
+          "native_ns": 664.8461538461538,
+          "original_rust_ns": 1441712.0,
+          "native_to_original_ratio": 0.00046115046128918525
+        },
+        "tokens_under_budget_large_ascii": {
+          "input_bytes": 1048581,
+          "budget": 262146,
+          "native_ns": 26030.533333333333,
+          "original_rust_ns": 25204.95,
+          "native_to_original_ratio": 1.0327548094058243
+        },
+        "tokens_under_budget_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 262147,
+          "native_ns": 25796.828125,
+          "original_rust_ns": 25702.0,
+          "native_to_original_ratio": 1.003689523188857
+        },
+        "tokens_zero_budget_large_unicode": {
+          "input_bytes": 1048586,
+          "budget": 0,
+          "native_ns": 391.6875,
+          "original_rust_ns": 64959.5,
+          "native_to_original_ratio": 0.006029718516922082
+        }
+      },
+      "all_cases_within_3_seconds": true,
+      "remaining": "Scalar calls still exceed inline Rust costs. Character paths, especially zero budgets, and small unchanged token inputs retain regressions. These bounded local observations are not a whole-product performance qualification."
+    },
+    "current_consumer_and_installed_ci": {
+      "status": "pending_published_head_run",
+      "required_symbol": "codex_hia_token_budget",
+      "seven_module_ci_is_not_substituted": true
+    },
+    "publication_changes_after_tests": [
+      "hia/README.md",
+      "hia/migration.json",
+      "hia/verification.json"
+    ],
+    "whole_codex_rewritten": false,
+    "production_dispatch_migrated": false,
     "legacy_retirement_ready": false
   }
 }

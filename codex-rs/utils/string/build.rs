@@ -6,4 +6,5 @@ fn main() {
     link_native("markdown_location");
     link_native("ascii_json_fragment");
     link_native("truncate");
+    link_native("token_budget");
 }

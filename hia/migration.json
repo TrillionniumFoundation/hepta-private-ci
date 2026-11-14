@@ -75,20 +75,20 @@
   "toolchain": {
     "lock": "hia/toolchain.json",
     "repository": "https://github.com/TrillionniumFoundation/Hepta",
-    "revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
     "implemented_target": "x86_64-unknown-linux-gnu",
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "seven_module_fixed_point_and_truncate_owner_passed_consumer_performance_platform_gates_open",
+    "qualification_status": "eight_module_fixed_point_and_string_owner_passed_current_consumer_ci_performance_platform_gates_open",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "B1/B2/B3 byte equality and 7 native modules. The new truncate component passes original-Rust, ABI, receipt, native/default string-owner and strict lint gates. Earlier six-module product checkpoints retain their exact scope. Current dependent-owner/installed CLI CI, performance, default dispatch and other platforms remain open.",
-    "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+    "qualification_scope": "Linux x86-64 GNU; eight B3 modules and six opt-in production algorithm groups. The separate scalar entry and v9 word loads optimize the existing five truncation APIs. Current local component/string-owner gates passed; current consumer and installed CLI CI, full workspace, performance, default dispatch, complete owners and other platforms remain open.",
+    "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
@@ -417,13 +417,10 @@
       "source_blob": "fa5b871774c242fb1380b927dd34fd7f73d3680b",
       "source_functions": [
         "truncate_middle_chars",
-        "truncate_middle_with_token_budget",
-        "approx_token_count",
-        "approx_bytes_for_tokens",
-        "approx_tokens_from_byte_count"
+        "truncate_middle_with_token_budget"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_and_default_string_owner_passed_consumer_performance_platform_gates_open",
+      "qualification_status": "current_component_and_string_owner_passed_current_consumer_ci_performance_platform_gates_open",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -450,7 +447,8 @@
         "Assign the odd byte-budget remainder to the suffix and move both cut points to UTF-8 boundaries.",
         "Count removed Unicode scalars for character markers; token markers retain the original nominal byte-budget accounting.",
         "Preserve saturating multiply/add arithmetic and the original result-string comparison, including marker collisions that return None.",
-        "Borrow arbitrarily large valid strings without a bootstrap-capacity input limit or a Rust algorithm fallback."
+        "Borrow arbitrarily large valid strings without a bootstrap-capacity input limit or a Rust algorithm fallback.",
+        "Count complete eight-byte batches with checked unaligned v9 word loads; preserve individual-byte tail behavior."
       ],
       "tests": [
         "hia/tests/test_native_truncate_caller.py",
@@ -459,7 +457,7 @@
         "codex-rs/utils/string/src/truncate_native_tests.rs"
       ],
       "validation": {
-        "report": "hia/verification.json#truncate_increment",
+        "report": "hia/verification.json#native_optimization",
         "artifact_generation": "B3",
         "original_rust_comparisons": 229173,
         "abi_native_calls": 2888,
@@ -467,6 +465,45 @@
         "native_string_tests_passed": 38,
         "default_string_tests_passed": 26,
         "skipped": 0,
+        "performance_qualified": false
+      }
+    },
+    {
+      "id": "token_budget",
+      "hia_source": "hia/token_budget.hepta",
+      "source_path": "codex-rs/utils/string/src/truncate.rs",
+      "source_functions": [
+        "approx_token_count",
+        "approx_bytes_for_tokens",
+        "approx_tokens_from_byte_count"
+      ],
+      "production_algorithm_group": "truncate",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "typed_abi_original_rust_and_string_owner_passed_current_consumer_ci_open",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_token_budget",
+        "profile": "u64-pair-to-u64-v1",
+        "operations": {
+          "0": "min(value * 4, u64::MAX)",
+          "1": "min(value + 3, u64::MAX) / 4",
+          "other": "SIGILL"
+        },
+        "invalid_operation": "trap; all 64 operation bits are significant",
+        "value_domain": "all u64 values, including u64::MAX as a valid input and result"
+      },
+      "tests": [
+        "hia/tests/test_token_budget_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_truncate_caller.py",
+        "hia/tests/test_build_receipt.py"
+      ],
+      "validation": {
+        "report": "hia/verification.json#native_optimization",
+        "native_calls": 74552,
+        "admission_checks": 114,
+        "original_rust_comparisons": 229173,
         "performance_qualified": false
       }
     }
@@ -690,14 +727,15 @@
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers"
       ],
-      "next_implementation": "Complete UUID helpers, JSON serialization outside the fragment encoder, truncation performance and dependent-owner/installed CLI qualification, then the remaining owner/default-release/platform gates.",
+      "next_implementation": "Complete UUID helpers, JSON serialization outside the fragment encoder, remaining truncation performance, current consumer/installed CI, then complete owner/default-release/platform qualification.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
         "metric_tag",
         "markdown_location",
         "ascii_json_fragment",
-        "truncate"
+        "truncate",
+        "token_budget"
       ]
     },
     {
@@ -787,7 +825,7 @@
       "source_repositories": [
         {
           "repository": "https://github.com/TrillionniumFoundation/Hepta",
-          "revision": "f33d8da316de8fdf27b504371f1a5310997ff548"
+          "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d"
         }
       ],
       "source_paths": [
@@ -2219,8 +2257,13 @@
       "utf8_prefix",
       "metric_tag",
       "markdown_location",
-      "ascii_json_fragment"
+      "ascii_json_fragment",
+      "truncate",
+      "token_budget"
     ],
-    "checks_passed": 52
+    "checks_passed": 56,
+    "typed_scalar_mutation_checks_passed": 56,
+    "scalar_build_admission_checks_passed": 114,
+    "shared_cargo_helper_changed": false
   }
 }
