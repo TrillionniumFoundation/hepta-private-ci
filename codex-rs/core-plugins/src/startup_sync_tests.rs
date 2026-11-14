@@ -1302,6 +1302,32 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+#[test]
+fn curated_repo_archive_fixtures_cover_stored_and_deflated_entries() {
+    for (bytes, expected_method) in [
+        (
+            curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA),
+            zip::CompressionMethod::Deflated,
+        ),
+        (
+            curated_repo_backup_archive_zip_bytes(TEST_CURATED_PLUGIN_SHA),
+            zip::CompressionMethod::Stored,
+        ),
+    ] {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(bytes)).expect("read archive fixture");
+        assert!(!archive.is_empty(), "archive fixture must contain entries");
+        for index in 0..archive.len() {
+            let entry = archive.by_index(index).expect("read fixture entry");
+            assert_eq!(
+                entry.compression(),
+                expected_method,
+                "fixture entry {index} must use its declared compression method",
+            );
+        }
+    }
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
@@ -1343,7 +1369,7 @@ fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
 fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default();
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
 
     writer
         .start_file("plugins/.git/HEAD", options)
