@@ -256,6 +256,15 @@ jobs:
             --report "$RUNNER_TEMP/hia-installed-patch.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-installed-patch.log"
 
+      - name: Provision system bubblewrap for real sandbox owner tests
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bubblewrap
+          command -v bwrap
+          bwrap --version
+
       - name: Test full Codex owners with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
