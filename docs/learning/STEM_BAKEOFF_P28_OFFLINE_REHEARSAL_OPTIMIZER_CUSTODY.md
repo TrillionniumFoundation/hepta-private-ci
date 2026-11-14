@@ -18,7 +18,7 @@ finite output-only check is not a cross-Cell custody guarantee.
 Base: P27 [#3068](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3068)
 exact source `a6cc400c8b979c85fca8304c5f4df6b051bc5432`.
 Parent #3068 and `main` are unchanged. No new runtime authority or per-Cell
-backbone introduced. 
+backbone introduced.
 
 - Reuse the P27 stock SGD/AdamW optimizer lifecycle, global-hook, physical
   storage, momentum/state safety, finite Student-gradient and rollback guards.
