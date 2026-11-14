@@ -1,0 +1,47 @@
+name: Hepta Memory A-I frozen protocol (shadow only)
+
+on:
+  pull_request:
+    paths:
+      - qa/stem-bakeoff/memory_ai_acceptance.py
+      - qa/stem-bakeoff/test_memory_ai_acceptance.py
+      - docs/learning/MEMORY_A_I_ACCEPTANCE.md
+      - .github/workflows/hepta-memory-ai-matrix-shadow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never allow later heads to mask the evidence/exit status of an earlier head.
+concurrency:
+  group: hepta-memory-ai-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  fail-closed-contract-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify exact checked-out source
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+      - name: Test strict nine-arm census, provenance, source and cost refusals
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python3 -m py_compile qa/stem-bakeoff/memory_ai_acceptance.py qa/stem-bakeoff/test_memory_ai_acceptance.py
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_ai_acceptance.py' -v
+      - name: Confirm test runner left repository unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
