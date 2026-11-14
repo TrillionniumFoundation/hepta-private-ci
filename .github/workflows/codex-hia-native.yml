@@ -6,12 +6,24 @@ on:
       - hia/**
       - codex-rs/apply-patch/**
       - codex-rs/utils/string/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
       - .github/workflows/codex-hia-native.yml
   pull_request:
     paths:
       - hia/**
       - codex-rs/apply-patch/**
       - codex-rs/utils/string/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
       - .github/workflows/codex-hia-native.yml
   workflow_dispatch:
 
@@ -21,10 +33,13 @@ permissions:
 jobs:
   native-components:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 30
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       HEPTA_SOURCE: ${{ github.workspace }}/Hepta
+      CODEX_HIA_NATIVE_LIB_DIR: ${{ runner.temp }}/hia-native
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hia-cargo-target
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     defaults:
       run:
         shell: bash
@@ -43,13 +58,14 @@ jobs:
           path: Hepta
           persist-credentials: false
 
-      - name: Prepare independent Rust oracle compiler
+      - name: Prepare Rust oracle and production caller compiler
         run: |
           set -euo pipefail
           rustup toolchain install 1.95.0 --profile minimal --no-self-update
           rustc_path="$(rustup which --toolchain 1.95.0 rustc)"
           test -x "$rustc_path"
           echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
+          echo "RUSTUP_TOOLCHAIN=1.95.0" >> "$GITHUB_ENV"
           {
             "$rustc_path" --version
             python3 --version
@@ -67,6 +83,17 @@ jobs:
             --hepta-root "$HEPTA_SOURCE" \
             --output "$RUNNER_TEMP/hia-native" \
             2>&1 | tee "$RUNNER_TEMP/hia-build.log"
+
+      - name: Verify Cargo build receipts and reject stale artifacts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-build-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-build-receipt.log"
 
       - name: Compare HIA search with original Rust implementation
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -105,36 +132,59 @@ jobs:
                   raise SystemExit(f"required verification was skipped: {field}")
           PY
 
-      - name: Install scoped Codex test runners
-        if: ${{ always() && steps.build.outcome == 'success' }}
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
-        with:
-          tool: just@1.51.0,cargo-nextest
-
-      - name: Test complete opt-in Codex apply-patch and string crates
-        if: ${{ always() && steps.build.outcome == 'success' }}
-        env:
-          CODEX_HIA_NATIVE_LIB_DIR: ${{ runner.temp }}/hia-native
-          LD_LIBRARY_PATH: ${{ runner.temp }}/hia-native
-        run: |
-          set -euo pipefail
-          cd codex
-          just test -p codex-apply-patch --features codex-apply-patch/hia-native \
-            2>&1 | tee "$RUNNER_TEMP/hia-apply-patch-crate.log"
-          just test -p codex-utils-string --features codex-utils-string/hia-native \
-            2>&1 | tee "$RUNNER_TEMP/hia-string-crate.log"
-
-      - name: Test real native patch caller and ABI rejection boundary
+      - name: Test statically linked native patch caller and large inputs
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           libdir="$RUNNER_TEMP/hia-native"
-          "$RUSTC" --edition=2024 --test --cfg 'feature="hia-native"' \
-            codex/hia/tests/native_patch_caller.rs \
-            -L "native=$libdir" -l dylib=codex_hia_seek_sequence \
-            -o "$RUNNER_TEMP/hia-patch-caller-tests"
-          LD_LIBRARY_PATH="$libdir" "$RUNNER_TEMP/hia-patch-caller-tests" --nocapture \
-            2>&1 | tee "$RUNNER_TEMP/hia-patch-caller.log"
+          test -f "$libdir/libcodex_hia_seek_sequence.a"
+          {
+            "$RUSTC" --edition=2024 --test --cfg 'feature="hia-native"' \
+              codex/hia/tests/native_patch_caller.rs \
+              -L "native=$libdir" -l static=codex_hia_seek_sequence \
+              -o "$RUNNER_TEMP/hia-patch-caller-tests"
+            "$RUNNER_TEMP/hia-patch-caller-tests" --nocapture
+          } 2>&1 | tee "$RUNNER_TEMP/hia-patch-caller.log"
+
+      - name: Test statically linked native string caller and allocation behavior
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_native_string_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-string-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-string-caller.log"
+
+      - name: Install repository test runner
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0
+
+      - name: Install cargo-nextest
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest
+          version: 0.9.103
+
+      - name: Test real apply-patch crate with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-apply-patch --features hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-apply-patch-crate.log"
+
+      - name: Test real string crate with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-utils-string --features hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-string-crate.log"
 
       - name: Upload original build and test results
         if: ${{ always() }}
@@ -147,9 +197,13 @@ jobs:
             ${{ runner.temp }}/hia-native/build.json
             ${{ runner.temp }}/hia-toolchain.log
             ${{ runner.temp }}/hia-patch-caller.log
+            ${{ runner.temp }}/hia-string-caller.json
+            ${{ runner.temp }}/hia-string-caller.log
             ${{ runner.temp }}/hia-apply-patch-crate.log
             ${{ runner.temp }}/hia-string-crate.log
             ${{ runner.temp }}/hia-build.log
+            ${{ runner.temp }}/hia-build-receipt.json
+            ${{ runner.temp }}/hia-build-receipt.log
             ${{ runner.temp }}/hia-seek-sequence.json
             ${{ runner.temp }}/hia-seek-sequence.log
             ${{ runner.temp }}/hia-utf8-boundaries.json

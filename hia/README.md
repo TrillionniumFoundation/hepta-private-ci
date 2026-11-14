@@ -242,59 +242,46 @@ function; the wider capability map determines the rest of the repository
 cleanup.
 
 
-## Experimental Codex patch-caller integration
+## Experimental Codex native call-path integrations
 
-The native-selfhost build also emits ELF namespaced shared libraries,
-libcodex_hia_seek_sequence.so and libcodex_hia_utf8_boundaries.so. These are
-derived from the B3-emitted objects with GNU objcopy symbol renaming and GNU ld.
-This permits both components in a single process without f0 symbol collision.
-The original f0 shared libraries remain available for original-Rust comparison.
+Two actual Codex call paths are selectable with the `hia-native` Cargo feature
+on Linux x86-64. Both link **static archives** generated exclusively from the
+B3 HIA-compiled ELF objects. The build helper verifies source, toolchain lock,
+build driver, compiler fixed-point images, archive content and symbol identity
+against the native receipt before copying the archive into Cargo's output
+directory. It intentionally rejects missing, mismatched or seed-only artifacts;
+it is an identity check, not a proof of compiler correctness or supply-chain
+authenticity against a compromised whole build.
 
-The opt-in codex-apply-patch hia-native feature routes the actual file-update
-seek_sequence call sites through the HIA-produced machine implementation. Its
-Rust adapter only constructs and decodes the established borrowed-buffer ABI.
-Set CODEX_HIA_NATIVE_LIB_DIR to the native build output when building with this
-feature, and make that directory available to the dynamic loader at runtime.
+**Patch matcher.** The feature-enabled `codex-apply-patch` file-update call
+sites use `libcodex_hia_seek_sequence.a`. The adapter frames UTF-8 line offsets
+using checked arithmetic and fallible reservation and validates returned
+indices. It does not impose the 1 MiB *compiler bootstrap* workspace bound on
+the caller's actual file. Two-megabyte file update cases and the full crate
+suite are included in native tests. Search cost retains the original
+potentially quadratic behavior; runtime cancellation/deadline and resource
+budgets are still required.
 
-If framing exceeds the locked 1 MiB capacity, native patch matching raises a
-ComputeReplacements error rather than silently reporting "no match". The
-original Rust matcher remains the default implementation while this feature
-undergoes whole-crate, full apply-patch and platform acceptance. No production
-release is migrated merely by introducing the feature. The native caller's
-source-level parity and oversize boundary are tested independently in
-hia/tests/native_patch_caller.rs, using the actual namespaced HIA ELF.
+**String prefix.** The public `codex-utils-string`
+`take_bytes_at_char_boundary(&str, usize) -> &str` uses the new
+`hia/utf8_prefix.hepta` and `libcodex_hia_utf8_prefix.a`. Valid Rust
+`&str` guarantees permit a bounded frame of at most 28 bytes: length,
+budget, window start and at most four bytes around the requested boundary.
+HIA owns the boundary algorithm; the Rust adapter only transports the window
+and verifies the resulting borrowed slice. This removes the older whole-string
+HIA frame's 1 MiB limitation without copying the string to the heap.
+`hia/utf8_boundaries.hepta` remains a separately differential-tested
+full-buffer component, not the selected public path.
 
-This is Linux x86-64 only. Runtime packaging, cancellation/deadline behavior,
-large-input strategy and other Codex owners remain pending. The complete
-`codex-apply-patch` feature-enabled crate suite passed 99/99 tests on desktop
-with the B3-emitted native matcher. An initial real Cargo run caught an invalid
-`try_fold` accumulator type in the experimental adapter; it was fixed before
-the passing run. The workflow now gates the same real crate suite in addition
-to the narrower original-source oracle.
+On the desktop x86-64 test host, build-receipt adversarial tests passed
+46 cases, native public string tests passed 5/5 (18,559 original-Rust
+comparisons, 2,048 no-allocation calls), and the feature-enabled string
+crate passed 21/21. Both native-feature crate test paths are reproducible
+in the dedicated workflow with original per-run reports.
 
-## Experimental Codex UTF-8 public caller integration
-
-The `codex-utils-string` `hia-native` feature uses the namespaced B3-produced
-`libcodex_hia_utf8_boundaries.so` for the **public**
-`take_bytes_at_char_boundary(&str, usize) -> &str` call. Its small Rust adapter
-only frames borrowed bytes, invokes the native ABI and checks that the returned
-index preserves Rust's slice/UTF-8 boundary contract. The UTF-8 scanning and
-boundary selection execute in HIA machine code. Without the feature, the
-unmodified original Rust function remains the default and the original-source
-oracle is still extractable.
-
-On Linux x86-64, set `CODEX_HIA_NATIVE_LIB_DIR` at build time and make that
-native directory available to the runtime dynamic loader (`LD_LIBRARY_PATH`
-or explicit package rpath). A missing native artifact is a build error, not a
-silent fallback. Input frames larger than the pinned 1 MiB limit panic rather
-than misrepresent the original result or use the Rust algorithm unnoticed.
-This limitation makes this an experimental, explicitly selected feature, **not**
-a release-wide migration. The feature-enabled string crate passed its complete
-21/21 tests on desktop, including original behavior comparisons, the exact
-native frame boundary and oversize rejection. Its CI counterpart now runs from
-the real workspace and links the namespaced native ELF.
-
-Both native caller features still need proper package/linker installation,
-Linux and other supported-platform qualification, caller-wide cancellation and
-bounded-cost policy, and clean-install end-to-end acceptance before replacing
-the corresponding Rust production owners or removing legacy code.
+These are **opt-in candidates**. Default callers still use Rust. Neither a
+single function nor two feature-enabled crates closes the full Codex rewrite.
+The required platform matrix, native OS/network/async facilities, package
+installation, user-session recovery, process/tool/sandbox semantics, bounded
+execution and clean-install end-to-end acceptance remain unresolved.
+No still-used legacy owner is eligible for deletion.

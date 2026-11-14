@@ -212,6 +212,45 @@
         },
         "release_qualified": false
       }
+    },
+    {
+      "id": "utf8_prefix",
+      "hia_source": "hia/utf8_prefix.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "take_bytes_at_char_boundary",
+      "implementation_status": "native_candidate",
+      "qualification_status": "local_original_rust_differential_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "f0",
+        "source_wire": "u64 original_utf8_byte_length, u64 budget, u64 window_start; up to four surrounding UTF-8 bytes",
+        "output_wire": "u64 prefix_boundary; little-endian",
+        "success_return": 8,
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "workspace": "reserved; not read or written"
+      },
+      "validation": {
+        "host": "desktop",
+        "target": "x86_64-unknown-linux-gnu",
+        "original_rust_comparisons": 18559,
+        "no_heap_allocations_calls": 2048,
+        "native_public_caller_tests_passed": 5,
+        "feature_enabled_crate_tests_passed": 21,
+        "evidence": "hia/tests/test_native_string_caller.py",
+        "release_qualified": false
+      },
+      "experimental_caller": {
+        "crate": "codex-utils-string",
+        "feature": "hia-native",
+        "status": "opt_in_native_HIA_static_archive",
+        "full_input_copy": false,
+        "frame_max_bytes": 28,
+        "default_rust_path_preserved": true,
+        "clean_install_e2e": "pending",
+        "other_platforms": "pending"
+      }
     }
   ],
   "capabilities": [

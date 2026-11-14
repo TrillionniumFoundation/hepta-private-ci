@@ -2,8 +2,6 @@
 mod hia_native;
 mod json;
 mod truncate;
-#[cfg(feature = "hia-native")]
-pub use hia_native::take_bytes_at_char_boundary;
 
 pub use json::to_ascii_json_string;
 pub use truncate::approx_bytes_for_tokens;
@@ -13,22 +11,32 @@ pub use truncate::truncate_middle_chars;
 pub use truncate::truncate_middle_with_token_budget;
 
 // Truncate a &str to a byte budget at a char boundary (prefix)
-#[cfg(not(feature = "hia-native"))]
 #[inline]
 pub fn take_bytes_at_char_boundary(s: &str, maxb: usize) -> &str {
-    if s.len() <= maxb {
-        return s;
+    #[cfg(feature = "hia-native")]
+    {
+        hia_native::take_bytes_at_char_boundary(s, maxb)
     }
-    let mut last_ok = 0;
-    for (i, ch) in s.char_indices() {
-        let nb = i + ch.len_utf8();
-        if nb > maxb {
-            break;
+    #[cfg(not(feature = "hia-native"))]
+    {
+        if s.len() <= maxb {
+            return s;
         }
-        last_ok = nb;
+        let mut last_ok = 0;
+        for (i, ch) in s.char_indices() {
+            let nb = i + ch.len_utf8();
+            if nb > maxb {
+                break;
+            }
+            last_ok = nb;
+        }
+        &s[..last_ok]
     }
-    &s[..last_ok]
 }
+
+#[cfg(all(test, feature = "hia-native"))]
+#[path = "hia_native_tests.rs"]
+mod hia_native_tests;
 
 /// Sanitize a tag value to comply with metric tag validation rules:
 /// only ASCII alphanumeric, '.', '_', '-', and '/' are allowed.
