@@ -1,0 +1,90 @@
+{
+  "checks": {
+    "compileall": "passed",
+    "full_repository_tests": "not_run",
+    "git_diff_check": "passed",
+    "hosted_ci_result": "not_claimed",
+    "rust_fmt_build_test": "not_run",
+    "workflow_yaml_parse": "passed"
+  },
+  "date": "2026-10-13",
+  "fixture_summary_sha256": "2055bcb48174c6b0af5d791384ecbb82ea9b61bc6a82aaaa2ec14dbeb9444077",
+  "limits": {
+    "RAPL_exposed_in_session": false,
+    "complete_end_to_end_flops": false,
+    "independent_future_outcomes": false,
+    "native_1024_4096_cells": false,
+    "pretrained_weights_loaded": false,
+    "production_authorized": false
+  },
+  "python_code_candidate": "a2ee85f7a4b52636cad67594ded483cb06e1bfb7",
+  "raw_fixture_diagnostic_sha256": "c6b6b5667b4ad2f4a5ad520691bccf5bb7fffc2f8f5239b8062f07adc86a73c0",
+  "remote_blob_matches_verified": [
+    "aten_work.py",
+    "host_counters.py",
+    "execution_meter.py",
+    "test_execution_meter.py",
+    "matrix_materials.py",
+    "matrix_runtime.py",
+    "matrix_export.py",
+    "test_measured_runtime.py"
+  ],
+  "runtime": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.metered-execution-local-tests.v1",
+  "second_run_seconds": 5.549,
+  "source_baseline": "2ab183ac6a03452393a81f4f78182ed5dac83326",
+  "source_blobs": {
+    "aten_work.py": {
+      "git_blob_sha1": "2ed0d80b6a0a3feef6b93e2cbe465ab5e818ac0c",
+      "sha256": "a922af68e249e610f3350e2a2052ac9d31b5de57f5393124a4981a44a692387d"
+    },
+    "execution_meter.py": {
+      "git_blob_sha1": "cc4d839beff260eb2482e5481e99f202b197d671",
+      "sha256": "ab04d0753631e3ca20c0540776b78a7e09edc443de4a33e3bd79496da75510c7"
+    },
+    "host_counters.py": {
+      "git_blob_sha1": "4cd04112bca5bc2357ee623e58e2ab4939d9baa3",
+      "sha256": "736fe55ca11a4b6cc93efb2a1145b5b1f8d80413056b505c5a4e0cd7c72e1bbf"
+    },
+    "matrix_export.py": {
+      "git_blob_sha1": "d3ad5cf4cfd67b4af881d8e8f07ae18a129c3fd8",
+      "sha256": "b5e18cbc670dd2bd42d5877c552741f54d47c8727ef34defb8a41224e1b9a52f"
+    },
+    "matrix_materials.py": {
+      "git_blob_sha1": "d4a25a79ade2afe432691d5141e792bc2c64407b",
+      "sha256": "420d61ffbc8c49814c356728cfa379be12caa7266a7efdcc49870e86f03cf9a1"
+    },
+    "matrix_runtime.py": {
+      "git_blob_sha1": "451df8b6745cd6cd2a4e032c099f004bc5ca0175",
+      "sha256": "d711739245bd95e7b6d677bd3ff413a04dfa8e48ba4ddc65aabd07c89d724858"
+    },
+    "test_execution_meter.py": {
+      "git_blob_sha1": "d66bd8ed381a3aaa47305eebeaff5d61cc00c9e0",
+      "sha256": "d1b2ac86215b32b1d9a025643644da7fc691812e10dfffaee3e4415a3541e7ea"
+    },
+    "test_measured_runtime.py": {
+      "git_blob_sha1": "b4bd13f328c06efaaf2c97076338b152fc8c1581",
+      "sha256": "53666a09770bda9e0b68b6d71af3d9d06c958c2823350dc973e5cf65ff4a7c72"
+    }
+  },
+  "surface": "session Linux CPU source mirror; not project cloud or full repository checkout",
+  "test_command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "test_log_location": "METERED_EXECUTION_TEST_LOG_20261013.txt in downloadable source package",
+  "test_log_sha256": "b8b39981b72952334130f5f1e78542463d26e7df05742658e8f577eb4fc6248d",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "new_execution_integration_tests": 11,
+    "new_meter_counter_tests": 18,
+    "passed": 95,
+    "retained_predecessor_tests": 66,
+    "run": 95,
+    "skips": 0
+  }
+}

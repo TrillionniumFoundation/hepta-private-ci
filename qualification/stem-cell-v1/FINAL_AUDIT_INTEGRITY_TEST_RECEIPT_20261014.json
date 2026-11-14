@@ -1,0 +1,174 @@
+{
+  "NDU_System2_integration_delivered": false,
+  "checks": {
+    "compileall": "passed",
+    "full_repository_rust_native_tests": "not_run",
+    "git_diff_check": "passed",
+    "hosted_CI": "not_observed_this_increment",
+    "remote_python_blobs_match_local": 10,
+    "rust_fmt": "not_run: no full codex-rs checkout or just"
+  },
+  "code_candidate": "f46f913d3dcdc6b7438f1c6ba36acd7a8baacd89",
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "delivery_branch": "research/shared-stem-final-audit-integrity-20261014",
+  "evidence_files_in_package": {
+    "baseline.log": {
+      "bytes": 36917,
+      "sha256": "58d3a767c38e85402253741cc934d1516180a75739183b0aa770e8a9bfc7b3b8"
+    },
+    "diagnostic.json": {
+      "bytes": 876,
+      "sha256": "8ea5e61cdfe8f1cfe4216946ffa747b0438ea11698db3ea68a498a0989a7b814"
+    },
+    "diagnostic.log": {
+      "bytes": 876,
+      "sha256": "703e44e78ad00c7f16dcf06ba3f794c835dd8d8668a55656705060a9aa0dc2bb"
+    },
+    "diagnostic.py": {
+      "bytes": 3472,
+      "sha256": "968f0e602d1339c411500e5617746c429f6f3ba8e6448df01daf7c838e615713"
+    },
+    "final1.log": {
+      "bytes": 39276,
+      "sha256": "c5ffdb793ad4d4d011160f1ee72ce9a5f0cf98103bef5d9fcb01acf028db2f74"
+    },
+    "final2.log": {
+      "bytes": 39276,
+      "sha256": "98a4cc5afd6f2cfd41b4c87a08130f2e8e256f0b2376def7b2d82b2fea17e948"
+    },
+    "full1.log": {
+      "bytes": 39099,
+      "sha256": "7a5e46a35d7eea5b3cd547f68299573d6bbda331e4623477ab8d92074dfe63cb"
+    },
+    "full2.log": {
+      "bytes": 39099,
+      "sha256": "a9c94a6d7a28210629b5f492a676c1df892a8167f5aba6108b3cc707c40e8c97"
+    },
+    "hf-attempt.log": {
+      "bytes": 285,
+      "sha256": "56075e8aa8ba1ace6456f805b62337b8b2f532cee5702b2846e1c9d6bb806916"
+    },
+    "unknown-failure-before.log": {
+      "bytes": 403,
+      "sha256": "aca2ac03b2b5348bd2a3aad1f2bd892b9a31b554adba6631ec23e456e22a9a66"
+    },
+    "work-final.log": {
+      "bytes": 2458,
+      "sha256": "b188c3ac2c429d043650fcb1fd582b6e1b598bfcd272d47c11ca57cafa47648e"
+    },
+    "work-record-first.log": {
+      "bytes": 2281,
+      "sha256": "65bf496e5f14b97e85d215803df5275eda089529887ad5b7403990752eb42398"
+    }
+  },
+  "full_resource_efficiency_established": false,
+  "independent_future_retention_established": false,
+  "installed_hf_attempt": {
+    "checks_defined": 3,
+    "checks_executed": 0,
+    "exit_code": 1,
+    "failure": "ModuleNotFoundError: transformers",
+    "included_in_passing_test_count": false
+  },
+  "observed_test_runs": [
+    {
+      "distinct_test_ids": 232,
+      "log": "baseline.log",
+      "seconds": 26.483,
+      "tests": 232
+    },
+    {
+      "distinct_test_ids": 248,
+      "log": "final1.log",
+      "seconds": 27.19,
+      "tests": 248
+    },
+    {
+      "distinct_test_ids": 248,
+      "log": "final2.log",
+      "seconds": 27.29,
+      "tests": 248
+    }
+  ],
+  "pretrained_execution": false,
+  "production_authorized": false,
+  "publication_method": "GitHub Git-data API; exact source blobs and code commit confirmed",
+  "recovered_archive": {
+    "name": "hepta-shared-stem-final-panels-20261013.zip",
+    "sha256": "0666ecadab3f3a0db293f111af5f6876d926c898b355f4295be1d6d2d71a9de4"
+  },
+  "recovered_prior_local_source_commit": "ef6873b12d9273b25aa62d9a66de310ee0c6c3f4",
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu",
+    "transformers_installed": false
+  },
+  "schema": "hepta.final-audit-integrity-source-verification.v1",
+  "source_blobs": {
+    "execution_meter.py": {
+      "bytes": 10333,
+      "git_blob_sha1": "e8daf07ab22c9de198e725124f2110e745be2922",
+      "sha256": "6e8f9c96443e5bda5517c28766c3c5feb17f9627c1163e06d76ed400c8699edd"
+    },
+    "final_campaign.py": {
+      "bytes": 14870,
+      "git_blob_sha1": "b28876ce73f28513a09c2b9f20ebfde40561c9d0",
+      "sha256": "d18e9559c2ade33f0b503f6b68082760f98ba0ac6708dde34790713fc21a9da2"
+    },
+    "final_panels.py": {
+      "bytes": 11349,
+      "git_blob_sha1": "01c4c19420b79df3f33fc5b505bc1752e1d8f244",
+      "sha256": "5295c2902f6d68a98367573eebb0386d23ac383dc3657f8620b62369826d1ca3"
+    },
+    "matrix_export.py": {
+      "bytes": 20174,
+      "git_blob_sha1": "243882339412801a05cf304424fa3f9809b494a6",
+      "sha256": "726e5154d2d5c55a023163e5a082d809f5e3bdd993e348f73fadba0256ddc6d0"
+    },
+    "matrix_runtime.py": {
+      "bytes": 22221,
+      "git_blob_sha1": "d1e1883580128a382b061eaaaa6710beda9e6929",
+      "sha256": "57ae27f2394dbfc24b26468a859af0e08f4c1a2f200ae1279a6c96426a3839b7"
+    },
+    "test_final_campaign.py": {
+      "bytes": 12385,
+      "git_blob_sha1": "1f695ac40cad8b6d76475f1d4c21cb35e7c60c07",
+      "sha256": "d395f67cbc695a4b3576486093d64ee9a8f76eb0cb17569fb608a5cef6f13676"
+    },
+    "test_final_panels.py": {
+      "bytes": 8324,
+      "git_blob_sha1": "68858fa75120d3720f1d645072f13d4e22f7badf",
+      "sha256": "6ecf0e2a7200f1d1bc73ea15b9aa6d144f3659c4c7689f5647eb3e3ba4fa29b6"
+    },
+    "test_unknown_work_failure.py": {
+      "bytes": 1340,
+      "git_blob_sha1": "cd198cfa4ddfccd9357aa6efe7b4111c24dc7516",
+      "sha256": "3c3b4257afa5f8467a11b80ae17d38737ae409f9e80274636b803a7c61962d1d"
+    },
+    "test_work_record.py": {
+      "bytes": 9842,
+      "git_blob_sha1": "35ac331bee59396b94038e39cb74c47fa01f92c9",
+      "sha256": "2f120aa6d7d3a25ebf0d5640a24b29d11ebd4366d5249c4c0155a28d256050d3"
+    },
+    "work_record.py": {
+      "bytes": 5263,
+      "git_blob_sha1": "9c0591b4b4b6ab6e3f3c5ee143af564aef901965",
+      "sha256": "506dd712484784c791f80418abd31a67edf33c56bca4b8007d4038d0e578d1ad"
+    }
+  },
+  "surface": "session Linux CPU source slice; not project cloud or full repository",
+  "tests": {
+    "current_new_tests": 16,
+    "errors": 0,
+    "failures": 0,
+    "final_runs": 2,
+    "passed": 248,
+    "recovered_final_panel_tests": 28,
+    "remote_predecessor_tests": 204,
+    "skips": 0
+  },
+  "upstream_pr": 1742,
+  "upstream_remote_base": "649aa980eeceed88624c8c678f97a87fc47084ad"
+}
