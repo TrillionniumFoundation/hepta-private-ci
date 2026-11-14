@@ -29,5 +29,5 @@ valid. It must not be treated as a tested restoration path.
 
 Reintroducing an active binary requires completing and reviewing the real
 PlannerStore owner contract and running normal package and build validation.
-The archived bytes do not establish current compilability, a successful named-host
+The archived bytes do not establish current build success, a successful named-host
 measurement, model execution, production activation, or release authority.

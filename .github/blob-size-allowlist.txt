@@ -88,7 +88,7 @@ sha256:f69fcda55c226e6cbe3c790209e7c41b07cfd0609d7ed9ffa7dddf338d65f87b archive/
 sha256:bf86fbe86e20c835b0f3243497a5311b2903863cbd6d088a34c6412f5e5d9233 qualification/ordinary-owner-assembly-20261111/native-evidence/9bfdef-original-records.tar.xz
 sha256:938af64804abc935ab8db125dd6054d64f6e6f73626f07fcca4d661daaac6618 qualification/ordinary-owner-assembly-20261111/native-evidence/3c8dabe-and-early-maintenance-original-records.tar.xz
 # Exact privileged caller inventory after reviewed ordinary-owner assembly; future edits require a new digest.
-sha256:86cc52079c610b02d50fd5b3c2e56846ef9dc238e9afbfc4d577b9924dedd216 CALLERS.toml
+sha256:0d931dcd03ffdcaf9888bea677b0278082f82ab9f58cbbcfc6f4753834506a97 CALLERS.toml
 sha256:b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9 qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz
 sha256:aaff3176e000652f54ac97308714aec0e94079ce6b731be5ec45f4622441394a qualification/ordinary-owner-assembly-20261111/native-evidence/v6/original-records.tar.xz
 # Exact B source callback guard migration; no threshold change.
@@ -264,3 +264,7 @@ sha256:e777b9cede6276b0eaa9f48fd853404442f862b917ab195af9a08799d02863ed evidence
 sha256:71051d0daf7f2abe80616a9c1b2f119ffb3bfa7767c57c5ff1621a28924b5667 evidence/actual-elf-transport-20261105-93bfc-01/archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0065.b64
 sha256:e01714d65c86cdcabc1fa7341612476ebe1ff752f328919bb184b86cfdfa2939 evidence/actual-elf-transport-20261105-93bfc-01/archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0066.b64
 sha256:ac74c4dfc434042ddea6c262437f022f94a9699c41b6f0307ece5266c87b6317 evidence/actual-elf-transport-20261105-93bfc-01/archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0067.b64
+
+# Preserve the original scoped Root learning source/review evidence container.
+# Product assembly remains HOLD; this pin grants no authority or current test acceptance.
+sha256:5bda96a40b924cb34e8a2da4082f0861c586f81a5f77810f2d88caa550240b70 qualification/root-learning-scope-evidence-20261109/source-and-review-evidence-v3.tar.xz
