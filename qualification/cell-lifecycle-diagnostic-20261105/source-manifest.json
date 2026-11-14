@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "candidate_commit": "3247636513f4cddaede6e9b45110925e9065d507",
+  "candidate_tree": "99cc2b503f5e9825457066c0d7e2b935a795d234",
+  "verification": "Each changed file was fetched from the published commit and compared byte-for-byte with the candidate. All three Rust files were rehashed before and after native red restoration, green and final formatting.",
+  "files": {
+    "codex-rs/hepta-runtime/src/lib.rs": {
+      "blob": "a58dfaa26fb8544530603f0c14ca0339514b17bf",
+      "sha256": "2f9d7865417dc8db620dcd149c99e624310dd33a743d6545e94fa79c8b48bbd5",
+      "bytes": 44919
+    },
+    "codex-rs/hepta-runtime/src/organs_tests.rs": {
+      "blob": "06a42540a0d857b26d85e9fa4bbac83cba04f4c8",
+      "sha256": "8100a42fd789269b2444a443f3869592c575ebfb94946417c99a47e9d12f0733",
+      "bytes": 34903
+    },
+    "codex-rs/hepta-runtime/src/topology_execution.rs": {
+      "blob": "768b0dd2a5c29a2eb0ac640228ccab5a6d5d8a35",
+      "sha256": "f1baa6c08cc72dabec84715a6a627cc0a8ca5dcc18f8f11081dd55f0ce7484db",
+      "bytes": 14599
+    },
+    "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md": {
+      "sha256": "59c2ebecd09613738d04426b9a7fb1697cdb77279e505b546834c874dc234f2a",
+      "bytes": 32089,
+      "blob": "c5ebb1e597cb7612f982d0acdec8e484eb6f2797"
+    },
+    "docs/modules/learning.plasticity/CURRENT_STATE.json": {
+      "sha256": "f5680ed758d8afafe27f8b73d91ae3750b3b33ff053422655bb41c965c551cd1",
+      "bytes": 19477,
+      "blob": "9668b39d883fcb247c6fe1b0dde971edb9038f58"
+    },
+    "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json": {
+      "sha256": "2c5e9ba15839d85c5245c06302a4c12bdfd3aed13e1be188d43320095928e4fe",
+      "bytes": 39715,
+      "blob": "a8c68f58eee3a01174ac73c0511a548f65349488"
+    }
+  },
+  "unchanged_internal_topology": {
+    "path": "codex-rs/hepta-runtime/src/organs.rs",
+    "blob": "0950be6088f669be5d00837646e624190efa0e5e"
+  }
+}

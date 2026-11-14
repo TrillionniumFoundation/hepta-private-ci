@@ -1,0 +1,133 @@
+{
+  "head": "3247636513f4cddaede6e9b45110925e9065d507",
+  "tree": "99cc2b503f5e9825457066c0d7e2b935a795d234",
+  "records": [
+    {
+      "name": "fetch-format-base",
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "--depth=1",
+        "--filter=blob:none",
+        "origin",
+        "3419b6ac8adf5b47b140e553f5fff9e74c98d352"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source",
+      "exit_code": 0,
+      "elapsed_seconds": 10.392234086990356,
+      "completed_at": "2026-11-05T06:30:19.713390+00:00",
+      "logs": {
+        "stdout": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/fetch-format-base.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gzip_bytes": 20,
+          "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        },
+        "stderr": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/fetch-format-base.stderr",
+          "bytes": 148,
+          "sha256": "01851dcf0e0e241ab8d4566977a8d2aff83e9d137433ae3af1699986aa849bbb",
+          "gzip_bytes": 152,
+          "gzip_sha256": "15ac971101a0b12c6f867ec73f9f603a5bde46b81725c94e15f7ea8eb71cfa2a"
+        }
+      }
+    },
+    {
+      "name": "native-red",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-runtime",
+        "-E",
+        "test(public_governed_topology_denies_before_grant_consumption_or_callbacks) | test(public_topology_recovery_denies_before_grant_consumption_or_callbacks)",
+        "--retries",
+        "0"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source/codex-rs",
+      "exit_code": 100,
+      "elapsed_seconds": 368.14342164993286,
+      "completed_at": "2026-11-05T06:36:28.754455+00:00",
+      "logs": {
+        "stdout": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/native-red.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gzip_bytes": 20,
+          "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        },
+        "stderr": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/native-red.stderr",
+          "bytes": 15367,
+          "sha256": "05152883c5218df6488c0cfe6247fa7e61e68187485909beb8f3a7c3809adea6",
+          "gzip_bytes": 3697,
+          "gzip_sha256": "0a9701279ca326920e427548fd192a552b3dbb423fa29df846c6ae59b881c4ed"
+        }
+      }
+    },
+    {
+      "name": "native-green",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-runtime",
+        "--retries",
+        "0"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source/codex-rs",
+      "exit_code": 0,
+      "elapsed_seconds": 9.644311428070068,
+      "completed_at": "2026-11-05T06:36:39.255256+00:00",
+      "logs": {
+        "stdout": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/native-green.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gzip_bytes": 20,
+          "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        },
+        "stderr": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/native-green.stderr",
+          "bytes": 5574,
+          "sha256": "fb5169dfa5425ca18d8800508906fd9646f4eeab2d66f59b98174c3ec6d75f07",
+          "gzip_bytes": 1308,
+          "gzip_sha256": "06a74d8a1a442f747d26dfe2ef2c5fe6905309792772b64a7a51ab7e92b47637"
+        }
+      }
+    },
+    {
+      "name": "native-fmt",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "3419b6ac8adf5b47b140e553f5fff9e74c98d352"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source/codex-rs",
+      "exit_code": 0,
+      "elapsed_seconds": 0.4844033718109131,
+      "completed_at": "2026-11-05T06:36:39.805668+00:00",
+      "logs": {
+        "stdout": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/native-fmt.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gzip_bytes": 20,
+          "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        },
+        "stderr": {
+          "path": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/evidence/native-fmt.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gzip_bytes": 20,
+          "gzip_sha256": "f61f27bd17de546264aa58f40f3aafaac7021e0ef69c17f6b1b4cd7664a037ec"
+        }
+      }
+    }
+  ]
+}
