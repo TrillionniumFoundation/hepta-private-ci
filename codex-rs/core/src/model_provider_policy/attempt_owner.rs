@@ -7,40 +7,31 @@ use codex_extension_api::ModelProviderAttemptLease;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderTerminal;
 use futures::future::BoxFuture;
-use tokio::sync::Mutex;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
 
 const OWNER_DROPPED_BEFORE_DISPATCH: &str = "model_provider_policy_owner_dropped_before_dispatch";
 const OWNER_DROPPED_AFTER_DISPATCH: &str = "model_provider_policy_owner_dropped_after_dispatch";
 
-struct SharedAttemptLease {
-    lease: Mutex<Option<Box<dyn ModelProviderAttemptLease>>>,
+/// Returns the same owned lease when observation completes or is cancelled.
+/// No request bytes or asynchronous cleanup are retained by this transfer.
+struct ObservationLease {
+    lease: Option<Box<dyn ModelProviderAttemptLease>>,
+    return_to_owner: Option<oneshot::Sender<Box<dyn ModelProviderAttemptLease>>>,
 }
 
-impl SharedAttemptLease {
-    fn new(lease: Box<dyn ModelProviderAttemptLease>) -> Self {
-        Self {
-            lease: Mutex::new(Some(lease)),
+impl Drop for ObservationLease {
+    fn drop(&mut self) {
+        if let (Some(lease), Some(return_to_owner)) =
+            (self.lease.take(), self.return_to_owner.take())
+        {
+            let _ = return_to_owner.send(lease);
         }
-    }
-
-    async fn finish(
-        &self,
-        terminal: ModelProviderTerminal,
-    ) -> Result<(), ModelProviderPolicyError> {
-        let lease = self
-            .lease
-            .lock()
-            .await
-            .take()
-            .ok_or_else(owner_stopped_error)?;
-        lease.finish(terminal).await
     }
 }
 
 struct LeaseFinalRequestObserver {
-    lease: Arc<SharedAttemptLease>,
+    commands: mpsc::WeakUnboundedSender<OwnerCommand>,
 }
 
 impl fmt::Debug for LeaseFinalRequestObserver {
@@ -54,23 +45,39 @@ impl fmt::Debug for LeaseFinalRequestObserver {
 impl EncodedRequestBodyObserver for LeaseFinalRequestObserver {
     fn observe_encoded_body<'a>(&'a self, body: &'a [u8]) -> BoxFuture<'a, Result<(), String>> {
         Box::pin(async move {
-            let guard = self.lease.lease.lock().await;
-            let lease = guard.as_ref().ok_or_else(|| {
-                "provider attempt lease was consumed before final request observation".to_owned()
-            })?;
-            lease
+            let commands = self
+                .commands
+                .upgrade()
+                .ok_or_else(observation_stopped_error)?;
+            let (acknowledge, acknowledged) = oneshot::channel();
+            commands
+                .send(OwnerCommand::ObserveFinalRequest { acknowledge })
+                .map_err(|_| observation_stopped_error())?;
+            drop(commands);
+            let observation = acknowledged
+                .await
+                .map_err(|_| observation_stopped_error())?;
+            let lease = observation
+                .lease
+                .as_ref()
+                .ok_or_else(observation_stopped_error)?;
+            let result = lease
                 .observe_final_request(body)
                 .await
-                .map_err(|error| format!("{}: {}", error.reason_code(), error.detail()))
+                .map_err(|error| format!("{}: {}", error.reason_code(), error.detail()));
+            drop(observation);
+            result
         })
     }
 }
 
 /// Cancellation-safe terminal owner for one admitted physical provider send.
 ///
-/// A detached supervisor owns the policy lease. Dropping this handle closes
-/// its command channel and forces exactly one fallback terminal based on the
-/// shared dispatch witness; no `Drop` implementation spawns new async work.
+/// A detached supervisor owns the policy lease, lending it only while the
+/// final request callback runs. Dropping this handle closes its command channel.
+/// The supervisor waits for any active observation to return the lease before
+/// recording exactly one fallback terminal based on the shared dispatch witness.
+/// No drop hook spawns new async work.
 #[must_use = "an admitted provider attempt must retain its terminal owner"]
 pub(crate) struct ProviderAttemptOwner {
     commands: mpsc::UnboundedSender<OwnerCommand>,
@@ -82,14 +89,18 @@ impl ProviderAttemptOwner {
         dispatch_metadata: RequestDispatchMetadata,
     ) -> Self {
         let requires_final_request_observation = lease.requires_final_request_observation();
-        let lease = Arc::new(SharedAttemptLease::new(lease));
+        let dispatch_probe = dispatch_metadata.clone();
+        let owner = Self::new_with_dispatch_probe(
+            lease,
+            Box::new(move || dispatch_probe.transport_invoked()),
+        );
         if requires_final_request_observation {
             dispatch_metadata.require_final_request_observation();
         }
         if requires_final_request_observation
             && let Err(error) = dispatch_metadata.install_final_request_observer(Arc::new(
                 LeaseFinalRequestObserver {
-                    lease: Arc::clone(&lease),
+                    commands: owner.commands.downgrade(),
                 },
             ))
         {
@@ -98,22 +109,11 @@ impl ProviderAttemptOwner {
                 "provider final-request observer installation invariant failed"
             );
         }
-        Self::new_with_shared_lease(
-            lease,
-            Box::new(move || dispatch_metadata.transport_invoked()),
-        )
+        owner
     }
 
-    #[cfg(test)]
     fn new_with_dispatch_probe(
         lease: Box<dyn ModelProviderAttemptLease>,
-        dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
-    ) -> Self {
-        Self::new_with_shared_lease(Arc::new(SharedAttemptLease::new(lease)), dispatch_probe)
-    }
-
-    fn new_with_shared_lease(
-        lease: Arc<SharedAttemptLease>,
         dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
     ) -> Self {
         let (commands, receiver) = mpsc::unbounded_channel();
@@ -137,44 +137,83 @@ impl ProviderAttemptOwner {
 }
 
 enum OwnerCommand {
+    ObserveFinalRequest {
+        acknowledge: oneshot::Sender<ObservationLease>,
+    },
     Finish {
         terminal: ModelProviderTerminal,
         acknowledge: oneshot::Sender<Result<(), ModelProviderPolicyError>>,
     },
 }
 
+async fn lend_lease_for_observation(
+    lease: Box<dyn ModelProviderAttemptLease>,
+    acknowledge: oneshot::Sender<ObservationLease>,
+) -> Result<Box<dyn ModelProviderAttemptLease>, ModelProviderPolicyError> {
+    let (return_to_owner, returned) = oneshot::channel();
+    // A failed send drops the transfer and immediately returns the lease.
+    // Dropping the receiving future after a successful send does the same.
+    let _ = acknowledge.send(ObservationLease {
+        lease: Some(lease),
+        return_to_owner: Some(return_to_owner),
+    });
+    returned.await.map_err(|_| owner_stopped_error())
+}
+
 async fn run_owner(
-    lease: Arc<SharedAttemptLease>,
+    mut lease: Box<dyn ModelProviderAttemptLease>,
     dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
     mut commands: mpsc::UnboundedReceiver<OwnerCommand>,
 ) {
-    match commands.recv().await {
-        Some(OwnerCommand::Finish {
-            terminal,
-            acknowledge,
-        }) => {
-            let _ = acknowledge.send(lease.finish(terminal).await);
-        }
-        None => {
-            let terminal = if dispatch_probe() {
-                ModelProviderTerminal::Indeterminate {
-                    reason_code: OWNER_DROPPED_AFTER_DISPATCH.to_string(),
-                    partial_response_sha256: None,
+    while let Some(command) = commands.recv().await {
+        match command {
+            OwnerCommand::ObserveFinalRequest { acknowledge } => {
+                match lend_lease_for_observation(lease, acknowledge).await {
+                    Ok(returned) => lease = returned,
+                    Err(error) => {
+                        tracing::warn!(
+                            reason_code = error.reason_code(),
+                            detail = error.detail(),
+                            "provider observation ended without returning its lease"
+                        );
+                        return;
+                    }
                 }
-            } else {
-                ModelProviderTerminal::NotDispatched {
-                    reason_code: OWNER_DROPPED_BEFORE_DISPATCH.to_string(),
-                }
-            };
-            if let Err(error) = lease.finish(terminal).await {
-                tracing::warn!(
-                    reason_code = error.reason_code(),
-                    detail = error.detail(),
-                    "failed to persist provider terminal after owner cancellation"
-                );
+            }
+            OwnerCommand::Finish {
+                terminal,
+                acknowledge,
+            } => {
+                // Reject queued and future observations as soon as the lease is consumed,
+                // without making them wait for terminal persistence.
+                drop(commands);
+                let _ = acknowledge.send(lease.finish(terminal).await);
+                return;
             }
         }
     }
+
+    let terminal = if dispatch_probe() {
+        ModelProviderTerminal::Indeterminate {
+            reason_code: OWNER_DROPPED_AFTER_DISPATCH.to_string(),
+            partial_response_sha256: None,
+        }
+    } else {
+        ModelProviderTerminal::NotDispatched {
+            reason_code: OWNER_DROPPED_BEFORE_DISPATCH.to_string(),
+        }
+    };
+    if let Err(error) = lease.finish(terminal).await {
+        tracing::warn!(
+            reason_code = error.reason_code(),
+            detail = error.detail(),
+            "failed to persist provider terminal after owner cancellation"
+        );
+    }
+}
+
+fn observation_stopped_error() -> String {
+    "provider attempt lease was consumed before final request observation".to_owned()
 }
 
 fn owner_stopped_error() -> ModelProviderPolicyError {
@@ -187,3 +226,7 @@ fn owner_stopped_error() -> ModelProviderPolicyError {
 #[cfg(test)]
 #[path = "attempt_owner_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "attempt_observation_tests.rs"]
+mod observation_tests;

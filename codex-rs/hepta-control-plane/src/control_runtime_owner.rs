@@ -887,14 +887,13 @@ fn merge_recovered_attempt(
     attempts: &mut BTreeMap<StableId, ExecutionAttemptV1>,
     attempt: ExecutionAttemptV1,
 ) -> Result<(), ControlRuntimeOwnerErrorV1> {
-    if let Some(previous) = attempts.get(attempt.attempt_id()) {
-        if attempt.transition_sequence() <= previous.transition_sequence()
-            || attempt.plan_receipt_digest() != previous.plan_receipt_digest()
-        {
-            return Err(ControlRuntimeOwnerErrorV1::AttemptHistoryConflict(
-                attempt.attempt_id().clone(),
-            ));
-        }
+    if let Some(previous) = attempts.get(attempt.attempt_id())
+        && (attempt.transition_sequence() <= previous.transition_sequence()
+            || attempt.plan_receipt_digest() != previous.plan_receipt_digest())
+    {
+        return Err(ControlRuntimeOwnerErrorV1::AttemptHistoryConflict(
+            attempt.attempt_id().clone(),
+        ));
     }
     attempts.insert(attempt.attempt_id().clone(), attempt);
     Ok(())

@@ -511,7 +511,7 @@ fn exact_final_request_identity_is_durable_and_receipt_bound() {
         .validate_for_record(&record)
         .expect("receipt remains preparation-bound");
 
-    let mut tampered = record.clone();
+    let mut tampered = record;
     tampered.token_count = tampered.token_count.saturating_add(1);
     assert!(tampered.validate().is_err());
     assert!(receipt.validate_for_record(&tampered).is_err());
