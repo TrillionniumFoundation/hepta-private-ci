@@ -8,7 +8,6 @@ use std::io::Read;
 use std::os::fd::AsRawFd;
 use std::os::fd::FromRawFd;
 use std::os::unix::ffi::OsStrExt;
-use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
@@ -1270,10 +1269,26 @@ fn make_directory_tree_writable(path: &Path) -> std::io::Result<()> {
         return Ok(());
     }
 
-    let directory = OpenOptions::new()
-        .read(true)
-        .custom_flags(libc::O_PATH | libc::O_DIRECTORY | libc::O_NOFOLLOW)
-        .open(path)?;
+    let c_path = CString::new(path.as_os_str().as_bytes())
+        .map_err(|err| std::io::Error::new(std::io::ErrorKind::InvalidInput, err))?;
+    // OpenOptions masks O_PATH out of custom_flags on musl because it is part of O_ACCMODE.
+    let directory = loop {
+        // SAFETY: c_path is NUL-terminated, and these flags do not require a mode argument.
+        let fd = unsafe {
+            libc::open(
+                c_path.as_ptr(),
+                libc::O_PATH | libc::O_DIRECTORY | libc::O_NOFOLLOW | libc::O_CLOEXEC,
+            )
+        };
+        if fd >= 0 {
+            // SAFETY: open returned a new descriptor, which is now owned exclusively by this File.
+            break unsafe { File::from_raw_fd(fd) };
+        }
+        let err = std::io::Error::last_os_error();
+        if err.kind() != std::io::ErrorKind::Interrupted {
+            return Err(err);
+        }
+    };
     let directory_path = PathBuf::from(format!("/proc/self/fd/{}", directory.as_raw_fd()));
     fs::set_permissions(&directory_path, fs::Permissions::from_mode(0o700))?;
     for entry in fs::read_dir(directory_path)? {
