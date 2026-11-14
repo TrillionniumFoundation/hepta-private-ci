@@ -851,6 +851,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.active_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.episodic_import_drain_clear()
         {
             return Ok(());
         }
@@ -866,6 +867,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.unresolved_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.episodic_import_drain_clear()
         {
             return Ok(());
         }
@@ -878,11 +880,13 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     let unresolved = state.unresolved_run_count()?;
     let generation_blockers = state.neuron_generation_drain_blockers()?;
     let circuit_blockers = state.circuit_task_drain_blockers().await?;
-    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 {
+    let episodic_pending = state.episodic_import_pending_count();
+    let episodic_settled = state.episodic_import_drain_clear();
+    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 && episodic_settled {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s) and {circuit_blockers} Circuit blocker(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s), {circuit_blockers} Circuit blocker(s) and {episodic_pending} pending episodic import(s) (episodic settled: {episodic_settled}); owner recovery is required"
         )))
     }
 }
