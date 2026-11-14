@@ -81,6 +81,10 @@ mod logging;
 #[cfg(target_os = "windows")]
 mod path_normalization;
 #[cfg(target_os = "windows")]
+mod phase_trace;
+#[cfg(target_os = "windows")]
+pub use phase_trace::trace_sandbox_phase;
+#[cfg(target_os = "windows")]
 mod private_object_capabilities;
 #[cfg(target_os = "windows")]
 mod process;

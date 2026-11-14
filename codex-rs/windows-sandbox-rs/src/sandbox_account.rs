@@ -37,6 +37,7 @@ pub(crate) struct SandboxAccountLease {
 
 impl SandboxAccountLease {
     pub(crate) fn acquire() -> Result<Self> {
+        crate::trace_sandbox_phase("account lifecycle request begin", None);
         let (ready_tx, ready_rx) = mpsc::sync_channel(1);
         let (release_tx, release_rx) = mpsc::channel();
         let owner = thread::Builder::new()
@@ -44,10 +45,12 @@ impl SandboxAccountLease {
             .spawn(move || {
                 let acquired = (|| -> Result<_> {
                     let lifecycle = AccountMutex::acquire(ACCOUNT_MUTEX_NAME)?;
+                    crate::trace_sandbox_phase("account lifecycle drain mutation begin", None);
                     // A helper may survive its parent process. Drain mutations
                     // before reading credentials; late helpers recheck a closed
                     // event and parent identity while holding this same mutex.
                     drop(AccountMutex::acquire(SETUP_MUTATION_MUTEX_NAME)?);
+                    crate::trace_sandbox_phase("account lifecycle drain mutation complete", None);
                     let closed_event = LeaseClosedEvent::create()?;
                     Ok((lifecycle, closed_event))
                 })();
@@ -63,6 +66,7 @@ impl SandboxAccountLease {
                     let _ = release_rx.recv();
                 }
                 drop(closed_event);
+                crate::trace_sandbox_phase("account lifecycle witness closed", None);
                 drop(guard);
             })
             .context("start sandbox account lease owner")?;
@@ -104,10 +108,15 @@ pub(crate) struct AccountMutex(OwnedHandle, PhantomData<Rc<()>>);
 
 impl AccountMutex {
     pub(crate) fn acquire(name: &str) -> io::Result<Self> {
-        let name = crate::winutil::to_wide(name);
+        crate::trace_sandbox_phase(&format!("account mutex wait begin: {name}"), None);
+        let name_wide = crate::winutil::to_wide(name);
         // A preexisting inaccessible mutex is an error, never an unlocked fallback.
         let handle = unsafe {
-            CreateMutexW(std::ptr::null(), /*binitialowner*/ 0, name.as_ptr())
+            CreateMutexW(
+                std::ptr::null(),
+                /*binitialowner*/ 0,
+                name_wide.as_ptr(),
+            )
         };
         if handle == 0 {
             return Err(io::Error::last_os_error());
@@ -115,7 +124,10 @@ impl AccountMutex {
         // SAFETY: CreateMutexW returned a new owned handle.
         let handle = unsafe { OwnedHandle::from_raw_handle(handle as _) };
         match unsafe { WaitForSingleObject(handle.as_raw_handle() as HANDLE, INFINITE) } {
-            WAIT_OBJECT_0 | WAIT_ABANDONED => Ok(Self(handle, PhantomData)),
+            WAIT_OBJECT_0 | WAIT_ABANDONED => {
+                crate::trace_sandbox_phase(&format!("account mutex acquired: {name}"), None);
+                Ok(Self(handle, PhantomData))
+            }
             _ => Err(io::Error::last_os_error()),
         }
     }

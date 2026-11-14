@@ -392,6 +392,7 @@ fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
         .stdin(Stdio::null())
         .stdout(Stdio::null())
         .stderr(Stdio::null());
+    crate::phase_trace::configure_helper_phase_stderr(&mut cmd, &sbx_dir);
     let cwd = std::env::current_dir().unwrap_or_else(|_| codex_home.to_path_buf());
     log_note(
         &format!(
@@ -402,6 +403,7 @@ fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
         ),
         Some(&sbx_dir),
     );
+    crate::trace_sandbox_phase("setup refresh helper launch begin", Some(&sbx_dir));
     let status = cmd.status().map_err(|err| {
         let message = format!(
             "setup refresh failed to launch helper: helper={}, cwd={}, log={}, error={err}",
@@ -412,6 +414,10 @@ fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
         log_note(&format!("setup refresh: {message}"), Some(&sbx_dir));
         failure(SetupErrorCode::OrchestratorHelperLaunchFailed, message)
     })?;
+    crate::trace_sandbox_phase(
+        &format!("setup refresh helper returned: {status}"),
+        Some(&sbx_dir),
+    );
     if !status.success() {
         log_note(
             &format!("setup refresh: exited with status {status:?}"),
@@ -961,19 +967,29 @@ fn run_setup_exe_payload(
     };
 
     if !needs_elevation {
-        let status = Command::new(&exe)
+        let mut command = Command::new(&exe);
+        command
             .arg(payload_b64)
             .creation_flags(0x08000000) // CREATE_NO_WINDOW
             .stdin(Stdio::null())
             .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
-            .map_err(|err| {
-                failure(
-                    SetupErrorCode::OrchestratorHelperLaunchFailed,
-                    format!("failed to launch setup helper (non-elevated): {err}"),
-                )
-            })?;
+            .stderr(Stdio::null());
+        let sbx_dir = sandbox_dir(codex_home);
+        crate::phase_trace::configure_helper_phase_stderr(&mut command, &sbx_dir);
+        crate::trace_sandbox_phase(
+            &format!("setup full helper launch begin: {}", exe.display()),
+            Some(&sbx_dir),
+        );
+        let status = command.status().map_err(|err| {
+            failure(
+                SetupErrorCode::OrchestratorHelperLaunchFailed,
+                format!("failed to launch setup helper (non-elevated): {err}"),
+            )
+        })?;
+        crate::trace_sandbox_phase(
+            &format!("setup full helper returned: {status}"),
+            Some(&sbx_dir),
+        );
         if !status.success() {
             return Err(report_helper_failure(
                 codex_home,
@@ -1007,6 +1023,10 @@ fn run_setup_exe_payload(
     sei.lpParameters = params_w.as_ptr();
     // Hide the window for the elevated helper.
     sei.nShow = 0; // SW_HIDE
+    crate::trace_sandbox_phase(
+        "setup elevated helper activation begin",
+        Some(&sandbox_dir(codex_home)),
+    );
     let ok = unsafe { ShellExecuteExW(&mut sei) };
     if ok == 0 || sei.hProcess == 0 {
         let last_error = unsafe { GetLastError() };
@@ -1020,6 +1040,10 @@ fn run_setup_exe_payload(
             format!("ShellExecuteExW failed to launch setup helper: {last_error}"),
         ));
     }
+    crate::trace_sandbox_phase(
+        "setup elevated helper process wait begin",
+        Some(&sandbox_dir(codex_home)),
+    );
     unsafe {
         WaitForSingleObject(sei.hProcess, INFINITE);
         let mut code: u32 = 1;
@@ -1033,6 +1057,10 @@ fn run_setup_exe_payload(
             ));
         }
     }
+    crate::trace_sandbox_phase(
+        "setup elevated helper process returned",
+        Some(&sandbox_dir(codex_home)),
+    );
     verify_setup_completed(codex_home)?;
     if let Err(err) = clear_setup_error_report(codex_home) {
         log_note(

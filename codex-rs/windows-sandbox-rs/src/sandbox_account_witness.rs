@@ -113,8 +113,10 @@ pub struct SandboxAccountSetupGuard {
 
 impl SandboxAccountSetupGuard {
     pub fn acquire(witness: &SandboxAccountLeaseWitness) -> Result<Self> {
+        crate::trace_sandbox_phase("setup mutation wait begin", None);
         let mutation = AccountMutex::acquire(SETUP_MUTATION_MUTEX_NAME)
             .context("acquire sandbox setup mutation lease")?;
+        crate::trace_sandbox_phase("setup mutation acquired; validate parent lease", None);
         let name = crate::winutil::to_wide(&witness.closed_event);
         let event = unsafe {
             OpenEventW(
@@ -164,6 +166,7 @@ impl SandboxAccountSetupGuard {
             } == WAIT_TIMEOUT,
             "setup account lease is closed"
         );
+        crate::trace_sandbox_phase("setup mutation parent lease valid", None);
         Ok(Self {
             _mutation: mutation,
             _parent: parent,

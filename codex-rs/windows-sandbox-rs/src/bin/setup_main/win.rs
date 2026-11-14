@@ -448,6 +448,7 @@ fn real_main() -> Result<()> {
             ),
         )));
     }
+    codex_windows_sandbox::trace_sandbox_phase("setup helper request decoded", None);
     let _account_mutation = SandboxAccountSetupGuard::acquire(&payload.account_lease)?;
     let sbx_dir = sandbox_dir(&payload.codex_home);
     std::fs::create_dir_all(&sbx_dir).map_err(|err| {
@@ -462,7 +463,16 @@ fn real_main() -> Result<()> {
             format!("open log in {} failed", sbx_dir.display()),
         ))
     })?;
+    codex_windows_sandbox::trace_sandbox_phase("setup helper execution begin", Some(&sbx_dir));
     let result = run_setup(&payload, &mut log, &sbx_dir);
+    codex_windows_sandbox::trace_sandbox_phase(
+        if result.is_ok() {
+            "setup helper execution complete"
+        } else {
+            "setup helper execution failed"
+        },
+        Some(&sbx_dir),
+    );
     if let Err(err) = &result {
         let _ = log_line(&mut log, &format!("setup error: {err:?}"));
         log_note(&format!("setup error: {err:?}"), Some(sbx_dir.as_path()));
@@ -731,10 +741,23 @@ fn run_provision_only(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) ->
 }
 
 fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
+    codex_windows_sandbox::trace_sandbox_phase(
+        "setup full read-ACL mutex wait begin",
+        Some(sbx_dir),
+    );
     let _read_acl_guard = acquire_read_acl_mutex()?;
+    codex_windows_sandbox::trace_sandbox_phase("setup full read-ACL mutex acquired", Some(sbx_dir));
     let refresh_only = payload.refresh_only;
     if !refresh_only {
+        codex_windows_sandbox::trace_sandbox_phase(
+            "setup account provisioning begin",
+            Some(sbx_dir),
+        );
         provision_and_hide_sandbox_users(payload, log, sbx_dir)?;
+        codex_windows_sandbox::trace_sandbox_phase(
+            "setup account provisioning complete",
+            Some(sbx_dir),
+        );
     }
     let offline_sid = resolve_sid(&payload.offline_username).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
@@ -764,7 +787,9 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
 
     let mut refresh_errors: Vec<String> = Vec::new();
     if !refresh_only {
+        codex_windows_sandbox::trace_sandbox_phase("setup offline network begin", Some(sbx_dir));
         configure_offline_sandbox_network(payload, &offline_sid_str, log)?;
+        codex_windows_sandbox::trace_sandbox_phase("setup offline network complete", Some(sbx_dir));
     }
 
     // Deny-read ACEs must be present before the sandboxed command starts. Apply

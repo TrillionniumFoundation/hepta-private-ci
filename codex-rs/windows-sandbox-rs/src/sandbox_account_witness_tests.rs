@@ -13,6 +13,34 @@ use windows_sys::Win32::System::Threading::OpenEventW;
 use windows_sys::Win32::System::Threading::PROCESS_SYNCHRONIZE;
 
 #[test]
+fn setup_guard_accepts_the_live_lease_in_a_real_child_process() -> Result<()> {
+    const CHILD_WITNESS: &str = "SBX_TEST_ACCOUNT_WITNESS";
+    const TEST_NAME: &str = "sandbox_account_witness::tests::setup_guard_accepts_the_live_lease_in_a_real_child_process";
+    if let Some(witness) = std::env::var_os(CHILD_WITNESS) {
+        let witness = witness
+            .to_str()
+            .ok_or_else(|| anyhow::anyhow!("child witness is not Unicode"))?;
+        let witness = serde_json::from_str(witness)?;
+        let _setup = SandboxAccountSetupGuard::acquire(&witness)?;
+        println!("cross-process setup guard entered");
+        return Ok(());
+    }
+    let lease = SandboxAccountLease::acquire()?;
+    let child = Command::new(std::env::current_exe()?)
+        .args(["--exact", TEST_NAME, "--nocapture"])
+        .env(CHILD_WITNESS, serde_json::to_string(&lease.witness())?)
+        .output()?;
+    anyhow::ensure!(
+        child.status.success(),
+        "real child could not enter the setup guard: {}",
+        String::from_utf8_lossy(&child.stderr),
+    );
+    let stdout = String::from_utf8(child.stdout)?;
+    assert!(stdout.contains("cross-process setup guard entered"));
+    Ok(())
+}
+
+#[test]
 fn an_entered_setup_helper_finishes_before_the_next_account_lease() -> Result<()> {
     let first = SandboxAccountLease::acquire()?;
     let witness = first.witness();

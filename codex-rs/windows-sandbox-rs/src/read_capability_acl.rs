@@ -88,12 +88,20 @@ pub unsafe fn grant_read_capability_for_root(
     sandbox_group: *mut c_void,
     read_sid: *mut c_void,
 ) -> Result<()> {
+    crate::trace_sandbox_phase(
+        &format!("read-cap open root begin: {}", root.display()),
+        None,
+    );
     let file = OpenOptions::new()
         .access_mode(READ_CONTROL | WRITE_DAC)
         .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
         .open(root)
         .with_context(|| format!("open read capability root {}", root.display()))?;
+    crate::trace_sandbox_phase(
+        &format!("read-cap open root complete: {}", root.display()),
+        None,
+    );
     let metadata = file.metadata()?;
     anyhow::ensure!(
         metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT == 0,
@@ -103,6 +111,10 @@ pub unsafe fn grant_read_capability_for_root(
     let handle = file.as_raw_handle() as _;
     let mut old_dacl = ptr::null_mut();
     let mut descriptor = LocalAllocation(ptr::null_mut());
+    crate::trace_sandbox_phase(
+        &format!("read-cap query DACL begin: {}", root.display()),
+        None,
+    );
     let status = unsafe {
         GetSecurityInfo(
             handle,
@@ -119,6 +131,10 @@ pub unsafe fn grant_read_capability_for_root(
         status == ERROR_SUCCESS,
         "read capability ACL query failed on {}: {status}",
         root.display()
+    );
+    crate::trace_sandbox_phase(
+        &format!("read-cap query DACL complete: {}", root.display()),
+        None,
     );
     unsafe { verify_read_only_dacl(old_dacl, read_sid) }
         .with_context(|| format!("validate read capability on {}", root.display()))?;
@@ -159,6 +175,10 @@ pub unsafe fn grant_read_capability_for_root(
         root.display()
     );
     unsafe { verify_read_only_dacl(new_dacl, read_sid) }?;
+    crate::trace_sandbox_phase(
+        &format!("read-cap SetSecurityInfo begin: {}", root.display()),
+        None,
+    );
     let status = unsafe {
         SetSecurityInfo(
             handle,
@@ -170,6 +190,13 @@ pub unsafe fn grant_read_capability_for_root(
             ptr::null_mut(),
         )
     };
+    crate::trace_sandbox_phase(
+        &format!(
+            "read-cap SetSecurityInfo end: {} status={status}",
+            root.display()
+        ),
+        None,
+    );
     anyhow::ensure!(
         status == ERROR_SUCCESS,
         "grant read capability failed on {}: {status}",

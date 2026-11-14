@@ -314,6 +314,7 @@ pub(crate) fn spawn_runner_transport(
     log_dir: Option<&Path>,
     spawn_request: SpawnRequest,
 ) -> Result<RunnerTransport> {
+    crate::trace_sandbox_phase("runner transport preparation begin", log_dir);
     let (pipe_in_name, pipe_out_name) = pipe_pair();
     let h_pipe_in =
         create_named_pipe(&pipe_in_name, PIPE_ACCESS_OUTBOUND, &sandbox_creds.username)?;
@@ -342,6 +343,7 @@ pub(crate) fn spawn_runner_transport(
     let mut pi: PROCESS_INFORMATION = unsafe { std::mem::zeroed() };
     let env_block: Option<Vec<u16>> = None;
 
+    crate::trace_sandbox_phase("runner logon begin", log_dir);
     let previous_error_mode = unsafe { SetErrorMode(RUNNER_ERROR_MODE_FLAGS) };
     // Sandbox users have no profile state that commands should inherit.
     let spawn_res = unsafe {
@@ -369,17 +371,23 @@ pub(crate) fn spawn_runner_transport(
         SetErrorMode(previous_error_mode);
     }
     if let Some(err) = spawn_error {
+        crate::trace_sandbox_phase(&format!("runner logon failed: {err}"), log_dir);
         unsafe {
             CloseHandle(h_pipe_in);
             CloseHandle(h_pipe_out);
         }
         return Err(RunnerLogonError { code: err }.into());
     }
+    crate::trace_sandbox_phase("runner logon complete", log_dir);
     let expected_runner_pid = pi.dwProcessId;
 
     let connect_result = (|| -> Result<()> {
+        crate::trace_sandbox_phase("runner pipe-in handshake begin", log_dir);
         connect_pipe_with_timeout(h_pipe_in, expected_runner_pid, "pipe-in")?;
+        crate::trace_sandbox_phase("runner pipe-in handshake complete", log_dir);
+        crate::trace_sandbox_phase("runner pipe-out handshake begin", log_dir);
         connect_pipe_with_timeout(h_pipe_out, expected_runner_pid, "pipe-out")?;
+        crate::trace_sandbox_phase("runner pipe-out handshake complete", log_dir);
         Ok(())
     })();
 
@@ -414,8 +422,11 @@ pub(crate) fn spawn_runner_transport(
         // Keep the runner process HANDLE alive until the *entire* startup handshake finishes.
         // That way, a later `send_spawn_request` or `spawn_ready` failure can still terminate the
         // runner instead of leaving a stray `codex-command-runner.exe` behind.
+        crate::trace_sandbox_phase("runner spawn request begin", log_dir);
         transport.send_spawn_request(spawn_request)?;
+        crate::trace_sandbox_phase("runner spawn-ready wait begin", log_dir);
         transport.read_spawn_ready()?;
+        crate::trace_sandbox_phase("runner spawn-ready received", log_dir);
         Ok(())
     })();
     if let Err(err) = startup_result {

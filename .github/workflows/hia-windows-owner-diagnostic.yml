@@ -25,6 +25,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       RUST_BACKTRACE: "1"
+      SBX_PHASE_TRACE: "1"
     defaults:
       run:
         shell: bash
@@ -99,6 +100,62 @@ jobs:
           New-Item -ItemType Directory -Path $evidence -Force | Out-Null
           Get-ChildItem -LiteralPath $env:RUNNER_TEMP -Filter "windows-owner-*" -File |
             Copy-Item -Destination $evidence -Force
+          # Preserve only daily sandbox logs from this job's temporary fixtures.
+          # Do not copy credentials, token data, helper executables or directory links.
+          $fixtureLogs = [Collections.Generic.List[object]]::new()
+          $scanErrors = [Collections.Generic.List[string]]::new()
+          $seenRoots = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+          $roots = @(
+            @{ Label = "temp"; Path = $env:TEMP },
+            @{ Label = "tmp"; Path = $env:TMP },
+            @{ Label = "worktree"; Path = (Join-Path $env:GITHUB_WORKSPACE "codex-rs") }
+          )
+          foreach ($root in $roots) {
+            if (-not $root.Path -or -not $seenRoots.Add($root.Path)) { continue }
+            $fixtures = Get-ChildItem -LiteralPath $root.Path -Directory -Filter ".tmp*" -Force
+            foreach ($fixture in $fixtures) {
+              if ($fixture.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
+              $pending = [Collections.Generic.Queue[object]]::new()
+              $pending.Enqueue(@{ Path = $fixture.FullName; Depth = 0 })
+              while ($pending.Count -gt 0) {
+                $current = $pending.Dequeue()
+                if ((Split-Path -Leaf $current.Path) -eq ".sandbox") {
+                  try {
+                    $logs = Get-ChildItem -LiteralPath $current.Path -Filter "sandbox.*.log" -File -Force
+                    foreach ($log in $logs) {
+                      if ($log.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
+                      $relative = [IO.Path]::GetRelativePath($root.Path, $log.FullName)
+                      $destination = Join-Path (Join-Path (Join-Path $evidence "fixture-logs") $root.Label) $relative
+                      New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+                      Copy-Item -LiteralPath $log.FullName -Destination $destination -Force
+                      $fixtureLogs.Add(@{
+                        Source = $log.FullName
+                        Destination = [IO.Path]::GetRelativePath($evidence, $destination)
+                        Bytes = (Get-Item -LiteralPath $destination).Length
+                        Sha256 = (Get-FileHash -LiteralPath $destination -Algorithm SHA256).Hash
+                      })
+                    }
+                  } catch { $scanErrors.Add($_.Exception.Message) }
+                  continue
+                }
+                if ($current.Depth -ge 6) { continue }
+                try {
+                  $children = Get-ChildItem -LiteralPath $current.Path -Directory -Force
+                  foreach ($child in $children) {
+                    if ($child.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
+                    if ($child.Name -in @(".sandbox-secrets", ".sandbox-bin")) { continue }
+                    $pending.Enqueue(@{ Path = $child.FullName; Depth = $current.Depth + 1 })
+                  }
+                } catch { $scanErrors.Add($_.Exception.Message) }
+              }
+            }
+          }
+          @{
+            CapturedUtc = (Get-Date).ToUniversalTime().ToString("o")
+            DirectoryDepthLimit = 6
+            Files = $fixtureLogs.ToArray()
+            ScanErrors = $scanErrors.ToArray()
+          } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $evidence "fixture-log-manifest.json")
           $nextest = Join-Path $env:CARGO_TARGET_DIR "nextest"
           if (Test-Path -LiteralPath $nextest) {
             Get-ChildItem -LiteralPath $nextest -Filter "junit.xml" -Recurse -File | ForEach-Object {
