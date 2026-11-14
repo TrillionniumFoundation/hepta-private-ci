@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python3",
+    "-W",
+    "error",
+    "-m",
+    "unittest",
+    "ndu_training.cv_train_d2.test_training",
+    "-v"
+  ],
+  "exit_code": 0,
+  "physical_process_and_children_cpu": 0.48168232899999996,
+  "scope": "hand-input software checks; no TRAIN predictions/updates",
+  "source_sha256": {
+    "ndu_training/cv_train_d2/budget.py": "20167abd570c0cd7fbf5e9e3e7fd9ac78ad75c446a80c170287afc104ba16b3d",
+    "ndu_training/cv_train_d2/cache.py": "a7e4ede7513fa589df4adff807f189a6dab9066e5d7ef99b2c3c0023b475a464",
+    "ndu_training/cv_train_d2/driver.py": "219686afd8fad5af8ee4cd6af345aae63b0e8c17e317658368c6807d503873a1",
+    "ndu_training/cv_train_d2/optimizer.py": "b4a23a1ab2730f87a088de53fd8c2e0324021094c83fd3af6eba59df11743d77",
+    "ndu_training/cv_train_d2/record.py": "94f7883857b21975dae8bf15503864b9f2e9c51abae9319a80042dac34eec2f5",
+    "ndu_training/cv_train_d2/test_training.py": "e1d38786165514379bd9b68a746d2fadc5741c06b2a20fc3792aa27705b8b6a1"
+  }
+}
