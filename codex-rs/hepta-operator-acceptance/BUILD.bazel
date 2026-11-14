@@ -32,10 +32,6 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
-    # The trust verifier deliberately uses /usr/bin/ssh-keygen. Run its actual
-    # signing and verification tests on the native CI host, where OpenSSH is
-    # provisioned, instead of the remote image which lacks that pinned binary.
-    tags = ["no-remote-exec"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
