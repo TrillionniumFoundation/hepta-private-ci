@@ -1,0 +1,68 @@
+name: hepta-hdcf-shadow-gates
+
+on:
+  push:
+    branches:
+      - research/hdcf-stem-graph-gates-20261016
+    paths:
+      - 'qualification/hdcf-research/**'
+      - '.github/workflows/hepta-hdcf-shadow-gates.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdcf-research/**'
+      - '.github/workflows/hepta-hdcf-shadow-gates.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hdcf-shadow-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-head:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Source-bound Python research audit
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m py_compile hdcf_gates.py physical_bank.py physical_cli.py public_source_recount.py independent_head_replay.py test_independent_head_replay.py paired_utility_gate.py test_paired_utility_gate.py test_hdcf_gates.py test_physical_bank.py test_physical_cli.py
+          python3 -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount test_independent_head_replay test_paired_utility_gate
+          python3 -O -m unittest -v test_hdcf_gates test_physical_bank test_physical_cli test_public_source_recount test_independent_head_replay test_paired_utility_gate
+      - name: Recount local synthetic original learning controls
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from test_physical_bank import original
+          from physical_bank import train, score
+          from independent_head_replay import audit_head_replay
+          from paired_utility_gate import audit_paired_utility
+          b, held = original()
+          trial = train(b)
+          blind = score(trial, held)
+          replay = audit_head_replay(b, trial)
+          paired = audit_paired_utility(b, trial, held)
+          assert paired["disposition"] == "HOLD_NO_GO"
+          assert paired["matched_case_census"] == 32
+          assert paired["qualifying_task_benefit"] is False
+          assert paired["charged_known_work"]["physical_head_train_sgd_updates"] == 768
+          assert replay["original_prediction_rows_replayed"] == 160
+          assert trial['production_authorized'] is False
+          assert trial['encoder_forward_count'] == 0
+          assert trial['pretrained_model_provenance_verified'] is False
+          assert blind['future_window_claim'] is False
+          print({'source': 'synthetic_fixture', 'trial': trial['trial_identity'],
+                 'correct_n': {k: (v['correct'], v['n']) for k, v in blind['results'].items()},
+                 'production_authorized': False})
+          PY
+      - name: Negative-authorization documentation check
+        run: |
+          grep -q 'NO CODE EXECUTION' qualification/hdcf-research/README.md
+          grep -q 'production_authorized.*False' qualification/hdcf-research/physical_bank.py
