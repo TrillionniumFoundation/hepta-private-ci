@@ -654,11 +654,14 @@ fn live_owner_rejects_same_length_header_tampering_before_any_external_effect() 
     let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p).expect("bootstrap");
     let original_length = reopen(&file).metadata().expect("metadata").len();
 
-    let mut tamper = reopen(&file);
-    tamper.seek(SeekFrom::Start(12)).expect("seek header");
-    tamper.write_all(&[0xf5]).expect("change scope bytes");
-    tamper.sync_all().expect("sync same-length corruption");
-    drop(tamper);
+    // Inject backing-byte corruption through the locking descriptor. Windows
+    // rejects writes through a separately opened handle while the owner lives.
+    {
+        let tamper = &mut owner.file.0;
+        tamper.seek(SeekFrom::Start(12)).expect("seek header");
+        tamper.write_all(&[0xf5]).expect("change scope bytes");
+        tamper.sync_all().expect("sync same-length corruption");
+    }
     assert_eq!(
         reopen(&file).metadata().expect("metadata").len(),
         original_length
@@ -681,15 +684,18 @@ fn live_owner_rejects_same_length_accepted_frame_tampering_before_resume() {
 
     let frame_boundary = HEADER_SIZE as u64 + 4 + FRAME_FIXED_SIZE as u64 - 1;
     let original_length = reopen(&file).metadata().expect("metadata").len();
-    let mut tamper = reopen(&file);
-    tamper
-        .seek(SeekFrom::Start(frame_boundary))
-        .expect("seek frame");
-    tamper
-        .write_all(&[0x5a])
-        .expect("corrupt same-size frame checksum");
-    tamper.sync_all().expect("sync frame corruption");
-    drop(tamper);
+    // Keep the live owner and its lock while injecting the same backing-byte
+    // fault; a separate write handle is correctly rejected on Windows.
+    {
+        let tamper = &mut owner.file.0;
+        tamper
+            .seek(SeekFrom::Start(frame_boundary))
+            .expect("seek frame");
+        tamper
+            .write_all(&[0x5a])
+            .expect("corrupt same-size frame checksum");
+        tamper.sync_all().expect("sync frame corruption");
+    }
     assert_eq!(
         reopen(&file).metadata().expect("metadata").len(),
         original_length
