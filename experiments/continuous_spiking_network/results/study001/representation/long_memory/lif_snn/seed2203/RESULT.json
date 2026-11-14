@@ -1,0 +1,146 @@
+{
+  "checkpoint_manifest_sha256": "71d0bdc1b585650ef23c3918f9a3a0f3d5e35e342f3f11768a34cd4bd10f26c4",
+  "checkpoint_reload_max_error": 0.0,
+  "checkpoint_scope": "exact model state for inference; optimizer is not retained",
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "gradient_groups": {
+    "backbone.blocks.0.cell.input.bias": {
+      "finite": true,
+      "l1": 0.022724298760294914
+    },
+    "backbone.blocks.0.cell.input.weight": {
+      "finite": true,
+      "l1": 0.38270995020866394
+    },
+    "backbone.blocks.0.cell.log_rate": {
+      "finite": true,
+      "l1": 0.001639446010813117
+    },
+    "backbone.blocks.0.cell.raw_threshold": {
+      "finite": true,
+      "l1": 0.00859712716192007
+    },
+    "backbone.blocks.0.cell.recurrent.weight": {
+      "finite": true,
+      "l1": 0.014472479932010174
+    },
+    "frontend.0.bias": {
+      "finite": true,
+      "l1": 0.03993922472000122
+    },
+    "frontend.0.weight": {
+      "finite": true,
+      "l1": 0.3395286798477173
+    },
+    "frontend.1.bias": {
+      "finite": true,
+      "l1": 0.008343508467078209
+    },
+    "frontend.1.weight": {
+      "finite": true,
+      "l1": 0.00416587945073843
+    },
+    "readout.bias": {
+      "finite": true,
+      "l1": 0.14243075251579285
+    },
+    "readout.weight": {
+      "finite": true,
+      "l1": 0.2479901760816574
+    }
+  },
+  "history": [
+    {
+      "last_grad_norm": 0.3136446177959442,
+      "train_loss": 1.3889929155508678,
+      "training_cpu_seconds": 2.0024942910000076,
+      "training_wall_seconds": 2.0753019280018634,
+      "update": 60,
+      "validation": {
+        "accuracy": 0.2421875,
+        "brier": 0.754158079624176,
+        "cases": 512,
+        "cross_entropy": 1.3951565027236938
+      }
+    },
+    {
+      "last_grad_norm": 0.36725929379463196,
+      "train_loss": 1.3889053722222646,
+      "training_cpu_seconds": 3.710516095000007,
+      "training_wall_seconds": 3.820254138991004,
+      "update": 120,
+      "validation": {
+        "accuracy": 0.2578125,
+        "brier": 0.7500250339508057,
+        "cases": 512,
+        "cross_entropy": 1.3863791227340698
+      }
+    },
+    {
+      "last_grad_norm": 0.3443412184715271,
+      "train_loss": 1.3847409516572953,
+      "training_cpu_seconds": 6.59044808200001,
+      "training_wall_seconds": 6.717051080951933,
+      "update": 240,
+      "validation": {
+        "accuracy": 0.2421875,
+        "brier": 0.7514386773109436,
+        "cases": 512,
+        "cross_entropy": 1.3890174627304077
+      }
+    }
+  ],
+  "parameters": {
+    "backbone": 2144,
+    "frontend": 2208,
+    "matching": null,
+    "readout": 132,
+    "total": 4484
+  },
+  "prepare_cpu_seconds": 2.006482913,
+  "selected_step": 120,
+  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "spec": {
+    "architecture": "lif_snn",
+    "batch_size": 32,
+    "data_seed": 7123,
+    "depth": 1,
+    "length": 32,
+    "lr": 0.003,
+    "match_cell_budget": false,
+    "seed": 2203,
+    "stage": "representation",
+    "task": "long_memory",
+    "test_size": 1024,
+    "train_size": 2048,
+    "updates": 240,
+    "val_size": 512,
+    "width": 32
+  },
+  "split_sources_sha256": "86eb80a5382da2d24cfde4d9444fe85c5a18589fb8d813ad7846944eb3763d1e",
+  "test": {
+    "accuracy": 0.244140625,
+    "brier": 0.7513716220855713,
+    "cases": 1024,
+    "cross_entropy": 1.3890254497528076
+  },
+  "test_cpu_seconds": 0.1056501549999993,
+  "test_wall_seconds": 0.10564874400006374,
+  "timing_scope": "includes preparation, fitting, validation, serialization, reload and test; installation excluded",
+  "total_cpu_seconds": 10.763634261,
+  "total_wall_seconds": 11.580569789999572,
+  "training_cpu_seconds": 6.59044808200001,
+  "training_examples_seen": 7680,
+  "training_sequence_positions": 245760,
+  "training_wall_seconds": 6.717051080951933,
+  "unique_training_examples_seen": 2009,
+  "validation_cpu_seconds": 0.20815215599999703
+}

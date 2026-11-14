@@ -1,0 +1,170 @@
+{
+  "checkpoint_manifest_sha256": "6dd1a6ae981fb19c6d774f1a877314f2f59bcc73458c74cd6ed6e350f5d05c47",
+  "checkpoint_reload_max_error": 0.0,
+  "checkpoint_scope": "exact model state for inference; optimizer is not retained",
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "gradient_groups": {
+    "backbone.blocks.0.cell.backbone.0.bias": {
+      "finite": true,
+      "l1": 0.3535473644733429
+    },
+    "backbone.blocks.0.cell.backbone.0.weight": {
+      "finite": true,
+      "l1": 12.389087677001953
+    },
+    "backbone.blocks.0.cell.ff1.bias": {
+      "finite": true,
+      "l1": 0.18782947957515717
+    },
+    "backbone.blocks.0.cell.ff1.weight": {
+      "finite": true,
+      "l1": 3.6157193183898926
+    },
+    "backbone.blocks.0.cell.ff2.bias": {
+      "finite": true,
+      "l1": 0.2698107063770294
+    },
+    "backbone.blocks.0.cell.ff2.weight": {
+      "finite": true,
+      "l1": 5.125860214233398
+    },
+    "backbone.blocks.0.cell.time_a.bias": {
+      "finite": true,
+      "l1": 0.07538596540689468
+    },
+    "backbone.blocks.0.cell.time_a.weight": {
+      "finite": true,
+      "l1": 1.5730046033859253
+    },
+    "backbone.blocks.0.cell.time_b.bias": {
+      "finite": true,
+      "l1": 0.07514077425003052
+    },
+    "backbone.blocks.0.cell.time_b.weight": {
+      "finite": true,
+      "l1": 1.553011417388916
+    },
+    "frontend.0.bias": {
+      "finite": true,
+      "l1": 1.1055501699447632
+    },
+    "frontend.0.weight": {
+      "finite": true,
+      "l1": 6.7231011390686035
+    },
+    "frontend.1.bias": {
+      "finite": true,
+      "l1": 0.17946763336658478
+    },
+    "frontend.1.weight": {
+      "finite": true,
+      "l1": 0.10781009495258331
+    },
+    "readout.bias": {
+      "finite": true,
+      "l1": 0.6691663265228271
+    },
+    "readout.weight": {
+      "finite": true,
+      "l1": 7.196974277496338
+    }
+  },
+  "history": [
+    {
+      "last_grad_norm": 0.5864267945289612,
+      "train_loss": 2.320010232925415,
+      "training_cpu_seconds": 1.6906135529999995,
+      "training_wall_seconds": 1.7074333479758934,
+      "update": 60,
+      "validation": {
+        "accuracy": 0.228515625,
+        "brier": 0.8932983875274658,
+        "cases": 512,
+        "cross_entropy": 2.2697105407714844,
+        "image_accuracy": 0.228515625
+      }
+    },
+    {
+      "last_grad_norm": 2.572404146194458,
+      "train_loss": 1.9538854340712228,
+      "training_cpu_seconds": 2.893024603000004,
+      "training_wall_seconds": 2.9235252279540873,
+      "update": 120,
+      "validation": {
+        "accuracy": 0.3125,
+        "brier": 0.7806150317192078,
+        "cases": 512,
+        "cross_entropy": 1.8033543825149536,
+        "image_accuracy": 0.3125
+      }
+    },
+    {
+      "last_grad_norm": 1.111548900604248,
+      "train_loss": 1.8099967281023661,
+      "training_cpu_seconds": 5.492326206999999,
+      "training_wall_seconds": 5.677773774950765,
+      "update": 240,
+      "validation": {
+        "accuracy": 0.349609375,
+        "brier": 0.7641685605049133,
+        "cases": 512,
+        "cross_entropy": 1.7310866117477417,
+        "image_accuracy": 0.349609375
+      }
+    }
+  ],
+  "parameters": {
+    "backbone": 6304,
+    "frontend": 2208,
+    "matching": null,
+    "readout": 330,
+    "total": 8842
+  },
+  "prepare_cpu_seconds": 0.7701517779999998,
+  "selected_step": 240,
+  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "spec": {
+    "architecture": "cfc",
+    "batch_size": 32,
+    "data_seed": 7123,
+    "depth": 1,
+    "length": 32,
+    "lr": 0.003,
+    "match_cell_budget": false,
+    "seed": 2201,
+    "stage": "representation",
+    "task": "mnist",
+    "test_size": 1024,
+    "train_size": 2048,
+    "updates": 240,
+    "val_size": 512,
+    "width": 32
+  },
+  "split_sources_sha256": "33a00ddcde03e8f7c5cb874caddaf3fd2deac585655567e3cda76374efb258b7",
+  "test": {
+    "accuracy": 0.3291015625,
+    "brier": 0.7797070145606995,
+    "cases": 1024,
+    "cross_entropy": 1.7729538679122925,
+    "image_accuracy": 0.3291015625
+  },
+  "test_cpu_seconds": 0.12207876999999989,
+  "test_wall_seconds": 0.13724116999947,
+  "timing_scope": "includes preparation, fitting, validation, serialization, reload and test; installation excluded",
+  "total_cpu_seconds": 7.931920969,
+  "total_wall_seconds": 8.166856591000396,
+  "training_cpu_seconds": 5.492326206999999,
+  "training_examples_seen": 7680,
+  "training_sequence_positions": 245760,
+  "training_wall_seconds": 5.677773774950765,
+  "unique_training_examples_seen": 2002,
+  "validation_cpu_seconds": 0.16656847700000021
+}

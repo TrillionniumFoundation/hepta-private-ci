@@ -1,0 +1,421 @@
+{
+  "actor_manifest_sha256": "fc562dfb879e43e4d44fe13d79de23a13482a79ac96c7cbf3d7f1b7bb940d5a6",
+  "actor_model_sha256": "7860b852c60d1c00da8a972833b6cbd1229d1c4c7a9760bd4256c425844b616a",
+  "bellman_table_build_cpu_seconds": 0.24007071699999827,
+  "episode_manifest_sha256": "ca15f28be1f1eb4a04e456eec319a65e60a5209a97833098edfd3061328c1cc0",
+  "fitting_prefix_cpu_seconds": 0.2705367800000005,
+  "limits": "temperature fitting is not a Bayesian transition proof; source arrays are prepared in RAM; avoided reads are actual task iterator/model steps, not network download or hardware energy",
+  "metrics": {
+    "id": {
+      "calibration": {
+        "raw": {
+          "prefix_brier": 0.08369152992963791,
+          "prefix_ce": 0.2611881196498871
+        },
+        "shared_temperature": {
+          "prefix_brier": 0.08352882415056229,
+          "prefix_ce": 0.2591021955013275
+        }
+      },
+      "direct": {
+        "accuracy": 0.90625,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.38542487899999767,
+        "loop_wall_seconds": 0.3856806059629889,
+        "mean_cost": 0.10843749892956112,
+        "mean_observations": 5.5625,
+        "net_utility": 0.7978125010704389,
+        "total_avoided_model_steps": 668,
+        "total_processed_rows": 356
+      },
+      "fixed": {
+        "accuracy": 0.859375,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.19132317299999801,
+        "loop_wall_seconds": 0.19140815300488612,
+        "mean_cost": 0.10289062360243406,
+        "mean_observations": 3.109375,
+        "net_utility": 0.7564843763975659,
+        "total_avoided_model_steps": 825,
+        "total_processed_rows": 199
+      },
+      "full": {
+        "accuracy": 0.953125,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.959786254000007,
+        "loop_wall_seconds": 0.9627744469835307,
+        "mean_cost": 0.578749991953373,
+        "mean_observations": 16.0,
+        "net_utility": 0.37437500804662704,
+        "total_avoided_model_steps": 0,
+        "total_processed_rows": 1024
+      },
+      "value": {
+        "accuracy": 0.859375,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.42586494499999983,
+        "loop_wall_seconds": 0.42720902099244995,
+        "mean_cost": 0.0944531241839286,
+        "mean_observations": 5.125,
+        "net_utility": 0.7649218758160714,
+        "total_avoided_model_steps": 696,
+        "total_processed_rows": 328
+      },
+      "verification_full_prefix_cpu_seconds": 1.0543626020000012
+    },
+    "ood": {
+      "calibration": {
+        "raw": {
+          "prefix_brier": 0.08326977491378784,
+          "prefix_ce": 0.25971782207489014
+        },
+        "shared_temperature": {
+          "prefix_brier": 0.08291226625442505,
+          "prefix_ce": 0.25742748379707336
+        }
+      },
+      "direct": {
+        "accuracy": 0.828125,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.3083897530000055,
+        "loop_wall_seconds": 0.3085810650663916,
+        "mean_cost": 0.1076562475936953,
+        "mean_observations": 3.21875,
+        "net_utility": 0.7204687524063047,
+        "total_avoided_model_steps": 1330,
+        "total_processed_rows": 206
+      },
+      "fixed": {
+        "accuracy": 0.890625,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 0.22573443300000662,
+        "loop_wall_seconds": 0.22584587601159,
+        "mean_cost": 0.18140624594525434,
+        "mean_observations": 3.453125,
+        "net_utility": 0.7092187540547457,
+        "total_avoided_model_steps": 1315,
+        "total_processed_rows": 221
+      },
+      "full": {
+        "accuracy": 0.921875,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 1.6652763710000063,
+        "loop_wall_seconds": 1.6653244589833776,
+        "mean_cost": 1.3424999699927866,
+        "mean_observations": 24.0,
+        "net_utility": -0.42062496999278665,
+        "total_avoided_model_steps": 0,
+        "total_processed_rows": 1536
+      },
+      "value": {
+        "accuracy": 0.796875,
+        "all_post_stop_reads_rejected": true,
+        "episodes": 64,
+        "loop_cpu_seconds": 1.1305499189999981,
+        "loop_wall_seconds": 1.1313589299898013,
+        "mean_cost": 0.11312499747145921,
+        "mean_observations": 3.96875,
+        "net_utility": 0.6837500025285408,
+        "total_avoided_model_steps": 1282,
+        "total_processed_rows": 254
+      },
+      "verification_full_prefix_cpu_seconds": 0.024154188000000687
+    }
+  },
+  "native": {},
+  "objective_sha256": "66d9958e116bb7538c7f5d4b9b6ac0dc80166bfaf50086b52b8099a6cf2d8eb9",
+  "policy_fit": {
+    "data_scope": "temperature/direct fit use training only; fixed uses validation utility; no heldout outcome is consumed",
+    "direct": {
+      "gradient_groups": {
+        "direct_bias": 0.040949903428554535,
+        "direct_context": 0.234267920255661
+      },
+      "initial_soft_utility": 0.7144954800605774,
+      "last_soft_utility_before_update": 0.7576549053192139,
+      "parameters": {
+        "direct_bias": -0.028958255425095558,
+        "direct_context": [
+          -0.7171275615692139,
+          1.0258073806762695,
+          -0.9437236189842224
+        ]
+      },
+      "temperature": 0.02,
+      "updates": 100
+    },
+    "direct_training_cpu_seconds": 0.2552382230000001,
+    "fixed": {
+      "grid": [
+        0.5001,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.925,
+        0.95,
+        0.975,
+        0.99,
+        0.999
+      ],
+      "threshold": 0.75,
+      "tie_rule": "first grid entry",
+      "validation_scores": [
+        0.7290820317575708,
+        0.7485351567993348,
+        0.7736132818827173,
+        0.7631445320439525,
+        0.7847070322022773,
+        0.7916015638220415,
+        0.7804296892063576,
+        0.7626953146354936,
+        0.708613284270541,
+        0.6810742223497073,
+        0.6419531290594023,
+        0.5853125048561196,
+        0.5161328182803118,
+        0.35802735173274414
+      ]
+    },
+    "fixed_selection_cpu_seconds": 0.0020448010000002625,
+    "temperature": 0.9403560757637024,
+    "temperature_bounds": [
+      0.25,
+      4.0
+    ],
+    "temperature_cpu_seconds": 2.766675588,
+    "temperature_train_ce": [
+      0.28599634766578674,
+      0.2856962978839874,
+      0.28559109568595886,
+      0.2856311798095703,
+      0.285705029964447,
+      0.2857281565666199,
+      0.285697877407074,
+      0.28564655780792236,
+      0.2856050431728363,
+      0.2855899930000305,
+      0.28560107946395874,
+      0.28562426567077637,
+      0.2856420576572418,
+      0.28564417362213135,
+      0.28563153743743896,
+      0.2856123447418213,
+      0.2855963408946991,
+      0.2855900228023529,
+      0.28559401631355286,
+      0.28560352325439453,
+      0.28561171889305115,
+      0.2856137156486511,
+      0.28560885787010193,
+      0.2856004536151886,
+      0.28559309244155884,
+      0.2855900228023529,
+      0.2855917811393738,
+      0.28559619188308716,
+      0.285599946975708,
+      0.2856006324291229,
+      0.28559815883636475,
+      0.2855941355228424,
+      0.28559091687202454,
+      0.2855900228023529,
+      0.2855913043022156,
+      0.28559353947639465,
+      0.28559496998786926,
+      0.2855946719646454,
+      0.2855930030345917,
+      0.28559109568595886,
+      0.2855900526046753,
+      0.285590261220932,
+      0.2855912744998932,
+      0.2855922281742096,
+      0.28559237718582153,
+      0.2855916917324066,
+      0.2855907082557678,
+      0.2855900526046753,
+      0.2855900824069977,
+      0.28559058904647827,
+      0.2855910658836365,
+      0.28559115529060364,
+      0.2855908274650574,
+      0.28559035062789917,
+      0.2855899930000305,
+      0.2855900526046753,
+      0.2855903208255768,
+      0.2855905592441559,
+      0.2855905592441559,
+      0.28559035062789917,
+      0.28559011220932007,
+      0.2855899930000305,
+      0.2855900526046753,
+      0.2855902314186096,
+      0.2855903208255768,
+      0.285590261220932,
+      0.28559011220932007,
+      0.2855900228023529,
+      0.2855900228023529,
+      0.2855900824069977,
+      0.28559011220932007,
+      0.28559014201164246,
+      0.28559011220932007,
+      0.2855900228023529,
+      0.28558996319770813,
+      0.2855899930000305,
+      0.2855900526046753,
+      0.2855900824069977,
+      0.2855900526046753,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855900526046753,
+      0.2855900526046753,
+      0.2855900228023529,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855900228023529,
+      0.2855900228023529,
+      0.2855899930000305,
+      0.2855900228023529,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855900228023529,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855899930000305,
+      0.2855899930000305
+    ],
+    "temperature_updates": 100,
+    "total_cpu_seconds": 3.0256346880000002,
+    "total_wall_seconds": 3.0312744039983954
+  },
+  "policy_sha256": "0e53eb1c2965a45c57c1ccee6d3690f568c7e73b100e0f0625751c301159fc04",
+  "replays": {
+    "id": {
+      "direct": {
+        "cpu_seconds": 0.004611308999999508,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 3,
+        "task_sha256": "bfd95e06e8722f5bc0597700d067e35be2a3c215d4125a036c0a51f70dbc8f5c",
+        "wall_seconds": 0.004612753997207619
+      },
+      "fixed": {
+        "cpu_seconds": 0.011495172000000053,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 3,
+        "task_sha256": "cb09252673a87dab025a9b0ccd041c6a79aac3548c27c2d15b51195f1a043a82",
+        "wall_seconds": 0.01149576799798524
+      },
+      "value": {
+        "cpu_seconds": 0.00667006099999945,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 4,
+        "task_sha256": "fecca6914395d70a580f1d4fac0af39c27c77c07cc123cbb2310043d717d35d7",
+        "wall_seconds": 0.006671061004453804
+      }
+    },
+    "ood": {
+      "direct": {
+        "cpu_seconds": 0.005720931000000817,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 4,
+        "task_sha256": "4c1817b1a9f173da72e1da21a7690dd7cbedd397468c8c95e3a912f875fb9ad0",
+        "wall_seconds": 0.0057221630049753
+      },
+      "fixed": {
+        "cpu_seconds": 0.012375560000000618,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 9,
+        "task_sha256": "f1ea2e13f16a07e3e03a9adef871bea950e20f6c89f1de69bfc5ddb3ecafcc50",
+        "wall_seconds": 0.012375785001495387
+      },
+      "value": {
+        "cpu_seconds": 0.009331981999999073,
+        "max_logit_error": 0.0,
+        "status": "exact_in_process_serialized_replay",
+        "steps_replayed": 4,
+        "task_sha256": "36c0cdc44678a5e0ea3e0bfcef22190a68eafbb648ead34ca5789ebeac72cd97",
+        "wall_seconds": 0.009332412999356166
+      }
+    }
+  },
+  "seed": 4405,
+  "source_seals": {
+    "base": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "followup": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+  },
+  "timing_scope": "Python process after initial source check includes model loading, data, fitting, policy tables, online task runs, verification, evidence serialization and final source check; interpreter/import, initial source check and final RESULT write excluded; child native CPU separately recorded",
+  "total_cpu_seconds": 11.729607432999998,
+  "total_wall_seconds": 11.754162062999967,
+  "trace_files": {
+    "id": {
+      "direct": {
+        "path": "id_direct.jsonl.gz",
+        "records": 64,
+        "sha256": "7d9d16d923042f08f5cd00c00f982e61396f206737901b56ba50bb81309fc947",
+        "uncompressed_sha256": "53ed1ca6d3407d9fb22ec0d3a6c2211689a810f45097950b8cf1588344ff5f92"
+      },
+      "fixed": {
+        "path": "id_fixed.jsonl.gz",
+        "records": 64,
+        "sha256": "ca03bbd23e47ad31166f8c61efabb1f910d6bf373e204f42362cb4f1ab17aaf4",
+        "uncompressed_sha256": "f180f85b9af19a0fb53db4203b6cc732ca5905dfd920f9cdab46a43a4c16b833"
+      },
+      "full": {
+        "path": "id_full.jsonl.gz",
+        "records": 64,
+        "sha256": "19159a6f172f66674ff5742e45debc6c76e1857a6493f1a0369a687947c7059b",
+        "uncompressed_sha256": "649e291fbd58f4073d164c1a4883d50b3c6e9f80a8f9dc1b1cf39c1001c58fce"
+      },
+      "value": {
+        "path": "id_value.jsonl.gz",
+        "records": 64,
+        "sha256": "c15d9c0792c9ecd935a00741ab6c72b037f7145cc55a0b85dd4649a47148e23f",
+        "uncompressed_sha256": "199bd88f6d4cd1fcb0720261f6ff4812fd16aa2502b01af3788b516fc5ff3fd0"
+      }
+    },
+    "ood": {
+      "direct": {
+        "path": "ood_direct.jsonl.gz",
+        "records": 64,
+        "sha256": "e83a3503db850415315a3941a1ba567a937954962bdae6777d02584325084d4f",
+        "uncompressed_sha256": "0f4b7a77af5d3bd7a38e1917539c6ec9e04b1b6d3c4448bb17e7278c9f8b26ab"
+      },
+      "fixed": {
+        "path": "ood_fixed.jsonl.gz",
+        "records": 64,
+        "sha256": "5cd6c74b6867e9835979693ca68956a373e7ad8bb96ba3babbcd59098b9bf145",
+        "uncompressed_sha256": "459c59a007c22694b4d1e0abec73d83bbc999918a42a367e2b19c6e2bd27d8ef"
+      },
+      "full": {
+        "path": "ood_full.jsonl.gz",
+        "records": 64,
+        "sha256": "699023d56998765c1d9badca68826091959db7fda4d1e9aaf1e5b4c9f87645a6",
+        "uncompressed_sha256": "e4ee66482c9aae62bee64f7d6df5bf0d7fd0f84e7b1b3aa13e864b598436fbd6"
+      },
+      "value": {
+        "path": "ood_value.jsonl.gz",
+        "records": 64,
+        "sha256": "3c5e16444b35c5657bf5f8a0518af8c4a9aa2d66f4a54c977d62fcf2c038d67d",
+        "uncompressed_sha256": "2b0d2679654ecdef3c72af0252820c80d0e9ca61f26fce97ea396574f5239919"
+      }
+    }
+  }
+}

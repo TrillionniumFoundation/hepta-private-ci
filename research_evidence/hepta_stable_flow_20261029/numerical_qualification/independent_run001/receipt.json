@@ -1,0 +1,257 @@
+{
+  "version": "hepta-independent-continuous-audit-20261029-v1",
+  "source_unchanged_during_audit": true,
+  "selected_step": null,
+  "passed": false,
+  "qualification": [
+    {
+      "mode": "analytic",
+      "case": "default",
+      "max_step": 0.25,
+      "state_scaled_max": 0.0022417500347175013,
+      "gradient_l2_relative": 0.01370134615704952,
+      "oracle_state_change": 2.231771906741259e-11,
+      "oracle_fd_gradient_change": 6.088468910533821e-07,
+      "same_step_dtype_state": 1.9157490385342954e-07,
+      "same_step_dtype_gradient": 9.96435978817463e-08,
+      "sampled_margin_range": [
+        -1.3033265842224702,
+        1.746584954060109
+      ],
+      "passed": false
+    },
+    {
+      "mode": "analytic",
+      "case": "default",
+      "max_step": 0.125,
+      "state_scaled_max": 0.0006670824722230483,
+      "gradient_l2_relative": 0.0017117617611094459,
+      "oracle_state_change": 2.231771906741259e-11,
+      "oracle_fd_gradient_change": 6.088468910533821e-07,
+      "same_step_dtype_state": 1.1943285724008785e-07,
+      "same_step_dtype_gradient": 2.123774793784902e-07,
+      "sampled_margin_range": [
+        -1.3033265842224702,
+        1.746584954060109
+      ],
+      "passed": true
+    },
+    {
+      "mode": "analytic",
+      "case": "crossing",
+      "max_step": 0.25,
+      "state_scaled_max": 0.00449485548061237,
+      "gradient_l2_relative": 0.017661174431557198,
+      "oracle_state_change": 3.283901580860072e-11,
+      "oracle_fd_gradient_change": 5.428449767154684e-07,
+      "same_step_dtype_state": 1.8740432684637623e-07,
+      "same_step_dtype_gradient": 1.2951272867789468e-07,
+      "sampled_margin_range": [
+        -3.3980314117628607,
+        2.980067135100694
+      ],
+      "passed": false
+    },
+    {
+      "mode": "analytic",
+      "case": "crossing",
+      "max_step": 0.125,
+      "state_scaled_max": 0.001195483423976058,
+      "gradient_l2_relative": 0.0027016860224679333,
+      "oracle_state_change": 3.283901580860072e-11,
+      "oracle_fd_gradient_change": 5.428449767154684e-07,
+      "same_step_dtype_state": 2.9172393906355835e-07,
+      "same_step_dtype_gradient": 2.0295490460561122e-07,
+      "sampled_margin_range": [
+        -3.3980314117628607,
+        2.980067135100694
+      ],
+      "passed": false
+    },
+    {
+      "mode": "matched_c1",
+      "case": "default",
+      "max_step": 0.25,
+      "state_scaled_max": 0.0015427171193071016,
+      "gradient_l2_relative": 0.025398759710908908,
+      "oracle_state_change": 8.412259763873743e-11,
+      "oracle_fd_gradient_change": 1.0998350173108983e-05,
+      "same_step_dtype_state": 2.2882383334211133e-07,
+      "same_step_dtype_gradient": 2.3604019092564074e-07,
+      "sampled_margin_range": [
+        -1.1885903215438356,
+        1.7121862763492275
+      ],
+      "passed": false
+    },
+    {
+      "mode": "matched_c1",
+      "case": "default",
+      "max_step": 0.125,
+      "state_scaled_max": 0.0004962483705722303,
+      "gradient_l2_relative": 0.00240308481902229,
+      "oracle_state_change": 8.412259763873743e-11,
+      "oracle_fd_gradient_change": 1.0998350173108983e-05,
+      "same_step_dtype_state": 1.9688151860274372e-07,
+      "same_step_dtype_gradient": 2.1327995891820316e-07,
+      "sampled_margin_range": [
+        -1.1885903215438356,
+        1.7121862763492275
+      ],
+      "passed": true
+    },
+    {
+      "mode": "matched_c1",
+      "case": "crossing",
+      "max_step": 0.25,
+      "state_scaled_max": 0.003783534939812979,
+      "gradient_l2_relative": 0.018147089167105633,
+      "oracle_state_change": 3.4305215368614286e-11,
+      "oracle_fd_gradient_change": 3.0183580644722206e-06,
+      "same_step_dtype_state": 1.071455364662988e-07,
+      "same_step_dtype_gradient": 3.093327682538633e-07,
+      "sampled_margin_range": [
+        -3.2684121212307296,
+        2.9169798614687736
+      ],
+      "passed": false
+    },
+    {
+      "mode": "matched_c1",
+      "case": "crossing",
+      "max_step": 0.125,
+      "state_scaled_max": 0.0010292470778302813,
+      "gradient_l2_relative": 0.0025576600390421664,
+      "oracle_state_change": 3.4305215368614286e-11,
+      "oracle_fd_gradient_change": 3.0183580644722206e-06,
+      "same_step_dtype_state": 1.8157856903175864e-07,
+      "same_step_dtype_gradient": 5.363874695114953e-07,
+      "sampled_margin_range": [
+        -3.2684121212307296,
+        2.9169798614687736
+      ],
+      "passed": false
+    },
+    {
+      "mode": "sigmoid",
+      "case": "default",
+      "max_step": 0.25,
+      "state_scaled_max": 0.00044396927135161273,
+      "gradient_l2_relative": 0.0012558568033654576,
+      "oracle_state_change": 6.998394797509421e-13,
+      "oracle_fd_gradient_change": 1.4554835312838647e-10,
+      "same_step_dtype_state": 2.7437278537507517e-07,
+      "same_step_dtype_gradient": 1.1369400286035837e-07,
+      "sampled_margin_range": [
+        -0.9451588166952787,
+        1.9180509370127998
+      ],
+      "passed": true
+    },
+    {
+      "mode": "sigmoid",
+      "case": "default",
+      "max_step": 0.125,
+      "state_scaled_max": 0.00014068411866201074,
+      "gradient_l2_relative": 0.0003268647944191378,
+      "oracle_state_change": 6.998394797509421e-13,
+      "oracle_fd_gradient_change": 1.4554835312838647e-10,
+      "same_step_dtype_state": 1.775808769091725e-07,
+      "same_step_dtype_gradient": 2.594298980708337e-07,
+      "sampled_margin_range": [
+        -0.9451588166952787,
+        1.9180509370127998
+      ],
+      "passed": true
+    },
+    {
+      "mode": "sigmoid",
+      "case": "crossing",
+      "max_step": 0.25,
+      "state_scaled_max": 0.0014851258884924865,
+      "gradient_l2_relative": 0.002962341870828227,
+      "oracle_state_change": 4.776882242843199e-13,
+      "oracle_fd_gradient_change": 2.5039258997641285e-10,
+      "same_step_dtype_state": 1.267655158613199e-07,
+      "same_step_dtype_gradient": 3.1006135946606555e-07,
+      "sampled_margin_range": [
+        -2.9714447252965686,
+        3.2219199733783825
+      ],
+      "passed": false
+    },
+    {
+      "mode": "sigmoid",
+      "case": "crossing",
+      "max_step": 0.125,
+      "state_scaled_max": 0.00038149150108616326,
+      "gradient_l2_relative": 0.0008339946690564128,
+      "oracle_state_change": 4.776882242843199e-13,
+      "oracle_fd_gradient_change": 2.5039258997641285e-10,
+      "same_step_dtype_state": 2.8877582024203236e-07,
+      "same_step_dtype_gradient": 4.146224641884377e-07,
+      "sampled_margin_range": [
+        -2.9714447252965686,
+        3.2219199733783825
+      ],
+      "passed": true
+    }
+  ],
+  "structural": {
+    "analytic": {
+      "batch_composition_max_abs": 0.0,
+      "zero_dt_max_abs": 0.0,
+      "passed": true
+    },
+    "matched_c1": {
+      "batch_composition_max_abs": 0.0,
+      "zero_dt_max_abs": 0.0,
+      "passed": true
+    },
+    "sigmoid": {
+      "batch_composition_max_abs": 0.0,
+      "zero_dt_max_abs": 0.0,
+      "passed": true
+    }
+  },
+  "stress_report_only": [
+    {
+      "mode": "analytic",
+      "max_step": 0.125,
+      "scaled_state_error": 0.016418825231522206,
+      "finite": true,
+      "bounds_observed": {
+        "v_abs": 3.0,
+        "q_offset_abs": 15.0,
+        "z_min": 0.0,
+        "z_max": 4.0
+      }
+    },
+    {
+      "mode": "matched_c1",
+      "max_step": 0.125,
+      "scaled_state_error": 0.03632278907811715,
+      "finite": true,
+      "bounds_observed": {
+        "v_abs": 3.0,
+        "q_offset_abs": 15.0,
+        "z_min": 0.0,
+        "z_max": 4.0
+      }
+    },
+    {
+      "mode": "sigmoid",
+      "max_step": 0.125,
+      "scaled_state_error": 0.007290039052137476,
+      "finite": true,
+      "bounds_observed": {
+        "v_abs": 3.0,
+        "q_offset_abs": 15.0,
+        "z_min": 0.0,
+        "z_max": 4.0
+      }
+    }
+  ],
+  "protocol_sha256": "bf75623e4c403b82fc3bf26ec7c0ca9af69b192a7f52fbfa52504d9c8b5b45d6",
+  "raw_arrays_sha256": "e180f858660fe08a36d8219af2f49ad664d5bc6b217f7c14e575da48823be23a"
+}

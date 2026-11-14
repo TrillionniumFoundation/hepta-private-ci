@@ -1,0 +1,36 @@
+{
+  "analysis_seal_sha256": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+  "child_cpu_seconds": 27.708894,
+  "child_pid": 1450122,
+  "child_system_cpu_seconds": 1.1870560000000001,
+  "child_user_cpu_seconds": 26.521838,
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/audit_online.py",
+    "--study",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002",
+    "--base-results",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/ONLINE_AUDIT.json",
+    "--replay-neural"
+  ],
+  "command_sha256": "06864710ea4f42f7906ad268d959769ce1e096f9d80d4910a8f8c46a9d9ac80f",
+  "cpu_scope": "exact direct child PID from POSIX wait4",
+  "ended_unix": 1793194554.2705526,
+  "exit_code": 0,
+  "log_path": "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/online_audit_01.log",
+  "log_sha256": "5b7aa3aa292cee262e19431c0ed46850257cdaf0d2f09fb39110b851a500fd94",
+  "max_rss_platform_units": 507116,
+  "outputs": {
+    "ONLINE_AUDIT.json": "28b5288ee617fb62c090af145d780e4edf4271711b9e5f6e4ece13886370f017"
+  },
+  "rss_units": "KiB on Linux; bytes on macOS",
+  "schema": "hcsn-online-analysis-execution-v1",
+  "scientific_source_seal_sha256": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673",
+  "started_unix": 1793194526.4817646,
+  "wait_status": 0,
+  "wall_seconds": 27.788787156998296
+}
