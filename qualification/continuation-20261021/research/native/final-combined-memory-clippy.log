@@ -1,0 +1,61 @@
+cargo clippy --tests {args}
+    Checking rustls-webpki v0.103.16
+    Checking webpki-roots v1.0.10
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+    Checking rustls v0.23.46
+    Checking tokio-rustls v0.26.6
+    Checking codex-utils-rustls-provider v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/utils/rustls-provider)
+    Checking sqlx-core v0.9.0
+    Checking hyper-rustls v0.27.10
+    Checking reqwest v0.12.28
+    Checking rama-tls-rustls v0.3.0-alpha.4
+    Checking codex-network-proxy v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/network-proxy)
+    Checking codex-http-client v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/http-client)
+    Checking sqlx-sqlite v0.9.0
+    Checking sqlx v0.9.0
+    Checking codex-protocol v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/protocol)
+    Checking codex-file-system v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/file-system)
+    Checking codex-history v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/history)
+    Checking codex-git-utils v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/git-utils)
+    Checking codex-state v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/state)
+    Checking codex-hepta-operations v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/hepta-operations)
+    Checking codex-hepta-memory v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/hepta-memory)
+warning: this function has too many arguments (8/7)
+   --> hepta-memory/src/cognitive_intelligence_writer.rs:156:5
+    |
+156 | /     pub(crate) async fn correct_with_kg_tx(
+157 | |         &self,
+158 | |         transaction: &mut Transaction<'_, Sqlite>,
+159 | |         access: &CognitiveAccess,
+...   |
+164 | |         facts: &KgFactSetDraft,
+165 | |     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+    | |___________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: this function has too many arguments (8/7)
+    --> hepta-memory/src/local_lease_outbox.rs:2618:5
+     |
+2618 | /     async fn append_outcome_in_transaction(
+2619 | |         &self,
+2620 | |         transaction: &mut Transaction<'_, Sqlite>,
+2621 | |         occurrence_key: String,
+...    |
+2626 | |         allow_exact_replay: bool,
+2627 | |     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+     | |___________________________________________________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+warning: `codex-hepta-memory` (lib test) generated 2 warnings
+    Finished `dev` profile [unoptimized] target(s) in 58.23s

@@ -1,0 +1,43 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+ Downloading crates ...
+  Downloaded proc-macro2 v1.0.107
+  Downloaded thiserror v2.0.21
+  Downloaded thiserror-impl v2.0.21
+  Downloaded anstyle v1.0.14
+  Downloaded syn v3.0.9
+  Downloaded unicode-ident v1.0.27
+  Downloaded memchr v2.8.3
+  Downloaded quote v1.0.47
+  Downloaded serde_core v1.0.229
+  Downloaded regex-automata v0.4.18
+  Downloaded bstr v1.13.1
+  Downloaded libc v0.2.191
+   Compiling predicates-core v1.0.10
+   Compiling syn v3.0.9
+   Compiling assert_cmd v2.2.2
+   Compiling termtree v0.5.1
+   Compiling regex-automata v0.4.18
+   Compiling difflib v0.4.0
+   Compiling memchr v2.8.3
+   Compiling thiserror-impl v2.0.21
+   Compiling bstr v1.13.1
+   Compiling predicates v3.1.4
+   Compiling predicates-tree v1.0.13
+   Compiling wait-timeout v0.2.1
+   Compiling thiserror v2.0.21
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/utils/cargo-bin)
+    Finished `test` profile [unoptimized] target(s) in 5.48s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 4ce7f74c-c5a5-4ec2-8e9c-7aa9e315e457 with nextest profile: local
+    Starting 2 tests across 1 binary
+        PASS [   0.004s] codex-utils-cargo-bin::manifest_only undeclared_bazel_binary_returns_not_found
+        PASS [   0.006s] codex-utils-cargo-bin::manifest_only unrelated_bazel_binary_does_not_enable_cargo_fallback
+────────────
+     Summary [   0.006s] 2 tests run: 2 passed, 0 skipped

@@ -1,0 +1,246 @@
+{
+  "schema": "hepta.native-scoped-qualification.v1",
+  "observed_at": "2026-10-21T01:31:57.090051+00:00",
+  "source_base_sha": "6b074e52621d77338112f02119beb0cb1a6f869f",
+  "source_base_tree": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+  "source_description": "Exact prospective merge of current #2944 and #2968 plus the existing-owner #2743 fixture and reviewed TLS lock updates; uncommitted local candidate at test time",
+  "working_diff_sha256": "99ba4b1d81447b477e44bf414f8da398739746f74b591c3e30a8b31385a232a1",
+  "modified_files": {
+    "MODULE.bazel.lock": {
+      "bytes": 1751659,
+      "sha256": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+      "git_blob": "2d523b71987f905a5d17137487a77c11e7c5a236"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 417851,
+      "sha256": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+      "git_blob": "2b65c4c5596e7e5d920c8c4c585df7b59241bed3"
+    },
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": {
+      "bytes": 40733,
+      "sha256": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43",
+      "git_blob": "dc6ae36263e1aab8c5c83e13649892ae9d3112c2"
+    }
+  },
+  "fixture_owner": {
+    "pr": 2743,
+    "head": "4290ec6480944af84646e8846dfe5e3dc5e73f81",
+    "branch": "maintenance/windows-memory-v15-fixture-20261017",
+    "exact_existing_blob_reused": true,
+    "production_migrations_unchanged": true,
+    "preservation_and_revocation_assertions_unchanged": true
+  },
+  "native_runtime": {
+    "platform": "Linux x86_64",
+    "rustc": "1.95.0 (59807616e 2026-04-14)",
+    "cargo": "1.95.0",
+    "nextest": "0.9.103",
+    "cache_reuse": "build acceleration only; source, locks, commands and actual executions recorded"
+  },
+  "validation": [
+    {
+      "receipt": "final-combined-memory-lib-result.json",
+      "receipt_sha256": "ba91bbcef70f85fa7ab44e0ba46f3d8f38e4b0c6c52475646f51bb507ea9da5c",
+      "log": "final-combined-memory-lib.log",
+      "log_sha256": "610ba25d61c92d237c64bb11f39d7f29e0905a30db2a4eeda6065ffb0f99d929",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-memory",
+        "--lib",
+        "--locked"
+      ],
+      "counts": {
+        "run": 272,
+        "passed": 272,
+        "failed": 0,
+        "skipped": 7
+      },
+      "exit_code": 0,
+      "started_at": "2026-10-21T01:26:05.118509+00:00",
+      "finished_at": "2026-10-21T01:27:23.039505+00:00",
+      "duration_seconds": 77.88005672300642
+    },
+    {
+      "receipt": "final-combined-cargo-bin-test-result.json",
+      "receipt_sha256": "b2dce29cc4c8f67e2efcb0abaa3d23f57f6a4cb16eb3836d62b8e759a7ef6554",
+      "log": "final-combined-cargo-bin-test.log",
+      "log_sha256": "c6acb4192fedd6c0e0c67fc74f103916eff564f731b6a4f7d96c9bbe3986ada6",
+      "command": [
+        "just",
+        "test",
+        "-p",
+        "codex-utils-cargo-bin",
+        "--locked"
+      ],
+      "counts": {
+        "run": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0
+      },
+      "exit_code": 0,
+      "started_at": "2026-10-21T01:27:49.438589+00:00",
+      "finished_at": "2026-10-21T01:27:51.025961+00:00",
+      "duration_seconds": 1.5412236440024571
+    },
+    {
+      "receipt": "final-combined-memory-clippy-result.json",
+      "receipt_sha256": "f2816bdbfa78eb5d63241e9f9db4dd8d257d1a77631caa3d1fa24da1ec1360b8",
+      "log": "final-combined-memory-clippy.log",
+      "log_sha256": "cf44e6af259a047dbd52892970804038021e7b7fb3b6bc8c3101844a1a883a2d",
+      "command": [
+        "just",
+        "clippy",
+        "-p",
+        "codex-hepta-memory",
+        "--locked",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::await_holding_lock",
+        "-D",
+        "clippy::await_holding_invalid_type",
+        "-D",
+        "clippy::expect_used",
+        "-D",
+        "clippy::unwrap_used"
+      ],
+      "counts": {},
+      "exit_code": 0,
+      "started_at": "2026-10-21T01:28:17.701822+00:00",
+      "finished_at": "2026-10-21T01:29:16.158267+00:00",
+      "duration_seconds": 58.41383274299733
+    },
+    {
+      "receipt": "final-combined-cargo-bin-clippy-result.json",
+      "receipt_sha256": "ab1aec9efb88fd83d80212338ea39f42b59a63638881663635a011216cd53a6d",
+      "log": "final-combined-cargo-bin-clippy.log",
+      "log_sha256": "3de6cbed82786bf034780f4a298179d44077aa37713218e2b1ecedc63fdec15f",
+      "command": [
+        "just",
+        "clippy",
+        "-p",
+        "codex-utils-cargo-bin",
+        "--locked",
+        "--",
+        "-D",
+        "clippy::correctness",
+        "-D",
+        "clippy::await_holding_lock",
+        "-D",
+        "clippy::await_holding_invalid_type",
+        "-D",
+        "clippy::expect_used",
+        "-D",
+        "clippy::unwrap_used"
+      ],
+      "counts": {},
+      "exit_code": 0,
+      "started_at": "2026-10-21T01:29:37.914005+00:00",
+      "finished_at": "2026-10-21T01:29:40.630181+00:00",
+      "duration_seconds": 2.666264423998655
+    }
+  ],
+  "existing_ignored_tests_not_qualified": [
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+      "line": 117,
+      "test": "qualification_knowledge_graph_capacity_receipt",
+      "existing_reason": "#[ignore = \"qualification: knowledge.graph PERF-LIBRARY capacity receipt\"]"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+      "line": 2472,
+      "test": "qualification_durable_writer_crash_reopen_probe",
+      "existing_reason": "#[ignore = \"qualification: child-process crash/reopen probe\"]"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+      "line": 991,
+      "test": "sqlite_1000_operation_seeded_reopen_replay_stress",
+      "existing_reason": "#[ignore = \"qualification stress: 1000 SQLite operations with deterministic reopen/replay\"]"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+      "line": 1486,
+      "test": "host_restart_reopen_replay_process_soak",
+      "existing_reason": "#[ignore = \"qualification stress: 1000 real child-process kill/reopen/replay operations\"]"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+      "line": 446,
+      "test": "target_host_owner_retrieval_reports_latency_percentiles",
+      "existing_reason": "#[ignore = \"target-host qualification probe; run explicitly with --ignored --nocapture\"]"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "line": 355,
+      "test": "kg_projection_crash_child",
+      "existing_reason": "#[ignore = \"qualification: child-process KG transaction crash probe\"]"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "line": 436,
+      "test": "qualification_kg_projection_crash_windows_restore_exact_predecessor",
+      "existing_reason": "#[ignore = \"qualification: child-process KG transaction crash/reopen matrix\"]"
+    }
+  ],
+  "fmt": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs",
+    "started_at": "2026-10-21T01:30:29.178691+00:00",
+    "finished_at": "2026-10-21T01:30:29.361992+00:00",
+    "duration_seconds": 0.18330421000428032,
+    "exit_code": 0,
+    "diff_check_exit_code": 0,
+    "file_sha256_before": {
+      "MODULE.bazel.lock": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+      "codex-rs/Cargo.lock": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+      "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43"
+    },
+    "file_sha256_after": {
+      "MODULE.bazel.lock": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+      "codex-rs/Cargo.lock": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+      "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43"
+    },
+    "tested_files_unchanged_by_fmt": true,
+    "no_tests_rerun_after_fmt": true,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "baseline": {
+    "f740_source_sha": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+    "f740_memory": {
+      "passed": 271,
+      "failed": 1,
+      "skipped": 7,
+      "exit_code": 100
+    },
+    "f740_strict_clippy_exit_code": 0,
+    "0cb_exact_unmodified_focus": {
+      "passed": 0,
+      "failed": 1,
+      "excluded_by_filter": 278,
+      "exit_code": 100
+    },
+    "only_failure": "migration ledger asserted 1..14 while the actual migration chain is 1..15",
+    "initial_missing_sysroot_attempt_retained": true,
+    "interrupted_compile_attempt_has_no_terminal_result": true
+  },
+  "posture": {
+    "authority": "DENY_ALL",
+    "production_activation": false,
+    "fresh_model_calls": 0
+  },
+  "limits": [
+    "Scoped Linux library and cargo-bin tests only; not full workspace or cross-platform qualification",
+    "Seven existing ignored Memory qualification/stress/target-host cases were not run",
+    "Strict Clippy uses repository requested deny groups, not blanket -D warnings",
+    "No performance, model quality, scientific acceptance or production authority is inferred"
+  ]
+}

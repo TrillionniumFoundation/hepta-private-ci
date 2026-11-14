@@ -1,0 +1,41 @@
+{
+  "source_sha": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+  "tree_sha": "be4f3dcda0bfb63e0d84356b5ccd56d496cfcd89",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-memory",
+    "--lib",
+    "--locked"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs",
+  "started_at": "2026-10-21T01:11:28.512201+00:00",
+  "cargo_lock_sha256_before": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "environment_overrides": {
+    "CARGO_HOME": "/workspace/scratch/337c309bc660/hepta-native-cache",
+    "CARGO_TARGET_DIR": "/workspace/scratch/337c309bc660/hepta-native-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "RUSTFLAGS": "--sysroot /tmp/hepta-wave2-tools/unpack/rust-std.tar.xz/rust-std-1.95.0-x86_64-unknown-linux-gnu/rust-std-x86_64-unknown-linux-gnu"
+  },
+  "free_disk_bytes_before": 4401954816,
+  "status": "FAIL",
+  "runner_pid": 661277,
+  "runner_parent_pid": 240,
+  "command_pid": 661282,
+  "finished_at": "2026-10-21T01:14:14.062491+00:00",
+  "duration_seconds": 165.54985220800154,
+  "exit_code": 100,
+  "cargo_lock_sha256_after": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "cargo_lock_unchanged": true,
+  "free_disk_bytes_after": 4193382400,
+  "tool_session_id": 98445,
+  "observed_tests_run": 272,
+  "passed_tests": 271,
+  "failed_tests": 1,
+  "skipped_tests": 7
+}

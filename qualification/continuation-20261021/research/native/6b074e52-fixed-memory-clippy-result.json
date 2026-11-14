@@ -1,0 +1,61 @@
+{
+  "source_sha": "6b074e52621d77338112f02119beb0cb1a6f869f",
+  "tree_sha": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+  "command": [
+    "just",
+    "clippy",
+    "-p",
+    "codex-hepta-memory",
+    "--locked",
+    "--",
+    "-D",
+    "clippy::correctness",
+    "-D",
+    "clippy::await_holding_lock",
+    "-D",
+    "clippy::await_holding_invalid_type",
+    "-D",
+    "clippy::expect_used",
+    "-D",
+    "clippy::unwrap_used"
+  ],
+  "cwd": "/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs",
+  "started_at": "2026-10-21T01:23:45.426791+00:00",
+  "cargo_lock_sha256_before": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "environment_overrides": {
+    "CARGO_HOME": "/workspace/scratch/337c309bc660/hepta-native-cache",
+    "CARGO_TARGET_DIR": "/workspace/scratch/337c309bc660/hepta-native-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "RUSTFLAGS": "--sysroot /tmp/hepta-wave2-tools/unpack/rust-std.tar.xz/rust-std-1.95.0-x86_64-unknown-linux-gnu/rust-std-x86_64-unknown-linux-gnu"
+  },
+  "free_disk_bytes_before": 207835136,
+  "status": "PASS",
+  "runner_pid": 698107,
+  "runner_parent_pid": 240,
+  "source_identity_before": {
+    "working_diff_sha256": "2e9b344481bc15a16c6b40cfc1713a517924af389ff2bc6853baa43b33a232b1",
+    "modified_files": {
+      "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43"
+    }
+  },
+  "log_path": "/workspace/scratch/337c309bc660/hepta-audit/research/native/6b074e52-fixed-memory-clippy.log",
+  "command_pid": 698152,
+  "finished_at": "2026-10-21T01:24:08.204182+00:00",
+  "duration_seconds": 22.74095864300034,
+  "exit_code": 0,
+  "cargo_lock_sha256_after": "8b458776ce179b326a6f5aef718b302f80fa0af40143bef1d512f0980dd3e0b1",
+  "cargo_lock_unchanged": true,
+  "free_disk_bytes_after": 0,
+  "source_identity_after": {
+    "working_diff_sha256": "2e9b344481bc15a16c6b40cfc1713a517924af389ff2bc6853baa43b33a232b1",
+    "modified_files": {
+      "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43"
+    }
+  },
+  "log_sha256": "a2cb55493451adc852d67c3cd12cc74e6cd1c155aea2b6fa841a6d615521ff79",
+  "source_unchanged_during_command": true
+}

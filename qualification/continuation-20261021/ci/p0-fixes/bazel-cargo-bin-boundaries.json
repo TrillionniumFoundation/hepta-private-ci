@@ -1,0 +1,76 @@
+{
+  "scope": "Real Linux Rust helper, pinned production dependencies, isolated harness; not native Windows or whole Bazel job validation",
+  "base_sha": "603238ba4721b2e9656c4647ce41c5f1664c1154",
+  "candidate_sha256": "bd04b1b75a4933359855ddfe7351e2a49dd1d2ffd79590a698647d0994b1af11",
+  "build_command": [
+    "cargo",
+    "build",
+    "--offline",
+    "--locked",
+    "--example",
+    "lookup_probe",
+    "-p",
+    "codex-utils-cargo-bin"
+  ],
+  "compiled_repository_name": "_main",
+  "passed": 7,
+  "total": 7,
+  "results": [
+    {
+      "case": "bazel-declared-hyphen-valid-manifest-and-chdir",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stdout": "OK\t/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/harness/codex-rs/target/debug/examples/lookup_probe\nEXECUTED\n",
+      "stderr": ""
+    },
+    {
+      "case": "bazel-declared-underscore-valid-manifest-and-chdir",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stdout": "OK\t/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/harness/codex-rs/target/debug/examples/lookup_probe\nEXECUTED\n",
+      "stderr": ""
+    },
+    {
+      "case": "bazel-declared-unmapped-path-errors",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "stdout": "MISSING_PATH\n",
+      "stderr": ""
+    },
+    {
+      "case": "bazel-declared-missing-target-errors",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "passed": true,
+      "stdout": "MISSING_PATH\n",
+      "stderr": ""
+    },
+    {
+      "case": "bazel-undeclared-existing-cargo-sibling-errors",
+      "exit_code": 3,
+      "expected_exit_code": 3,
+      "passed": true,
+      "stdout": "NOT_FOUND\n",
+      "stderr": ""
+    },
+    {
+      "case": "cargo-declared-absolute-path-still-executes",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stdout": "OK\t/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/harness/codex-rs/target/debug/examples/lookup_probe\nEXECUTED\n",
+      "stderr": ""
+    },
+    {
+      "case": "cargo-existing-sibling-fallback-still-executes",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "passed": true,
+      "stdout": "OK\t/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/harness/codex-rs/target/debug/examples/lookup_probe\nEXECUTED\n",
+      "stderr": ""
+    }
+  ]
+}
