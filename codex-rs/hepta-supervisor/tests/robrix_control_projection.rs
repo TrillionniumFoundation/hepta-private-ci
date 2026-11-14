@@ -344,21 +344,39 @@ fn is_forbidden_directional_character(character: char) -> bool {
 fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
     let output = tempfile::tempdir()?;
     write_robrix_control_projection(output.path())?;
-    assert_eq!(read_artifacts(output.path())?, read_tracked_artifacts()?);
+    assert_eq!(
+        read_artifacts(output.path(), ArtifactSource::Generated)?,
+        read_tracked_artifacts()?
+    );
     Ok(())
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
+    let manifest =
+        codex_utils_cargo_bin::find_resource!("fixtures/robrix-control-v2/manifest.json")?;
     read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
+        manifest.parent().context("tracked artifact directory")?,
+        ArtifactSource::TrackedRunfiles,
     )
 }
 
-fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {
+enum ArtifactSource {
+    Generated,
+    TrackedRunfiles,
+}
+
+fn read_artifacts(
+    root: &std::path::Path,
+    source: ArtifactSource,
+) -> Result<BTreeMap<String, Vec<u8>>> {
     let mut artifacts = BTreeMap::new();
     for entry in fs::read_dir(root).with_context(|| format!("read {}", root.display()))? {
         let entry = entry?;
-        let file_type = entry.file_type()?;
+        let file_type = match source {
+            ArtifactSource::Generated => entry.file_type()?,
+            // Bazel exposes declared source fixtures through runfiles symlinks.
+            ArtifactSource::TrackedRunfiles => fs::metadata(entry.path())?.file_type(),
+        };
         if !file_type.is_file() {
             anyhow::bail!(
                 "artifact set contains a non-file: {}",

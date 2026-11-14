@@ -18,6 +18,7 @@ mod model;
 mod module_catalog;
 mod registry;
 mod release;
+mod release_publication;
 
 pub use allocation::calculate_local_allocation_v1;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;

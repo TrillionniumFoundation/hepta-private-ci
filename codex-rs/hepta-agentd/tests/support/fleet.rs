@@ -51,7 +51,8 @@ pub(crate) struct FleetHarness {
 
 impl FleetHarness {
     pub(crate) fn new() -> Result<Self> {
-        let temp = tempfile::tempdir()?;
+        // Compact control sockets must fit Darwin's 103-byte pathname bound.
+        let temp = tempfile::Builder::new().prefix("haf-").tempdir_in("/tmp")?;
         let root = temp.path().canonicalize()?;
         let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet_root.clone())?;

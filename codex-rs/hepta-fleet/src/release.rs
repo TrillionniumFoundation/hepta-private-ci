@@ -256,7 +256,9 @@ impl FleetRegistry {
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
         std::fs::create_dir(&staging)?;
+        let mut cleanup_staging = true;
         let result = (|| {
+            let staging_identity = std::fs::symlink_metadata(&staging)?;
             let bin_root = staging.join("bin");
             std::fs::create_dir(&bin_root)?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
@@ -293,14 +295,30 @@ impl FleetRegistry {
             set_mode(&bin_root, /*mode*/ 0o555)?;
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
-            set_mode(&staging, /*mode*/ 0o555)?;
             std::fs::rename(&staging, &final_root)?;
+            cleanup_staging = false;
+            // Darwin requires write permission on a directory being renamed.
+            // Catalog admission rejects the final directory until this seal
+            // completes; program and manifest bytes are already immutable.
+            if let Err(error) = set_mode(&final_root, /*mode*/ 0o555) {
+                cleanup_staging = crate::release_publication::restore_unsealed_staging(
+                    &final_root,
+                    &staging,
+                    &staging_identity,
+                );
+                return Err(error);
+            }
+            // Once sealed, concurrent catalog readers may have admitted this
+            // release. A later sync failure must not make it writable again.
+            sync_directory(&final_root)?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
         if let Err(error) = result {
-            make_tree_removable(&staging);
-            let _ = std::fs::remove_dir_all(&staging);
+            if cleanup_staging {
+                make_tree_removable(&staging);
+                let _ = std::fs::remove_dir_all(&staging);
+            }
             return Err(error);
         }
         resolve_catalog_release(self.layout().releases_root(), &release_id)

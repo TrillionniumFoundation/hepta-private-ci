@@ -3,6 +3,7 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-supervisor",
     crate_name = "codex_hepta_supervisor",
+    test_data_extra = glob(["fixtures/robrix-control-v2/**"]),
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

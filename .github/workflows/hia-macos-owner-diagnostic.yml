@@ -1,11 +1,8 @@
-name: HIA macOS filesystem diagnostic
+name: HIA macOS owner diagnostic
 
 on:
   push:
     branches: [codex/hia-macos-owner-20261114-a90d]
-    paths:
-      - .github/scripts/hepta_macos_filesystem_probe.py
-      - .github/workflows/hia-macos-owner-diagnostic.yml
   workflow_dispatch:
 
 permissions:
@@ -46,3 +43,117 @@ jobs:
         run: |
           git diff --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
+
+  native-owners:
+    name: Native macOS owners on ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            target: aarch64-apple-darwin
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare repository Bazel toolchain and caches
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: bazel-test
+
+      - name: Record exact source and native runner identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          {
+            git rev-parse HEAD 'HEAD^{tree}'
+            uname -a
+            sw_vers
+            python3 -c 'import os,tempfile; print("default_temp", tempfile.gettempdir()); print("canonical_temp", os.path.realpath(tempfile.gettempdir()))'
+          } | tee "$RUNNER_TEMP/macos-owner-source.txt"
+
+      - name: Run the complete repository native test roster
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Match the required Bazel workflow's roster and exclusions. Keep
+          # its per-test timeouts and platform skip rules unchanged.
+          bazel_targets=(
+            //...
+            -//third_party/v8:all
+            -//codex-rs/v8-poc:v8-poc-unit-tests
+          )
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA="${GITHUB_SHA}" \
+            --build_event_json_file="$RUNNER_TEMP/macos-owner-tests.bep.json" \
+            -- \
+            "${bazel_targets[@]}" \
+            2>&1 | tee "$RUNNER_TEMP/macos-owner-tests.log"
+
+      - name: Run repository native Clippy gates
+        if: ${{ always() && steps.prepare_bazel.outcome == 'success' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel_target_lines="$(./scripts/list-bazel-clippy-targets.sh)"
+          bazel_targets=()
+          while IFS= read -r target; do
+            bazel_targets+=("${target}")
+          done <<< "${bazel_target_lines}"
+          test "${#bazel_targets[@]}" -gt 0
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            -- \
+            build \
+            --config=clippy \
+            --build_metadata=COMMIT_SHA="${GITHUB_SHA}" \
+            --build_event_json_file="$RUNNER_TEMP/macos-owner-clippy.bep.json" \
+            -- \
+            "${bazel_targets[@]}" \
+            2>&1 | tee "$RUNNER_TEMP/macos-owner-clippy.log"
+
+      - name: Preserve native qualification evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: macos-owner-${{ matrix.target }}-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/macos-owner-*
+            ${{ runner.temp }}/bazel-execution-logs/
+
+      - name: Save Bazel repository cache after a miss
+        if: ${{ always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true' }}
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check source remains clean
+        if: always()
+        uses: ./.github/actions/check-clean-worktree

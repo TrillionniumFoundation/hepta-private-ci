@@ -54,8 +54,9 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
     .await?;
 
     let temp = tempfile::tempdir()?;
-    let allowed_dir = temp.path().join("allowed");
-    let denied_dir = temp.path().join("denied");
+    let root = temp.path().canonicalize()?;
+    let allowed_dir = root.join("allowed");
+    let denied_dir = root.join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let allowed_file = allowed_dir.join("allowed.txt");

@@ -479,7 +479,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    let host_directory = tempfile::Builder::new().prefix("hcw-").tempdir_in("/tmp")?;
+    let root = host_directory.path().canonicalize()?;
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     // core_test_support installs the real Codex arg0 dispatcher in this test
     // executable, including the child filesystem and execution helpers.

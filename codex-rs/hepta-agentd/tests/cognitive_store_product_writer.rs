@@ -146,6 +146,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
+    store.close().await;
     drop(store);
 
     let authority = ProductionAuthorityLease::from_verified_parts(
@@ -198,6 +199,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     );
     let unchanged = DurableCognitiveStore::open(&config.identity().layout).await?;
     assert_eq!(unchanged.recovery_anchor().await?, expected);
+    unchanged.close().await;
     drop(unchanged);
 
     let expected_fence = authority.fencing_token_digest()?;

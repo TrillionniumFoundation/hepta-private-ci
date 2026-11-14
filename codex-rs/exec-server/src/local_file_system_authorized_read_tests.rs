@@ -51,8 +51,9 @@ async fn stable_handle_read_rejects_hardlink_provenance_ambiguity() -> io::Resul
     }
 
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let test_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = test_root.as_path().join("allowed");
+    let denied_dir = test_root.as_path().join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let secret = denied_dir.join("secret.txt");
@@ -81,15 +82,16 @@ async fn stable_handle_read_authorizes_resolved_symlink_target() -> io::Result<(
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let test_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = test_root.as_path().join("allowed");
+    let denied_dir = test_root.as_path().join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let allowed_file = allowed_dir.join("allowed.txt");
     let secret_file = denied_dir.join("secret.txt");
     std::fs::write(&allowed_file, b"allowed")?;
     std::fs::write(&secret_file, b"secret")?;
-    let allowed_link = temp_dir.path().join("allowed-link");
+    let allowed_link = test_root.as_path().join("allowed-link");
     let denied_link = allowed_dir.join("denied-link");
     symlink(&allowed_file, &allowed_link)?;
     symlink(&secret_file, &denied_link)?;
@@ -113,7 +115,8 @@ async fn stable_handle_read_applies_deny_glob_to_resolved_target() -> io::Result
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
+    let test_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = test_root.as_path().join("allowed");
     std::fs::create_dir_all(&allowed_dir)?;
     let denied_file = allowed_dir.join("blocked.secret");
     std::fs::write(&denied_file, b"secret")?;
@@ -145,8 +148,9 @@ async fn stable_handle_read_rejects_parent_symlink_replacement() -> io::Result<(
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed = temp_dir.path().join("allowed");
-    let outside = temp_dir.path().join("outside");
+    let test_root = temp_dir.path().canonicalize()?;
+    let allowed = test_root.as_path().join("allowed");
+    let outside = test_root.as_path().join("outside");
     let parent = allowed.join("parent");
     std::fs::create_dir_all(&parent)?;
     std::fs::create_dir_all(&outside)?;
@@ -172,8 +176,9 @@ async fn stable_handle_read_rejects_parent_directory_decoy() -> io::Result<()> {
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let moved_dir = temp_dir.path().join("moved");
+    let test_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = test_root.as_path().join("allowed");
+    let moved_dir = test_root.as_path().join("moved");
     let parent = allowed_dir.join("parent");
     std::fs::create_dir_all(&parent)?;
     let path = parent.join("file.txt");
@@ -202,8 +207,9 @@ async fn stable_handle_read_rejects_file_path_identity_aba() -> io::Result<()> {
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let path = temp_dir.path().join("skill.md");
-    let moved = temp_dir.path().join("skill.moved.md");
+    let test_root = temp_dir.path().canonicalize()?;
+    let path = test_root.as_path().join("skill.md");
+    let moved = test_root.as_path().join("skill.moved.md");
     std::fs::write(&path, b"authorized")?;
 
     let original = super::regular_file::open(&path).await?;
@@ -228,8 +234,9 @@ async fn stable_handle_read_is_bound_to_opened_inode_after_path_replacement() ->
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let path = temp_dir.path().join("file.txt");
-    let moved = temp_dir.path().join("moved.txt");
+    let test_root = temp_dir.path().canonicalize()?;
+    let path = test_root.as_path().join("file.txt");
+    let moved = test_root.as_path().join("moved.txt");
     std::fs::write(&path, b"authorized")?;
     let original = super::regular_file::open(&path).await?;
     let identity = super::unique_file_identity(&original).await?;
@@ -251,8 +258,9 @@ async fn stable_handle_read_keeps_authorized_handle_after_later_hardlink() -> io
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let allowed_dir = temp_dir.path().join("allowed");
-    let denied_dir = temp_dir.path().join("denied");
+    let test_root = temp_dir.path().canonicalize()?;
+    let allowed_dir = test_root.as_path().join("allowed");
+    let denied_dir = test_root.as_path().join("denied");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&denied_dir)?;
     let path = allowed_dir.join("allowed.txt");
@@ -277,8 +285,9 @@ async fn stable_handle_read_rejects_hardlink_added_before_reopen() -> io::Result
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let path = temp_dir.path().join("allowed.txt");
-    let alias = temp_dir.path().join("alias.txt");
+    let test_root = temp_dir.path().canonicalize()?;
+    let path = test_root.as_path().join("allowed.txt");
+    let alias = test_root.as_path().join("alias.txt");
     std::fs::write(&path, b"allowed")?;
     let original = super::regular_file::open(&path).await?;
     let identity = super::unique_file_identity(&original).await?;
@@ -297,11 +306,12 @@ async fn stable_handle_read_redacts_missing_target_path() -> io::Result<()> {
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let missing = temp_dir.path().join("SECRET-missing-target.txt");
+    let test_root = temp_dir.path().canonicalize()?;
+    let missing = test_root.as_path().join("SECRET-missing-target.txt");
     let error = authorized_read(
         &LocalFileSystem::unsandboxed(),
         &missing,
-        &read_sandbox(temp_dir.path())?,
+        &read_sandbox(test_root.as_path())?,
         128,
     )
     .await
@@ -318,7 +328,8 @@ async fn stable_handle_read_rejects_unlinked_initial_handle() -> io::Result<()> 
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let path = temp_dir.path().join("unlinked.txt");
+    let test_root = temp_dir.path().canonicalize()?;
+    let path = test_root.as_path().join("unlinked.txt");
     std::fs::write(&path, b"allowed")?;
     let file = super::regular_file::open(&path).await?;
     std::fs::remove_file(&path)?;
@@ -335,11 +346,12 @@ async fn stable_handle_bounded_read_never_returns_oversize_prefix() -> io::Resul
         return Ok(());
     }
     let temp_dir = tempfile::tempdir()?;
-    let exact = temp_dir.path().join("exact.txt");
-    let oversized = temp_dir.path().join("oversized.txt");
+    let test_root = temp_dir.path().canonicalize()?;
+    let exact = test_root.as_path().join("exact.txt");
+    let oversized = test_root.as_path().join("oversized.txt");
     std::fs::write(&exact, b"12345678")?;
     std::fs::write(&oversized, b"123456789")?;
-    let sandbox = read_sandbox(temp_dir.path())?;
+    let sandbox = read_sandbox(test_root.as_path())?;
     let file_system = LocalFileSystem::unsandboxed();
 
     assert_eq!(
