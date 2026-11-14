@@ -105,3 +105,20 @@ class CompiledCouponTests(unittest.TestCase):
             elif mode=='sticky':self.assertIn('callback unresolved: 2',value)
             else:self.assertIn('integration unresolved',value)
         self.assertEqual(warnings.filters,original_filters)
+
+
+    def test_finite_coupon_inputs_with_overflowed_cashflow_reject(self):
+        p=HX(maturity=1e-300,coupon=1e308)
+        self.assertTrue(all(math.isfinite(value) for value in vars(p).values()))
+        with self.assertRaisesRegex(ArithmeticError, 'compiled coupon cashflow unresolved'):
+            c.bond_value_compiled(p,2.,1e-300,1.)
+
+    def test_finite_endpoint_inputs_with_overflowed_cashflows_reject(self):
+        cases=((HX(maturity=1e-300,principal=1e308),2.,0.,1.),
+               (HX(maturity=1e-300),1e308,1e-300,1e308))
+        for p,asset,tau,b in cases:
+            self.assertTrue(all(math.isfinite(value) for value in
+                                (*vars(p).values(),asset,tau,b)))
+            with self.subTest(asset=asset,tau=tau):
+                with self.assertRaises(ArithmeticError):
+                    c.bond_value_compiled(p,asset,tau,b)

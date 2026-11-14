@@ -37,9 +37,10 @@ def verify(prefix):
     for row in rows:
         seed=row['seed']
         receipt=Path(str(prefix)+'_receipts')/f'{seed}.json'
-        if digest(receipt.read_bytes())!=summary['per_seed_receipt_sha256'][str(seed)]:
+        receipt_blob=receipt.read_bytes()
+        if digest(receipt_blob)!=summary['per_seed_receipt_sha256'][str(seed)]:
             raise AuditRefusal('per-seed raw receipt mismatch')
-        if json.loads(receipt.read_bytes())!=row:
+        if json.loads(receipt_blob)!=row:
             raise AuditRefusal('aggregated raw receipt differs from sealed seed')
         metric={}
         if set(row['arms'])!={'ordinary','call_put_margin_risk'}:

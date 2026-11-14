@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import time
 
@@ -93,10 +94,15 @@ def validate_pair(aggregate, timed):
             timed.get('arm')!='physical_event_timestamp' or
             aggregate.get('task')!=timed.get('task') or
             aggregate.get('seed')!=timed.get('seed') or
+            aggregate.get('task') not in TASKS or
+            type(aggregate.get('seed')) is not int or
+            type(timed.get('seed')) is not int or
             aggregate.get('seed') not in SEEDS):
         raise UnresolvedContent('nonpaired training arms')
     for arm in (aggregate,timed):
-        if (arm.get('params')!=5186 or arm.get('reached_step_cap') is not False or
+        cpu=arm.get('training_cpu_seconds')
+        if (type(cpu) not in (float,int) or not math.isfinite(cpu) or
+                arm.get('params')!=5186 or arm.get('reached_step_cap') is not False or
                 arm.get('reached_cpu_budget') is not True or
                 arm.get('training_cpu_seconds',0)<BUDGET or
                 arm.get('training_cpu_seconds',0)>BUDGET*1.05 or
@@ -108,6 +114,10 @@ def validate_pair(aggregate, timed):
         if aggregate.get(k)!=timed.get(k) or not aggregate.get(k):
             raise UnresolvedContent('initial model or physical training data mismatch')
     for panel in ('id','ood'):
+        for arm in (aggregate,timed):
+            accuracy=arm[panel].get('accuracy')
+            if type(accuracy) not in (float,int) or not math.isfinite(accuracy):
+                raise UnresolvedContent('nonfinite paired evaluation accuracy')
         for k in ('data_sha256','total_events','queries','multi_fire_streams'):
             if aggregate[panel][k]!=timed[panel][k]:
                 raise UnresolvedContent('paired evaluation inputs mismatch')

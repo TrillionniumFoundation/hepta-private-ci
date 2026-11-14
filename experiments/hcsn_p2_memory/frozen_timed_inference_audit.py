@@ -19,13 +19,32 @@ from .event_content import (ContentSession,TrainableEventContent,default_spec,
                             example,model_digest,train_pilot)
 from .timed_fire_content import TimedFireSession
 
+_FROZEN_MODEL_SHA256={
+    'copy':'e92c7f7d5efd75ba4bd7c3511da02bc157f13af127e48cd16ba72dea24dfa895',
+    'mqar4':'bd8cf2b234e749b0320d2372a27a1c2dab1b7a2692b9ba3897e8e28966ec1a62',
+}
+
+
+def _load_frozen_model(weights,task):
+    model=TrainableEventContent(32).eval()
+    model.load_state_dict(torch.load(weights,weights_only=True,map_location='cpu'))
+    if model_digest(model)!=_FROZEN_MODEL_SHA256[task]:
+        raise RuntimeError('wrong or corrupted frozen model weights')
+    return model
+
 
 def audit(weights,*,task,actors=96,length=16,data_seed=200):
     if task not in ('copy','mqar4') or actors<1 or length<12:
         raise ValueError('invalid actor workload')
     torch.set_num_threads(1)
-    model=TrainableEventContent(32).eval()
-    model.load_state_dict(torch.load(weights,weights_only=True,map_location='cpu'))
+    model=_load_frozen_model(weights,task)
+    return _audit_model(model,task=task,actors=actors,length=length,data_seed=data_seed)
+
+
+def _audit_model(model,*,task,actors=96,length=16,data_seed=200):
+    if task not in ('copy','mqar4') or actors<1 or length<12:
+        raise ValueError('invalid actor workload')
+    torch.set_num_threads(1)
     correct=dict(aggregate=0,timed=0)
     actor_accuracy={key:[] for key in correct}
     cpu={key:0. for key in correct}
@@ -79,8 +98,7 @@ def main():
     results=[]
     if not args.regenerate and args.weights_dir is None:
         parser.error('provide --regenerate or --weights-dir')
-    expected={'copy':'e92c7f7d5efd75ba4bd7c3511da02bc157f13af127e48cd16ba72dea24dfa895',
-              'mqar4':'bd8cf2b234e749b0320d2372a27a1c2dab1b7a2692b9ba3897e8e28966ec1a62'}
+    expected=_FROZEN_MODEL_SHA256
     if args.regenerate:
         import tempfile
         weight_dir=tempfile.TemporaryDirectory()
@@ -94,12 +112,9 @@ def main():
         wd=args.weights_dir
     for task in ('copy','mqar4'):
         weights=wd/f'{task}_seed0_state.pt'
-        m=TrainableEventContent(32).eval()
-        m.load_state_dict(torch.load(weights,weights_only=True,map_location='cpu'))
-        if model_digest(m)!=expected[task]:
-            raise RuntimeError('wrong or corrupted frozen model weights')
+        m=_load_frozen_model(weights,task)
         for length,seed in ((16,200),(32,300)):
-            rec=audit(weights,task=task,actors=args.actors,length=length,data_seed=seed)
+            rec=_audit_model(m,task=task,actors=args.actors,length=length,data_seed=seed)
             results.append(rec)
             print(task,length,rec['models'],flush=True)
     out=dict(schema='hcsn-p2-timed-frozen-inference-v1',

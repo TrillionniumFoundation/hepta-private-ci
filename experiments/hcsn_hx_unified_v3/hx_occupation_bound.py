@@ -163,7 +163,7 @@ def sharp_fixed_barrier_equity_envelope(p, *, candidate_barrier: float,
     except AttributeError as e:
         raise UnresolvedEquityEnvelope('missing financial parameter') from e
     r=a['rate'];delta=a['payout'];s2=a['volatility']**2;T=a['maturity']
-    if not (r>0 and delta>0 and s2>0 and T>0 and a['principal']>0
+    if not (r>0 and delta>0 and a['volatility']>0 and T>0 and a['principal']>0
             and a['coupon']>=0 and a['shock_intensity']>=0
             and 0<=a['sale_fraction']<=1 and 0<=a['recovery']<=1
             and 0<=a['tax_shield']<=1):

@@ -3,7 +3,7 @@
 These comparisons are empirical; they do not prove outward-rounded floating
 point enclosure and do not provide the equity upper-bound hypothesis.
 """
-from dataclasses import replace
+from types import SimpleNamespace
 import math
 import unittest
 from .hx import HX, bond_value, boundary
@@ -43,7 +43,7 @@ class FarFieldBudgetTests(unittest.TestCase):
             with self.subTest(kwargs=kwargs),self.assertRaises(UnresolvedFarTail):
                 far_field_bond_budget(p,**kw)
         with self.assertRaises(UnresolvedFarTail):
-            far_field_bond_budget(replace(p,volatility=0),asset=b*2,
+            far_field_bond_budget(SimpleNamespace(**{**vars(p), "volatility": 0}),asset=b*2,
                                   boundary=b,maturity=p.maturity)
 
 if __name__=='__main__':

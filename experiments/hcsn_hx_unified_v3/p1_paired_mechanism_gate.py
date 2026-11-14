@@ -119,10 +119,14 @@ def _validate_pair(pair: Mapping, cpu_penalty: float, joule_penalty: float,
 def _exact_sign_flip_p(differences: list[float]) -> float:
     """Exhaustive null sign flips; assumes paired symmetric/exchangeable errors."""
     total=sum(differences)
+    if not math.isfinite(total):
+        raise ContractError('nonfinite paired sum')
     threshold=abs(total)-1e-13*max(1,abs(total))
     extremal=0
     for signs in itertools.product((-1,1),repeat=len(differences)):
         signed=sum(s*x for s,x in zip(signs,differences))
+        if not math.isfinite(signed):
+            raise ContractError('nonfinite sign-flip sum')
         extremal += abs(signed)>=threshold
     return extremal/(1<<len(differences))
 

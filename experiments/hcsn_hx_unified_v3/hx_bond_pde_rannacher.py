@@ -89,9 +89,13 @@ def solve_bond_rannacher(p,barrier:float,*,duration:float|None=None,
     base=coupon/q
     far=lambda t:base+math.exp(-q*t)*(principal-base)
     if duration==0:
+        if not (math.isfinite(recovery) and math.isfinite(principal)):
+            raise UnresolvedRannacher('nonfinite terminal bond state')
         return RannacherBondGrid(barrier,log_upper,0.,nodes,time_steps,
             (recovery,)+tuple([principal]*(nodes-1)),1.,0.,h,True)
     dt=duration/time_steps
+    if not math.isfinite(dt) or dt<=0 or dt/2<=0:
+        raise UnresolvedRannacher('unresolved time step or half-step')
     # CN right-hand weights must be nonnegative; otherwise refuse instead of
     # quietly claiming monotonicity/maximum principle on an inadmissible mesh.
     if dt*gen/2>1:

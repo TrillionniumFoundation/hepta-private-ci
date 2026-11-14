@@ -108,6 +108,8 @@ def solve_bond_pde(p, barrier: float, *, duration: float | None = None,
     def far(t):
         return base+math.exp(-q*t)*(par-base)
     if duration==0:
+        if not (math.isfinite(recovery) and math.isfinite(par)):
+            raise UnresolvedBondPDE('nonfinite terminal bond state')
         return BondPDESolution(barrier,log_upper,0.,nodes,time_steps,
                                (recovery,)+tuple([par]*(nodes-1)),0.,1.,drift,ql,qr)
     dt=duration/time_steps
@@ -156,6 +158,8 @@ def solve_bond_pde(p, barrier: float, *, duration: float | None = None,
         for i in range(1,nodes-1):
             defect=(curr[i]-previous[i])/dt - (
                 ql*curr[i-1]+qr*curr[i+1]-(ql+qr+q)*curr[i]+coupon)
+            if not math.isfinite(defect):
+                raise UnresolvedBondPDE('nonfinite backward PDE residual')
             worst=max(worst,abs(defect))
         prev=curr
     return BondPDESolution(barrier,log_upper,duration,nodes,time_steps,

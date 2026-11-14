@@ -8,6 +8,7 @@ Infinite horizon, constant parameters; not coupled with task-model dynamics.
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
 import math
+import sys
 
 from scipy.optimize import brentq
 from scipy.special import lambertw
@@ -39,7 +40,11 @@ class Stop:
         overflow even when the true positive kappa is representable.
         All branches are algebraically equivalent in exact arithmetic.
         """
-        noise = math.sqrt(2.) * math.sqrt(self.discount)
+        # Keep exact products (for example 2 * 0.5 == 1) in range.
+        # Split the square root only where doubling discount would overflow.
+        noise = (math.sqrt(2. * self.discount)
+                 if self.discount <= sys.float_info.max / 2
+                 else math.sqrt(2.) * math.sqrt(self.discount))
         scaled_drift = self.drift / self.diffusion
         if not math.isfinite(scaled_drift):
             # A positive drift dominates diffusion by >max_f64; the

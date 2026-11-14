@@ -119,5 +119,26 @@ class P1PairedGateTests(unittest.TestCase):
             with self.subTest(field=name),self.assertRaises(ContractError):analyze(p)
 
 
+    def test_nonfinite_sign_flip_accumulations_reject(self):
+        from .p1_paired_mechanism_gate import _exact_sign_flip_p
+        for values, message in (([1e308]*10, 'nonfinite paired sum'),
+                                ([1e308,-1e308]*5, 'nonfinite sign-flip sum')):
+            with self.subTest(values=values):
+                with self.assertRaisesRegex(ContractError, message):
+                    _exact_sign_flip_p(values)
+
+    def test_finite_worker_costs_cannot_publish_zero_p_from_overflow(self):
+        data=synthetic_fixture()
+        data['protocol']['cpu_penalty']=1.
+        data['protocol']['joule_penalty']=0.
+        for arm in data['contrasts'].values():
+            for pair in arm:
+                pair['candidate_worker_cpu_s']=100.
+                pair['baseline_worker_cpu_s']=1e308
+        with self.assertRaisesRegex(ContractError, 'nonfinite paired sum'):
+            analyze(data)
+
+
+
 if __name__=='__main__':
     unittest.main()

@@ -2,7 +2,7 @@
 import math
 import unittest
 
-from .stopping import (Stop, qvi, regenerative_boundary,
+from .stopping import (Stop, one_shot_boundary, qvi, regenerative_boundary,
                        regenerative_obstacle, regenerative_value)
 
 
@@ -38,9 +38,12 @@ class QviFiniteGateTests(unittest.TestCase):
 
     def test_f64_unresolved_large_discount_generator_refuses(self):
         p=Stop(0.,1.,1e308,0.,-1.,0.)
-        self.assertTrue(math.isfinite(regenerative_obstacle(p,0.)))
+        # The implicit optimum is unresolved at the strict upper endpoint.
+        # A fixed threshold isolates the independent generator-error guard.
+        b=one_shot_boundary(p)
+        self.assertTrue(math.isfinite(regenerative_obstacle(p,0.,boundary=b)))
         with self.assertRaisesRegex(ArithmeticError,'generator'):
-            qvi(p,0.)
+            qvi(p,0.,boundary=b)
 
     def test_nonfinite_renewal_amplitude_refuses_not_returns_infinity(self):
         p=Stop(1e308,1e308,.1,0.,-1.,0.)

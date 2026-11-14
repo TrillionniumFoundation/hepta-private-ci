@@ -8,6 +8,7 @@ import base64
 import gzip
 import hashlib
 import json
+import math
 from pathlib import Path
 import statistics
 
@@ -76,8 +77,11 @@ def audit(payload):
             entry=rec.get(panel)
             if (not isinstance(entry,dict) or entry.get('queries')!=(128 if key[0]=='copy' else 512) or
                     type(entry.get('correct')) is not int or not 0<=entry['correct']<=entry['queries'] or
-                    abs(entry.get('accuracy',-1)-entry['correct']/entry['queries'])>2e-7 or
-                    type(entry.get('cpu_seconds')) not in (float,int) or entry['cpu_seconds']<0 or
+                    type(entry.get('accuracy')) not in (float,int) or
+                    not math.isfinite(entry['accuracy']) or
+                    abs(entry['accuracy']-entry['correct']/entry['queries'])>2e-7 or
+                    type(entry.get('cpu_seconds')) not in (float,int) or
+                    not math.isfinite(entry['cpu_seconds']) or entry['cpu_seconds']<0 or
                     type(entry.get('total_events')) is not int or entry['total_events']<=0 or
                     type(entry.get('multi_fire_streams')) is not int or not 0<=entry['multi_fire_streams']<=128):
                 raise UnresolvedAudit('corrupted heldout metric/cost/event counts')
@@ -107,7 +111,9 @@ def audit(payload):
             if len(saved)!=1 or saved[0].get('equal_cpu_within_five_percent') is not True:
                 raise UnresolvedAudit('missing or false paired comparison')
             for k in ('training_cpu_relative_gap','id_signed_pp','ood_signed_pp'):
-                if abs(saved[0].get(k,float('inf'))-d[k])>1e-12:
+                value=saved[0].get(k)
+                if (type(value) not in (float,int) or not math.isfinite(value) or
+                        abs(value-d[k])>1e-12):
                     raise UnresolvedAudit('paired summary differs from raw data')
     if len(payload.get('comparisons',[]))!=6:
         raise UnresolvedAudit('extra or omitted paired comparisons')

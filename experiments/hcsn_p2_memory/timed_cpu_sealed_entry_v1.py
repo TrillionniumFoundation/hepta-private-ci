@@ -16,7 +16,7 @@ import scipy
 import torch
 
 from . import event_content, timed_fire_content, timed_training_budget_pilot, timed_cpu_matched_v2
-from .sealed_run_records_v1 import publish_create_only, EvidenceUnresolved
+from .sealed_run_records_v1 import publish_create_only, EvidenceUnresolved, _valid_id
 
 ENTRY_SCHEMA = 'hcsn-p2-cpu-matched-sealed-cli-v1'
 
@@ -33,7 +33,7 @@ def run_and_record(task: str, seed: int, arm: str, directory: Path, run_id: str)
     if (task not in timed_cpu_matched_v2.TASKS or
             type(seed) is not int or seed not in timed_cpu_matched_v2.SEEDS or
             arm not in timed_cpu_matched_v2.ARMS or
-            type(run_id) is not str or
+            not _valid_id(run_id) or
             not run_id.startswith(f'{task}-s{seed}-{arm}-') or
             len(run_id)<len(f'{task}-s{seed}-{arm}-')+8):
         raise EvidenceUnresolved('invalid sealed P2 experiment identity')

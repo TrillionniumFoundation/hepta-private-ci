@@ -79,10 +79,10 @@ def channels(v: torch.Tensor, k: torch.Tensor, *,
     call = torch.where(m > 0, torch.where(near, stable, direct),
                        torch.zeros_like(v))
     put = torch.where(m > 0, (k - b) * torch.exp(-beta * m_safe), k - v)
-    if not (torch.isfinite(call).all().item() and
-            torch.isfinite(put).all().item()):
+    result = Channels(call, put, m, b, call / k, put / k)
+    if not all(torch.isfinite(value).all().item() for value in result):
         raise Refusal('Nonfinite output; candidate cannot be admitted')
-    return Channels(call, put, m, b, call / k, put / k)
+    return result
 
 
 def first_hit_probability(v: float, b: float, horizon: float, *,

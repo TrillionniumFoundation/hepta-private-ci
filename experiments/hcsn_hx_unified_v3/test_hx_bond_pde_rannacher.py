@@ -3,7 +3,7 @@
 All tests are research-only. Neither f64 residual nor pointwise agreement with
 an analytic financial bond is an interval continuum/truncation certificate.
 """
-from dataclasses import replace
+from types import SimpleNamespace
 import math
 import unittest
 
@@ -95,11 +95,24 @@ class DebtRannacherTests(unittest.TestCase):
             with self.subTest(barrier=x),self.assertRaises(UnresolvedRannacher):
                 solve_bond_rannacher(p,x)
         with self.assertRaises(UnresolvedRannacher):
-            solve_bond_rannacher(replace(p,rate=-1),b)
+            solve_bond_rannacher(SimpleNamespace(**{**vars(p),'rate':-1}),b)
         with self.assertRaises(UnresolvedRannacher):
             solve_bond_rannacher(p,b,nodes=1001,time_steps=10)
         with self.assertRaises(UnresolvedRannacher):
             solve_bond_rannacher(p,b,log_upper=3.6,nodes=1001,time_steps=20000)
+
+    def test_terminal_cashflows_must_remain_finite(self):
+        p=HX(maturity=1e-308,principal=1e308,coupon=0.)
+        self.assertTrue(all(math.isfinite(value) for value in vars(p).values()))
+        with self.assertRaises(UnresolvedRannacher):
+            solve_bond_rannacher(p,1.,duration=0.,nodes=33,time_steps=5)
+
+    def test_underflowed_time_step_refused(self):
+        for steps in (1,500):
+            with self.subTest(steps=steps),self.assertRaises(UnresolvedRannacher):
+                solve_bond_rannacher(HX(),1.,duration=math.ulp(0.),
+                                     nodes=33,time_steps=steps)
+
 
 if __name__=='__main__':
     unittest.main()

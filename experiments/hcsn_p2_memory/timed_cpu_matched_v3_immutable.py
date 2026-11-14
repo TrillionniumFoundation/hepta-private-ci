@@ -24,6 +24,9 @@ def run_and_publish(task: str, seed: int, arm: str, root: Path):
     # Delayed import keeps receipt inspection independent of Torch/training.
     from .timed_cpu_matched_v2 import run
     result=run(task,seed,arm)
+    if (not isinstance(result,dict) or type(result.get('seed')) is not int or
+            (result.get('task'),result.get('seed'),result.get('arm'))!=(task,seed,arm)):
+        raise UnresolvedReceipt('training result differs from requested trial')
     receipt=publish(root,result)
     checked,_=read(root,key)
     if checked.file_sha256!=receipt.file_sha256:

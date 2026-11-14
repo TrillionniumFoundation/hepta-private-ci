@@ -72,9 +72,19 @@ def bond_value_compiled(p,asset,tau,asset_boundary):
     if not (all(math.isfinite(z) for z in (asset,tau,b)) and asset>0 and b>0 and 0<=tau<=p.maturity):
         raise ValueError('Invalid compiled coupon bond state')
     recovery=p.recovery*b/p.maturity
-    if asset<=b:return recovery
-    if tau==0:return p.per_bond_principal
+    if asset<=b:
+        if not math.isfinite(recovery):
+            raise ArithmeticError('HX recovery cashflow unresolved in f64')
+        return recovery
+    if tau==0:
+        principal=p.per_bond_principal
+        if not math.isfinite(principal):
+            raise ArithmeticError('HX principal cashflow unresolved in f64')
+        return principal
     x=_log_asset_ratio(asset,b)
     F,G=_first_passage_factors(p,x,tau)
     coupon=p.per_bond_coupon*coupon_annuity_compiled(p,x,tau) if p.per_bond_coupon else 0.
-    return coupon+math.exp(-p.q*tau)*p.per_bond_principal*(1-F)+recovery*G
+    value=coupon+math.exp(-p.q*tau)*p.per_bond_principal*(1-F)+recovery*G
+    if not math.isfinite(value):
+        raise ArithmeticError('HX compiled coupon cashflow unresolved in f64')
+    return value

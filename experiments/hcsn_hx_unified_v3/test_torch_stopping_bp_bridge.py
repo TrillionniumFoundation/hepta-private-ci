@@ -92,6 +92,46 @@ class TestScalarQVIBridge(unittest.TestCase):
         self.assertGreaterEqual(accepted,200)
         self.assertEqual(accepted+refused,250)
 
+
+    def test_inactive_fire_exponential_cannot_poison_finite_gradients(self):
+        vals=(.1,.6,.25,1.,.1,.3)
+        b=regenerative_boundary(Stop(*vals))
+        state_values=[b-1.25,b+1000.]
+        states=torch.tensor(state_values,dtype=torch.float64,requires_grad=True)
+        args=self.tensors(vals)
+        value,adv,margin=scalar_qvi_features(states,*args)
+        self.assertTrue(all(bool(torch.isfinite(x).all())
+                            for x in (value,adv,margin)))
+        weights_v=(.3,.7)
+        weights_a=(.4,-.2)
+        loss=sum(weights_v[i]*value[i]+weights_a[i]*adv[i]+.05*margin[i]
+                 for i in range(2))
+        gradients=torch.autograd.grad(loss,[states,*args])
+        self.assertTrue(all(bool(torch.isfinite(g).all()) for g in gradients))
+
+        def independent_loss(values,positions):
+            p=Stop(*values)
+            boundary=regenerative_boundary(p)
+            return sum(weights_v[i]*regenerative_value(p,x)
+                       -weights_a[i]*qvi(p,x)['obstacle']+.05*(x-boundary)
+                       for i,x in enumerate(positions))
+
+        for i,x in enumerate(state_values):
+            h=2e-5*max(1.,abs(x))
+            left=list(state_values);right=list(state_values)
+            left[i]-=h;right[i]+=h
+            numerical=(independent_loss(vals,right)-independent_loss(vals,left))/(2*h)
+            self.assertAlmostEqual(gradients[0][i].item(),numerical,
+                                   delta=2e-5*max(1.,abs(numerical)))
+        for i,x in enumerate(vals):
+            h=2e-5*max(1.,abs(x))
+            left=list(vals);right=list(vals)
+            left[i]-=h;right[i]+=h
+            numerical=(independent_loss(right,state_values)-
+                       independent_loss(left,state_values))/(2*h)
+            self.assertAlmostEqual(gradients[i+1].item(),numerical,
+                                   delta=2e-5*max(1.,abs(numerical)))
+
     def test_fail_closed_near_boundary_f32_and_invalid_domain(self):
         vals=(.1,.6,.25,1.,.1,.3)
         b=regenerative_boundary(Stop(*vals))

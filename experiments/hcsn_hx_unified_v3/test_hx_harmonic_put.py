@@ -1,5 +1,6 @@
 """Independent high-precision formula and composition tests for r-harmonic put."""
 from dataclasses import replace
+from types import SimpleNamespace
 from fractions import Fraction
 import math
 import unittest
@@ -93,6 +94,12 @@ class HarmonicPutProofTests(unittest.TestCase):
                 harmonic_put_component(p,**kw)
         with self.assertRaises(UnresolvedEquityEnvelope):
             harmonic_put_component(replace(p,payout=0),candidate_barrier=b,log_upper=3.6)
+
+    def test_negative_volatility_refused_before_squaring(self):
+        p=HX();b=boundary(p)
+        bad=SimpleNamespace(**{**vars(p),'volatility':-p.volatility})
+        with self.assertRaises(UnresolvedEquityEnvelope):
+            harmonic_put_component(bad,candidate_barrier=b,log_upper=3.6)
 
 if __name__=='__main__':
     unittest.main()

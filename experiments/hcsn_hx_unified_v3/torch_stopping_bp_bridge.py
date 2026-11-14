@@ -89,9 +89,13 @@ def scalar_qvi_features(states, drift, diffusion, discount, cost, reset, refract
     d = torch.sqrt(drift*drift + 2*discount*diffusion*diffusion)
     k = torch.where(drift >= 0, 2*discount/(d+drift), (d-drift)/(diffusion*diffusion))
     q = torch.exp(-discount*refractory-k*(b-reset))
-    continuation = torch.exp(k*(states-b))/k
+    continuing = states < b
+    # An unused growing exponential can still poison backward through where.
+    # Keep the original continuation distance only on its active branch.
+    continuation_distance = torch.where(continuing, states-b, torch.zeros_like(states))
+    continuation = torch.exp(k*continuation_distance)/k
     immediate = states-cost+q/k
-    value = torch.where(states < b, continuation, immediate)
+    value = torch.where(continuing, continuation, immediate)
     advantage = value-immediate
     if not all(bool(torch.isfinite(t).all()) for t in (value, advantage, states-b)):
         raise UnresolvedBP('nonfinite differentiable value features')

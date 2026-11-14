@@ -93,7 +93,7 @@ def harmonic_put_component(p, *, candidate_barrier: float, log_upper: float,
     except AttributeError as exc:
         raise UnresolvedEquityEnvelope('missing HX finance parameter') from exc
     r=a['rate'];delta=a['payout'];s2=a['volatility']**2;T=a['maturity']
-    if not (r>0 and delta>0 and s2>0 and T>0 and a['principal']>0 and
+    if not (r>0 and delta>0 and a['volatility']>0 and T>0 and a['principal']>0 and
             a['coupon']>=0 and a['shock_intensity']>=0 and
             0<=a['tax_shield']<=1 and 0<=a['recovery']<=1 and
             0<=a['sale_fraction']<=1):

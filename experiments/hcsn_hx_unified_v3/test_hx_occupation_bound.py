@@ -1,5 +1,6 @@
 """Independent high-precision references and fail-closed checks for tight envelope."""
 from dataclasses import replace
+from types import SimpleNamespace
 from fractions import Fraction
 import math
 import unittest
@@ -115,6 +116,13 @@ class TightFixedBarrierTests(unittest.TestCase):
             _exp_neg_interval(Fraction(129))
         with self.assertRaises(UnresolvedEquityEnvelope):
             _sqrt_interval(Fraction(-1))
+
+    def test_negative_volatility_refused_before_squaring(self):
+        p=HX();b=boundary(p)
+        bad=SimpleNamespace(**{**vars(p),'volatility':-p.volatility})
+        with self.assertRaises(UnresolvedEquityEnvelope):
+            sharp_fixed_barrier_equity_envelope(bad,candidate_barrier=b,
+                log_upper=3.6,nominal_upper_equity=0.)
 
 if __name__=='__main__':
     unittest.main()

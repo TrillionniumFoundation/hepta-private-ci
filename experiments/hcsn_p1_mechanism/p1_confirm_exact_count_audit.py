@@ -64,9 +64,13 @@ def verify(doc):
             ds=[v-u for v,u in zip(count,base)]
             if row.get('paired_ood_correct_deltas')!=ds:
                 raise IncompleteEvidence('paired count deltas corrupted')
-            if abs(row['mean_ood_gain']-sum(ds)/(384*12))>1e-12:
+            if (type(row.get('mean_ood_gain')) not in (float,int) or
+                    not math.isfinite(row['mean_ood_gain']) or
+                    abs(row['mean_ood_gain']-sum(ds)/(384*12))>1e-12):
                 raise IncompleteEvidence('invalid reported OOD gain')
-            if abs(row['mean_id_acc']-sum(row['id_correct'])/(384*12))>1e-12:
+            if (type(row.get('mean_id_acc')) not in (float,int) or
+                    not math.isfinite(row['mean_id_acc']) or
+                    abs(row['mean_id_acc']-sum(row['id_correct'])/(384*12))>1e-12):
                 raise IncompleteEvidence('invalid reported ID mean')
             if arm=='ordinary':
                 if row.get('exact_p')!='1':

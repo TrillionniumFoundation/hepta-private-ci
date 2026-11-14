@@ -1,5 +1,5 @@
 """Independent parabolic debt PDE / elliptic equity QVI disagreement audit."""
-from dataclasses import replace
+from types import SimpleNamespace
 import math
 import unittest
 from .hx import HX, boundary, bond_value
@@ -77,13 +77,26 @@ class IndependentFinancialPDETests(unittest.TestCase):
             with self.subTest(kw=kw),self.assertRaises(UnresolvedBondPDE):
                 solve_bond_pde(p,b,**kw)
         with self.assertRaises(UnresolvedBondPDE):
-            solve_bond_pde(replace(p,volatility=0.),b)
+            solve_bond_pde(SimpleNamespace(**{**vars(p),'volatility':0.}),b)
         with self.assertRaises(UnresolvedBondPDE):
             solve_bond_pde(p,float('nan'))
         with self.assertRaises(UnresolvedCoupledAudit):
             audit_fixed_barrier_from_bond_pde(p,b,max_policy_iterations=0)
         with self.assertRaises(UnresolvedBondPDE):
             solve_bond_pde(p,b,nodes=101).at(b/2.)
+
+    def test_terminal_cashflows_must_remain_finite(self):
+        p=HX(maturity=1e-308,principal=1e308,coupon=0.)
+        self.assertTrue(all(math.isfinite(value) for value in vars(p).values()))
+        with self.assertRaises(UnresolvedBondPDE):
+            solve_bond_pde(p,1.,duration=0.,nodes=33,time_steps=5)
+
+    def test_nonfinite_time_residual_is_not_zero(self):
+        p=HX(rate=1e308,payout=1e308,maturity=1e-308,principal=1.,
+             coupon=0.,sale_fraction=0.,recovery=0.)
+        self.assertTrue(all(math.isfinite(value) for value in vars(p).values()))
+        with self.assertRaises(UnresolvedBondPDE):
+            solve_bond_pde(p,1.,nodes=33,time_steps=1,log_upper=3.6)
 
 
 if __name__=='__main__':

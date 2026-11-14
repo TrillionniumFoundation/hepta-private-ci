@@ -73,3 +73,29 @@ class CouponUnitDiscountTests(unittest.TestCase):
             except ArithmeticError:
                 pass  # existing F/G refusal is independent of coupon opt-in
             helper.assert_not_called()
+
+    def test_finite_inputs_with_overflowed_coupon_reject(self):
+        p=HX(maturity=1e-300,coupon=1e308)
+        self.assertTrue(all(math.isfinite(value) for value in vars(p).values()))
+        for pricing in (default_bond_value,bond_value):
+            with self.subTest(direct=pricing is bond_value):
+                with self.assertRaises(ArithmeticError):
+                    pricing(p,2.,1e-300,1.)
+
+
+    def test_finite_endpoint_inputs_with_overflowed_cashflows_reject(self):
+        cases=((HX(maturity=1e-300,principal=1e308),2.,0.,1.),
+               (HX(maturity=1e-300),1e308,1e-300,1e308))
+        for p,asset,tau,b in cases:
+            self.assertTrue(all(math.isfinite(value) for value in
+                                (*vars(p).values(),asset,tau,b)))
+            for pricing in (default_bond_value,bond_value):
+                with self.subTest(asset=asset,tau=tau,direct=pricing is bond_value):
+                    with self.assertRaises(ArithmeticError):
+                        pricing(p,asset,tau,b)
+
+    def test_ordinary_default_cashflow_overflow_rejects(self):
+        p=HX(coupon=1e308)
+        self.assertTrue(all(math.isfinite(value) for value in vars(p).values()))
+        with self.assertRaisesRegex(ArithmeticError, 'bond cashflow unresolved'):
+            default_bond_value(p,2.,1.,1.)
