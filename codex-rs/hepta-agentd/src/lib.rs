@@ -821,6 +821,8 @@ mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
+#[cfg(unix)]
+mod private_directory_fd;
 #[cfg(target_os = "linux")]
 mod production_authority;
 #[cfg(target_os = "linux")]
