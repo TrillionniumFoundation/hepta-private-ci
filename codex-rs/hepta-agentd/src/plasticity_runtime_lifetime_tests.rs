@@ -67,10 +67,13 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio_util::sync::CancellationToken;
 
+use crate::AgentdError;
 use crate::AgentdIdentity;
+use crate::AgentdLearningPlasticityProducerV1;
 use crate::AgentdPlasticityAnchorStoreV1;
 use crate::AgentdState;
 use crate::ConcretePlasticityOwnerEvidenceResolverV1;
@@ -933,13 +936,43 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_anchor_store,
     )
     .expect("runtime bootstrap");
-    let state = daemon.state();
-    let (handle, owner) = bootstrap
+    let state = Arc::new(
+        AgentdState::new(
+            daemon.identity.clone(),
+            daemon.registry.clone(),
+            /*event_capacity*/ 16,
+        )
+        .expect("state before app readiness"),
+    );
+    let (producer, owner) = bootstrap
         .into_channel()
         .expect("compose daemon plasticity owner");
+    let handle: crate::PlasticityRuntimeHandleV1 = producer.clone();
     state
-        .attach_plasticity_runtime(handle.clone())
+        .attach_plasticity_runtime(producer.clone())
         .expect("retain generation handle");
+    let (replacement_sender, mut replacement_receiver) =
+        tokio::sync::mpsc::channel(/*buffer*/ 1);
+    assert!(matches!(
+        state.attach_plasticity_runtime(AgentdLearningPlasticityProducerV1::new(
+            replacement_sender,
+        )),
+        Err(AgentdError::Protocol(message)) if message == "plasticity runtime already attached"
+    ));
+    assert!(matches!(
+        replacement_receiver.try_recv(),
+        Err(tokio::sync::mpsc::error::TryRecvError::Disconnected)
+    ));
+
+    let durable_paths = [
+        &files.parameter_registry,
+        &files.parameter_anchor,
+        &files.topology_registry,
+        &files.topology_anchor,
+    ];
+    let before_unavailable =
+        durable_paths.map(|path| fs::read(path).expect("durable bytes before unready submissions"));
+    assert!(!state.plasticity_admission_ready().expect("unready state"));
     let cancellation = CancellationToken::new();
     let owner_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&state),
@@ -947,8 +980,24 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         cancellation.clone(),
     );
 
-    let first = handle
-        .propose_parameter(request.clone(), 50)
+    assert!(matches!(
+        producer.submit_parameter(request.clone(), /*now*/ 50).await,
+        Err(PlasticityRuntimeCallErrorV1::Unavailable)
+    ));
+    assert!(matches!(
+        producer
+            .submit_topology(topology_request.clone(), /*now*/ 50)
+            .await,
+        Err(PlasticityRuntimeCallErrorV1::Unavailable)
+    ));
+    assert_eq!(
+        durable_paths.map(|path| fs::read(path).expect("durable bytes after unready submissions")),
+        before_unavailable
+    );
+    state.mark_app_server_ready().expect("app ready");
+
+    let first = producer
+        .submit_parameter(request.clone(), /*now*/ 50)
         .await
         .expect("first product proposal");
     assert_eq!(
@@ -958,8 +1007,8 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     assert_eq!(first.registry.sequence, 1);
     assert_eq!(first.registry.disposition, AppendDisposition::Inserted);
 
-    let first_topology = handle
-        .propose_topology(topology_request.clone(), 50)
+    let first_topology = producer
+        .submit_topology(topology_request.clone(), /*now*/ 50)
         .await
         .expect("first topology product proposal");
     assert_eq!(first_topology.durable.sequence, 1);

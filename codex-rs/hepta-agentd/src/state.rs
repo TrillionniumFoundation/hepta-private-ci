@@ -49,7 +49,7 @@ pub(crate) struct AgentdState {
     pub(crate) objective_runtime:
         std::sync::OnceLock<Arc<crate::objective_runtime::ObjectiveRuntimeHost>>,
     // Retain this generation's bounded producer while its exclusive owner runs.
-    plasticity_runtime: std::sync::OnceLock<crate::PlasticityRuntimeHandleV1>,
+    plasticity_runtime: std::sync::OnceLock<crate::AgentdLearningPlasticityProducerV1>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -161,10 +161,10 @@ impl AgentdState {
 
     pub(crate) fn attach_plasticity_runtime(
         &self,
-        handle: crate::PlasticityRuntimeHandleV1,
+        producer: crate::AgentdLearningPlasticityProducerV1,
     ) -> Result<(), AgentdError> {
         self.plasticity_runtime
-            .set(handle)
+            .set(producer)
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
