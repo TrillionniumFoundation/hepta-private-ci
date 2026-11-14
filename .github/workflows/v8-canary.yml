@@ -289,6 +289,9 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          # An absolute Cargo executable does not pin rustc when a dependency
+          # has its own rust-toolchain.toml; bind the compiler as well.
+          RUSTUP_TOOLCHAIN: "1.96.1"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash
