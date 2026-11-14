@@ -1,0 +1,48 @@
+name: HIA macOS filesystem diagnostic
+
+on:
+  push:
+    branches: [codex/hia-macos-owner-20261114-a90d]
+    paths:
+      - .github/scripts/hepta_macos_filesystem_probe.py
+      - .github/workflows/hia-macos-owner-diagnostic.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hia-macos-filesystem-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  filesystem-observations:
+    name: Native filesystem observations on ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-15, macos-15-intel, ubuntu-24.04]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Observe owned fixture behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B .github/scripts/hepta_macos_filesystem_probe.py \
+            --report "$RUNNER_TEMP/filesystem-observation.json"
+      - name: Preserve native observations
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: filesystem-observation-${{ matrix.runner }}
+          path: ${{ runner.temp }}/filesystem-observation.json
+          if-no-files-found: error
+      - name: Check source cleanliness
+        shell: bash
+        run: |
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
