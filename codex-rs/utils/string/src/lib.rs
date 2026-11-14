@@ -6,6 +6,8 @@ mod hia_native_ascii_json;
 mod hia_native_markdown;
 #[cfg(feature = "hia-native")]
 mod hia_native_metric;
+#[cfg(feature = "hia-native")]
+mod hia_native_truncate;
 mod json;
 mod truncate;
 

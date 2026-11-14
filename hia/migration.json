@@ -80,14 +80,14 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_6_modules_and_5_opt_in_algorithms_passed",
+    "qualification_status": "seven_module_fixed_point_and_truncate_owner_passed_consumer_performance_platform_gates_open",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "B1/B2/B3 byte equality; 6 native modules; original-Rust and ABI comparisons; 5 opt-in production algorithms; listed Linux GNU caller/consumer gates and relocated full CLI symbol/startup/patch checks. Whole capability owners, default releases and other platforms remain pending.",
+    "qualification_scope": "B1/B2/B3 byte equality and 7 native modules. The new truncate component passes original-Rust, ABI, receipt, native/default string-owner and strict lint gates. Earlier six-module product checkpoints retain their exact scope. Current dependent-owner/installed CLI CI, performance, default dispatch and other platforms remain open.",
     "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -409,6 +409,66 @@
           "default_release_migrated": false
         }
       }
+    },
+    {
+      "id": "truncate",
+      "hia_source": "hia/truncate.hepta",
+      "source_path": "codex-rs/utils/string/src/truncate.rs",
+      "source_blob": "fa5b871774c242fb1380b927dd34fd7f73d3680b",
+      "source_functions": [
+        "truncate_middle_chars",
+        "truncate_middle_with_token_budget",
+        "approx_token_count",
+        "approx_bytes_for_tokens",
+        "approx_tokens_from_byte_count"
+      ],
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_and_default_string_owner_passed_consumer_performance_platform_gates_open",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_truncate",
+        "source_contract": "Operations 0/1 validate arbitrary UTF-8 bytes; 4/5 require valid UTF-8 borrowed from Rust &str; 2/3 require empty source.",
+        "request": "Read-only 16-byte workspace: little-endian u64 operation, budget.",
+        "operations": {
+          "0": "strict chars plan",
+          "1": "strict token plan",
+          "2": "tokens to saturating bytes",
+          "3": "bytes to saturating approximate tokens",
+          "4": "trusted chars plan",
+          "5": "trusted token plan"
+        },
+        "output_wire": "Five little-endian u64 values: prefix_end, suffix_start, removed_units, original_tokens, kind. Scalar operations return value followed by four zero fields.",
+        "output_bytes": 40,
+        "success_return": 40,
+        "invalid_input_return": 4294967295,
+        "short_buffer_return": 4294967294,
+        "invalid_utf8_return": 4294967293,
+        "error_effect": "Every returned error preserves the complete source, request and output. Successful calls preserve the request and output beyond byte 39."
+      },
+      "behavior": [
+        "Assign the odd byte-budget remainder to the suffix and move both cut points to UTF-8 boundaries.",
+        "Count removed Unicode scalars for character markers; token markers retain the original nominal byte-budget accounting.",
+        "Preserve saturating multiply/add arithmetic and the original result-string comparison, including marker collisions that return None.",
+        "Borrow arbitrarily large valid strings without a bootstrap-capacity input limit or a Rust algorithm fallback."
+      ],
+      "tests": [
+        "hia/tests/test_native_truncate_caller.py",
+        "hia/tests/native_truncate_caller.rs",
+        "hia/tests/test_truncate_abi.py",
+        "codex-rs/utils/string/src/truncate_native_tests.rs"
+      ],
+      "validation": {
+        "report": "hia/verification.json#truncate_increment",
+        "artifact_generation": "B3",
+        "original_rust_comparisons": 229173,
+        "abi_native_calls": 2888,
+        "abi_error_no_write_cases": 757,
+        "native_string_tests_passed": 38,
+        "default_string_tests_passed": 26,
+        "skipped": 0,
+        "performance_qualified": false
+      }
     }
   ],
   "capabilities": [
@@ -630,13 +690,14 @@
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers"
       ],
-      "next_implementation": "Complete middle truncation, budget accounting and UUID helpers, plus the remaining owner/default-release/platform gates. JSON serialization outside the fragment encoder remains Rust.",
+      "next_implementation": "Complete UUID helpers, JSON serialization outside the fragment encoder, truncation performance and dependent-owner/installed CLI qualification, then the remaining owner/default-release/platform gates.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
         "metric_tag",
         "markdown_location",
-        "ascii_json_fragment"
+        "ascii_json_fragment",
+        "truncate"
       ]
     },
     {
