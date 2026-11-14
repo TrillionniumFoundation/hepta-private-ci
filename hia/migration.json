@@ -80,14 +80,14 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_6_modules_and_5_opt_in_algorithms_passed",
+    "qualification_status": "three_generation_fixed_point_10_modules_and_8_opt_in_production_path_algorithms_passed",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "B1/B2/B3 byte equality; 6 native modules; original-Rust and ABI comparisons; 5 opt-in production algorithms; listed Linux GNU caller/consumer gates and relocated full CLI symbol/startup/patch checks. Whole capability owners, default releases and other platforms remain pending.",
+    "qualification_scope": "B1/B2/B3 byte equality; ten native modules; eight production-path algorithms plus a public UUID API with no repository production caller; original-Rust/ABI comparisons; three owner crates and listed Linux GNU consumers; relocated full CLI with eight symbols. Template performance, complete owners, default releases and other platforms remain pending.",
     "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -171,9 +171,7 @@
         "original Rust behavior for every valid string input",
         "full UTF-8 validation before output publication"
       ],
-      "tests": [
-        "hia/tests/test_utf8_boundaries.py"
-      ],
+      "tests": ["hia/tests/test_utf8_boundaries.py"],
       "validation": {
         "native_selfhost": {
           "status": "passed",
@@ -324,7 +322,7 @@
         "hia/tests/test_native_markdown_caller.py",
         "hia/tests/native_markdown_caller.rs",
         "hia/tests/test_markdown_location_abi.py",
-        "codex-rs/utils/string/src/hia_native_markdown_tests.rs"
+        "codex-rs/utils/string/src/markdown_location_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
       "qualification_status": "native_linux_caller_and_crate_tests_passed",
@@ -409,6 +407,224 @@
           "default_release_migrated": false
         }
       }
+    },
+    {
+      "id": "uuid_matches",
+      "hia_source": "hia/uuid_matches.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "find_uuids",
+      "implementation_status": "native_with_opt_in_public_api_no_repository_production_caller",
+      "qualification_status": "native_linux_public_api_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_uuid_matches",
+        "maximum_frame_bytes": 4096,
+        "output_capacity": 36,
+        "workspace_bytes": 1,
+        "workspace": "Byte 0 is the final-window flag, 0 or 1.",
+        "success_return": "High 16 bits are match (1), exhausted (2), or more (3); low 16 bits are consumed bytes.",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_effect": "Errors and non-matches leave both mutable buffers unchanged."
+      },
+      "behavior": [
+        "Select leftmost non-overlapping matches of the original ASCII UUID pattern, without word-boundary requirements.",
+        "Preserve the exact matched 36 bytes and their case, including matches spanning borrowed windows.",
+        "No existing repository production caller is claimed; the public function and its feature-selected implementation are tested."
+      ],
+      "tests": [
+        "hia/tests/test_native_uuid_caller.py",
+        "hia/tests/native_uuid_caller.rs",
+        "hia/tests/test_uuid_abi.py",
+        "codex-rs/utils/string/src/uuid_tests.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
+          "library_sha256": "5972557274b1ef6ce2a0e76712781534f179d18eae96caf842c7a61225bd0d02",
+          "archive_sha256": "a62ca9814c7422b12cee721ce1c67db524870740e14933fad48bfe8d630e1d1f",
+          "tests": 6,
+          "skipped": 0,
+          "original_rust_comparisons": 26808,
+          "abi_native_calls": 34861
+        },
+        "production_dispatch": {
+          "status": "public_api_only_no_repository_production_caller",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_uuid_matches",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "template_parser",
+      "hia_source": "hia/template_parser.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "source_function": "Template::parse",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_functional_tests_passed_performance_open",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_parser",
+        "contract": "hia/template_buffer_contract.md",
+        "error_effect": "Returned errors leave the current call output and workspace unchanged; successful earlier events remain committed."
+      },
+      "behavior": [
+        "HIA recognizes delimiter and four-brace escape precedence, decodes UTF-8, applies Rust Unicode whitespace trimming and preserves byte-offset parse errors.",
+        "Returned literal/placeholder spans refer to the original source. Native index insertion decides placeholder uniqueness and canonical order."
+      ],
+      "tests": [
+        "hia/tests/native_template_parser.rs",
+        "hia/tests/test_native_template_parser.py",
+        "hia/tests/test_template_parser_abi.py",
+        "codex-rs/utils/template/src/parser_native_tests.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
+          "library_sha256": "bc3b613d335b7bab98f281412024fcb2b19e55380124314e998248c3fe592a60",
+          "archive_sha256": "1c57968b2caedc582323ca89900bd90204cf497e96a4f471b88d9f624e70bb1d",
+          "tests": 7,
+          "skipped": 0,
+          "original_rust_parse_comparisons": 2334492,
+          "original_rust_render_comparisons": 78,
+          "abi_native_calls": 962
+        },
+        "production_dispatch": {
+          "status": "native_linux_opt_in_caller_tests_passed",
+          "feature": "codex-utils-template/hia-native",
+          "link": "static=codex_hia_template_parser",
+          "default_release_migrated": false
+        }
+      },
+      "performance_equivalence": false,
+      "remaining_host_work": [
+        "allocation and deallocation",
+        "owned strings and AST storage",
+        "generic iterator/AsRef/Drop effects",
+        "public formatting and checked native result conversion"
+      ]
+    },
+    {
+      "id": "template_render",
+      "hia_source": "hia/template_render.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "source_function": "Template::render and build_variable_map",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_functional_tests_passed_performance_open",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_render",
+        "contract": "hia/template_buffer_contract.md",
+        "error_effect": "Returned errors leave the current call output and workspace unchanged; successful earlier events remain committed."
+      },
+      "behavior": [
+        "HIA chooses duplicate/missing/extra validation precedence and literal/value segment selection.",
+        "The Rust transport preserves generic iteration, AsRef order, Drop/unwind effects and owned storage; native index decisions are not replaced by Rust comparison, sorting or ordered-map lookup."
+      ],
+      "tests": [
+        "hia/tests/native_template_render.rs",
+        "hia/tests/test_native_template_parser.py",
+        "hia/tests/test_template_render_abi.py",
+        "codex-rs/utils/template/src/render_native_tests.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
+          "library_sha256": "86752db526f3be8d544bb60547255b05772534e2b86312edb72f02b360f5fb91",
+          "archive_sha256": "bd87e7e068658c55387c5a3cb8a8975551c2d6766c18303a54d51dd9c83c43be",
+          "tests": 5,
+          "skipped": 0,
+          "original_rust_comparisons": 1161985,
+          "iterator_effect_cases": 120,
+          "abi_native_calls": 457
+        },
+        "production_dispatch": {
+          "status": "native_linux_opt_in_caller_tests_passed",
+          "feature": "codex-utils-template/hia-native",
+          "link": "static=codex_hia_template_render",
+          "default_release_migrated": false
+        }
+      },
+      "performance_equivalence": false,
+      "remaining_host_work": [
+        "allocation and deallocation",
+        "owned strings and AST storage",
+        "generic iterator/AsRef/Drop effects",
+        "public formatting and checked native result conversion"
+      ]
+    },
+    {
+      "id": "template_index",
+      "hia_source": "hia/template_index.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "source_function": "Template placeholder ordering/deduplication and render variable lookup",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_functional_tests_passed_performance_open",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_index",
+        "contract": "hia/template_buffer_contract.md",
+        "error_effect": "Returned errors leave the current call output and workspace unchanged; successful earlier events remain committed."
+      },
+      "behavior": [
+        "HIA owns the AVL tree, byte comparison, duplicate detection, canonical traversal, lookup, usage marks and smallest-unused selection.",
+        "Stable IDs allow Rust to own strings and expose the original Clone/Debug/Eq/ordered iterator behavior without a second Rust ordered set."
+      ],
+      "tests": [
+        "hia/tests/native_template_placeholders.rs",
+        "hia/tests/test_native_template_parser.py",
+        "hia/tests/test_template_index_abi.py",
+        "codex-rs/utils/template/src/hia_native_index_tests.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
+          "library_sha256": "065be7a88cfc09241bcaaf79355fcb537b77475c189ebae57ff7c082108305ad",
+          "archive_sha256": "d199980913d36eaf31c634c936571fae03be2d34cb765d917058306695afb5a6",
+          "tests": 6,
+          "skipped": 0,
+          "original_rust_public_api_comparisons": 2029,
+          "abi_native_calls": 609200
+        },
+        "production_dispatch": {
+          "status": "native_linux_opt_in_caller_tests_passed",
+          "feature": "codex-utils-template/hia-native",
+          "link": "static=codex_hia_template_index",
+          "default_release_migrated": false
+        }
+      },
+      "performance_equivalence": false,
+      "remaining_host_work": [
+        "allocation and deallocation",
+        "owned strings and AST storage",
+        "generic iterator/AsRef/Drop effects",
+        "public formatting and checked native result conversion"
+      ]
     }
   ],
   "capabilities": [
@@ -440,7 +656,8 @@
         "codex-rs/secrets",
         "codex-rs/aws-auth",
         "codex-rs/workload-identity",
-        "codex-rs/agent-identity"
+        "codex-rs/agent-identity",
+        "codex-rs/utils/template"
       ],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
@@ -449,7 +666,13 @@
         "credential storage, refresh, redaction and logout",
         "workload identity and platform keyring behavior"
       ],
-      "next_implementation": "Add native credential and identity interfaces with the same permission boundaries and platform-specific storage tests."
+      "next_implementation": "Add native credential and identity interfaces with the same permission boundaries and platform-specific storage tests.",
+      "candidate_modules": [
+        "template_parser",
+        "template_render",
+        "template_index"
+      ],
+      "partial_scope": "Login page template parsing/rendering and ordered placeholder decisions are connected through codex-login/hia-native. This does not migrate login, credentials or identity ownership."
     },
     {
       "id": "thread_turn_execution",
@@ -586,11 +809,7 @@
     },
     {
       "id": "sdk_frontends",
-      "source_roots": [
-        "sdk",
-        "codex-cli",
-        "apps"
-      ],
+      "source_roots": ["sdk", "codex-cli", "apps"],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -602,10 +821,7 @@
     },
     {
       "id": "patch_application",
-      "source_roots": [
-        "codex-rs/apply-patch",
-        "codex-rs/file-search"
-      ],
+      "source_roots": ["codex-rs/apply-patch", "codex-rs/file-search"],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -614,15 +830,11 @@
         "Unicode context matching and search ordering"
       ],
       "next_implementation": "Complete platform/default release gates and HIA parser/file-update owners.",
-      "candidate_modules": [
-        "seek_sequence"
-      ]
+      "candidate_modules": ["seek_sequence"]
     },
     {
       "id": "string_utilities",
-      "source_roots": [
-        "codex-rs/utils/string"
-      ],
+      "source_roots": ["codex-rs/utils/string"],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -630,13 +842,14 @@
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers"
       ],
-      "next_implementation": "Complete middle truncation, budget accounting and UUID helpers, plus the remaining owner/default-release/platform gates. JSON serialization outside the fragment encoder remains Rust.",
+      "next_implementation": "Complete middle truncation, budget accounting and remaining owner/default-release/platform gates. UUID matching is verified as an opt-in public API without a current repository production caller. JSON serialization outside the fragment encoder remains Rust.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
         "metric_tag",
         "markdown_location",
-        "ascii_json_fragment"
+        "ascii_json_fragment",
+        "uuid_matches"
       ]
     },
     {
@@ -729,10 +942,7 @@
           "revision": "f33d8da316de8fdf27b504371f1a5310997ff548"
         }
       ],
-      "source_paths": [
-        "hia/build.py",
-        "hia/toolchain.json"
-      ],
+      "source_paths": ["hia/build.py", "hia/toolchain.json"],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -1665,7 +1875,7 @@
       "manifest": "codex-rs/login/Cargo.toml",
       "manifest_blob": "2971dec6c1a81cb80379477333371bba6e8fbece",
       "rust_file_count": 42,
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false
     },
     {
@@ -2099,7 +2309,7 @@
       "manifest": "codex-rs/utils/template/Cargo.toml",
       "manifest_blob": "f24caec190455f3ac685004fc1f6e474ee8f8ed9",
       "rust_file_count": 1,
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false
     },
     {
@@ -2158,8 +2368,29 @@
       "utf8_prefix",
       "metric_tag",
       "markdown_location",
-      "ascii_json_fragment"
+      "ascii_json_fragment",
+      "uuid_matches",
+      "template_parser",
+      "template_render",
+      "template_index"
     ],
-    "checks_passed": 52
+    "checks_passed": 60
+  },
+  "current_qualification": {
+    "report": "hia/verification.json",
+    "component_tested_git_tree": "54905a2186d56f7ee5dc37e812b14bb181340fd9",
+    "source_snapshot_sha256": "575813eb6545264769276bd69b8e7ac957ae6d1be0c9b86adebf4b744c0d1dd5",
+    "module_count": 10,
+    "installed_production_symbols": 8,
+    "template_performance_closed": false,
+    "whole_workspace_requalification": "passed_default_linux_gnu",
+    "default_workspace_tests": {
+      "passed": 19383,
+      "existing_skips": 53,
+      "flaky": 1
+    },
+    "native_windows_runtime": "pending_for_main_source",
+    "post_test_deltas": "See verification.json source_reconciliation for documentation and CI changes.",
+    "separate_windows_diagnostic": "Open: separate branch b10e6d45 has 180/189 sandbox tests passing with nine failures; it is not main-source qualification."
   }
 }

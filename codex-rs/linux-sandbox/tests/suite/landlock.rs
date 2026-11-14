@@ -811,9 +811,11 @@ async fn sandbox_keeps_parent_repo_discovery_while_blocking_child_metadata() {
     let tmpdir = tempfile::tempdir().expect("tempdir");
     let repo = tmpdir.path().join("repo");
     let subdir = repo.join("sub");
-    let real_tmp = tmpdir.path().join("real-tmp");
-    let redirected_tmp = tmpdir.path().join("redirected-tmp");
-    let tmp_alias = tmpdir.path().join("tmp-alias");
+    let scratch = tmpdir.path().join("scratch");
+    std::fs::create_dir(&scratch).expect("create writable scratch directory");
+    let real_tmp = scratch.join("real-tmp");
+    let redirected_tmp = scratch.join("redirected-tmp");
+    let tmp_alias = scratch.join("tmp-alias");
     std::fs::create_dir(&real_tmp).expect("create real temp directory");
     std::fs::create_dir(&redirected_tmp).expect("create redirected temp directory");
     std::os::unix::fs::symlink(&real_tmp, &tmp_alias).expect("create temp directory alias");
@@ -855,8 +857,12 @@ fi
     );
 
     let cwd = AbsolutePathBuf::try_from(subdir.as_path()).expect("cwd should be absolute");
+    // Redirecting the temporary-directory alias requires its parent to be
+    // writable even when the fixture is outside the conventional /tmp root.
+    // Keep this scratch grant separate from the parent repository metadata.
+    let scratch = AbsolutePathBuf::try_from(scratch).expect("scratch should be absolute");
     let permission_profile = PermissionProfile::workspace_write_with(
-        std::slice::from_ref(&cwd),
+        &[cwd.clone(), scratch],
         NetworkSandboxPolicy::Enabled,
         /*exclude_tmpdir_env_var*/ false,
         /*exclude_slash_tmp*/ false,

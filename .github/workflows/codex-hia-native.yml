@@ -9,6 +9,8 @@ on:
       - codex-rs/cli/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
+      - codex-rs/utils/template/**
+      - codex-rs/login/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -24,6 +26,8 @@ on:
       - codex-rs/cli/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
+      - codex-rs/utils/template/**
+      - codex-rs/login/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -65,6 +69,22 @@ jobs:
           ref: f33d8da316de8fdf27b504371f1a5310997ff548
           path: Hepta
           persist-credentials: false
+
+      - name: Install Linux sandbox runtime
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends bubblewrap apparmor apparmor-profiles
+          command -v bwrap
+          bwrap --version
+          # Use Ubuntu's executable-scoped profile while retaining the global
+          # restriction on unprivileged user namespaces.
+          profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -f "$profile"
+          sudo apparmor_parser -Q -T "$profile"
+          sudo apparmor_parser -r "$profile"
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = 1
+          bwrap --unshare-user --unshare-net --ro-bind / / --dev /dev --proc /proc -- /bin/true
 
       - name: Prepare Rust oracle and production caller compiler
         run: |
@@ -213,12 +233,12 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
-      - name: Test both production crates with HIA enabled
+      - name: Test production crates with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          just test -p codex-apply-patch -p codex-utils-string --features hia-native --locked \
+          just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --features hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-native-crates.log"
 
       - name: Compare actual native and original ASCII JSON callers
@@ -239,6 +259,84 @@ jobs:
             --library-dir "$RUNNER_TEMP/hia-native" \
             --report "$RUNNER_TEMP/hia-ascii-json-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-abi.log"
+
+      - name: Compare actual native and original UUID callers
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_uuid_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-uuid-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-uuid-caller.log"
+
+      - name: Verify UUID window progress and error contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_uuid_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-uuid-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-uuid-abi.log"
+
+      - name: Compare complete native and original template parsers
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_template_parser.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-template-parser.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-parser.log"
+
+      - name: Verify template parser window and error contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_template_parser_abi.py \
+            --library "$RUNNER_TEMP/hia-native/libcodex_hia_template_parser.so" \
+            --report "$RUNNER_TEMP/hia-template-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-abi.log"
+
+      - name: Compare native and original template renderers
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_template_parser.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --harness codex/hia/tests/native_template_render.rs \
+            --report "$RUNNER_TEMP/hia-template-render.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-render.log"
+
+      - name: Verify template renderer commands and atomic errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_template_render_abi.py \
+            --library "$RUNNER_TEMP/hia-native/libcodex_hia_template_render.so" \
+            --report "$RUNNER_TEMP/hia-template-render-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-render-abi.log"
+
+      - name: Compare native template collection and public API behavior
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_template_parser.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --harness codex/hia/tests/native_template_placeholders.rs \
+            --report "$RUNNER_TEMP/hia-template-placeholders.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-placeholders.log"
+
+      - name: Verify template index bounds, ordering and atomic errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_template_index_abi.py \
+            --library "$RUNNER_TEMP/hia-native/libcodex_hia_template_index.so" \
+            --report "$RUNNER_TEMP/hia-template-index-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-index-abi.log"
 
       - name: Verify installed HIA apply_patch executable
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -285,7 +383,7 @@ jobs:
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string --locked \
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
 
       - name: Upload original build and test results
@@ -313,6 +411,22 @@ jobs:
             ${{ runner.temp }}/hia-ascii-json-caller.log
             ${{ runner.temp }}/hia-ascii-json-abi.json
             ${{ runner.temp }}/hia-ascii-json-abi.log
+            ${{ runner.temp }}/hia-uuid-caller.json
+            ${{ runner.temp }}/hia-uuid-caller.log
+            ${{ runner.temp }}/hia-uuid-abi.json
+            ${{ runner.temp }}/hia-uuid-abi.log
+            ${{ runner.temp }}/hia-template-parser.json
+            ${{ runner.temp }}/hia-template-parser.log
+            ${{ runner.temp }}/hia-template-abi.json
+            ${{ runner.temp }}/hia-template-abi.log
+            ${{ runner.temp }}/hia-template-render.json
+            ${{ runner.temp }}/hia-template-render.log
+            ${{ runner.temp }}/hia-template-render-abi.json
+            ${{ runner.temp }}/hia-template-render-abi.log
+            ${{ runner.temp }}/hia-template-placeholders.json
+            ${{ runner.temp }}/hia-template-placeholders.log
+            ${{ runner.temp }}/hia-template-index-abi.json
+            ${{ runner.temp }}/hia-template-index-abi.log
             ${{ runner.temp }}/hia-native-crates.log
             ${{ runner.temp }}/hia-installed-patch-build.log
             ${{ runner.temp }}/hia-original-patch-build.log

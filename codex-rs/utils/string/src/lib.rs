@@ -6,6 +6,8 @@ mod hia_native_ascii_json;
 mod hia_native_markdown;
 #[cfg(feature = "hia-native")]
 mod hia_native_metric;
+#[cfg(feature = "hia-native")]
+mod hia_native_uuid;
 mod json;
 mod truncate;
 
@@ -56,6 +58,10 @@ mod markdown_location_tests;
 #[path = "ascii_json_tests.rs"]
 mod ascii_json_tests;
 
+#[cfg(test)]
+#[path = "uuid_tests.rs"]
+mod uuid_tests;
+
 /// Sanitize a tag value to comply with metric tag validation rules:
 /// only ASCII alphanumeric, '.', '_', '-', and '/' are allowed.
 pub fn sanitize_metric_tag_value(value: &str) -> String {
@@ -91,15 +97,22 @@ pub fn sanitize_metric_tag_value(value: &str) -> String {
 /// Find all UUIDs in a string.
 #[allow(clippy::unwrap_used)]
 pub fn find_uuids(s: &str) -> Vec<String> {
-    static RE: std::sync::OnceLock<regex_lite::Regex> = std::sync::OnceLock::new();
-    let re = RE.get_or_init(|| {
-        regex_lite::Regex::new(
-            r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}",
-        )
-        .unwrap() // Unwrap is safe thanks to the tests.
-    });
+    #[cfg(feature = "hia-native")]
+    {
+        hia_native_uuid::find_uuids(s)
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        static RE: std::sync::OnceLock<regex_lite::Regex> = std::sync::OnceLock::new();
+        let re = RE.get_or_init(|| {
+            regex_lite::Regex::new(
+                r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}",
+            )
+            .unwrap() // Unwrap is safe thanks to the tests.
+        });
 
-    re.find_iter(s).map(|m| m.as_str().to_string()).collect()
+        re.find_iter(s).map(|m| m.as_str().to_string()).collect()
+    }
 }
 
 /// Convert a markdown-style `#L..` location suffix into a terminal-friendly
