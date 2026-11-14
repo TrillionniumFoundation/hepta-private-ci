@@ -1,0 +1,104 @@
+name: Hepta NDU grounded generation
+
+on:
+  pull_request:
+    paths:
+      - qa/ndu-grounded-generation/**
+      - .github/workflows/hepta-ndu-grounded.yml
+  push:
+    paths:
+      - qa/ndu-grounded-generation/**
+      - .github/workflows/hepta-ndu-grounded.yml
+  workflow_dispatch:
+    inputs:
+      run_model_smoke:
+        description: Download the pinned model and run real CPU integration smoke tests
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ndu-grounded-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scoped-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONUNBUFFERED: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Set the evidence directory
+        run: printf 'NDU_ROOT=%s\n' "$RUNNER_TEMP/hepta-ndu-grounded" >> "$GITHUB_ENV"
+      - name: Install the pinned CPU runtime
+        run: |
+          set -euo pipefail
+          mkdir -p "$NDU_ROOT"
+          git rev-parse HEAD HEAD^{tree} > "$NDU_ROOT/source.txt"
+          python -m pip install --no-cache-dir --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu' 'torchvision==0.25.0+cpu'
+          python -m pip install --no-cache-dir --only-binary=:all: -r qa/ndu-grounded-generation/requirements.txt
+      - name: Run scoped unit tests
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qa/ndu-grounded-generation -p 'test_*.py' -v 2>&1 | tee "$NDU_ROOT/unit-tests.log"
+      - name: Acquire the fixed real model and official annotation member
+        if: github.event_name == 'workflow_dispatch' && inputs.run_model_smoke
+        run: |
+          set -euo pipefail
+          python qa/ndu-grounded-generation/acquisition.py \
+            --model-dir "$NDU_ROOT/model" \
+            --annotations-output "$NDU_ROOT/instances_val2017.json" \
+            2>&1 | tee "$NDU_ROOT/acquisition.log"
+      - name: Build the small real-image integration cohort
+        if: github.event_name == 'workflow_dispatch' && inputs.run_model_smoke
+        run: |
+          set -euo pipefail
+          python qa/ndu-grounded-generation/cohort.py \
+            --annotations "$NDU_ROOT/instances_val2017.json" \
+            --exclude-manifest qa/ndu-grounded-generation/historical_exclusions.json \
+            --image-cache "$NDU_ROOT/images" --output-dir "$NDU_ROOT/cohort" \
+            --sizes 8,4,4,4 --download-images 2>&1 | tee "$NDU_ROOT/cohort.log"
+      - name: Check real cached decoding and causal interventions
+        if: github.event_name == 'workflow_dispatch' && inputs.run_model_smoke
+        run: |
+          set -euo pipefail
+          HEPTA_NDU_MODEL_DIR="$NDU_ROOT/model" \
+          HEPTA_NDU_OBSERVATIONS="$NDU_ROOT/cohort/train.observations.jsonl" \
+            python -m unittest discover -s qa/ndu-grounded-generation -p 'test_backend.py' -v \
+            2>&1 | tee "$NDU_ROOT/model-smoke.log"
+      - name: Record the scope of evidence
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ## Grounded-generation verification scope
+
+          Default CI checks unit behavior. The optional manual job additionally downloads the pinned model and runs real CPU integration checks on a 20-image cohort. These checks do not train or validate the NDU policy and do not establish an empirical quality-risk frontier. Consult the actual step outcomes and retained logs.
+          EOF
+      - name: Retain bounded verification records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-ndu-grounded-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-ndu-grounded/*.log
+            ${{ runner.temp }}/hepta-ndu-grounded/source.txt
+            ${{ runner.temp }}/hepta-ndu-grounded/*.acquisition.json
+            ${{ runner.temp }}/hepta-ndu-grounded/cohort/*.json
+            ${{ runner.temp }}/hepta-ndu-grounded/cohort/*.jsonl
+          if-no-files-found: warn
+          retention-days: 14
