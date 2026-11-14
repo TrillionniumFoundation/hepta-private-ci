@@ -1,0 +1,390 @@
+{
+  "cost": {
+    "arms": {
+      "memory": {
+        "measured": {
+          "attempted": 18,
+          "completed": 18,
+          "correct_queries_per_second": 0.7029845069810409,
+          "failed": 0,
+          "input_tokens": 1452,
+          "interval_wall_ns": 25605116217,
+          "operation_exact": 18,
+          "output_tokens": 162,
+          "p50_ns": 1543281512,
+          "p95_ns": 1606733452,
+          "source_observation_payload_bytes_read": 0,
+          "summed_query_cpu_ns": 25595483118,
+          "summed_query_wall_ns": 25602828290,
+          "unattempted": 0
+        },
+        "other_child_cpu_ns": 754460914,
+        "other_child_wall_ns": 756906793,
+        "query_samples_are_attribution_not_additive_to_whole_child": true,
+        "startup_inside_worker": {
+          "cpu_ns": 8246099728,
+          "wall_ns": 8258066858
+        },
+        "warmup": {
+          "attempted": 2,
+          "completed": 2,
+          "correct_queries_per_second": 0.7740644420289918,
+          "failed": 0,
+          "input_tokens": 156,
+          "interval_wall_ns": 2583764208,
+          "operation_exact": 2,
+          "output_tokens": 16,
+          "p50_ns": 1089669307,
+          "p95_ns": 1493932921,
+          "source_observation_payload_bytes_read": 0,
+          "summed_query_cpu_ns": 2583086240,
+          "summed_query_wall_ns": 2583602228,
+          "unattempted": 0
+        },
+        "whole_child": {
+          "cpu_affinity": [
+            0
+          ],
+          "cpu_ns": 37179130000,
+          "peak_rss_kib": 1108628,
+          "returncode": 0,
+          "stderr_bytes": 50,
+          "stdout_bytes": 30928,
+          "wall_ns": 37201404169
+        }
+      },
+      "retrieval": {
+        "measured": {
+          "attempted": 18,
+          "completed": 18,
+          "correct_queries_per_second": 13670.726872547813,
+          "failed": 0,
+          "input_tokens": 0,
+          "interval_wall_ns": 1316682,
+          "operation_exact": 18,
+          "output_tokens": 0,
+          "p50_ns": 57966,
+          "p95_ns": 89493,
+          "source_observation_payload_bytes_read": 156402,
+          "summed_query_cpu_ns": 0,
+          "summed_query_wall_ns": 1117016,
+          "unattempted": 0
+        },
+        "other_child_cpu_ns": 31894999,
+        "other_child_wall_ns": 41701753,
+        "query_samples_are_attribution_not_additive_to_whole_child": true,
+        "startup_inside_worker": {
+          "cpu_ns": 0,
+          "wall_ns": 5017
+        },
+        "warmup": {
+          "attempted": 2,
+          "completed": 2,
+          "correct_queries_per_second": 8057.758009411461,
+          "failed": 0,
+          "input_tokens": 0,
+          "interval_wall_ns": 248208,
+          "operation_exact": 2,
+          "output_tokens": 0,
+          "p50_ns": 79388,
+          "p95_ns": 147919,
+          "source_observation_payload_bytes_read": 17378,
+          "summed_query_cpu_ns": 0,
+          "summed_query_wall_ns": 227307,
+          "unattempted": 0
+        },
+        "whole_child": {
+          "cpu_affinity": [
+            0
+          ],
+          "cpu_ns": 31894999,
+          "peak_rss_kib": 26468,
+          "returncode": 0,
+          "stderr_bytes": 0,
+          "stdout_bytes": 10948,
+          "wall_ns": 43051093
+        }
+      }
+    },
+    "controller": {
+      "billing_usd": null,
+      "charged_child_cpu_ns": 37211024999,
+      "controller_plus_child_cpu_ns": 42343564826,
+      "cutoff": "after execute_body returns/raises, including result serialization; excludes this receipt serialization",
+      "energy_joules": null,
+      "error": null,
+      "schema": "hepta.memory.warm-controller-cost.v1",
+      "self_cpu_excludes_child_cpu": true,
+      "self_cpu_ns": 5132539827,
+      "whole_execute_wall_ns": 44638723331,
+      "whole_host_cpu_ns": null
+    },
+    "covering_outer_process_cpu_ns": 42393865000,
+    "covering_outer_process_wall_ns": 44690792057,
+    "outer_process_not_additive_to_controller_plus_child": true,
+    "retained_run_artifact_bytes_before_audit": 116111,
+    "source_observation_payload_bytes_read": 173780,
+    "source_phase_cpu_zero_is_below_counter_resolution_not_free_work": true,
+    "worker_output_stream_bytes": 41926
+  },
+  "evidence": {
+    "audit_warm_002.py": {
+      "bytes": 11755,
+      "path": "audit_warm_002.py",
+      "sha256": "56b413f25c3559ea6218c43a9d60006a20b7be88a8899bef950ef653688823b2"
+    },
+    "inventory-001/summary.json": {
+      "bytes": 17041,
+      "path": "inventory-001/summary.json",
+      "sha256": "d667b3f9493f9736905aebe23ceb941f3abe87e623114dd1d647b58a1d753212"
+    },
+    "inventory-002/summary.json": {
+      "bytes": 945,
+      "path": "inventory-002/summary.json",
+      "sha256": "c48d43b80458f5a2d1b71c074182044027988542f1bf51280017cc6069ed2221"
+    },
+    "pure-tests-003.process.json": {
+      "bytes": 316,
+      "path": "pure-tests-003.process.json",
+      "sha256": "e13778f58d261e031a393b1f9c3afab28dcbd3d8bca5f4a842a902fc62bc7f05"
+    },
+    "source-lint-003.process.json": {
+      "bytes": 356,
+      "path": "source-lint-003.process.json",
+      "sha256": "05821896142dc5d1ae0e851072a8530812730e25fdbb1d41c50adbcbca902d32"
+    },
+    "warm-audit-002.json": {
+      "bytes": 8609,
+      "path": "warm-audit-002.json",
+      "sha256": "03cd29802b57f5099da1de8d2c933d3c3a068ba89c65d2be92c5b5adb3bf2213"
+    },
+    "warm-run-002-001/controller-cost.json": {
+      "bytes": 416,
+      "path": "warm-run-002-001/controller-cost.json",
+      "sha256": "f177e0b97ee46f71933383a84e8d8b077e77f6742c516be67e13290391c4d567"
+    },
+    "warm-run-002-001/result.json": {
+      "bytes": 40649,
+      "path": "warm-run-002-001/result.json",
+      "sha256": "7a2e115458524f79f3f6ea131e189d47d49b387f654d14bf96779b627a246249"
+    },
+    "warm-samples-002.jsonl": {
+      "bytes": 6902,
+      "path": "warm-samples-002.jsonl",
+      "sha256": "a3074ae65ac10abb5cfe4826326561bc1f8c0eeeea52ef4b92bfc9670145d11a"
+    }
+  },
+  "execution": {
+    "all_calls_correct": 40,
+    "all_calls_failed": 0,
+    "all_calls_unattempted": 0,
+    "autoregressive_internal_forward_steps": null,
+    "decoder_input_tokens": 1608,
+    "decoder_output_tokens": 178,
+    "explicit_feature_calls": 0,
+    "model_calls": 20,
+    "new_task_gate_runs": 0,
+    "pre_post_immutable_input_checks": "passed; frozen controller result and post_integrity_error both null",
+    "retry_count": 0,
+    "source_retrieval_calls": 20,
+    "start_end_events": {
+      "decoder_finished": 20,
+      "decoder_started": 20,
+      "finished": 2,
+      "query_started": 40,
+      "sample": 40,
+      "startup": 2
+    },
+    "timing_driver": {
+      "bytes": 1119,
+      "path": "warm-run-002-001.driver-process.json",
+      "sha256": "563c84ea1bfe3ec0ab5a7cacf4fd543f6c0ff8298efaa3ad3d09013f8c6ea4cc"
+    },
+    "training_updates": 0
+  },
+  "independent_peer_review": {
+    "identity_key": [
+      "phase",
+      "index"
+    ],
+    "model_or_test_execution": false,
+    "quantile_method": "nearest rank on18 measured samples; p50 rank9 andp95 rank18",
+    "raw_data_agreed": true,
+    "record_sha256": "2d1616d36dd3fdb83fcad994bbfc5b645ae4d860149706ad331b56f9eea5aa14",
+    "reviewer": "/root/ndu_current_proof"
+  },
+  "limitations": [
+    "Memory measures bare parameter reads including parameter integrity checks; it does not include live source-owner enrollment, revocation, Objective/NDU or complete native service handling.",
+    "Two warmups plus 18 measured calls per arm; three exposed question forms repeated six times are not 18 independent tasks.",
+    "The source comparator is exact typed retrieval over two verified source observations, not a general strong RAG/repair agent.",
+    "This is one short sequential warm probe; p95 is the maximum at N18. No sustained scale, tail SLA or hardware-general superiority claim.",
+    "Startup inside the worker excludes earlier interpreter/main-module setup; whole child includes it. Source startup CPU recorded 0 reflects counter granularity, not free execution.",
+    "Shared controller CPU covers both arms and complete pre/post hash checks, including audit retention. It is not imputed equally to arms or erased from the study total.",
+    "Outer waited-process CPU covers controller+children and CLI/receipt overhead. The small residual is not measured again; never add overlapping totals.",
+    "Source bytes are logical observation-payload reads, not physical I/O. Memory source-bytes 0 does not mean zero base/checkpoint/runtime reads.",
+    "Peak RSS is the direct-child high-water observation, not whole-host peak; library/OS/page-cache sharing remains outside that number.",
+    "Process IDs are invocation-namespace identifiers; no globally unique process or remote attestation claim.",
+    "Whole-host CPU, external launcher self CPU, energy, billing, dynamic-library closure and continuous/transient storage remain unknown.",
+    "No protocol change or retry occurred after outcomes. Source, checkpoint and runtime pins were checked before first query and after both arms by the frozen controller.",
+    "The source and model runtime snapshots are retained dependencies, including later relay packages; whole OS and minimum install closure remain unknown.",
+    "Group independence and cost-closure flags in the reusable quality reducer are controller declarations; they require future linkage to a frozen incident catalogue and execution receipts.",
+    "Fixed source-first order, one local runtime and a tiny repeated sample; these observations cannot establish broad quality, scale, causal hardware superiority or independent future transfer."
+  ],
+  "preregistration": {
+    "executed_protocol": {
+      "bytes": 4030558,
+      "path": "warm-proposal-002/protocol.json",
+      "sha256": "e6347ce6da3f875e55b1a7fd7df24ae3b353595da8b6123978f19122d60738dd"
+    },
+    "generation_limits": {
+      "calls": 20,
+      "input_tokens_total": 3840,
+      "new_tokens": 16,
+      "output_tokens_total": 320,
+      "prompt_tokens": 192
+    },
+    "input_file_pins": 19282,
+    "method_changed_after_first_new_model_result": false,
+    "native_rust_files_in_inputs": 0,
+    "selected_seed": 24041,
+    "superseded_zero_model_proposal": {
+      "bytes": 4029626,
+      "path": "warm-proposal-001/protocol.json",
+      "sha256": "7f71001d527e5da9fdf6d8ccba153f84ab2d09b4bd67ddfc5642cd213d24f955"
+    },
+    "supersession": {
+      "bytes": 1243,
+      "path": "proposal-supersession-002.json",
+      "sha256": "01d0b090e1e65059df019e26e2757bbd3cc2a2f0cb95fe247bdbb611230e954c"
+    }
+  },
+  "qualification": {
+    "failed": 0,
+    "final_format_performed_by_this_agent": false,
+    "final_pure_tests": 17,
+    "lint_exit": 0,
+    "no_test_or_model_after_final_format": true,
+    "passed": 17,
+    "prior_pure_runs_retained": [
+      10,
+      11
+    ],
+    "static_lint_first_run": {
+      "failures": 3,
+      "fixed_before_final_pure_tests": true,
+      "rule": "E731"
+    }
+  },
+  "recorded_at": "2026-10-25T13:32:02.213874+00:00",
+  "schema": "hepta.memory.cost-v2.compact-qualification.v1",
+  "scope": {
+    "bare_parameter_read": true,
+    "end_to_end_native_service_latency": false,
+    "general_strong_rag_qualified": false,
+    "historical_independent_incidents": 1,
+    "independent_future_tasks": 0,
+    "live_revocation_or_objective_ndu_checks": false,
+    "live_source_owner_enrollment": false,
+    "net_compression_gain": null,
+    "scaled_sustained_throughput_qualified": false,
+    "task_scope": "three already-exposed question forms over F401/E731, repeated six times; two warmups separate"
+  },
+  "source_manifest": {
+    "scripts/memory_cell_cost_v2/README.md": {
+      "bytes": 5249,
+      "lines": 81,
+      "sha256": "ce36f9f4c6c1c54cf4f6c5aaa1ba97add3a87a4f43b9d8809b3f9da8cbf11bce"
+    },
+    "scripts/memory_cell_cost_v2/historical_inventory.py": {
+      "bytes": 8945,
+      "lines": 137,
+      "sha256": "116f8975bbfbbcb0bc12d5bbbcf610fd0590288e96130d9cca7cfcd37dbd2005"
+    },
+    "scripts/memory_cell_cost_v2/receipt_reader.py": {
+      "bytes": 5760,
+      "lines": 102,
+      "sha256": "93e252c138054fb39bcd4c251d9ecd41264ba8bb884c5bea816feef8cbe8470f"
+    },
+    "scripts/memory_cell_cost_v2/storage_ledger.py": {
+      "bytes": 9388,
+      "lines": 188,
+      "sha256": "78d3334429b93910a365f436f13976099146fcfda52a65a8828a60cafded605b"
+    },
+    "scripts/memory_cell_cost_v2/test_controller_meter.py": {
+      "bytes": 2050,
+      "lines": 43,
+      "sha256": "17a4f61fd10709174763d151d57d516ab9e692b18164efb3a6c759a1d2fa2f86"
+    },
+    "scripts/memory_cell_cost_v2/test_receipt_reader.py": {
+      "bytes": 3513,
+      "lines": 73,
+      "sha256": "81535bf951ce819ceb880370b690d789ff62ab073264c75d7b77af78b32f4549"
+    },
+    "scripts/memory_cell_cost_v2/test_storage_ledger.py": {
+      "bytes": 4523,
+      "lines": 89,
+      "sha256": "e608100b08a0e9b60fe05df079d40c55ed70fb4b076dd08d0e5605a77df85fad"
+    },
+    "scripts/memory_cell_cost_v2/test_warm_worker.py": {
+      "bytes": 5401,
+      "lines": 114,
+      "sha256": "c6f79a6b46696218d4f1af88806e8d4094c19c3c78d7f4bef822c7378dfe1c28"
+    },
+    "scripts/memory_cell_cost_v2/warm_trial.py": {
+      "bytes": 13234,
+      "lines": 212,
+      "sha256": "086707f51dc74063fdcf7277e85d5c01797c0a69d80f92b95b6ecaad2961d5bc"
+    },
+    "scripts/memory_cell_cost_v2/warm_worker.py": {
+      "bytes": 7406,
+      "lines": 152,
+      "sha256": "a32c5821d051f9259d1a50d5cbe3bd37a4b0e757cbb5bfed286a66174b3fc85e"
+    }
+  },
+  "status": "measured_exposed_development_contract_only",
+  "storage": {
+    "changed_accounting_code_bytes": 65469,
+    "component_logical_bytes": {
+      "adapter-24041": 1890398,
+      "adapter-24043": 1890389,
+      "adapter-24047": 1890357,
+      "base": 271170520,
+      "development-execution-code": 19330,
+      "model-environment-snapshot": 872338447,
+      "model-source-closure": 115198,
+      "published-development-record": 85762,
+      "python-executable": 30894944,
+      "python-stdlib": 25454590,
+      "retained-research-evidence": 1039611,
+      "ruff-tool": 27849024,
+      "source-diagnostic": 2574,
+      "source-facts": 961,
+      "source-fixture": 105134,
+      "source-observations": 25902,
+      "source-policy": 7508
+    },
+    "content_dedup_actually_applied": false,
+    "full_all_input_hashes_performed_before_first_query_and_after_last_query": true,
+    "hardlinks_vs_content_duplicates_separate": true,
+    "incremental_refresh_only_rehashed_changed_code": true,
+    "latest_inventory_totals": {
+      "allocated_file_bytes": 1282613248,
+      "content_deduplication_actually_applied": false,
+      "content_duplicate_inode_bytes": 7594379,
+      "content_unique_bytes": 1227251739,
+      "file_entries": 19282,
+      "filesystem_metadata_bytes": null,
+      "hardlink_repeated_path_bytes": 0,
+      "logical_file_bytes": 1234846118,
+      "physical_files": 19282,
+      "physical_payload_bytes": 1234846118
+    },
+    "operational_deployment_logical_bytes": {
+      "memory_standalone": 1229874530,
+      "retrieval_standalone": 84359967,
+      "three_cells_independent_hosts": 3689623540,
+      "three_cells_shared_host": 1233655276
+    },
+    "physical_payload_is_unique_inode_logical_bytes_not_device_extents": true
+  }
+}

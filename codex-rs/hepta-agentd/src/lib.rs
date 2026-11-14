@@ -711,6 +711,37 @@ pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptOwner
 pub use neuron_cell_evaluation_receipt_owner::OriginalCellEvaluationReceiptSourcesV1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerV1;
+mod native_memory;
+mod native_memory_context_binding;
+#[cfg(test)]
+#[path = "native_memory_control_tests.rs"]
+mod native_memory_control_tests;
+mod native_memory_current;
+#[cfg(all(test, unix))]
+#[path = "native_memory_current_test_support.rs"]
+mod native_memory_current_test_support;
+#[cfg(all(test, unix))]
+#[path = "native_memory_current_tests.rs"]
+mod native_memory_current_tests;
+#[cfg(target_os = "linux")]
+mod native_memory_host_bootstrap;
+#[cfg(target_os = "linux")]
+mod native_memory_host_control;
+#[cfg(target_os = "linux")]
+mod native_memory_host_session;
+mod native_memory_model;
+mod native_memory_process;
+#[cfg(target_os = "linux")]
+mod native_memory_process_schema;
+#[cfg(target_os = "linux")]
+mod native_memory_process_trust;
+mod native_memory_registration;
+mod native_memory_shadow_namespace;
+#[cfg(test)]
+mod native_memory_test_support;
+mod native_memory_tick_binding;
+mod native_memory_tick_owner;
+mod native_memory_types;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
@@ -1128,6 +1159,30 @@ pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
 pub use learning_iteration_ports::LearningIterationStageOwnerPortsV1;
 pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
+pub use native_memory::AgentdNativeMemoryCell;
+pub use native_memory_context_binding::NativeMemoryContextBindingV1;
+pub use native_memory_current::AgentdNativeMemoryContextHostV1;
+pub use native_memory_current::AgentdNativeMemoryCurrentContextV1;
+pub use native_memory_current::AgentdNativeMemoryPreparedReadV1;
+pub use native_memory_current::NativeMemoryClockObservationV1;
+pub use native_memory_current::NativeMemoryTickClockV1;
+pub use native_memory_current::native_memory_subject_digest_v1;
+#[cfg(target_os = "linux")]
+pub use native_memory_host_bootstrap::configure_native_memory_process_v1;
+pub use native_memory_registration::AgentdNativeMemoryHostV1;
+pub use native_memory_registration::AgentdNativeMemoryRegistrationV1;
+pub use native_memory_registration::NativeMemorySourceConfigV1;
+pub use native_memory_shadow_namespace::NativeMemoryShadowFilesV1;
+pub use native_memory_shadow_namespace::NativeMemoryShadowProfileV1;
+pub use native_memory_shadow_namespace::NativeMemoryShadowStartV1;
+pub use native_memory_tick_owner::AgentdNativeMemoryShadowOwner;
+pub use native_memory_tick_owner::NativeMemoryContextAuthorityV1;
+pub use native_memory_tick_owner::NativeMemoryShadowReadV1;
+pub use native_memory_tick_owner::NativeMemoryTickContextV1;
+pub use native_memory_types::NativeMemoryError;
+pub use native_memory_types::NativeMemoryExecutionV1;
+pub use native_memory_types::NativeMemoryModelConfigV1;
+pub use native_memory_types::NativeMemoryPinsV1;
 pub use neuron_cell_evaluation::CellComparisonContractV1;
 pub use neuron_cell_evaluation::CellCostCoverageV1;
 pub use neuron_cell_evaluation::CellEvaluationArmRecordV1;

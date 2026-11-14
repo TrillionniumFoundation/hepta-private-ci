@@ -1,0 +1,80 @@
+{
+  "audit_utc": "2026-10-25T13:49:47.398550+00:00",
+  "controller_process_sha256": "743c7dfe3aa6c6c61d0a118c849596a671a2d9acbe8625bdb265269912dbc579",
+  "frozen_files_count": 22,
+  "groups": [
+    {
+      "all_original_definitions_ast_retained": true,
+      "id": "H1",
+      "original_definitions_count": 37,
+      "phases": [
+        {
+          "exact_ids_and_outcomes_verified": true,
+          "phase": "original",
+          "raw_hashes_match_report": true,
+          "returncode": 0,
+          "spawn_error": null,
+          "timeout": false
+        },
+        {
+          "exact_ids_and_outcomes_verified": true,
+          "phase": "expanded",
+          "raw_hashes_match_report": true,
+          "returncode": 1,
+          "spawn_error": null,
+          "timeout": false
+        },
+        {
+          "exact_ids_and_outcomes_verified": true,
+          "phase": "reference",
+          "raw_hashes_match_report": true,
+          "returncode": 0,
+          "spawn_error": null,
+          "timeout": false
+        }
+      ]
+    },
+    {
+      "all_original_definitions_ast_retained": true,
+      "id": "H2",
+      "original_definitions_count": 43,
+      "phases": [
+        {
+          "exact_ids_and_outcomes_verified": true,
+          "phase": "original",
+          "raw_hashes_match_report": true,
+          "returncode": 0,
+          "spawn_error": null,
+          "timeout": false
+        },
+        {
+          "exact_ids_and_outcomes_verified": true,
+          "phase": "expanded",
+          "raw_hashes_match_report": true,
+          "returncode": 1,
+          "spawn_error": null,
+          "timeout": false
+        },
+        {
+          "exact_ids_and_outcomes_verified": true,
+          "phase": "reference",
+          "raw_hashes_match_report": true,
+          "returncode": 0,
+          "spawn_error": null,
+          "timeout": false
+        }
+      ]
+    }
+  ],
+  "model_calls": 0,
+  "new_execution_calls_during_audit": 0,
+  "post_execution_pin_mismatches": [],
+  "protocol_sha256": "6ab14752462774ef558bfaae97ec9f3a372b46a64c76b3de2922edefa7f29fb1",
+  "qualified_historical_heldout_groups": 2,
+  "result_sha256": "65bbc071e2593c43ded3bbb259301fd5768b2b64be67db70a88a858f3aba3537",
+  "schema": "hepta.historical-heldout-independent-raw-audit.v1",
+  "solver_results_observed_by_curator": 0,
+  "sum_child_cpu_seconds": 10.152046,
+  "temporal_future_groups": 0,
+  "training_updates": 0
+}

@@ -30,6 +30,9 @@ use crate::cognitive_test_support::source;
 #[path = "cognitive_store_recovery_read_only_tests.rs"]
 mod cold_read_only;
 
+#[cfg(unix)]
+#[path = "cognitive_store_bootstrap_crash_tests.rs"]
+mod bootstrap_crash;
 #[cfg(windows)]
 #[path = "cognitive_store_recovery_windows_tests.rs"]
 mod windows;
@@ -153,8 +156,7 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
         serde_json::from_slice(&serialized).expect("retained witness");
     assert_eq!(retained, anchor);
     let original = store.path().to_path_buf();
-    store.pool.close().await;
-    drop(store);
+    store.close().await;
 
     let authority = recovery_authority(&owner);
     let recovered = CognitiveStore::open_with_recovery(
@@ -188,8 +190,7 @@ async fn exact_current_cut_recovers_writable_generation_and_persists_activation(
         .expect("advanced current witness");
     assert_ne!(advanced, retained);
     let recovered_path = recovered.path().to_path_buf();
-    recovered.pool.close().await;
-    drop(recovered);
+    recovered.close().await;
 
     let reopened = CognitiveStore::open(&layout(&temp, &owner))
         .await

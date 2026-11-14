@@ -1,0 +1,195 @@
+{
+  "completed_utc": "2026-10-25T11:52:42.657075+00:00",
+  "contract_sha256": "df2507680813e86d08b94877e6985476927b2bb76d5ec4bdb083ad5b3e86a8dc",
+  "development_corrections": [
+    "qualification001 preserved: 4 Ruff allocation aborts at512MiB AS before singleCPU affinity; no semantic worker ran",
+    "qualification-plan002 not executed; plan003 included review corrections before successful run002",
+    "best-effort output-file receipt preserves stderr-open error without spawning child",
+    "hash then parse same contract bytes",
+    "source-lint001 F401 unused harness sys import; only that import removed; source-lint002 clean; exact executed harness source retained"
+  ],
+  "files": {
+    "README.md": {
+      "bytes": 5900,
+      "lines": 105,
+      "sha256": "18c7ac449404a7555b02361a230ac2027c63decbd883401268d45f8292b73b04"
+    },
+    "bounded_process.py": {
+      "bytes": 3597,
+      "lines": 113,
+      "sha256": "462a4088e1d5f28cd6d4aac45b9463862b531d58885c0bbc119258718caf1b88"
+    },
+    "ruff_contract.json": {
+      "bytes": 12212,
+      "lines": 182,
+      "sha256": "df2507680813e86d08b94877e6985476927b2bb76d5ec4bdb083ad5b3e86a8dc"
+    },
+    "ruff_executor.py": {
+      "bytes": 10229,
+      "lines": 266,
+      "sha256": "b1a89a8b0e1966d2e840266c118336400c33dffa72eefc8e727d61a3da5c0bf0"
+    },
+    "ruff_judge.py": {
+      "bytes": 2596,
+      "lines": 84,
+      "sha256": "259380ca4b1f60a5b4729dd3d5c0efaa7b35fac60a688ee8604e00368520fc1b"
+    },
+    "test_ruff_executor.py": {
+      "bytes": 8529,
+      "lines": 221,
+      "sha256": "b1fcab07b9eadd88e209423c3f4bc14c53ea1a28856c912d77b32b416302784b"
+    }
+  },
+  "fixed_fixture_files": 17,
+  "fixture_has_explicit_ruff_configuration": false,
+  "formatting": {
+    "bridge": "publication-format.json",
+    "existing_publication_checkout_files_unchanged": 747,
+    "just_fmt_calls": 1,
+    "python_ast_equal_before_after_fmt": 4,
+    "returncode": 0,
+    "separate_harness_import_cleanup": "final-import-cleanup.json",
+    "tests_after_fmt": 0
+  },
+  "independent_test_modules": 13,
+  "limits": [
+    "Trusted proposals only: same UID/Python interpreter, no hostile-code sandbox/anti-monkeypatch/remote attestation",
+    "Parent-alive wall/process-group cleanup only; parent death or deliberate descendant escape not contained",
+    "Binary pins do not pin OS/stdlib/dynamic library closure",
+    "One exposed incident/family; known fix is explicit gold positive control; no independent prediction",
+    "No solver/retrieval baseline, five-arm comparison, full CPU/token/storage ledger, long-term guarantee or production qualification claimed"
+  ],
+  "new_judge_changes": [
+    "Ruff --isolated --output-format=json freezes default rules/diagnostics; old argv retained in README",
+    "new suppression comments refused",
+    "independent unchanged tests with exact per-test start/completion/outcome admission",
+    "Linux single-CPU affinity; 90s wall/30s CPU/512MiB virtual AS/4MiB output file per child"
+  ],
+  "required_test_ids": 76,
+  "retained_runs": [
+    {
+      "accepted": false,
+      "cases": {
+        "known-fix": {
+          "accepted": false,
+          "baseline_codes": [
+            "E731",
+            "F401"
+          ],
+          "outcomes": {},
+          "status": "lint_failed",
+          "tests_run": null
+        },
+        "original-failure": {
+          "accepted": false,
+          "baseline_codes": null,
+          "outcomes": {},
+          "status": "rejected",
+          "tests_run": null
+        },
+        "semantic-failure": {
+          "accepted": false,
+          "baseline_codes": null,
+          "outcomes": {},
+          "status": "rejected",
+          "tests_run": null
+        },
+        "skip-failure": {
+          "accepted": false,
+          "baseline_codes": null,
+          "outcomes": {},
+          "status": "rejected",
+          "tests_run": null
+        }
+      },
+      "child_cpu_seconds_sum": 0.138362,
+      "child_process_receipts": 6,
+      "child_wall_seconds_sum": 0.1557749059793423,
+      "errors": 0,
+      "failures": 4,
+      "harness_wall_seconds": 0.625838031002786,
+      "run": "qualification-001",
+      "spawned_children": 6,
+      "tests_run": 8
+    },
+    {
+      "accepted": true,
+      "cases": {
+        "known-fix": {
+          "accepted": true,
+          "baseline_codes": [
+            "E731",
+            "F401"
+          ],
+          "outcomes": {
+            "success": 76
+          },
+          "status": "passed",
+          "tests_run": 76
+        },
+        "original-failure": {
+          "accepted": false,
+          "baseline_codes": [
+            "E731",
+            "F401"
+          ],
+          "outcomes": {},
+          "status": "lint_failed",
+          "tests_run": null
+        },
+        "semantic-failure": {
+          "accepted": false,
+          "baseline_codes": [
+            "E731",
+            "F401"
+          ],
+          "outcomes": {
+            "failure": 1,
+            "success": 75
+          },
+          "status": "semantic_failed",
+          "tests_run": 76
+        },
+        "skip-failure": {
+          "accepted": false,
+          "baseline_codes": [
+            "E731",
+            "F401"
+          ],
+          "outcomes": {
+            "skip": 3,
+            "success": 62
+          },
+          "status": "semantic_failed",
+          "tests_run": 65
+        }
+      },
+      "child_cpu_seconds_sum": 10.061128,
+      "child_process_receipts": 13,
+      "child_wall_seconds_sum": 10.135491424975044,
+      "errors": 0,
+      "failures": 0,
+      "harness_wall_seconds": 10.651666554003896,
+      "run": "qualification-002",
+      "spawned_children": 12,
+      "tests_run": 9
+    }
+  ],
+  "schema": "hepta.memory-cell.common-executor-development-summary.v1",
+  "scope": "one previously exposed historical Ruff development incident; engineering candidate executor, not predictor/future benchmark",
+  "source_commit": "b168b8d05959b4e9a4956fc3122364f2b59cc1fe",
+  "tracked_command_ledger": {
+    "all_tracked_spawned_children_excluding_harnesses": 21,
+    "future_cases": 0,
+    "model_queries": 0,
+    "qualification_child_spawned": 18,
+    "qualification_harness_processes_separate": 2,
+    "qualification_nonspawn_process_receipts": 1,
+    "ruff_help_metadata_child": 1,
+    "rust_build_or_test_commands": 0,
+    "scope_note": "Metadata inspection/orchestration Python/shell invocations, formatter internals and whole host/background costs are not completely metered; this is not a whole-system cost ledger.",
+    "semantic_workers": 3,
+    "source_lint_children": 2,
+    "training_updates": 0
+  }
+}

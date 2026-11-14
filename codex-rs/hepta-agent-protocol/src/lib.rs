@@ -6,6 +6,7 @@ mod authbus;
 mod capabilities;
 mod evidence;
 mod generation;
+mod memory_cell;
 mod objective_history;
 mod q24_completed_history;
 mod q24_initial_task_progress;
@@ -48,6 +49,10 @@ pub use generation::GenerationStatusV1;
 pub use generation::GenerationStepV1;
 pub use generation::MAX_GENERATION_CONTROL_INPUT_BYTES;
 pub use generation::MAX_GENERATION_OUTPUT_PAGE_BYTES;
+pub use memory_cell::MemoryCellReadIngress;
+pub use memory_cell::MemoryCellReadSnapshot;
+pub use memory_cell::MemoryCellReadState;
+pub use memory_cell::MemoryCellRole;
 pub use objective_history::ObjectiveAdmissionOutcome;
 pub use objective_history::ObjectiveAdmissionPublication;
 pub use objective_history::ObjectiveAdmissionQuery;
@@ -610,6 +615,12 @@ impl AgentdRequest {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    MemoryCellReadStart {
+        request: crate::MemoryCellReadIngress,
+    },
+    MemoryCellReadStatus {
+        invocation_id: String,
+    },
     Capabilities,
     Generation {
         request: Box<GenerationControlRequestV1>,
@@ -791,6 +802,7 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    MemoryCellRead(crate::MemoryCellReadSnapshot),
     Capabilities(AgentdCapabilitySet),
     Generation(GenerationControlResponseV1),
     Q24OriginalTerminalOutcome(Q24OriginalTerminalOutcomeReceiptV1),

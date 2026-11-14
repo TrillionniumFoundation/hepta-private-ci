@@ -145,6 +145,11 @@ pub struct AgentdConfig {
     notes_thread_tools: Option<crate::AgentdNotesThreadToolRuntime>,
     #[cfg(target_os = "linux")]
     desktop_thread_tools: Option<crate::AgentdDesktopThreadToolRuntime>,
+    native_memory_cell: Option<std::sync::Arc<crate::AgentdNativeMemoryCell>>,
+    native_memory_registration: Option<std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>>,
+    #[cfg(target_os = "linux")]
+    native_memory_process_host:
+        Option<std::sync::Arc<crate::native_memory_host_bootstrap::NativeMemoryProcessHost>>,
     cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
@@ -329,6 +334,10 @@ impl AgentdConfig {
             notes_thread_tools: None,
             #[cfg(target_os = "linux")]
             desktop_thread_tools: None,
+            native_memory_cell: None,
+            native_memory_registration: None,
+            #[cfg(target_os = "linux")]
+            native_memory_process_host: None,
             cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
@@ -693,6 +702,78 @@ impl AgentdConfig {
         &self,
     ) -> Option<std::sync::Arc<crate::AgentdProductionWriterHost>> {
         self.production_writer_host.clone()
+    }
+
+    /// Explicit native decoder opt-in on the already recovered production
+    /// writer; neither a query nor daemon startup can choose model authority.
+    #[cfg(feature = "qualification-cognitive-write")]
+    pub fn with_native_memory_cell(
+        mut self,
+        cell: std::sync::Arc<crate::AgentdNativeMemoryCell>,
+    ) -> Result<Self, AgentdError> {
+        let host = self.production_writer_host.as_ref().ok_or_else(|| {
+            AgentdError::Invalid(
+                "native memory requires the recovered production writer host".to_string(),
+            )
+        })?;
+        if self.native_memory_cell.is_some()
+            || self.native_memory_registration.is_some()
+            || !std::sync::Arc::ptr_eq(&cell.writer, &host.writer())
+        {
+            return Err(AgentdError::Invalid(
+                "native memory owner differs from registered production host".to_string(),
+            ));
+        }
+        self.native_memory_cell = Some(cell);
+        Ok(self)
+    }
+
+    pub(crate) fn native_memory_cell(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdNativeMemoryCell>> {
+        self.native_memory_cell.clone()
+    }
+
+    /// Install external NDU/clock owners after Agentd attaches its actual
+    /// Objective runtime and recovered writer. No run is required at startup.
+    pub fn with_native_memory_registration(
+        mut self,
+        registration: std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>,
+    ) -> Result<Self, AgentdError> {
+        if self.native_memory_registration.is_some() || self.native_memory_cell.is_some() {
+            return Err(AgentdError::Invalid(
+                "native memory is already configured".to_string(),
+            ));
+        }
+        self.native_memory_registration = Some(registration);
+        Ok(self)
+    }
+
+    pub(crate) fn native_memory_registration(
+        &self,
+    ) -> Option<std::sync::Arc<crate::AgentdNativeMemoryRegistrationV1>> {
+        self.native_memory_registration.clone()
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn with_native_memory_process_host(
+        mut self,
+        host: std::sync::Arc<crate::native_memory_host_bootstrap::NativeMemoryProcessHost>,
+    ) -> Result<Self, AgentdError> {
+        if self.native_memory_process_host.is_some() {
+            return Err(AgentdError::Invalid(
+                "native memory process host is already configured".into(),
+            ));
+        }
+        self.native_memory_process_host = Some(host);
+        Ok(self)
+    }
+
+    #[cfg(target_os = "linux")]
+    pub(crate) fn native_memory_process_host(
+        &self,
+    ) -> Option<std::sync::Arc<crate::native_memory_host_bootstrap::NativeMemoryProcessHost>> {
+        self.native_memory_process_host.clone()
     }
 
     /// Select the retrieval product profile explicitly. Compatibility preserves

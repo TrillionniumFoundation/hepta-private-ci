@@ -46,7 +46,7 @@ use crate::RunPhase;
 #[path = "state_q24_completed_history_tests.rs"]
 mod completed_history;
 
-fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+pub(crate) fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     #[cfg(unix)]

@@ -1,0 +1,26 @@
+{
+  "archive_audit_sha256": "3b2909a82fc619fb9fda97fe0b87c819eaf9ddc9199a6180b0fc581c02cf5f52",
+  "auditor_source_sha256": "187fea169d387e50c960d49241b27dfbcca14fdece94c6507afcc4a29f15b5bb",
+  "frozen_plan_sha256": "7c4fc2bb251d1c6f897e336dcc82adad3780511b6f353e7b672dc9fca8f471bf",
+  "log_inventory_file": "log_inventory.json",
+  "phase_report_semantics": "observe_report.json preserves the intermediate awaiting_pinned_encoder status; result.json and this manifest record the completed real Encoder/SGD run.",
+  "phases": {
+    "archive_audit": "exit_0",
+    "freeze": "exit_0",
+    "learn": "exit_0",
+    "observe": "exit_0"
+  },
+  "production_authority": "DENY_ALL",
+  "result_sha256": "84e12378b548dd8f105d8f94881ec3b4ffc1d69bef1155b8398e2413f3caf56b",
+  "runtime_native_execution_of_new_artifact": false,
+  "schema": "hepta.procedure-replay-run-validation.v1",
+  "source_code_changed_after_plan": false,
+  "status": "complete",
+  "unit_tests": {
+    "archived_log_file": "logs/unit_tests.log.gz",
+    "failed": 0,
+    "passed": 9,
+    "test_log_sha256": "d753880df78ef796d0b5215ade1b9087953302195090374b84e6c19402833f65",
+    "test_source_sha256": "18d205c0036f315ab9fa4a8415d42392e9cf079ac98ff93a2a00e445e5689fa4"
+  }
+}

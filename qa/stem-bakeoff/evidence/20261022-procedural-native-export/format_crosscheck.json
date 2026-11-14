@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "bundle_sha256": "360a9667ae08eb081ec1937b947f1558258490264aebca792af672ba561e03d8",
+      "feature_identity_formula_match": true,
+      "native_dataset_frontier_formula_match": true,
+      "original_weights_and_manifest_byte_exact": true,
+      "seed": 7
+    },
+    {
+      "bundle_sha256": "0febb2c751c5202178a4e50453e1ff5902a4caa2d4a820f14d7d07d7eacc5bf7",
+      "feature_identity_formula_match": true,
+      "native_dataset_frontier_formula_match": true,
+      "original_weights_and_manifest_byte_exact": true,
+      "seed": 17
+    },
+    {
+      "bundle_sha256": "ec7ec3662273135404322d347f568f3f773f0a1faa42aec7ab3efef3379a7319",
+      "feature_identity_formula_match": true,
+      "native_dataset_frontier_formula_match": true,
+      "original_weights_and_manifest_byte_exact": true,
+      "seed": 29
+    }
+  ],
+  "native_execution_performed": false,
+  "native_source_reviewed": [
+    "cell_head_bundle.rs decode/verify_cell_head_bundle",
+    "cell_head_npz.rs read_profile/read_parameters",
+    "cell_head_inference.rs source_digest/infer_with_clock"
+  ],
+  "schema": "hepta.procedural-native-format-crosscheck.v1"
+}

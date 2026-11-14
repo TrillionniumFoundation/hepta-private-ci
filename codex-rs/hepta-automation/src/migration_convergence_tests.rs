@@ -48,6 +48,8 @@ async fn historical_pool(displaced: bool) -> (tempfile::TempDir, SqlitePool) {
             .expect("historical branch migration");
     }
     drop(connection);
+    // Keep the database directory alive until the caller has closed its pool.
+    // Returning only the pool would unlink the database and its WAL here.
     (directory, pool)
 }
 
