@@ -16,12 +16,12 @@ The frozen base uses revision `00921df66db728a9ceb750f5eca43e5c203a2051` and wei
 
 `cohort.py` selects one task per original image from the official COCO `instances_val2017.json`. Selection uses annotations and a fixed hash order, without model output. Each selected category has 1–3 instances, all non-crowd with valid boxes; its largest bounding-box area covers at least 4% of the image. Categories with tied largest boxes or an exactly centered largest box are excluded. License IDs 4 and 5 match the prior research roster.
 
-| Split | Original-image groups | Permitted role |
-| --- | ---: | --- |
-| train | 128 | Teacher-forced Cell fitting; random exploration; policy and verifier fitting |
-| dev | 32 | Choose NDU risk weight from the fixed grid |
-| calibration | 32 | Adjust verifier severe-error probability only |
-| test | 64 | Fixed final comparison and descriptive statistics |
+| Split       | Original-image groups | Permitted role                                                               |
+| ----------- | --------------------: | ---------------------------------------------------------------------------- |
+| train       |                   128 | Teacher-forced Cell fitting; random exploration; policy and verifier fitting |
+| dev         |                    32 | Choose NDU risk weight from the fixed grid                                   |
+| calibration |                    32 | Adjust verifier severe-error probability only                                |
+| test        |                    64 | Fixed final comparison and descriptive statistics                            |
 
 The historical 384-image cohort is excluded. File SHA256, decoded RGB SHA256 and horizontal 64-bit dHash distance at most 4 screen historical and newly selected images for duplicates. The split unit is the original image. COCO does not establish that people or other real-world entities never recur across images, and overlap with the base model's pretraining data is not excluded.
 
@@ -33,12 +33,12 @@ Each `<split>.observations.jsonl` row has exactly five public fields: `task_id`,
 
 The four Cells are rank-16 sparse residual adapters over a common decoder vocabulary:
 
-| Cell | Training role |
-| --- | --- |
-| semantic | Lexical tokens in the train-derived vocabulary |
-| horizontal | Horizontal location tokens |
-| vertical | Vertical location tokens |
-| completion | Sequence-boundary token corrections |
+| Cell       | Training role                                  |
+| ---------- | ---------------------------------------------- |
+| semantic   | Lexical tokens in the train-derived vocabulary |
+| horizontal | Horizontal location tokens                     |
+| vertical   | Vertical location tokens                       |
+| completion | Sequence-boundary token corrections            |
 
 They share one frozen encoder/decoder backbone. They are not four modality generators. Residual logits are bounded by `3*tanh(raw/3)`, and teacher-forced training preserves the frozen softmax's outside-vocabulary mass in the normalizer.
 
@@ -61,23 +61,23 @@ The optional 4×4 matrix is the current token-probability-weighted covariance of
 
 ## Comparison arms
 
-| Baseline | Executed mechanism |
-| --- | --- |
-| `base` | Frozen base with greedy token generation and no Cell controller |
-| `static_cells` | Uniform Cell weights with prefix geometry constraints |
-| `learned_router` | Terminal-quality-weighted supervised action cross-entropy |
-| `best_of_n` | One shared same-prompt Encoder execution, then at most two independent decoder candidates under one total cap; first greedy, second sampled at temperature 0.7; train-fitted quality verifier selects |
-| `mean_only` | Quality-only offline actor–critic; risk weight is zero |
-| `risk_actor_critic` | TD/return-anchored critic and fixed-threshold risk heads; no BSDE path residual |
-| `ndu` | Discrete BSDE critics, sampled portfolio policy and local-matrix penalty |
+| Baseline            | Executed mechanism                                                                                                                                                                                    |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `base`              | Frozen base with greedy token generation and no Cell controller                                                                                                                                       |
+| `static_cells`      | Uniform Cell weights with prefix geometry constraints                                                                                                                                                 |
+| `learned_router`    | Terminal-quality-weighted supervised action cross-entropy                                                                                                                                             |
+| `best_of_n`         | One shared same-prompt Encoder execution, then at most two independent decoder candidates under one total cap; first greedy, second sampled at temperature 0.7; train-fitted quality verifier selects |
+| `mean_only`         | Quality-only offline actor–critic; risk weight is zero                                                                                                                                                |
+| `risk_actor_critic` | TD/return-anchored critic and fixed-threshold risk heads; no BSDE path residual                                                                                                                       |
+| `ndu`               | Discrete BSDE critics, sampled portfolio policy and local-matrix penalty                                                                                                                              |
 
-| Ablation | Exact intervention |
-| --- | --- |
-| `ablate_covariance` | Disable the 4×4 portfolio penalty. Diagonal disagreement features remain in the 24-dimensional state. |
-| `ablate_fixed_weights` | Uniform weights throughout; behavior duplicates `static_cells` under the same constraints. |
-| `ablate_crossmodal` | Remove prefix syntax and coordinate-order constraints. This is a geometry-constraint ablation; it does not test an independently learned cross-modal semantic constraint. |
-| `ablate_missing_modality` | Replace the image with a same-size black image; retain the requested category and execute the encoder. |
-| `ablate_shuffled_pair` | Substitute the next image in the same split while retaining the original category; score and render on the original source. |
+| Ablation                  | Exact intervention                                                                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ablate_covariance`       | Disable the 4×4 portfolio penalty. Diagonal disagreement features remain in the 24-dimensional state.                                                                     |
+| `ablate_fixed_weights`    | Uniform weights throughout; behavior duplicates `static_cells` under the same constraints.                                                                                |
+| `ablate_crossmodal`       | Remove prefix syntax and coordinate-order constraints. This is a geometry-constraint ablation; it does not test an independently learned cross-modal semantic constraint. |
+| `ablate_missing_modality` | Replace the image with a same-size black image; retain the requested category and execute the encoder.                                                                    |
+| `ablate_shuffled_pair`    | Substitute the next image in the same split while retaining the original category; score and render on the original source.                                               |
 
 ## Fixed scoring, selection and calibration
 

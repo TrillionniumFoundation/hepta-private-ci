@@ -36,18 +36,18 @@ work, FLOPs, energy, and uncertainty remain unbalanced/unidentified.
 
 With the **verified existing v1 archive**, the result is:
 
-| Audit item | Computed result | Decision |
-| --- | --- | --- |
-| Full journal/aggregate reconciliation | 768 records, 64 task-seed groups, 7 aggregate fields reconciled | **PASS: engineering integrity only** |
-| 8–16 actually exercised NDU controls | 2 sources with 0; 47 with 2; 15 with 3 | OPEN |
-| Covariance causal effect | Dev selected `lambda=0`; 62 jointly completed covariance-ablation pairs, 0 changed outputs | OPEN |
-| Learned independent text + pixels | V1 has a text template and overlaid original image | OPEN |
-| Independent one-Cell-at-a-time counterfactuals | Not executed in v1 | OPEN |
-| Matched realized cost and coverage | Mean NDU wall time +23.95% versus best-of-2; NDU coverage −3.125 pp; 18/64 paired sources within ±5% and equal coverage | OPEN |
-| Multiple holdout seeds and power | One seed, 64 original test sources | OPEN |
-| Confirmed quality-risk-cost frontier improvement | NDU is outside the descriptive nondominated set | OPEN |
-| Untouched v2 evaluation cohort | No new v2 cohort has been executed | OPEN |
-| Complete state / continuous FBSDE | Action-only discrete approximation, no convergence evidence | OPEN |
+| Audit item                                       | Computed result                                                                                                         | Decision                             |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Full journal/aggregate reconciliation            | 768 records, 64 task-seed groups, 7 aggregate fields reconciled                                                         | **PASS: engineering integrity only** |
+| 8–16 actually exercised NDU controls             | 2 sources with 0; 47 with 2; 15 with 3                                                                                  | OPEN                                 |
+| Covariance causal effect                         | Dev selected `lambda=0`; 62 jointly completed covariance-ablation pairs, 0 changed outputs                              | OPEN                                 |
+| Learned independent text + pixels                | V1 has a text template and overlaid original image                                                                      | OPEN                                 |
+| Independent one-Cell-at-a-time counterfactuals   | Not executed in v1                                                                                                      | OPEN                                 |
+| Matched realized cost and coverage               | Mean NDU wall time +23.95% versus best-of-2; NDU coverage −3.125 pp; 18/64 paired sources within ±5% and equal coverage | OPEN                                 |
+| Multiple holdout seeds and power                 | One seed, 64 original test sources                                                                                      | OPEN                                 |
+| Confirmed quality-risk-cost frontier improvement | NDU is outside the descriptive nondominated set                                                                         | OPEN                                 |
+| Untouched v2 evaluation cohort                   | No new v2 cohort has been executed                                                                                      | OPEN                                 |
+| Complete state / continuous FBSDE                | Action-only discrete approximation, no convergence evidence                                                             | OPEN                                 |
 
 See `v1-retrospective-gates.json` alongside this document for **actual machine
 results and the exact original evidence file hashes**. This receipt is a
@@ -85,11 +85,11 @@ Historical source IDs must also be unique across the complete rosters. Input
 byte limits are checked before and after file reading, to avoid allocating
 oversized manifests. Resource overruns yield a typed denial, never a partial
 PASS. Direct library
-calls without `require_complete_history=True` are *diagnostics only*. It verifies
+calls without `require_complete_history=True` are _diagnostics only_. It verifies
 **observable image identities only**: real-world entity identity and
 foundation-model pretraining overlap remain outside what hashes can prove.
 
-A required negative control was run with the *v1 candidate manifest itself*
+A required negative control was run with the _v1 candidate manifest itself_
 and both historical data sources. All **256/256** reused v1 sources were
 caught, with no internal false assumption that test data could be recycled.
 The 384-image exclusions were also read and checked. That negative-control
@@ -109,6 +109,7 @@ python qa/ndu-grounded-generation/capability_gate.py \
 # EXPECT EXIT STATUS 2: nine capability blockers remain OPEN, not a test failure.
 python qa/ndu-grounded-generation/cohort_firewall.py \
   --candidate /path/to/a/new/v2/cohort/manifest.json \
+  --image-dir /path/to/new/v2-original-jpegs \
   --historical /path/to/v1/hepta-ndu-evidence-v1-20261022/cohort/manifest.json \
   --historical qa/ndu-grounded-generation/historical_exclusions.json \
   --historical-sha256 "$TRUSTED_V1_MANIFEST_SHA256" \
@@ -117,7 +118,7 @@ python qa/ndu-grounded-generation/cohort_firewall.py \
 # EXPECT EXIT STATUS 0 only if identity overlap is absent.
 ```
 
-These 20 standard-library tests require no model weights or downloading.
+These synthetic integrity tests require no model weights or downloading.
 The trusted SHA256 variables must be populated by the independent evidence
 owner, not taken from the candidate or a self-asserted receipt.
 
@@ -147,7 +148,7 @@ A replay PASS does not automatically turn v2 scientific gates green.
    close this gate. A model-free provenance flag is not proof of generation.
 4. **Estimate terminal-output error covariance** using real independent
    validation outcomes and out-of-fold predictions. Demonstrate covariance's
-   *causal* contribution against covariance-disabled controls with a nonzero
+   _causal_ contribution against covariance-disabled controls with a nonzero
    development-selected penalty; avoid test-set hyperparameter selection.
 5. **Pre-register a matched actual-compute and coverage experiment**, not just
    a shared cap. Charge failed/cancelled attempts, extra candidates and
@@ -167,3 +168,26 @@ claim is made that a configured cloud project was used for a new model run;
 these offline files were checked locally and can be executed in CI. The
 original v1 results and the subsequent overlay-geometry audit remain
 untouched.
+
+## Current reader and candidate-image binding
+
+The CLI also requires the candidate's original local JPEGs. Each image is
+opened relative to one retained no-follow directory descriptor; its JPEG
+bytes, decoded RGB digest, dimensions and perceptual fingerprint must agree
+with the candidate manifest. Receipt destinations cannot overwrite the
+candidate, either original history, or the image directory. This does not
+prove real-world entity independence or exclude foundation pretraining.
+
+Capability and overlay readers use one bounded byte snapshot for hashing
+and parsing or image decoding, reject duplicate JSON keys and non-finite
+JSON numbers, and refuse evidence-aliasing outputs. Their per-file limit is
+128 MiB, above the entire original archive's declared 129,958,634-byte
+uncompressed contents. Benign metadata fields may be present; undeclared
+claim flags never establish scientific qualification. An empty overlay
+journal cannot produce an integrity PASS.
+
+The older verify_frozen_history_pins function remains an identity-only
+compatibility check. Only the CLI additionally enforces the complete
+256+384 historical roster, distance floor of four and actual candidate
+image bytes. The pure check_cohort function is diagnostic. Original
+historical reports and their failed/open scientific conclusions are unchanged.

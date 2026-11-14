@@ -16,16 +16,23 @@ from cohort_firewall import CohortContractError, check_cohort, load_sources
 
 
 def image(index, dhash=None):
-    return {"source_id": f"coco:val2017:{index}", "task_id": f"task-{index}",
-            "image_sha256": hashlib.sha256(f"image-{index}".encode()).hexdigest(),
-            "decoded_rgb_sha256": hashlib.sha256(f"rgb-{index}".encode()).hexdigest(),
-            "dhash64": f"{int.from_bytes(hashlib.sha256(f'fingerprint-{index}'.encode()).digest()[:8], 'big') if dhash is None else dhash:016x}"}
+    return {
+        "source_id": f"coco:val2017:{index}",
+        "task_id": f"task-{index}",
+        "image_sha256": hashlib.sha256(f"image-{index}".encode()).hexdigest(),
+        "decoded_rgb_sha256": hashlib.sha256(f"rgb-{index}".encode()).hexdigest(),
+        "dhash64": f"{int.from_bytes(hashlib.sha256(f'fingerprint-{index}'.encode()).digest()[:8], 'big') if dhash is None else dhash:016x}",
+    }
 
 
 def manifest(offset=0):
-    return {"schema": "hepta.grounded-cohort.v1", "splits": {
-        part: {"count": 1, "sources": [image(offset + index)]}
-        for index,part in enumerate(("train", "dev", "calibration", "test"))}}
+    return {
+        "schema": "hepta.grounded-cohort.v1",
+        "splits": {
+            part: {"count": 1, "sources": [image(offset + index)]}
+            for index, part in enumerate(("train", "dev", "calibration", "test"))
+        },
+    }
 
 
 class CohortFirewallTests(unittest.TestCase):
@@ -45,7 +52,8 @@ class CohortFirewallTests(unittest.TestCase):
     def test_exact_source_id_collision(self):
         v = copy.deepcopy(self.new)
         v["splits"]["train"]["sources"][0]["source_id"] = image(0)["source_id"]
-        r = check_cohort(v, [self.old]); self.assertEqual(r["status"], "fail")
+        r = check_cohort(v, [self.old])
+        self.assertEqual(r["status"], "fail")
         self.assertTrue(any("source_id" in hit["reasons"] for hit in r["violations"]))
 
     def test_equal_bytes_and_equal_rgb_both_block(self):
@@ -53,28 +61,38 @@ class CohortFirewallTests(unittest.TestCase):
             with self.subTest(key=key):
                 v = copy.deepcopy(self.new)
                 v["splits"]["dev"]["sources"][0][key] = image(1)[key]
-                r = check_cohort(v, [self.old]); self.assertEqual(r["status"], "fail")
+                r = check_cohort(v, [self.old])
+                self.assertEqual(r["status"], "fail")
                 self.assertTrue(any(key in hit["reasons"] for hit in r["violations"]))
 
     def test_hamming_boundary(self):
         v = copy.deepcopy(self.new)
-        v["splits"]["train"]["sources"][0]["dhash64"] = f"{int(image(0)['dhash64'],16) ^ 0b1111:016x}"  # distance 4
+        v["splits"]["train"]["sources"][0]["dhash64"] = (
+            f"{int(image(0)['dhash64'], 16) ^ 0b1111:016x}"  # distance 4
+        )
         self.assertEqual(check_cohort(v, [self.old])["status"], "fail")
         self.assertEqual(check_cohort(v, [self.old], max_hamming=3)["status"], "pass")
 
     def test_duplicate_inside_candidate(self):
         v = copy.deepcopy(self.new)
-        v["splits"]["test"]["sources"][0]["image_sha256"] = v["splits"]["train"]["sources"][0]["image_sha256"]
+        v["splits"]["test"]["sources"][0]["image_sha256"] = v["splits"]["train"][
+            "sources"
+        ][0]["image_sha256"]
         self.assertEqual(check_cohort(v, [self.old])["status"], "fail")
 
     def test_task_id_aliases_are_rejected_across_and_within_splits(self):
         # A task ID is a score/journal join key, independently of image bytes.
-        for first, second in (("train", "dev"), ("train", "test"),
-                              ("dev", "calibration"), ("calibration", "test")):
+        for first, second in (
+            ("train", "dev"),
+            ("train", "test"),
+            ("dev", "calibration"),
+            ("calibration", "test"),
+        ):
             with self.subTest(first=first, second=second):
                 candidate = copy.deepcopy(self.new)
-                candidate["splits"][second]["sources"][0]["task_id"] = (
-                    candidate["splits"][first]["sources"][0]["task_id"])
+                candidate["splits"][second]["sources"][0]["task_id"] = candidate[
+                    "splits"
+                ][first]["sources"][0]["task_id"]
                 with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
                     check_cohort(candidate, [self.old])
         candidate = copy.deepcopy(self.new)
@@ -85,8 +103,9 @@ class CohortFirewallTests(unittest.TestCase):
         with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
             check_cohort(candidate, [self.old])
         historical = copy.deepcopy(self.old)
-        historical["splits"]["test"]["sources"][0]["task_id"] = (
-            historical["splits"]["train"]["sources"][0]["task_id"])
+        historical["splits"]["test"]["sources"][0]["task_id"] = historical["splits"][
+            "train"
+        ]["sources"][0]["task_id"]
         with self.assertRaisesRegex(CohortContractError, "duplicate task_id"):
             check_cohort(self.new, [historical])
 
@@ -95,38 +114,57 @@ class CohortFirewallTests(unittest.TestCase):
             with self.subTest(invalid=invalid):
                 candidate = copy.deepcopy(self.new)
                 candidate["splits"]["train"]["sources"][0]["task_id"] = invalid
-                with self.assertRaisesRegex(CohortContractError, "noncanonical task_id"):
+                with self.assertRaisesRegex(
+                    CohortContractError, "noncanonical task_id"
+                ):
                     check_cohort(candidate, [self.old])
 
     def test_candidate_task_key_must_not_alias_historical_cohort(self):
         candidate = copy.deepcopy(self.new)
-        candidate["splits"]["dev"]["sources"][0]["task_id"] = (
-            self.old["splits"]["train"]["sources"][0]["task_id"])
+        candidate["splits"]["dev"]["sources"][0]["task_id"] = self.old["splits"][
+            "train"
+        ]["sources"][0]["task_id"]
         self.assertNotEqual(
             candidate["splits"]["dev"]["sources"][0]["source_id"],
-            self.old["splits"]["train"]["sources"][0]["source_id"])
+            self.old["splits"]["train"]["sources"][0]["source_id"],
+        )
         self.assertNotEqual(
             candidate["splits"]["dev"]["sources"][0]["image_sha256"],
-            self.old["splits"]["train"]["sources"][0]["image_sha256"])
-        with self.assertRaisesRegex(CohortContractError, "candidate task_id aliases historical"):
+            self.old["splits"]["train"]["sources"][0]["image_sha256"],
+        )
+        with self.assertRaisesRegex(
+            CohortContractError, "candidate task_id aliases historical"
+        ):
             check_cohort(candidate, [self.old])
 
     def test_historical_task_keys_must_be_unique_across_manifests(self):
         other = manifest(20000)
-        other["splits"]["test"]["sources"][0]["task_id"] = (
-            self.old["splits"]["train"]["sources"][0]["task_id"])
+        other["splits"]["test"]["sources"][0]["task_id"] = self.old["splits"]["train"][
+            "sources"
+        ][0]["task_id"]
         self.assertNotEqual(
             other["splits"]["test"]["sources"][0]["source_id"],
-            self.old["splits"]["train"]["sources"][0]["source_id"])
-        with self.assertRaisesRegex(CohortContractError, "duplicate task_id across historical"):
+            self.old["splits"]["train"]["sources"][0]["source_id"],
+        )
+        with self.assertRaisesRegex(
+            CohortContractError, "duplicate task_id across historical"
+        ):
             check_cohort(self.new, [self.old, other])
 
     def test_bad_contract_fails_closed(self):
-        for bad in [None, {}, {"schema": "bad"}, {"schema": "hepta.grounded-cohort.v1", "splits": {}}]:
+        for bad in [
+            None,
+            {},
+            {"schema": "bad"},
+            {"schema": "hepta.grounded-cohort.v1", "splits": {}},
+        ]:
             with self.subTest(bad=bad), self.assertRaises(CohortContractError):
                 load_sources(bad, "candidate")
         for distance in (-1, 65, 1.2, True):
-            with self.subTest(distance=distance), self.assertRaises(CohortContractError):
+            with (
+                self.subTest(distance=distance),
+                self.assertRaises(CohortContractError),
+            ):
                 check_cohort(self.new, [self.old], max_hamming=distance)
         with self.assertRaises(CohortContractError):
             check_cohort(self.new, [])
@@ -135,176 +173,125 @@ class CohortFirewallTests(unittest.TestCase):
         prior = image(2)
         prior["image_id"] = 2
         del prior["source_id"]
-        wrapper = {"schema": "hepta.ndu.historical-exclusions.v1", "source_sample": {"images": [prior]}}
+        wrapper = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {"images": [prior]},
+        }
         result = check_cohort(self.new, [wrapper])
         self.assertEqual(result["status"], "pass")
         duplicate = copy.deepcopy(self.new)
-        duplicate["splits"]["train"]["sources"][0]["decoded_rgb_sha256"] = prior["decoded_rgb_sha256"]
+        duplicate["splits"]["train"]["sources"][0]["decoded_rgb_sha256"] = prior[
+            "decoded_rgb_sha256"
+        ]
         result = check_cohort(duplicate, [wrapper])
         self.assertEqual(result["status"], "fail")
 
     def test_incomplete_candidate_rejects_cli(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td)
+            root = Path(td)
             (root / "candidate.json").write_text("{}")
             (root / "history.json").write_text(json.dumps(self.old))
-            result = subprocess.run([sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                         "--candidate", str(root / "candidate.json"),
-                         "--historical", str(root / "history.json"),
-                         "--output", str(root / "receipt.json")], capture_output=True, text=True)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate",
+                    str(root / "candidate.json"),
+                    "--historical",
+                    str(root / "history.json"),
+                    "--output",
+                    str(root / "receipt.json"),
+                ],
+                capture_output=True,
+                text=True,
+            )
             self.assertEqual(result.returncode, 2, result.stderr)
-            self.assertEqual(json.loads((root / "receipt.json").read_text())["status"], "fail")
-
+            self.assertEqual(
+                json.loads((root / "receipt.json").read_text())["status"], "fail"
+            )
 
     def test_historical_wrapper_malformed_and_identity_mismatch(self):
         for sample in (None, [], 0, {"images": None}):
             with self.subTest(sample=sample), self.assertRaises(CohortContractError):
-                load_sources({"schema": "hepta.ndu.historical-exclusions.v1",
-                              "source_sample": sample}, "history", historical=True)
+                load_sources(
+                    {
+                        "schema": "hepta.ndu.historical-exclusions.v1",
+                        "source_sample": sample,
+                    },
+                    "history",
+                    historical=True,
+                )
         prior = image(17)
         prior["image_id"] = 18
         with self.assertRaisesRegex(CohortContractError, "source_id/image_id mismatch"):
-            load_sources({"schema": "hepta.ndu.historical-exclusions.v1",
-                          "source_sample": {"images": [prior]}}, "history", historical=True)
+            load_sources(
+                {
+                    "schema": "hepta.ndu.historical-exclusions.v1",
+                    "source_sample": {"images": [prior]},
+                },
+                "history",
+                historical=True,
+            )
 
     def test_complete_v2_history_rosters_are_required(self):
         with self.assertRaisesRegex(CohortContractError, "requires both"):
             check_cohort(self.new, [self.old], require_complete_history=True)
         v1 = manifest()
         next_id = 0
-        for split, count in zip(("train", "dev", "calibration", "test"), (128, 32, 32, 64)):
+        for split, count in zip(
+            ("train", "dev", "calibration", "test"), (128, 32, 32, 64)
+        ):
             v1["splits"][split] = {
                 "count": count,
                 "sources": [image(next_id + i) for i in range(count)],
             }
             next_id += count
-        wrapper = {"schema": "hepta.ndu.historical-exclusions.v1",
-                   "source_sample": {"images": [
-                       {**image(i + 1000), "image_id": i + 1000}
-                       for i in range(384)]}}
+        wrapper = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {
+                "images": [
+                    {**image(i + 1000), "image_id": i + 1000} for i in range(384)
+                ]
+            },
+        }
         with self.assertRaisesRegex(CohortContractError, "384-source"):
-            check_cohort(manifest(10000), [v1, {
-                "schema": wrapper["schema"],
-                "source_sample": {"images": wrapper["source_sample"]["images"][:383]},
-            }], require_complete_history=True)
-        result = check_cohort(manifest(10000), [v1, wrapper],
-                              require_complete_history=True)
+            check_cohort(
+                manifest(10000),
+                [
+                    v1,
+                    {
+                        "schema": wrapper["schema"],
+                        "source_sample": {
+                            "images": wrapper["source_sample"]["images"][:383]
+                        },
+                    },
+                ],
+                require_complete_history=True,
+            )
+        result = check_cohort(
+            manifest(10000), [v1, wrapper], require_complete_history=True
+        )
         self.assertEqual(result["status"], "pass")
         self.assertTrue(result["historical_roster_shape_confirmed"])
         self.assertFalse(result["independent_history_trust_established"])
         aliased_candidate = manifest(10000)
-        aliased_candidate["splits"]["test"]["sources"][0]["task_id"] = (
-            v1["splits"]["train"]["sources"][0]["task_id"])
-        with self.assertRaisesRegex(CohortContractError, "candidate task_id aliases historical"):
-            check_cohort(aliased_candidate, [v1, wrapper],
-                         require_complete_history=True)
+        aliased_candidate["splits"]["test"]["sources"][0]["task_id"] = v1["splits"][
+            "train"
+        ]["sources"][0]["task_id"]
+        with self.assertRaisesRegex(
+            CohortContractError, "candidate task_id aliases historical"
+        ):
+            check_cohort(
+                aliased_candidate, [v1, wrapper], require_complete_history=True
+            )
         duplicate = copy.deepcopy(wrapper)
-        duplicate["source_sample"]["images"][1] = duplicate["source_sample"]["images"][0]
+        duplicate["source_sample"]["images"][1] = duplicate["source_sample"]["images"][
+            0
+        ]
         with self.assertRaisesRegex(CohortContractError, "duplicate identities"):
-            check_cohort(manifest(10000), [v1, duplicate],
-                         require_complete_history=True)
-
-
-    def test_published_history_pins_are_not_caller_self_pins(self):
-        raw_v1 = json.dumps(self.old).encode("utf-8")
-        wrapper = {"schema": "hepta.ndu.historical-exclusions.v1",
-                   "source_sample": {"images": [{**image(900), "image_id": 900}]}}
-        raw_wrapper = json.dumps(wrapper).encode("utf-8")
-        with self.assertRaisesRegex(CohortContractError, "original frozen SHA256 mismatch"):
-            cohort_firewall.verify_frozen_history_pins(
-                [raw_v1, raw_wrapper], [self.old, wrapper])
-        fixture_pins = {
-            self.old["schema"]: hashlib.sha256(raw_v1).hexdigest(),
-            wrapper["schema"]: hashlib.sha256(raw_wrapper).hexdigest(),
-        }
-        # Synthetic pin substitution is test-only. Production uses original
-        # archive identities that were fixed before v2 cohort construction.
-        with mock.patch.dict(cohort_firewall.ORIGINAL_HISTORICAL_SHA256,
-                             fixture_pins, clear=True):
-            cohort_firewall.verify_frozen_history_pins(
-                [raw_wrapper, raw_v1], [wrapper, self.old])
-            cohort_firewall.verify_frozen_history_pins(
-                [raw_v1, raw_wrapper], [self.old, wrapper])
-            with self.assertRaisesRegex(CohortContractError, "original frozen SHA256 mismatch"):
-                cohort_firewall.verify_frozen_history_pins(
-                    [raw_v1 + b" ", raw_wrapper], [self.old, wrapper])
-            with self.assertRaisesRegex(CohortContractError, "duplicated or unknown"):
-                cohort_firewall.verify_frozen_history_pins(
-                    [raw_v1, raw_v1], [self.old, self.old])
-            with self.assertRaisesRegex(CohortContractError, "duplicated or unknown"):
-                cohort_firewall.verify_frozen_history_pins(
-                    [raw_v1, raw_wrapper], [{"schema": []}, wrapper])
-
-
-    def test_cli_denies_weakened_perceptual_collision_threshold(self):
-        # A caller-supplied distance of 0 or 3 must not turn near-duplicate
-        # images into a source-disjoint success under the published v2 gate.
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            candidate = root / "candidate.json"
-            history = root / "history.json"
-            output = root / "denial.json"
-            candidate.write_text("{}")
-            history.write_text("{}")
-            original_bytes = (candidate.read_bytes(), history.read_bytes())
-            base = [
-                sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                "--candidate", str(candidate),
-                "--historical", str(history),
-                "--historical-sha256", hashlib.sha256(original_bytes[1]).hexdigest(),
-                "--output", str(output),
-            ]
-            for value in ("-1", "0", "3", "65"):
-                with self.subTest(value=value):
-                    run = subprocess.run(
-                        base + ["--max-dhash-distance", value],
-                        capture_output=True, text=True, timeout=5,
-                    )
-                    self.assertEqual(run.returncode, 2, run.stderr)
-                    denial = json.loads(output.read_text(encoding="utf-8"))
-                    self.assertEqual(denial["status"], "fail")
-                    self.assertIn("--max-dhash-distance between 4 and 64", denial["error"])
-                    self.assertEqual(
-                        (candidate.read_bytes(), history.read_bytes()), original_bytes,
-                    )
-
-    def test_cli_denies_complete_forged_history_with_matching_caller_hashes(self):
-        # Before the guard, 256+384 source-disjoint replacement rows plus
-        # matching caller hashes could give a false historical PASS.
-        v1 = manifest()
-        first_id = 0
-        for split, count in zip(("train", "dev", "calibration", "test"),
-                                (128, 32, 32, 64)):
-            v1["splits"][split] = {
-                "count": count,
-                "sources": [image(first_id + i) for i in range(count)],
-            }
-            first_id += count
-        wrapper = {"schema": "hepta.ndu.historical-exclusions.v1",
-                   "source_sample": {"images": [
-                       {**image(i + 1000), "image_id": i + 1000} for i in range(384)
-                   ]}}
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            candidate = root / "candidate.json"
-            candidate.write_text(json.dumps(manifest(10000)))
-            historical = []
-            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                    "--candidate", str(candidate), "--output", str(root / "receipt.json")]
-            for n, document in enumerate((v1, wrapper)):
-                path = root / f"history-{n}.json"
-                raw = json.dumps(document).encode("utf-8")
-                path.write_bytes(raw)
-                historical.append((path, raw))
-                args.extend(("--historical", str(path), "--historical-sha256",
-                             hashlib.sha256(raw).hexdigest()))
-            result = subprocess.run(args, capture_output=True, text=True, timeout=10)
-            self.assertEqual(result.returncode, 2, result.stderr)
-            denial = json.loads((root / "receipt.json").read_text(encoding="utf-8"))
-            self.assertEqual(denial["status"], "fail")
-            self.assertIn("original frozen SHA256 mismatch", denial["error"])
-            self.assertEqual([path.read_bytes() for path, _ in historical],
-                             [raw for _, raw in historical])
+            check_cohort(
+                manifest(10000), [v1, duplicate], require_complete_history=True
+            )
 
     def test_unbounded_candidate_and_comparison_budget_fail_closed(self):
         too_many = manifest(32)
@@ -315,17 +302,13 @@ class CohortFirewallTests(unittest.TestCase):
         many = manifest(10000)
         # Distinct task IDs across all four splits: otherwise the earlier
         # canonical task-identity guard aborts before the comparison budget.
-        for split_index, split in enumerate(
-            ("train", "dev", "calibration", "test")
-        ):
+        for split_index, split in enumerate(("train", "dev", "calibration", "test")):
             many["splits"][split]["sources"] = [
                 image(30000 + split_index * 1000 + i) for i in range(400)
             ]
             many["splits"][split]["count"] = 400
         old = manifest(2000)
-        for split_index, split in enumerate(
-            ("train", "dev", "calibration", "test")
-        ):
+        for split_index, split in enumerate(("train", "dev", "calibration", "test")):
             old["splits"][split]["sources"] = [
                 image(40000 + split_index * 1000 + i) for i in range(400)
             ]
@@ -333,8 +316,10 @@ class CohortFirewallTests(unittest.TestCase):
         with self.assertRaisesRegex(CohortContractError, "comparison budget"):
             check_cohort(many, [old])
 
-    @unittest.skipUnless(hasattr(os, "O_NOFOLLOW") and hasattr(os, "symlink"),
-                         "no-follow open is unavailable on this platform")
+    @unittest.skipUnless(
+        hasattr(os, "O_NOFOLLOW") and hasattr(os, "symlink"),
+        "no-follow open is unavailable on this platform",
+    )
     def test_cli_does_not_follow_mutable_manifest_symlink(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -342,15 +327,23 @@ class CohortFirewallTests(unittest.TestCase):
             (root / "alias.json").symlink_to(root / "real.json")
             raw = json.dumps(self.old).encode()
             (root / "history.json").write_bytes(raw)
-            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                    "--candidate", str(root / "alias.json"),
-                    "--historical", str(root / "history.json"),
-                    "--historical-sha256", hashlib.sha256(raw).hexdigest(),
-                    "--output", str(root / "receipt.json")]
+            args = [
+                sys.executable,
+                str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate",
+                str(root / "alias.json"),
+                "--historical",
+                str(root / "history.json"),
+                "--historical-sha256",
+                hashlib.sha256(raw).hexdigest(),
+                "--output",
+                str(root / "receipt.json"),
+            ]
             result = subprocess.run(args, capture_output=True, text=True, timeout=5)
             self.assertEqual(result.returncode, 2, result.stderr)
-            self.assertEqual(json.loads((root / "receipt.json").read_text())["status"],
-                             "fail")
+            self.assertEqual(
+                json.loads((root / "receipt.json").read_text())["status"], "fail"
+            )
 
     def test_cli_rejects_duplicate_keys_and_nonstandard_json_bytes(self):
         with tempfile.TemporaryDirectory() as td:
@@ -362,18 +355,32 @@ class CohortFirewallTests(unittest.TestCase):
             clean_history = json.dumps(self.old).encode("utf-8")
             nested = clean_candidate.replace(
                 b'"task_id": "task-32"',
-                b'"task_id": "forged", "task_id": "task-32"', 1,
+                b'"task_id": "forged", "task_id": "task-32"',
+                1,
             )
             ambiguous_history = clean_history.replace(
                 b'"schema": "hepta.grounded-cohort.v1"',
-                b'"schema": "forged", "schema": "hepta.grounded-cohort.v1"', 1,
+                b'"schema": "forged", "schema": "hepta.grounded-cohort.v1"',
+                1,
             )
             cases = (
                 ("candidate", nested, "duplicate JSON"),
                 ("history", ambiguous_history, "duplicate JSON"),
-                ("candidate", b'{"unverified": NaN,' + clean_candidate[1:], "nonstandard JSON"),
-                ("history", b'{"unverified": Infinity,' + clean_history[1:], "nonstandard JSON"),
-                ("candidate", b'{"unverified": 1e10000,' + clean_candidate[1:], "nonfinite JSON"),
+                (
+                    "candidate",
+                    b'{"unverified": NaN,' + clean_candidate[1:],
+                    "nonstandard JSON",
+                ),
+                (
+                    "history",
+                    b'{"unverified": Infinity,' + clean_history[1:],
+                    "nonstandard JSON",
+                ),
+                (
+                    "candidate",
+                    b'{"unverified": 1e10000,' + clean_candidate[1:],
+                    "nonfinite JSON",
+                ),
                 ("candidate", b"\xff" + clean_candidate, "invalid cohort JSON"),
                 ("history", b"\xff" + clean_history, "invalid cohort JSON"),
             )
@@ -387,21 +394,34 @@ class CohortFirewallTests(unittest.TestCase):
                     )
                     raw_history = history.read_bytes()
                     result = subprocess.run(
-                        [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                         "--candidate", str(candidate),
-                         "--historical", str(history),
-                         "--historical-sha256", hashlib.sha256(raw_history).hexdigest(),
-                         "--output", str(output)],
-                        capture_output=True, text=True, timeout=5,
+                        [
+                            sys.executable,
+                            str(Path(__file__).parent / "cohort_firewall.py"),
+                            "--candidate",
+                            str(candidate),
+                            "--historical",
+                            str(history),
+                            "--historical-sha256",
+                            hashlib.sha256(raw_history).hexdigest(),
+                            "--output",
+                            str(output),
+                        ],
+                        capture_output=True,
+                        text=True,
+                        timeout=5,
                     )
                     self.assertEqual(result.returncode, 2, result.stderr)
                     denial = json.loads(output.read_text(encoding="utf-8"))
                     self.assertEqual(denial["status"], "fail")
                     self.assertIn(expected_error, denial["error"])
-                    self.assertEqual(candidate.read_bytes(),
-                                     malicious if side == "candidate" else clean_candidate)
-                    self.assertEqual(history.read_bytes(),
-                                     malicious if side == "history" else clean_history)
+                    self.assertEqual(
+                        candidate.read_bytes(),
+                        malicious if side == "candidate" else clean_candidate,
+                    )
+                    self.assertEqual(
+                        history.read_bytes(),
+                        malicious if side == "history" else clean_history,
+                    )
 
     def test_giant_duplicate_json_key_cannot_amplify_denial_receipt(self):
         with tempfile.TemporaryDirectory() as td:
@@ -447,15 +467,23 @@ class CohortFirewallTests(unittest.TestCase):
             (root / "candidate.json").write_text(json.dumps(self.new))
             raw = json.dumps(self.old).encode()
             (root / "history.json").write_bytes(raw)
-            base = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                    "--candidate", str(root / "candidate.json"),
-                    "--historical", str(root / "history.json"),
-                    "--output", str(root / "receipt.json")]
+            base = [
+                sys.executable,
+                str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate",
+                str(root / "candidate.json"),
+                "--historical",
+                str(root / "history.json"),
+                "--output",
+                str(root / "receipt.json"),
+            ]
             for extra, expected_error in [
                 ([], "out-of-band SHA256"),
                 (["--historical-sha256", "0" * 64], "historical SHA256 mismatch"),
-                (["--historical-sha256", hashlib.sha256(raw).hexdigest()],
-                 "requires both"),
+                (
+                    ["--historical-sha256", hashlib.sha256(raw).hexdigest()],
+                    "requires both",
+                ),
             ]:
                 result = subprocess.run(base + extra, capture_output=True, text=True)
                 self.assertEqual(result.returncode, 2, result.stderr)
@@ -472,15 +500,22 @@ class CohortFirewallTests(unittest.TestCase):
             history.write_text(json.dumps(self.old))
             original_candidate = candidate.read_bytes()
             original_history = history.read_bytes()
-            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                    "--candidate", str(candidate),
-                    "--historical", str(history),
-                    "--historical-sha256", hashlib.sha256(original_history).hexdigest(),
-                    "--output"]
+            args = [
+                sys.executable,
+                str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate",
+                str(candidate),
+                "--historical",
+                str(history),
+                "--historical-sha256",
+                hashlib.sha256(original_history).hexdigest(),
+                "--output",
+            ]
             for destination in (candidate, history):
                 with self.subTest(destination=destination.name):
-                    result = subprocess.run(args + [str(destination)],
-                                            capture_output=True, text=True)
+                    result = subprocess.run(
+                        args + [str(destination)], capture_output=True, text=True
+                    )
                     self.assertEqual(result.returncode, 2, result.stderr)
                     denial = json.loads(result.stdout)
                     self.assertEqual(denial["status"], "fail")
@@ -500,11 +535,18 @@ class CohortFirewallTests(unittest.TestCase):
             history.write_text(json.dumps(self.old))
             original = history.read_bytes()
             alias = root / "receipt.json"
-            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                    "--candidate", str(candidate),
-                    "--historical", str(history),
-                    "--historical-sha256", hashlib.sha256(original).hexdigest(),
-                    "--output", str(alias)]
+            args = [
+                sys.executable,
+                str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate",
+                str(candidate),
+                "--historical",
+                str(history),
+                "--historical-sha256",
+                hashlib.sha256(original).hexdigest(),
+                "--output",
+                str(alias),
+            ]
             alias.symlink_to(history)
             denied = subprocess.run(args, capture_output=True, text=True)
             self.assertEqual(denied.returncode, 2, denied.stderr)
@@ -529,12 +571,20 @@ class CohortFirewallTests(unittest.TestCase):
             before = candidate.read_bytes()
             (root / "alias-dir").symlink_to(root, target_is_directory=True)
             denied = subprocess.run(
-                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                 "--candidate", str(candidate),
-                 "--historical", str(history),
-                 "--historical-sha256", hashlib.sha256(history.read_bytes()).hexdigest(),
-                 "--output", str(root / "alias-dir" / "candidate.json")],
-                capture_output=True, text=True,
+                [
+                    sys.executable,
+                    str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate",
+                    str(candidate),
+                    "--historical",
+                    str(history),
+                    "--historical-sha256",
+                    hashlib.sha256(history.read_bytes()).hexdigest(),
+                    "--output",
+                    str(root / "alias-dir" / "candidate.json"),
+                ],
+                capture_output=True,
+                text=True,
             )
             self.assertEqual(denied.returncode, 2, denied.stderr)
             self.assertIn("aliases frozen input", json.loads(denied.stdout)["error"])
@@ -549,17 +599,23 @@ class CohortFirewallTests(unittest.TestCase):
             candidate.write_text("{}")
             history.write_text("{}")
             before = (candidate.read_bytes(), history.read_bytes())
-            args = [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                    "--candidate", str(candidate),
-                    "--historical", str(history),
-                    "--historical-sha256", hashlib.sha256(before[1]).hexdigest(),
-                    "--output", str(destination)]
+            args = [
+                sys.executable,
+                str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate",
+                str(candidate),
+                "--historical",
+                str(history),
+                "--historical-sha256",
+                hashlib.sha256(before[1]).hexdigest(),
+                "--output",
+                str(destination),
+            ]
             for _ in range(2):
                 denied = subprocess.run(args, capture_output=True, text=True)
                 self.assertEqual(denied.returncode, 2, denied.stderr)
                 self.assertEqual(json.loads(destination.read_text())["status"], "fail")
                 self.assertEqual((candidate.read_bytes(), history.read_bytes()), before)
-
 
     def test_direct_receipt_writer_denial_never_mutates_frozen_image_tree(self):
         # Unlike the CLI, the public writer has no outer preflight. Reject
@@ -575,7 +631,9 @@ class CohortFirewallTests(unittest.TestCase):
             denied = frozen / "unexpected-subdir" / "receipt.json"
             with self.assertRaisesRegex(CohortContractError, "overlaps frozen"):
                 write_receipt_atomically(
-                    denied, {"status": "fail"}, [source],
+                    denied,
+                    {"status": "fail"},
+                    [source],
                     protected_image_dir=frozen,
                 )
             self.assertFalse(denied.parent.exists())
@@ -587,7 +645,9 @@ class CohortFirewallTests(unittest.TestCase):
                 denied_alias = alias / "unexpected-alias-subdir" / "receipt.json"
                 with self.assertRaisesRegex(CohortContractError, "overlaps frozen"):
                     write_receipt_atomically(
-                        denied_alias, {"status": "fail"}, [source],
+                        denied_alias,
+                        {"status": "fail"},
+                        [source],
                         protected_image_dir=frozen,
                     )
                 self.assertFalse((frozen / "unexpected-alias-subdir").exists())
@@ -595,7 +655,9 @@ class CohortFirewallTests(unittest.TestCase):
             # Preserve the supported publication of ordinary nested receipts.
             allowed = root / "separate-receipts" / "nested" / "receipt.json"
             write_receipt_atomically(
-                allowed, {"status": "fail"}, [source],
+                allowed,
+                {"status": "fail"},
+                [source],
                 protected_image_dir=frozen,
             )
             self.assertEqual(
@@ -603,7 +665,6 @@ class CohortFirewallTests(unittest.TestCase):
                 {"status": "fail"},
             )
             self.assertEqual(source.read_bytes(), b"immutable candidate evidence")
-
 
     @unittest.skipUnless(os.name == "posix", "requires a POSIX named pipe")
     def test_cli_rejects_unopened_candidate_fifo_without_blocking(self):
@@ -615,12 +676,21 @@ class CohortFirewallTests(unittest.TestCase):
             history.write_text(json.dumps(self.old))
             output = root / "denial.json"
             result = subprocess.run(
-                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                 "--candidate", str(fifo),
-                 "--historical", str(history),
-                 "--historical-sha256", hashlib.sha256(history.read_bytes()).hexdigest(),
-                 "--output", str(output)],
-                capture_output=True, text=True, timeout=3,
+                [
+                    sys.executable,
+                    str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate",
+                    str(fifo),
+                    "--historical",
+                    str(history),
+                    "--historical-sha256",
+                    hashlib.sha256(history.read_bytes()).hexdigest(),
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=3,
             )
             self.assertEqual(result.returncode, 2, result.stderr)
             self.assertIn("regular file", json.loads(output.read_text())["error"])
@@ -635,12 +705,21 @@ class CohortFirewallTests(unittest.TestCase):
             os.mkfifo(fifo)
             output = root / "denial.json"
             result = subprocess.run(
-                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                 "--candidate", str(candidate),
-                 "--historical", str(fifo),
-                 "--historical-sha256", "0" * 64,
-                 "--output", str(output)],
-                capture_output=True, text=True, timeout=3,
+                [
+                    sys.executable,
+                    str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate",
+                    str(candidate),
+                    "--historical",
+                    str(fifo),
+                    "--historical-sha256",
+                    "0" * 64,
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=3,
             )
             self.assertEqual(result.returncode, 2, result.stderr)
             self.assertIn("regular file", json.loads(output.read_text())["error"])
@@ -655,22 +734,31 @@ class CohortFirewallTests(unittest.TestCase):
             history.write_text(json.dumps(self.old))
             output = root / "denial.json"
             result = subprocess.run(
-                [sys.executable, str(Path(__file__).parent / "cohort_firewall.py"),
-                 "--candidate", str(candidate),
-                 "--historical", str(history),
-                 "--historical-sha256", hashlib.sha256(history.read_bytes()).hexdigest(),
-                 "--output", str(output)],
-                capture_output=True, text=True, timeout=3,
+                [
+                    sys.executable,
+                    str(Path(__file__).parent / "cohort_firewall.py"),
+                    "--candidate",
+                    str(candidate),
+                    "--historical",
+                    str(history),
+                    "--historical-sha256",
+                    hashlib.sha256(history.read_bytes()).hexdigest(),
+                    "--output",
+                    str(output),
+                ],
+                capture_output=True,
+                text=True,
+                timeout=3,
             )
             self.assertEqual(result.returncode, 2, result.stderr)
             self.assertIn("byte limit", json.loads(output.read_text())["error"])
-
 
     @unittest.skipUnless(os.name == "posix", "link-race tests require POSIX")
     def test_cli_atomic_receipt_does_not_follow_late_link_swap(self):
         # Reproduce a path replacement after all validation but before publish.
         # A direct Path.write_text call would overwrite the protected input.
         from cohort_firewall import main
+
         for alias_kind in ("symlink", "hardlink"):
             with self.subTest(alias=alias_kind), tempfile.TemporaryDirectory() as td:
                 root = Path(td)
@@ -691,11 +779,19 @@ class CohortFirewallTests(unittest.TestCase):
                         destination.hardlink_to(candidate)
                     return real_replace(temporary, target)
 
-                args = ["--candidate", str(candidate),
-                        "--historical", str(history),
-                        "--historical-sha256", hashlib.sha256(original_history).hexdigest(),
-                        "--output", str(destination)]
-                with mock.patch("cohort_firewall.os.replace", side_effect=swap_late) as patched:
+                args = [
+                    "--candidate",
+                    str(candidate),
+                    "--historical",
+                    str(history),
+                    "--historical-sha256",
+                    hashlib.sha256(original_history).hexdigest(),
+                    "--output",
+                    str(destination),
+                ]
+                with mock.patch(
+                    "cohort_firewall.os.replace", side_effect=swap_late
+                ) as patched:
                     status = main(args)
                 self.assertEqual(status, 2)
                 self.assertEqual(patched.call_count, 1)
@@ -703,7 +799,6 @@ class CohortFirewallTests(unittest.TestCase):
                 self.assertEqual(history.read_bytes(), original_history)
                 self.assertFalse(destination.is_symlink())
                 self.assertEqual(json.loads(destination.read_text())["status"], "fail")
-
 
     @staticmethod
     def _complete_synthetic_histories():
@@ -721,8 +816,7 @@ class CohortFirewallTests(unittest.TestCase):
             "schema": "hepta.ndu.historical-exclusions.v1",
             "source_sample": {
                 "images": [
-                    {**image(1000 + i), "image_id": 1000 + i}
-                    for i in range(384)
+                    {**image(1000 + i), "image_id": 1000 + i} for i in range(384)
                 ]
             },
         }
@@ -776,18 +870,19 @@ class CohortFirewallTests(unittest.TestCase):
                 path = root / f"history-{i}.json"
                 path.write_bytes(data)
                 args.extend(
-                    ("--historical", str(path),
-                     "--historical-sha256", hashlib.sha256(data).hexdigest())
+                    (
+                        "--historical",
+                        str(path),
+                        "--historical-sha256",
+                        hashlib.sha256(data).hexdigest(),
+                    )
                 )
             output = root / "denial.json"
-            self.assertEqual(
-                cohort_firewall.main(args + ["--output", str(output)]), 2
-            )
+            self.assertEqual(cohort_firewall.main(args + ["--output", str(output)]), 2)
             verdict = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(verdict["status"], "fail")
             self.assertFalse(verdict["observable_image_identity_disjoint"])
             self.assertIn("independently pinned historical SHA256", verdict["error"])
-
 
     @staticmethod
     def _four_original_jpegs(candidate, image_dir):
@@ -801,9 +896,7 @@ class CohortFirewallTests(unittest.TestCase):
             filename = f"candidate-{index}.jpg"
             path = image_dir / filename
             pixels = random.Random(43790 + index).randbytes(32 * 24 * 3)
-            Image.frombytes("RGB", (32, 24), pixels).save(
-                path, "JPEG", quality=89
-            )
+            Image.frombytes("RGB", (32, 24), pixels).save(path, "JPEG", quality=89)
             row = candidate["splits"][split]["sources"][0]
             row.update(image_fingerprint(path, (32, 24)))
             row["image_filename"] = filename
@@ -817,9 +910,7 @@ class CohortFirewallTests(unittest.TestCase):
             candidate = manifest(10000)
             image_dir = Path(td) / "images"
             self._four_original_jpegs(candidate, image_dir)
-            proof = cohort_firewall.verify_candidate_image_bytes(
-                candidate, image_dir
-            )
+            proof = cohort_firewall.verify_candidate_image_bytes(candidate, image_dir)
             self.assertEqual(proof["checked_images"], 4)
             self.assertTrue(proof["original_bytes_cryptographically_checked"])
             self.assertGreater(proof["source_jpeg_bytes"], 0)
@@ -835,9 +926,7 @@ class CohortFirewallTests(unittest.TestCase):
                     with self.assertRaisesRegex(
                         CohortContractError, f"actual image bytes disagree with {key}"
                     ):
-                        cohort_firewall.verify_candidate_image_bytes(
-                            forged, image_dir
-                        )
+                        cohort_firewall.verify_candidate_image_bytes(forged, image_dir)
 
     @unittest.skipUnless(hasattr(os, "O_NOFOLLOW"), "no-follow FD required")
     def test_real_candidate_jpeg_custody_rejects_links_and_fifo(self):
@@ -864,7 +953,8 @@ class CohortFirewallTests(unittest.TestCase):
                     cohort_firewall.verify_candidate_image_bytes(candidate, image_dir)
 
     @unittest.skipUnless(
-        hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")
+        hasattr(os, "O_NOFOLLOW")
+        and hasattr(os, "O_DIRECTORY")
         and os.open in os.supports_dir_fd,
         "descriptor-relative no-follow required",
     )
@@ -886,7 +976,8 @@ class CohortFirewallTests(unittest.TestCase):
                 )
 
     @unittest.skipUnless(
-        hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")
+        hasattr(os, "O_NOFOLLOW")
+        and hasattr(os, "O_DIRECTORY")
         and os.open in os.supports_dir_fd,
         "descriptor-relative no-follow required",
     )
@@ -904,7 +995,8 @@ class CohortFirewallTests(unittest.TestCase):
                 cohort_firewall._open_pinned_image_directory(root / "alias")
 
     @unittest.skipUnless(
-        hasattr(os, "O_NOFOLLOW") and hasattr(os, "O_DIRECTORY")
+        hasattr(os, "O_NOFOLLOW")
+        and hasattr(os, "O_DIRECTORY")
         and os.open in os.supports_dir_fd,
         "descriptor-relative no-follow required",
     )
@@ -921,9 +1013,7 @@ class CohortFirewallTests(unittest.TestCase):
                 original.rename(root / "renamed")
                 original.mkdir()
                 (original / "test.jpg").write_bytes(b"forged")
-                opened = os.open(
-                    "test.jpg", os.O_RDONLY | os.O_NOFOLLOW, dir_fd=fd
-                )
+                opened = os.open("test.jpg", os.O_RDONLY | os.O_NOFOLLOW, dir_fd=fd)
                 with os.fdopen(opened, "rb") as reader:
                     self.assertEqual(reader.read(), b"original")
             finally:
@@ -946,8 +1036,12 @@ class CohortFirewallTests(unittest.TestCase):
                 path = root / f"history-{index}.json"
                 path.write_bytes(blob)
                 args.extend(
-                    ("--historical", str(path),
-                     "--historical-sha256", hashlib.sha256(blob).hexdigest())
+                    (
+                        "--historical",
+                        str(path),
+                        "--historical-sha256",
+                        hashlib.sha256(blob).hexdigest(),
+                    )
                 )
             output = root / "verdict.json"
             args += ["--output", str(output)]
@@ -965,7 +1059,6 @@ class CohortFirewallTests(unittest.TestCase):
             self.assertEqual(receipt["status"], "pass")
             self.assertEqual(receipt["candidate_image_custody"]["checked_images"], 4)
             self.assertFalse(receipt["independent_history_trust_established"])
-
 
     def test_cli_receipt_cannot_overwrite_candidate_image_custody(self):
         import cohort_firewall
@@ -988,20 +1081,171 @@ class CohortFirewallTests(unittest.TestCase):
                         CohortContractError, "overlaps frozen candidate image"
                     ):
                         cohort_firewall.validate_output_destination(
-                            output, [candidate, history],
+                            output,
+                            [candidate, history],
                             protected_image_dir=images,
                         )
-                    result = cohort_firewall.main([
-                        "--candidate", str(candidate),
-                        "--historical", str(history),
-                        "--historical-sha256", history_digest,
-                        "--image-dir", str(images),
-                        "--output", str(output),
-                    ])
+                    result = cohort_firewall.main(
+                        [
+                            "--candidate",
+                            str(candidate),
+                            "--historical",
+                            str(history),
+                            "--historical-sha256",
+                            history_digest,
+                            "--image-dir",
+                            str(images),
+                            "--output",
+                            str(output),
+                        ]
+                    )
                     self.assertEqual(result, 2)
                     self.assertEqual(original.read_bytes(), frozen)
                     if output != original:
                         self.assertFalse(output.exists())
+
+    def test_published_history_pins_are_not_caller_self_pins(self):
+        raw_v1 = json.dumps(self.old).encode("utf-8")
+        wrapper = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {"images": [{**image(900), "image_id": 900}]},
+        }
+        raw_wrapper = json.dumps(wrapper).encode("utf-8")
+        with self.assertRaisesRegex(
+            CohortContractError, "original frozen SHA256 mismatch"
+        ):
+            cohort_firewall.verify_frozen_history_pins(
+                [raw_v1, raw_wrapper], [self.old, wrapper]
+            )
+        fixture_pins = {
+            self.old["schema"]: hashlib.sha256(raw_v1).hexdigest(),
+            wrapper["schema"]: hashlib.sha256(raw_wrapper).hexdigest(),
+        }
+        # Synthetic pin substitution is test-only. Production uses original
+        # archive identities that were fixed before v2 cohort construction.
+        with mock.patch.dict(
+            cohort_firewall.ORIGINAL_HISTORICAL_SHA256, fixture_pins, clear=True
+        ):
+            cohort_firewall.verify_frozen_history_pins(
+                [raw_wrapper, raw_v1], [wrapper, self.old]
+            )
+            cohort_firewall.verify_frozen_history_pins(
+                [raw_v1, raw_wrapper], [self.old, wrapper]
+            )
+            with self.assertRaisesRegex(
+                CohortContractError, "original frozen SHA256 mismatch"
+            ):
+                cohort_firewall.verify_frozen_history_pins(
+                    [raw_v1 + b" ", raw_wrapper], [self.old, wrapper]
+                )
+            with self.assertRaisesRegex(CohortContractError, "duplicated or unknown"):
+                cohort_firewall.verify_frozen_history_pins(
+                    [raw_v1, raw_v1], [self.old, self.old]
+                )
+            with self.assertRaisesRegex(CohortContractError, "duplicated or unknown"):
+                cohort_firewall.verify_frozen_history_pins(
+                    [raw_v1, raw_wrapper], [{"schema": []}, wrapper]
+                )
+
+    def test_cli_denies_weakened_perceptual_collision_threshold(self):
+        # A caller-supplied distance of 0 or 3 must not turn near-duplicate
+        # images into a source-disjoint success under the published v2 gate.
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            history = root / "history.json"
+            output = root / "denial.json"
+            candidate.write_text("{}")
+            history.write_text("{}")
+            original_bytes = (candidate.read_bytes(), history.read_bytes())
+            base = [
+                sys.executable,
+                str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate",
+                str(candidate),
+                "--historical",
+                str(history),
+                "--historical-sha256",
+                hashlib.sha256(original_bytes[1]).hexdigest(),
+                "--output",
+                str(output),
+            ]
+            for value in ("-1", "0", "3", "65"):
+                with self.subTest(value=value):
+                    run = subprocess.run(
+                        base + ["--max-dhash-distance", value],
+                        capture_output=True,
+                        text=True,
+                        timeout=5,
+                    )
+                    self.assertEqual(run.returncode, 2, run.stderr)
+                    denial = json.loads(output.read_text(encoding="utf-8"))
+                    self.assertEqual(denial["status"], "fail")
+                    self.assertIn(
+                        "--max-dhash-distance between 4 and 64", denial["error"]
+                    )
+                    self.assertEqual(
+                        (candidate.read_bytes(), history.read_bytes()),
+                        original_bytes,
+                    )
+
+    def test_cli_denies_complete_forged_history_with_matching_caller_hashes(self):
+        # Before the guard, 256+384 source-disjoint replacement rows plus
+        # matching caller hashes could give a false historical PASS.
+        v1 = manifest()
+        first_id = 0
+        for split, count in zip(
+            ("train", "dev", "calibration", "test"), (128, 32, 32, 64)
+        ):
+            v1["splits"][split] = {
+                "count": count,
+                "sources": [image(first_id + i) for i in range(count)],
+            }
+            first_id += count
+        wrapper = {
+            "schema": "hepta.ndu.historical-exclusions.v1",
+            "source_sample": {
+                "images": [
+                    {**image(i + 1000), "image_id": i + 1000} for i in range(384)
+                ]
+            },
+        }
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            candidate = root / "candidate.json"
+            candidate.write_text(json.dumps(manifest(10000)))
+            historical = []
+            args = [
+                sys.executable,
+                str(Path(__file__).parent / "cohort_firewall.py"),
+                "--candidate",
+                str(candidate),
+                "--output",
+                str(root / "receipt.json"),
+            ]
+            for n, document in enumerate((v1, wrapper)):
+                path = root / f"history-{n}.json"
+                raw = json.dumps(document).encode("utf-8")
+                path.write_bytes(raw)
+                historical.append((path, raw))
+                args.extend(
+                    (
+                        "--historical",
+                        str(path),
+                        "--historical-sha256",
+                        hashlib.sha256(raw).hexdigest(),
+                    )
+                )
+            result = subprocess.run(args, capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 2, result.stderr)
+            denial = json.loads((root / "receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(denial["status"], "fail")
+            self.assertIn("original frozen SHA256 mismatch", denial["error"])
+            self.assertEqual(
+                [path.read_bytes() for path, _ in historical],
+                [raw for _, raw in historical],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
