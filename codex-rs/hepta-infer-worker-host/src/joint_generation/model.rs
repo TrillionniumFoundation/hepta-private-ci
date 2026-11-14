@@ -16,6 +16,13 @@ pub const ACTIONS: [&str; 7] = [
 ];
 pub const MODALITIES: [&str; 4] = ["image", "audio", "video", "text"];
 pub use crate::state::State;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum VerificationSupport {
+    ObservedMedia,
+    Unavailable,
+}
+
 pub struct Model {
     pub weights: Packet,
     pub width: usize,
@@ -228,7 +235,7 @@ impl Model {
             let x = p.get(name)?;
             if p.tensors[name].shape != shape
                 || x.iter()
-                    .any(|v| v.abs() > 1.0 || name.ends_with("_mask") && *v < 0.0)
+                    .any(|v| !v.is_finite() || v.abs() > 1.0 || name.ends_with("_mask") && *v < 0.0)
             {
                 return Err(format!("public shape/range {name}"));
             }
@@ -238,7 +245,10 @@ impl Model {
             || (!self.observed && tokens.is_empty())
             || tokens.len() > 4096
             || tokens.iter().any(|v| {
-                *v < 0.0 || *v >= if self.observed { 256.0 } else { 128.0 } || v.fract() != 0.0
+                !v.is_finite()
+                    || *v < 0.0
+                    || *v >= if self.observed { 256.0 } else { 128.0 }
+                    || v.fract() != 0.0
             })
         {
             return Err("token domain".into());
@@ -317,6 +327,17 @@ impl Model {
             text,
         })
     }
+    pub(crate) fn verification_support(&self, public: &Packet) -> Result<VerificationSupport> {
+        self.validate_input(public)?;
+        for name in ["image_mask", "audio_mask", "video_mask"] {
+            if public.get(name)?.iter().any(|value| *value > 0.0) {
+                return Ok(VerificationSupport::ObservedMedia);
+            }
+        }
+        // Public text has no verification target in this profile. Zero masks
+        // supply no media evidence, even though their masked error is zero.
+        Ok(VerificationSupport::Unavailable)
+    }
     pub fn outputs(&self, s: &State) -> Result<Vec<Vec<f64>>> {
         let mut result = Vec::new();
         for (i, m) in MODALITIES.iter().enumerate() {
@@ -359,13 +380,19 @@ impl Model {
         if !remaining.is_finite() || !(0.0..=1.0).contains(&remaining) {
             return Err("remaining budget fraction".into());
         }
-        self.inspect_features(s, &self.features(s, remaining), None)
+        self.inspect_features(
+            s,
+            &self.features(s, remaining),
+            /*observed*/ None,
+            VerificationSupport::ObservedMedia,
+        )
     }
     pub(crate) fn inspect_features(
         &self,
         s: &State,
         x: &[f64],
         observed: Option<&DeliveryObservation>,
+        verification: VerificationSupport,
     ) -> Result<Packet> {
         let mut p = s.packet();
         let outputs = self.outputs(s)?;
@@ -391,7 +418,9 @@ impl Model {
                 if s.steps == 0 && !self.initial_stop {
                     legal[6] = false;
                 }
-                if self.suppress_verify && s.verified {
+                if verification == VerificationSupport::Unavailable
+                    || self.suppress_verify && s.verified
+                {
                     legal[5] = false;
                 }
                 if s.steps >= 6 || s.stopped {
@@ -409,6 +438,9 @@ impl Model {
                     .filter(|(i, _)| legal[*i])
                     .map(|(_, v)| *v)
                     .fold(f64::NEG_INFINITY, f64::max);
+                if !max.is_finite() {
+                    return Err("no legal continuation under admitted portfolio".into());
+                }
                 let mut total = 0.0;
                 for (i, v) in y.iter_mut().enumerate() {
                     *v = if legal[i] { (*v - max).exp() } else { 0.0 };
@@ -439,6 +471,11 @@ impl Model {
             return Ok(next);
         }
         if action == "verify" {
+            if self.observed
+                && self.verification_support(public)? == VerificationSupport::Unavailable
+            {
+                return Err("verification has no observed media".into());
+            }
             if self.suppress_verify && s.verified {
                 return Err("redundant verification masked".into());
             }

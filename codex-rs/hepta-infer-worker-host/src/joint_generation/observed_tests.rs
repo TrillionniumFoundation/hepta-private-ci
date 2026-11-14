@@ -45,21 +45,169 @@ fn actor_and_both_critics_consume_actual_committed_bytes() -> Result<()> {
     }
     let fixture = support::observed_fixture(weights)?;
     let model = Model::new(Packet::decode(&fixture.weights)?)?;
-    let state = model.encode(&Packet::decode(&fixture.public)?)?;
+    let public = Packet::decode(&fixture.public)?;
+    let state = model.encode(&public)?;
     let mut a = Prefixes::for_model(&model);
     a.frame(/*modality*/ 3, /*units*/ 1, b"a")?;
     let mut b = Prefixes::for_model(&model);
     b.frame(/*modality*/ 3, /*units*/ 1, b"b")?;
     let oa = DeliveryObservation::new(&owner(), &a, model.total_units())?;
     let ob = DeliveryObservation::new(&owner(), &b, model.total_units())?;
-    let ia = model.inspect_observed(&state, &oa)?;
-    let ib = model.inspect_observed(&state, &ob)?;
+    let ia = model.inspect_observed(&state, &oa, &public)?;
+    let ib = model.inspect_observed(&state, &ob, &public)?;
     for name in ["actor.logits", "critic", "delivery_critic"] {
         assert_ne!(ia.get(name)?, ib.get(name)?);
     }
     let probabilities = ia.get("policy.probabilities")?;
     assert_eq!(&probabilities[2..4], &[0.0, 0.0]);
     assert!(model.inspect(&state, /*remaining*/ 1.0).is_err());
+    Ok(())
+}
+
+#[test]
+fn absent_media_verification_is_masked_and_cannot_change_state() -> Result<()> {
+    let mut weights = support::observed_weights();
+    weights.meta.insert(
+        "inference_profile".into(),
+        "actor-greedy-observed-v1".into(),
+    );
+    set(
+        &mut weights,
+        "actor.2.bias",
+        /*index*/ 5,
+        /*value*/ 10.0,
+    )?;
+    let fixture = support::observed_fixture(weights)?;
+    let model = Model::new(Packet::decode(&fixture.weights)?)?;
+    let public = Packet::decode(&fixture.public)?;
+    let state = model.encode(&public)?;
+    let original = state.clone();
+    let observation =
+        DeliveryObservation::new(&owner(), &Prefixes::for_model(&model), model.total_units())?;
+    let inspection = model.inspect_observed(&state, &observation, &public)?;
+    assert_eq!(
+        (
+            inspection.get("policy.legal_mask")?[5],
+            inspection.get("policy.probabilities")?[5],
+        ),
+        (0.0, 0.0)
+    );
+    assert_eq!(
+        model.advance(&state, "verify", &public),
+        Err("verification has no observed media".into())
+    );
+    assert_eq!(state, original);
+
+    let mut contract = owner();
+    let initialized = crate::proposal::propose(&support::request_observed(
+        &fixture,
+        &[],
+        &[],
+        Command::Init(EmissionLaw {
+            seed: 19,
+            sampler: Sampler::Mean,
+        }),
+        &contract,
+    ))?;
+    contract.budget_remaining -= 1000;
+    assert!(
+        crate::proposal::propose(&support::request_observed(
+            &fixture,
+            &initialized.state,
+            &[],
+            Command::Advance(/*action*/ 5),
+            &contract,
+        ))
+        .is_err()
+    );
+    let automatic = crate::proposal::propose(&support::request_observed(
+        &fixture,
+        &initialized.state,
+        &[],
+        Command::Auto((contract.budget_remaining * 1_000_000 / contract.budget_total) as u32),
+        &contract,
+    ))?;
+    let automatic_state = Packet::decode(&automatic.state)?;
+    assert_eq!(
+        (
+            automatic_state.text("planning.action")?,
+            automatic_state.text("verified")?,
+        ),
+        ("0", "false")
+    );
+    Ok(())
+}
+
+#[test]
+fn observed_verification_reopens_only_after_content_changes() -> Result<()> {
+    let mut weights = support::observed_weights();
+    weights
+        .meta
+        .insert("suppress_redundant_verify".into(), "true".into());
+    let fixture = support::observed_fixture(weights)?;
+    let model = Model::new(Packet::decode(&fixture.weights)?)?;
+    let mut public = Packet::decode(&fixture.public)?;
+    set(
+        &mut public,
+        "image_mask",
+        /*index*/ 0,
+        /*value*/ 0.5,
+    )?;
+    let state = model.encode(&public)?;
+    let observation =
+        DeliveryObservation::new(&owner(), &Prefixes::for_model(&model), model.total_units())?;
+    assert_eq!(
+        model
+            .inspect_observed(&state, &observation, &public)?
+            .get("policy.legal_mask")?[5],
+        1.0
+    );
+    let verified = model.advance(&state, "verify", &public)?;
+    assert_eq!(
+        (
+            verified.verified,
+            verified.verified_revision,
+            verified.content_revision
+        ),
+        (true, 0, 0)
+    );
+    assert!(verified.feedback[0] > 0.0);
+    assert_eq!(&verified.feedback[1..], &[0.0, 0.0]);
+    assert_eq!(
+        model
+            .inspect_observed(&verified, &observation, &public)?
+            .get("policy.legal_mask")?[5],
+        0.0
+    );
+    assert!(model.advance(&verified, "verify", &public).is_err());
+    let changed = model.advance(&verified, "shared", &public)?;
+    assert!(!changed.verified);
+    assert_eq!(
+        model
+            .inspect_observed(&changed, &observation, &public)?
+            .get("policy.legal_mask")?[5],
+        1.0
+    );
+    Ok(())
+}
+
+#[test]
+fn invalid_media_masks_do_not_supply_verification_evidence() -> Result<()> {
+    let fixture = support::observed_fixture(support::observed_weights())?;
+    let model = Model::new(Packet::decode(&fixture.weights)?)?;
+    let mut public = Packet::decode(&fixture.public)?;
+    let state = model.encode(&public)?;
+    let observation =
+        DeliveryObservation::new(&owner(), &Prefixes::for_model(&model), model.total_units())?;
+    for value in [f64::NAN, f64::INFINITY, -0.1, 1.1] {
+        set(&mut public, "image_mask", /*index*/ 0, value)?;
+        assert!(model.advance(&state, "verify", &public).is_err());
+        assert!(
+            model
+                .inspect_observed(&state, &observation, &public)
+                .is_err()
+        );
+    }
     Ok(())
 }
 

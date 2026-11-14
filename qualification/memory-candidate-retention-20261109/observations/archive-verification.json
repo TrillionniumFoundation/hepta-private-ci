@@ -1,0 +1,317 @@
+{
+  "actor_execution_or_rescore_performed": false,
+  "archive": {
+    "bytes": 1355380,
+    "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+    "sha256": "d3646f54f595a1dbb1d15465708a995c575fcefeb3ca857478ef55ac942b9330",
+    "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+  },
+  "bindings": {
+    "request-v2.json": {
+      "bytes": 14948,
+      "sha256": "2ad28975785858d77780e8b7c333154282916ff330c09b2f3d4aa211a8812f98"
+    },
+    "request.json": {
+      "bytes": 14939,
+      "sha256": "052e8b30473bb1517376f6e8c0a27e67ed27644e9e0ba9fa69ae84462a0d062c"
+    },
+    "run-001/RUN_RECEIPT.json": {
+      "bytes": 1478,
+      "sha256": "bda871d1df0fb78398b445265c68f047790396629f208d32ba08e117d201255c"
+    },
+    "run-002/REPORT.json": {
+      "bytes": 187390,
+      "sha256": "465334e5483e263af09e68d232d08047507841c49a84e7154466b3527f12f8e3"
+    },
+    "run-002/RUN_RECEIPT.json": {
+      "bytes": 47503,
+      "sha256": "020ead824388c3ef994d72f65befd8479d8fe7369922171158e7aa7c514688c3"
+    }
+  },
+  "export_job_id": "1a1c058e2bc-5e21-9df",
+  "export_job_status": {
+    "at_unix_ms": 1794228418821,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1c058e2bc-5e21-9df",
+    "launch_nonce": "f1ce81a61a6fa3a1576aaa51a9d6a2ad",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 1486,
+        "stored": 1486
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "export_receipt": {
+    "bytes": 1636,
+    "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/EXPORT_RECEIPT.json",
+    "sha256": "ec9a6f513a16cb94fb2c6c723587be64f121beba4ffd265321623efabc6823fa",
+    "version": "66306:46048422:1636:1794228418789358501:1794228418789358501"
+  },
+  "host": "ai395",
+  "members": {
+    "archive_members": 2456,
+    "inventory_original_files": 3675,
+    "outside_archive_content_retrieved": false,
+    "outside_archive_files": 1222,
+    "outside_archive_note": "Only pinned inventory records were recovered for these images/binaries/source files; original bytes remain on the remote host.",
+    "verified_generated_members": 3,
+    "verified_original_metadata_bytes": 17878863,
+    "verified_original_metadata_files": 2453
+  },
+  "no_extractall_used": true,
+  "original_failed_preflight_preserved": true,
+  "schema": "hepta.mem.candidate-archive-verification.v1",
+  "scientific_acceptance": "HOLD",
+  "source_commit": "a4068996433f87f756455e97fe06ca1992aa63fb",
+  "status": "VERIFIED_METADATA_BYTES",
+  "summary": {
+    "bytes": 24890,
+    "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/SUMMARY.json",
+    "sha256": "3bdb0348324407117aa2e1a8a3a7816889153e822116d10719713eaf9bd8fb60",
+    "version": "66306:46048418:24890:1794228416584723154:1794228416584723154"
+  },
+  "summary_preserves_all_report_panels_denominators_unknowns_bounds_and_pairs": true,
+  "transfer": {
+    "chunk_count": 21,
+    "chunks": [
+      {
+        "chunk_sha256": "d1232989f0d4399b2d04874248557a25b1d4f7483a1bdd9320548b1eb462bede",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 65535,
+        "offset": 0,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "93936155b3ace3fa9c715356c1080c9dcbce9d6b5abda2a726aa134f74d61cb4",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 131070,
+        "offset": 65535,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "3de94f853c32cadebbeb1a153c336e25b5741aeb898207bbead266990bddedea",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 196605,
+        "offset": 131070,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "220b823db15ad6e47f963ab386c202a0eaa1e6e8f51da681360fc80e90a6e7e9",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 262140,
+        "offset": 196605,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "3e56e9c0884f93d6e767b6d9dbf1c05aac2eb13de2ad042dd2cf53dffe98eb2b",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 327675,
+        "offset": 262140,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "160bcc0a6af74b46f2a01b9732b4099461a6c6b1b75d513333660ce1d7de608e",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 393210,
+        "offset": 327675,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "ff59be0078d3cfc67e28337f75115c3b4af60cd071e574479847168c9b77fb7a",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 458745,
+        "offset": 393210,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "b52a8569ec9d7d8f4fa5e8f83a55b6c0871eb64d887d14bb4539df76f60a061c",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 524280,
+        "offset": 458745,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "a3f65737e6cf616b3687f02399f5cfa6194e4925857f0519bead17f9e93c85f6",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 589815,
+        "offset": 524280,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "c042f209688e9c213d208ad0d6be2e4b8139884cb65067fa6c4666ed607a978f",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 655350,
+        "offset": 589815,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "369d32b4f14eb4e8621036e4964cb425fef1534630fc3e4e9120c311629e8b88",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 720885,
+        "offset": 655350,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "7cfd536d47541c2d9616e29e04dff43839328cef845e6ad4e0466ee10cac0fe7",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 786420,
+        "offset": 720885,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "013659bc19c92245732d9eb07fb2c20a40751a5eba1fb87fe5e942894fc288ee",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 851955,
+        "offset": 786420,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "5e8d861177a15c63887d01a5248e40f427979fd139fe5482c169fa70bb156c75",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 917490,
+        "offset": 851955,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "8a507d3e09bf72f292c98c948e98d6f8729f3ec5241d897cf82bd598504d8ad9",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 983025,
+        "offset": 917490,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "833bfedf775418f917e7e19b71e666fb6f5c148ee38d5af13643b6b99f25ef3d",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 1048560,
+        "offset": 983025,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "45919d7ef3ef6fb538fb79c147590fbed6d6e45e2181e741c777bc3ad0d622bb",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 1114095,
+        "offset": 1048560,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "04881650b8b96359de3ad81337c475fa4225fa4f3a3d35af68288a95fe3690cf",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 1179630,
+        "offset": 1114095,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "b6cf4e43f672774e06b5cd2ac8dd653ffabf6ea9ac3120c1e3e0a94604dde255",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 1245165,
+        "offset": 1179630,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "4059dd5168478b1403b079b9fd2198294c1263f41d1d74808c1eeddfdcff9af3",
+        "eof": false,
+        "kind": "archive",
+        "next_offset": 1310700,
+        "offset": 1245165,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      },
+      {
+        "chunk_sha256": "33f2cc923bca20213052912e3b349e638d64a2fbe3971d0c7d535282fa225dea",
+        "eof": true,
+        "kind": "archive",
+        "next_offset": 1355380,
+        "offset": 1310700,
+        "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/evidence-export-v1/metadata-evidence.tar.xz",
+        "size": 1355380,
+        "version": "66306:46048421:1355380:1794228418786190612:1794228418786190612"
+      }
+    ],
+    "every_chunk_version_offset_length_and_sha_verified": true,
+    "maximum_chunk_bytes": 65535,
+    "maximum_parallel_reads": 4
+  }
+}

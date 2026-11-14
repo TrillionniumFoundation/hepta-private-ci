@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.mem5.original-archive-verification.v1",
+  "source_commit": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a",
+  "source_root": "/home/qq/mem5-selection-20261110-4b3362/run-001-5fa0d0e462cd",
+  "archive_root": "/home/qq/mem5-selection-20261110-4b3362/raw-archive-5fa0d0e-v1",
+  "host": "ai395",
+  "read_only_verification": true,
+  "archive_creation_replayed": false,
+  "actors_replayed": false,
+  "archive_key_changed": false,
+  "existing_archive_start_key": "mem5-raw-archive-5fa0d0e-20261110-v1",
+  "original_archive_job_id": "UNRESOLVED",
+  "index": {
+    "path": "INDEX.json",
+    "size": 2764,
+    "sha256": "470cb2217d2d4727c551b6f935f8f1ffaa66f7702af87ea1fdaa15b86e0b69f4"
+  },
+  "manifest_asset": {
+    "path": "manifest-00001.tar.xz",
+    "size": 184168,
+    "sha256": "41f5894e45b846857abec1da8bc7e6a95e271cbbfcbd20251cea785d22dd68b1"
+  },
+  "verifier": {
+    "repository_commit": "865aa66a98bf4a78229650ebd0489ba527e91126",
+    "path": "qualification/memory-cell-mem5-selection/archive-instrument/archive-run-strict-v2.py",
+    "git_blob_sha1": "274198e18b5a6fec8d2d97fb77cd928295e4805e",
+    "execution": "/usr/bin/python3 - --verify --output <archive_root>; script from pinned Git blob passed over stdin",
+    "host_job_id": "1a1c4b6bd99-cf39-3f8",
+    "idempotency_key": "mem5-archive-readonly-v2-verify-865aa66-20261110-v2",
+    "state": "succeeded",
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "stdout_complete": true
+  },
+  "result": {
+    "status": "verified",
+    "logical_files": 4000,
+    "logical_bytes": 77913835,
+    "unique_objects": 2825,
+    "unique_chunks": 2859,
+    "assets": 84,
+    "manifest_sha256": "c98d559d76dee6d80b509397813e5f57128e53174d2e05b527f1df13a2339304",
+    "all_logical_files_reconstructible": true,
+    "source_owner_authenticated": false
+  },
+  "limitations": [
+    "This verifies intact logical archive reconstruction on the named ai395 host, not independently authenticated source ownership or atomic snapshot.",
+    "Original archive start job identity remains unresolved and no full asset set is yet published to GitHub or independent durable custody.",
+    "It does not independently rerun actor tasks, reproduce all OCR pixels/sidecars, or establish sealed science confirmation.",
+    "Dedicated frozen-source CI and repository-wide CI retain separate identities and open gates."
+  ]
+}

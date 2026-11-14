@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.mem5.two_host_archive_reconstruction.v1",
+  "observed_at_utc": "2026-11-10T09:55:53Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "frozen_execution_source": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a",
+  "original_archive_key": "mem5-raw-archive-5fa0d0e-20261110-v1",
+  "original_archive_start_job_identity": "UNRESOLVED",
+  "original_actor_job": "1a1c46734c8-cf39-2eb",
+  "original_actor_reexecution": false,
+  "original_archive_rebuild": false,
+  "source": {
+    "host": "ai395",
+    "path": "/home/qq/mem5-selection-20261110-4b3362/raw-archive-5fa0d0e-v1",
+    "verification_job": "1a1c4b6bd99-cf39-3f8",
+    "sha256_index": "470cb2217d2d4727c551b6f935f8f1ffaa66f7702af87ea1fdaa15b86e0b69f4"
+  },
+  "replication": {
+    "method": "rsync over previously authorized, BatchMode SSH; retained original file bytes; no archive regeneration",
+    "source_host": "ai395",
+    "target_host": "desktop",
+    "source_execution_job": "1a1c4e178ba-cf39-4ae",
+    "source_execution_terminal": "succeeded",
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "target_directory": "/home/qian-qi/mem5-cold-custody-20261110/raw-archive-5fa0d0e-v1",
+    "target_archive_file_count": 85,
+    "archive_mode": "0700",
+    "parent_mode": "0700"
+  },
+  "target_direct_verification": {
+    "host": "desktop",
+    "job_id": "1a1c4e2ae61-cf39-4bc",
+    "terminal": "succeeded",
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "ran_via": "mcp__h__shell_start directly bound to desktop",
+    "strict_v2_sha256": "3e8466d63a03306f8e52de6e5f68bd378ce235731f98f9022ec47a4696677897",
+    "index_sha256": "470cb2217d2d4727c551b6f935f8f1ffaa66f7702af87ea1fdaa15b86e0b69f4",
+    "manifest_sha256": "c98d559d76dee6d80b509397813e5f57128e53174d2e05b527f1df13a2339304",
+    "result": {
+      "status": "verified",
+      "all_logical_files_reconstructible": true,
+      "logical_files": 4000,
+      "logical_bytes": 77913835,
+      "assets": 84,
+      "unique_objects": 2825,
+      "unique_chunks": 2859,
+      "source_owner_authenticated": false
+    }
+  },
+  "limitations": [
+    "This confirms reconstructibility and same-byte digest binding on two separately configured operator hosts, not an independently operated third-party custodian.",
+    "Original archive start job identity remains UNRESOLVED; no claim of origin owner authentication or filesystem-atomic snapshot.",
+    "No sealed/independent science, full sidecar/pixel re-execution, provider/exposure certification, physical costs or full original owner cold restore.",
+    "Scientific acceptance remains HOLD, production NoUpdate, all_blockers_closed remains false.",
+    "No new actor run, no change to original archive key, original source, source weights, sandbox or assertions."
+  ],
+  "next_steps": [
+    "Cross-version owner-authenticated transition with revocation/expiry/dependency and cold recovery.",
+    "Remediate four cargo-deny advisories and platform Bazel failures without suppressions or sandbox relaxation.",
+    "Externally governed durable custody if independent third-party persistence is required.",
+    "Authenticated independent confirmation and all-exposure union before any new cohort."
+  ]
+}

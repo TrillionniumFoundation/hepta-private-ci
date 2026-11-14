@@ -1,0 +1,66 @@
+{
+  "MEM_selector_failure_cause_established": false,
+  "architecture": {
+    "base_merge": {
+      "conclusion": "success",
+      "job_id": 129691795243
+    },
+    "overall_conclusion": null,
+    "run_id": 42775149085,
+    "source_head": {
+      "active_step": "Module lifecycle generations and migration rollback",
+      "job_id": 129691795736,
+      "status": "in_progress"
+    }
+  },
+  "architecture_theory_failure_claimed": false,
+  "dedicated_MEM_pass_transferred": false,
+  "failed_jobs": [
+    {
+      "cause": "UNKNOWN: original log fetch twice returned Transport closed; no historical advisory attribution transferred",
+      "decoded_log_retrieved": false,
+      "failed_step": "Run cargo-deny",
+      "job_id": 129705041583,
+      "run_id": 42775149122
+    },
+    {
+      "decoded_log_retrieved": true,
+      "failed_step": "bazel test //...",
+      "job_id": 129705042127,
+      "observed_scope": [
+        "hepta-agentd fixture failed: Invalid",
+        "hepta-automation open/durable owner/store/original owner: Invalid"
+      ],
+      "run_id": 42775149122,
+      "unique_root_cause_established": false
+    },
+    {
+      "decoded_log_retrieved": true,
+      "failed_step": "bazel test shard",
+      "job_id": 129705042213,
+      "observed_scope": [
+        "hepta-automation owner/fixture Invalid",
+        "remote Windows sandbox request rejected: ambient parent FILE_DELETE_CHILD bypass; no qualified replacement preserves this read policy",
+        "core default wait_agent timeout assertion",
+        "core paginated-rollout model-context failure"
+      ],
+      "run_id": 42775149122,
+      "unique_root_cause_established": false
+    }
+  ],
+  "full_ci_passed": false,
+  "full_required_ci_terminal": false,
+  "new_polling_performed_for_package": false,
+  "observed_at": "2026-11-10T08:15:29.952Z",
+  "policy_or_code_modified": false,
+  "raw_log_format": "Complete decoded GitHub job text retained as ordered lossless JSON content chunks; indices bind the concatenated UTF-8 bytes.",
+  "read_only_evidence": true,
+  "repo_checks": {
+    "conclusion": "success",
+    "job_id": 129705041733,
+    "just_fmt": "success",
+    "prettier": "success"
+  },
+  "schema": "mem5-latest-required-ci-summary.v1",
+  "source_commit": "5fa0d0e462cd1393f4f9e95565ff5993e9bad29a"
+}

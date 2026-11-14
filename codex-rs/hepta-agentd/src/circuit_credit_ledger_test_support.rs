@@ -78,7 +78,6 @@ fn sign(
 
 pub(super) struct LedgerFixture {
     pub(super) writer: LedgerWriter,
-    observers: [File; 2],
     _directory: tempfile::TempDir,
 }
 
@@ -94,18 +93,12 @@ impl LedgerFixture {
                     .open(directory.path().join(name)),
             )
         };
-        let ledger_file = file("ledger");
-        let witness_file = file("witness");
-        let observers = [
-            checked(ledger_file.try_clone()),
-            checked(witness_file.try_clone()),
-        ];
         let ledger = checked(DurableLedger::create(
-            ledger_file,
+            file("ledger"),
             d(domain),
             /*max_records*/ 32,
         ));
-        let witness = checked(LedgerWitnessStore::create(witness_file, d(domain)));
+        let witness = checked(LedgerWitnessStore::create(file("witness"), d(domain)));
         let key = SigningKey::from_bytes(&[99; 32]);
         let root = LearningTrustRootV1 {
             root_id: id("root"),
@@ -161,15 +154,13 @@ impl LedgerFixture {
         ));
         Self {
             writer,
-            observers,
             _directory: directory,
         }
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        self.observers
-            .each_ref()
-            .map(|file| checked(crate::test_support::read_file_bytes(file)))
+    pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+        const MAXIMUM_FILE_BYTES: u64 = 8 * 1024 * 1024;
+        checked(self.writer.qualification_file_bytes(MAXIMUM_FILE_BYTES))
     }
 }
 

@@ -1,0 +1,16 @@
+{
+  "checks_passed": 3235,
+  "corrected_returncode": 0,
+  "correction": "Add unchanged final-source-capsule.zip extraction to published-final, preserving audit implementation",
+  "input_hashes_rechecked": true,
+  "new_actor_or_reference_evaluator_run": false,
+  "original_documentation_attempt": {
+    "cause": "Instructions omitted required exact-source capsule; no actor or scorer ran",
+    "returncode": 1,
+    "stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/4b3362a26575/mem5-results-reproduce/audit-run-result.py\", line 431, in <module>\n    main()\n  File \"/workspace/scratch/4b3362a26575/mem5-results-reproduce/audit-run-result.py\", line 412, in main\n    result = audit(args.root)\n             ^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/4b3362a26575/mem5-results-reproduce/audit-run-result.py\", line 134, in audit\n    raw = (ROOT / \"published-final\" / path).read_bytes()\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1019, in read_bytes\n    with self.open(mode='rb') as f:\n         ^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py\", line 1013, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/4b3362a26575/mem5-results-reproduce/published-final/experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py'\n"
+  },
+  "reproduced_output_sha256": "623ed3e66608b484d655ec07a5be1f53e025eafbf1ca498b0fbc7d6603fbccfc",
+  "schema": "mem5-published-core-layout-reproduction.v1",
+  "stderr": "",
+  "stdout": "{\"status\": \"PASS\", \"checks_passed\": 3235, \"problems\": 0, \"output\": \"mem5-results-reproduce/reproduced-audit.json\"}\n"
+}

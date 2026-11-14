@@ -230,7 +230,15 @@ class FittedPredictor:
 def forecast_tensors(
     model, x, action, particles, seed, step, remaining, legal, memory_mode
 ):
-    """The same frozen-noise transition in deployment and differentiable unrolls."""
+    """Shared frozen-noise forecast with conservative public action support.
+
+    The compact state does not retain both ROI boxes. After observing a ROI,
+    a hypothetical PREPARE cannot certify that it selects a different region;
+    only the actual host successor can reopen READ in that case. This limits
+    lookahead and does not establish calibrated transition probabilities.
+    """
+    if action not in legal:
+        raise ValueError("Cannot forecast an action outside current public support")
     predicted, duration = model.predict_transition(
         x[None], torch.tensor([ACTIONS.index(action)], device=x.device)
     )
@@ -268,12 +276,12 @@ def forecast_tensors(
     fields[CONTENT_WIDTH + 14] = (
         meta[14] * (1 - duration / max(remaining, 1e-9)).clamp(min=0)
     ).expand(particles)
-    following_legal = tuple(
-        a
-        for a in ACTIONS
-        if (a != "READ_ROI" or action == "PREPARE_ROI" or meta[8] > 0.5)
-        and (a not in {"WRITE_TEXT", "RENDER_IMAGE"} or a in legal)
+    read_follows = (action == "PREPARE_ROI" and not bool(meta[9] > 0.5)) or (
+        action not in {"PREPARE_ROI", "READ_ROI", "STOP"} and "READ_ROI" in legal
     )
-    if step + 1 >= 8:
+    following_legal = tuple(
+        a for a in ACTIONS if (read_follows if a == "READ_ROI" else a in legal)
+    )
+    if action == "STOP" or step + 1 >= 8:
         following_legal = ("STOP",)
     return torch.stack(fields, -1), duration, following_legal

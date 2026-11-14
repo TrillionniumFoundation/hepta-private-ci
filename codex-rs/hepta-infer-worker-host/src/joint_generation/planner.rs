@@ -29,6 +29,14 @@ pub(crate) fn validate_profile(model: &Model) -> Result<()> {
 }
 
 #[derive(Clone, Debug, PartialEq)]
+pub(crate) enum RiskEvidence {
+    // Preserve the original packet bytes when restoring pre-metadata states.
+    LegacyUnrecorded,
+    NotEvaluated,
+    InactiveSingleParticle(f64),
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) struct PlanningReceipt {
     pub(crate) profile: String,
     pub(crate) action: usize,
@@ -39,6 +47,7 @@ pub(crate) struct PlanningReceipt {
     pub(crate) scored: [bool; 7],
     pub(crate) scores: [f64; 7],
     pub(crate) selected_duration_micros: u64,
+    pub(crate) risk_evidence: RiskEvidence,
 }
 
 impl PlanningReceipt {
@@ -63,6 +72,22 @@ impl PlanningReceipt {
             ("duration_micros", self.selected_duration_micros.to_string()),
         ] {
             packet.meta.insert(format!("planning.{key}"), value);
+        }
+        let evidence = match &self.risk_evidence {
+            RiskEvidence::LegacyUnrecorded => None,
+            RiskEvidence::NotEvaluated => Some(("not-evaluated", "not-evaluated".into(), "0")),
+            RiskEvidence::InactiveSingleParticle(value) => {
+                Some(("inactive-single-particle", value.to_string(), "1"))
+            }
+        };
+        if let Some((semantics, parameter, particles)) = evidence {
+            for (key, value) in [
+                ("risk_semantics", semantics.into()),
+                ("risk_parameter", parameter),
+                ("support_particles", particles.into()),
+            ] {
+                packet.meta.insert(format!("planning.{key}"), value);
+            }
         }
         packet.vector("planning.scores", self.scores.to_vec());
         packet.vector(
@@ -89,6 +114,43 @@ impl PlanningReceipt {
         if mask.len() != 7 || mask.iter().any(|value| ![0.0, 1.0].contains(value)) {
             return Err("invalid planning score mask".into());
         }
+        let risk_keys = [
+            "planning.risk_semantics",
+            "planning.risk_parameter",
+            "planning.support_particles",
+        ];
+        let risk_evidence = if risk_keys.iter().all(|key| !packet.meta.contains_key(*key)) {
+            // Legacy packets retain their deterministic noise identity. Missing
+            // additive metadata does not qualify them as risk-sensitive.
+            RiskEvidence::LegacyUnrecorded
+        } else {
+            let actor = packet.text("planning.profile")? == ACTOR_PROFILE;
+            let semantics = if actor {
+                "not-evaluated"
+            } else {
+                "inactive-single-particle"
+            };
+            if packet.text("planning.risk_semantics")? != semantics
+                || packet.text("planning.support_particles")? != if actor { "0" } else { "1" }
+            {
+                return Err("planning risk evidence contradicts deterministic profile".into());
+            }
+            let parameter = packet.text("planning.risk_parameter")?;
+            if actor {
+                if parameter != "not-evaluated" {
+                    return Err("actor receipt cannot claim an evaluated risk parameter".into());
+                }
+                RiskEvidence::NotEvaluated
+            } else {
+                let value: f64 = parameter
+                    .parse()
+                    .map_err(|_| "invalid planning risk parameter")?;
+                if !value.is_finite() || value < 0.0 {
+                    return Err("invalid planning risk parameter".into());
+                }
+                RiskEvidence::InactiveSingleParticle(value)
+            }
+        };
         let receipt = Self {
             profile: packet.text("planning.profile")?.into(),
             action: number("action")?,
@@ -105,6 +167,7 @@ impl PlanningReceipt {
                 .text("planning.duration_micros")?
                 .parse()
                 .map_err(|_| "invalid duration forecast")?,
+            risk_evidence,
         };
         let (objective, noise) = if receipt.profile == ACTOR_PROFILE {
             ("actor-probability-argmax-v1", "not-evaluated")
@@ -131,6 +194,7 @@ impl PlanningReceipt {
 }
 
 struct Profile {
+    risk: f64,
     discount: f64,
     latency_weight: f64,
     horizon: usize,
@@ -189,6 +253,7 @@ impl Profile {
             return Err("invalid finite NDU profile".into());
         }
         Ok(Self {
+            risk,
             discount,
             latency_weight,
             horizon,
@@ -228,7 +293,8 @@ impl Search<'_> {
     fn inspect(&self, node: &Node) -> Result<Packet> {
         let observation =
             DeliveryObservation::new(&node.owner, &node.prefixes, self.model.total_units())?;
-        self.model.inspect_observed(&node.state, &observation)
+        self.model
+            .inspect_observed(&node.state, &observation, self.public)
     }
 
     fn forecast(&mut self, node: &Node, action: usize) -> Result<Option<Node>> {
@@ -325,7 +391,7 @@ pub(crate) fn choose(
         owner: owner.clone(),
     };
     let observation = DeliveryObservation::new(owner, prefixes, model.total_units())?;
-    let inspection = model.inspect_observed(state, &observation)?;
+    let inspection = model.inspect_observed(state, &observation, public)?;
     let legal = inspection.get("policy.legal_mask")?;
     let mut receipt = PlanningReceipt {
         profile: profile_name.into(),
@@ -337,6 +403,7 @@ pub(crate) fn choose(
         scored: [false; 7],
         scores: [0.0; 7],
         selected_duration_micros: 0,
+        risk_evidence: RiskEvidence::NotEvaluated,
     };
     if profile_name == ACTOR_PROFILE {
         let probabilities = inspection.get("policy.probabilities")?;
@@ -360,6 +427,7 @@ pub(crate) fn choose(
         return Err("unknown observed inference profile".into());
     }
     let profile = Profile::read(model)?;
+    receipt.risk_evidence = RiskEvidence::InactiveSingleParticle(profile.risk);
     receipt.horizon = profile.horizon;
     receipt.forecast_cap = profile.cap;
     let mut search = Search {

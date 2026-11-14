@@ -1,0 +1,92 @@
+name: Hepta MEM full trajectory native campaign
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-mem4-native.yml
+      - scripts/memory_cell_mem1/run_trajectory_coverage.py
+      - scripts/memory_cell_mem1/coverage_control.py
+      - scripts/memory_cell_mem1/environment.py
+      - scripts/memory_cell_mem1/native.py
+      - scripts/memory_cell_mem1/run.py
+      - codex-rs/hepta-memory-retrieval/**
+      - codex-rs/hepta-cognitive-types/**
+      - codex-rs/hepta-types/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-mem4-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  trajectory:
+    name: Build actual Rust worker and retain all planned trajectories
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: "1.96.0"
+      - name: Bind source and build the original native example
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/mem4-native"
+          mkdir -p "$records"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-identity.txt"
+          git ls-files -z codex-rs/hepta-memory-retrieval codex-rs/hepta-cognitive-types codex-rs/hepta-types |
+            xargs -0 sha256sum > "$records/native-source-sha256.txt"
+          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock > "$records/workspace-sha256.txt"
+          rustc --version > "$records/rust-version.txt"
+          cargo --version > "$records/cargo-version.txt"
+          python --version > "$records/python-version.txt"
+          cargo build --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-memory-retrieval --example mem1_fast_memory \
+            2>&1 | tee "$records/native-build.log"
+          sha256sum codex-rs/target/debug/examples/mem1_fast_memory > "$records/native-binary-sha256.txt"
+      - name: Execute complete matched trajectories
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_mem1/run_trajectory_coverage.py \
+            --native "$GITHUB_WORKSPACE/codex-rs/target/debug/examples/mem1_fast_memory" \
+            --output "$RUNNER_TEMP/mem4-native/campaign" \
+            --source-revision "$SOURCE_SHA" --seeds 0 1 2 3 4 \
+            2>&1 | tee "$RUNNER_TEMP/mem4-native/campaign-console.log"
+      - name: Retain final source identity
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mem4-native"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/mem4-native/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/mem4-native/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Preserve raw outcomes, failures and measured cost
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem4-native-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem4-native
+          if-no-files-found: error
+          retention-days: 30

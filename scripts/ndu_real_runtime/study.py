@@ -12,6 +12,7 @@ import traceback
 
 from ndu_real_materials.common import strict_json
 from .episode import EpisodeHost
+from .factorial_report import FAMILIES, REQUIRED_SOURCES
 from .metering import _usage, atomic_json, canonical_sha, file_sha
 
 
@@ -71,10 +72,10 @@ def select_sources(catalog, design, excluded_groups=()):
                 (row for row in rows if row["episode_group"] == episode),
                 key=lambda row: row["task_family"],
             )
-            expected = 1 if name == "pilot_retention" else 5
+            expected = {"retention"} if name == "pilot_retention" else set(FAMILIES)
             if (
-                len(chosen) != expected
-                or len({row["task_family"] for row in chosen}) != expected
+                len(chosen) != len(expected)
+                or {row["task_family"] for row in chosen} != expected
             ):
                 raise ValueError(
                     "Selected source lacks the prospectively required family coverage"
@@ -134,6 +135,12 @@ def freeze(config, design_path, output):
             / "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
         ]
     )
+    if not REQUIRED_SOURCES <= {
+        path.relative_to(code).as_posix() for path in source_files
+    }:
+        raise ValueError(
+            "New pilot plan lacks required prospective factorial analysis sources"
+        )
     pins = [
         {"path": str(path), "sha256": file_sha(path), "bytes": path.stat().st_size}
         for path in source_files

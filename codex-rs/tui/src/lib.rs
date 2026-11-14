@@ -3263,8 +3263,8 @@ mod tests {
             .expect("state db startup failure should retain its typed context");
 
         assert_eq!(
-            startup_error.database_path().canonicalize()?,
-            logs_db_path.canonicalize()?
+            dunce::canonicalize(startup_error.database_path())?,
+            dunce::canonicalize(&logs_db_path)?
         );
         assert!(
             codex_state::sqlite_error_detail_is_corruption(startup_error.detail()),

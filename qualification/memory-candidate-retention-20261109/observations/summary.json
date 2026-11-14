@@ -1,0 +1,849 @@
+{
+  "attempt_kind": "preflight-correction",
+  "bootstrap_wall_seconds": {
+    "original": 0.1229547499679029,
+    "preflight_correction": 94.09647845989093
+  },
+  "campaign_root": "/home/qq/mem-candidate-retention-20261109-a6b21bc7",
+  "collection_performs_no_rescore_or_actor_execution": true,
+  "cost_accounting": "Run/episode/Bootstrap envelopes overlap; retain all original levels and do not add them. Export cost is separate.",
+  "design": {
+    "by_role": {
+      "development": {
+        "case_pairs": 50,
+        "episode_groups": 10,
+        "episodes": 100,
+        "family_episode_counts": {
+          "continuation_not_worthwhile": 20,
+          "preparation_required": 20,
+          "selective_refinement": 20,
+          "text_image_complementary": 20,
+          "text_sufficient": 20
+        },
+        "source_groups": 10
+      },
+      "retention_validation": {
+        "case_pairs": 4,
+        "episode_groups": 4,
+        "episodes": 8,
+        "family_episode_counts": {
+          "text_image_complementary": 8
+        },
+        "source_groups": 4
+      }
+    },
+    "control_plan": {
+      "bytes": 361,
+      "path": "CONTROL.json",
+      "sha256": "740b0679bc2a39edad5d4ae6c565bf8987aeb03018d345a0b9f3b49ece52ccec"
+    },
+    "excluded_source_groups": [
+      "merchant-50f46908878b39ed0bd3853f",
+      "merchant-5d4b99c3062c5faa80efd221",
+      "merchant-a3992bf7e3041d26a067feab",
+      "merchant-bd1804bb290a96349b65a9ab",
+      "merchant-d93e19ca396d00036f1a51d5"
+    ],
+    "groups_per_role": {
+      "development": 10,
+      "retention_validation": 4
+    },
+    "planned_episodes": 108,
+    "planned_pairs": 54,
+    "quarantined_source_groups_not_in_released_catalog": [
+      "merchant-d93e19ca396d00036f1a51d5"
+    ],
+    "selection_salt": "mem-candidate-retention-20261109-a6b21bc7-v1",
+    "source_group_count": 14
+  },
+  "frozen_checkpoint_count": 1,
+  "independent_training_repeats": 0,
+  "new_fits": 0,
+  "report": {
+    "all_planned_denominator_is_primary": true,
+    "anchor_rule": "last WRITE_TEXT decision; otherwise final actor decision",
+    "candidate_correctness": "frozen independent text normalizer; image quality separately scored",
+    "candidate_unavailability_scope": "observed earlier but absent from the offered decision roster; physical eviction requires separate receipt evidence",
+    "conditional_rates_are_not_causal_selection_effects": true,
+    "confirmatory_use": false,
+    "evidence_sha256": "eb2c4b21fd2c91005af23c61e9a8e2ffd992817815763b25ad693587eb3de009",
+    "full_cost_adjusted": false,
+    "paired_unconditional_success_difference": {
+      "bounds": [
+        0.0,
+        0.0
+      ],
+      "contrast": "bounded - current_only",
+      "observed_outcomes": {
+        "loss": 0,
+        "tie": 54,
+        "win": 0
+      },
+      "observed_pairs": 54,
+      "planned_pairs": 54,
+      "sampling_uncertainty": "not estimated; finite descriptive panel only",
+      "unknown_pairs": 0,
+      "value": 0.0
+    },
+    "panels": {
+      "bounded/all_planned": {
+        "bypass_successes": 0,
+        "evidence_status": {
+          "VERIFIED": 54
+        },
+        "failure_stage": {
+          "candidate_success": 1,
+          "delivery_failure": 1,
+          "initial_no_op_success": 10,
+          "perception_unavailable": 11,
+          "selection_error": 21,
+          "unknown": 10
+        },
+        "no_op_successes": 10,
+        "p_available": {
+          "bounds": [
+            0.42592592592592593,
+            0.7962962962962963
+          ],
+          "denominator": 54,
+          "numerator": 23,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 20,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": [
+            0.5348837209302325,
+            1.0
+          ],
+          "denominator": 36,
+          "numerator": 23,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 7,
+          "unknown_outcome": 13,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": [
+            0.045454545454545456,
+            0.9545454545454546
+          ],
+          "denominator": 2,
+          "numerator": 1,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 20,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": [
+            0.6666666666666666,
+            0.7962962962962963
+          ],
+          "denominator": 54,
+          "numerator": 36,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 7,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": [
+            0.046511627906976744,
+            0.5116279069767442
+          ],
+          "denominator": 23,
+          "numerator": 2,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 20,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": [
+            0.2037037037037037,
+            0.2037037037037037
+          ],
+          "denominator": 54,
+          "numerator": 11,
+          "planned_episodes": 54,
+          "status": "OBSERVED",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": 0.2037037037037037
+        },
+        "planned_episodes": 54,
+        "reported_timeouts": 0,
+        "terminal_status": {
+          "Completed": 54
+        }
+      },
+      "bounded/initial_correct": {
+        "bypass_successes": 0,
+        "evidence_status": {
+          "VERIFIED": 10
+        },
+        "failure_stage": {
+          "initial_no_op_success": 10
+        },
+        "no_op_successes": 10,
+        "p_available": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 10,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 10,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 7,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 3,
+          "unknown_outcome": 7,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": [
+            0.7,
+            1.0
+          ],
+          "denominator": 10,
+          "numerator": 7,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 3,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": [
+            1.0,
+            1.0
+          ],
+          "denominator": 10,
+          "numerator": 10,
+          "planned_episodes": 10,
+          "status": "OBSERVED",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": 1.0
+        },
+        "planned_episodes": 10,
+        "reported_timeouts": 0,
+        "terminal_status": {
+          "Completed": 10
+        }
+      },
+      "bounded/initial_incorrect": {
+        "bypass_successes": 0,
+        "evidence_status": {
+          "VERIFIED": 44
+        },
+        "failure_stage": {
+          "candidate_success": 1,
+          "delivery_failure": 1,
+          "perception_unavailable": 11,
+          "selection_error": 21,
+          "unknown": 10
+        },
+        "no_op_successes": 0,
+        "p_available": {
+          "bounds": [
+            0.5227272727272727,
+            0.75
+          ],
+          "denominator": 44,
+          "numerator": 23,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 10,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": [
+            0.696969696969697,
+            1.0
+          ],
+          "denominator": 29,
+          "numerator": 23,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 4,
+          "unknown_outcome": 6,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": [
+            0.08333333333333333,
+            0.9166666666666666
+          ],
+          "denominator": 2,
+          "numerator": 1,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": [
+            0.6590909090909091,
+            0.75
+          ],
+          "denominator": 44,
+          "numerator": 29,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 4,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": [
+            0.06060606060606061,
+            0.36363636363636365
+          ],
+          "denominator": 23,
+          "numerator": 2,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": [
+            0.022727272727272728,
+            0.022727272727272728
+          ],
+          "denominator": 44,
+          "numerator": 1,
+          "planned_episodes": 44,
+          "status": "OBSERVED",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": 0.022727272727272728
+        },
+        "planned_episodes": 44,
+        "reported_timeouts": 0,
+        "terminal_status": {
+          "Completed": 44
+        }
+      },
+      "bounded/initial_unknown": {
+        "bypass_successes": 0,
+        "evidence_status": {},
+        "failure_stage": {},
+        "no_op_successes": 0,
+        "p_available": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "planned_episodes": 0,
+        "reported_timeouts": 0,
+        "terminal_status": {}
+      },
+      "current_only/all_planned": {
+        "bypass_successes": 0,
+        "evidence_status": {
+          "VERIFIED": 54
+        },
+        "failure_stage": {
+          "candidate_success": 1,
+          "candidate_unavailable_at_decision": 9,
+          "delivery_failure": 1,
+          "initial_no_op_success": 10,
+          "perception_unavailable": 11,
+          "selection_error": 12,
+          "unknown": 10
+        },
+        "no_op_successes": 10,
+        "p_available": {
+          "bounds": [
+            0.25925925925925924,
+            0.6296296296296297
+          ],
+          "denominator": 54,
+          "numerator": 14,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 20,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": [
+            0.32558139534883723,
+            0.7906976744186046
+          ],
+          "denominator": 36,
+          "numerator": 14,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 7,
+          "unknown_outcome": 13,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": [
+            0.045454545454545456,
+            0.9545454545454546
+          ],
+          "denominator": 2,
+          "numerator": 1,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 20,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": [
+            0.6666666666666666,
+            0.7962962962962963
+          ],
+          "denominator": 54,
+          "numerator": 36,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 7,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": [
+            0.058823529411764705,
+            0.6470588235294118
+          ],
+          "denominator": 14,
+          "numerator": 2,
+          "planned_episodes": 54,
+          "status": "UNKNOWN",
+          "unknown_condition": 20,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": [
+            0.2037037037037037,
+            0.2037037037037037
+          ],
+          "denominator": 54,
+          "numerator": 11,
+          "planned_episodes": 54,
+          "status": "OBSERVED",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": 0.2037037037037037
+        },
+        "planned_episodes": 54,
+        "reported_timeouts": 0,
+        "terminal_status": {
+          "Completed": 54
+        }
+      },
+      "current_only/initial_correct": {
+        "bypass_successes": 0,
+        "evidence_status": {
+          "VERIFIED": 10
+        },
+        "failure_stage": {
+          "initial_no_op_success": 10
+        },
+        "no_op_successes": 10,
+        "p_available": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 10,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 10,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 7,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 3,
+          "unknown_outcome": 7,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": [
+            0.7,
+            1.0
+          ],
+          "denominator": 10,
+          "numerator": 7,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 3,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": [
+            0.0,
+            1.0
+          ],
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 10,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": [
+            1.0,
+            1.0
+          ],
+          "denominator": 10,
+          "numerator": 10,
+          "planned_episodes": 10,
+          "status": "OBSERVED",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": 1.0
+        },
+        "planned_episodes": 10,
+        "reported_timeouts": 0,
+        "terminal_status": {
+          "Completed": 10
+        }
+      },
+      "current_only/initial_incorrect": {
+        "bypass_successes": 0,
+        "evidence_status": {
+          "VERIFIED": 44
+        },
+        "failure_stage": {
+          "candidate_success": 1,
+          "candidate_unavailable_at_decision": 9,
+          "delivery_failure": 1,
+          "perception_unavailable": 11,
+          "selection_error": 12,
+          "unknown": 10
+        },
+        "no_op_successes": 0,
+        "p_available": {
+          "bounds": [
+            0.3181818181818182,
+            0.5454545454545454
+          ],
+          "denominator": 44,
+          "numerator": 14,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 10,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": [
+            0.42424242424242425,
+            0.7272727272727273
+          ],
+          "denominator": 29,
+          "numerator": 14,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 4,
+          "unknown_outcome": 6,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": [
+            0.08333333333333333,
+            0.9166666666666666
+          ],
+          "denominator": 2,
+          "numerator": 1,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": [
+            0.6590909090909091,
+            0.75
+          ],
+          "denominator": 44,
+          "numerator": 29,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 0,
+          "unknown_outcome": 4,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": [
+            0.08333333333333333,
+            0.5
+          ],
+          "denominator": 14,
+          "numerator": 2,
+          "planned_episodes": 44,
+          "status": "UNKNOWN",
+          "unknown_condition": 10,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": [
+            0.022727272727272728,
+            0.022727272727272728
+          ],
+          "denominator": 44,
+          "numerator": 1,
+          "planned_episodes": 44,
+          "status": "OBSERVED",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": 0.022727272727272728
+        },
+        "planned_episodes": 44,
+        "reported_timeouts": 0,
+        "terminal_status": {
+          "Completed": 44
+        }
+      },
+      "current_only/initial_unknown": {
+        "bypass_successes": 0,
+        "evidence_status": {},
+        "failure_stage": {},
+        "no_op_successes": 0,
+        "p_available": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_available_given_observed": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_delivered_given_selected": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_raw_observed": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_selected_given_available": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "p_unconditional_success": {
+          "bounds": null,
+          "denominator": 0,
+          "numerator": 0,
+          "planned_episodes": 0,
+          "status": "ZERO_DENOMINATOR",
+          "unknown_condition": 0,
+          "unknown_outcome": 0,
+          "value": null
+        },
+        "planned_episodes": 0,
+        "reported_timeouts": 0,
+        "terminal_status": {}
+      }
+    },
+    "plan_sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+    "planned_episodes": 108,
+    "production_adoption": false,
+    "provider_authenticity_verified": false,
+    "schema": "ndu.real.candidate-retention-report.v1",
+    "scientific_acceptance": "HOLD"
+  },
+  "report_missing": false,
+  "retry_of": {
+    "job_id": "1a1c0432b6c-5e21-992",
+    "run": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-001"
+  },
+  "run_001": {
+    "cpu_seconds": 0.009702000000000002,
+    "energy_joules": null,
+    "error": {
+      "message": "Exposure ledger belongs to a different registry or contains unknown source groups",
+      "traceback": "Traceback (most recent call last):\n  File \"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\", line 641, in run\n    plan, jobs = freeze(request, output)\n                 ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\", line 354, in freeze\n    excluded, training_groups = exclusions(request, catalog, materials)\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\", line 226, in exclusions\n    require(\n  File \"/home/qq/mem-candidate-retention-20261109-a6b21bc7/source/scripts/ndu_real_runtime/run_candidate_retention.py\", line 47, in require\n    raise ValueError(message)\nValueError: Exposure ledger belongs to a different registry or contains unknown source groups\n",
+      "type": "ValueError"
+    },
+    "provider_charges": null,
+    "source_commit": "cce6a7d3222a7eaffe2ec3890e624820a2ec8023",
+    "status": "Failed",
+    "wall_seconds": 0.01160031696781516
+  },
+  "run_002": {
+    "cpu_seconds": 171.76210299999997,
+    "energy_joules": null,
+    "planned_episodes": 108,
+    "provider_charges": null,
+    "source_commit": "a4068996433f87f756455e97fe06ca1992aa63fb",
+    "source_group_count": 14,
+    "source_pins_unchanged": true,
+    "status": "Completed",
+    "terminal_status_counts": {
+      "Completed": 108
+    },
+    "wall_seconds": 93.79111864906736,
+    "weights_sha256_after": "313743619c25f7449c30982d5f2dcc96e574a9bc41730eb5c9551fb568fb57ac",
+    "weights_sha256_before": "313743619c25f7449c30982d5f2dcc96e574a9bc41730eb5c9551fb568fb57ac"
+  },
+  "schema": "ndu.real.candidate-retention-export-summary.v1",
+  "scientific_acceptance": "HOLD"
+}

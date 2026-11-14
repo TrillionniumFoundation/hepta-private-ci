@@ -1,0 +1,28 @@
+{
+  "schema": "hepta-mem-ci-readonly-observation-v1",
+  "observed_at_utc": "2026-11-09 13:07:48 UTC",
+  "pr": 5540,
+  "requested_source_sha": "5616af5910e694cec1740c681727c14acf39e3cb",
+  "tested_source_sha": null,
+  "run_id": 42621122302,
+  "job_id": 129173207535,
+  "job_name": "Frozen candidate and coverage contracts",
+  "status": "queued",
+  "conclusion": null,
+  "steps": null,
+  "observed_passed_tests": null,
+  "planned_minimum_tests": {
+    "candidate_contracts": 17,
+    "replay_coverage": 6,
+    "candidate_runner": 7,
+    "composition_mechanism": 7
+  },
+  "source_verification": "Exact-source checkout is configured but has not executed while the job remains queued.",
+  "raw_job_logs": {
+    "saved": false,
+    "reason": "No job log is available from a queued job."
+  },
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42621122302/job/129173207535",
+  "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5616af5910e694cec1740c681727c14acf39e3cb/.github/workflows/hepta-mem-python.yml",
+  "read_only": true
+}
