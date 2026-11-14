@@ -3,6 +3,10 @@
 import hashlib
 import json
 from pathlib import Path
+import sys
+
+if sys.flags.optimize:
+    raise SystemExit("optimized verification refused")
 
 root = Path(__file__).resolve().parent
 manifest = json.loads((root / 'SOURCE_MANIFEST.json').read_text(encoding='utf-8'))

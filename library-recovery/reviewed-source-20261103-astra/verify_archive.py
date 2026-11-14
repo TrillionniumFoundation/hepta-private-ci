@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import hashlib,json,tarfile
+import sys
+
+if sys.flags.optimize:
+    raise SystemExit("optimized verification refused")
 p=Path(__file__).resolve().parent
 m=json.loads((p/'SOURCE_MANIFEST.json').read_text());v=json.loads((p/'LOCAL_VERIFICATION.json').read_text())
 def identity(b):return dict(size_bytes=len(b),sha256=hashlib.sha256(b).hexdigest(),git_blob_sha1=hashlib.sha1(f'blob {len(b)}\0'.encode()+b).hexdigest())
