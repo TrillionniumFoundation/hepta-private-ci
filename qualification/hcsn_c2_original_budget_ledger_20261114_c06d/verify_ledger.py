@@ -45,7 +45,7 @@ worker_sum = remaining_sum - len(fits) * reserve
 assert charge_sum == ledger["arithmetic"]["original_whole_process_wall_seconds_fsum"]
 assert remaining_sum == ledger["arithmetic"]["original_decision_non_refunded_charged_remainder_seconds_fsum"]
 assert worker_sum == ledger["arithmetic"]["original_decision_worker_active_ceiling_before_finalization_seconds_fsum"]
-assert remaining_sum == ledger["contract"]["maximum_new_summed_fit_active_wall_seconds_before_exit_overhead"]
+assert remaining_sum == ledger["contract"]["original_decision_summed_charged_remainder_before_reserve_seconds"]
 assert ledger["arithmetic"]["matches_frozen_decision_aggregate_before_reserve_deduction_exactly"] is True
 
 print("PASS: original start ledger and reserve separation closed; current remaining stays UNKNOWN/HOLD")
