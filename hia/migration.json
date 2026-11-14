@@ -78,7 +78,7 @@
     "revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
     "implemented_target": "x86_64-unknown-linux-gnu",
     "borrowed_buffer_capacity": 1048576,
-    "default_build": "Python-created B0 seed; native HIA B1, B2 and B3; B3 emits component objects; GNU ld links shared libraries.",
+    "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
     "qualification_status": "three_generation_fixed_point_and_two_components_passed",
     "remaining_work": [
@@ -90,7 +90,8 @@
     "qualification_scope": "B1/B2/B3 compiler byte equality and original-Rust differential tests of seek_sequence and utf8_boundaries.",
     "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json"
+    "report": "hia/verification.json",
+    "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
   },
   "candidate_modules": [
     {
@@ -99,7 +100,7 @@
       "source_path": "codex-rs/apply-patch/src/seek_sequence.rs",
       "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
       "source_function": "seek_sequence",
-      "implementation_status": "native_candidate",
+      "implementation_status": "native_with_opt_in_production_caller",
       "qualification_status": "native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
@@ -119,7 +120,9 @@
       ],
       "tests": [
         "hia/tests/test_seek_sequence.py",
-        "hia/tests/seek_sequence_oracle.rs"
+        "hia/tests/seek_sequence_oracle.rs",
+        "hia/tests/native_patch_caller.rs",
+        "codex-rs/apply-patch/tests/suite/hia_native.rs"
       ],
       "validation": {
         "native_selfhost": {
@@ -135,22 +138,11 @@
           "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d"
         },
         "production_dispatch": {
-          "status": "pending"
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-apply-patch/hia-native",
+          "link": "static=codex_hia_seek_sequence",
+          "default_release_migrated": false
         }
-      },
-      "experimental_caller": {
-        "crate": "codex-apply-patch",
-        "feature": "hia-native",
-        "status": "opt_in_native_hia_elf",
-        "validation": {
-          "host": "desktop",
-          "target": "x86_64-unknown-linux-gnu",
-          "scope": "complete feature-enabled crate suite",
-          "passed": 99,
-          "failed": 0,
-          "skipped": 0
-        },
-        "release_qualified": false
       }
     },
     {
@@ -197,21 +189,30 @@
         "production_dispatch": {
           "status": "pending"
         }
-      },
-      "experimental_caller": {
-        "crate": "codex-utils-string",
-        "feature": "hia-native",
-        "status": "opt_in_native_hia_elf",
-        "validation": {
-          "host": "desktop",
-          "target": "x86_64-unknown-linux-gnu",
-          "scope": "complete feature-enabled crate suite",
-          "passed": 21,
-          "failed": 0,
-          "skipped": 0
-        },
-        "release_qualified": false
       }
+    },
+    {
+      "id": "utf8_prefix",
+      "hia_source": "hia/utf8_prefix.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "take_bytes_at_char_boundary",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_utf8_prefix",
+        "source_wire": "u64 length, budget, window_start; at most four bytes; little-endian",
+        "source_contract": "Valid original UTF-8 string (&str)",
+        "maximum_frame_bytes": 28,
+        "output_wire": "u64 prefix_end little-endian",
+        "success_return": 8
+      },
+      "tests": [
+        "hia/tests/test_native_string_caller.py",
+        "hia/tests/native_string_caller.rs",
+        "codex-rs/utils/string/src/hia_native_tests.rs"
+      ]
     }
   ],
   "capabilities": [
@@ -409,14 +410,14 @@
         "codex-rs/apply-patch",
         "codex-rs/file-search"
       ],
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
         "patch parsing, matching, updates and error behavior",
         "line ending modes and file effects",
         "Unicode context matching and search ordering"
       ],
-      "next_implementation": "Wire the HIA matching candidate into a tested patch-application path, then implement the remaining parser and file-update owners.",
+      "next_implementation": "Complete platform/default release gates and HIA parser/file-update owners.",
       "candidate_modules": [
         "seek_sequence"
       ]
@@ -426,16 +427,17 @@
       "source_roots": [
         "codex-rs/utils/string"
       ],
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
         "UTF-8 boundaries",
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers"
       ],
-      "next_implementation": "Qualify the UTF-8 boundary candidate and its host dispatch, then implement the remaining helpers.",
+      "next_implementation": "Complete platform/default release gates and remaining truncation, metric, UUID, JSON and location helpers.",
       "candidate_modules": [
-        "utf8_boundaries"
+        "utf8_boundaries",
+        "utf8_prefix"
       ]
     },
     {
@@ -638,7 +640,7 @@
       "manifest": "codex-rs/apply-patch/Cargo.toml",
       "manifest_blob": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6",
       "rust_file_count": 16,
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false
     },
     {
@@ -1891,7 +1893,7 @@
       "manifest": "codex-rs/utils/string/Cargo.toml",
       "manifest_blob": "8710cffe4697ae4cce6e97d6bac35566db426672",
       "rust_file_count": 4,
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false
     },
     {
@@ -1942,5 +1944,14 @@
       "regression fixtures, licensing and required release assets remain available"
     ],
     "cleanup_rule": "Remove superseded source and process artifacts only after the corresponding replacement satisfies these requirements. Build outputs and transient test files remain outside the repository."
+  },
+  "native_link_gate": {
+    "helper": "hia/cargo_build.rs",
+    "builder": "hia/build.py",
+    "tests": "hia/tests/test_build_receipt.py",
+    "feature_off_requires_artifacts": false,
+    "unsupported_native_targets": "build_error",
+    "runtime_shared_library_requirement": false,
+    "status": "current_source_and_artifact_mutation_tests_passed"
   }
 }

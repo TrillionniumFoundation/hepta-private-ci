@@ -1,5 +1,5 @@
 {
-  "schema": "codex.hia.component-verification.v1",
+  "schema": "codex.hia.component-verification.v2",
   "codex_baseline": "732e934ba496d90fbe042b8d41d479ef901643e5",
   "hepta_revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
   "target": "x86_64-unknown-linux-gnu",
@@ -29,14 +29,57 @@
       "core_sha256": "b7503d955cefee04d2cecff7c6679c8e485c9e95c13cd36384180f12faa998a1",
       "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d",
       "library_bytes": 33640,
-      "object_sha256": "1ccdec825cd1bc16a9ea5f814774b277aca483056f75d2e61c96f98d83471850"
+      "static_link": {
+        "symbol": "codex_hia_seek_sequence",
+        "object": "seek_sequence.namespaced.o",
+        "archive": "libcodex_hia_seek_sequence.a",
+        "archive_bytes": 23264,
+        "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1",
+        "object_sha256": "8be4b6180caf305f3f608545266ebb59ff334848158367b531500b9f0d8797f6",
+        "text_sha256": "99dfa1bef8c197e0a7b53f375f034392396e4f44e1efc68745e07f192980931f",
+        "defined_symbols": [
+          "codex_hia_seek_sequence"
+        ],
+        "undefined_symbols": []
+      }
     },
     "utf8_boundaries": {
       "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
       "core_sha256": "60769338473242d4b88c290eb6413c972a7d6e9927c9d989ce3adee5645de0b5",
       "library_sha256": "311fe6b2755189304992ce0fd95e934edffac39565c258029e3737a3c71f4e36",
       "library_bytes": 17256,
-      "object_sha256": "cb24cf8223d172d155d2300c0b4abea59415470317170a064a068a096a310264"
+      "static_link": {
+        "symbol": "codex_hia_utf8_boundaries",
+        "object": "utf8_boundaries.namespaced.o",
+        "archive": "libcodex_hia_utf8_boundaries.a",
+        "archive_bytes": 7874,
+        "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17",
+        "object_sha256": "8bf83079c457edf7af1bcad77f0863bca3e26029a5863186fd8e0e088b878f79",
+        "text_sha256": "2d71a9e6d46f975030fb48b07b87b30591787509939727c8251cf381410929e5",
+        "defined_symbols": [
+          "codex_hia_utf8_boundaries"
+        ],
+        "undefined_symbols": []
+      }
+    },
+    "utf8_prefix": {
+      "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+      "core_sha256": "1fb0f643c5a5e4d84a741644b249ff5ee79934a5c1cb703628e21cc21a4eeb0b",
+      "library_sha256": "c94e610bed95cc0a55a3d0f21f5f3549ab609aab5776b85d4e79ae38216b9f5b",
+      "library_bytes": 17256,
+      "static_link": {
+        "symbol": "codex_hia_utf8_prefix",
+        "object": "utf8_prefix.namespaced.o",
+        "archive": "libcodex_hia_utf8_prefix.a",
+        "archive_bytes": 5718,
+        "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
+        "object_sha256": "d3bd3368110567e86ee960df7ae070e16f51089c5d5ccdc5ed07a1c81400a0f1",
+        "text_sha256": "53a871c90469ac7abc422832ae38af75ef3ba02799933a8ef4a10f9cff9082a1",
+        "defined_symbols": [
+          "codex_hia_utf8_prefix"
+        ],
+        "undefined_symbols": []
+      }
     }
   },
   "seek_sequence": {
@@ -48,7 +91,7 @@
     "boundary_calls": 135,
     "corpus_sha256": "2819d227a041cc572555f41c42846d03014fe4fc2708603cca78932cf0552cb0",
     "oracle_output_sha256": "390ac047a58805e3541740db91d3d212f7e8fd3e5e46df5e4dbcb0f4176f52f3",
-    "rust_source_sha256": "5eced89191977d6b53b1b770ccaad6cafa2fb3ecbcd4839a88318f75e4a620e4",
+    "rust_source_sha256": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "hia_source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
     "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d",
     "symbol": "f0",
@@ -60,12 +103,160 @@
     "native_calls": 75109,
     "native_sha256": "311fe6b2755189304992ce0fd95e934edffac39565c258029e3737a3c71f4e36",
     "rust_oracle_calls": 2093,
-    "rust_source_sha256": "8cce3b8b9e583b9ea7f8d49acff074707d517f6b9cbf294aefd135df5d02017c",
+    "rust_source_sha256": "d2177bb4f4f1cdaa98793e8fd4e9dd7d64ac114a7718197f0b8a41368d3eda9c",
     "suite": "codex_hia_utf8_boundaries",
     "vm_calls": 56
   },
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
-  "scope": "Linux x86-64 component behavior; compiler rebuild fixed point; no full Codex acceptance"
+  "scope": "Linux x86-64 GNU; B3 native fixed point, static source/artifact admission, original Rust differential oracles, actual feature-enabled and default crate suites, separately installed patch executable with original CLI parity, and strict native Clippy. Not whole-Codex/platform release qualification.",
+  "build_inputs": {
+    "toolchain_lock_sha256": "35d0de57f7fec7765a72b41bb5e79ec3b94545b8ff149572a6ef41bba485209a",
+    "build_driver_sha256": "eee6e29b460792f2d878900a538367eb054f4343b1ca92588bfad6f0905cf791",
+    "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+    "compiler_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0"
+  },
+  "build_report_sha256": "d3b897c5e02be7b00abf61206522e94ea4c0f81b1a8aacd36543098fc5917120",
+  "native_string_caller": {
+    "passed": true,
+    "tests_passed": 5,
+    "tests_skipped": 0,
+    "original_rust_comparisons": 18559,
+    "allocation_free_calls": 2048,
+    "inputs": {
+      "public_source_sha256": "d2177bb4f4f1cdaa98793e8fd4e9dd7d64ac114a7718197f0b8a41368d3eda9c",
+      "public_function_sha256": "fc3805b201c1f11d5065239e072a618a1667fc851e8c82d8dd8177dea7f36ca7",
+      "adapter_sha256": "c09416c899e8554aa8e8903fb952b21e1751cdf1b06b25186079dcf333f8d489",
+      "hia_source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+      "test_source_sha256": "7235787b03f3384686d8f3be5bd394b23d967aaf592e059fa62ce06dfea1e2d4",
+      "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
+      "build_report_sha256": "d3b897c5e02be7b00abf61206522e94ea4c0f81b1a8aacd36543098fc5917120"
+    },
+    "outputs": {
+      "reference_rlib_sha256": "9d917d68d17ed619a52f880cd1f0923bd1b7679f449accb719ac73d70d7e008d",
+      "native_test_binary_sha256": "a88a2d55ea84647bc8ebcae4e4b87e7bd2dc395b1da8083e881d011507bcda27"
+    },
+    "oracle": "public function compiled without hia-native from the actual source",
+    "caller": "public function compiled with hia-native and the production adapter"
+  },
+  "native_patch_caller": {
+    "tests_passed": 8,
+    "tests_skipped": 0,
+    "includes_large_payload_and_offset_table": true
+  },
+  "cargo_crate_tests": {
+    "packages": [
+      "codex-apply-patch",
+      "codex-utils-string"
+    ],
+    "native_feature": {
+      "passed": 122,
+      "skipped": 0
+    },
+    "default_feature": {
+      "passed": 117,
+      "skipped": 0
+    }
+  },
+  "build_receipt_tests": {
+    "schema": "codex.hia.build-receipt-test.v1",
+    "status": "passed",
+    "checks": 46,
+    "cases": [
+      "sha256-0",
+      "sha256-1",
+      "sha256-3",
+      "sha256-55",
+      "sha256-56",
+      "sha256-63",
+      "sha256-64",
+      "sha256-65",
+      "sha256-1000",
+      "sha256-1000000",
+      "feature-disabled-needs-no-files-or-target",
+      "accepted-seek_sequence",
+      "accepted-utf8_boundaries",
+      "accepted-utf8_prefix",
+      "changed-bytes-build.py",
+      "changed-bytes-cargo_build.rs",
+      "changed-bytes-toolchain.json",
+      "changed-bytes-seek_sequence.hepta",
+      "changed-bytes-utf8_boundaries.hepta",
+      "changed-bytes-utf8_prefix.hepta",
+      "changed-bytes-build.json",
+      "changed-bytes-seek_sequence.namespaced.o",
+      "changed-bytes-libcodex_hia_seek_sequence.a",
+      "changed-bytes-B1.image.bin",
+      "changed-bytes-B2.image.bin",
+      "changed-bytes-B3.image.bin",
+      "wrong-receipt-mode",
+      "wrong-receipt-symbol",
+      "wrong-receipt-object",
+      "wrong-receipt-archive",
+      "wrong-receipt-revision",
+      "invalid-build-state-status",
+      "invalid-build-state-build_mode",
+      "invalid-build-state-compiler_fixed_point",
+      "noncanonical-receipt-34",
+      "noncanonical-receipt-35",
+      "noncanonical-receipt-36",
+      "missing-libdir",
+      "unsupported-CARGO_CFG_TARGET_OS",
+      "unsupported-CARGO_CFG_TARGET_ARCH",
+      "unsupported-CARGO_CFG_TARGET_ENV",
+      "unsupported-CARGO_CFG_TARGET_POINTER_WIDTH",
+      "reject-rehashed-weak-symbol",
+      "reject-rehashed-undefined-symbol",
+      "duplicate-rehashed-archive-member",
+      "python-duplicate-archive-rejected"
+    ],
+    "helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+    "build_report_sha256": "d3b897c5e02be7b00abf61206522e94ea4c0f81b1a8aacd36543098fc5917120",
+    "whole_codex_rewritten": false
+  },
+  "opt_in_production_callers_verified": true,
+  "installed_patch_caller": {
+    "passed": true,
+    "cases_passed": 2,
+    "skipped": 0,
+    "binary_sha256": "c9e35ec27307faf4e467f622b9891c776b08be382370f4ec2d538b1805d2e268",
+    "reference_binary_sha256": "47e2825f557b12b733c3c589e128bd2a2dad9ec1d9b337a2e6469c598ba3d0c4",
+    "separate_copy_matches_built_binary": true,
+    "native_symbol_definitions": 1,
+    "reference_native_symbol_definitions": 0,
+    "hia_dynamic_dependencies": [],
+    "cases": [
+      {
+        "name": "legacy_lf_replacement",
+        "preserve_line_endings": "0",
+        "input_bytes": 2097152,
+        "input_sha256": "e10a52248c63d3776d892d5dac081b91187cb10f2d7a9ff262b795a84937c0b2",
+        "output_sha256": "97645d7d83eee9a0f559ee72626b80b5d099eb3efe54c16a0de7f8cf11d6492c",
+        "exact_contents_match": true,
+        "earlier_fuzzy_candidate_unchanged": true,
+        "later_ascii_candidate_replaced": true,
+        "line_endings_match": true
+      },
+      {
+        "name": "preserve_crlf",
+        "preserve_line_endings": "1",
+        "input_bytes": 2097152,
+        "input_sha256": "e10a52248c63d3776d892d5dac081b91187cb10f2d7a9ff262b795a84937c0b2",
+        "output_sha256": "2a3d27bd60225e61836b645041b9dffd2a0090b85b01b0a2b472d9191945e09d",
+        "exact_contents_match": true,
+        "earlier_fuzzy_candidate_unchanged": true,
+        "later_ascii_candidate_replaced": true,
+        "line_endings_match": true
+      }
+    ],
+    "original_rust_output_and_exit_parity": true,
+    "sandbox_environment_preserved": true,
+    "report_sha256": "62e82d2aeb8d7eef54702902565016c099aa44cdd1d5f62e271f1d67ed8a85aa"
+  },
+  "strict_native_clippy": {
+    "passed": true,
+    "command": "just clippy -p codex-apply-patch -p codex-utils-string --features hia-native --locked --message-format=json",
+    "exit_code": 0
+  }
 }

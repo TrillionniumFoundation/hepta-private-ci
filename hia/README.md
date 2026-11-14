@@ -3,13 +3,17 @@
 This directory contains HIA implementations of Codex's patch-line matching and
 UTF-8 prefix-boundary functions. The compiler is pinned to
 [`TrillionniumFoundation/Hepta`](https://github.com/TrillionniumFoundation/Hepta)
-at `f33d8da316de8fdf27b504371f1a5310997ff548`. Both implementations execute their
+at `f33d8da316de8fdf27b504371f1a5310997ff548`. The components execute their
 algorithms as native machine code produced from `.hepta` source.
 
-The next integration work is to connect these implementations to the actual
-Codex callers and migrate the remaining owners listed in
-[`migration.json`](migration.json). Production dispatch still uses the existing
-Rust implementation. The migration state is therefore:
+The `hia-native` Cargo feature connects the actual patch-update matcher and
+public string-prefix API to HIA machine code on Linux x86-64 GNU. Their Rust
+adapters frame borrowed inputs and check native results. Static archives are
+verified at build time and incorporated into the caller binary.
+
+The feature remains opt-in. Other owners listed in
+[`migration.json`](migration.json), other platforms, and the default release
+dispatch still need migration. The whole-product state is therefore:
 
 ```json
 {
@@ -24,6 +28,7 @@ Rust implementation. The migration state is therefore:
 | --- | --- | --- |
 | [`seek_sequence.hepta`](seek_sequence.hepta) | [`seek_sequence`](../codex-rs/apply-patch/src/seek_sequence.rs) | Exact, trailing-whitespace, trimmed and Unicode punctuation matching; original pass precedence, first match, empty patterns, start bounds, EOF behavior and both line-ending modes. |
 | [`utf8_boundaries.hepta`](utf8_boundaries.hepta) | [`take_bytes_at_char_boundary`](../codex-rs/utils/string/src/lib.rs) | The largest complete UTF-8 prefix within a byte budget, plus complete validation of the incoming UTF-8 bytes. |
+| [`utf8_prefix.hepta`](utf8_prefix.hepta) | The public string-prefix caller | Constant-size boundary selection for an already-valid Rust `&str`, preserving borrowing and allocation-free calls for arbitrarily large strings. |
 
 The UTF-8 input checks reject overlong encodings, surrogate encodings, values
 above U+10FFFF, lone continuation bytes and truncated sequences. They scan the
@@ -55,13 +60,15 @@ these low-bit results:
 
 | Component result | Meaning |
 | --- | --- |
-| `16` for `seek_sequence`, `8` for `utf8_boundaries` | Number of output bytes written. |
+| `16` for `seek_sequence`, `8` for either UTF-8 module | Number of output bytes written. |
 | `0xffffffff` | Invalid input frame or UTF-8. |
 | `0xfffffffe` | Output capacity is too small. |
 
 Caller allocations must stay live for the call and mutable ranges must be
-disjoint. Callers must enforce the locked capacity of 1,048,576 bytes per buffer
-before entering a selfhost artifact. Both modules
+disjoint. The direct seed wrapper and bootstrap compiler profile have a
+1,048,576-byte capacity. The production B3 ELF entry receives the actual live
+buffer extent; that compiler capacity is not a maximum file size. The patch
+adapter checks all length arithmetic and uses fallible allocation. All modules
 leave the source and workspace unchanged. Module errors leave the output
 unchanged; successful calls preserve output bytes beyond the result length.
 The workspace is reserved and may have length zero.
@@ -80,9 +87,17 @@ text. Its eight-byte result is the little-endian byte offset at which to slice
 the original text. It checks the eight-byte input header, output capacity and
 then the UTF-8 payload, in that order.
 
+`utf8_prefix` accepts three little-endian `u64` fields: original string length,
+byte budget, and window start. They are followed by at most four bytes around
+the requested cutoff. HIA validates the framing and chooses the final boundary;
+the caller checks the returned offset before borrowing the original prefix.
+This entry requires a valid original UTF-8 string. It does not claim full
+validation of bytes outside its small window; the byte-oriented
+`utf8_boundaries` entry supplies that separate contract.
+
 ## Build
 
-Use Linux x86-64, Python, GNU `ld`, and a clean checkout of the Hepta revision
+Use Linux x86-64, Python, GNU `ld`, `objcopy`, `ar`, and a clean checkout of the Hepta revision
 in [`toolchain.json`](toolchain.json). The build checks the checkout revision
 and working tree before and after compilation. Its output directory must not
 already exist and must be outside the source checkout.
@@ -106,14 +121,22 @@ The default build executes this sequence:
 2. Run B0 to compile B1, B1 to compile B2, and B2 to compile B3.
 3. Require B1, B2 and B3 to reproduce identical compiler bytes.
 4. Run B3 to compile each component to an ELF object.
-5. Link those HIA-produced objects with GNU `ld`.
+5. Link diagnostic shared objects with GNU `ld` and create namespaced static
+   archives with GNU `objcopy` and deterministic `ar crsD`.
+6. Verify that symbol renaming leaves `.text` unchanged, there are no imports,
+   each entry is unique, and each archive contains exactly its HIA object.
 
 The Python driver orchestrates this build and creates the initial B0 seed.
 B1–B3 and the final component compilation execute native HIA compiler images.
 The linker links the emitted object; it does not generate C or Rust source.
 
 `build.json` records the compiler generation identities, source/Core hashes,
-object inventory and shared-library hashes. A built component still needs its
+object inventory, static archives and shared-library hashes. Each module also
+receives a strict `.link` receipt. The shared Cargo build helper verifies the
+current source, lock, driver, helper, build report, three compiler images,
+ELF export, machine-code digest and exact archive member. It copies the
+captured archive into Cargo's output directory before static linking.
+A built component still needs its
 behavioral tests. Compiler generation equality covers this bootstrap path;
 the full compiler/runtime and Codex capability requirements are tracked in the
 migration file.
@@ -177,12 +200,18 @@ recorded results and artifact identities are in
 | --- | --- |
 | Patch-line matching | 2,327 valid cases, 86 invalid cases and 135 buffer-boundary calls; all matched the original Rust behavior and buffer contract. |
 | UTF-8 boundaries | All six tests passed with zero skips: 75,109 native calls, 2,093 original Rust comparisons and 56 Core VM comparisons. |
+| Static patch caller | Eight tests passed, including multi-megabyte lines/patterns, an offset table exceeding 1 MiB, both modes, EOF and maximum start values. |
+| Static string caller | Five tests passed: 18,559 original Rust comparisons, 9 MB input, 2,048 allocation-free calls and eight concurrent callers. |
+| Real Cargo callers | 122 tests passed with `hia-native`; 117 passed with the default feature set; zero skipped in either run. |
+| Installed patch executable | Two 2 MiB file updates passed against the original Rust CLI, with identical file bytes, exit status, stdout and stderr in both line-ending modes. The copied executable defines the native HIA symbol and has no HIA shared-library dependency. |
+| Build and artifact identity | 46 checks passed, including altered sources/compiler images, malformed receipts, weak/undefined symbols and duplicate archive members. |
+| Native lint gate | Strict Clippy passed for both production caller crates with `hia-native` enabled. |
 
 The native B1–B3 compiler generations reproduced identical bytes, and both
 components emitted by B3 passed their original Rust comparisons. This establishes
 the three-generation compiler rebuild and the two component behavior checks.
-Production integration, the full compiler/runtime surface and the wider Codex
-capability map remain pending. `migration.json` records these scopes separately.
+The current production callers have additional static-link and whole-crate
+gates below. Full compiler/runtime and wider Codex qualification remain pending. `migration.json` records these scopes separately.
 
 ## Remaining implementation map
 
@@ -212,20 +241,20 @@ pinned Git tree is the complete source-path inventory.
 | App Server v2 | `app-server`, protocol/transport/client/daemon crates | Public JSON-RPC behavior, schemas, events and mixed app/exec host configurations. |
 | CLI and TUI | `cli`, `tui`, `arg0`, terminal utilities | Flags, exit status, terminal event/rendering paths and existing snapshots. |
 | SDK and frontends | `sdk/`, `codex-cli/`, `apps/` | Public client interfaces, frontend lifecycle and packaging. |
-| Patch application | `apply-patch`, `file-search` | Connect the matching candidate, then implement parser and file-update owners. |
-| String utilities | `utils/string` | Connect the prefix candidate, then implement truncation and the remaining helpers. |
+| Patch application | `apply-patch`, `file-search` | Matching is connected behind `hia-native`; parser and file-update owners still need migration. |
+| String utilities | `utils/string` | Prefix selection is connected behind `hia-native`; truncation and remaining helpers still need migration. |
 | Hepta cells and adapters | `hepta-*` crates | Existing cell, Agentd, Codex adapter, identity, recovery and learning/adoption boundaries. |
 | Platforms and release | Linux/macOS/Windows integrations, build and release paths | Supported architectures, packages, clean installation and end-to-end platform tests. |
 | HIA toolchain | The pinned Hepta compiler and runtime | Required host interfaces, broader platform support and complete compiler/runtime ownership. |
 
-All of these production capability migrations remain pending. The two
-implemented functions advance the patch and string rows; they do not migrate
-their entire crates or their production callers.
+All complete capability migrations remain pending. The two connected functions
+advance the patch and string rows; their entire crates and default release
+dispatch have not been migrated.
 
 The search implementation preserves the original four-pass search complexity.
-Long repeated context can require quadratic work; the input byte limit is not
-an execution deadline. Production integration must retain cancellation and
-execution budgets without changing a timed-out search into a false no-match.
+Long repeated context can require quadratic work. Large-input compatibility
+does not establish an execution deadline. A future cancellable matcher must
+propagate interruption distinctly from a genuine no-match result.
 
 ## Retiring superseded files
 
@@ -236,65 +265,54 @@ unused source, dependency declarations, build rules and process artifacts in
 the same verified change, retaining the tests, licensing and release assets
 needed by the final version.
 
-The present candidate has no legacy paths ready for retirement. Completing
-production dispatch is the next prerequisite for removing either original
-function; the wider capability map determines the rest of the repository
-cleanup.
+The native-feature production patch matcher excludes the original Rust search
+function; tests and the default platform path still retain it. Global deletion
+requires the remaining default-release and platform gates. The wider capability
+map determines the rest of the repository cleanup.
 
 
-## Experimental Codex patch-caller integration
+## Build and test the production callers
 
-The native-selfhost build also emits ELF namespaced shared libraries,
-libcodex_hia_seek_sequence.so and libcodex_hia_utf8_boundaries.so. These are
-derived from the B3-emitted objects with GNU objcopy symbol renaming and GNU ld.
-This permits both components in a single process without f0 symbol collision.
-The original f0 shared libraries remain available for original-Rust comparison.
+After the native build above, select the verified static artifacts:
 
-The opt-in codex-apply-patch hia-native feature routes the actual file-update
-seek_sequence call sites through the HIA-produced machine implementation. Its
-Rust adapter only constructs and decodes the established borrowed-buffer ABI.
-Set CODEX_HIA_NATIVE_LIB_DIR to the native build output when building with this
-feature, and make that directory available to the dynamic loader at runtime.
+```bash
+export CODEX_HIA_NATIVE_LIB_DIR="$native_output"
 
-If framing exceeds the locked 1 MiB capacity, native patch matching raises a
-ComputeReplacements error rather than silently reporting "no match". The
-original Rust matcher remains the default implementation while this feature
-undergoes whole-crate, full apply-patch and platform acceptance. No production
-release is migrated merely by introducing the feature. The native caller's
-source-level parity and oversize boundary are tested independently in
-hia/tests/native_patch_caller.rs, using the actual namespaced HIA ELF.
+python3 -B hia/tests/test_build_receipt.py --artifacts "$native_output" --report "$build_parent/receipt-tests.json"
+python3 -B hia/tests/test_native_string_caller.py --library-dir "$native_output" --rustc "$rustc_binary" --report "$build_parent/string-caller-tests.json"
 
-This is Linux x86-64 only. Runtime packaging, cancellation/deadline behavior,
-large-input strategy and other Codex owners remain pending. The complete
-`codex-apply-patch` feature-enabled crate suite passed 99/99 tests on desktop
-with the B3-emitted native matcher. An initial real Cargo run caught an invalid
-`try_fold` accumulator type in the experimental adapter; it was fixed before
-the passing run. The workflow now gates the same real crate suite in addition
-to the narrower original-source oracle.
+"$rustc_binary" --edition=2024 --test --cfg 'feature="hia-native"' hia/tests/native_patch_caller.rs -L "native=$native_output" -l static=codex_hia_seek_sequence -o "$build_parent/patch-caller-tests"
+"$build_parent/patch-caller-tests"
 
-## Experimental Codex UTF-8 public caller integration
+cd codex-rs
+just test -p codex-apply-patch -p codex-utils-string --features hia-native --locked
 
-The `codex-utils-string` `hia-native` feature uses the namespaced B3-produced
-`libcodex_hia_utf8_boundaries.so` for the **public**
-`take_bytes_at_char_boundary(&str, usize) -> &str` call. Its small Rust adapter
-only frames borrowed bytes, invokes the native ABI and checks that the returned
-index preserves Rust's slice/UTF-8 boundary contract. The UTF-8 scanning and
-boundary selection execute in HIA machine code. Without the feature, the
-unmodified original Rust function remains the default and the original-source
-oracle is still extractable.
+cargo build --locked -p codex-apply-patch --features hia-native --bin apply_patch
+cp "${CARGO_TARGET_DIR:-target}/debug/apply_patch" "$build_parent/hia-apply_patch"
+cargo build --locked -p codex-apply-patch --bin apply_patch
+python3 -B ../hia/tests/test_installed_patch.py \
+  --binary "$build_parent/hia-apply_patch" \
+  --reference-binary "${CARGO_TARGET_DIR:-target}/debug/apply_patch" \
+  --report "$build_parent/installed-patch.json"
+```
 
-On Linux x86-64, set `CODEX_HIA_NATIVE_LIB_DIR` at build time and make that
-native directory available to the runtime dynamic loader (`LD_LIBRARY_PATH`
-or explicit package rpath). A missing native artifact is a build error, not a
-silent fallback. Input frames larger than the pinned 1 MiB limit panic rather
-than misrepresent the original result or use the Rust algorithm unnoticed.
-This limitation makes this an experimental, explicitly selected feature, **not**
-a release-wide migration. The feature-enabled string crate passed its complete
-21/21 tests on desktop, including original behavior comparisons, the exact
-native frame boundary and oversize rejection. Its CI counterpart now runs from
-the real workspace and links the namespaced native ELF.
+The static callers need no HIA shared-library directory at runtime. Build-time
+artifact mismatches are errors; selecting `hia-native` on an unsupported target
+is also an error. With the feature disabled the build helper performs no HIA
+source or artifact reads, so existing platform builds need no HIA toolchain.
 
-Both native caller features still need proper package/linker installation,
-Linux and other supported-platform qualification, caller-wide cancellation and
-bounded-cost policy, and clean-install end-to-end acceptance before replacing
-the corresponding Rust production owners or removing legacy code.
+The production gates cover exact source oracles, multi-megabyte files and
+strings, large offset tables, both patch line-ending modes, EOF/start semantics,
+allocation-free string calls, concurrent calls, and actual crate integration
+tests. Receipt tests use real artifacts and reject changed sources, compiler
+images, reports, symbols and archive members.
+
+The installed-executable gate copies the HIA binary into a separate temporary
+directory and runs it without the native build directory or dynamic-library
+search override. It compares complete output files and CLI results with a
+default-feature Rust executable. The normal line-ending mode preserves the
+original behavior of untouched CRLF lines while writing LF replacement lines;
+the preserving mode retains CRLF throughout. Sandbox settings are inherited.
+
+The `Codex HIA native components` workflow runs these gates against the checked
+out revision. Build products and logs stay outside the repository.
