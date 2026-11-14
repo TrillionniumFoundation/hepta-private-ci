@@ -3586,9 +3586,7 @@ mod final_use_dispatch_tests {
     }
 
     fn test_nonce(label: &str) -> TestResult<[u8; 32]> {
-        let now_nanos = SystemTime::now()
-            .duration_since(UNIX_EPOCH)?
-            .as_nanos();
+        let now_nanos = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
         let material = format!("{label}:{now_nanos}:{}", std::process::id());
         let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
         Ok(digest.into())
@@ -3600,9 +3598,7 @@ mod final_use_dispatch_tests {
         grant_id: &str,
         nonce: [u8; 32],
     ) -> TestResult<SignedFinalUseGrant> {
-        let now_ms = SystemTime::now()
-            .duration_since(UNIX_EPOCH)?
-            .as_millis() as u64;
+        let now_ms = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "final-use-owner".to_string(),

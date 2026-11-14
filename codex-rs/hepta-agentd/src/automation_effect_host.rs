@@ -820,16 +820,14 @@ mod tests {
             .await?;
         fixture
             .store
-            .apply_taskflow_command(
-                &TaskFlowCommand::new(
-                    &intent.run_id,
-                    "agentd-product-effect-start",
-                    fence.clone(),
-                    claimed.revision,
-                    TaskFlowTransition::Start,
-                    now_ms + 2,
-                )?,
-            )
+            .apply_taskflow_command(&TaskFlowCommand::new(
+                &intent.run_id,
+                "agentd-product-effect-start",
+                fence.clone(),
+                claimed.revision,
+                TaskFlowTransition::Start,
+                now_ms + 2,
+            )?)
             .await?;
         let digest = intent.digest()?;
         fixture

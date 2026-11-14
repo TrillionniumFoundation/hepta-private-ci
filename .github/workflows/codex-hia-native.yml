@@ -37,8 +37,6 @@ jobs:
     env:
       PYTHONDONTWRITEBYTECODE: "1"
       HEPTA_SOURCE: ${{ github.workspace }}/Hepta
-      CODEX_HIA_NATIVE_LIB_DIR: ${{ runner.temp }}/hia-native
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hia-cargo-target
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
@@ -69,6 +67,8 @@ jobs:
           test -x "$rustc_path"
           echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
           echo "RUSTUP_TOOLCHAIN=1.95.0" >> "$GITHUB_ENV"
+          echo "CODEX_HIA_NATIVE_LIB_DIR=$RUNNER_TEMP/hia-native" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hia-cargo-target" >> "$GITHUB_ENV"
           {
             "$rustc_path" --version
             python3 --version
