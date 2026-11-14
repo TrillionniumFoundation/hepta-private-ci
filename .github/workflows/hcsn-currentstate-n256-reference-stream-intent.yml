@@ -1,0 +1,26 @@
+name: hcsn-currentstate-n256-reference-stream-intent
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_reference_stream_intent/**"
+      - ".github/workflows/hcsn-currentstate-n256-reference-stream-intent.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Run assertions-enabled fixtures
+        run: python3 -m unittest qualification.hcsn_currentstate_n256_reference_stream_intent.test_static
+      - name: Run optimized-mode fixtures
+        run: python3 -O -m unittest qualification.hcsn_currentstate_n256_reference_stream_intent.test_static
+      - name: Verify frozen source and fail-closed request
+        run: python3 -m qualification.hcsn_currentstate_n256_reference_stream_intent.static_inspector
