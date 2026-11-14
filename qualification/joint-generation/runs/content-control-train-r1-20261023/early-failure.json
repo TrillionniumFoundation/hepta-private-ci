@@ -1,0 +1,140 @@
+{
+  "cpu_seconds": 1.554477821,
+  "partial_ledgers": {
+    "shared": {
+      "arm": "shared",
+      "consumed_units": 37616283,
+      "hardware_flops_or_latency": false,
+      "kernels": {
+        "decoder": {
+          "adam_update": {
+            "calls": 300,
+            "compare_ops": 600,
+            "consumed_units": 21730200,
+            "div_ops": 2246700,
+            "exp_ops": 0,
+            "log_ops": 0,
+            "macs": 0,
+            "pow_ops": 1200,
+            "scalar_ops": 9736800,
+            "sort_items": 0,
+            "sqrt_ops": 749100,
+            "tanh_ops": 0
+          },
+          "decoder": {
+            "calls": 301,
+            "compare_ops": 1387008,
+            "consumed_units": 11789568,
+            "div_ops": 693504,
+            "exp_ops": 693504,
+            "log_ops": 0,
+            "macs": 0,
+            "pow_ops": 0,
+            "scalar_ops": 2080512,
+            "sort_items": 0,
+            "sqrt_ops": 0,
+            "tanh_ops": 0
+          },
+          "decoder_gradient": {
+            "calls": 300,
+            "compare_ops": 0,
+            "consumed_units": 4089600,
+            "div_ops": 691200,
+            "exp_ops": 0,
+            "log_ops": 0,
+            "macs": 0,
+            "pow_ops": 0,
+            "scalar_ops": 1324800,
+            "sort_items": 0,
+            "sqrt_ops": 0,
+            "tanh_ops": 0
+          },
+          "decoder_mse": {
+            "calls": 1,
+            "compare_ops": 0,
+            "consumed_units": 6915,
+            "div_ops": 1,
+            "exp_ops": 0,
+            "log_ops": 0,
+            "macs": 0,
+            "pow_ops": 0,
+            "scalar_ops": 6911,
+            "sort_items": 0,
+            "sqrt_ops": 0,
+            "tanh_ops": 0
+          }
+        }
+      },
+      "prices": {
+        "compare_ops": 1,
+        "div_ops": 4,
+        "exp_ops": 8,
+        "log_ops": 8,
+        "macs": 2,
+        "pow_ops": 8,
+        "scalar_ops": 1,
+        "sort_items": 1,
+        "sqrt_ops": 4,
+        "tanh_ops": 8
+      },
+      "remaining_units": 11962383717,
+      "schema": "hepta.independent-work-ledger.v1",
+      "shared_sources": [],
+      "stages": {
+        "compile": {
+          "compiler_invocations": 1,
+          "consumed_units": 0
+        },
+        "data": {
+          "consumed_units": 0,
+          "prepared_rows": 3072,
+          "serialized_bytes": 3022821
+        },
+        "decoder": {
+          "consumed_units": 37616283,
+          "content_updates": 0,
+          "decoder_calls": 301,
+          "decoder_elements": 693504,
+          "decoder_updates": 300,
+          "op_compare_ops": 1387608,
+          "op_div_ops": 3631405,
+          "op_exp_ops": 693504,
+          "op_log_ops": 0,
+          "op_macs": 0,
+          "op_pow_ops": 1200,
+          "op_scalar_ops": 13149023,
+          "op_sort_items": 0,
+          "op_sqrt_ops": 749100,
+          "op_tanh_ops": 0,
+          "optimizer_elements": 748800,
+          "optimizer_updates": 300
+        }
+      },
+      "total_cap": 12000000000,
+      "totals": {
+        "compiler_invocations": 1,
+        "consumed_units": 37616283,
+        "content_updates": 0,
+        "decoder_calls": 301,
+        "decoder_elements": 693504,
+        "decoder_updates": 300,
+        "op_compare_ops": 1387608,
+        "op_div_ops": 3631405,
+        "op_exp_ops": 693504,
+        "op_log_ops": 0,
+        "op_macs": 0,
+        "op_pow_ops": 1200,
+        "op_scalar_ops": 13149023,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 749100,
+        "op_tanh_ops": 0,
+        "optimizer_elements": 748800,
+        "optimizer_updates": 300,
+        "prepared_rows": 3072,
+        "serialized_bytes": 3022821
+      },
+      "unit_profile": "declared-priced-operator-work-v1"
+    }
+  },
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/content_control/run.py\", line 305, in <module>\n    exit_code = build(args.out, args.freeze)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/content_control/run.py\", line 130, in build\n    objective, rng = CachedObjective(\"S\", model), np.random.default_rng(seed + 1000)\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/learning.py\", line 145, in __init__\n    raise ValueError(\"plain JointModel required; automatic instrumentation would double charge\")\nValueError: plain JointModel required; automatic instrumentation would double charge\n"
+}

@@ -1,0 +1,36 @@
+{
+  "artifact": {
+    "digest": "97ed2f5972bd21678c0486a339fc1a2dec504bff426ab47f87b6719368b1aa03",
+    "file": "model.npz",
+    "serialization_cpu_seconds": 0.004659975000000038,
+    "sha256": "5a2e5a0006aa14a9c22dc074d2f12991fcfc1cdc581fb0a665f7cf04a3a68acb"
+  },
+  "clocks": {
+    "bias": 394,
+    "encoder": 394,
+    "image": 394,
+    "image_bias": 394,
+    "text": 394,
+    "text_bias": 394
+  },
+  "first_head_skip": null,
+  "lr": 0.003,
+  "name": "H_joint-11-0.003",
+  "pair_units": 4496572,
+  "quota_cpu": 0.6244312643333334,
+  "quota_units": 890158752,
+  "seed": 11,
+  "training_cpu": 0.3220026759999999,
+  "training_units": 885831972,
+  "update_types": {
+    "joint": 394
+  },
+  "updates": 394,
+  "validation": {
+    "consistency": 0.9605782082894564,
+    "greedy_joint_success": 0.9869791666666666,
+    "joint_success": 0.9496936600857454,
+    "pixel_mse": 0.0012879838968922889,
+    "task_utility": 0.9519806376578824
+  }
+}
