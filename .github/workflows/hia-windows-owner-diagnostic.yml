@@ -287,3 +287,100 @@ jobs:
           retention-days: 14
           if-no-files-found: error
           path: ${{ runner.temp }}/windows-private-fs-evidence/
+
+  durable-signature-owners:
+    name: Native Windows durable and signature owners
+    runs-on: windows-2025
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+    defaults:
+      run:
+        shell: bash
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@3f2778ee6a28c53e512b95bbcf7b2120993da70d # 1.96.1
+        with:
+          components: clippy,rustfmt
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+
+      - name: Verify current foundation source identity
+        shell: pwsh
+        run: |
+          $head = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $head -ne $env:GITHUB_SHA) { throw "Source identity mismatch" }
+          git rev-parse HEAD 'HEAD^{tree}' | Out-File "$env:RUNNER_TEMP/windows-durable-signature-source.txt"
+          rustc --version --verbose | Out-File -Append "$env:RUNNER_TEMP/windows-durable-signature-source.txt"
+
+      - name: Build native durable and signature owners tests
+        id: build
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-hepta-operator-acceptance -p codex-hepta-intelligence -p codex-hepta-shadow-qualification -p codex-hepta-prompt-registry -p codex-hepta-contracts -p codex-hepta-prompt-optimizer --tests \
+            2>&1 | tee "$RUNNER_TEMP/windows-durable-signature-build.log"
+
+      - name: Run every native durable and signature owners test
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-operator-acceptance -p codex-hepta-intelligence -p codex-hepta-shadow-qualification -p codex-hepta-prompt-registry -p codex-hepta-contracts -p codex-hepta-prompt-optimizer --retries 0 \
+            2>&1 | tee "$RUNNER_TEMP/windows-durable-signature-tests.log"
+
+      - name: Check native durable and signature owners with warnings denied
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-operator-acceptance -p codex-hepta-intelligence -p codex-hepta-shadow-qualification -p codex-hepta-prompt-registry -p codex-hepta-contracts -p codex-hepta-prompt-optimizer --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/windows-durable-signature-clippy.log"
+
+      - name: Check durable and signature source remains clean
+        if: always()
+        uses: ./.github/actions/check-clean-worktree
+
+      - name: Collect native durable and signature evidence
+        if: always()
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP "windows-durable-signature-evidence"
+          New-Item -ItemType Directory -Path $evidence -Force | Out-Null
+          Get-ChildItem -LiteralPath $env:RUNNER_TEMP -Filter "windows-durable-signature-*" -File |
+            Copy-Item -Destination $evidence -Force
+          $nextest = if ($env:CARGO_TARGET_DIR) {
+            Join-Path $env:CARGO_TARGET_DIR "nextest"
+          } else {
+            Join-Path $env:GITHUB_WORKSPACE "codex-rs/target/nextest"
+          }
+          if (Test-Path -LiteralPath $nextest) {
+            Get-ChildItem -LiteralPath $nextest -Filter "junit.xml" -Recurse -File | ForEach-Object {
+              $relative = [IO.Path]::GetRelativePath($nextest, $_.FullName)
+              $destination = Join-Path (Join-Path $evidence "nextest") $relative
+              New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+              Copy-Item -LiteralPath $_.FullName -Destination $destination -Force
+            }
+          }
+          $files = @(Get-ChildItem -LiteralPath $evidence -Recurse -File |
+            Where-Object Name -ne "manifest.json" |
+            Get-FileHash -Algorithm SHA256 |
+            Select-Object Path, Hash)
+          ConvertTo-Json -InputObject $files | Set-Content -LiteralPath (Join-Path $evidence "manifest.json")
+
+      - name: Preserve native durable and signature evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hia-windows-durable-signature-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/windows-durable-signature-evidence/

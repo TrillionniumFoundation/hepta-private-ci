@@ -2,7 +2,6 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -127,7 +126,8 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = crate::sshsig::keygen_command()
+            .expect("trusted system ssh-keygen")
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -144,7 +144,8 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = crate::sshsig::keygen_command()
+            .expect("trusted system ssh-keygen")
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -209,7 +210,8 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = crate::sshsig::keygen_command()
+            .expect("trusted system ssh-keygen")
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])
@@ -244,11 +246,12 @@ fn write_private(path: &Path, bytes: &[u8]) {
     file.write_all(bytes).expect("write private test file");
 }
 
+#[cfg(unix)]
 fn set_private_permissions(path: &Path) {
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
-            .expect("secure test signature permissions");
-    }
+    use std::os::unix::fs::PermissionsExt;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
+        .expect("secure test signature permissions");
 }
+
+#[cfg(not(unix))]
+fn set_private_permissions(_path: &Path) {}

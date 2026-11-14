@@ -34,7 +34,14 @@ sha2 = { workspace = true }
 thiserror = { workspace = true }
 
 [target.'cfg(windows)'.dependencies]
+codex-utils-path = { path = "../utils/path-utils" }
 winapi-util = { workspace = true }
+windows-sys = { version = "0.61", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_Storage_FileSystem",
+    "Win32_System_SystemInformation",
+] }
 
 [dev-dependencies]
 pretty_assertions = { workspace = true }

@@ -131,6 +131,36 @@ fn private_directory_flushes_without_a_prior_rename() -> io::Result<()> {
 }
 
 #[test]
+fn publication_preserves_utf16_names_and_file_identity() -> io::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let directory = PrivateDirectory::open_or_create(&temp.path().join("state"))?;
+    for destination in [
+        "a".to_owned(),
+        "sixsix".to_owned(),
+        "state.json".to_owned(),
+        "状态-🧭.json".to_owned(),
+        "n".repeat(/*n*/ 128),
+    ] {
+        let mut source = directory.create_new("publish.next")?;
+        source.write_all(destination.as_bytes())?;
+        source.sync_all()?;
+        let before = snapshot_private_file(&source)?;
+        checked_state_io(
+            &destination,
+            directory.replace("publish.next", &destination),
+        )?;
+        directory.sync_all()?;
+        assert!(!directory.entry_exists("publish.next")?);
+        let mut published = directory.open_read(&destination)?;
+        assert!(before.same_file(&snapshot_private_file(&published)?));
+        let mut contents = Vec::new();
+        published.read_to_end(&mut contents)?;
+        assert_eq!(contents, destination.as_bytes());
+    }
+    Ok(())
+}
+
+#[test]
 fn hardlinked_state_is_rejected_without_changing_contents() -> io::Result<()> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().join("state");

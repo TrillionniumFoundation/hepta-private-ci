@@ -178,10 +178,8 @@ common:ci-windows --test_env=CODEX_BAZEL_TEST_SKIP_FILTERS=suite::code_mode::cod
 common:ci-linux --config=ci-bazel
 common:ci-linux --build_metadata=TAG_os=linux
 common:ci-linux --platforms=//:rbe
-# The trust-verification tests need the host's pinned /usr/bin/ssh-keygen.
-# Match only test execution so compilation keeps its remote execution toolchain.
+# Test targets that require host tools declare no-remote-exec in their BUILD rule.
 common:ci-linux --strategy=TestRunner=remote
-common:ci-linux --strategy_regexp=^Testing.*//codex-rs/hepta-operator-acceptance:=linux-sandbox
 
 # On mac, we can run all the build actions remotely but test actions locally.
 common:ci-macos --config=ci-bazel

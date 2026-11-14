@@ -4,7 +4,6 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::fs::File;
 use std::io;
-use std::mem::offset_of;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
 use std::os::windows::io::AsRawHandle;
@@ -35,7 +34,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
-use windows_sys::Win32::Storage::FileSystem::FileRenameInfo;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
@@ -47,6 +45,7 @@ const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x0000_0020;
 const FILE_NON_DIRECTORY_FILE: u32 = 0x0000_0040;
 const SYNCHRONIZE_ACCESS: u32 = 0x0010_0000;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
+const FILE_RENAME_INFORMATION_CLASS: u32 = 10;
 
 pub(super) enum Kind {
     Directory,
@@ -89,6 +88,14 @@ unsafe extern "system" {
         create_options: u32,
         ea_buffer: *const c_void,
         ea_length: u32,
+    ) -> NTSTATUS;
+
+    fn NtSetInformationFile(
+        file_handle: HANDLE,
+        io_status_block: *mut IO_STATUS_BLOCK,
+        file_information: *const c_void,
+        length: u32,
+        file_information_class: u32,
     ) -> NTSTATUS;
 }
 
@@ -201,34 +208,53 @@ fn open(
 
 pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io::Result<()> {
     let name = child_name(destination)?;
-    let name_bytes = name.len() * size_of::<u16>();
-    let size =
-        (offset_of!(FILE_RENAME_INFO, FileName) + name_bytes).max(size_of::<FILE_RENAME_INFO>());
+    let name_bytes = name
+        .len()
+        .checked_mul(size_of::<u16>())
+        .ok_or_else(|| invalid_name("destination name is too long"))?;
+    // FileRenameInformation requires the full fixed structure in addition to
+    // the variable name. The zeroed extra WCHAR also supplies a terminator;
+    // FileNameLength contains only the actual UTF-16 name bytes.
+    let size = size_of::<FILE_RENAME_INFO>()
+        .checked_add(name_bytes)
+        .and_then(|size| size.checked_add(size_of::<u16>()))
+        .ok_or_else(|| invalid_name("rename buffer is too large"))?;
+    let buffer_length =
+        u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?;
+    let name_length =
+        u32::try_from(name_bytes).map_err(|_| invalid_name("destination name is too long"))?;
     let mut storage = vec![0_usize; size.div_ceil(size_of::<usize>())];
     let info = storage.as_mut_ptr().cast::<FILE_RENAME_INFO>();
+    let mut io_status = IO_STATUS_BLOCK::default();
     // SAFETY: the allocation is aligned for this pointer-containing struct,
     // includes the complete variable name, and outlives the synchronous call.
-    unsafe {
+    // FILE_RENAME_INFO has the native FileRenameInformation layout. The source
+    // was opened synchronously with DELETE access, and RootDirectory remains
+    // the validated retained parent rather than a pathname resolved again.
+    let status = unsafe {
         // Assign fields separately so all alignment padding and the unused
         // bytes of the BOOLEAN/flags union stay initialized to zero.
         (*info).Anonymous.ReplaceIfExists = true;
         (*info).RootDirectory = directory.as_raw_handle();
-        (*info).FileNameLength =
-            u32::try_from(name_bytes).map_err(|_| invalid_name("destination name is too long"))?;
+        (*info).FileNameLength = name_length;
         ptr::copy_nonoverlapping(
             name.as_ptr(),
             (&raw mut (*info).FileName).cast(),
             name.len(),
         );
-        if SetFileInformationByHandle(
+        NtSetInformationFile(
             source.as_raw_handle(),
-            FileRenameInfo,
+            &mut io_status,
             storage.as_ptr().cast(),
-            u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?,
-        ) == 0
-        {
-            return Err(io::Error::last_os_error());
-        }
+            buffer_length,
+            FILE_RENAME_INFORMATION_CLASS,
+        )
+    };
+    if status != 0 {
+        // SAFETY: converting the returned status does not dereference a pointer.
+        return Err(io::Error::from_raw_os_error(
+            unsafe { RtlNtStatusToDosError(status) } as i32,
+        ));
     }
     Ok(())
 }

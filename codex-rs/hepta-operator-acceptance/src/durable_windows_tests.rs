@@ -5,6 +5,17 @@ use crate::durable::secure_hash;
 use crate::durable::secure_read;
 
 #[test]
+fn directory_flush_uses_a_writable_directory_handle() {
+    let temporary = tempfile::tempdir().expect("temporary directory");
+    let directory = super::open_directory_for_sync(temporary.path()).expect("open directory");
+    directory.sync_all().expect("flush actual directory");
+    let artifact = temporary.path().join("artifact");
+    std::fs::write(&artifact, b"sealed").expect("write artifact");
+    assert!(super::open_directory_for_sync(&artifact).is_err());
+    pretty_assertions::assert_eq!(std::fs::read(&artifact).expect("read artifact"), b"sealed");
+}
+
+#[test]
 fn hardlinked_artifacts_are_rejected_before_reading_or_hashing() {
     let temporary = tempfile::tempdir().expect("temporary artifact directory");
     let artifact = temporary.path().join("artifact");

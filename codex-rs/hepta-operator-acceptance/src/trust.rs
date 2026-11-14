@@ -1,6 +1,5 @@
 use std::io::Write;
 use std::path::Path;
-use std::process::Command;
 use std::process::Stdio;
 
 use base64::Engine as _;
@@ -23,7 +22,6 @@ pub(crate) const SIGNATURE_ALGORITHM: &str = "openssh-sshsig-ed25519";
 pub(crate) const TRUST_POLICY_SCOPE: &str =
     "externally_pinned_single_ed25519_external_revocation_responsibility_no_local_krl_v1";
 const TRUST_POLICY_SCHEMA: &str = "hepta_operator_acceptance_trust_policy_v1";
-const SSH_KEYGEN: &str = "/usr/bin/ssh-keygen";
 const MAX_TRUST_FILE_BYTES: usize = 16 * 1024;
 const MAX_SIGNATURE_BYTES: usize = 4 * 1024;
 
@@ -162,16 +160,13 @@ impl TrustAnchor {
             ));
         }
 
-        let allowed_signers = InheritedPipe::new(&self.allowed_signers_bytes)?;
-        let signature = InheritedPipe::new(signature_bytes)?;
-        let mut child = Command::new(SSH_KEYGEN)
+        let inputs =
+            crate::sshsig::VerificationInputs::new(&self.allowed_signers_bytes, signature_bytes)?;
+        let mut child = crate::sshsig::keygen_command()?
             .args(["-Y", "verify", "-f"])
-            .arg(allowed_signers.child_path())
+            .arg(inputs.allowed_signers_path())
             .args(["-I", &self.binding.principal, "-n", SSHSIG_NAMESPACE, "-s"])
-            .arg(signature.child_path())
-            .env_clear()
-            .env("LANG", "C")
-            .env("LC_ALL", "C")
+            .arg(inputs.signature_path())
             .stdin(Stdio::piped())
             .stdout(Stdio::null())
             .stderr(Stdio::null())
@@ -311,72 +306,6 @@ fn digest_shape(value: &str) -> bool {
         && value
             .bytes()
             .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
-}
-
-#[cfg(unix)]
-struct InheritedPipe {
-    read_fd: std::os::fd::OwnedFd,
-}
-
-#[cfg(unix)]
-impl InheritedPipe {
-    fn new(bytes: &[u8]) -> Result<Self, AcceptanceError> {
-        use std::fs::File;
-        use std::os::fd::FromRawFd;
-        use std::os::fd::OwnedFd;
-
-        let mut raw = [-1; 2];
-        // SAFETY: `pipe` receives a valid two-element integer array and writes
-        // exactly two owned file descriptors on success.
-        if unsafe { libc::pipe(raw.as_mut_ptr()) } != 0 {
-            return Err(std::io::Error::last_os_error().into());
-        }
-        // SAFETY: successful `pipe` returned two newly owned descriptors.
-        let read_fd = unsafe { OwnedFd::from_raw_fd(raw[0]) };
-        // SAFETY: successful `pipe` returned two newly owned descriptors.
-        let write_fd = unsafe { OwnedFd::from_raw_fd(raw[1]) };
-        clear_close_on_exec(&read_fd)?;
-        let mut writer = File::from(write_fd);
-        writer.write_all(bytes)?;
-        drop(writer);
-        Ok(Self { read_fd })
-    }
-
-    fn child_path(&self) -> String {
-        use std::os::fd::AsRawFd;
-        format!("/dev/fd/{}", self.read_fd.as_raw_fd())
-    }
-}
-
-#[cfg(unix)]
-fn clear_close_on_exec(fd: &std::os::fd::OwnedFd) -> Result<(), AcceptanceError> {
-    use std::os::fd::AsRawFd;
-
-    // SAFETY: `fcntl` receives a live descriptor and does not dereference
-    // application memory for F_GETFD/F_SETFD.
-    let flags = unsafe { libc::fcntl(fd.as_raw_fd(), libc::F_GETFD) };
-    if flags == -1
-        || unsafe { libc::fcntl(fd.as_raw_fd(), libc::F_SETFD, flags & !libc::FD_CLOEXEC) } == -1
-    {
-        return Err(std::io::Error::last_os_error().into());
-    }
-    Ok(())
-}
-
-#[cfg(not(unix))]
-struct InheritedPipe;
-
-#[cfg(not(unix))]
-impl InheritedPipe {
-    fn new(_bytes: &[u8]) -> Result<Self, AcceptanceError> {
-        Err(invalid(
-            "OpenSSH SSHSIG verification requires Unix inherited descriptors",
-        ))
-    }
-
-    fn child_path(&self) -> String {
-        String::new()
-    }
 }
 
 fn invalid(message: impl Into<String>) -> AcceptanceError {
