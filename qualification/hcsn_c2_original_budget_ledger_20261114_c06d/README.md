@@ -9,7 +9,10 @@ The immutable campaign roster records six HCSN terminal commands with
 exact `whole_process_wall_seconds`. Charging those complete outer-wall values
 against the frozen 43,200-second per-fit cap, with zero parent refund, closes the
 original decision's non-refunded per-fit charged remainders. Their `math.fsum`
-is exactly `172938.8845898183`, matching the pre-existing decision.
+is exactly `172938.8845898183`, matching the pre-existing decision. The
+machine-readable field names this aggregate
+`original_decision_summed_charged_remainder_before_reserve_seconds`; it is not
+labelled as a maximum worker-active budget.
 
 The 600-second finalization reserve remains inside each 43,200-second cap. It is
 not already deducted from that aggregate. The separately recorded worker active
