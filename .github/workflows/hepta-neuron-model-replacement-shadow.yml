@@ -32,11 +32,19 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD
           test -n "$(git rev-parse HEAD)"
+      - name: Install exact CPU Torch needed for the equal-step Head adversarial contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/replacement-contracts"
+          "$RUNNER_TEMP/replacement-contracts/bin/python" -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
       - name: Run five-model registry and six-stage adversarial gates
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_*.py' -v
+          "$RUNNER_TEMP/replacement-contracts/bin/python" -m unittest discover \
+            -s qa/stem-bakeoff -p 'test_replacement_*.py' -v
           python3 qa/stem-bakeoff/replacement_gate.py --assert-no-production
           python3 -m py_compile qa/stem-bakeoff/replacement_gate.py qa/stem-bakeoff/replacement_metadata.py
           test -z "$(git status --porcelain)"
