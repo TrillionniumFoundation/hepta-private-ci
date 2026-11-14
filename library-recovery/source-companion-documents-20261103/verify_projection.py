@@ -57,6 +57,34 @@ for path, peer_oid, reference_oid in affected:
         identity(resolved[path])["oid"] == peer_oid == reference_oid,
         "preserved peer identity differs: " + path,
     )
+from verify_source_custody_volumes import (
+    REGISTRATIONS as VOLUME_REGISTRATIONS,
+    resolve_original_paths as resolve_volume_paths,
+)
+
+volume_affected = []
+for candidate in manifest["candidates"]:
+    for peer in candidate.get("same_original_package_verified_source_peers", []):
+        reference = peer.get("verified_peer_reference", {})
+        path = reference.get("path")
+        if isinstance(path, str) and any(
+            path.startswith(group + "/") for group in VOLUME_REGISTRATIONS
+        ):
+            volume_affected.append(
+                (path, peer["git_blob_sha"], reference["git_blob_sha"])
+            )
+volume_paths = sorted({path for path, _, _ in volume_affected})
+require(
+    len(volume_affected) == 53 and len(volume_paths) == 48,
+    "affected volume peer reference count changed",
+)
+volume_resolved = resolve_volume_paths(root.parents[1], volume_paths)
+for path, peer_oid, reference_oid in volume_affected:
+    require(
+        identity(volume_resolved[path])["oid"] == peer_oid == reference_oid,
+        "preserved volume peer identity differs: " + path,
+    )
+
 print(
     json.dumps(
         {
@@ -65,6 +93,8 @@ print(
             "all_bytes_match_manifest": True,
             "affected_peer_occurrences_verified": len(affected),
             "affected_peer_paths_verified": len(paths),
+            "volume_peer_occurrences_verified": len(volume_affected),
+            "volume_peer_paths_verified": len(volume_paths),
             "archived_source_executed": False,
             "research_or_runtime_qualification": False,
         }

@@ -33,6 +33,8 @@ jobs:
           python3 --version
           python3 -B -m unittest discover -s scripts/tests -p test_verify_source_custody_container.py -v
           python3 -B -m unittest discover -s scripts/tests -p test_mixed_patch_custody.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_verify_source_custody_volumes.py -v
+          python3 -B scripts/verify_source_custody_volumes.py --all
           python3 -B library-recovery/followup-source-20261103/verify_projection.py
           python3 -B library-recovery/20261107/verify_custody.py
           python3 -B library-recovery/mixed-patch-new-files-20261103/verify_sources.py
