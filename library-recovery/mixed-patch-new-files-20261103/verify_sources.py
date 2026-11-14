@@ -14,14 +14,26 @@ parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--original-patches',type=Path)
 args=parser.parse_args()
 root=Path(__file__).resolve().parent
-manifest=json.loads((root/'SOURCE_MANIFEST.json').read_bytes())
+repository=root.parents[1]
+sys.path.insert(0,str(repository/'scripts'))
+from verify_source_custody_container import MIXED, MAX_CONTROL, SNAPSHOTS, read_regular, unique_object, verify_container
+
+verified_sources=verify_container(repository,MIXED)
+manifest_raw=read_regular(repository,MIXED+'/SOURCE_MANIFEST.json',MAX_CONTROL)
+require(fp(manifest_raw)['git_blob_sha']==SNAPSHOTS[MIXED]['controls']['SOURCE_MANIFEST.json'],'original manifest drift')
+manifest=json.loads(manifest_raw,object_pairs_hook=unique_object)
 require(manifest['frozen_candidate_count']==6116 and manifest['formal_verified_count_unchanged']==5887,'frozen count changed')
 seen=set();parents={};read_bytes=0;extractions=0;source_bytes=0;notices=0
 for row in manifest['objects']+manifest['notices']:
     sha=row['git_blob_sha'];rel=row['relative_path']
     require(re.fullmatch(r'(?:objects|notices)/[0-9a-f]{40}\.[a-z0-9]+',rel) and Path(rel).stem==sha,'unsafe/mismatched object path')
     require(sha not in seen,'duplicate object')
-    seen.add(sha);raw=(root/rel).read_bytes()
+    seen.add(sha)
+    if rel.startswith('objects/'):
+        require(MIXED+'/'+rel in verified_sources,'missing verified source')
+        raw=verified_sources[MIXED+'/'+rel]
+    else:
+        raw=read_regular(repository,MIXED+'/'+rel,row['bytes'])
     require(fp(raw)=={k:row[k] for k in ('git_blob_sha','sha256','bytes')},'object bytes differ')
     if row['role']=='auxiliary original third-party notice':notices+=1
     else:source_bytes+=len(raw)

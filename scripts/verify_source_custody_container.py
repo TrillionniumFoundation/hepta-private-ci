@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify two preserved source snapshots as data; never extract or execute them."""
+"""Verify preserved source snapshots as data; never extract or execute them."""
 
 import argparse
 import hashlib
@@ -17,10 +17,25 @@ SCHEMA = "hepta.source-custody-container.v1"
 SOURCE_COMMIT = "aa37c2723e4856f5c251cc52721286ff8c48851c"
 FOLLOWUP = "library-recovery/followup-source-20261103"
 UNRESOLVED = "library-recovery/20261107"
+MIXED = "library-recovery/mixed-patch-new-files-20261103"
 MAX_CONTROL = 1024 * 1024
 MAX_ARCHIVE = 8 * 1024 * 1024
 MAX_TAR = 16 * 1024 * 1024
 SNAPSHOTS = {
+    MIXED: {
+        "manifest": "SOURCE_MANIFEST.json",
+        "notice_count": 3,
+        "controls": {
+            "PARSER_QUALIFICATION.json": "a7335c5c2cad306ce797a822a876c7bfc15b59f8",
+            "README.md": "932f1a1f714dd44c6c8e6c879ded0abfa61e5b77",
+            "SOURCE_MANIFEST.json": "c07d6710208bb68d93f3cd60de553d3b9bed8fe2",
+            "notices/7f77de13d6a3a5b2a7b35bfb249b7902317c2045.txt": "7f77de13d6a3a5b2a7b35bfb249b7902317c2045",
+            "notices/d952d62c065f3f35fb83a173496e90b21525aef3.txt": "d952d62c065f3f35fb83a173496e90b21525aef3",
+            "notices/f9afe0989588d7f672fa35a4ebec946189bf4eee.txt": "f9afe0989588d7f672fa35a4ebec946189bf4eee",
+            "patch_parser.py": "6c097ab0254a9736eb65283b9441f954889a5dd4",
+            "verify_sources.py": "0c9c615dd5a6feeb37e3d9f8c262b7d91ae128a6",
+        },
+    },
     FOLLOWUP: {
         "manifest": "SOURCE_MANIFEST.json",
         "controls": {
@@ -131,7 +146,44 @@ def source_rows(document, directory):
         items = document["sources"]
         count, size = document["source_count"], document["source_bytes"]
         fields = ("relative_path", "git_blob_sha")
-    else:
+    elif directory == MIXED:
+        require(
+            document["schema"] == "isolated-frozen-patch-new-file-projection-v1",
+            "source schema",
+        )
+        require(
+            document["preserved_source_executed"] is False
+            and document["patch_applied"] is False
+            and document["new_frozen_candidates_counted"] == 0
+            and document["source_candidate_sets_unchanged"] is True
+            and document["boundaries"]
+            == ["DRAFT", "SHADOW_ONLY", "DENY_ALL", "HOLD_NO_GO"]
+            and document["frozen_candidate_count"] == 6116
+            and document["formal_verified_count_unchanged"] == 5887,
+            "source-only boundary changed",
+        )
+        require(
+            isinstance(document["objects"], list)
+            and document["additional_source_object_count"] == 30
+            and isinstance(document["notices"], list)
+            and len(document["notices"]) == document["auxiliary_notice_count"] == 3,
+            "source or notice count",
+        )
+        for notice in document["notices"]:
+            name = canonical(notice["relative_path"])
+            require(
+                name.startswith("notices/")
+                and notice["role"] == "auxiliary original third-party notice"
+                and notice["git_blob_sha"] == SNAPSHOTS[MIXED]["controls"].get(name),
+                "original notice binding",
+            )
+        items = document["objects"]
+        count, size = (
+            document["additional_source_object_count"],
+            document["additional_source_bytes"],
+        )
+        fields = ("relative_path", "git_blob_sha")
+    elif directory == UNRESOLVED:
         require(
             document["schema"] == "trillionnium.library-source-custody.v1",
             "source schema",
@@ -148,6 +200,8 @@ def source_rows(document, directory):
             document["counts"]["unique_bytes"],
         )
         fields = ("canonical_repository_path", "git_blob_sha1")
+    else:
+        raise ValueError("unregistered source collection")
     require(
         isinstance(items, list) and type(count) is int and len(items) == count,
         "source count",
@@ -155,7 +209,7 @@ def source_rows(document, directory):
     sources, seen = {}, set()
     for index, row in enumerate(items):
         path = canonical(row[fields[0]])
-        if directory == FOLLOWUP:
+        if directory in (FOLLOWUP, MIXED):
             path = directory + "/" + path
         require(path.startswith(directory + "/"), "source path escapes collection")
         fingerprint = {
@@ -169,7 +223,11 @@ def source_rows(document, directory):
         )
         sources[path] = {
             **fingerprint,
-            "pointer": ("/sources/" if directory == FOLLOWUP else "/source_files/")
+            "pointer": {
+                FOLLOWUP: "/sources/",
+                UNRESOLVED: "/source_files/",
+                MIXED: "/objects/",
+            }[directory]
             + str(index),
         }
         seen.add(fingerprint["oid"])
@@ -429,7 +487,7 @@ def main(argv=None):
             {
                 "source_count": len(sources),
                 "source_bytes": sum(map(len, sources.values())),
-                "notice_count": 0,
+                "notice_count": SNAPSHOTS[args.collection].get("notice_count", 0),
                 "all_bytes_match_manifest": True,
                 "archived_source_executed": False,
                 "research_or_runtime_qualification": False,
