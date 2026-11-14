@@ -1,0 +1,751 @@
+{
+  "assets": {
+    "model": {
+      "README.md": {
+        "bytes": 6772,
+        "sha256": "4f97533ad95b1b2fea15fbc075c01b94578ebdd7c8138888fa43fa3abd530dc4"
+      },
+      "config.json": {
+        "bytes": 861,
+        "sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a"
+      },
+      "generation_config.json": {
+        "bytes": 132,
+        "sha256": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013"
+      },
+      "material-manifest.json": {
+        "bytes": 1263,
+        "sha256": "6e6a76d478f28906566c1cc8db9ef767922b7a215c9f795da8d845e965c59f0c"
+      },
+      "model.safetensors": {
+        "bytes": 269060552,
+        "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+      },
+      "model.safetensors.partial": {
+        "bytes": 124821398,
+        "sha256": "4484a1259bf80d662995a0601e880764112c3ac71eb92529c5d58f6678925c31"
+      },
+      "special_tokens_map.json": {
+        "bytes": 655,
+        "sha256": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52"
+      },
+      "tokenizer.json": {
+        "bytes": 2104556,
+        "sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+      },
+      "tokenizer_config.json": {
+        "bytes": 3764,
+        "sha256": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df"
+      }
+    },
+    "seed11-bursty": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "bbf14a55ed1aea85f373c2b662c53d0665a6d1152fec7a6c3306a5e4ddcc6024"
+      }
+    },
+    "seed11-interleaved": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "5da94a4fafc3804b64dbfe26470d008f76c38a1fa1b515e088f894af921a82b0"
+      }
+    },
+    "seed17-bursty": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "86204ff8f3b74b45355818259099a663fcd0456c965e0858ec3f50bccf72bfab"
+      }
+    },
+    "seed17-interleaved": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "f701b5f98ea9ee0048f6d0531ac8069a70dd9b602e9380f3fb677c9391c36a0f"
+      }
+    },
+    "seed23-bursty": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "342ce2a5fe6facad84eec42d578eda9f6ab544180a610fb2fbff38c3bb4ff5c4"
+      }
+    },
+    "seed23-interleaved": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "d7cb0a9bd48ce77dca8f77c47a3108b07cd075a04d04e1ebd5c38ebd836f4175"
+      }
+    },
+    "seed29-bursty": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "94b71b7e43fa7419e07be1f73273c5a2a9b0c7bf3333ff8aecabe07a508e0e28"
+      }
+    },
+    "seed29-interleaved": {
+      "README.md": {
+        "bytes": 5242,
+        "sha256": "2282b1fbbd699b9b43b5ecb1cd483e086cf3ed9cadeef1e682612af171105ffe"
+      },
+      "adapter_config.json": {
+        "bytes": 1099,
+        "sha256": "b968cdacedba786dd7d22136e4a8bf07f8d959ea867e7989be424237ab0f561c"
+      },
+      "adapter_model.safetensors": {
+        "bytes": 560696,
+        "sha256": "ab9174a7fecc2abd9576d6c09e5faf22429bf9beeb10ef4bb92b5e934969a0df"
+      }
+    }
+  },
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "cpu_only": true,
+  "encoded_prompts": [
+    {
+      "id": "arithmetic-01",
+      "input_ids": [
+        4182,
+        216,
+        33,
+        34,
+        2852,
+        670,
+        216,
+        41,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "arithmetic-02",
+      "input_ids": [
+        4182,
+        216,
+        35,
+        1711,
+        216,
+        36,
+        4037,
+        288,
+        216,
+        33,
+        37,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "arithmetic-03",
+      "input_ids": [
+        4182,
+        216,
+        33,
+        32,
+        32,
+        46522,
+        411,
+        216,
+        34,
+        37,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "arithmetic-04",
+      "input_ids": [
+        4182,
+        216,
+        34,
+        33,
+        354,
+        908,
+        15328,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "arithmetic-05",
+      "input_ids": [
+        4182,
+        216,
+        34,
+        8055,
+        216,
+        34,
+        4037,
+        288,
+        216,
+        36,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "arithmetic-06",
+      "input_ids": [
+        4182,
+        216,
+        40,
+        253,
+        9552,
+        1230,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "taxonomy-01",
+      "input_ids": [
+        4182,
+        253,
+        31083,
+        508,
+        253,
+        8525,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "taxonomy-02",
+      "input_ids": [
+        4182,
+        253,
+        588,
+        12155,
+        253,
+        1502,
+        282,
+        5065,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "taxonomy-03",
+      "input_ids": [
+        14748,
+        253,
+        14973,
+        457,
+        1296,
+        5882,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "taxonomy-04",
+      "input_ids": [
+        4182,
+        253,
+        35084,
+        253,
+        36402,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "taxonomy-05",
+      "input_ids": [
+        4182,
+        8548,
+        253,
+        4718,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "taxonomy-06",
+      "input_ids": [
+        4182,
+        24361,
+        253,
+        5553,
+        418,
+        3589,
+        2779,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "negation-01",
+      "input_ids": [
+        4182,
+        357,
+        7065,
+        338,
+        897,
+        5222,
+        553,
+        1876,
+        4037,
+        5882,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "negation-02",
+      "input_ids": [
+        4182,
+        357,
+        7065,
+        338,
+        216,
+        33,
+        33,
+        314,
+        253,
+        15674,
+        1230,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "negation-03",
+      "input_ids": [
+        4182,
+        357,
+        7065,
+        338,
+        216,
+        33,
+        37,
+        314,
+        46522,
+        411,
+        216,
+        35,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "negation-04",
+      "input_ids": [
+        4182,
+        357,
+        7065,
+        338,
+        216,
+        41,
+        314,
+        354,
+        908,
+        1230,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "negation-05",
+      "input_ids": [
+        4182,
+        357,
+        7065,
+        338,
+        253,
+        2605,
+        553,
+        4962,
+        2009,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "negation-06",
+      "input_ids": [
+        4182,
+        357,
+        7065,
+        338,
+        253,
+        15026,
+        3593,
+        22063,
+        3723,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "conditional-01",
+      "input_ids": [
+        1937,
+        787,
+        1892,
+        9891,
+        359,
+        2382,
+        284,
+        511,
+        754,
+        2259,
+        359,
+        1892,
+        9891,
+        28,
+        416,
+        253,
+        754,
+        508,
+        325,
+        2382,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "conditional-02",
+      "input_ids": [
+        1937,
+        253,
+        6261,
+        314,
+        45219,
+        284,
+        965,
+        4642,
+        11464,
+        28,
+        314,
+        357,
+        11464,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "conditional-03",
+      "input_ids": [
+        1937,
+        216,
+        37,
+        314,
+        2852,
+        670,
+        216,
+        34,
+        284,
+        216,
+        34,
+        314,
+        2852,
+        670,
+        216,
+        33,
+        28,
+        314,
+        216,
+        33,
+        2852,
+        670,
+        216,
+        37,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "conditional-04",
+      "input_ids": [
+        1937,
+        253,
+        3985,
+        6650,
+        216,
+        35,
+        13855,
+        284,
+        216,
+        34,
+        540,
+        359,
+        3235,
+        28,
+        1072,
+        357,
+        2205,
+        216,
+        37,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "conditional-05",
+      "input_ids": [
+        1937,
+        253,
+        9191,
+        8470,
+        429,
+        216,
+        33,
+        33,
+        42,
+        37,
+        41,
+        288,
+        216,
+        33,
+        34,
+        42,
+        32,
+        32,
+        28,
+        314,
+        260,
+        8427,
+        1685,
+        1361,
+        216,
+        37,
+        41,
+        47,
+        198,
+        21350,
+        42
+      ]
+    },
+    {
+      "id": "conditional-06",
+      "input_ids": [
+        1937,
+        827,
+        4037,
+        5208,
+        971,
+        2127,
+        1876,
+        3401,
+        28,
+        1072,
+        2267,
+        932,
+        2127,
+        1876,
+        3401,
+        47,
+        198,
+        21350,
+        42
+      ]
+    }
+  ],
+  "external_resource_limits": "NOT_ATTESTED",
+  "generation_config": {
+    "_from_model_config": true,
+    "assistant_confidence_threshold": 0.4,
+    "assistant_early_exit": null,
+    "assistant_lookbehind": 10,
+    "bad_words_ids": null,
+    "begin_suppress_tokens": null,
+    "bos_token_id": 1,
+    "cache_config": null,
+    "cache_implementation": null,
+    "constraints": null,
+    "decoder_start_token_id": null,
+    "disable_compile": false,
+    "diversity_penalty": 0.0,
+    "do_sample": false,
+    "dola_layers": null,
+    "early_stopping": false,
+    "encoder_no_repeat_ngram_size": 0,
+    "encoder_repetition_penalty": 1.0,
+    "eos_token_id": 2,
+    "epsilon_cutoff": 0.0,
+    "eta_cutoff": 0.0,
+    "exponential_decay_length_penalty": null,
+    "force_words_ids": null,
+    "forced_bos_token_id": null,
+    "forced_eos_token_id": null,
+    "guidance_scale": null,
+    "is_assistant": false,
+    "length_penalty": 1.0,
+    "low_memory": null,
+    "max_length": 20,
+    "max_matching_ngram_size": null,
+    "max_new_tokens": 8,
+    "max_time": null,
+    "min_length": 0,
+    "min_new_tokens": null,
+    "min_p": null,
+    "no_repeat_ngram_size": 0,
+    "num_assistant_tokens": 20,
+    "num_assistant_tokens_schedule": "constant",
+    "num_beam_groups": 1,
+    "num_beams": 1,
+    "num_return_sequences": 1,
+    "output_attentions": false,
+    "output_hidden_states": false,
+    "output_logits": null,
+    "output_scores": false,
+    "pad_token_id": 2,
+    "penalty_alpha": null,
+    "prefill_chunk_size": null,
+    "prompt_lookup_num_tokens": null,
+    "remove_invalid_values": false,
+    "renormalize_logits": false,
+    "repetition_penalty": 1.0,
+    "return_dict_in_generate": false,
+    "return_legacy_cache": null,
+    "sequence_bias": null,
+    "stop_strings": null,
+    "suppress_tokens": null,
+    "target_lookbehind": 10,
+    "temperature": 1.0,
+    "token_healing": false,
+    "top_k": 50,
+    "top_p": 1.0,
+    "transformers_version": "4.57.3",
+    "typical_p": 1.0,
+    "use_cache": true,
+    "watermarking_config": null
+  },
+  "independent_calibration": "MISSING",
+  "independent_future_sources": "MISSING",
+  "inputs": {
+    "archive": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+    "plan": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043",
+    "previous": "3002553ec485b19247f510863e9c78d2cce7747434ad7737f68b7dd3f9a74a2a"
+  },
+  "old_task_retention": "MISSING",
+  "planned_generations": 216,
+  "run_id": "ae7e08d4dd7f4e2792149b6e030c1b54",
+  "runtime": {
+    "peft": "0.18.0",
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3"
+  },
+  "schema": "HPCA-FREEGEN-PREEXECUTION-1",
+  "source_parent": "87858f5a74a248344b99bb319d937487a13b4a8b",
+  "sources": {
+    "contract": "daf7e381992bb7fd131f67aaa09eb21433a1804e423deccacd87edf342a2da5b",
+    "prior_helper": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8",
+    "runner": "230d94cd184f6127d78d5c5671d8b7095307c61b366eb873a73fcc34c4c1056d"
+  },
+  "threads": 4,
+  "tokenizer": {
+    "bos": 1,
+    "class": "GPT2TokenizerFast",
+    "eos": 2,
+    "pad": 2,
+    "special_ids": [
+      1,
+      2,
+      0
+    ],
+    "special_tokens": [
+      "<|im_start|>",
+      "<|im_end|>",
+      "<|endoftext|>"
+    ]
+  }
+}

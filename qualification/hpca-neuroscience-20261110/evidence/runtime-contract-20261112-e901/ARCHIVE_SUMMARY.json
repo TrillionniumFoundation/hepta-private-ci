@@ -1,0 +1,43 @@
+{
+  "all_first_token_eos": true,
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "completed_generation_attempts": 216,
+  "conditions": 9,
+  "correct": 0,
+  "distinct_public_tasks": 24,
+  "independent_calibration": "MISSING",
+  "independent_future_sources": "MISSING",
+  "model_phase_cost": {
+    "io_delta": {
+      "cancelled_write_bytes": 0,
+      "rchar": 405782323,
+      "read_bytes": 21856256,
+      "syscr": 1209,
+      "syscw": 443,
+      "wchar": 136408,
+      "write_bytes": 1912832
+    },
+    "maxrss_kib_lifetime_peak": 1207508,
+    "process_cpu_seconds": 33.180033789,
+    "wall_seconds": 10.227863733889535
+  },
+  "old_task_retention": "MISSING",
+  "runtime": {
+    "peft": "0.18.0",
+    "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3"
+  },
+  "schema": "HPCA-NATIVE-FREEGEN-ARCHIVE-1",
+  "source_files_unchanged": true,
+  "source_head": "0b75caf446a18807e527f8e2ed9937ae3cae515d",
+  "unique_emitted_token_sequences": [
+    [
+      2
+    ]
+  ],
+  "unique_generated_texts": [
+    ""
+  ],
+  "valid": 0
+}
