@@ -1,5 +1,6 @@
 """Exercise formatter scope using real Git state and observable tool commands."""
 
+import hashlib
 import importlib.util
 import os
 from pathlib import Path
@@ -223,6 +224,75 @@ class FormatterScopeTests(unittest.TestCase):
         )
         self.assertEqual(command.cwd, self.root / "qualification/fixture")
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+
+    def vendor_workspace(self):
+        self.write(
+            "codex-rs/Cargo.toml",
+            '[workspace]\nmembers=["product", "third_party/owned"]\n'
+            'exclude=["third_party/upstream", "separate-product"]\n'
+            'resolver="2"\n',
+        )
+        sources = {}
+        for directory in (
+            "product",
+            "third_party/owned",
+            "third_party/upstream",
+            "separate-product",
+        ):
+            self.write(
+                f"codex-rs/{directory}/Cargo.toml",
+                f'[package]\nname="{Path(directory).name}"\n'
+                'version="1.0.0"\nedition="2024"\n',
+            )
+            sources[directory] = self.write(
+                f"codex-rs/{directory}/src/lib.rs", "pub fn selected( )->u8{1}\n"
+            )
+        sources["product-tests"] = self.write(
+            "codex-rs/product/tests/smoke.rs", "#[test]fn check( ){assert!(true);}\n"
+        )
+        return sources
+
+    def assert_vendor_preserved_by_real_rustfmt(self):
+        sources = self.vendor_workspace()
+        upstream = sources.pop("third_party/upstream")
+        before = hashlib.sha256(upstream.read_bytes()).hexdigest()
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=False)
+        self.assertEqual([group.name for group in groups], ["Rust"])
+        self.assertEqual(
+            {Path(command.args[-1]) for command in groups[0].commands},
+            set(sources.values()),
+        )
+        original_product = sources["product"].read_bytes()
+        result = FMT.run_formatter_group(groups[0])
+        self.assertEqual(result.returncode, 0, result.output)
+        self.assertEqual(hashlib.sha256(upstream.read_bytes()).hexdigest(), before)
+        self.assertNotEqual(sources["product"].read_bytes(), original_product)
+        self.assertEqual(
+            sources["product"].read_text(), "pub fn selected() -> u8 {\n    1\n}\n"
+        )
+        check = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        result = FMT.run_formatter_group(check[0])
+        self.assertEqual(result.returncode, 0, result.output)
+
+    def test_workspace_excluded_vendor_keeps_published_hash_with_real_rustfmt(self):
+        self.assert_vendor_preserved_by_real_rustfmt()
+
+    def test_python_310_respects_vendor_boundary_using_real_cargo(self):
+        with patch.object(FMT, "tomllib", None):
+            self.assert_vendor_preserved_by_real_rustfmt()
+
+    def test_workspace_config_expansion_preserves_only_excluded_vendor_sources(self):
+        sources = self.vendor_workspace()
+        upstream = sources.pop("third_party/upstream")
+        self.git("add", ".")
+        self.git("commit", "-qm", "product and vendor sources")
+        self.write("codex-rs/rustfmt.toml", "max_width=88\n")
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual(
+            {Path(command.args[-1]) for command in groups[0].commands},
+            set(sources.values()),
+        )
+        self.assertNotIn(upstream, set(sources.values()))
 
     def test_changed_ruff_configuration_checks_the_owning_python_tree(self):
         groups = FMT.scoped_formatter_groups(["scripts/ruff.toml"], check=True)

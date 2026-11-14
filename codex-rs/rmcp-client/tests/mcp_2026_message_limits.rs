@@ -28,6 +28,8 @@ use wiremock::matchers::method;
 use wiremock::matchers::path;
 
 const MAX_MCP_MESSAGE_BYTES: usize = 8 * 1024 * 1024;
+const MAX_LEGACY_HTTP_MESSAGE_BYTES: usize = 16 * 1024 * 1024;
+const MAX_HTTP_ERROR_BODY_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum OversizedHttpResponse {
@@ -177,8 +179,13 @@ async fn modern_http_rejects_oversized_json_error_and_sse_bodies() -> anyhow::Re
                 .await
                 .expect_err("oversized tools response must be rejected");
             let error = format!("{error:#}");
+            let limit = if oversized == OversizedHttpResponse::ToolError {
+                MAX_HTTP_ERROR_BODY_BYTES
+            } else {
+                MAX_MCP_MESSAGE_BYTES
+            };
             assert!(
-                error.contains("8388608 bytes")
+                error.contains(&format!("{limit} bytes"))
                     || (oversized == OversizedHttpResponse::ToolSseEvent
                         && (error.contains("timed out") || error.contains("Transport closed"))),
                 "unexpected {oversized:?} error: {error}"
@@ -227,6 +234,63 @@ async fn legacy_http_keeps_existing_large_json_response_behavior() -> anyhow::Re
         Some(MAX_MCP_MESSAGE_BYTES + 1)
     );
     client.shutdown().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn legacy_http_rejects_oversized_json_error_and_non_json_bodies() -> anyhow::Result<()> {
+    for (status, content_type, limit) in [
+        (200, "application/json", MAX_LEGACY_HTTP_MESSAGE_BYTES),
+        (500, "application/json", MAX_HTTP_ERROR_BODY_BYTES),
+        (200, "text/plain", MAX_HTTP_ERROR_BODY_BYTES),
+    ] {
+        let server = MockServer::start().await;
+        let padding = Arc::new("x".repeat(limit + 1));
+        Mock::given(method("POST"))
+            .and(path("/mcp"))
+            .respond_with(move |request: &Request| {
+                let body: Value = request.body_json().expect("JSON-RPC request");
+                match body["method"].as_str() {
+                    Some("initialize") => ResponseTemplate::new(200).set_body_json(json!({
+                        "jsonrpc": "2.0",
+                        "id": body["id"],
+                        "result": {
+                            "protocolVersion": "2025-06-18",
+                            "capabilities": {"tools": {}},
+                            "serverInfo": {"name": "bounded-legacy-response", "version": "1.0.0"},
+                        },
+                    })),
+                    Some("notifications/initialized") => ResponseTemplate::new(202),
+                    Some("tools/list") if content_type == "text/plain" => {
+                        ResponseTemplate::new(status).set_body_raw(padding.as_str(), content_type)
+                    }
+                    Some("tools/list") if status == 500 => ResponseTemplate::new(status)
+                        .set_body_json(json!({
+                            "jsonrpc": "2.0",
+                            "id": body["id"],
+                            "error": {"code": -32603, "message": padding.as_str()},
+                        })),
+                    Some("tools/list") => {
+                        ResponseTemplate::new(status).set_body_json(tools_response(&body, &padding))
+                    }
+                    other => panic!("unexpected legacy MCP method {other:?}"),
+                }
+            })
+            .mount(&server)
+            .await;
+
+        let client = http_client(&server, McpProtocolMode::Legacy).await?;
+        initialize(&client).await?;
+        let error = client
+            .list_tools(/*params*/ None, Some(Duration::from_secs(15)))
+            .await
+            .expect_err("legacy HTTP responses must have a finite byte limit");
+        assert!(
+            format!("{error:#}").contains(&format!("{limit} bytes")),
+            "expected bounded {status} {content_type} response, got {error:#}"
+        );
+        client.shutdown().await;
+    }
     Ok(())
 }
 
