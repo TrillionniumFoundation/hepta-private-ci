@@ -51,6 +51,74 @@ def model():
 
 
 class TorchGeneratorTests(unittest.TestCase):
+    def test_empty_verification_is_refused_before_state_changes(self):
+        generator, public = model(), public_input()
+        state = generator.encode(public)
+        with self.assertRaisesRegex(ValueError, "No observed media"):
+            generator.advance(state, "verify", public)
+        self.assertEqual(
+            (state.steps, state.verified, state.verified_revision), (0, False, -1)
+        )
+        owner = DeliveryObservation(8, 1, 10000, 10000, bytes([3]) * 32)
+        inspection = generator.inspect(state, owner, public)
+        self.assertEqual(
+            (
+                float(inspection["policy.legal_mask"][0, 5]),
+                float(inspection["policy.probabilities"].detach()[0, 5]),
+            ),
+            (0.0, 0.0),
+        )
+        self.assertTrue(bool(torch.isfinite(inspection["policy.probabilities"]).all()))
+
+    def test_observed_verification_remains_available_after_a_content_change(self):
+        generator, public = model(), public_input()
+        generator.suppress_redundant_verify = True
+        public["image_mask"][0, 0, 0, 0] = 0.5
+        state = generator.encode(public)
+        owner = DeliveryObservation(8, 1, 10000, 10000, bytes([3]) * 32)
+        self.assertEqual(
+            float(generator.inspect(state, owner, public)["policy.legal_mask"][0, 5]),
+            1.0,
+        )
+        verified = generator.advance(state, "verify", public)
+        self.assertEqual(
+            (verified.verified, verified.verified_revision, verified.content_revision),
+            (True, 0, 0),
+        )
+        self.assertGreater(float(verified.feedback.detach()[0, 0]), 0.0)
+        torch.testing.assert_close(
+            verified.feedback[0, 1:],
+            torch.zeros(2, dtype=torch.float64),
+            rtol=0,
+            atol=0,
+        )
+        self.assertEqual(
+            float(
+                generator.inspect(verified, owner, public)["policy.legal_mask"][0, 5]
+            ),
+            0.0,
+        )
+        with self.assertRaisesRegex(ValueError, "Redundant verification"):
+            generator.advance(verified, "verify", public)
+        changed = generator.advance(verified, "shared", public)
+        self.assertFalse(changed.verified)
+        self.assertEqual(
+            float(generator.inspect(changed, owner, public)["policy.legal_mask"][0, 5]),
+            1.0,
+        )
+
+    def test_invalid_verification_masks_cannot_supply_evidence(self):
+        generator, public = model(), public_input()
+        state = generator.encode(public)
+        owner = DeliveryObservation(8, 1, 10000, 10000, bytes([3]) * 32)
+        for invalid in (float("nan"), float("inf"), -0.1, 1.1):
+            with self.subTest(mask=invalid):
+                public["image_mask"][0, 0, 0, 0] = invalid
+                with self.assertRaisesRegex(ValueError, "Public"):
+                    generator.advance(state, "verify", public)
+                with self.assertRaisesRegex(ValueError, "Public"):
+                    generator.inspect(state, owner, public)
+
     def test_order_and_persistent_reset_have_causal_effects(self):
         generator = model()
         self.assertFalse(
@@ -112,8 +180,12 @@ class TorchGeneratorTests(unittest.TestCase):
             8, 1, 10000, 9000, bytes([3]) * 32, (0, 0, 0, 2), (b"", b"", b"", b"ab")
         )
         b = replace(a, committed=(b"", b"", b"", b"ba"))
-        state = generator.encode(public_input())
-        first, second = generator.inspect(state, a), generator.inspect(state, b)
+        public = public_input()
+        state = generator.encode(public)
+        first, second = (
+            generator.inspect(state, a, public),
+            generator.inspect(state, b, public),
+        )
         for name in ("actor.logits", "critic", "delivery_critic"):
             self.assertFalse(torch.equal(first[name], second[name]))
         self.assertEqual(first["policy.probabilities"][0, 2:4].tolist(), [0.0, 0.0])
@@ -193,6 +265,37 @@ class NativeGeneratorTests(unittest.TestCase):
         for byte in complete[3][len(files[3]) :]:
             state = self.generator.consume_byte(state, byte)
         self.assert_state(resumed["state"], state)
+
+    def test_native_verification_requires_the_same_observed_media_as_python(self):
+        initial = self.invoke(b"", b"", b"\x00" + struct.pack("<Q", 17) + b"\x00")
+        process = subprocess.run(
+            [self.binary],
+            input=request_bytes(
+                self.weights,
+                self.public_bytes,
+                initial["state"],
+                b"",
+                b"\x01\x05",
+                self.owner,
+            ),
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+        self.assertEqual(process.returncode, 2)
+        self.assertIn(b"action outside admitted legal output portfolio", process.stderr)
+        self.assertEqual(process.stdout, b"")
+
+        self.public["image_mask"][0, 0, 0, 0] = 0.5
+        self.public_bytes = public_packet(self.public)
+        initial = self.invoke(b"", b"", b"\x00" + struct.pack("<Q", 17) + b"\x00")
+        native = self.invoke(initial["state"], b"", b"\x01\x05")
+        state = self.generator.advance(
+            self.generator.encode(self.public), "verify", self.public
+        )
+        self.assert_state(native["state"], state)
+        metadata, _ = read_packet(native["state"])
+        self.assertEqual(metadata["verified"], "true")
 
     def test_native_outputs_open_as_standard_image_audio_and_video(self):
         from PIL import Image

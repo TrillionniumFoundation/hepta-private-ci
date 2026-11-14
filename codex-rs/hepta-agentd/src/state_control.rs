@@ -25,6 +25,7 @@ use crate::LifecycleSnapshot;
 use crate::SessionIngress;
 use crate::SessionTransport;
 use crate::cognitive_context::CognitiveContextError;
+use crate::episodic_import::EpisodicImportIngress;
 
 use super::AgentdState;
 use super::poisoned_state;
@@ -231,6 +232,16 @@ impl AgentdState {
                         .map_err(AgentdError::Protocol)?,
                     );
                 }
+                if self.episodic_snapshot_import.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::EPISODIC_SNAPSHOT_IMPORT_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.evidence.get().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new("kernel.evidence", 1, 0)
@@ -408,6 +419,9 @@ impl AgentdState {
                     crate::evidence_host::verify(self, request).await?,
                 )
             }
+            crate::AgentdMethod::EpisodicSnapshotImport { snapshot_json } => {
+                self.import_episodic_snapshot(&snapshot_json).await?
+            }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
                 require_cognitive_control_ready(
                     lifecycle,
@@ -427,6 +441,11 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
+                let source = self
+                    .episodic_snapshot_import
+                    .get()
+                    .map(EpisodicImportIngress::source_read)
+                    .transpose()?;
                 let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,
@@ -441,6 +460,11 @@ impl AgentdState {
                     },
                 )
                 .await;
+                if result.is_ok()
+                    && let Some(source) = source
+                {
+                    source.revalidate()?;
+                }
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -509,6 +533,11 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
+                let source = self
+                    .episodic_snapshot_import
+                    .get()
+                    .map(EpisodicImportIngress::source_read)
+                    .transpose()?;
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
@@ -524,6 +553,11 @@ impl AgentdState {
                     self.cognitive_retrieval_context.get(),
                 )
                 .await;
+                if result.is_ok()
+                    && let Some(source) = source
+                {
+                    source.revalidate()?;
+                }
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -1283,7 +1317,7 @@ fn cognitive_control_unavailable() -> AgentdPayload {
     }
 }
 
-fn require_cognitive_control_ready(
+pub(super) fn require_cognitive_control_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
     critical_stores_ready: bool,

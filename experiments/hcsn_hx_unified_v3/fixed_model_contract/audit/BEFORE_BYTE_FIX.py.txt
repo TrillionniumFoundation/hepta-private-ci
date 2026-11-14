@@ -1,0 +1,146 @@
+"""Identity contract for two trusted, reviewed HX artifacts; not authentication.
+
+No input-supplied digest is a trust anchor. The local reviewed registry is trusted.
+This does not validate hostile source/registries or general mathematical claims.
+"""
+import hashlib,json,math,os,tempfile
+from pathlib import Path
+import flint
+from flint import arb,ctx
+ctx.prec=256
+HERE=Path(__file__).resolve().parent
+SCHEMA='hx-fixed-model-bundle-v1'
+PROOF='hx-local-taylor4-ieee-rn-v1'
+FIXED=dict(schema_version=SCHEMA,proof_version=PROOF,log_distance_upper='2^-19',
+           precompute_acceptance='2^-40',runtime_relative_bound='2^-49',
+           python_flint='0.9.0',root_precision_bits=160,coefficient_precision_bits=256,
+           global_status='NOT_CERTIFIED')
+FIELDS=set(FIXED)|{'model_digest','exact_params','root_receipt_sha256',
+                   'coefficient_receipt_sha256','asset_lower_hex','asset_upper_hex'}
+class ContractError(ValueError):pass
+
+def require(test,message):
+ if not test:raise ContractError(message)
+
+def pairs_unique(pairs):
+ result={}
+ for key,value in pairs:
+  require(key not in result,'Duplicate JSON key: '+key);result[key]=value
+ return result
+
+def no_constant(value):raise ContractError('Nonfinite JSON constant: '+value)
+
+def finite_numbers(value):
+ if isinstance(value,float):require(math.isfinite(value),'Nonfinite JSON numeric value')
+ elif isinstance(value,dict):
+  for child in value.values():finite_numbers(child)
+ elif isinstance(value,list):
+  for child in value:finite_numbers(child)
+
+def load_json(path):
+ value=json.loads(Path(path).read_text(),object_pairs_hook=pairs_unique,parse_constant=no_constant)
+ finite_numbers(value);return value
+
+def canonical(value):
+ return json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=True,allow_nan=False).encode('utf-8')
+
+def digest(value):return hashlib.sha256(canonical(value)).hexdigest()
+
+def normalized(payload,kind):
+ result=dict(payload)
+ key={'root':'elapsed_seconds','coefficient':'precompute_seconds'}[kind]
+ require(key in result and type(result[key]) in (int,float) and math.isfinite(result[key]) and result[key]>=0,'Invalid timing field '+key)
+ del result[key] # only this exact top-level path is excluded
+ return result
+
+def registry():return load_json(HERE/'REGISTRY.json')
+
+def make_contract(model_digest):
+ reg=registry();require(model_digest in reg,'Unregistered model digest');row=reg[model_digest]
+ return dict(FIXED,model_digest=model_digest,**{k:row[k] for k in ('exact_params','root_receipt_sha256','coefficient_receipt_sha256','asset_lower_hex','asset_upper_hex')})
+
+def validate_bundle(directory):
+ directory=Path(directory);contract=load_json(directory/'CONTRACT.json')
+ require(type(contract) is dict and set(contract)==FIELDS,'Contract fields mismatch')
+ # Exact key/value/type equality: bool must not masquerade as precision integer.
+ for key,value in FIXED.items():
+  require(type(contract[key]) is type(value) and contract[key]==value,'Contract claim mismatch: '+key)
+ reg=registry();key=contract['model_digest']
+ require(type(key) is str and key in reg,'Unregistered model digest');row=reg[key]
+ require(type(contract['exact_params']) is dict and contract['exact_params']==row['exact_params'],'Exact model parameters mismatch')
+ require(all(type(v) is str for v in contract['exact_params'].values()),'Parameters must be registered rational strings')
+ require(digest(contract['exact_params'])==key,'Parameter digest mismatch')
+ require(contract==make_contract(key),'Contract differs from registered binding')
+ require(flint.__version__==FIXED['python_flint'],'Unsupported producer FLINT wrapper version')
+ root=load_json(directory/'ROOT_PROOF.json');coeff=load_json(directory/'COEFFICIENTS.json')
+ require(type(root) is dict and type(coeff) is dict,'Receipt objects required')
+ rn=normalized(root,'root');cn=normalized(coeff,'coefficient')
+ require(set(rn)==set(row['root_keys']) and set(cn)==set(row['coefficient_keys']),'Receipt fields mismatch')
+ require(root['exact_rational_inputs']==row['exact_params'] and coeff['exact_params']==row['exact_params'],'Cross-model receipts')
+ require(root['status']=='FIXED_CASE_ROOT_AND_GUARD_ENCLOSED','Unknown root status')
+ require(coeff['status']=='UNIFORM_BOUND_ESTABLISHED_UNDER_IEEE_RN_PREMISES','Unknown coefficient status')
+ require(root['global_status']==coeff['global_status']=='NOT_CERTIFIED','Global certification not supported')
+ require(type(root['precision_bits']) is int and root['precision_bits']==160 and type(coeff['precision_bits']) is int and coeff['precision_bits']==256,'Receipt precision mismatch')
+ require(root['python_flint']=='0.9.0','Root FLINT version mismatch')
+ require(coeff['relative_acceptance_budget']=='2^-40','Receipt acceptance budget mismatch')
+ bound=arb(coeff['relative_error_upper'])
+ require(bound.is_finite() and bound>0 and bound<arb(2)**(-49),'Unresolved or excessive uniform bound')
+ for field in ('asset_lower_hex','asset_upper_hex','root_hi_hex','root_lo_hex'):
+  require(type(coeff[field]) is str and math.isfinite(float.fromhex(coeff[field])),'Nonfinite runtime constant: '+field)
+ require(type(coeff['coefficients_hex']) is list and len(coeff['coefficients_hex'])==3,'Coefficient count mismatch')
+ require(all(type(x) is str and math.isfinite(float.fromhex(x)) for x in coeff['coefficients_hex']),'Nonfinite coefficient')
+ require(coeff['asset_lower_hex']==contract['asset_lower_hex'] and coeff['asset_upper_hex']==contract['asset_upper_hex'],'Asset interval mismatch')
+ require(digest(rn)==row['root_receipt_sha256']==contract['root_receipt_sha256'],'Root receipt digest mismatch')
+ require(digest(cn)==row['coefficient_receipt_sha256']==contract['coefficient_receipt_sha256'],'Coefficient receipt digest mismatch')
+ return contract,coeff
+
+def render(contract,p):
+ code='''"""Generated fixed-model local research path, identified by canonical parameters.
+Uniform relative error <=2^-49 only under trusted CPython IEEE binary64 RN
+premises, unchanged rounding mode and operation order. Digests are identity
+labels, not signatures, authentication or hostile-artifact safety proofs.
+"""
+import sys
+if sys.implementation.name != 'cpython' or (sys.float_info.radix,sys.float_info.mant_dig,sys.float_info.max_exp,sys.float_info.min_exp,sys.float_info.rounds)!=(2,53,1024,-1021,1):
+    raise RuntimeError('Unsupported floating runtime')
+_one=1.0;_u=2.0**-53
+if not (_one+_u==_one and _one+3*_u==1.0000000000000004):
+    raise RuntimeError('Nearest-even rounding probe failed')
+'''
+ for name,value in [('SCHEMA_VERSION',SCHEMA),('PROOF_VERSION',PROOF),('MODEL_DIGEST',contract['model_digest']),('EXACT_PARAMETERS',dict(sorted(contract['exact_params'].items()))),('CONTRACT_SHA256',digest(contract)),('MODEL','HX exact rational model sha256:'+contract['model_digest'])]:code+=f'{name}={value!r}\n'
+ for name,key in [('VMIN','asset_lower_hex'),('VMAX','asset_upper_hex'),('BHI','root_hi_hex'),('BLO','root_lo_hex')]:code+=f'{name}=float.fromhex({p[key]!r})\n'
+ for name,value in zip(('C2','C3','C4'),p['coefficients_hex']):code+=f'{name}=float.fromhex({value!r})\n'
+ code+='''RELATIVE_ERROR_BOUND=2.0**-49
+def equity(asset):
+    if type(asset) is not float or not VMIN<=asset<=VMAX:
+        raise ValueError('Outside certified fixed-model binary64 asset interval')
+    gap_hi=asset-BHI
+    w=gap_hi-BLO
+    h0=C4*w
+    h1=h0+C3
+    h2=h1*w
+    h3=h2+C2
+    square=w*w
+    result=square*h3
+    if not result>0.0:
+        raise ArithmeticError('Runtime violated positive-result proof premises')
+    return result
+'''
+ return code
+
+def emit(directory):
+ directory=Path(directory);contract,p=validate_bundle(directory)
+ code=render(contract,p) # complete validation/render before any output write
+ temporary=None
+ try:
+  with tempfile.NamedTemporaryFile(mode='w',encoding='utf-8',dir=directory,prefix='.runtime-',delete=False) as f:
+   temporary=Path(f.name);f.write(code)
+  os.replace(temporary,directory/'fastpath.py')
+ finally:
+  if temporary is not None and temporary.exists():temporary.unlink()
+ return hashlib.sha256(code.encode()).hexdigest()
+
+def verify_runtime(directory):
+ directory=Path(directory);contract,p=validate_bundle(directory)
+ require((directory/'fastpath.py').read_text()==render(contract,p),'Runtime source identity mismatch')
+ return {'status':'REGISTERED_BUNDLE_RUNTIME_IDENTITY_MATCH','model_digest':contract['model_digest'],'contract_sha256':digest(contract),'runtime_sha256':hashlib.sha256((directory/'fastpath.py').read_bytes()).hexdigest(),'global_status':'NOT_CERTIFIED','authentication_claim':False}

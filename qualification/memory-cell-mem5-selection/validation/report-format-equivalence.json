@@ -1,0 +1,45 @@
+{
+  "schema": "mem5-selector-report-software-validation-v1",
+  "normal": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "stdout_file": "normal.log",
+    "sha256": "cde2800bef7dd50b67406a69cc65ccba023b135419419a12ef5e76cd423da5ee"
+  },
+  "optimized": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "stdout_file": "optimized.log",
+    "sha256": "02ea558e9681e1acd04e2d88a86997abcf2f776b7f92dd73ad23ee58ad836a4b"
+  },
+  "formatter": "ruff 0.15.13",
+  "lint_passed": true,
+  "files": [
+    {
+      "path": "scripts/ndu_real_runtime/candidate_selection_report.py",
+      "tested_sha256": "3278154e9991e2a2f0a515b756b12b70e525ccc3d11d94690084de7233c0fa65",
+      "formatted_sha256": "a4a068921a5315ce8f5dba822c8f865550ac19e6d2d43e21565f0803ecc0dd71",
+      "ast_identical_including_type_comments": true,
+      "lines": 341
+    },
+    {
+      "path": "scripts/ndu_real_runtime/selector_report_summary.py",
+      "tested_sha256": "d8af55a95b28e34cc2feecb7204a045b43b98817b75c7de2c4e726fa18d41363",
+      "formatted_sha256": "3c0341287fc66544cb52e186a735fa1efe9fb123be8bbc688c058575feb494ed",
+      "ast_identical_including_type_comments": true,
+      "lines": 128
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_candidate_selection_report.py",
+      "tested_sha256": "b103956219a3a8f1ca404e64dba856806b9f16d40552d3cf29839e14eb6d2da7",
+      "formatted_sha256": "b103956219a3a8f1ca404e64dba856806b9f16d40552d3cf29839e14eb6d2da7",
+      "ast_identical_including_type_comments": true,
+      "lines": 336
+    }
+  ],
+  "tests_after_formatting": false,
+  "scope": "software contracts only; no actor campaign or task efficacy claimed",
+  "scientific_acceptance": "HOLD"
+}

@@ -135,7 +135,7 @@ pub(crate) fn propose(bytes: &[u8]) -> Result<Response> {
         if let Some(owner) = &state.owner {
             let observation =
                 DeliveryObservation::new(owner, &state.prefixes, model.total_units())?;
-            let inspection = model.inspect_observed(&state.model, &observation)?;
+            let inspection = model.inspect_observed(&state.model, &observation, &public)?;
             if inspection.get("policy.legal_mask")?.get(action) != Some(&1.0) {
                 return Err("action outside admitted legal output portfolio".into());
             }

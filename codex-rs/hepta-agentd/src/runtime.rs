@@ -124,6 +124,12 @@ pub async fn run_with_shutdown(
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let mut production_writer_host = config.production_writer_host();
+    let episodic_snapshot_import = config.take_episodic_snapshot_import();
+    let app_server_model_tools = if episodic_snapshot_import.is_some() {
+        crate::app_runtime::AppServerModelToolProfile::ExplicitContextOnly
+    } else {
+        app_server_model_tools
+    };
     let native_memory_cell = config.native_memory_cell();
     let native_memory_registration = config.native_memory_registration();
     #[cfg(target_os = "linux")]
@@ -166,6 +172,13 @@ pub async fn run_with_shutdown(
     {
         return Err(AgentdError::Invalid(
             "Notes Objective requires original operations and a dedicated finite profile".into(),
+        ));
+    }
+    if episodic_snapshot_import.is_some()
+        && (notes_objective.is_some() || desktop_objective.is_some() || neuron_generation.is_some())
+    {
+        return Err(AgentdError::Invalid(
+            "episodic import requires the ordinary Agentd execution profile".into(),
         ));
     }
     let (identity, registry, writer_lock) = config.into_parts();
@@ -249,6 +262,12 @@ pub async fn run_with_shutdown(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
+    }
+    if let Some(ingress) = episodic_snapshot_import {
+        state
+            .episodic_snapshot_import
+            .set(ingress)
+            .map_err(|_| AgentdError::Invalid("episodic import owner already attached".into()))?;
     }
     if let Some(current) = retrieval_context {
         state
@@ -832,6 +851,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.active_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.episodic_import_drain_clear()
         {
             return Ok(());
         }
@@ -847,6 +867,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.unresolved_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.episodic_import_drain_clear()
         {
             return Ok(());
         }
@@ -859,11 +880,13 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     let unresolved = state.unresolved_run_count()?;
     let generation_blockers = state.neuron_generation_drain_blockers()?;
     let circuit_blockers = state.circuit_task_drain_blockers().await?;
-    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 {
+    let episodic_pending = state.episodic_import_pending_count();
+    let episodic_settled = state.episodic_import_drain_clear();
+    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 && episodic_settled {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s) and {circuit_blockers} Circuit blocker(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s), {circuit_blockers} Circuit blocker(s) and {episodic_pending} pending episodic import(s) (episodic settled: {episodic_settled}); owner recovery is required"
         )))
     }
 }

@@ -1,0 +1,615 @@
+{
+  "schema": "mem2-independent-reconstruction-v2",
+  "verified": {
+    "windows": 80,
+    "updates": 5120,
+    "queries": 1600
+  },
+  "matching_pairs": 20,
+  "aggregate": [
+    {
+      "condition": "dynamic",
+      "phase": "A1",
+      "profile": "legacy_uniform",
+      "stable_accuracy_mean": 1.0,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "source_coverage_mean": 12,
+      "observed_wall_ms_mean": 63.422624
+    },
+    {
+      "condition": "dynamic",
+      "phase": "A1",
+      "profile": "legacy_structured",
+      "stable_accuracy_mean": 0.975,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        0.875,
+        1.0
+      ],
+      "source_coverage_mean": 9.6,
+      "observed_wall_ms_mean": 69.9253042
+    },
+    {
+      "condition": "dynamic",
+      "phase": "A1",
+      "profile": "coverage_uniform",
+      "stable_accuracy_mean": 1.0,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "source_coverage_mean": 12,
+      "observed_wall_ms_mean": 64.692428
+    },
+    {
+      "condition": "dynamic",
+      "phase": "A1",
+      "profile": "coverage_structured",
+      "stable_accuracy_mean": 0.975,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        0.875,
+        1.0
+      ],
+      "source_coverage_mean": 12,
+      "observed_wall_ms_mean": 68.08775659999999
+    },
+    {
+      "condition": "dynamic",
+      "phase": "B",
+      "profile": "legacy_uniform",
+      "stable_accuracy_mean": 0.8,
+      "per_seed_stable_accuracy": [
+        0.75,
+        0.875,
+        0.625,
+        0.875,
+        0.875
+      ],
+      "source_coverage_mean": 21.6,
+      "observed_wall_ms_mean": 70.5488814
+    },
+    {
+      "condition": "dynamic",
+      "phase": "B",
+      "profile": "legacy_structured",
+      "stable_accuracy_mean": 0.875,
+      "per_seed_stable_accuracy": [
+        0.875,
+        0.75,
+        0.875,
+        0.875,
+        1.0
+      ],
+      "source_coverage_mean": 11.6,
+      "observed_wall_ms_mean": 75.93428420000001
+    },
+    {
+      "condition": "dynamic",
+      "phase": "B",
+      "profile": "coverage_uniform",
+      "stable_accuracy_mean": 0.85,
+      "per_seed_stable_accuracy": [
+        0.875,
+        1.0,
+        0.75,
+        0.875,
+        0.75
+      ],
+      "source_coverage_mean": 22,
+      "observed_wall_ms_mean": 75.6619792
+    },
+    {
+      "condition": "dynamic",
+      "phase": "B",
+      "profile": "coverage_structured",
+      "stable_accuracy_mean": 0.875,
+      "per_seed_stable_accuracy": [
+        0.75,
+        1.0,
+        0.875,
+        1.0,
+        0.75
+      ],
+      "source_coverage_mean": 22,
+      "observed_wall_ms_mean": 72.08576
+    },
+    {
+      "condition": "stationary",
+      "phase": "A1",
+      "profile": "legacy_uniform",
+      "stable_accuracy_mean": 1.0,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "source_coverage_mean": 12,
+      "observed_wall_ms_mean": 66.2290034
+    },
+    {
+      "condition": "stationary",
+      "phase": "A1",
+      "profile": "legacy_structured",
+      "stable_accuracy_mean": 0.975,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        0.875,
+        1.0
+      ],
+      "source_coverage_mean": 9.6,
+      "observed_wall_ms_mean": 64.6543626
+    },
+    {
+      "condition": "stationary",
+      "phase": "A1",
+      "profile": "coverage_uniform",
+      "stable_accuracy_mean": 1.0,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "source_coverage_mean": 12,
+      "observed_wall_ms_mean": 62.676508
+    },
+    {
+      "condition": "stationary",
+      "phase": "A1",
+      "profile": "coverage_structured",
+      "stable_accuracy_mean": 0.975,
+      "per_seed_stable_accuracy": [
+        1.0,
+        1.0,
+        1.0,
+        0.875,
+        1.0
+      ],
+      "source_coverage_mean": 12,
+      "observed_wall_ms_mean": 65.3752624
+    },
+    {
+      "condition": "stationary",
+      "phase": "B",
+      "profile": "legacy_uniform",
+      "stable_accuracy_mean": 0.8,
+      "per_seed_stable_accuracy": [
+        0.625,
+        0.75,
+        0.75,
+        1.0,
+        0.875
+      ],
+      "source_coverage_mean": 23,
+      "observed_wall_ms_mean": 67.8732386
+    },
+    {
+      "condition": "stationary",
+      "phase": "B",
+      "profile": "legacy_structured",
+      "stable_accuracy_mean": 0.85,
+      "per_seed_stable_accuracy": [
+        0.75,
+        0.625,
+        0.875,
+        1.0,
+        1.0
+      ],
+      "source_coverage_mean": 12,
+      "observed_wall_ms_mean": 68.734167
+    },
+    {
+      "condition": "stationary",
+      "phase": "B",
+      "profile": "coverage_uniform",
+      "stable_accuracy_mean": 0.9,
+      "per_seed_stable_accuracy": [
+        0.75,
+        0.875,
+        0.875,
+        1.0,
+        1.0
+      ],
+      "source_coverage_mean": 24,
+      "observed_wall_ms_mean": 70.2773112
+    },
+    {
+      "condition": "stationary",
+      "phase": "B",
+      "profile": "coverage_structured",
+      "stable_accuracy_mean": 0.75,
+      "per_seed_stable_accuracy": [
+        0.875,
+        0.75,
+        0.75,
+        0.5,
+        0.875
+      ],
+      "source_coverage_mean": 24,
+      "observed_wall_ms_mean": 81.5935264
+    }
+  ],
+  "pair_details": [
+    {
+      "condition": "dynamic",
+      "seed": 0,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "d9c60bddc5a2d2aaca426408ac274e6ce3c4e362c2132bddd5892bf4bf27bd7b",
+        "pool_sha256": "d46b7f18bf11cdef422f76191f70602509f1feeca62bfae286b68dcfe2104e35",
+        "updates": 64,
+        "replay_payload_bytes": 13085,
+        "replay_request_bytes": 12439,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 0,
+      "phase": "B",
+      "matched": {
+        "pre_state": "e35b91becc7a5e98afc3b20909774aa78d866fd6eb6107e66d789a7d984f07d6",
+        "pool_sha256": "95cb7fa53273a6567175ed7cb68ea9b19ce75b0c858602388632a5362cce7290",
+        "updates": 64,
+        "replay_payload_bytes": 12770,
+        "replay_request_bytes": 12431,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 1,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "76935b6a0da29a2380846b540a832ea41d21a5fc35c299d22f38359386f2452f",
+        "pool_sha256": "b62fe01267b66edd64e83253c80dbf0900c79fd83f63931b5f5db3817ae6e785",
+        "updates": 64,
+        "replay_payload_bytes": 13049,
+        "replay_request_bytes": 12398,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 1,
+      "phase": "B",
+      "matched": {
+        "pre_state": "de84a4c98b0c2b7e8849fb60112895d4781e35c1a31e50650adf959c144ebfd1",
+        "pool_sha256": "0bf50fb4fbdb3df54cafcc3e6062142892fd1c21cf7c8df37124e368e09da5ac",
+        "updates": 64,
+        "replay_payload_bytes": 12739,
+        "replay_request_bytes": 12422,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 2,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "a6d6706428156bba05e5922cb4a5e723e1b68a9cb065dedae52745a966293fd5",
+        "pool_sha256": "db9e1449e47e447e9fbdd31e4de78b1219709df9811263af1f8c0e5711c0fb1d",
+        "updates": 64,
+        "replay_payload_bytes": 13106,
+        "replay_request_bytes": 12455,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 2,
+      "phase": "B",
+      "matched": {
+        "pre_state": "f1b63f6df529a0ac6741e71b3e8df1926d6bc6b600ac13e1adb207f52ce985c0",
+        "pool_sha256": "cf95e3969c7e63319f122b9b73716f5e78885947099ebb5508238e56b418f03d",
+        "updates": 64,
+        "replay_payload_bytes": 12737,
+        "replay_request_bytes": 12398,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 3,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "20557665fe27b042afa82c5e7f6b34bc6151997d01489f209c813e442c00782b",
+        "pool_sha256": "be17e226bc55bb048665c89dc09fe6f6b19ea946db83bb7adba7fe2462237182",
+        "updates": 64,
+        "replay_payload_bytes": 13012,
+        "replay_request_bytes": 12378,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 3,
+      "phase": "B",
+      "matched": {
+        "pre_state": "3ae87afe8d5698253d3f1cd1913219c8b26e922a15136299bbcda2048fa54782",
+        "pool_sha256": "1f83f69b16e73b5ea5d956637c4b9f2df9c7f9df9d9414159cca7beadd79b3cd",
+        "updates": 64,
+        "replay_payload_bytes": 12711,
+        "replay_request_bytes": 12396,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 4,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "bd8eb76289054dfe32b03be2e53edcc4c1fd5b3523ff62622c4db51a4ee2bcd6",
+        "pool_sha256": "d1147bbf923192008a218ba340024ff1735e1c87b66d3276e9498faf94431cf7",
+        "updates": 64,
+        "replay_payload_bytes": 13056,
+        "replay_request_bytes": 12405,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "dynamic",
+      "seed": 4,
+      "phase": "B",
+      "matched": {
+        "pre_state": "721ad34f02a2c7172e8b1e7022e6450768377cbaec195e45a96227084dd31c3b",
+        "pool_sha256": "a0b7847d92cf76f2dc4894e17f1938b33811d573bb891d39c4832f986c8150f0",
+        "updates": 64,
+        "replay_payload_bytes": 12756,
+        "replay_request_bytes": 12417,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 0,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "d9c60bddc5a2d2aaca426408ac274e6ce3c4e362c2132bddd5892bf4bf27bd7b",
+        "pool_sha256": "d46b7f18bf11cdef422f76191f70602509f1feeca62bfae286b68dcfe2104e35",
+        "updates": 64,
+        "replay_payload_bytes": 13085,
+        "replay_request_bytes": 12439,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 0,
+      "phase": "B",
+      "matched": {
+        "pre_state": "dccc2d167704ba0f89fa5782a846d064e54fb444f2e60487e591883b4f515792",
+        "pool_sha256": "71e34e9e347e1098eb6835b938b5f19972a588965d31c170b7e3ddbbf84bfbdf",
+        "updates": 64,
+        "replay_payload_bytes": 13114,
+        "replay_request_bytes": 12434,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 1,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "76935b6a0da29a2380846b540a832ea41d21a5fc35c299d22f38359386f2452f",
+        "pool_sha256": "b62fe01267b66edd64e83253c80dbf0900c79fd83f63931b5f5db3817ae6e785",
+        "updates": 64,
+        "replay_payload_bytes": 13049,
+        "replay_request_bytes": 12398,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 1,
+      "phase": "B",
+      "matched": {
+        "pre_state": "4706de4e0bb1cb59d6281682531f25e886a58d930e2851b15fc0c5c4856f7bd9",
+        "pool_sha256": "2e4772e1915699a2bf85cd4e6aa9950f737fe806179462f4249fd55ce83d4676",
+        "updates": 64,
+        "replay_payload_bytes": 13106,
+        "replay_request_bytes": 12417,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 2,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "a6d6706428156bba05e5922cb4a5e723e1b68a9cb065dedae52745a966293fd5",
+        "pool_sha256": "db9e1449e47e447e9fbdd31e4de78b1219709df9811263af1f8c0e5711c0fb1d",
+        "updates": 64,
+        "replay_payload_bytes": 13106,
+        "replay_request_bytes": 12455,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 2,
+      "phase": "B",
+      "matched": {
+        "pre_state": "b2fbce8607fcbf500e59b1654f2e94e309ecddd8cc5ac4b88401a0074a367ae3",
+        "pool_sha256": "f2ad78c3ed3c0831018011af8c62293c9c44af4948338b6c139c9c40df3651e4",
+        "updates": 64,
+        "replay_payload_bytes": 13093,
+        "replay_request_bytes": 12405,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 3,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "20557665fe27b042afa82c5e7f6b34bc6151997d01489f209c813e442c00782b",
+        "pool_sha256": "be17e226bc55bb048665c89dc09fe6f6b19ea946db83bb7adba7fe2462237182",
+        "updates": 64,
+        "replay_payload_bytes": 13012,
+        "replay_request_bytes": 12378,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 3,
+      "phase": "B",
+      "matched": {
+        "pre_state": "1d417207d970aa1dc89bf283cddcf289608a558c0f02af36e24aedbed56adcf0",
+        "pool_sha256": "7dab156cf5e4668716ccc5ffc686be5b0d47da112f019ba0d1c4ae32f9f873e2",
+        "updates": 64,
+        "replay_payload_bytes": 13092,
+        "replay_request_bytes": 12413,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 4,
+      "phase": "A1",
+      "matched": {
+        "pre_state": "bd8eb76289054dfe32b03be2e53edcc4c1fd5b3523ff62622c4db51a4ee2bcd6",
+        "pool_sha256": "d1147bbf923192008a218ba340024ff1735e1c87b66d3276e9498faf94431cf7",
+        "updates": 64,
+        "replay_payload_bytes": 13056,
+        "replay_request_bytes": 12405,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    },
+    {
+      "condition": "stationary",
+      "seed": 4,
+      "phase": "B",
+      "matched": {
+        "pre_state": "285bf61aa72c9103201808adfd94605d968ae3a3eb0ba0f032c932f49c25cee3",
+        "pool_sha256": "bf223f1bcc9ed0c5b2c7ee684f0c815444374187495f36a2e0dcbc57b08dd987",
+        "updates": 64,
+        "replay_payload_bytes": 13097,
+        "replay_request_bytes": 12410,
+        "kernel_multiplications": 26624,
+        "teacher": {
+          "bytes": 0,
+          "calls": 0,
+          "multiplications": 0
+        }
+      }
+    }
+  ],
+  "scientific_qualification": "HOLD",
+  "production_adoption": "NoUpdate"
+}

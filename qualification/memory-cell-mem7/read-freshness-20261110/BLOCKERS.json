@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.mem7.read-freshness-followup.v1",
+  "date_utc": "2026-11-10",
+  "tested_source_commit": "4c3b1fb6d40de7c85aedd1964357e138fc7aa9d8",
+  "tested_source_tree": "494fe36854e8d26cd9ae0b510e429fe931cef63d",
+  "scientific_acceptance": "HOLD",
+  "production_adoption": false,
+  "adoption_action": "NoUpdate",
+  "new_real_actor_episodes": 0,
+  "closed_this_followup": [
+    {
+      "id": "SNAPSHOT-CHRONOLOGY-AND-HISTORICAL-CLOSURE",
+      "status": "REPAIRED_AND_TESTED",
+      "scope": "Impossible historical roster rejected before current-frontier filtering; valid old snapshots retained."
+    },
+    {
+      "id": "READ-FRESHNESS-AFTER-RANKING",
+      "status": "REPAIRED_AND_TESTED",
+      "scope": "A changed authority or selected authorized record aborts delivery; the final live view is a read linearization point, not an external-effect lease."
+    },
+    {
+      "id": "COMMON-SOURCE-FOCUSED-TESTS",
+      "status": "PASSED",
+      "scope": "Nine existing MEM workflow groups passed on the exact source on ai395; two failed OCR groups rerun after external environment repair. All original attempts retained."
+    },
+    {
+      "id": "MEM6-SECOND-HOST-ARCHIVE-RESTORE",
+      "status": "VERIFIED",
+      "scope": "Original complete archive and 10365 restored files verified on desktop; no archived actor/runtime code executed."
+    },
+    {
+      "id": "MEM6-CRITICAL-RAW-TRAJECTORIES",
+      "status": "REVIEWED",
+      "scope": "All 224 files for the previously unavailable retention win, selector loss and selector bypass were matched to the restored manifest; original observations and evaluator records clarify the outcomes without actor replay or new pixel scoring."
+    }
+  ],
+  "open": [
+    {
+      "id": "WORKING-STATE-SCIENTIFIC-GATE",
+      "status": "NOT_MET",
+      "finding": "Historical MEM6 30/84 vs 28/84; source-level one-sided 95% lower bound 0.0. No reweighting or threshold change."
+    },
+    {
+      "id": "ORDINARY-OWNER-BRIDGE",
+      "status": "NOT_IMPLEMENTED",
+      "finding": "Native fresh-session inference exists, but Python episodic identity/admission/update/revoke/reconcile mapping into the original Rust writer is absent.",
+      "closure": "Implement the bridge using the retained original writer capability and authenticated source events; recover the exact cut and preserve tombstones and uncertain-commit reconciliation."
+    },
+    {
+      "id": "PROVIDER-RUNTIME-BINDING",
+      "status": "NOT_VERIFIED",
+      "finding": "ai395 model server health succeeds; unauthenticated model listing returns 401. No authorized ordinary-owner/provider/final-use route was exercised."
+    },
+    {
+      "id": "UNSEEN-EPISODIC-BENEFIT",
+      "status": "NOT_EVALUATED",
+      "finding": "Fresh-process fixture delivery uses zero model calls. Historical working-state and selector experiments do not establish episodic successor benefit."
+    },
+    {
+      "id": "STRONG-BASELINES-AND-ASSOCIATION",
+      "status": "PARTIAL",
+      "finding": "Exact KV, BM25, chronological ICL and uniform read replay exist as mechanism paths. Real matched successor competition, trained association and model-driven cross-document inference are not evaluated."
+    },
+    {
+      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
+      "status": "HOLD",
+      "finding": "Source ownership, complete exposure history and independent trust-domain authority are not authenticated by hashes or same-owner receipts. Malicious-owner rollback resistance is not established."
+    },
+    {
+      "id": "DELETION-AND-EXTERNAL-EFFECT",
+      "status": "PARTIAL",
+      "finding": "Logical exclusion and dependency invalidation are tested. Physical erasure, consumer-cache propagation and external-effect commit fencing remain unqualified."
+    },
+    {
+      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
+      "status": "HOLD",
+      "finding": "Second-host file restoration does not recover original live owners, grants, credentials, effect state or all external runtime/material inputs."
+    },
+    {
+      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
+      "status": "NOT_QUALIFIED",
+      "finding": "Successful read timing is bounded; full producer/consumer/model/failure/recovery cost and slow semantic/skill consolidation are not established."
+    },
+    {
+      "id": "HOSTED-CI",
+      "status": "PENDING",
+      "finding": "At the retained source checkpoint, required jobs are queued/in progress. Local/ai395 focused success is not a hosted whole-repository pass."
+    },
+    {
+      "id": "MEM6-CLOUD-AND-GITHUB-RAW-COPY",
+      "status": "PARTIAL",
+      "finding": "Historical cloud download remains 371/938 chunks, 24313856 verified bytes. Full original archive GitHub publication is not claimed. Second-host restoration is separately complete."
+    }
+  ],
+  "archive": {
+    "original_bytes": 61412948,
+    "original_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+    "restored_logical_files": 10365,
+    "restored_logical_bytes": 243281645,
+    "restore_host": "desktop",
+    "restore_job_id": "1a1c6670efe-5074-ff",
+    "archived_runtime_executed": false,
+    "independent_trust_domain": false,
+    "full_owner_cold_recovery": false
+  },
+  "historical_results_unchanged": {
+    "retention_successes": [
+      30,
+      28
+    ],
+    "retention_pairs": 84,
+    "retention_initial_noops_per_arm": 16,
+    "retention_source_bootstrap_lower_bound": 0.0,
+    "selector_successes": [
+      21,
+      13
+    ],
+    "selector_pairs": 54,
+    "selector_wins_ties_losses": [
+      9,
+      44,
+      1
+    ],
+    "selector_initial_noops_per_arm": 10,
+    "selector_bypasses": [
+      1,
+      0
+    ]
+  }
+}

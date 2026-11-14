@@ -1,0 +1,213 @@
+"""Frozen exact-float high-precision first-passage density tail checks.
+
+90-digit positive-density quadrature agrees with 100-digit reflection to
+relative2.2e-88 for these twelve inputs. ULP tolerances are sampled diagnostics,
+not a full-domain certificate. Existing strict F/G admission remains binding.
+"""
+import math
+import unittest
+from unittest.mock import patch
+from . import hx
+from .hx import HX,_first_passage_factors
+
+FIXTURES = [({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0.03,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0.015,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.34342726782051,
+  2.0,
+  1.16851262815184e-310,
+  1.0262522740042e-310),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0.015,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.34342726782051,
+  2.0,
+  1.9252328274e-313,
+  1.69084571386e-313),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0.03,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.34342726782051,
+  2.0,
+  1.16851262815184e-310,
+  1.05746191191864e-310),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0.03,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 1e-09,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.34342726782051,
+  2.0,
+  1.16851262815184e-310,
+  1.0574619098067e-310),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0.03,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0.015,
+   'shock_intensity': 0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.34342726782051,
+  2.0,
+  1.16851262815184e-310,
+  1.05746191191864e-310),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 1e-05,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0.015,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.34342726782051,
+  2.0,
+  1.9293590477e-313,
+  1.6944695882e-313),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0.03,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0.2,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.34342726782051,
+  2.0,
+  1.16851262815184e-310,
+  7.0923492342605e-311),
+ ({'coupon': 4.0,
+   'maturity': 5,
+   'payout': 0.07,
+   'principal': 60.0,
+   'rate': 0.09,
+   'recovery': 0.6,
+   'sale_fraction': 0.015,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.4},
+  34.11659926210609,
+  5,
+  8.2886475806e-313,
+  4.90672320496e-313),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0.03,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0.2,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.350648873315516,
+  2.0,
+  5.4085444338097e-311,
+  3.282742189124e-311),
+ ({'coupon': 4.0,
+   'maturity': 2.0,
+   'payout': 0,
+   'principal': 60.0,
+   'rate': 0.05,
+   'recovery': 0.6,
+   'sale_fraction': 0.015,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.25},
+  13.343353958193847,
+  2.0,
+  1.9404113389e-313,
+  1.7041763237e-313),
+ ({'coupon': 4.0,
+   'maturity': 1.2,
+   'payout': 0.05,
+   'principal': 60.0,
+   'rate': 0.11,
+   'recovery': 0.6,
+   'sale_fraction': 0.015,
+   'shock_intensity': 1.0,
+   'tax_shield': 0.25,
+   'volatility': 0.35},
+  14.503690198131096,
+  1.2,
+  4.47036482053e-313,
+  3.84848266317e-313),
+ ({'coupon': 6.2945755010555455,
+   'maturity': 4.876607300917969,
+   'payout': 0.007468352185589125,
+   'principal': 93.68808730933799,
+   'rate': 0.03351125169582385,
+   'recovery': 0.3754492150815021,
+   'sale_fraction': 1e-09,
+   'shock_intensity': 4.885103592833655,
+   'tax_shield': 0.24984843995542066,
+   'volatility': 0.25640973737671446},
+  21.548129079893553,
+  4.876607300917969,
+  6.56583743e-316,
+  5.5771827e-316)]
+
+class SubnormalFirstPassageTests(unittest.TestCase):
+    def test_twelve_previously_erased_tails_match_independent_density(self):
+        for params,v,tau,expected_f,expected_g in FIXTURES:
+            with self.subTest(params=params,v=v,tau=tau):
+                f,g=_first_passage_factors(HX(**params),v,tau)
+                self.assertTrue(0<=g<=f<=1)
+                self.assertGreater(f,0.)
+                self.assertLessEqual(abs(f-expected_f),8*math.ulp(expected_f))
+                self.assertLessEqual(abs(g-expected_g),8*math.ulp(expected_g))
+
+    def test_ndtr_zero_transition_has_no_spurious_half_mass_jump(self):
+        p=HX(rate=.5,payout=0.,volatility=1.,shock_intensity=0.)
+        # 90-digit erfc on the exact float distance; drift=0,sigma=1,T=1.
+        fixtures=((37.677120720495175,1.1771759939876e-310),
+                  (37.67712072049518,1.1771759939873e-310),
+                  (37.67712072049519,1.17717599398694e-310),
+                  (37.677120720495196,1.17717599398664e-310),
+                  (38.,5.7708567e-316))
+        for v,expected in fixtures:
+            with self.subTest(v=v):
+                f,g=_first_passage_factors(p,v,1.)
+                self.assertTrue(0<=g<=f)
+                self.assertLessEqual(abs(f-expected),8*math.ulp(expected))
+
+    def test_true_underflow_can_remain_zero(self):
+        p=HX(rate=.5,payout=0.,volatility=1.,shock_intensity=0.)
+        self.assertEqual(_first_passage_factors(p,39.,1.),(0.,0.))
+
+    def test_nonzero_ndtr_does_not_enter_log_recovery(self):
+        with patch.object(hx,'_exp_cdf',wraps=hx._exp_cdf) as tail:
+            _first_passage_factors(HX(),.4,2.)
+            self.assertEqual(tail.call_count,3) # second F term and two G terms

@@ -1,0 +1,33 @@
+{
+  "all_scientific_blockers_closed": false,
+  "audit_report_sha256": "72ec731a7a602e681861c7fc7e371bede61f400b4d16fa1e80588c93213190c3",
+  "base_head": "d29bfc22844d0ea202ab20aa9bf8eec51e6bf686",
+  "base_pr": 4517,
+  "date": "2026-10-31",
+  "environment": {
+    "python": "3.13.5",
+    "scipy": "1.17.0",
+    "torch": "2.10.0+cpu"
+  },
+  "experiment": "HCSN scalar dual-channel structural identifiability",
+  "files": {
+    "dual_channel_structural_gate.py": {
+      "bytes": 6111,
+      "sha256": "205b8f5e8d01c454b5bb807b383c81197b83cdad33aaed649c6f78a5504fe9d0"
+    },
+    "run_structural_panel.py": {
+      "bytes": 2011,
+      "sha256": "bcf76d3b112892ce57eccd2db45ae84687cbcb3617b6504dfb5d0b11bcd022a4"
+    },
+    "structural_panel.json": {
+      "bytes": 60045,
+      "sha256": "64dd7c9940159f5e491e763d00cd88d67de7911565c50196e3f07f176fcc8dab"
+    },
+    "test_dual_channel_structural_gate.py": {
+      "bytes": 6674,
+      "sha256": "01c5d23038d1a905650403022718a1d9af07c7468b48611c3ad02ec761459f00"
+    }
+  },
+  "production_activation": false,
+  "tests": "9 passed, 0 skipped; local Python unittest CPU"
+}

@@ -56,6 +56,7 @@ def checkpoint_binding(args, packet, model, plan, deployment, parameters):
         name: file_sha(directory / (name + ".py"))
         for name in (
             "actor",
+            "action_effects",
             "state_codec",
             "neural",
             "controllers",

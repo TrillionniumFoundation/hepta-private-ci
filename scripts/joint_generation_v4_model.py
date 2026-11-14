@@ -107,8 +107,8 @@ class JointGeneratorV4(nn.Module):
             )
         self.double()
 
-    def encode(self, public):
-        """Encode one public task; tokens are raw, valid UTF-8 byte IDs."""
+    @staticmethod
+    def _validate_public(public):
         if set(public) != {
             "image",
             "image_mask",
@@ -146,6 +146,18 @@ class JointGeneratorV4(nn.Module):
         ):
             raise ValueError("UTF-8 token domain")
         bytes(tokens.long().flatten().tolist()).decode("utf-8")
+
+    def _verification_available(self, public):
+        self._validate_public(public)
+        # This profile only compares observed image/audio/video coordinates.
+        # Text tokens do not supply a verification target, and zero masks are
+        # absent evidence rather than a successful zero-error verification.
+        return any(bool((public[name + "_mask"] > 0).any()) for name in MODALITIES[:3])
+
+    def encode(self, public):
+        """Encode one public task; tokens are raw, valid UTF-8 byte IDs."""
+        self._validate_public(public)
+        tokens = public["tokens"]
         image = self.image_encoder(
             torch.cat((public["image"].flatten(1), public["image_mask"].flatten(1)), -1)
         )
@@ -192,7 +204,7 @@ class JointGeneratorV4(nn.Module):
             for index, name in enumerate(MODALITIES)
         }
 
-    def inspect(self, state, observation):
+    def inspect(self, state, observation, public):
         extras = state.shared.new_tensor(
             [[observation.remaining_fraction, state.steps / 8]]
         )
@@ -212,10 +224,14 @@ class JointGeneratorV4(nn.Module):
         legal[0] = any(legal[1:5])
         if state.steps == 0 and not self.allow_initial_stop:
             legal[6] = False
-        if state.verified and self.suppress_redundant_verify:
+        if not self._verification_available(public) or (
+            state.verified and self.suppress_redundant_verify
+        ):
             legal[5] = False
         if state.steps >= 6 or state.stopped:
             legal = [False] * 6 + [True]
+        if not any(legal):
+            raise ValueError("No legal continuation under admitted portfolio")
         mask = torch.tensor(legal, dtype=torch.bool, device=logits.device)
         return {
             "actor.logits": logits,
@@ -237,6 +253,8 @@ class JointGeneratorV4(nn.Module):
         if action == "stop":
             return replace(following, stopped=True)
         if action == "verify":
+            if not self._verification_available(public):
+                raise ValueError("No observed media for verification")
             if self.suppress_redundant_verify and state.verified:
                 raise ValueError("Redundant verification")
             outputs = self.outputs(state)

@@ -55,6 +55,7 @@ use core_test_support::responses::ResponseMock;
 use core_test_support::responses::ResponsesRequest;
 use serde_json::Value;
 use serde_json::json;
+use sha2::Digest;
 use tokio::time::timeout;
 use wiremock::Mock;
 use wiremock::MockServer;
@@ -84,6 +85,7 @@ const STABLE_REQUEST_WINDOW: Duration = Duration::from_millis(500);
 struct ProductClient {
     inner: RemoteAppServerClient,
     next_request_id: i64,
+    emit_provider_receipts: bool,
 }
 
 impl ProductClient {
@@ -106,7 +108,14 @@ impl ProductClient {
         Ok(Self {
             inner,
             next_request_id: 1,
+            emit_provider_receipts: false,
         })
+    }
+
+    fn provider_receipt(&self, receipt: Value) {
+        if self.emit_provider_receipts {
+            println!("HEPTA_PROVIDER_QUALIFICATION {receipt}");
+        }
     }
 
     fn request_id(&mut self) -> RequestId {
@@ -156,7 +165,7 @@ impl ProductClient {
         let response: ThreadStartResponse = self
             .inner
             .request_typed(ClientRequest::ThreadStart {
-                request_id,
+                request_id: request_id.clone(),
                 params: ThreadStartParams {
                     model: Some(expected_model.to_string()),
                     model_provider: Some(expected_provider.to_string()),
@@ -183,6 +192,16 @@ impl ProductClient {
             response.cwd.as_path() == workspace,
             "thread started in the wrong workspace"
         );
+        self.provider_receipt(json!({
+            "phase": "thread_started",
+            "rpc_request_id": request_id,
+            "thread_id": &response.thread.id,
+            "requested_model": expected_model,
+            "requested_provider": expected_provider,
+            "observed_app_server_model": &response.model,
+            "observed_app_server_provider": &response.model_provider,
+            "provider_response_model_observed": false,
+        }));
         Ok(response.thread.id)
     }
 
@@ -220,10 +239,10 @@ impl ProductClient {
         let response: TurnStartResponse = self
             .inner
             .request_typed(ClientRequest::TurnStart {
-                request_id,
+                request_id: request_id.clone(),
                 params: TurnStartParams {
                     thread_id: thread_id.to_string(),
-                    client_user_message_id: Some(client_user_message_id),
+                    client_user_message_id: Some(client_user_message_id.clone()),
                     input: vec![V2UserInput::Text {
                         text: text.to_string(),
                         text_elements: Vec::new(),
@@ -232,6 +251,15 @@ impl ProductClient {
                 },
             })
             .await?;
+        self.provider_receipt(json!({
+            "phase": "turn_admitted",
+            "rpc_request_id": request_id,
+            "requested_client_user_message_id": client_user_message_id,
+            "client_admission_key_server_echo_observed": false,
+            "thread_id": thread_id,
+            "observed_turn_id": &response.turn.id,
+            "observed_status": &response.turn.status,
+        }));
         let turn_id = response.turn.id;
         self.wait_for_turn_with_timeout(thread_id, &turn_id, turn_timeout)
             .await?;
@@ -256,6 +284,12 @@ impl ProductClient {
                     && completed.thread_id == thread_id
                     && completed.turn.id == turn_id
                 {
+                    self.provider_receipt(json!({
+                        "phase": "turn_completed_notification",
+                        "observed_thread_id": &completed.thread_id,
+                        "observed_turn_id": &completed.turn.id,
+                        "observed_status": &completed.turn.status,
+                    }));
                     ensure!(
                         completed.turn.status == TurnStatus::Completed,
                         "turn ended with {:#?}",
@@ -839,14 +873,23 @@ async fn real_agentd_local_memory_review_hides_host_tombstone_after_reopen() -> 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 #[ignore = "set HEPTA_LOCAL_PROVIDER_BASE_URL and HEPTA_LOCAL_PROVIDER_MODEL for a loopback model smoke"]
 async fn real_agentd_loopback_provider_read_only_smoke() -> Result<()> {
+    const PROVIDER_ID: &str = "local_mlx";
     let provider_base_url = std::env::var("HEPTA_LOCAL_PROVIDER_BASE_URL")
         .context("HEPTA_LOCAL_PROVIDER_BASE_URL is required for this ignored smoke")?;
     let model_id = std::env::var("HEPTA_LOCAL_PROVIDER_MODEL")
         .context("HEPTA_LOCAL_PROVIDER_MODEL is required for this ignored smoke")?;
+    let provider_uri = provider_base_url
+        .parse::<http::Uri>()
+        .context("loopback provider URL must be a valid absolute HTTP URI")?;
     ensure!(
-        provider_base_url.starts_with("http://127.0.0.1:")
-            || provider_base_url.starts_with("http://localhost:"),
-        "loopback provider smoke refuses non-local URL: {provider_base_url}"
+        provider_uri.scheme_str() == Some("http")
+            && provider_uri.authority().is_some_and(|authority| {
+                matches!(authority.host(), "127.0.0.1" | "localhost")
+                    && !authority.as_str().contains('@')
+            })
+            && provider_uri.query().is_none()
+            && !provider_base_url.contains('#'),
+        "loopback provider smoke requires a local HTTP authority without user info, query, or fragment"
     );
     ensure!(
         !model_id.trim().is_empty(),
@@ -855,25 +898,82 @@ async fn real_agentd_loopback_provider_read_only_smoke() -> Result<()> {
 
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_A, "workspace-loopback-provider")?;
+    let retained_fixture_root = fleet.retain_fixture_root()?;
+    println!(
+        "HEPTA_PROVIDER_QUALIFICATION {}",
+        json!({
+            "phase": "fixture_retained",
+            "retained_fixture_root": &retained_fixture_root,
+            "root_mode": "0700",
+            "process_cleanup_remains_enabled": true,
+        })
+    );
     MockResponsesConfig::new("http://127.0.0.1:1")
-        .with_model_provider("local_mlx")
-        .with_provider_name("Local MLX qualification provider")
+        .with_model_provider(PROVIDER_ID)
+        .with_provider_name("Local loopback qualification provider")
         .with_provider_base_url(&provider_base_url)
         .with_model(&model_id)
+        .disable_feature(codex_features::Feature::UnboundedConnectionRetries)
         .with_provider_config("supports_websockets = false")
         .with_root_config("model_reasoning_effort = \"minimal\"")
         .write(agent.layout.home_root())?;
+    let config_bytes = std::fs::read(agent.layout.home_root().join("config.toml"))?;
+    let config_sha256 = format!("{:x}", sha2::Sha256::digest(&config_bytes));
 
+    println!(
+        "HEPTA_PROVIDER_QUALIFICATION {}",
+        json!({
+            "phase": "configured",
+            "requested_provider_base_url": provider_base_url,
+            "requested_model": model_id,
+            "requested_provider": PROVIDER_ID,
+            "test_owner_home": agent.layout.home_root(),
+            "retained_fixture_root": retained_fixture_root,
+            "rendered_config_sha256": config_sha256,
+            "turn_completion_timeout_seconds": TURN_TIMEOUT.as_secs(),
+            // MockResponsesConfig renders both retry limits as zero.
+            "request_max_retries": 0,
+            "stream_max_retries": 0,
+            "unbounded_connection_retries": false,
+            "supports_websockets": false,
+            "provider_payload_tool_inventory": "not_observed",
+        })
+    );
     fleet.start(&agent)?;
-    let (control, _health) = fleet.wait_ready(&agent, 1).await?;
+    let (control, health) = fleet.wait_ready(&agent, 1).await?;
     let mut product = ProductClient::connect(&agent, &control).await?;
-    let thread = product.start_thread(&agent.workspace).await?;
-    product
+    product.emit_provider_receipts = true;
+    product.provider_receipt(json!({
+        "phase": "test_owner_ready",
+        "process_id": health.process_id,
+        "agent_id": agent.agent_id.to_string(),
+        "fresh_temporary_fleet": true,
+    }));
+    let thread = product
+        .start_thread_with_expected_provider(&agent.workspace, &model_id, PROVIDER_ID)
+        .await?;
+    let turn_id = product
         .run_turn(
             &thread,
             "Reply with exactly READY. Do not call tools or access external resources.",
         )
         .await?;
+    let thread_read = product.read_thread(&thread).await?;
+    ensure!(
+        thread_read.thread.id == thread,
+        "thread/read returned another thread"
+    );
+    assert_external_read_only_turn(&thread_read, &turn_id, "READY")?;
+    product.provider_receipt(json!({
+        "phase": "persisted_read_only_turn_verified",
+        "observed_thread_id": &thread_read.thread.id,
+        "observed_turn_id": turn_id,
+        "expected_assistant_text": "READY",
+        "full_persisted_items_checked": true,
+        "observed_tool_item_count": 0,
+        "provider_payload_tool_inventory": "not_observed",
+        "physical_provider_request_count": "not_observed",
+    }));
     product.shutdown().await?;
     Ok(())
 }
