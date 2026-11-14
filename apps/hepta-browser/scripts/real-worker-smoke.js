@@ -11,7 +11,8 @@ import {
 } from "../src/worker-driver.js";
 
 const workerPath = resolve(process.argv[2] ?? "");
-if (!process.argv[2]) throw new Error("usage: real-worker-smoke.js WORKER_BINARY");
+if (!process.argv[2])
+  throw new Error("usage: real-worker-smoke.js WORKER_BINARY");
 const bytes = await readFile(workerPath);
 const workerDigest = createHash("sha256").update(bytes).digest("hex");
 const root = await mkdtemp(join(tmpdir(), "hepta-servo-worker-smoke-"));
@@ -32,7 +33,10 @@ try {
     generation: 1,
     allowedOrigins: [],
   });
-  if (typeof started.processId !== "string" || !started.processId.startsWith("servo.pid.")) {
+  if (
+    typeof started.processId !== "string" ||
+    !started.processId.startsWith("servo.pid.")
+  ) {
     throw new Error("worker did not return a process identity");
   }
   const stopped = await driver.stop({
@@ -40,14 +44,17 @@ try {
     processId: started.processId,
     generation: 1,
   });
-  if (stopped.stopped !== true) throw new Error("worker did not stop terminally");
-  process.stdout.write(JSON.stringify({
-    schema: "hepta.browser.real-worker-smoke.v1",
-    workerSha256: workerDigest,
-    currentPinWorkerBooted: true,
-    privateProtocolRoundTrip: true,
-    sandboxedStartStop: true,
-  }) + "\n");
+  if (stopped.stopped !== true)
+    throw new Error("worker did not stop terminally");
+  process.stdout.write(
+    JSON.stringify({
+      schema: "hepta.browser.real-worker-smoke.v1",
+      workerSha256: workerDigest,
+      currentPinWorkerBooted: true,
+      privateProtocolRoundTrip: true,
+      sandboxedStartStop: true,
+    }) + "\n",
+  );
 } finally {
   await rm(root, { recursive: true, force: true });
 }
