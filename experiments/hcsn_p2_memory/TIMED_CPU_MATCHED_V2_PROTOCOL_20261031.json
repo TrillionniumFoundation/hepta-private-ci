@@ -1,0 +1,89 @@
+{
+  "schema": "hcsn-p2-timed-physical-cpu-matched-followup-v2",
+  "preregistration_date": "2026-10-31",
+  "parent_pr": 4504,
+  "parent_head": "d07405a4d4582ca763a517d7828170c49121e498",
+  "relationship": "New fixed follow-up prompted by v1 failure: all original 8 arms stopped at 2000 updates before reaching the registered CPU budget. This design was chosen after viewing those outcomes; not blind/independent confirmation.",
+  "status": "EXPLORATORY_PREREGISTERED_FOLLOWUP",
+  "policy": "DENY_ALL / NO_GO",
+  "tasks": [
+    "copy",
+    "mqar4"
+  ],
+  "paired_seeds": [
+    2,
+    3,
+    4
+  ],
+  "arms": [
+    "aggregate_count",
+    "physical_event_timestamp"
+  ],
+  "task_contract": {
+    "train_length": 16,
+    "id_length": 16,
+    "ood_length": 32,
+    "train_n": 128,
+    "test_n": 128,
+    "train_data_seed_formula": "100+seed",
+    "id_data_seed_formula": "200+seed",
+    "ood_data_seed_formula": "300+seed",
+    "brownian_event_sample": "SpikeStream.default_spec; per-observation events; exact physical order",
+    "same_examples_per_pair": true
+  },
+  "model": {
+    "class": "TrainableEventContent",
+    "hidden": 32,
+    "initial_seed": "torch.manual_seed(400+seed)",
+    "trainable_params": 5186,
+    "same_initial_weights": true,
+    "device": "PyTorch CPU float32",
+    "num_threads": 1
+  },
+  "optimizer": {
+    "name": "Adam",
+    "lr": 0.006,
+    "batch_size": 24,
+    "batch_index_seed": "500+seed",
+    "max_steps": 8000,
+    "masked_BCE": true,
+    "stop": "after crossing 25 process-CPU seconds at end of optimizer update"
+  },
+  "accounting": {
+    "training_budget_cpu_seconds_per_arm": 25,
+    "includes_data_prep": true,
+    "includes_optimizer": true,
+    "excludes_evaluation": true,
+    "metrics": [
+      "data CPU",
+      "train optimizer CPU",
+      "total train CPU",
+      "ID/OOD evaluation CPU/wall",
+      "ID/OOD accuracy",
+      "ID/OOD logloss",
+      "train examples and FIRE totals",
+      "model SHA256",
+      "exact paired data digest",
+      "step logloss at predeclared indices"
+    ]
+  },
+  "budget_match_gate": "For each task/seed pair both arms must stop due to >=25 CPU seconds, not max_steps; absolute training CPU difference divided by max(arm CPU seconds) <= 0.05. Any invalid pair is retained as NO_GO and must not be used as evidence of matched training cost.",
+  "negative_evidence": "Retain all attempted runs including failures, errant costs, partials, and no-benefit outcomes, without cherry picking; never modify historic v1 results.",
+  "scope_limits": [
+    "nonblinded exploratory follow-up rather than independent confirmation",
+    "training CPU is not GPU FLOPs or end-to-end joules",
+    "no tuning ordinary SSM/Transformer baselines",
+    "no post-hoc thresholds or exclusion of bad seed",
+    "no production, no signed persistent crash recovery or real 4-modal inputs"
+  ],
+  "admission": {
+    "P0": false,
+    "P1": false,
+    "P2": false,
+    "P3": false,
+    "P4": false,
+    "P5": false,
+    "production_activation": false,
+    "all_scientific_blockers_closed": false
+  }
+}
