@@ -205,6 +205,10 @@ pub enum AuthBusAuthorityError {
     RollbackDetected,
     #[error("AuthBus owner has not completed restart reconciliation")]
     RecoveryRequired,
+    #[error("another AuthBus authority writer owns the checkpoint lease")]
+    WriterLeaseHeld,
+    #[error("AuthBus authority writer lease was lost or replaced")]
+    WriterLeaseLost,
     #[error("AuthBus authority checkpoint file is unsafe or unavailable")]
     UnsafeCheckpoint,
     #[error("AuthBus policy cannot be retired while reservations still reference it")]
