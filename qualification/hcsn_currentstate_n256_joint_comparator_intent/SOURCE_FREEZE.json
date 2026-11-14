@@ -8,9 +8,9 @@
     "qualification/hcsn_currentstate_n256_joint_comparator_intent/__init__.py": "3337a3bd10ef1d8ffbee51f8de82c6670f1d3de73ed3161d99ee595fa181f903",
     "qualification/hcsn_currentstate_n256_joint_comparator_intent/contract.py": "416b99310e2847a4fa66a7f894e9c3ead937bc7df704aac67a613556e21048aa",
     "qualification/hcsn_currentstate_n256_joint_comparator_intent/full_coordinate_comparator.py": "d20bfd4ae57e783d506a571e9a9ecb1deed836a8abbafa6e870f2879595972cf",
-    "qualification/hcsn_currentstate_n256_joint_comparator_intent/joint_runner_contract.py": "ae8f5d1e4784d0f6725cebf908f628b2cbfa458ee59b2df3d1f4488ca24f4dc0",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/joint_runner_contract.py": "1a3e99635883810de356d23983b83d1356dbad26b83993cb92d01f2a0a43be67",
     "qualification/hcsn_currentstate_n256_joint_comparator_intent/static_inspector.py": "cf401e1ae6cb6f295f312ec822221f59104b104c21c7c6af3c01353e1160d7fe",
-    "qualification/hcsn_currentstate_n256_joint_comparator_intent/test_static.py": "e2c54c6a9522d9107596a51f342a9c04b1fbcf3f1989cab64ad2dcf45119db5a",
+    "qualification/hcsn_currentstate_n256_joint_comparator_intent/test_static.py": "28590042aa875961f74e79d11e6381e41c93023f9ec40bdc8b42c42348b3e30b",
     "qualification/hcsn_currentstate_n256_joint_comparator_intent/REQUEST.json": "e4f988713d6228b0b1b215e9466e0e2ead23ee29612dad449c18981b065bddde",
     "qualification/hcsn_currentstate_n256_joint_comparator_intent/README.md": "5794c5f20580a648a4061ae55cec5f7b508e53ef1bedcc627aac93412fde3e11"
   },
@@ -30,6 +30,7 @@
     "frame_order_guard": true,
     "coordinate_identity_guard": true,
     "separate_candidate_oracle_error_gates": true,
+    "manifest_error_thresholds_recomputed": true,
     "signed_error_cancellation_forbidden": true,
     "three_byte_exact_pair_guards": true,
     "all_external_admissions_null_fail_closed": true
