@@ -82,11 +82,19 @@ def two_segment_first_hit(x, b, mu, sigma, c1, c2, switch, T, q=0, *, dps=60):
         tail_bound = mp.erfc(radius / mp.sqrt(2))
         if lower_z >= radius:
             raise ArithmeticError("unresolved surviving-gap tail")
+        # A short second interval can make its hitting CDF a nearly
+        # discontinuous step inside the *first* segment's normal width.
+        # Split at the deterministic second-leg crossing of the initial
+        # surviving gap. Otherwise quadrature may silently miss the sharp
+        # transition even when its Gaussian mass is well resolved.
+        crossing_z = (-nu2 * remaining - mean_gap) / scale
         z_knots = sorted({-radius, radius, mp.mpf(-16), mp.mpf(-8),
                           mp.mpf(-4), mp.mpf(-1), mp.mpf(0),
                           mp.mpf(1), mp.mpf(4), mp.mpf(8),
                           mp.mpf(16)}
                          | ({lower_z} if -radius < lower_z < radius
+                            else set())
+                         | ({crossing_z} if -radius < crossing_z < radius
                             else set()))
         continuation_F = mp.quad(
             lambda z: surviving_gap(z)*second_F(mean_gap+scale*z), z_knots)
