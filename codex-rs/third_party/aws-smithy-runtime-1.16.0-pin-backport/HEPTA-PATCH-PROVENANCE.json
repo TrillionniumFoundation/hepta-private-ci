@@ -38,10 +38,325 @@
       "path": "tests/stalled_stream_upload.rs",
       "before_sha256": "bbc989028f97e942fce1cda766f1b74c12f3817162cef723b3dc4aa678f79f53",
       "after_sha256": "d03e435c6b0ada2e892d937be728f05ea90bcf6db2101144c5129cd7f9fcb22b"
+    },
+    {
+      "path": "src/client/auth/http.rs",
+      "before_sha256": "81d213f591f9287114a70bf4c416d3afc1841a81544e5386e9280802afeb0a73",
+      "after_sha256": "edf3b3a75fc137d5e5e9b03bd524c304ed5ee692c704b3255ce1a56fec3326a7",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/auth/no_auth.rs",
+      "before_sha256": "674f36221a84fa88c4106fd4b88ba9b082f175806e476ab0a64e415be7dd3921",
+      "after_sha256": "b7b5de68bd2f9049b1bcbdad39bbc09ae7b6d4b92f4e0275c587f1b53ee03570",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/config_override.rs",
+      "before_sha256": "80f15259cb626e468596d199293188995e9f3143abb1ec952101a09e74ba86a8",
+      "after_sha256": "47adc0051f623988afee097916d5580272590e0a9dfc71b75f32ea23ede22183",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/defaults.rs",
+      "before_sha256": "4cdde241d5b3995904fe253296fe04ac042adc125dfe4aad80fcf97a82160e4b",
+      "after_sha256": "ffc25b343c889c00dd89c35d558f9f272301055d988751cc613b14debf19e477",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/dns.rs",
+      "before_sha256": "8b78c344dd9853685ad02dcf6220121eb8a9ab6f17cbe08ee3c16114b94f2d45",
+      "after_sha256": "188d4097c36361d016e6dc8e5713474506d1fa521281356de46aecba792bac07",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/endpoint.rs",
+      "before_sha256": "4bcea284877a0b5622414297375071a8832ad617ed15dcbafbeae5127c88b7ba",
+      "after_sha256": "66154bdbe0cc580d03c99df504ccd18d7115e6bdcb6cdcb022246229d1dd8fb5",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http.rs",
+      "before_sha256": "fd13bc31435cf78e8f861f8ac7c63595a1ce07039f75ef8e8c67c7eb48736e87",
+      "after_sha256": "bf5c509819737d7fddd9050e1310ba6affacdb221aa20bdc448b440180016b00",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http/body/content_length_enforcement.rs",
+      "before_sha256": "36009c7fc2b547dcbeed7654cc629b8e06a10852f99e680673330980c9f4d0fe",
+      "after_sha256": "6f030eead7f04dbac2c1e81d6c18d1e9964354996841b670fcc431bc1386b1ae",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput.rs",
+      "before_sha256": "f65bb31aa50c61449e4a583ee6468b8ee42f8b48a71a4e7c8c442edb86661ffb",
+      "after_sha256": "4828b08dd649ed0c2f85a9dbf6d5b0a22d6b6b27258b67518aa5c2a342ea7b2e",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/http_body_0_4_x.rs",
+      "before_sha256": "c2a6630eb3a5628b705bbacb7c65eb04901cdb8ccaf9710a9adc465cb7ca06d0",
+      "after_sha256": "ae7df0a6ed53f6eebbb33766189466b1fe80854ac36be2958726f9f93c875738",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/http_body_1_x.rs",
+      "before_sha256": "9ed82d521ed8079a8af2c75ef6ed9eb0df14b7bb30e70c913cf0fc85fafbf2fe",
+      "after_sha256": "b2dee606f58b05ee910e58af5cdf66791b22c82c34f6994eefec9fd2342ea432",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/options.rs",
+      "before_sha256": "2d7493ffa49b6a74e1e0156ce13a26c5d96d3073d2030ac63ca414a6971ddb09",
+      "after_sha256": "ec0f3db0e6b65f1ace8f667c602e46de9d1df996d7430b1e0ee188f42ec65702",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/throughput.rs",
+      "before_sha256": "5be8ef98b0f7c7bbc07e8b21b954c2669365895e31e839ac82c3d059f9c0ed01",
+      "after_sha256": "31edae5e1fb649062f23975f7906adf214ef40abb78ef27229b28abfe3826cec",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/http/connection_poisoning.rs",
+      "before_sha256": "03662d5f2548070727382aef04a29a4c5e4dd9fbe40c5fe9419d7972847ce211",
+      "after_sha256": "d4d2fba935ed0b9119c20415c7af66e7c9aa220cbed27b816a8098fe2b0ae5e0",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/identity.rs",
+      "before_sha256": "b8cb3b8545298a3a0d627dd5963555202a5ce60a7b76a70d34ca3d93cf8c66b2",
+      "after_sha256": "e6841d007a915846f7d90415013380a6c1bd517e99a53409c99065e97230ba84",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/identity/cache.rs",
+      "before_sha256": "e3ed8141c502f4a4259db5681e8a53c5b4583bd6e498a34dee1fa7aea747880b",
+      "after_sha256": "a8fa002b300ff3f38dbad22b44e40f88548d7234807fee9247163426b206eea8",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/identity/cache/lazy.rs",
+      "before_sha256": "39d2526e269ba5568114eb533c9ac6b5f495d70d0ff9d422a94f313367897958",
+      "after_sha256": "21278aba325d881b6a983d30af803a387dc96879934dd934414a67c70da6229f",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/identity/no_auth.rs",
+      "before_sha256": "f4c04fce808de34918567dd54ca660403b279b00ac06bb76e7027dc437941318",
+      "after_sha256": "ebd23a5dc868dafc81094795ede844bcb700c7233bca0b2283ae026bf0b4f7a8",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/interceptors.rs",
+      "before_sha256": "dba55f5b9d6646e0018d53e9e4ebf570486cca6608dfaca0b32dc5023d8c0e94",
+      "after_sha256": "1e29e1dbe42589bffb9b0f68ae1d2c11dd8fe72639a5f0f53b65cdcea395d83e",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/metrics.rs",
+      "before_sha256": "01448c7634ee8da8f0c947effd361c339a778e891521fa00633bbf9aab2f4960",
+      "after_sha256": "75a84ac619eab105273d5f1865e501380d697f7390cdf1f40b7e55ecf3acefb2",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/orchestrator.rs",
+      "before_sha256": "8861ff4a78fcfeda9922f68fc963d0ad41938eda57ccd13f731e7fa345033fb9",
+      "after_sha256": "712b45cb30d8706580b88a9cbb093a332f2f672d7c7d5611544dac669437f47e",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/orchestrator/auth.rs",
+      "before_sha256": "b7c956a4a32581e3b7c613b690c3727272a3cd892d6c35e78a4181bc467e2eec",
+      "after_sha256": "c0735da048fc3168dc14c60ac80be1928d5c07011d9bedeb257b5a0696e14629",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/orchestrator/endpoints.rs",
+      "before_sha256": "7d7901d9954c498c1a2dd6098c598e058819d71c0c3a476f53d547406a5579d1",
+      "after_sha256": "ba356454d7bf2b16144f71bd1135caf0d707caaf06ef412f9d1063916aba344c",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/orchestrator/operation.rs",
+      "before_sha256": "617b2c5f3cff3e2ef196e3139c20ef6b8b5bb9dd44f854750fdb0652d627fad7",
+      "after_sha256": "534f5e3a548e28a6763bfceb6377061b18187b5deb946697b6d3e53f8641e901",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/retries.rs",
+      "before_sha256": "dd4fb0cb6011639d4a06bacb992e82d5a216d252d43022bba89db6cf950ed481",
+      "after_sha256": "9142ca922aaa451daea2743483678876aaf056255788ebcb70da81af543985b8",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/retries/classifiers.rs",
+      "before_sha256": "dcf73fd736fc49e403f0e9aa9d0da57c2f6200443bd9f4ce248e8a18e54b3a9a",
+      "after_sha256": "deb242161172e2333c3bd2ea72df8f0b10ff1ab762f26a4866359b5c2934db0d",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/retries/client_rate_limiter.rs",
+      "before_sha256": "33d8227a7801da48b6fc85d2556596154005d31c9a0e580301b1cc5f7a1deef4",
+      "after_sha256": "53227d57529e63c91db9e7f20f991584f7949bee6ee0f936a6941b0ce2c080c9",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/retries/strategy/never.rs",
+      "before_sha256": "9ac8dc414d80532e2a8bbe4f0db60e23b133c92e8d3b79cc04dfa5e96c0e9511",
+      "after_sha256": "50c6778d4d995a402e95c8bdb2cf2f23edf6183908473433290cdc026bf5eab4",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/retries/strategy/standard.rs",
+      "before_sha256": "decf4bf787ece490da1cd258262c95da3ddc624a07276e7ab697c4baa3060e1e",
+      "after_sha256": "6d44b9e39a3f6ab678c11174a13244dbcd2e744fc8ed89499c509734615be30a",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/retries/token_bucket.rs",
+      "before_sha256": "afb67228a79dd3f8063baa6fb9b6f3696a934f6eb0ad30936f478b9e7eaa0a41",
+      "after_sha256": "2a2756b0b6a68046e6fa97a45759a948dda1612f95c3aec5b506261156bdb89a",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/sdk_feature.rs",
+      "before_sha256": "c28d70d755f9b6db3dab3b002928aedd8cc39a81c976295c37ed58d2ff629837",
+      "after_sha256": "b95a0c36165ac17f4165e983527c10c06d328fbe8fa5dc0565f327509d319851",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/stalled_stream_protection.rs",
+      "before_sha256": "ee8160c58d28299fb994a88fb3a71c35df127730d1ee9918ebef8aa34489b011",
+      "after_sha256": "079788179ef327791bd784bed3a885fc95c12ea4fefbd7fdcd04bfdf6d575450",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/telemetry_bytes.rs",
+      "before_sha256": "66c6fe4d0ef1c5eaba6761f8f478e8251062b331cb9c7ba3850ee17a50ee7b61",
+      "after_sha256": "31a7fbe49395e4c6220ab7d8aa9a343c12308f5f2989abb13a7717fd22d973e2",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/test_util/deserializer.rs",
+      "before_sha256": "ae74452b0d4d55b9acfd9c326f74ab9b2cc4cc70a5fbb215fbf25d6064df9dcb",
+      "after_sha256": "85e47f988cc3d6dbe2cc013017c2a6194a47b0968e6a5a44ba7cf5260be97a2e",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/test_util/serializer.rs",
+      "before_sha256": "e92ff7e50a174ccc194e6a43b1949dc8e54299711baa35aa3d9c2ed95f9ee9ee",
+      "after_sha256": "a8b95468757361ebff10720bce00e255ff73b3dee6ce73b0b74a4d96b467aa79",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/timeout.rs",
+      "before_sha256": "c3483aae98653b0b2b3ff0dbfdd374dc5e256d3fa3f0899d6f5f15a1188e1ec8",
+      "after_sha256": "1336b566a536330fe87f664d5a043951bc5a9aa3ae520a1f31f4055563e2e9da",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/waiters.rs",
+      "before_sha256": "a78a7da924e3b178b65b9355b232c951c8dc811edea8f8ae6758cae9bb617774",
+      "after_sha256": "3256262e78ecbce4db3018b052d08a74bfe678f7f574c593c1a44f1d0afac214",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/client/waiters/backoff.rs",
+      "before_sha256": "a12ad3b65d298a339e3b0f864c8d980c4d65e97e0754fddbc23ebb45c0ee1c0b",
+      "after_sha256": "dda1278447fda89d4294f55ef01b71f7e84e72c36503e32a9db6652f81d82209",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/expiring_cache.rs",
+      "before_sha256": "b8160c75325b08b9859fd8909905357ed29f918d5216d4302496bc17d9e78bb8",
+      "after_sha256": "38a2a0227f9b67a736be881f48fd99738c3ba330a62eb8e051f1e1a4b6c8c9c4",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/static_partition_map.rs",
+      "before_sha256": "69aa6852a8f1cc9f38b2595ab267c89b7db2a97e000aac980c6edfb010640dba",
+      "after_sha256": "4e44bcae00e70bc965cba1e3259a991f0051ded454c4c6b77cd3bd6c644aceb8",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/test_util/assertions.rs",
+      "before_sha256": "e77a0c676705944ca07aa2f687e26681287a27aab79f6ea4f665e7ea2c403839",
+      "after_sha256": "c7c5caa95b6b2e5b48226d7af39bc9e2897478fe8f6c43330b45976f66fe9cce",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/test_util/capture_test_logs.rs",
+      "before_sha256": "b364228f0a3a315ec3ce18618a86b4b4d6d6d74a971cec006bf157d70b5b8096",
+      "after_sha256": "170965312606f72157f433653b9b6c5bded97abfd93287c2723864f6dca5bc02",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "tests/reconnect_on_transient_error.rs",
+      "before_sha256": "2cc718b94863a201febb82a801fc929c897612e7c9b8e80f4744e2deda2b8e9e",
+      "after_sha256": "b3160666e19d55eb077b216b3a071cd297ce2d0d1d3f559ab0193e65766159e2",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "tests/retries.rs",
+      "before_sha256": "243ac441c44d3118a8d2b5e5fd0105a841d0a131facb6c5022b609a63cdd82df",
+      "after_sha256": "416fe51a544627f653073289d96e39629866a6d4229b7170ced1f1fc811d15e6",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "tests/stalled_stream_performance.rs",
+      "before_sha256": "65e5ba36361c357e748b8dc267fd1f397fbac7e54ae75f98983680636dc4ca90",
+      "after_sha256": "21431ba2cc90831cbd9c851be2a06304659729c956b5f2b5ea2776e07548d7ad",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
     }
   ],
   "minimal_patch_sha256": "a14497d90100a0ad77d84acbdf1c9b8ce1bc33bf870bb6b78179f1fe2025ac90",
-  "all_other_archive_files_unchanged": true,
+  "all_other_archive_files_unchanged": false,
   "historical_vendor_lock_is_not_workspace_dependency_authority": true,
   "formatting": {
     "command": [
@@ -55,5 +370,50 @@
       "src/client/orchestrator/http.rs",
       "tests/stalled_stream_common.rs"
     ]
+  },
+  "previous_provenance_record": {
+    "commit": "c2130629037b342e6e48154867b65acc8fc82434",
+    "git_blob": "daca41e0b5f9e32fd9032f50a6949e63ef00b998",
+    "sha256": "a42b84a2a61fdffacc6a129b07f8bb072cbb6772a7f90e9696d5e7511930c7cb",
+    "recorded_edits": [
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "540a2b03a14b4c6ff49ecd895fde9b38d3bafe4b91d5abb8310b9e9189a9f443",
+        "after_sha256": "d3c2f4bde65caccfdc2abecb932848e6b34b04123aa162f5f8c0f56c113937af"
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "c67eff730723034494a40911c851e44b276672a7170a7479d7063d75d84dd66c",
+        "after_sha256": "4b4588d965a1299405632b8265fc8a36cca482c1ed988c40c68bd1b927c841bb"
+      },
+      {
+        "path": "src/client/orchestrator/http.rs",
+        "before_sha256": "301ede6c67e6c7fe303f3fe67574926e3508c2349c5e9345f8c48e37952b4b65",
+        "after_sha256": "f3e54cef26b18eac0f970578e9152ec31aafe9e899c059603767f2f1ab9e9ad4"
+      },
+      {
+        "path": "tests/stalled_stream_common.rs",
+        "before_sha256": "75e3e2bd51ff0646224b8ba322d8426f18493ca7788ee50522201e080b4130e3",
+        "after_sha256": "b6cc52ff6f9045162944bd24b13cdda94b09e2f9cff821954ae2bc423f575864"
+      },
+      {
+        "path": "tests/stalled_stream_download.rs",
+        "before_sha256": "0e1b6e63a64abc5480ef7e3710b8268112c62559fe7b04c9ccff91e2bf5ea510",
+        "after_sha256": "57d5d8447dd146d5f4a9342144040b73aa90b0e8092b6c3f076df8bd2327e18a"
+      },
+      {
+        "path": "tests/stalled_stream_upload.rs",
+        "before_sha256": "bbc989028f97e942fce1cda766f1b74c12f3817162cef723b3dc4aa678f79f53",
+        "after_sha256": "d03e435c6b0ada2e892d937be728f05ea90bcf6db2101144c5129cd7f9fcb22b"
+      }
+    ],
+    "all_other_archive_files_unchanged_at_that_record": true
+  },
+  "current_followup_scope": "Current source identities include the explicitly listed repository-formatting changes. Original minimal patches retain their original bytes and original dependency-change scope.",
+  "formatting_provenance": {
+    "path": "HEPTA-FORMATTING-PROVENANCE.json",
+    "sha256": "90b41529f3f836b86ab1791bd25d495bf55fc72d864869fb92a9734db01aacec",
+    "base": "c2130629037b342e6e48154867b65acc8fc82434",
+    "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2"
   }
 }
