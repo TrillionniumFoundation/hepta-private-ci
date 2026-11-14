@@ -1,0 +1,93 @@
+"""Record two concrete admission behaviors before and after their repair."""
+
+import hashlib
+import json
+import multiprocessing
+import os
+from pathlib import Path
+import sys
+import tempfile
+from unittest.mock import patch
+
+import parametric_owner as module
+from parametric_owner import Frontier, ParametricOwner
+from tensor_contract import bounded_read
+from test_parametric_owner import checkpoint
+
+
+def fifo_worker(path, ready, output):
+    ready.set()
+    try:
+        value = bounded_read(Path(path), 256 * 1024)
+        output.put({"accepted": True, "bytes": len(value)})
+    except Exception as error:
+        output.put({"rejected": type(error).__name__, "reason": str(error)})
+
+
+def observe():
+    with tempfile.TemporaryDirectory(prefix="hepta-admission-repro-") as temp:
+        root = Path(temp)
+        fifo = root / "fifo-lineage.json"
+        os.mkfifo(fifo)
+        context = multiprocessing.get_context("fork")
+        ready, output = context.Event(), context.Queue()
+        child = context.Process(target=fifo_worker, args=(str(fifo), ready, output))
+        child.start()
+        assert ready.wait(10)
+        child.join(0.5)
+        blocked = child.is_alive()
+        if blocked:
+            child.terminate()
+            child.join(5)
+        fifo_result = {"blocked_after_500ms": blocked, "result": None if blocked else output.get(timeout=5)}
+
+        path = root / "cell"
+        pin = checkpoint(path, {"1" * 64})
+        first = ParametricOwner(root / "owner.sqlite")
+        second = ParametricOwner(root / "owner.sqlite")
+        view = Frontier("scope-a")
+        first.activate("memory", path, pin, scope="scope-a", expected_current=None,
+                       generation=0, provider=lambda: view, allowed_roots={"1" * 64})
+        original = module._checkpoint
+        events, fired = [], False
+
+        def checked(*args, **kwargs):
+            nonlocal view, fired
+            result = original(*args, **kwargs)
+            if not fired:
+                fired = True
+                view = Frontier("scope-a", 1, ("1" * 64,))
+                try:
+                    second.invoke("memory", "scope-a", lambda: view,
+                                  lambda active: events.append("unexpected_other_callback"))
+                except ValueError as error:
+                    events.append("other_owner_committed_withdrawal: " + str(error))
+            return result
+
+        def callback(active):
+            events.append("model_callback_after_withdrawal_commit")
+            return "must_not_escape"
+
+        escaped = False
+        with patch("parametric_owner._checkpoint", side_effect=checked):
+            try:
+                first.invoke("memory", "scope-a", lambda: view, callback)
+                escaped = True
+            except ValueError as error:
+                events.append("outer_rejected: " + str(error))
+        source = Path(module.__file__).parent
+        return {
+            "schema": "hepta.parametric-memory.admission-hardening-reproduction.v1",
+            "files_sha256": {name: hashlib.sha256((source / name).read_bytes()).hexdigest()
+                             for name in ("parametric_owner.py", "tensor_contract.py")},
+            "fifo": fifo_result,
+            "concurrent_withdrawal": {"events": events, "result_escaped": escaped,
+                                      "callback_after_persisted_withdrawal": "model_callback_after_withdrawal_commit" in events},
+            "production_accepted": False,
+        }
+
+
+if __name__ == "__main__":
+    result = observe()
+    Path(sys.argv[1]).write_text(json.dumps(result,indent=2,sort_keys=True) + "\n")
+    print(json.dumps(result,indent=2,sort_keys=True))
