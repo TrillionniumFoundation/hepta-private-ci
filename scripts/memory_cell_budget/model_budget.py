@@ -8,7 +8,7 @@ import time
 
 from artifact_inventory import measure
 from budget_ledger import BudgetExceeded, BudgetLedger, canonical, digest, quantities
-from cohort_contract import file_sha, retain
+from cohort_contract import bind_implementation, file_sha, retain
 
 
 def ledger_for(path, arm, protocol, protocol_sha):
@@ -35,6 +35,7 @@ def model_call(
     request,
     *,
     implementation,
+    study,
     directory,
     expected_updates=0,
     maximum_seconds=None,
@@ -45,6 +46,7 @@ def model_call(
             event,
             request,
             implementation=implementation,
+            study=study,
             directory=directory,
             expected_updates=expected_updates,
             maximum_seconds=maximum_seconds,
@@ -67,11 +69,19 @@ def _model_call(
     request,
     *,
     implementation,
+    study,
     directory,
     expected_updates=0,
     maximum_seconds=None,
 ):
     """Actual trainer receipts and raw generated token rows determine settlement."""
+    binding = bind_implementation(study, implementation)
+    implementation = Path(binding["implementation"])
+    request = dict(request, source_binding=binding)
+    if request["phase"] in ("parent", "arm"):
+        if str(Path(request["study"]).resolve(strict=True)) != binding["study"]:
+            raise ValueError("request study differs from independently pinned study")
+        request["study"] = binding["study"]
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     sys.path.insert(0, str(Path(implementation) / "scripts/memory_cell_network"))
@@ -114,7 +124,14 @@ def _model_call(
     try:
         receipt = run_child(
             Path(__file__).with_name("budget_model_worker.py"),
-            ["--implementation", str(implementation)],
+            [
+                "--implementation",
+                str(implementation),
+                "--study",
+                binding["study"],
+                "--seal-sha256",
+                binding["seal_sha256"],
+            ],
             input_text=json.dumps(request),
             timeout=timeout,
             cwd=directory,
@@ -122,6 +139,10 @@ def _model_call(
             operation="budget " + request["phase"],
         )
         output = json.loads(receipt["stdout"])
+        if output.get("source_binding") != binding:
+            raise ValueError(
+                "worker source binding differs from admitted implementation"
+            )
     except BaseException as error:
         ledger.abandon(
             event,
@@ -157,6 +178,7 @@ def _model_call(
     )
     record = dict(
         request_sha256=digest(request),
+        source_binding=binding,
         process_receipt_path=receipt["receipt_path"],
         process_receipt_sha256=file_sha(receipt["receipt_path"]),
         actual=actual,

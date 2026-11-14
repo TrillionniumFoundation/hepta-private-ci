@@ -9,6 +9,7 @@ from pathlib import Path
 
 from population_audit_artifacts import (
     SEEDS,
+    _consistent_reads,
     _digest,
     _hash,
     _json,
@@ -24,6 +25,7 @@ from population_audit_sources import _baselines, _exact as _exact, _inputs
 from population_audit_training import _training
 
 
+@_consistent_reads
 def audit_trial(seed_directory):
     """Raise on inconsistent evidence; return negative hypotheses without error."""
     directory = Path(seed_directory).resolve()
@@ -55,6 +57,7 @@ def audit_trial(seed_directory):
     }
 
 
+@_consistent_reads
 def audit_population(output_root):
     root = Path(output_root).resolve()
     present = sorted(

@@ -82,7 +82,7 @@ class OuterFailureTests(unittest.TestCase):
                 raise ValueError("no completed parent measurement")
 
             with (
-                patch.object(runner, "validate_seal"),
+                patch.object(runner, "bind_implementation", return_value={}),
                 patch.object(runner.subprocess, "check_output", return_value="4" * 40),
                 patch.object(runner, "model_call", fail),
             ):
@@ -120,7 +120,7 @@ class OuterFailureTests(unittest.TestCase):
                 return dict(arm=name, status="unit-fake-complete")
 
             with (
-                patch.object(runner, "validate_seal"),
+                patch.object(runner, "bind_implementation", return_value={}),
                 patch.object(runner.subprocess, "check_output", return_value="4" * 40),
                 patch.object(runner, "model_call", parent),
                 patch.object(runner, "arm_run", arm),

@@ -5,12 +5,19 @@ import ast
 from datetime import datetime, timezone
 import hashlib
 import json
+from importlib.machinery import PathFinder
 from pathlib import Path
 import sys
 import sysconfig
 
 from receipt_reader import read_receipt, total
-from storage_ledger import canonical, compression_gain, deployment, inventory
+from storage_ledger import (
+    canonical,
+    compression_gain,
+    deployment,
+    file_record,
+    inventory,
+)
 
 
 def save(path, value):
@@ -18,7 +25,7 @@ def save(path, value):
         stream.write(canonical(value) + b"\n")
 
 
-def local_sources(start):
+def local_sources(start, verify=None):
     """Conservative static closure of same-directory Python imports, no execution."""
     pending, seen = [Path(start)], set()
     while pending:
@@ -26,6 +33,8 @@ def local_sources(start):
         if path in seen:
             continue
         seen.add(path)
+        if verify is not None:
+            verify(path)
         for node in ast.walk(ast.parse(path.read_bytes())):
             names = (
                 [node.module]
@@ -39,6 +48,59 @@ def local_sources(start):
                 if candidate.is_file() and candidate not in seen:
                     pending.append(candidate)
     return sorted(seen)
+
+
+def bind_model_sources(directory, inputs):
+    """Validate the actual model-module closure against independent inventory pins."""
+    directory = Path(directory).resolve(strict=True)
+    pins = {}
+    for entry in inputs:
+        path = Path(entry["path"])
+        if (
+            not path.is_absolute()
+            or str(path.resolve()) != entry["path"]
+            or entry["path"] in pins
+        ):
+            raise ValueError("source inventory paths must be unique and canonical")
+        pins[entry["path"]] = entry
+
+    def verify(path):
+        expected = pins.get(str(path.resolve(strict=True)))
+        if expected is None:
+            raise ValueError(
+                "actual model source is not independently pinned: " + str(path)
+            )
+        if (
+            type(expected.get("bytes")) is not int
+            or expected["bytes"] < 0
+            or path.stat().st_size != expected["bytes"]
+        ):
+            raise ValueError("pinned model source size changed")
+        row, _ = file_record(path)
+        if {key: row[key] for key in ("path", "bytes", "sha256")} != expected:
+            raise ValueError("pinned model source bytes changed")
+
+    paths = local_sources(directory / "parametric_model.py", verify=verify)
+    for path in paths:
+        name = path.stem
+        loaded = sys.modules.get(name)
+        if loaded is not None:
+            origin = getattr(loaded, "__file__", None)
+            if origin is None or Path(origin).resolve() != path.resolve():
+                raise ValueError(
+                    "loaded model module differs from pinned source: " + name
+                )
+        else:
+            spec = PathFinder.find_spec(name, [str(directory)])
+            if (
+                spec is None
+                or spec.origin is None
+                or Path(spec.origin).resolve() != path.resolve()
+            ):
+                raise ValueError(
+                    "model import resolution differs from pinned source: " + name
+                )
+    return [dict(pins[str(path.resolve())]) for path in paths]
 
 
 def build(args):

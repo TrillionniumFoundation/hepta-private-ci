@@ -1,6 +1,7 @@
 """Fresh raw decoder observations and actual frozen learned-parent features."""
 
 import gc
+import io
 from importlib.metadata import version as package_version
 import json
 from pathlib import Path
@@ -11,7 +12,7 @@ import time
 
 import numpy as np
 
-from diagnosis_common import canonical, configure, file_sha, retain
+from diagnosis_common import canonical, configure, file_sha, pinned_bytes, retain
 
 
 def cpu_snapshot():
@@ -216,13 +217,20 @@ def parent_features(repo, model, version, questions, output, scope):
         or receipt["version"] != version
         or receipt["adapter_enabled"] is not True
         or destination != output / "worker/parent-features.npy"
-        or file_sha(destination) != receipt["sha256"]
-        or [row["question"] for row in receipt["prompts"]] != questions
     ):
         raise ValueError(
             "parent worker request, feature file or model receipt mismatch"
         )
-    vectors = np.load(destination, allow_pickle=False)
+    payload = pinned_bytes(
+        destination,
+        receipt["sha256"],
+        "parent worker request, feature file or model receipt mismatch",
+    )
+    if [row["question"] for row in receipt["prompts"]] != questions:
+        raise ValueError(
+            "parent worker request, feature file or model receipt mismatch"
+        )
+    vectors = np.load(io.BytesIO(payload), allow_pickle=False)
     if list(vectors.shape) != receipt["shape"] or not np.isfinite(vectors).all():
         raise ValueError("finite parent feature matrix with declared shape required")
     receipt["worker_cost"] = {
