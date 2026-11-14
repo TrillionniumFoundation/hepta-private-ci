@@ -677,13 +677,20 @@ impl ServerHandler for TestToolServer {
                     std::fs::write(marker_file, b"called")
                         .map_err(|err| McpError::internal_error(err.to_string(), None))?;
                 }
-                let thread_id = context
-                    .meta
-                    .0
-                    .get("threadId")
+                let thread_id = request
+                    .arguments
+                    .as_ref()
+                    .and_then(|arguments| arguments.get("threadId"))
+                    .or_else(|| {
+                        request
+                            .meta
+                            .as_ref()
+                            .and_then(|meta| meta.0.get("threadId"))
+                    })
+                    .or_else(|| context.meta.0.get("threadId"))
                     .and_then(serde_json::Value::as_str)
                     .ok_or_else(|| {
-                        McpError::invalid_params("missing threadId metadata".to_string(), None)
+                        McpError::invalid_params("missing threadId argument".to_string(), None)
                     })?;
                 Ok(CallToolResult::success(vec![
                     rmcp::model::ContentBlock::text(format!(

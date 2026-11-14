@@ -34,6 +34,15 @@ max-threads = 2
 [test-groups.hepta_agentd_process]
 max-threads = 1
 
+[test-groups.hepta_supervisor_pairs]
+max-threads = 1
+
+[[profile.default.overrides]]
+# Nextest runs each test in its own process, so the fixture's in-process mutex
+# cannot isolate its two real fleets. Keep the original timeout and all checks.
+filter = 'package(codex-hepta-supervisor) & binary(paired_process_product)'
+test-group = 'hepta_supervisor_pairs'
+
 [[profile.default.overrides]]
 # Each case starts a full Agentd fleet and exercises durable recovery. Avoid
 # competing fleets while retaining the default per-test timeout and assertions.
@@ -120,3 +129,11 @@ filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_ide
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
+
+[[profile.default.overrides]]
+# These historical encrypted-store checks perform the original 200,000-round
+# password derivations in unoptimized test builds. Reserve the test pool for
+# each check so CPU contention cannot consume the production 5-second startup
+# deadline. Keep the original KDF, assertions, and 60-second test watchdog.
+filter = 'package(=codex-hepta-matrix-sdk) & binary(=storage_upgrade) & (test(=legacy_encrypted_storage_migrates_and_reopens_with_the_same_identity) | test(=wrong_passphrase_preserves_the_existing_encrypted_store))'
+threads-required = "num-test-threads"

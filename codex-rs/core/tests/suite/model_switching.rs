@@ -36,6 +36,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::request_user_input::RequestUserInputAnswer;
 use codex_protocol::request_user_input::RequestUserInputResponse;
 use codex_protocol::user_input::UserInput;
+use core_test_support::history_annotations;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_completed_with_tokens;
@@ -345,9 +346,11 @@ async fn rollback_first_turn_model_change_removes_its_instructions(
 
     let request = &response_mock.requests()[1];
     assert_eq!(request.body_json()["model"], followup_model);
-    let misaligned_messages = request
-        .inputs_of_type("message")
+    history_annotations::assert_metadata_is_private(request);
+    let history = history_annotations::response_items(&test.codex).await;
+    let misaligned_messages = history
         .into_iter()
+        .filter(|item| item["type"] == "message")
         .filter(|message| {
             message["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
                 .as_array()
@@ -425,7 +428,12 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&["model_switch.instructions"]));
+    history_annotations::assert_metadata_is_private(second_request);
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["model_switch.instructions"]
+    ));
     let developer_texts = second_request.message_input_texts("developer");
     let model_switch_text = developer_texts
         .iter()
@@ -992,7 +1000,12 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let first_request = requests.first().expect("expected first request");
-    assert!(first_request.has_content_kinds(&["user.image", "user.audio", "user.text"]));
+    history_annotations::assert_metadata_is_private(first_request);
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["user.image", "user.audio", "user.text"]
+    ));
     assert!(
         !first_request.message_input_image_urls("user").is_empty(),
         "first request should include the uploaded image"
@@ -1003,11 +1016,13 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     );
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&[
-        "images.unsupported",
-        "audio.unsupported",
-        "user.text",
-    ]));
+    // The provider-specific placeholders must not rewrite retained media.
+    // Local history keeps the original annotations for a later capable model.
+    history_annotations::assert_metadata_is_private(second_request);
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["user.image", "user.audio", "user.text",]
+    ));
     assert!(
         second_request.message_input_image_urls("user").is_empty(),
         "second request should strip unsupported image content"

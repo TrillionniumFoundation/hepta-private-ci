@@ -9,11 +9,7 @@ const ACTIONS = new Set([
 ]);
 
 function snapshotDataRecord(value, name) {
-  if (
-    value === null ||
-    typeof value !== "object" ||
-    Array.isArray(value)
-  ) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${name} must be an object`);
   }
   const prototype = Object.getPrototypeOf(value);
@@ -31,7 +27,9 @@ function snapshotDataRecord(value, name) {
   for (const key of keys) {
     const descriptor = descriptors[key];
     if (!Object.hasOwn(descriptor, "value") || descriptor.enumerable !== true) {
-      throw new TypeError(`${name} fields must be enumerable own data properties`);
+      throw new TypeError(
+        `${name} fields must be enumerable own data properties`,
+      );
     }
     snapshot[key] = descriptor.value;
   }
@@ -124,7 +122,10 @@ export function observeNativeOutcome(input) {
     ["operationId", "terminalObserved", "terminalStatus", "outcomeDigest"],
     "input",
   );
-  if (record.terminalStatus !== "succeeded" && record.terminalStatus !== "failed") {
+  if (
+    record.terminalStatus !== "succeeded" &&
+    record.terminalStatus !== "failed"
+  ) {
     throw new TypeError("terminalStatus is not registered");
   }
   requireDigest(record.outcomeDigest, "outcomeDigest");

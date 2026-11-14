@@ -125,9 +125,20 @@ jobs:
                     foreach ($log in $logs) {
                       if ($log.Attributes -band [IO.FileAttributes]::ReparsePoint) { continue }
                       $relative = [IO.Path]::GetRelativePath($root.Path, $log.FullName)
-                      $destination = Join-Path (Join-Path (Join-Path $evidence "fixture-logs") $root.Label) $relative
+                      # upload-artifact excludes hidden path components by default.
+                      # Keep the allowlisted bytes under an opaque, non-hidden name;
+                      # the manifest retains the exact original fixture path.
+                      $logKey = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($relative))).ToLowerInvariant()
+                      $leaf = "${logKey}-$($log.Name)"
+                      $destination = Join-Path (Join-Path (Join-Path $evidence "fixture-logs") $root.Label) $leaf
                       New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
                       Copy-Item -LiteralPath $log.FullName -Destination $destination -Force
+                      # Preserve a bounded phase tail in the job log as well. These
+                      # lines are emitted by SBX_PHASE_TRACE and contain no payloads.
+                      $phaseTail = @(Get-Content -LiteralPath $destination | Where-Object { $_ -match "^\[.*\] PHASE pid=" } | Select-Object -Last 32)
+                      foreach ($phase in $phaseTail) {
+                        Write-Output "FIXTURE_PHASE $($root.Label) $logKey $phase"
+                      }
                       $fixtureLogs.Add(@{
                         Source = $log.FullName
                         Destination = [IO.Path]::GetRelativePath($evidence, $destination)
@@ -179,3 +190,100 @@ jobs:
           retention-days: 14
           if-no-files-found: warn
           path: ${{ runner.temp }}/windows-owner-evidence/
+
+  private-filesystem-owner:
+    name: Native Windows private filesystem owner
+    runs-on: windows-2025
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+    defaults:
+      run:
+        shell: bash
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@3f2778ee6a28c53e512b95bbcf7b2120993da70d # 1.96.1
+        with:
+          components: clippy,rustfmt
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+
+      - name: Verify current foundation source identity
+        shell: pwsh
+        run: |
+          $head = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $head -ne $env:GITHUB_SHA) { throw "Source identity mismatch" }
+          git rev-parse HEAD 'HEAD^{tree}' | Out-File "$env:RUNNER_TEMP/windows-private-fs-source.txt"
+          rustc --version --verbose | Out-File -Append "$env:RUNNER_TEMP/windows-private-fs-source.txt"
+
+      - name: Build native private filesystem owner tests
+        id: build
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-utils-path --tests \
+            2>&1 | tee "$RUNNER_TEMP/windows-private-fs-build.log"
+
+      - name: Run every native private filesystem owner test
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-utils-path --retries 0 \
+            2>&1 | tee "$RUNNER_TEMP/windows-private-fs-tests.log"
+
+      - name: Check native private filesystem owner with warnings denied
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-utils-path --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/windows-private-fs-clippy.log"
+
+      - name: Check private filesystem source remains clean
+        if: always()
+        uses: ./.github/actions/check-clean-worktree
+
+      - name: Collect native private filesystem evidence
+        if: always()
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP "windows-private-fs-evidence"
+          New-Item -ItemType Directory -Path $evidence -Force | Out-Null
+          Get-ChildItem -LiteralPath $env:RUNNER_TEMP -Filter "windows-private-fs-*" -File |
+            Copy-Item -Destination $evidence -Force
+          $nextest = if ($env:CARGO_TARGET_DIR) {
+            Join-Path $env:CARGO_TARGET_DIR "nextest"
+          } else {
+            Join-Path $env:GITHUB_WORKSPACE "codex-rs/target/nextest"
+          }
+          if (Test-Path -LiteralPath $nextest) {
+            Get-ChildItem -LiteralPath $nextest -Filter "junit.xml" -Recurse -File | ForEach-Object {
+              $relative = [IO.Path]::GetRelativePath($nextest, $_.FullName)
+              $destination = Join-Path (Join-Path $evidence "nextest") $relative
+              New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+              Copy-Item -LiteralPath $_.FullName -Destination $destination -Force
+            }
+          }
+          $files = @(Get-ChildItem -LiteralPath $evidence -Recurse -File |
+            Where-Object Name -ne "manifest.json" |
+            Get-FileHash -Algorithm SHA256 |
+            Select-Object Path, Hash)
+          ConvertTo-Json -InputObject $files | Set-Content -LiteralPath (Join-Path $evidence "manifest.json")
+
+      - name: Preserve native private filesystem evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hia-windows-private-fs-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/windows-private-fs-evidence/

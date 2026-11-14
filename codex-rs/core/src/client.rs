@@ -177,6 +177,10 @@ use codex_response_debug_context::extract_response_debug_context_from_api_error;
 use codex_response_debug_context::telemetry_api_error_message;
 use codex_response_debug_context::telemetry_transport_error_message;
 
+mod response_stream_context;
+
+use response_stream_context::ResponseStreamContext;
+
 /// Host-owned gate invoked after the effective provider request is finalized
 /// and immediately before a physical turn send may be attempted.
 pub(crate) trait TurnRecoveryRequestCheckpoint: Send + Sync {
@@ -375,29 +379,27 @@ struct ConnectedWebsocket {
 }
 
 #[derive(Clone, Eq, PartialEq)]
+// Only bind fields that select the authenticated connection. Turn metadata is
+// sent in every frame; its stricter recovery projection belongs to the request
+// checkpoint and must not prevent prewarm or cross-turn connection reuse.
 struct WebsocketConnectionIdentity {
     provider_name: String,
     base_url: String,
     query_params: BTreeMap<String, String>,
     headers: ApiHeaderMap,
+    auth_headers: ApiHeaderMap,
+    session_headers: ApiHeaderMap,
     beta_features_header: Option<String>,
-    compatibility_projection_json: Vec<u8>,
 }
 
 impl WebsocketConnectionIdentity {
     fn from_provider(
         provider: &ApiProvider,
+        auth_headers: ApiHeaderMap,
         beta_features_header: Option<&str>,
         responses_metadata: &CodexResponsesMetadata,
-    ) -> std::result::Result<Self, ApiError> {
-        let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
-                .map_err(|error| {
-                    ApiError::Stream(format!(
-                        "failed to bind websocket compatibility identity: {error}"
-                    ))
-                })?;
-        Ok(Self {
+    ) -> Self {
+        Self {
             provider_name: provider.name.clone(),
             base_url: provider.base_url.clone(),
             query_params: provider
@@ -407,9 +409,13 @@ impl WebsocketConnectionIdentity {
                 .into_iter()
                 .collect(),
             headers: provider.headers.clone(),
+            auth_headers,
+            session_headers: build_session_headers(
+                Some(responses_metadata.session_id.clone()),
+                Some(responses_metadata.thread_id.clone()),
+            ),
             beta_features_header: beta_features_header.map(str::to_string),
-            compatibility_projection_json,
-        })
+        }
     }
 }
 
@@ -421,11 +427,25 @@ impl std::fmt::Debug for WebsocketConnectionIdentity {
             .field("base_url", &"[redacted]")
             .field("query_param_count", &self.query_params.len())
             .field("header_count", &self.headers.len())
+            .field("auth_header_count", &self.auth_headers.len())
+            .field("session_header_count", &self.session_headers.len())
             .field(
                 "beta_features_present",
                 &self.beta_features_header.is_some(),
             )
             .finish()
+    }
+}
+
+/// Capture the same authentication headers in the connection identity and the
+/// opening handshake, even if the provider can refresh credentials between calls.
+struct WebsocketHandshakeAuth {
+    headers: ApiHeaderMap,
+}
+
+impl AuthProvider for WebsocketHandshakeAuth {
+    fn add_auth_headers(&self, headers: &mut ApiHeaderMap) {
+        headers.extend(self.headers.clone());
     }
 }
 
@@ -1430,11 +1450,13 @@ impl ModelClient {
         auth_context: AuthRequestTelemetryContext,
         request_route_telemetry: RequestRouteTelemetry,
     ) -> std::result::Result<ConnectedWebsocket, ApiError> {
+        let auth_headers = api_auth.to_auth_headers();
         let identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
+            auth_headers.clone(),
             self.state.beta_features_header.as_deref(),
             responses_metadata,
-        )?;
+        );
         let headers = self.build_websocket_headers(responses_metadata).await;
         let websocket_telemetry = ModelClientSession::build_websocket_telemetry(
             session_telemetry,
@@ -1444,7 +1466,12 @@ impl ModelClient {
         );
         let websocket_connect_timeout = self.state.provider.info().websocket_connect_timeout();
         let start = Instant::now();
-        let websocket_client = ApiWebSocketResponsesClient::new(api_provider, api_auth);
+        let websocket_client = ApiWebSocketResponsesClient::new(
+            api_provider,
+            Arc::new(WebsocketHandshakeAuth {
+                headers: auth_headers,
+            }),
+        );
         let websocket_connect = websocket_client
             .connect(
                 &self.http_client_factory,
@@ -1789,18 +1816,20 @@ impl ModelClientSession {
         } = params;
         let desired_identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
+            api_auth.to_auth_headers(),
             self.client.state.beta_features_header.as_deref(),
             responses_metadata,
-        )?;
+        );
         let needs_new = match self.websocket_session.connection.as_ref() {
             Some(conn) => conn.identity != desired_identity || conn.connection.is_closed().await,
             None => true,
         };
 
         if needs_new {
-            self.websocket_session.last_request = None;
-            self.websocket_session.last_response_rx = None;
-            self.websocket_session.last_response_from_untraced_warmup = false;
+            // Retire the old authenticated connection before opening its replacement.
+            // Per-request metadata is carried in each frame, while a handshake identity
+            // change must also discard the old connection's incremental response state.
+            self.reset_websocket_session();
             let new_conn = match self
                 .client
                 .connect_websocket_future(
@@ -3086,26 +3115,22 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
         api_stream,
-        session_telemetry,
-        inference_trace_attempt,
-        provider,
-        provider_attempt,
-        redact_provider_errors,
-        encoded_request_observer,
+        ResponseStreamContext {
+            upstream_request_id,
+            session_telemetry,
+            inference_trace_attempt,
+            provider,
+            provider_attempt,
+            redact_provider_errors,
+            encoded_request_observer,
+        },
     )
 }
 
 fn map_response_events<S>(
-    upstream_request_id: Option<String>,
     api_stream: S,
-    session_telemetry: SessionTelemetry,
-    inference_trace_attempt: InferenceTraceAttempt,
-    provider: SharedModelProvider,
-    provider_attempt: Option<ProviderAttemptOwner>,
-    redact_provider_errors: bool,
-    encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+    context: ResponseStreamContext,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -3113,6 +3138,15 @@ where
         + Send
         + 'static,
 {
+    let ResponseStreamContext {
+        upstream_request_id,
+        session_telemetry,
+        inference_trace_attempt,
+        provider,
+        provider_attempt,
+        redact_provider_errors,
+        encoded_request_observer,
+    } = context;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

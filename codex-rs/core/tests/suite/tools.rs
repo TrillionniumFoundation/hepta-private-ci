@@ -388,14 +388,45 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
     .await?;
 
     let request = mock.single_request();
-    let custom_tool_calls = request.inputs_of_type("custom_tool_call");
+    core_test_support::history_annotations::assert_metadata_is_private(&request);
+    let history = core_test_support::history_annotations::response_items(&test.codex).await;
+    let custom_tool_calls: Vec<_> = history
+        .iter()
+        .filter(|item| item["type"] == "custom_tool_call" && item["call_id"] == call_id)
+        .cloned()
+        .collect();
     let turn_id = custom_tool_calls
         .first()
         .and_then(|item| item.pointer("/internal_chat_message_metadata_passthrough/turn_id"))
         .and_then(Value::as_str)
         .map(str::to_string)
         .expect("custom tool call should include turn metadata");
-    let custom_tool_output = request.custom_tool_call_output(call_id);
+    let custom_tool_output =
+        core_test_support::history_annotations::tool_call_output(&history, call_id).clone();
+    let mut wire_calls = custom_tool_calls.clone();
+    for item in &mut wire_calls {
+        item.as_object_mut()
+            .expect("tool call object")
+            .remove("internal_chat_message_metadata_passthrough");
+    }
+    let mut wire_output = custom_tool_output.clone();
+    wire_output
+        .as_object_mut()
+        .expect("tool output object")
+        .remove("internal_chat_message_metadata_passthrough");
+    assert_eq!(
+        (
+            strip_response_item_ids_from_json(Value::Array(
+                request.inputs_of_type("custom_tool_call")
+            )),
+            strip_response_item_ids_from_json(request.custom_tool_call_output(call_id)),
+        ),
+        (
+            strip_response_item_ids_from_json(Value::Array(wire_calls)),
+            strip_response_item_ids_from_json(wire_output),
+        ),
+    );
+    let original_stored_output = custom_tool_output.clone();
     let output_create_time = custom_tool_output
         .pointer("/internal_chat_message_metadata_passthrough/create_time")
         .and_then(Value::as_f64)
@@ -423,10 +454,6 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
                 "internal_chat_message_metadata_passthrough": {
                     "turn_id": turn_id,
                     "create_time": output_create_time,
-                    "executed_tool_calls": [{
-                        "name": format!("{namespace}__{tool_name}"),
-                        "arguments": input,
-                    }],
                 },
             }),
         )
@@ -462,27 +489,23 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
     )
     .await?;
     let escaped_request = escaped_mock.single_request();
+    core_test_support::history_annotations::assert_metadata_is_private(&escaped_request);
+    let history = core_test_support::history_annotations::response_items(&test.codex).await;
     assert_eq!(
-        escaped_request.custom_tool_call_output(call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
-        json!([{
-            "name": format!("{namespace}__{tool_name}"),
-            "arguments": input,
-        }]),
+        core_test_support::history_annotations::tool_call_output(&history, call_id),
+        &original_stored_output,
+        "the next request must preserve the original durable result",
     );
-    let expected_escaped_calls = json!([{
-        "name": format!("{namespace}__{tool_name}"),
-        "arguments": {
-            "_codex_executed_tool_call_truncated": {
-                "original_bytes": serde_json::to_vec(&escaped_input)?.len(),
-                "max_bytes": 8 * 1024,
-            },
-        },
-    }]);
+    let escaped_stored_output =
+        core_test_support::history_annotations::tool_call_output(&history, escaped_call_id).clone();
     assert_eq!(
-        escaped_request.custom_tool_call_output(escaped_call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
-        expected_escaped_calls,
+        escaped_request.custom_tool_call_output(escaped_call_id)["output"],
+        escaped_stored_output["output"],
+    );
+    assert!(
+        escaped_stored_output["internal_chat_message_metadata_passthrough"]
+            .get("executed_tool_calls")
+            .is_none()
     );
 
     let direct_exec_call_id = "custom-direct-exec";
@@ -516,18 +539,15 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
     .await?;
 
     let direct_exec_request = direct_exec_mock.single_request();
+    core_test_support::history_annotations::assert_metadata_is_private(&direct_exec_request);
+    let history = core_test_support::history_annotations::response_items(&test.codex).await;
     assert_eq!(
-        direct_exec_request.custom_tool_call_output(call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
-        json!([{
-            "name": format!("{namespace}__{tool_name}"),
-            "arguments": input,
-        }]),
+        core_test_support::history_annotations::tool_call_output(&history, call_id),
+        &original_stored_output,
     );
     assert_eq!(
-        direct_exec_request.custom_tool_call_output(escaped_call_id)["internal_chat_message_metadata_passthrough"]
-            ["executed_tool_calls"],
-        expected_escaped_calls,
+        core_test_support::history_annotations::tool_call_output(&history, escaped_call_id),
+        &escaped_stored_output,
     );
     let direct_exec_output = direct_exec_request.custom_tool_call_output(direct_exec_call_id);
     assert_eq!(
@@ -535,11 +555,10 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
         json!("unsupported custom tool call: exec"),
     );
     assert_eq!(
-        direct_exec_output["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        json!([{
-            "name": codex_code_mode::PUBLIC_TOOL_NAME,
-            "arguments": input,
-        }]),
+        core_test_support::history_annotations::tool_call_output(&history, direct_exec_call_id)["internal_chat_message_metadata_passthrough"]
+            ["executed_tool_calls"],
+        Value::Null,
+        "attempt metadata is attached to request copies, not durable history",
     );
 
     Ok(())

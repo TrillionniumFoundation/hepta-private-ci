@@ -258,13 +258,18 @@ impl Session {
             }
 
             if let Some(catalog) = catalog {
-                let selections = self.services.turn_environments.selections();
+                let selections = environments.to_selections();
                 projection.config.mcp_server_catalog =
                     catalog.build_with_environment_authority(|environment_id| {
                         let Some(selection) = selections
                             .iter()
                             .find(|selection| selection.environment_id == environment_id)
                         else {
+                            if environments.starting().any(|environment| {
+                                environment.selection.environment_id == environment_id
+                            }) {
+                                return McpEnvironmentAuthority::Unavailable;
+                            }
                             return if environment_id
                                 == codex_config::DEFAULT_MCP_SERVER_ENVIRONMENT_ID
                             {
@@ -301,6 +306,14 @@ impl Session {
         ready_selected_capability_roots: &[SelectedCapabilityRoot],
         elicitation_reviewer: Option<ElicitationReviewerHandle>,
     ) {
+        let mcp_projection = self
+            .project_selected_environment_mcp_servers(
+                &desired.session_source,
+                &desired.config,
+                &desired.environments,
+                mcp_projection,
+            )
+            .await;
         let input = self.build_mcp_runtime_input(
             desired,
             mcp_projection,

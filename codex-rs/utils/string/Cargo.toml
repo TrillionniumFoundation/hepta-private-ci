@@ -5,7 +5,7 @@ edition.workspace = true
 license.workspace = true
 
 [features]
-# Explicit native HIA prefix selection; requires a pinned Linux x86-64 artifact.
+# Native HIA string operations; requires pinned Linux x86-64 artifacts.
 hia-native = []
 
 [lints]

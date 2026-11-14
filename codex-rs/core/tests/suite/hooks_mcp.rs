@@ -706,7 +706,9 @@ async fn mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools() -> Result<
     assert!(
         request
             .message_input_texts("developer")
-            .contains(&expected_context)
+            .contains(&expected_context),
+        "hidden MCP tool must receive the owning thread: {:?}",
+        request.message_input_texts("developer"),
     );
     assert!(
         request
@@ -957,13 +959,15 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
     let output_item = requests[1].function_call_output(call_id);
+    for request in &requests {
+        core_test_support::history_annotations::assert_metadata_is_private(request);
+    }
+    let history = core_test_support::history_annotations::response_items(&test.codex).await;
+    let stored_output = core_test_support::history_annotations::tool_call_output(&history, call_id);
     assert_eq!(
-        output_item["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        json!([{
-            "name": format!("{mcp_namespace}__echo"),
-            "arguments": { "message": RMCP_ECHO_MESSAGE },
-        }]),
-        "a blocked MCP request must still retain the original model-attempted call",
+        stored_output["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
+        Value::Null,
+        "attempt metadata is attached to request copies, not durable history",
     );
     let output = output_item
         .get("output")

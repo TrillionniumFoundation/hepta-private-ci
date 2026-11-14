@@ -7,6 +7,7 @@
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
+#[cfg(unix)]
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
@@ -19,17 +20,24 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::VerifiedUseToken;
 use serde::Deserialize;
 use serde::Serialize;
+#[cfg(unix)]
 use tokio::io::AsyncReadExt;
+#[cfg(unix)]
 use tokio::io::AsyncWriteExt;
+#[cfg(unix)]
 use tokio::time::timeout;
 
 use crate::native_app_server::TurnStartAuthorityFuture;
 use crate::native_app_server::TurnStartAuthorizer;
 
 const AUTHORITY_PORT_SCHEMA_VERSION: u32 = 1;
+#[cfg(unix)]
 const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+#[cfg(unix)]
 const MAX_CONFIG_BYTES: usize = 64 * 1024;
+#[cfg(unix)]
 const MAX_REQUEST_BYTES: usize = 16 * 1024;
+#[cfg(unix)]
 const MAX_RESPONSE_BYTES: usize = 64 * 1024;
 const MAX_DENIAL_REASON_BYTES: usize = 1024;
 const MAX_ISSUER_TIMEOUT: Duration = Duration::from_secs(30);
@@ -57,8 +65,11 @@ pub struct FinalUseAuthorizerConfig {
 /// Production runtime.codex authorizer. The independent endpoint decides
 /// whether to issue a grant; this process only verifies and consumes it.
 pub struct UnixFinalUseAuthorizer {
+    #[cfg(unix)]
     issuer_socket: PathBuf,
+    #[cfg(unix)]
     issuer_uid: u32,
+    #[cfg(unix)]
     issuer_timeout: Duration,
     authority: FinalUseAuthority,
 }
@@ -89,8 +100,11 @@ impl UnixFinalUseAuthorizer {
             },
         )?;
         Ok(Self {
+            #[cfg(unix)]
             issuer_socket: config.issuer_socket,
+            #[cfg(unix)]
             issuer_uid: config.issuer_uid,
+            #[cfg(unix)]
             issuer_timeout,
             authority,
         })
@@ -165,6 +179,7 @@ impl TurnStartAuthorizer for UnixFinalUseAuthorizer {
     }
 }
 
+#[cfg(unix)]
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct IssuerRequest {

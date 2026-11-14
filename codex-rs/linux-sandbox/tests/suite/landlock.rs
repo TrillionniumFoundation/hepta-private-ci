@@ -469,11 +469,14 @@ async fn sandbox_inner_stage_rejects_retained_capabilities() {
 
     let permission_profile = serde_json::to_string(&PermissionProfile::read_only())
         .expect("read-only permission profile should serialize");
-    let output = std::process::Command::new("unshare")
+    let mut command = std::process::Command::new("unshare");
+    command
         .args(["--user", "--map-root-user", "--"])
         .arg(codex_linux_sandbox_exe())
         .args(["--sandbox-policy-cwd", "/", "--permission-profile"])
-        .arg(permission_profile)
+        .arg(permission_profile);
+    let _parent_lifetime = super::parent_lifetime::inherit_parent_pidfd(&mut command);
+    let output = command
         .args([
             "--apply-seccomp-then-exec",
             "--",

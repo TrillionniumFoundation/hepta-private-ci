@@ -21,7 +21,7 @@ use crate::authbus_trust::hex_bytes;
 
 const MAX_EVIDENCE_ISSUERS: usize = 32;
 const MAX_EVIDENCE_ROLES_PER_ISSUER: usize = 16;
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 const MAX_EVIDENCE_TRUST_FILE_BYTES: u64 = 32_768;
 
 #[derive(Deserialize)]
@@ -187,10 +187,16 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
     Ok(bytes)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, AgentdError> {
+    crate::authbus_trust::windows::read(path, &identity.home_root, MAX_EVIDENCE_TRUST_FILE_BYTES)
+        .map_err(|error| invalid(&format!("private owner file validation failed: {error}")))
+}
+
+#[cfg(not(any(unix, windows)))]
 fn read_owner_file(_path: &Path, _identity: &AgentdIdentity) -> Result<Vec<u8>, AgentdError> {
     Err(invalid(
-        "the kernel evidence trust-file profile currently requires Unix ownership checks",
+        "the kernel evidence trust-file profile requires supported ownership checks",
     ))
 }
 

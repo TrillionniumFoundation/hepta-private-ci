@@ -1,5 +1,7 @@
 use super::AgentControl;
 use crate::codex_thread::CodexThread;
+use crate::session::FinishRetryState;
+use crate::state::StartTransitionCompletion;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::Result as CodexResult;
@@ -20,6 +22,12 @@ pub(crate) struct AgentExecutionGuard {
     limiter: Arc<AgentExecutionLimiter>,
 }
 
+/// Carries the exact Finish witnesses observed by a turn-start preflight.
+pub(crate) enum TurnStartCapacity {
+    Available,
+    Finishing(Vec<Arc<StartTransitionCompletion>>),
+}
+
 impl Drop for AgentExecutionGuard {
     fn drop(&mut self) {
         self.limiter.active.fetch_sub(1, Ordering::AcqRel);
@@ -31,25 +39,44 @@ impl AgentControl {
         &self,
         thread: &CodexThread,
     ) -> CodexResult<()> {
+        match self.turn_start_capacity(thread).await? {
+            TurnStartCapacity::Available => Ok(()),
+            TurnStartCapacity::Finishing(_) => Err(CodexErr::InvalidRequest(
+                "turn start is fenced while the session is terminalizing".to_string(),
+            )),
+        }
+    }
+
+    pub(crate) async fn turn_start_capacity(
+        &self,
+        thread: &CodexThread,
+    ) -> CodexResult<TurnStartCapacity> {
         {
             let active = thread.session.active_turn.lock().await;
             if active.is_some() {
-                return Ok(());
+                return Ok(TurnStartCapacity::Available);
             }
             if thread.session.shutdown_started() {
                 return Err(CodexErr::InternalAgentDied);
             }
-            if thread.session.has_pending_task_terminalization() {
-                return Err(CodexErr::InvalidRequest(
-                    "turn start is fenced while the session is terminalizing".to_string(),
-                ));
+            match thread.session.finish_retry_state(active.as_ref()) {
+                FinishRetryState::Clear => {}
+                FinishRetryState::Finishing(fences) => {
+                    return Ok(TurnStartCapacity::Finishing(fences));
+                }
+                FinishRetryState::Blocked => {
+                    return Err(CodexErr::InvalidRequest(
+                        "turn start is fenced while the session is terminalizing".to_string(),
+                    ));
+                }
             }
         }
         let config = thread.session.get_config().await;
         let multi_agent_version = thread
             .multi_agent_version()
             .unwrap_or_else(|| config.multi_agent_version_from_features());
-        self.ensure_execution_capacity(multi_agent_version, &thread.session_source)
+        self.ensure_execution_capacity(multi_agent_version, &thread.session_source)?;
+        Ok(TurnStartCapacity::Available)
     }
 
     pub(crate) fn ensure_execution_capacity(

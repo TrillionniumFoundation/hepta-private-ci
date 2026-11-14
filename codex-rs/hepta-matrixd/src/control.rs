@@ -431,10 +431,15 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
                 ),
             )));
         }
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(()),
-        Err(error) if error.kind() == ErrorKind::ConnectionRefused => {}
-        Err(_) if !socket_path.exists() => return Ok(()),
-        Err(error) => return Err(error.into()),
+        Err(error) => match tokio::fs::symlink_metadata(socket_path).await {
+            // Windows AF_UNIX can report ConnectionRefused for a path that
+            // has never existed. Inspect the path before treating it as a
+            // stale endpoint, and retain permission and other metadata errors.
+            Err(metadata_error) if metadata_error.kind() == ErrorKind::NotFound => return Ok(()),
+            Err(metadata_error) => return Err(metadata_error.into()),
+            Ok(_) if error.kind() == ErrorKind::ConnectionRefused => {}
+            Ok(_) => return Err(error.into()),
+        },
     }
     if codex_uds::is_stale_socket_path(socket_path).await? {
         tokio::fs::remove_file(socket_path).await?;
@@ -869,8 +874,20 @@ mod tests {
         let server =
             MatrixdControlServer::bind(socket.clone(), Arc::clone(&state), cancel.clone()).await?;
         let task = tokio::spawn(server.run());
+        let duplicate = MatrixdControlServer::bind(
+            socket.clone(),
+            Arc::clone(&state),
+            CancellationToken::new(),
+        )
+        .await;
+        assert!(matches!(
+            duplicate,
+            Err(MatrixdControlError::Io(error)) if error.kind() == ErrorKind::AddrInUse
+        ));
 
         let mut stream = UnixStream::connect(&socket).await?;
+        let peer_identity = stream.ensure_current_user_peer();
+        let initial_health = connections.health();
         let request = MatrixdRequest {
             schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
             request_id: 41,
@@ -880,21 +897,54 @@ mod tests {
         };
         let mut bytes = serde_json::to_vec(&request)?;
         bytes.push(b'\n');
-        stream.write_all(&bytes).await?;
-        let mut reader = BufReader::new(stream);
-        let mut response = Vec::new();
-        reader.read_until(b'\n', &mut response).await?;
-        let response: MatrixdResponse = serde_json::from_slice(&response)?;
-        assert_eq!(response.release_id, "release-1");
-        assert!(matches!(
-            response.payload,
-            MatrixdPayload::Health(MatrixdHealth {
-                lifecycle: MatrixdLifecycle::Degraded,
-                agentd_connected: false,
-                matrix_sync_connected: false,
-                ..
-            })
-        ));
+        match peer_identity {
+            Ok(()) => {
+                stream.write_all(&bytes).await?;
+                let mut reader = BufReader::new(stream);
+                let mut response = Vec::new();
+                reader.read_until(b'\n', &mut response).await?;
+                let response: MatrixdResponse = serde_json::from_slice(&response)?;
+                assert_eq!(response.release_id, "release-1");
+                assert!(matches!(
+                    response.payload,
+                    MatrixdPayload::Health(MatrixdHealth {
+                        lifecycle: MatrixdLifecycle::Degraded,
+                        agentd_connected: false,
+                        matrix_sync_connected: false,
+                        ..
+                    })
+                ));
+            }
+            Err(error) => {
+                // The current Windows transport rejects peers because it cannot
+                // establish their user identity. Exercise that rejection; a
+                // successful unauthenticated response must never pass this test.
+                assert!(cfg!(windows));
+                assert_eq!(error.kind(), ErrorKind::Unsupported);
+                if let Err(error) = stream.write_all(&bytes).await {
+                    assert!(matches!(
+                        error.kind(),
+                        ErrorKind::BrokenPipe
+                            | ErrorKind::ConnectionReset
+                            | ErrorKind::ConnectionAborted
+                    ));
+                }
+                let mut response = [0_u8; 1];
+                match timeout(IO_TIMEOUT, stream.read(&mut response)).await? {
+                    Ok(0) => {}
+                    Err(error)
+                        if matches!(
+                            error.kind(),
+                            ErrorKind::BrokenPipe
+                                | ErrorKind::ConnectionReset
+                                | ErrorKind::ConnectionAborted
+                        ) => {}
+                    Ok(_) => panic!("unauthenticated peer received Matrix control response bytes"),
+                    Err(error) => return Err(error.into()),
+                }
+            }
+        }
+        assert_eq!(connections.health(), initial_health);
 
         connections.set_agentd_connected(true);
         connections.set_matrix_sync_connected(true);
@@ -903,6 +953,8 @@ mod tests {
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
         cancel.cancel();
         task.await??;
+        let rebound = MatrixdControlServer::bind(socket, state, CancellationToken::new()).await?;
+        drop(rebound);
         Ok(())
     }
 }

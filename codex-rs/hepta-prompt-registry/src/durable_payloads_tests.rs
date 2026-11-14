@@ -1,10 +1,40 @@
 //! Physical storage regression tests; fixture admissions are not product authority.
 use std::io::Seek;
 use std::io::SeekFrom;
+#[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
+use std::path::Path;
 
 use super::*;
 use crate::TestMust;
+
+#[cfg(unix)]
+type FileSnapshot = (u64, u64, i64, i64);
+#[cfg(windows)]
+type FileSnapshot = codex_utils_path::windows_private_fs::FileSnapshot;
+
+#[cfg(unix)]
+fn file_snapshot(path: &Path) -> std::io::Result<FileSnapshot> {
+    let metadata = std::fs::metadata(path)?;
+    Ok((
+        metadata.len(),
+        metadata.ino(),
+        metadata.mtime(),
+        metadata.mtime_nsec(),
+    ))
+}
+
+#[cfg(windows)]
+fn file_snapshot(path: &Path) -> std::io::Result<FileSnapshot> {
+    use codex_utils_path::windows_private_fs::PrivateDirectory;
+    use codex_utils_path::windows_private_fs::snapshot_private_file;
+    let directory = PrivateDirectory::open_existing(path.parent().must("fixture parent"))?;
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .must("fixture file name");
+    snapshot_private_file(&directory.open_read(name)?)
+}
 
 fn id(value: &str) -> StableId {
     StableId::new(value).must("test identity")
@@ -70,7 +100,7 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
         })
         .must("seed actual payload bytes");
     let payload_file = path.join(payloads::FILE_NAME);
-    let before = std::fs::metadata(&payload_file).must("payload metadata");
+    let before = file_snapshot(&payload_file).must("payload snapshot");
     let legacy_bytes = serde_json::to_vec(&stored_v2(owner.registry().must("registry")))
         .must("legacy serialization")
         .len();
@@ -80,16 +110,8 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
     owner
         .retire_factor(&id("factor:0"), &id("operator:test"), digest("retirement"))
         .must("metadata-only retirement preserves historical payloads");
-    let after = std::fs::metadata(&payload_file).must("payload metadata");
-    assert_eq!(
-        (
-            before.len(),
-            before.ino(),
-            before.mtime(),
-            before.mtime_nsec()
-        ),
-        (after.len(), after.ino(), after.mtime(), after.mtime_nsec())
-    );
+    let after = file_snapshot(&payload_file).must("payload snapshot");
+    assert_eq!(before, after);
     let manifest = path.join("registry.json");
     let metadata_bytes = std::fs::metadata(&manifest).must("manifest").len();
     assert!(metadata_bytes < legacy_bytes as u64 / 4);
@@ -107,13 +129,13 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
             .get(&payload_id)
             .must("owner payload"),
     ));
-    let manifest_inode = std::fs::metadata(&manifest).must("manifest").ino();
+    let manifest_snapshot = file_snapshot(&manifest).must("manifest snapshot");
     drop(owner);
     let reopened = DurablePromptRegistry::open_state_dir(&path, 512).must("reopen");
     assert_eq!(reopened.registry().must("registry"), &expected);
     assert_eq!(
-        std::fs::metadata(&manifest).must("manifest").ino(),
-        manifest_inode
+        file_snapshot(&manifest).must("manifest snapshot"),
+        manifest_snapshot
     );
     eprintln!(
         "PREG_V3_GROWTH payloads=64 raw_bytes={} legacy_snapshot_bytes={legacy_bytes} metadata_commit_bytes={metadata_bytes} old_payload_bytes_rewritten=0",

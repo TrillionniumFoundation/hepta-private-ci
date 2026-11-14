@@ -373,3 +373,51 @@ async fn preparation_holds_catalog_authority_until_it_finishes() {
         .expect_err("the test preparation should stop the call");
     assert!(step.tool_catalog_revision.try_write().is_ok());
 }
+
+#[tokio::test]
+async fn hidden_hook_call_preserves_captured_authority_and_rejects_stale_preparation() {
+    let mut step = test_step(
+        "old",
+        AppToolApproval::Prompt,
+        /*supports_sandbox_state_meta*/ true,
+    )
+    .await;
+    let binding = Arc::get_mut(&mut step.step).expect("exclusive fixture binding");
+    let call = binding
+        .calls
+        .get_mut(&(SERVER_NAME.to_string(), TOOL_NAME.to_string()))
+        .expect("permitted catalog tool");
+    let mut meta = rmcp::model::MetaObject::new();
+    meta.insert("ui".to_string(), serde_json::json!({"visibility": []}));
+    call.tool_info.tool.meta = Some(meta);
+
+    assert!(binding.prepare_call(SERVER_NAME, TOOL_NAME).is_none());
+    assert!(
+        binding
+            .prepare_hook_call(SERVER_NAME, "not-permitted")
+            .is_none()
+    );
+    let prepared = binding
+        .prepare_hook_call(SERVER_NAME, TOOL_NAME)
+        .expect("configured hooks may call a permitted model-hidden tool");
+    assert!(Arc::ptr_eq(&prepared.client.client, &step.client));
+    assert_eq!(
+        (
+            prepared.tool_approval_mode(),
+            prepared.server_environment_id()
+        ),
+        (AppToolApproval::Prompt, "old-environment"),
+    );
+
+    *step.tool_catalog_revision.write().await += 1;
+    let side_effect_ran = AtomicBool::new(false);
+    let error = prepared
+        .call_with_preparation(/*requested_timeout*/ None, || async {
+            side_effect_ran.store(true, Ordering::SeqCst);
+            Ok((None, None))
+        })
+        .await
+        .expect_err("stale hook authority must reject preparation");
+    assert!(format!("{error:#}").contains("catalog changed"));
+    assert!(!side_effect_ran.load(Ordering::SeqCst));
+}

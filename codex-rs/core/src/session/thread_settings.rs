@@ -3,6 +3,8 @@
 
 use super::session::Session;
 use super::session::SessionSettingsUpdate;
+use super::turn_input_retry::FinishFences;
+use super::turn_input_retry::FinishRetryState;
 use crate::config::ConstraintResult;
 use codex_features::Feature;
 use codex_protocol::protocol::CodexErrorInfo;
@@ -21,17 +23,42 @@ pub(super) async fn update(
     overrides: ThreadSettingsOverrides,
 ) {
     let updates = prepare_update(session, overrides).await;
-    if let Err(error) = apply_standalone_update(session, submission_id.clone(), updates).await {
-        session
-            .send_event_raw(Event {
-                id: submission_id,
-                msg: EventMsg::Error(ErrorEvent {
-                    message: format!("failed to apply thread settings override: {error}"),
-                    codex_error_info: Some(CodexErrorInfo::BadRequest),
-                }),
-            })
-            .await;
-    }
+    let error = match apply_standalone_update(session, submission_id.clone(), updates).await {
+        Ok(StandaloneSettingsOutcome::Applied) => {
+            session
+                .pending_thread_settings_retries
+                .complete(&submission_id);
+            return;
+        }
+        Ok(StandaloneSettingsOutcome::RetryAfterFinish(fences)) => {
+            if session
+                .pending_thread_settings_retries
+                .retry_after_finish(&submission_id, fences)
+            {
+                return;
+            }
+            // Internal unregistered callers retain the original rejection.
+            "turn is terminalizing and cannot accept a standalone settings update".to_string()
+        }
+        Err(error) => error,
+    };
+    session
+        .send_event_raw(Event {
+            id: submission_id.clone(),
+            msg: EventMsg::Error(ErrorEvent {
+                message: format!("failed to apply thread settings override: {error}"),
+                codex_error_info: Some(CodexErrorInfo::BadRequest),
+            }),
+        })
+        .await;
+    session
+        .pending_thread_settings_retries
+        .complete(&submission_id);
+}
+
+enum StandaloneSettingsOutcome {
+    Applied,
+    RetryAfterFinish(FinishFences),
 }
 
 /// Serializes a standalone settings mutation with recovery publication. A
@@ -46,14 +73,24 @@ async fn apply_standalone_update(
     session: &Session,
     submission_id: String,
     updates: SessionSettingsUpdate,
-) -> Result<(), String> {
+) -> Result<StandaloneSettingsOutcome, String> {
     if !session.enabled(Feature::HeptaTurnRecovery) {
         let active = session.active_turn.lock().await;
-        if session.shutdown_started()
-            || session.has_pending_task_terminalization()
-            || active
-                .as_ref()
-                .is_some_and(|active_turn| active_turn.task_terminalization.is_some())
+        match session.finish_retry_state(active.as_ref()) {
+            FinishRetryState::Clear => {}
+            FinishRetryState::Finishing(fences) => {
+                return Ok(StandaloneSettingsOutcome::RetryAfterFinish(fences));
+            }
+            FinishRetryState::Blocked => {
+                return Err(
+                    "turn is terminalizing and cannot accept a standalone settings update"
+                        .to_string(),
+                );
+            }
+        }
+        if active
+            .as_ref()
+            .is_some_and(|active_turn| active_turn.task_terminalization.is_some())
         {
             return Err(
                 "turn is terminalizing and cannot accept a standalone settings update".to_string(),
@@ -63,7 +100,7 @@ async fn apply_standalone_update(
             .await
             .map_err(|error| error.to_string());
         drop(active);
-        return result;
+        return result.map(|()| StandaloneSettingsOutcome::Applied);
     }
 
     session
@@ -72,10 +109,16 @@ async fn apply_standalone_update(
         .map_err(|error| error.to_string())?;
 
     let active = session.active_turn.lock().await;
-    if session.shutdown_started() || session.has_pending_task_terminalization() {
-        return Err(
-            "turn is terminalizing and cannot accept a standalone settings update".to_string(),
-        );
+    match session.finish_retry_state(active.as_ref()) {
+        FinishRetryState::Clear => {}
+        FinishRetryState::Finishing(fences) => {
+            return Ok(StandaloneSettingsOutcome::RetryAfterFinish(fences));
+        }
+        FinishRetryState::Blocked => {
+            return Err(
+                "turn is terminalizing and cannot accept a standalone settings update".to_string(),
+            );
+        }
     }
     if active.as_ref().is_some_and(|active_turn| {
         active_turn.task_terminalization.is_some() || active_turn.task.is_none()
@@ -113,7 +156,7 @@ async fn apply_standalone_update(
     drop(active);
     result?;
     emit_applied(session, submission_id).await;
-    Ok(())
+    Ok(StandaloneSettingsOutcome::Applied)
 }
 
 /// Converts protocol overrides into the internal settings update shape.

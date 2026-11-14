@@ -120,6 +120,12 @@ pub(crate) struct Session {
         Mutex<std::collections::VecDeque<RolloutPersistenceFault>>,
     pub(crate) async_hook_results: async_channel::Receiver<HookCompletedEvent>,
     pub(crate) input_queue: InputQueue,
+    pub(crate) pending_turn_input_retries: super::turn_input_retry::PendingTurnInputRetries,
+    pub(crate) pending_thread_settings_retries:
+        super::thread_settings_retry::PendingThreadSettingsRetries,
+    pub(crate) pending_history_mutation_retries:
+        super::history_mutation_retry::PendingHistoryMutationRetries,
+    pub(crate) pending_mailbox_retries: super::mailbox_retry::PendingMailboxRetries,
     pub(crate) pending_user_message_admissions:
         crate::user_message_admission::PendingUserMessageAdmissions,
     pub(crate) guardian_review_session: GuardianReviewSessionManager,
@@ -1578,6 +1584,10 @@ impl Session {
                 rollout_persistence_faults: Mutex::new(std::collections::VecDeque::new()),
                 async_hook_results,
                 input_queue: InputQueue::new(),
+                pending_turn_input_retries: Default::default(),
+                pending_thread_settings_retries: Default::default(),
+                pending_mailbox_retries: Default::default(),
+        pending_history_mutation_retries: Default::default(),
                 pending_user_message_admissions: Default::default(),
                 guardian_review_session: GuardianReviewSessionManager::default(),
                 services,

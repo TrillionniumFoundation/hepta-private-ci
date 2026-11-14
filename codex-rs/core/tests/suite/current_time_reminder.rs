@@ -25,6 +25,7 @@ use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::user_input::UserInput;
 use core_test_support::assert_regex_match;
+use core_test_support::history_annotations;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -142,18 +143,25 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
         .await?;
 
     test.submit_turn("first simulated day").await?;
+    let first_history = history_annotations::response_items(&test.codex).await;
     time_provider
         .current_time
         .store(FIRST_TIME_UNIX_SECONDS + 86_400, Ordering::Relaxed);
     test.submit_turn("second simulated day").await?;
+    let second_history = history_annotations::response_items(&test.codex).await;
 
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
-    for (request, timestamp) in requests
+    for ((request, timestamp), history) in requests
         .iter()
         .zip([FIRST_TIME_UNIX_SECONDS, FIRST_TIME_UNIX_SECONDS + 86_400])
+        .zip([first_history, second_history])
     {
-        assert!(request.has_content_kinds(&["environments.environment_context"]));
+        history_annotations::assert_metadata_is_private(request);
+        assert!(history_annotations::has_content_kinds(
+            &history,
+            &["environments.environment_context"]
+        ));
         let current_date = DateTime::<Utc>::from_timestamp(timestamp, 0)
             .expect("test timestamp should be valid")
             .with_timezone(&Local)
@@ -343,7 +351,12 @@ async fn system_time_source_adds_current_time_reminder() -> Result<()> {
     test.submit_turn("what time is it?").await?;
 
     let request = responses.single_request();
-    assert!(request.has_content_kinds(&["current_time.reminder"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["current_time.reminder"]
+    ));
     let reminders = current_time_reminders(&request);
     assert_eq!(reminders.len(), 1);
     assert_regex_match(

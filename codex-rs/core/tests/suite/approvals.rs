@@ -343,6 +343,7 @@ fn shell_event_with_prefix_rule(
     prefix_rule: Option<Vec<String>>,
 ) -> Result<Value> {
     let mut args = json!({
+        "login": false,
         "cmd": command,
         "yield_time_ms": timeout_ms,
     });
@@ -365,6 +366,7 @@ fn exec_command_event(
     justification: Option<&str>,
 ) -> Result<Value> {
     let mut args = json!({
+        "login": false,
         "cmd": cmd.to_string(),
     });
     if let Some(yield_time_ms) = yield_time_ms {

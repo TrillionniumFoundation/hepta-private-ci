@@ -12,6 +12,22 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fmt;
 use std::fs::File;
+
+#[cfg(windows)]
+#[path = "durable_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::StateDirectory;
+#[cfg(windows)]
+use windows::entry_exists;
+#[cfg(windows)]
+use windows::open_private;
+#[cfg(windows)]
+use windows::prepare_directory;
+#[cfg(windows)]
+use windows::replace_state;
+#[cfg(not(windows))]
+type StateDirectory = File;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
@@ -1230,7 +1246,7 @@ enum StoredAny {
 }
 
 struct Store {
-    root: File,
+    root: StateDirectory,
     _lock: File,
     payloads: payloads::PayloadState,
     #[cfg(test)]
@@ -1404,12 +1420,12 @@ fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1427,7 +1443,7 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryErr
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
@@ -1438,7 +1454,7 @@ fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
@@ -1479,11 +1495,11 @@ impl fmt::Display for DurableRegistryError {
 
 impl std::error::Error for DurableRegistryError {}
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 mod tests {
     use crate::TestMust;
     use std::collections::BTreeSet;
-    use std::os::unix::fs::DirBuilderExt;
+    #[cfg(unix)]
     use std::os::unix::fs::OpenOptionsExt;
     use std::time::Instant;
     use std::time::SystemTime;
@@ -1514,10 +1530,7 @@ mod tests {
     fn schema_v1_migrates_without_resurrecting_state() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&root)
-            .must("state dir");
+        let _directory = prepare_directory(&root).must("state dir");
         let factor = StoredFactor {
             factor_id: "factor:1".to_owned(),
             proposer_id: "proposer:1".to_owned(),
@@ -1560,12 +1573,11 @@ mod tests {
         };
         let bytes = serde_json::to_vec(&stored).must("serialize legacy state");
         let path = root.join("registry.json");
-        let mut file = std::fs::OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(path)
-            .must("legacy state");
+        let mut options = std::fs::OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        let mut file = options.open(path).must("legacy state");
         file.write_all(&bytes).must("legacy bytes");
         file.sync_all().must("legacy fsync");
         drop(file);
@@ -1626,10 +1638,7 @@ mod tests {
     fn schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry-frontier");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&root)
-            .must("state dir");
+        let _directory = prepare_directory(&root).must("state dir");
         let stored = StoredV1 {
             schema: 1,
             revision: 5,
@@ -1665,12 +1674,11 @@ mod tests {
         };
         let bytes = serde_json::to_vec(&stored).must("serialize legacy state");
         let path = root.join("registry.json");
-        let mut file = std::fs::OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(path)
-            .must("legacy state");
+        let mut options = std::fs::OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        let mut file = options.open(path).must("legacy state");
         file.write_all(&bytes).must("legacy bytes");
         file.sync_all().must("legacy fsync");
         drop(file);
@@ -2576,10 +2584,7 @@ mod tests {
     fn failed_v1_migration_does_not_overwrite_predecessor_bytes() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry-bad-migration");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&root)
-            .must("state dir");
+        let _directory = prepare_directory(&root).must("state dir");
         let stored = StoredV1 {
             schema: 1,
             revision: 4,
@@ -2602,12 +2607,11 @@ mod tests {
         };
         let bytes = serde_json::to_vec(&stored).must("serialize invalid legacy state");
         let path = root.join("registry.json");
-        let mut file = std::fs::OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(&path)
-            .must("legacy state");
+        let mut options = std::fs::OpenOptions::new();
+        options.create_new(true).write(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        let mut file = options.open(&path).must("legacy state");
         file.write_all(&bytes).must("legacy bytes");
         file.sync_all().must("legacy fsync");
         drop(file);
@@ -2651,10 +2655,7 @@ mod tests {
                 .must("revoke factor");
             durable.registry().must("registry").snapshot_digest()
         };
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&restore_root)
-            .must("restore dir");
+        let _restore_directory = prepare_directory(&restore_root).must("restore dir");
         std::fs::copy(
             source_root.join("registry.json"),
             restore_root.join("registry.json"),
@@ -2808,6 +2809,6 @@ mod tests {
     }
 }
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 #[path = "durable_payloads_tests.rs"]
 mod payload_tests;

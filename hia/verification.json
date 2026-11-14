@@ -27,60 +27,141 @@
     "seek_sequence": {
       "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
       "core_sha256": "b7503d955cefee04d2cecff7c6679c8e485c9e95c13cd36384180f12faa998a1",
-      "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d",
-      "library_bytes": 33640,
+      "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
+      "library_bytes": 33576,
       "static_link": {
         "symbol": "codex_hia_seek_sequence",
         "object": "seek_sequence.namespaced.o",
         "archive": "libcodex_hia_seek_sequence.a",
+        "archive_member": "hia.o",
         "archive_bytes": 23264,
         "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1",
         "object_sha256": "8be4b6180caf305f3f608545266ebb59ff334848158367b531500b9f0d8797f6",
         "text_sha256": "99dfa1bef8c197e0a7b53f375f034392396e4f44e1efc68745e07f192980931f",
-        "defined_symbols": [
-          "codex_hia_seek_sequence"
-        ],
-        "undefined_symbols": []
+        "defined_symbols": ["codex_hia_seek_sequence"],
+        "undefined_symbols": [],
+        "library": "libcodex_hia_seek_sequence.so",
+        "library_sha256": "f28e5222725077e92fbb07ef35da711f6c29e36217a79d2ac7fe8cfa76ca9498"
       }
     },
     "utf8_boundaries": {
       "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
       "core_sha256": "60769338473242d4b88c290eb6413c972a7d6e9927c9d989ce3adee5645de0b5",
-      "library_sha256": "311fe6b2755189304992ce0fd95e934edffac39565c258029e3737a3c71f4e36",
-      "library_bytes": 17256,
+      "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
+      "library_bytes": 17192,
       "static_link": {
         "symbol": "codex_hia_utf8_boundaries",
         "object": "utf8_boundaries.namespaced.o",
         "archive": "libcodex_hia_utf8_boundaries.a",
+        "archive_member": "hia.o",
         "archive_bytes": 7874,
         "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17",
         "object_sha256": "8bf83079c457edf7af1bcad77f0863bca3e26029a5863186fd8e0e088b878f79",
         "text_sha256": "2d71a9e6d46f975030fb48b07b87b30591787509939727c8251cf381410929e5",
-        "defined_symbols": [
-          "codex_hia_utf8_boundaries"
-        ],
-        "undefined_symbols": []
+        "defined_symbols": ["codex_hia_utf8_boundaries"],
+        "undefined_symbols": [],
+        "library": "libcodex_hia_utf8_boundaries.so",
+        "library_sha256": "c13a6b566910eaba52b0d7bfba1f2c562e6c8b6e543435c7e6487f37d3bd84e8"
       }
     },
     "utf8_prefix": {
       "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
       "core_sha256": "1fb0f643c5a5e4d84a741644b249ff5ee79934a5c1cb703628e21cc21a4eeb0b",
-      "library_sha256": "c94e610bed95cc0a55a3d0f21f5f3549ab609aab5776b85d4e79ae38216b9f5b",
-      "library_bytes": 17256,
+      "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
+      "library_bytes": 17192,
       "static_link": {
         "symbol": "codex_hia_utf8_prefix",
         "object": "utf8_prefix.namespaced.o",
         "archive": "libcodex_hia_utf8_prefix.a",
+        "archive_member": "hia.o",
         "archive_bytes": 5718,
         "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
         "object_sha256": "d3bd3368110567e86ee960df7ae070e16f51089c5d5ccdc5ed07a1c81400a0f1",
         "text_sha256": "53a871c90469ac7abc422832ae38af75ef3ba02799933a8ef4a10f9cff9082a1",
-        "defined_symbols": [
-          "codex_hia_utf8_prefix"
-        ],
-        "undefined_symbols": []
+        "defined_symbols": ["codex_hia_utf8_prefix"],
+        "undefined_symbols": [],
+        "library": "libcodex_hia_utf8_prefix.so",
+        "library_sha256": "1eb95d9b14f6b640ea8d825d4b41d966bcd7d3465568ac36057b900b7f2653c8"
+      }
+    },
+    "metric_tag": {
+      "source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+      "core_sha256": "9651924c897e3f4bdc276d698da9ff606a8f334c022b4cff42f4a206198c41d9",
+      "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
+      "library_bytes": 21288,
+      "static_link": {
+        "symbol": "codex_hia_metric_tag",
+        "object": "metric_tag.namespaced.o",
+        "archive": "libcodex_hia_metric_tag.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 11046,
+        "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae",
+        "object_sha256": "d9677eb3edb8b33580276d191663f7b8796c378948a01360c2ed2fd64ad44b2d",
+        "text_sha256": "39bf34094d4040e2f90d63902683c7c661972f7af5ab282814204f6f58e2f548",
+        "defined_symbols": ["codex_hia_metric_tag"],
+        "undefined_symbols": [],
+        "library": "libcodex_hia_metric_tag.so",
+        "library_sha256": "aca8249178a5aa60182120ba9b668aa4ba7ec994e0694d4f098718a671347f61"
+      }
+    },
+    "markdown_location": {
+      "source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+      "core_sha256": "09f1ca5eb6f6f48a2fd9afdb90a330023d5506d1fd453a77af4ebcceb44ffc4f",
+      "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
+      "library_bytes": 21288,
+      "static_link": {
+        "symbol": "codex_hia_markdown_location",
+        "object": "markdown_location.namespaced.o",
+        "archive": "libcodex_hia_markdown_location.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 9044,
+        "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
+        "object_sha256": "669a7edf77c4b867a78ca81f31dc1b35cf97ccd16d07d4307e75e2d7abf5e401",
+        "text_sha256": "ec108fdeef45b4987f982b3486fbf56fa588208cd845d94719431b2c63b9dc22",
+        "defined_symbols": ["codex_hia_markdown_location"],
+        "undefined_symbols": [],
+        "library": "libcodex_hia_markdown_location.so",
+        "library_sha256": "e9407071eb36013c150ce005d83fec0e57fa36ab7daa3dccb06034c732d011b7"
+      }
+    },
+    "ascii_json_fragment": {
+      "source_sha256": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+      "core_sha256": "75109c1a75aac0f1a2d4294d0ef1fc94598f68a8cb3c1f0272428562548775af",
+      "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
+      "library_bytes": 25384,
+      "static_link": {
+        "symbol": "codex_hia_ascii_json_fragment",
+        "object": "ascii_json_fragment.namespaced.o",
+        "archive": "libcodex_hia_ascii_json_fragment.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 13534,
+        "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
+        "object_sha256": "6f26f5ae6c0426b20125f267f8ebf70440ea69672f72a08a9eab0781145cdcdb",
+        "text_sha256": "12d5d738d58d36ef581e2b569d02ec7d8d3ee53bb42e188bda22f54d04c4a626",
+        "defined_symbols": ["codex_hia_ascii_json_fragment"],
+        "undefined_symbols": [],
+        "library": "libcodex_hia_ascii_json_fragment.so",
+        "library_sha256": "cbd9f78f814faf93704450fa9940ca83d660abeadbf4f516f25ec97c4b697fee"
       }
     }
+  },
+  "build_inputs": {
+    "toolchain_lock_sha256": "e8ea24597dddf226972deae8c22cb8ba0a56cfed5bfefb4cbdc1af5a09a5844e",
+    "build_driver_sha256": "eee6e29b460792f2d878900a538367eb054f4343b1ca92588bfad6f0905cf791",
+    "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+    "compiler_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0"
+  },
+  "build_report_sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195",
+  "production_dispatch_migrated": false,
+  "whole_codex_rewritten": false,
+  "legacy_source_retired": false,
+  "opt_in_production_callers_verified": true,
+  "production_algorithms": {
+    "seek_sequence": "patch context matching",
+    "utf8_prefix": "UTF-8 prefix selection",
+    "metric_tag": "metric-tag sanitizing",
+    "markdown_location": "Markdown location suffix normalization",
+    "ascii_json_fragment": "ASCII JSON string-fragment encoding"
   },
   "seek_sequence": {
     "schema": "codex.hia.seek-sequence-differential.v1",
@@ -93,7 +174,7 @@
     "oracle_output_sha256": "390ac047a58805e3541740db91d3d212f7e8fd3e5e46df5e4dbcb0f4176f52f3",
     "rust_source_sha256": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "hia_source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
-    "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d",
+    "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
     "symbol": "f0",
     "whole_codex_rewritten": false
   },
@@ -101,68 +182,145 @@
     "core_sha256": "60769338473242d4b88c290eb6413c972a7d6e9927c9d989ce3adee5645de0b5",
     "hia_source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "native_calls": 75109,
-    "native_sha256": "311fe6b2755189304992ce0fd95e934edffac39565c258029e3737a3c71f4e36",
+    "native_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
     "rust_oracle_calls": 2093,
-    "rust_source_sha256": "d2177bb4f4f1cdaa98793e8fd4e9dd7d64ac114a7718197f0b8a41368d3eda9c",
+    "rust_source_sha256": "5a48256f2f429170d845803602434bfbdf1fbd130e9fa99375b10074efff86c6",
     "suite": "codex_hia_utf8_boundaries",
     "vm_calls": 56
   },
-  "production_dispatch_migrated": false,
-  "whole_codex_rewritten": false,
-  "legacy_source_retired": false,
-  "scope": "Linux x86-64 GNU; B3 native fixed point, static source/artifact admission, original Rust differential oracles, actual feature-enabled and default crate suites, separately installed patch executable with original CLI parity, and strict native Clippy. Not whole-Codex/platform release qualification.",
-  "build_inputs": {
-    "toolchain_lock_sha256": "35d0de57f7fec7765a72b41bb5e79ec3b94545b8ff149572a6ef41bba485209a",
-    "build_driver_sha256": "eee6e29b460792f2d878900a538367eb054f4343b1ca92588bfad6f0905cf791",
-    "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
-    "compiler_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0"
-  },
-  "build_report_sha256": "d3b897c5e02be7b00abf61206522e94ea4c0f81b1a8aacd36543098fc5917120",
-  "native_string_caller": {
-    "passed": true,
-    "tests_passed": 5,
-    "tests_skipped": 0,
-    "original_rust_comparisons": 18559,
-    "allocation_free_calls": 2048,
-    "inputs": {
-      "public_source_sha256": "d2177bb4f4f1cdaa98793e8fd4e9dd7d64ac114a7718197f0b8a41368d3eda9c",
-      "public_function_sha256": "fc3805b201c1f11d5065239e072a618a1667fc851e8c82d8dd8177dea7f36ca7",
-      "adapter_sha256": "c09416c899e8554aa8e8903fb952b21e1751cdf1b06b25186079dcf333f8d489",
-      "hia_source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
-      "test_source_sha256": "7235787b03f3384686d8f3be5bd394b23d967aaf592e059fa62ce06dfea1e2d4",
-      "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
-      "build_report_sha256": "d3b897c5e02be7b00abf61206522e94ea4c0f81b1a8aacd36543098fc5917120"
+  "production_caller_differentials": {
+    "utf8_prefix": {
+      "schema": "codex.hia.native-string-caller.v1",
+      "passed": true,
+      "inputs": {
+        "public_source_sha256": "5a48256f2f429170d845803602434bfbdf1fbd130e9fa99375b10074efff86c6",
+        "public_function_sha256": "fc3805b201c1f11d5065239e072a618a1667fc851e8c82d8dd8177dea7f36ca7",
+        "adapter_sha256": "c09416c899e8554aa8e8903fb952b21e1751cdf1b06b25186079dcf333f8d489",
+        "hia_source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+        "test_source_sha256": "7235787b03f3384686d8f3be5bd394b23d967aaf592e059fa62ce06dfea1e2d4",
+        "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
+        "build_report_sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195"
+      },
+      "outputs": {
+        "reference_rlib_sha256": "cc056d3bc8262cbe962e762273f1ce3107f5f1228fda5f75af138126c0dd2883",
+        "native_test_binary_sha256": "7e15bc318cefc5bafd93f74f73fc1ade2febb37b19f11b5ab62a17cb0fbcd1f8"
+      },
+      "tests_passed": 5,
+      "tests_skipped": 0,
+      "original_rust_comparisons": 18559,
+      "allocation_free_calls": 2048,
+      "oracle": "public function compiled without hia-native from the actual source",
+      "caller": "public function compiled with hia-native and the production adapter",
+      "report_sha256": "776cfb20f76e31bb2b38fa16274c318521e8abc9adf8bd53d52d6d07ee70cb12"
     },
-    "outputs": {
-      "reference_rlib_sha256": "9d917d68d17ed619a52f880cd1f0923bd1b7679f449accb719ac73d70d7e008d",
-      "native_test_binary_sha256": "a88a2d55ea84647bc8ebcae4e4b87e7bd2dc395b1da8083e881d011507bcda27"
+    "metric_tag": {
+      "schema": "codex.hia.native-metric-caller.v1",
+      "passed": true,
+      "inputs": {
+        "public_source_sha256": "5a48256f2f429170d845803602434bfbdf1fbd130e9fa99375b10074efff86c6",
+        "public_function_sha256": "3d986faae6b0fca5085d7558677c1fe3b789d3767b1a06ef58edbad9375eb16f",
+        "adapter_sha256": "c74c9d5ffabaeefd125e240977dca2b02c2da0c2d9e658315faac0bb2036cd73",
+        "hia_source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+        "test_source_sha256": "3ddb875dbca6480d340f04e2df777e4b380294366107d05d238b3be3c9b60c64",
+        "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae",
+        "build_report_sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195"
+      },
+      "outputs": {
+        "reference_rlib_sha256": "2342d55ae75efa9c89a004a55665c1bcd0c6aec3e698d35854eeaa234d9fd1bf",
+        "native_test_binary_sha256": "2cca57e174915554dab2b97cc522688fe590c9ce357c5bf1904f6f243eb8530e"
+      },
+      "tests_passed": 6,
+      "tests_skipped": 0,
+      "original_rust_comparisons": 40992,
+      "oracle": "actual public function compiled without hia-native",
+      "caller": "actual public function, production adapter and native HIA archive",
+      "report_sha256": "0bde239aa87aafbe60e1a38501ecdae6706395341dea37f0256f121b89bfd1a6"
     },
-    "oracle": "public function compiled without hia-native from the actual source",
-    "caller": "public function compiled with hia-native and the production adapter"
-  },
-  "native_patch_caller": {
-    "tests_passed": 8,
-    "tests_skipped": 0,
-    "includes_large_payload_and_offset_table": true
-  },
-  "cargo_crate_tests": {
-    "packages": [
-      "codex-apply-patch",
-      "codex-utils-string"
-    ],
-    "native_feature": {
-      "passed": 122,
-      "skipped": 0
+    "markdown_location": {
+      "schema": "codex.hia.native-markdown-caller.v1",
+      "passed": true,
+      "inputs": {
+        "public_source_sha256": "5a48256f2f429170d845803602434bfbdf1fbd130e9fa99375b10074efff86c6",
+        "extracted_functions_sha256": "52561b4fa2b0c05d9486de4ebc598ac3bc1b63ab911321b90144237d70afbac8",
+        "adapter_sha256": "f893ae0c4ee9677a7556be5ca27c058584bd7e6d05530ec9ecd82b64bd66e7e1",
+        "hia_source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+        "test_source_sha256": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
+        "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
+        "build_report_sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195"
+      },
+      "outputs": {
+        "reference_rlib_sha256": "e0a8abe0f8d86fbdec093d0274bd8c0f24544672c6ed7d149b7d840c357b906b",
+        "native_test_binary_sha256": "388fbda06825e56820964d2660071b501b11169672366bb3e62c6b97eff614bc"
+      },
+      "tests_passed": 7,
+      "tests_skipped": 0,
+      "original_rust_comparisons": 164791,
+      "oracle": "actual public function and helper compiled without hia-native",
+      "caller": "actual public function, production adapter and native HIA archive",
+      "report_sha256": "9ab71eddbc1c3a0d57e89c0d0c86719789e99dee14351b685d68fba07b1f0bdf"
     },
-    "default_feature": {
-      "passed": 117,
-      "skipped": 0
+    "ascii_json_fragment": {
+      "schema": "codex.hia.native-ascii-json-caller.v1",
+      "passed": true,
+      "inputs": {
+        "codex-rs/utils/string/src/json.rs": "799b4f220ede9ba62ebb9fe90f66397dbdf35271a1ae289c5e78607260f24a0b",
+        "codex-rs/utils/string/src/hia_native_ascii_json.rs": "9a5b3fb5fd581012de872c3835f10d69a2be9b28fb594ee64f653bfd97cdcc39",
+        "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+        "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
+        "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
+        "build_report_sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195"
+      },
+      "test_binary_sha256": "401afac59e50e9bf3973e8ff77ca1f89bed448bbb685f64f790d05b46f3617e5",
+      "native_symbol_present": true,
+      "tests_passed": 7,
+      "skipped": 0,
+      "original_rust_comparisons": 27075,
+      "oracle": "actual complete string crate built without hia-native",
+      "report_sha256": "79dab1a28a7364ff3edae0dce37a6dc911b7db8075575feb57fb331ab1457eae"
+    }
+  },
+  "streaming_abi": {
+    "metric_tag": {
+      "schema": "codex.hia.metric-abi.v1",
+      "passed": true,
+      "native_calls": 10535,
+      "invalid_states": 9,
+      "capacity_failures": 4,
+      "stream_cases": 72,
+      "skipped": 0,
+      "library_sha256": "aca8249178a5aa60182120ba9b668aa4ba7ec994e0694d4f098718a671347f61",
+      "input_contract": "chunks of a complete valid UTF-8 string",
+      "report_sha256": "1e9a32fd65e79b12a2e245edd8d7e01a7d06a661c5196b013f63de13cc0ced16"
+    },
+    "markdown_location": {
+      "schema": "codex.hia.markdown-abi.v1",
+      "passed": true,
+      "native_calls": 1289,
+      "error_no_write_cases": 523,
+      "stream_cases": 170,
+      "skipped": 0,
+      "library_sha256": "e9407071eb36013c150ce005d83fec0e57fa36ab7daa3dccb06034c732d011b7",
+      "input_contract": "byte frames of a complete valid UTF-8 string; per-frame result length",
+      "error_contract": "no writes to output or workspace on any returned error",
+      "report_sha256": "10504d035fa2997d01853303a4ca73e44b6fd00cb8b5e13ef0f3fc66221f83cd"
+    },
+    "ascii_json_fragment": {
+      "schema": "codex.hia.ascii-json-abi.v1",
+      "passed": true,
+      "native_calls": 957,
+      "error_no_write_cases": 659,
+      "stream_cases": 90,
+      "skipped": 0,
+      "library_sha256": "cbd9f78f814faf93704450fa9940ca83d660abeadbf4f516f25ec97c4b697fee",
+      "framing": "borrowed UTF-8 windows; unconsumed partial scalar is presented again",
+      "error_contract": "all returned errors leave output and workspace unchanged",
+      "report_sha256": "21d83d08bc2a9efebb252b3b241fde29c9962f7ea97f711dee8b604bc14865e7"
     }
   },
   "build_receipt_tests": {
     "schema": "codex.hia.build-receipt-test.v1",
     "status": "passed",
-    "checks": 46,
+    "checks": 52,
     "cases": [
       "sha256-0",
       "sha256-1",
@@ -178,12 +336,18 @@
       "accepted-seek_sequence",
       "accepted-utf8_boundaries",
       "accepted-utf8_prefix",
+      "accepted-metric_tag",
+      "accepted-markdown_location",
+      "accepted-ascii_json_fragment",
       "changed-bytes-build.py",
       "changed-bytes-cargo_build.rs",
       "changed-bytes-toolchain.json",
       "changed-bytes-seek_sequence.hepta",
       "changed-bytes-utf8_boundaries.hepta",
       "changed-bytes-utf8_prefix.hepta",
+      "changed-bytes-metric_tag.hepta",
+      "changed-bytes-markdown_location.hepta",
+      "changed-bytes-ascii_json_fragment.hepta",
       "changed-bytes-build.json",
       "changed-bytes-seek_sequence.namespaced.o",
       "changed-bytes-libcodex_hia_seek_sequence.a",
@@ -198,9 +362,9 @@
       "invalid-build-state-status",
       "invalid-build-state-build_mode",
       "invalid-build-state-compiler_fixed_point",
-      "noncanonical-receipt-34",
-      "noncanonical-receipt-35",
-      "noncanonical-receipt-36",
+      "noncanonical-receipt-40",
+      "noncanonical-receipt-41",
+      "noncanonical-receipt-42",
       "missing-libdir",
       "unsupported-CARGO_CFG_TARGET_OS",
       "unsupported-CARGO_CFG_TARGET_ARCH",
@@ -212,23 +376,84 @@
       "python-duplicate-archive-rejected"
     ],
     "helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
-    "build_report_sha256": "d3b897c5e02be7b00abf61206522e94ea4c0f81b1a8aacd36543098fc5917120",
+    "build_report_sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195",
     "whole_codex_rewritten": false
   },
-  "opt_in_production_callers_verified": true,
-  "installed_patch_caller": {
+  "cargo_crate_tests": {
+    "packages": ["codex-apply-patch", "codex-utils-string"],
+    "native_feature": {
+      "passed": 135,
+      "skipped": 0,
+      "log_sha256": "7f0a4bcca6866087361f6458892957c582c4c0939a8242aaeaedefb7065942ec",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-apply-patch",
+        "-p",
+        "codex-utils-string",
+        "--features",
+        "hia-native"
+      ]
+    },
+    "default_feature": {
+      "passed": 125,
+      "skipped": 0,
+      "log_sha256": "20daaeacaf9af7db6a6698136cce687af2a4a9ff82aafccf1e01dc37b7e13fc4",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-apply-patch",
+        "-p",
+        "codex-utils-string"
+      ]
+    }
+  },
+  "strict_native_clippy": {
     "passed": true,
-    "cases_passed": 2,
+    "command": "cargo clippy --locked -p codex-apply-patch -p codex-utils-string --all-targets --features hia-native -- -D warnings",
+    "exit_code": 0,
+    "log_sha256": "bc7bb61e02ccb4c248a2f31b3b39295bd59e18a6df3cf67f53b4890f9998548c"
+  },
+  "installed_full_cli": {
+    "passed": true,
+    "qualification_checkpoint": "6-module component integration; symbol retention, relocated startup and patch parity. This does not execute every linked component or qualify the whole product.",
+    "cases_passed": 4,
+    "startup_cases_passed": 2,
     "skipped": 0,
-    "binary_sha256": "c9e35ec27307faf4e467f622b9891c776b08be382370f4ec2d538b1805d2e268",
-    "reference_binary_sha256": "47e2825f557b12b733c3c589e128bd2a2dad9ec1d9b337a2e6469c598ba3d0c4",
-    "separate_copy_matches_built_binary": true,
-    "native_symbol_definitions": 1,
+    "binary_sha256": "6584b7c53b7f528f425d1ec5ef697cb120182459dbf4921c6030fc8ee97fa961",
+    "reference_binary_sha256": "bf1e0fdeb776dfbf5f18cd9f34138c28ea476d7d714fa23230fb8ca60243e5f9",
+    "relocated_copies_match": true,
+    "native_symbols": [
+      "codex_hia_seek_sequence",
+      "codex_hia_utf8_prefix",
+      "codex_hia_metric_tag",
+      "codex_hia_markdown_location",
+      "codex_hia_ascii_json_fragment"
+    ],
     "reference_native_symbol_definitions": 0,
     "hia_dynamic_dependencies": [],
+    "startup_cases": [
+      {
+        "argument": "--help",
+        "passed": true,
+        "returncode": 0,
+        "original_output_matches": true
+      },
+      {
+        "argument": "--version",
+        "passed": true,
+        "returncode": 0,
+        "original_output_matches": true
+      }
+    ],
     "cases": [
       {
         "name": "legacy_lf_replacement",
+        "dispatch": "stdin",
         "preserve_line_endings": "0",
         "input_bytes": 2097152,
         "input_sha256": "e10a52248c63d3776d892d5dac081b91187cb10f2d7a9ff262b795a84937c0b2",
@@ -236,10 +461,12 @@
         "exact_contents_match": true,
         "earlier_fuzzy_candidate_unchanged": true,
         "later_ascii_candidate_replaced": true,
-        "line_endings_match": true
+        "line_endings_match": true,
+        "original_rust_cli_output_matches": true
       },
       {
         "name": "preserve_crlf",
+        "dispatch": "stdin",
         "preserve_line_endings": "1",
         "input_bytes": 2097152,
         "input_sha256": "e10a52248c63d3776d892d5dac081b91187cb10f2d7a9ff262b795a84937c0b2",
@@ -247,16 +474,379 @@
         "exact_contents_match": true,
         "earlier_fuzzy_candidate_unchanged": true,
         "later_ascii_candidate_replaced": true,
-        "line_endings_match": true
+        "line_endings_match": true,
+        "original_rust_cli_output_matches": true
+      },
+      {
+        "name": "legacy_lf_replacement",
+        "dispatch": "codex_arg1",
+        "preserve_line_endings": "0",
+        "input_bytes": 2097152,
+        "input_sha256": "e10a52248c63d3776d892d5dac081b91187cb10f2d7a9ff262b795a84937c0b2",
+        "output_sha256": "97645d7d83eee9a0f559ee72626b80b5d099eb3efe54c16a0de7f8cf11d6492c",
+        "exact_contents_match": true,
+        "earlier_fuzzy_candidate_unchanged": true,
+        "later_ascii_candidate_replaced": true,
+        "line_endings_match": true,
+        "original_rust_cli_output_matches": true
+      },
+      {
+        "name": "preserve_crlf",
+        "dispatch": "codex_arg1",
+        "preserve_line_endings": "1",
+        "input_bytes": 2097152,
+        "input_sha256": "e10a52248c63d3776d892d5dac081b91187cb10f2d7a9ff262b795a84937c0b2",
+        "output_sha256": "2a3d27bd60225e61836b645041b9dffd2a0090b85b01b0a2b472d9191945e09d",
+        "exact_contents_match": true,
+        "earlier_fuzzy_candidate_unchanged": true,
+        "later_ascii_candidate_replaced": true,
+        "line_endings_match": true,
+        "original_rust_cli_output_matches": true
       }
     ],
-    "original_rust_output_and_exit_parity": true,
     "sandbox_environment_preserved": true,
-    "report_sha256": "62e82d2aeb8d7eef54702902565016c099aa44cdd1d5f62e271f1d67ed8a85aa"
+    "report_sha256": "de11790fc8294df38fc35118c88f74ff90ff04df522ccd4fe6e84083648ef6d4"
   },
-  "strict_native_clippy": {
+  "product_integration_gates": {
     "passed": true,
-    "command": "just clippy -p codex-apply-patch -p codex-utils-string --features hia-native --locked --message-format=json",
-    "exit_code": 0
+    "scope": "Only the explicitly listed commands and summaries; not whole-Codex HIA ownership or release qualification.",
+    "results": [
+      {
+        "name": "native-cli-build",
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "codex-cli",
+          "--features",
+          "hia-native",
+          "--bin",
+          "codex"
+        ],
+        "exit": 0,
+        "log_sha256": "ff69710c1c672dba5d18ed9eda37a333d819b26c12c86d2bf5bea40b1e2f20d2",
+        "summary": []
+      },
+      {
+        "name": "native-core",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-core",
+          "--features",
+          "codex-apply-patch/hia-native,codex-utils-string/hia-native"
+        ],
+        "exit": 0,
+        "log_sha256": "34b7fa54b028606ad113e0a4d6461ddd03c23e8909227bfb9d66bb9c50917e3f",
+        "summary": [
+          "     Summary [  43.937s] 3872 tests run: 3872 passed (1 slow), 9 skipped"
+        ]
+      },
+      {
+        "name": "native-cli-tui",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-cli",
+          "-p",
+          "codex-arg0",
+          "-p",
+          "codex-tui",
+          "--features",
+          "hia-native"
+        ],
+        "exit": 0,
+        "log_sha256": "3633f3a4e7be873fa3f2998da2a9e041776feb813c25b54e2dda0007f1914994",
+        "summary": [
+          "     Summary [   9.849s] 4473 tests run: 4473 passed, 6 skipped"
+        ]
+      },
+      {
+        "name": "native-strict",
+        "command": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "codex-core",
+          "-p",
+          "codex-cli",
+          "-p",
+          "codex-arg0",
+          "-p",
+          "codex-tui",
+          "--all-targets",
+          "--features",
+          "codex-cli/hia-native",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "log_sha256": "4d9e88c607602567965559d67af87dbc705b73d78f616802558237d7670560f5",
+        "summary": []
+      },
+      {
+        "name": "default-cli-build",
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "codex-cli",
+          "--bin",
+          "codex"
+        ],
+        "exit": 0,
+        "log_sha256": "d8de2fb0113ca7478d33ca187080634b28b15c80dee39895173282b2a3e8950c",
+        "summary": []
+      },
+      {
+        "name": "installed-native-cli",
+        "command": [
+          "/usr/bin/python3",
+          "-B",
+          "/home/qq/codex-hia-work/a90d-integrated-20261114/codex/hia/tests/test_installed_codex.py",
+          "--binary",
+          "/home/qq/codex-hia-work/a90d-integrated-20261114/native-codex-six-v1",
+          "--reference-binary",
+          "/home/qq/codex-hia-work/a90d-integrated-20261114/original-codex-six-v1",
+          "--report",
+          "/home/qq/codex-hia-work/a90d-integrated-20261114/six-product-v1-installed-codex.json"
+        ],
+        "exit": 0,
+        "log_sha256": "8d43bdc1ef4cd0b037d9ed7dff82ffd2081aadc1a6db1d52be8c041d99ccda7a",
+        "summary": [
+          "PASS full Codex --help: original Rust parity",
+          "PASS full Codex --version: original Rust parity",
+          "PASS legacy_lf_replacement: 2097152 input bytes, later ASCII match, original Rust parity",
+          "PASS preserve_crlf: 2097152 input bytes, later ASCII match, original Rust parity",
+          "PASS legacy_lf_replacement: 2097152 input bytes, later ASCII match, original Rust parity",
+          "PASS preserve_crlf: 2097152 input bytes, later ASCII match, original Rust parity"
+        ]
+      }
+    ],
+    "report_sha256": "2c3ec730296db3d0aef54406fdf911388cfac82429a25a42298e98ca34ba2536",
+    "consumer_tests": {
+      "native-core": {
+        "executed": 3872,
+        "passed": 3872,
+        "skipped": 9,
+        "skipped_counted_as_passed": false,
+        "log_sha256": "34b7fa54b028606ad113e0a4d6461ddd03c23e8909227bfb9d66bb9c50917e3f"
+      },
+      "native-cli-tui": {
+        "executed": 4473,
+        "passed": 4473,
+        "skipped": 6,
+        "skipped_counted_as_passed": false,
+        "log_sha256": "3633f3a4e7be873fa3f2998da2a9e041776feb813c25b54e2dda0007f1914994"
+      }
+    },
+    "source_snapshot_sha256": "26bceba19b2b7fbed64a86f814bf4d7c58eeb1dc9006da1651cc02dd47e06a15",
+    "source_snapshot_paths": 9933,
+    "source_unchanged": true,
+    "durable_job_id": "1a1db489719-392-1924",
+    "whole_workspace_requalification": "passed_default_linux_gnu_tests",
+    "native_windows_runtime": "pending"
+  },
+  "scope": "Linux x86-64 GNU; 6 B3 modules and 5 opt-in production algorithms. The recorded component, consumer and installation checkpoints do not establish whole capability owners, default dispatch, cross-platform release support or full compiler/runtime ownership.",
+  "evidence_reports": {
+    "build": {
+      "sha256": "f692859a9195b0cc1453e98f223a29a0f6b4c6978727f3fbb8072e7654698195",
+      "bytes": 134035
+    },
+    "source_snapshot": {
+      "sha256": "5e8104b085bfda13e7a8420449661b1ca4bbbe62d6db13d70e9fa4c7ac860f43",
+      "bytes": 1310
+    },
+    "results": {
+      "sha256": "788e59fd0bb95e7e5838e202537406830c5d569486cc6d49ef5d7a2a2bd2ebbf",
+      "bytes": 9444
+    },
+    "seek_sequence": {
+      "sha256": "203c1acec06c710c6db76ec62d4ea22c064e7b353033e941816fe7b2a586152b",
+      "bytes": 675
+    },
+    "utf8_boundaries": {
+      "sha256": "b1952a32605f5d342ce93857a4ef7b915d1d75eb455aa2828f84f6525319ca4a",
+      "bytes": 470
+    },
+    "caller:utf8_prefix": {
+      "sha256": "776cfb20f76e31bb2b38fa16274c318521e8abc9adf8bd53d52d6d07ee70cb12",
+      "bytes": 4076
+    },
+    "caller:metric_tag": {
+      "sha256": "0bde239aa87aafbe60e1a38501ecdae6706395341dea37f0256f121b89bfd1a6",
+      "bytes": 4161
+    },
+    "caller:markdown_location": {
+      "sha256": "9ab71eddbc1c3a0d57e89c0d0c86719789e99dee14351b685d68fba07b1f0bdf",
+      "bytes": 4348
+    },
+    "caller:ascii_json_fragment": {
+      "sha256": "79dab1a28a7364ff3edae0dce37a6dc911b7db8075575feb57fb331ab1457eae",
+      "bytes": 124386
+    },
+    "abi:metric_tag": {
+      "sha256": "1e9a32fd65e79b12a2e245edd8d7e01a7d06a661c5196b013f63de13cc0ced16",
+      "bytes": 323
+    },
+    "abi:markdown_location": {
+      "sha256": "10504d035fa2997d01853303a4ca73e44b6fd00cb8b5e13ef0f3fc66221f83cd",
+      "bytes": 415
+    },
+    "abi:ascii_json_fragment": {
+      "sha256": "21d83d08bc2a9efebb252b3b241fde29c9962f7ea97f711dee8b604bc14865e7",
+      "bytes": 409
+    },
+    "receipts": {
+      "sha256": "565030c5771d28984d51ae6d7dca263270c3c54787c5f5f10150dd3008f2e110",
+      "bytes": 2019
+    },
+    "installed_full_cli": {
+      "sha256": "de11790fc8294df38fc35118c88f74ff90ff04df522ccd4fe6e84083648ef6d4",
+      "bytes": 19948
+    },
+    "product_results": {
+      "sha256": "2c3ec730296db3d0aef54406fdf911388cfac82429a25a42298e98ca34ba2536",
+      "bytes": 4434
+    },
+    "product_complete": {
+      "sha256": "5c4f85c1d871e20d4c4f057b3c55d1481423906e17cd9e09f54a7553b0a4b4a5",
+      "bytes": 449
+    },
+    "product_terminal": {
+      "sha256": "725a78f031b80151de140dacf58998ebe53f3711e847cd6d0aa244a0299caecc",
+      "bytes": 731
+    },
+    "product_events": {
+      "sha256": "17db719866dc6db614bd004720ae2d1ba0d5f8b0dbf2667d6b7a593e112b9dd5",
+      "bytes": 5472
+    }
+  },
+  "current_source_inputs": {
+    "hia/toolchain.json": "e8ea24597dddf226972deae8c22cb8ba0a56cfed5bfefb4cbdc1af5a09a5844e",
+    "hia/build.py": "eee6e29b460792f2d878900a538367eb054f4343b1ca92588bfad6f0905cf791",
+    "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+    "codex-rs/utils/string/src/lib.rs": "5a48256f2f429170d845803602434bfbdf1fbd130e9fa99375b10074efff86c6",
+    "codex-rs/utils/string/src/json.rs": "799b4f220ede9ba62ebb9fe90f66397dbdf35271a1ae289c5e78607260f24a0b",
+    "codex-rs/utils/string/src/hia_native_ascii_json.rs": "9a5b3fb5fd581012de872c3835f10d69a2be9b28fb594ee64f653bfd97cdcc39",
+    "codex-rs/utils/string/src/ascii_json_tests.rs": "7e52a8777264b1b13528bf9b81ab5998674239f30425592e97349633c5cc9d05",
+    "codex-rs/utils/string/build.rs": "d0d05b8c89f9d28dc11b1ea11ec17bbfcd51281edd78dedaff5b74c995b08e49",
+    "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+    "hia/tests/native_ascii_json_caller.rs": "1f88e72e6448b096d922ec10665401767a482edb37663af7bd4f6cd95c720520",
+    "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
+    "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
+    "hia/tests/test_installed_codex.py": "b0276173d5b246a6914a492a0c832361b3b64f1c7f9840efd0acec2e5aeaeee7",
+    ".github/workflows/codex-hia-native.yml": "4a0635c7f33bcc407371766aa1fe10cd28a83f4c82caf5a5c3245f83d938b76a",
+    "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+    "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+    "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+    "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+    "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+    "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
+    "codex-rs/utils/string/src/hia_native.rs": "c09416c899e8554aa8e8903fb952b21e1751cdf1b06b25186079dcf333f8d489",
+    "hia/tests/native_string_caller.rs": "7235787b03f3384686d8f3be5bd394b23d967aaf592e059fa62ce06dfea1e2d4",
+    "codex-rs/utils/string/src/hia_native_metric.rs": "c74c9d5ffabaeefd125e240977dca2b02c2da0c2d9e658315faac0bb2036cd73",
+    "hia/tests/native_metric_caller.rs": "3ddb875dbca6480d340f04e2df777e4b380294366107d05d238b3be3c9b60c64",
+    "codex-rs/utils/string/src/hia_native_markdown.rs": "f893ae0c4ee9677a7556be5ca27c058584bd7e6d05530ec9ecd82b64bd66e7e1",
+    "hia/tests/native_markdown_caller.rs": "f05e8d6bffd6ce20ca506648934d90396d00c24d47580b04062c463ea94a03c9",
+    "codex-rs/protocol/src/permission_profile_intersection_tests.rs": "b5616c6bb461def702004e14a4f1fb4224165dceb1e619c24c719cc8b45d7c70"
+  },
+  "workspace_requalification": {
+    "status": "passed",
+    "target": "x86_64-unknown-linux-gnu",
+    "rust_version": "1.96.1",
+    "host": "ai395",
+    "feature_mode": "default",
+    "durable_job_id": "1a1db9b6e12-392-1a21",
+    "durable_terminal_exit": 0,
+    "tests": {
+      "executed": 19370,
+      "passed": 19370,
+      "skipped": 53,
+      "skipped_counted_as_passed": false,
+      "skip_configuration_changed": false
+    },
+    "source_snapshot_sha256": "35f57e9817309b42ebdfab7e69ac68f7646af63553a65e174e178e82af88827d",
+    "source_snapshot_paths": 9933,
+    "tested_git_tree": "f4294d34623867b391937cac8d8ce222b287dbf1",
+    "source_unchanged_during_tests": true,
+    "source_unchanged_after_lint_format": true,
+    "results": [
+      {
+        "name": "protocol-owner",
+        "command": ["just", "test", "--locked", "-p", "codex-protocol"],
+        "exit": 0,
+        "log_sha256": "c2ac090d0986fbf3af42a3384c29f422e02ca5f68780de32debe946c3fef679d",
+        "summary": [
+          "     Summary [   0.133s] 301 tests run: 301 passed, 0 skipped"
+        ]
+      },
+      {
+        "name": "protocol-ambient-unset",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-protocol",
+          "effective_workspace_intersection_preserves_network_metadata_and_temp"
+        ],
+        "exit": 0,
+        "log_sha256": "7f97616adc4a2f9bb9e1209ac418db58a0779df52f5f498bb05f69b6700abbe9",
+        "summary": [
+          "     Summary [   0.007s] 1 test run: 1 passed, 300 skipped"
+        ]
+      },
+      {
+        "name": "full-tests",
+        "command": ["just", "test", "--locked"],
+        "exit": 0,
+        "log_sha256": "7f2a5241d08f1186de451bc0247fb6d43d274056be5a0ec849a8c6f0477bc539",
+        "summary": [
+          "     Summary [ 256.760s] 19370 tests run: 19370 passed (5 slow), 53 skipped"
+        ]
+      },
+      {
+        "name": "protocol-strict",
+        "command": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "codex-protocol",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "log_sha256": "bfef48b1577c9bc717430b09666aef7cda55254d64a596863e3df1511cddc98c",
+        "summary": []
+      },
+      {
+        "name": "diff-check",
+        "command": ["git", "diff", "--check"],
+        "exit": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary": []
+      }
+    ],
+    "report_sha256": "fcaab1f2a4ce4578f447451b3807bef5839ec37263eacfbcbdb70fd704a2313e",
+    "completion_report_sha256": "c1636da3d833ee344a49b144408758b65be76d2cd0487ffa0bc96752462d7132",
+    "temp_capacity_report_sha256": "101d1172c309ee5518532a206af1c5d8cc5edd189fd42ffb4a6d131ca1ed5c66",
+    "fixture_correction": "An isolated child uses sibling workspace and TMPDIR directories; original workspace/network/metadata assertions remain and actual temp Write access is asserted. Production permission behavior is unchanged.",
+    "publication_changes_after_test": [
+      "hia/README.md",
+      "hia/verification.json"
+    ],
+    "scope": "Full default Linux workspace test gate only; skipped tests, other platforms, whole HIA capability ownership and default native release dispatch are not qualified."
   }
 }

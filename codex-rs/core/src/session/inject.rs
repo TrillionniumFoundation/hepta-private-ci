@@ -1,6 +1,8 @@
 use super::TurnInput as PendingTurnInput;
+use super::mailbox_retry::MailboxEnqueueOutcome;
 use super::session::Session;
 use super::turn_context::TurnContext;
+use super::turn_input_retry::FinishRetryState;
 use crate::codex_thread::InjectIfRunningError;
 use codex_features::Feature;
 use codex_history::CodexHarnessMetadata;
@@ -11,6 +13,39 @@ use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::InterAgentCommunication;
 
 impl Session {
+    pub(crate) async fn enqueue_mailbox_communication(
+        &self,
+        communication: InterAgentCommunication,
+        parent_turn_id: Option<String>,
+        root_turn_id: Option<String>,
+    ) -> CodexResult<()> {
+        self.enqueue_mailbox_communication_impl(None, communication, parent_turn_id, root_turn_id)
+            .await
+            .map(|_| ())
+    }
+
+    pub(super) async fn enqueue_mailbox_communication_for_submission(
+        &self,
+        submission_id: &str,
+        communication: InterAgentCommunication,
+        parent_turn_id: Option<String>,
+        root_turn_id: Option<String>,
+    ) -> CodexResult<MailboxEnqueueOutcome> {
+        if !self.pending_mailbox_retries.contains(submission_id) {
+            return self
+                .enqueue_mailbox_communication(communication, parent_turn_id, root_turn_id)
+                .await
+                .map(|()| MailboxEnqueueOutcome::Enqueued);
+        }
+        self.enqueue_mailbox_communication_impl(
+            Some(submission_id),
+            communication,
+            parent_turn_id,
+            root_turn_id,
+        )
+        .await
+    }
+
     /// Accepts model-visible mailbox input only after revoking any recovery
     /// authority for the request it can affect. Keep the active-turn lock
     /// across the durable revoke and queue append so controlled detach cannot
@@ -19,41 +54,49 @@ impl Session {
         clippy::await_holding_invalid_type,
         reason = "active turn checks, recovery revoke, and mailbox enqueue must remain atomic"
     )]
-    pub(crate) async fn enqueue_mailbox_communication(
+    async fn enqueue_mailbox_communication_impl(
         &self,
+        submission_id: Option<&str>,
         communication: InterAgentCommunication,
         parent_turn_id: Option<String>,
         root_turn_id: Option<String>,
-    ) -> CodexResult<()> {
-        if !self.enabled(Feature::HeptaTurnRecovery) {
-            let active = self.active_turn.lock().await;
-            if self.shutdown_started()
-                || self.has_pending_task_terminalization()
-                || active
-                    .as_ref()
-                    .is_some_and(|active_turn| active_turn.task_terminalization.is_some())
-            {
-                return Err(CodexErr::InvalidRequest(
-                    "turn is terminalizing and cannot accept inter-agent communication".to_string(),
-                ));
+    ) -> CodexResult<MailboxEnqueueOutcome> {
+        let active = self.active_turn.lock().await;
+        let terminalizing = || {
+            CodexErr::InvalidRequest(
+                "turn is terminalizing and cannot accept inter-agent communication".to_string(),
+            )
+        };
+        if self.shutdown_started() {
+            return Err(terminalizing());
+        }
+        let has_terminalization_marker = active
+            .as_ref()
+            .is_some_and(|active_turn| active_turn.task_terminalization.is_some());
+        if self.has_pending_task_terminalization() || has_terminalization_marker {
+            match self.finish_retry_state(active.as_ref()) {
+                FinishRetryState::Finishing(fences) => {
+                    if let Some(submission_id) = submission_id
+                        && self
+                            .pending_mailbox_retries
+                            .retry_after_finish(submission_id, fences)
+                    {
+                        return Ok(MailboxEnqueueOutcome::Deferred);
+                    }
+                    return Err(terminalizing());
+                }
+                // The exact owner may retire between the initial observation
+                // and capture. A cleared registry and slot need no retry.
+                FinishRetryState::Clear if !has_terminalization_marker => {}
+                FinishRetryState::Clear | FinishRetryState::Blocked => return Err(terminalizing()),
             }
+        }
+        if !self.enabled(Feature::HeptaTurnRecovery) {
             self.input_queue
                 .enqueue_mailbox_communication(communication, parent_turn_id, root_turn_id)
                 .await;
             drop(active);
-            return Ok(());
-        }
-
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
-            return Err(CodexErr::InvalidRequest(
-                "turn is terminalizing and cannot accept inter-agent communication".to_string(),
-            ));
-        }
-        let active = self.active_turn.lock().await;
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
-            return Err(CodexErr::InvalidRequest(
-                "turn is terminalizing and cannot accept inter-agent communication".to_string(),
-            ));
+            return Ok(MailboxEnqueueOutcome::Enqueued);
         }
         if let Some(active_turn) = active.as_ref() {
             if active_turn.task_terminalization.is_some() {
@@ -73,7 +116,7 @@ impl Session {
             self.input_queue
                 .enqueue_mailbox_communication(communication, parent_turn_id, root_turn_id)
                 .await;
-            return Ok(());
+            return Ok(MailboxEnqueueOutcome::Enqueued);
         }
 
         let consumed_recovery = self.consume_recovery_candidate_for_mutation().await?;
@@ -84,7 +127,7 @@ impl Session {
             self.settle_consumed_recovery_status();
         }
         drop(active);
-        Ok(())
+        Ok(MailboxEnqueueOutcome::Enqueued)
     }
 
     /// Returns the input if there is no active turn to inject into.

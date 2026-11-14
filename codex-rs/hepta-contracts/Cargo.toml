@@ -25,6 +25,9 @@ serde_json = { workspace = true }
 sha2 = { workspace = true }
 zeroize = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
 [dev-dependencies]
 codex-utils-cargo-bin = { workspace = true }
 pretty_assertions = { workspace = true }

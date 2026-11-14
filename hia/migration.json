@@ -80,14 +80,14 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_and_two_components_passed",
+    "qualification_status": "three_generation_fixed_point_6_modules_and_5_opt_in_algorithms_passed",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "B1/B2/B3 compiler byte equality and original-Rust differential tests of seek_sequence and utf8_boundaries.",
+    "qualification_scope": "B1/B2/B3 byte equality; 6 native modules; original-Rust and ABI comparisons; 5 opt-in production algorithms; listed Linux GNU caller/consumer gates and relocated full CLI symbol/startup/patch checks. Whole capability owners, default releases and other platforms remain pending.",
     "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -127,15 +127,17 @@
       "validation": {
         "native_selfhost": {
           "status": "passed",
-          "rust_version": "1.95.0",
-          "host": "desktop",
+          "rust_version": "1.96.1",
+          "host": "ai395",
           "valid_cases": 2327,
           "invalid_cases": 86,
           "buffer_boundary_calls": 135,
           "original_rust_comparison": true,
           "artifact_generation": "B3",
           "report": "hia/verification.json",
-          "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d"
+          "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
+          "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+          "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1"
         },
         "production_dispatch": {
           "status": "native_linux_crate_tests_passed",
@@ -175,8 +177,8 @@
       "validation": {
         "native_selfhost": {
           "status": "passed",
-          "rust_version": "1.95.0",
-          "host": "desktop",
+          "rust_version": "1.96.1",
+          "host": "ai395",
           "tests": 6,
           "skipped": 0,
           "native_calls": 75109,
@@ -184,7 +186,9 @@
           "core_vm_calls": 56,
           "artifact_generation": "B3",
           "report": "hia/verification.json",
-          "library_sha256": "311fe6b2755189304992ce0fd95e934edffac39565c258029e3737a3c71f4e36"
+          "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
+          "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+          "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17"
         },
         "production_dispatch": {
           "status": "pending"
@@ -212,7 +216,199 @@
         "hia/tests/test_native_string_caller.py",
         "hia/tests/native_string_caller.rs",
         "codex-rs/utils/string/src/hia_native_tests.rs"
-      ]
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+          "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
+          "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
+          "tests": 5,
+          "skipped": 0,
+          "original_rust_comparisons": 18559
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_utf8_prefix",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "metric_tag",
+      "hia_source": "hia/metric_tag.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "sanitize_metric_tag_value",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_metric_tag",
+        "source_contract": "Successive chunks of a complete valid UTF-8 string; chunks may split a scalar.",
+        "maximum_chunk_bytes": 1048576,
+        "output_capacity": 256,
+        "workspace_bytes": 32,
+        "workspace": "Initially zero. u64 count and last-non-underscore position saturate at 257; u64 alphanumeric flag; final flag byte 24; finalized byte 25; reserved bytes 26..31 preserved.",
+        "nonfinal_success_return": 0,
+        "final_success_return": "1..256",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_effect": "Output and workspace unchanged."
+      },
+      "behavior": [
+        "Retain ASCII alphanumeric characters and ._-/; replace each other Unicode scalar with one underscore.",
+        "Trim leading and trailing underscores; select unspecified when the entire input contains no ASCII alphanumeric character.",
+        "Otherwise retain the first 256 bytes of the trimmed result, including when the alphanumeric character occurs after byte 256.",
+        "Bounded streaming buffers preserve behavior for arbitrary valid string lengths."
+      ],
+      "tests": [
+        "hia/tests/test_native_metric_caller.py",
+        "hia/tests/native_metric_caller.rs",
+        "hia/tests/test_metric_tag_abi.py",
+        "codex-rs/utils/string/src/hia_native_metric_tests.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "tests": 6,
+          "skipped": 0,
+          "original_rust_comparisons": 40992,
+          "abi_native_calls": 10535,
+          "report": "hia/verification.json",
+          "source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+          "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
+          "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae"
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_metric_tag",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "markdown_location",
+      "hia_source": "hia/markdown_location.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "normalize_markdown_hash_location_suffix",
+      "interface": {
+        "entry": "codex_hia_markdown_location",
+        "source_contract": "Successive byte windows of a valid UTF-8 string; windows may split scalars.",
+        "maximum_frame_bytes": 4096,
+        "output_capacity": "at least the current source length",
+        "workspace_bytes": 2,
+        "workspace": "Byte 0 holds the grammar phase 0..6 or finalized phase 7; byte 1 is the final-frame flag 0 or 1.",
+        "success_return": "current-frame output bytes, including zero",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "invalid_format_return": 4294967293,
+        "error_effect": "The current call leaves output and workspace unchanged; prior successful frames remain committed."
+      },
+      "behavior": [
+        "Require # and an initial L; the optional range starts at the first hyphen and requires another L.",
+        "Replace the initial # with a colon and omit each endpoint's initial L.",
+        "Replace the first C in each endpoint with a colon; preserve later C and hyphen bytes exactly.",
+        "Preserve the original acceptance of empty and nonnumeric endpoint bodies; retain Unicode bytes unchanged."
+      ],
+      "tests": [
+        "hia/tests/test_native_markdown_caller.py",
+        "hia/tests/native_markdown_caller.rs",
+        "hia/tests/test_markdown_location_abi.py",
+        "codex-rs/utils/string/src/hia_native_markdown_tests.rs"
+      ],
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+          "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
+          "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
+          "tests": 7,
+          "skipped": 0,
+          "original_rust_comparisons": 164791,
+          "abi_native_calls": 1289
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_markdown_location",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "ascii_json_fragment",
+      "hia_source": "hia/ascii_json_fragment.hepta",
+      "source_path": "codex-rs/utils/string/src/json.rs",
+      "source_function": "AsciiJsonFormatter::write_string_fragment",
+      "interface": {
+        "entry": "codex_hia_ascii_json_fragment",
+        "source_contract": "Borrowed UTF-8 windows; re-present an unconsumed partial scalar with the next window.",
+        "maximum_frame_bytes": 4096,
+        "output_capacity": "8 + 3 * current source length",
+        "output_wire": "u64 consumed-source-prefix length little-endian followed by escaped bytes",
+        "workspace_bytes": 2,
+        "workspace": "Byte 0 is open (0) or finalized (1); byte 1 is the final-frame flag 0 or 1.",
+        "success_return": "total output bytes including the eight-byte header",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "invalid_utf8_return": 4294967293,
+        "error_effect": "The current call leaves output and workspace unchanged; prior writer effects are not rolled back."
+      },
+      "behavior": [
+        "Preserve ASCII fragment bytes and encode other Unicode scalars as lowercase JSON Unicode escapes, including surrogate pairs.",
+        "Validate canonical UTF-8; a nonfinal incomplete scalar remains unconsumed, while a final incomplete scalar is rejected.",
+        "Keep Serde's surrounding JSON serialization, control-character escaping and writer-error propagation unchanged."
+      ],
+      "tests": [
+        "hia/tests/test_native_ascii_json_caller.py",
+        "hia/tests/native_ascii_json_caller.rs",
+        "hia/tests/test_ascii_json_abi.py",
+        "codex-rs/utils/string/src/ascii_json_tests.rs"
+      ],
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+          "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
+          "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
+          "tests": 7,
+          "skipped": 0,
+          "original_rust_comparisons": 27075,
+          "abi_native_calls": 957
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_ascii_json_fragment",
+          "default_release_migrated": false
+        }
+      }
     }
   ],
   "capabilities": [
@@ -434,10 +630,13 @@
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers"
       ],
-      "next_implementation": "Complete platform/default release gates and remaining truncation, metric, UUID, JSON and location helpers.",
+      "next_implementation": "Complete middle truncation, budget accounting and UUID helpers, plus the remaining owner/default-release/platform gates. JSON serialization outside the fragment encoder remains Rust.",
       "candidate_modules": [
         "utf8_boundaries",
-        "utf8_prefix"
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment"
       ]
     },
     {
@@ -1952,6 +2151,15 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_source_and_artifact_mutation_tests_passed"
+    "status": "current_source_and_artifact_mutation_tests_passed",
+    "accepted_modules": [
+      "seek_sequence",
+      "utf8_boundaries",
+      "utf8_prefix",
+      "metric_tag",
+      "markdown_location",
+      "ascii_json_fragment"
+    ],
+    "checks_passed": 52
   }
 }

@@ -1,24 +1,25 @@
 use super::*;
 use crate::config::NetworkProxyConfig;
 use crate::state::network_proxy_state_for_policy;
+use codex_utils_rustls_provider::ensure_rustls_crypto_provider;
 use pretty_assertions::assert_eq;
+use rama_crypto::dep::rcgen::BasicConstraints;
+use rama_crypto::dep::rcgen::CertificateParams;
+use rama_crypto::dep::rcgen::DistinguishedName;
+use rama_crypto::dep::rcgen::DnType;
+use rama_crypto::dep::rcgen::ExtendedKeyUsagePurpose;
+use rama_crypto::dep::rcgen::IsCa;
+use rama_crypto::dep::rcgen::Issuer;
+use rama_crypto::dep::rcgen::KeyPair;
+use rama_crypto::dep::rcgen::KeyUsagePurpose;
+use rama_crypto::dep::rcgen::PKCS_ECDSA_P256_SHA256;
+use rama_crypto::pki_types::CertificateDer;
+use rama_crypto::pki_types::PrivateKeyDer;
+use rama_crypto::pki_types::pem::PemObject;
 use rama_http::StatusCode;
 use rama_http::Version;
 use rama_net::address::Host;
 use rama_net::address::HostWithPort;
-use rama_tls_rustls::dep::pki_types::CertificateDer;
-use rama_tls_rustls::dep::pki_types::PrivateKeyDer;
-use rama_tls_rustls::dep::pki_types::pem::PemObject;
-use rama_tls_rustls::dep::rcgen::BasicConstraints;
-use rama_tls_rustls::dep::rcgen::CertificateParams;
-use rama_tls_rustls::dep::rcgen::DistinguishedName;
-use rama_tls_rustls::dep::rcgen::DnType;
-use rama_tls_rustls::dep::rcgen::ExtendedKeyUsagePurpose;
-use rama_tls_rustls::dep::rcgen::IsCa;
-use rama_tls_rustls::dep::rcgen::Issuer;
-use rama_tls_rustls::dep::rcgen::KeyPair;
-use rama_tls_rustls::dep::rcgen::KeyUsagePurpose;
-use rama_tls_rustls::dep::rcgen::PKCS_ECDSA_P256_SHA256;
 use rama_tls_rustls::dep::tokio_rustls::TlsAcceptor;
 use std::collections::HashMap;
 use std::fs;
@@ -89,7 +90,16 @@ async fn mitm_upstream_client_trusts_startup_custom_ca() {
     let acceptor = TlsAcceptor::from(Arc::new(server_config));
     let server = tokio::spawn(async move {
         let (stream, _) = listener.accept().await.unwrap();
+        assert!(
+            acceptor.accept(stream).await.is_err(),
+            "the default client must reject an untrusted test CA"
+        );
+        let (stream, _) = listener.accept().await.unwrap();
         let mut stream = acceptor.accept(stream).await.unwrap();
+        assert_eq!(
+            stream.get_ref().1.alpn_protocol(),
+            Some(b"http/1.1".as_slice())
+        );
         let mut request = [0; 4096];
         let bytes_read = stream.read(&mut request).await.unwrap();
         assert!(bytes_read > 0);
@@ -102,6 +112,20 @@ async fn mitm_upstream_client_trusts_startup_custom_ca() {
     let mut config = NetworkProxyConfig::default();
     config.set_allowed_domains(vec!["localhost".to_string()]);
     let state = Arc::new(network_proxy_state_for_policy(config));
+    let default_client = UpstreamClient::direct(Arc::clone(&state));
+    let untrusted = default_client
+        .serve(
+            Request::builder()
+                .version(Version::HTTP_2)
+                .uri(format!("https://localhost:{}/", address.port()))
+                .body(Body::empty())
+                .unwrap(),
+        )
+        .await;
+    assert!(
+        untrusted.is_err(),
+        "the default root store must not trust the startup-only CA"
+    );
     let client = UpstreamClient::direct_with_tls_root_store(state, roots);
     let response = client
         .serve(

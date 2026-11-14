@@ -74,7 +74,7 @@ pub(crate) fn load_plugin_metrics_operations(
     if contents.len() as u64 > MAX_ANALYTICS_MANIFEST_BYTES {
         return None;
     }
-    let manifest: AnalyticsManifest = serde_yaml::from_slice(&contents).ok()?;
+    let manifest: AnalyticsManifest = yaml_serde::from_slice(&contents).ok()?;
     validate_manifest(manifest, plugin_root)
 }
 
@@ -156,3 +156,7 @@ fn valid_identifier(value: &str) -> bool {
             character.is_ascii_lowercase() || character.is_ascii_digit() || character == '_'
         })
 }
+
+#[cfg(test)]
+#[path = "plugin_metrics_yaml_tests.rs"]
+mod yaml_tests;

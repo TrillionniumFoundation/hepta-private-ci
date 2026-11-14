@@ -27,11 +27,10 @@ manual_rust_test_targets="$(
     --output=label \
     -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
 )"
-if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
-  # Non-Windows clippy jobs lint the native test binaries; the
-  # Windows-cross binaries exist only for the fast Windows test leg.
-  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
-elif [[ $windows_cross_compile -eq 1 ]]; then
+# Native Windows query output may use CRLF; normalize labels before suffix
+# matching so incompatible helper targets cannot leak through the filter.
+manual_rust_test_targets="${manual_rust_test_targets//$'\r'/}"
+if [[ $windows_cross_compile -eq 1 ]]; then
   # `bazel query` is intentionally pre-analysis and does not remove targets
   # made incompatible by `target_compatible_with`. Sharded integration tests
   # add native-only manual helpers such as `core-all-test-bin`, plus separate
@@ -39,6 +38,10 @@ elif [[ $windows_cross_compile -eq 1 ]]; then
   # the Windows helpers and unit-test helpers, but do not pass the native-only
   # sharded integration helpers as explicit clippy targets.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-test-bin$' || true)"
+else
+  # Native jobs, including Windows MSVC, lint native test binaries. Only an
+  # explicit Windows-cross request may select the gnullvm-only helpers.
+  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
 fi
 
 printf '%s\n' \

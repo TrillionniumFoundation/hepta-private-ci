@@ -117,3 +117,75 @@ fn preserves_overlong_descriptions_and_short_descriptions() {
         }
     );
 }
+
+#[test]
+fn yaml_scalars_anchors_and_null_options_keep_frontmatter_contract()
+-> Result<(), super::SkillParseError> {
+    for (frontmatter, expected) in [
+        (
+            "name: 42\ndescription: true\nmetadata:\n  short-description: 0x2a\n",
+            ParsedSkillFrontmatter {
+                name: "42".to_string(),
+                description: "true".to_string(),
+                short_description: Some("0x2a".to_string()),
+            },
+        ),
+        (
+            "name: null\ndescription: &summary '中文 café 💡'\nmetadata:\n  short-description: *summary\n",
+            ParsedSkillFrontmatter {
+                name: "fallback".to_string(),
+                description: "中文 café 💡".to_string(),
+                short_description: Some("中文 café 💡".to_string()),
+            },
+        ),
+        (
+            "name: demo\ndescription: 'null'\nmetadata:\n  short-description: null\n",
+            ParsedSkillFrontmatter {
+                name: "demo".to_string(),
+                description: "null".to_string(),
+                short_description: None,
+            },
+        ),
+    ] {
+        let parsed =
+            parse_skill_frontmatter_metadata(&format!("---\n{frontmatter}---\nBody\n"), || {
+                "fallback".to_string()
+            })?;
+        assert_eq!(parsed, expected);
+    }
+    Ok(())
+}
+
+#[test]
+fn yaml_duplicate_fields_and_null_descriptions_keep_validation_errors() {
+    for frontmatter in [
+        "name: first\nname: second\ndescription: Demo\n",
+        "name: demo\ndescription: [one, two]\n",
+        "name: demo\ndescription: Demo\nmetadata: null\n",
+    ] {
+        assert!(matches!(
+            parse_skill_frontmatter_metadata(&format!("---\n{frontmatter}---\n"), || "fallback"
+                .to_string()),
+            Err(super::SkillParseError::InvalidYaml(_))
+        ));
+    }
+    assert!(matches!(
+        parse_skill_frontmatter_metadata("---\nname: demo\ndescription: null\n---\n", || {
+            "fallback".to_string()
+        }),
+        Err(super::SkillParseError::MissingField("description"))
+    ));
+}
+
+#[test]
+fn yaml_values_roundtrip_tags_aliases_and_non_string_mapping_keys() -> Result<(), yaml_serde::Error>
+{
+    let source = "defaults: &defaults {description: '中文 café 💡'}\n<<: *defaults\n? [one, two]\n: !custom [42, true, null]\n";
+    let value: yaml_serde::Value = yaml_serde::from_str(source)?;
+    let encoded = yaml_serde::to_string(&value)?;
+    let decoded: yaml_serde::Value = yaml_serde::from_slice(encoded.as_bytes())?;
+    assert_eq!(decoded, value);
+    assert!(value.get("<<").is_some());
+    assert!(value.get("description").is_none());
+    Ok(())
+}

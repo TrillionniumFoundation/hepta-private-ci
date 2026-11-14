@@ -2049,7 +2049,7 @@ async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
-    let (_test, second_mock) = run_code_mode_turn(
+    let (test, second_mock) = run_code_mode_turn(
         &server,
         "surface nested tool handler failures as script exceptions",
         r#"
@@ -2064,12 +2064,14 @@ try {
     .await?;
 
     let request = second_mock.single_request();
+    core_test_support::history_annotations::assert_metadata_is_private(&request);
+    let history = core_test_support::history_annotations::response_items(&test.codex).await;
+    let stored_output =
+        core_test_support::history_annotations::tool_call_output(&history, "call-1");
     assert_eq!(
-        request.custom_tool_call_output("call-1")["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        serde_json::json!([
-            {"name": "exec_command", "arguments": {}},
-        ]),
-        "failed nested tool attempts remain private request metadata",
+        stored_output["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
+        serde_json::Value::Null,
+        "attempt metadata is attached to request copies, not durable history",
     );
     let (output, success) = custom_tool_output_body_and_success(&request, "call-1");
     assert_ne!(

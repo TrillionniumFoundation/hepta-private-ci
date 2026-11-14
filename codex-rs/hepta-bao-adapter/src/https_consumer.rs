@@ -87,6 +87,15 @@ pub struct BaoAuthBusAdmission {
     pub expires_at_ms: u64,
 }
 
+/// Borrowed authority and durable admission for one quota-controlled read.
+/// The consuming method checks policy, quota, and exact final-use authority.
+pub struct BaoAuthBusReadContext<'a> {
+    pub authbus: &'a AuthBusAuthorityHost,
+    pub admission: &'a BaoAuthBusAdmission,
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
+}
+
 /// Independent evidence producer used by the product host. AuthBus verifies
 /// every returned signature; the Bao adapter never owns trusted-time or
 /// settlement signing keys.
@@ -232,14 +241,17 @@ impl BaoClient {
     /// kernel final-use claim -> provider observation -> signed settlement.
     pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
         &self,
-        authbus: &AuthBusAuthorityHost,
-        admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
+        context: BaoAuthBusReadContext<'_>,
         request: &BaoReadRequest,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+        let BaoAuthBusReadContext {
+            authbus,
+            admission,
+            authority,
+            grant,
+        } = context;
         if admission.policy_revision == 0
             || admission.expected_quota_revision == 0
             || admission.amount == 0

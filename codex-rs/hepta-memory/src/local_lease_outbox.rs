@@ -33,6 +33,11 @@ use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::framing::frame_part;
 
+mod outcome_transition;
+
+use outcome_transition::ExactReplay;
+use outcome_transition::OutcomeTransition;
+
 pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
 pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
 pub const LOCAL_LEASE_OUTBOX_EXTERNAL_EFFECTS: bool = false;
@@ -1822,7 +1827,7 @@ impl LocalLeaseOutbox {
             format!("dispatch_started_pending_ack:{}", operation_digest.as_str()),
             &[LocalOutcomeState::Queued],
             LocalOutcomeState::Indeterminate,
-            /*allow_exact_replay*/ false,
+            ExactReplay::Reject,
         )
         .await
     }
@@ -2555,7 +2560,7 @@ impl LocalLeaseOutbox {
             payload,
             allowed,
             resulting_state,
-            /*allow_exact_replay*/ true,
+            ExactReplay::Allow,
         )
         .await
     }
@@ -2567,7 +2572,7 @@ impl LocalLeaseOutbox {
         payload: String,
         allowed: &[LocalOutcomeState],
         resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        replay_policy: ExactReplay,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         let mut transaction = self
             .store
@@ -2581,9 +2586,11 @@ impl LocalLeaseOutbox {
                 occurrence_key,
                 kind,
                 payload,
-                allowed,
-                resulting_state,
-                allow_exact_replay,
+                OutcomeTransition {
+                    allowed,
+                    resulting_state,
+                    replay_policy,
+                },
             )
             .await?;
         transaction
@@ -2608,9 +2615,11 @@ impl LocalLeaseOutbox {
             occurrence_key,
             "reconcile_committed",
             receipt,
-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
-            LocalOutcomeState::Committed,
-            /*allow_exact_replay*/ true,
+            OutcomeTransition {
+                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+                resulting_state: LocalOutcomeState::Committed,
+                replay_policy: ExactReplay::Allow,
+            },
         )
         .await
     }
@@ -2621,10 +2630,13 @@ impl LocalLeaseOutbox {
         occurrence_key: String,
         kind: &str,
         payload: String,
-        allowed: &[LocalOutcomeState],
-        resulting_state: LocalOutcomeState,
-        allow_exact_replay: bool,
+        transition: OutcomeTransition<'_>,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        let OutcomeTransition {
+            allowed,
+            resulting_state,
+            replay_policy,
+        } = transition;
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
@@ -2660,7 +2672,7 @@ impl LocalLeaseOutbox {
         .await?;
         if !allowed.contains(&current) {
             match (
-                allow_exact_replay,
+                replay_policy,
                 find_transition(
                     transaction,
                     &self.lease_id,
@@ -2670,7 +2682,9 @@ impl LocalLeaseOutbox {
                 )
                 .await?,
             ) {
-                (true, Some(existing)) if existing.payload_sha256 == payload_sha256 => {
+                (ExactReplay::Allow, Some(existing))
+                    if existing.payload_sha256 == payload_sha256 =>
+                {
                     return Ok(LocalOutcomeReceipt {
                         lease_id: self.lease_id.clone(),
                         occurrence_key,
@@ -2695,7 +2709,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         {
-            if !allow_exact_replay {
+            if matches!(replay_policy, ExactReplay::Reject) {
                 return Err(LocalLeaseOutboxError::IllegalTransition(
                     "dispatch claim was already consumed".to_string(),
                 ));

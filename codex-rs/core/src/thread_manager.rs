@@ -1938,10 +1938,26 @@ impl ThreadManagerState {
         {
             log.push((thread_id, captured_op));
         }
-        thread
-            .io
-            .submit_with_trace(op, /*trace*/ None, parent_turn_id, root_turn_id)
-            .await
+        match op {
+            Op::InterAgentCommunication { communication } => {
+                thread
+                    .io
+                    .submit_mailbox_after_terminalization(
+                        &thread.session,
+                        communication,
+                        /*trace*/ None,
+                        parent_turn_id,
+                        root_turn_id,
+                    )
+                    .await
+            }
+            op => {
+                thread
+                    .io
+                    .submit_with_trace(op, /*trace*/ None, parent_turn_id, root_turn_id)
+                    .await
+            }
+        }
     }
 
     /// Remove a thread from the manager by ID, returning it when present.

@@ -242,3 +242,6 @@ async fn plan_mode_uses_contributed_turn_item_for_last_agent_message() {
         Some("plan contributed assistant text")
     );
 }
+
+#[path = "turn_tests/websocket_recovery.rs"]
+mod websocket_recovery;

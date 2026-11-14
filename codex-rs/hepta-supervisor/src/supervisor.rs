@@ -85,6 +85,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
+                supervisor.restore_matrix_restart_budget(&agent_id, slot, &record, now)?;
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
@@ -208,6 +209,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             })
     }
 
+    #[cfg(unix)]
     pub(crate) fn next_control_revision(&self, agent_id: &AgentId) -> Result<u64, SupervisorError> {
         self.slots
             .get(agent_id)
@@ -217,6 +219,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))
     }
 
+    #[cfg(unix)]
     pub(crate) fn set_control_revision(
         &mut self,
         agent_id: &AgentId,
@@ -580,7 +583,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot.signed_intent.as_ref().is_some_and(|intent| {
                 !matches!(
                     intent.status,
-                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+                    SignedIntentStatus::Committed
+                        | SignedIntentStatus::RolledBack
+                        | SignedIntentStatus::Aborted
                 )
             }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
@@ -700,7 +705,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.signed_intent = Some(intent.clone());
         if matches!(
             intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
+            SignedIntentStatus::Committed
+                | SignedIntentStatus::RolledBack
+                | SignedIntentStatus::Aborted
         ) {
             return Ok(());
         }
@@ -770,6 +777,17 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.signed_intent = Some(terminal);
                 return Ok(());
             }
+        }
+
+        // The operator directive binds the bytes that were inspected, before
+        // converting a Prepared or Queued intent to RecoveryRequired. Process
+        // recovery may have changed the lifecycle, so use the current record.
+        if crate::signed_intent_abort::consume_abort_directive(
+            &self.record(agent_id)?,
+            slot,
+            &intent,
+        )? {
+            return Ok(());
         }
 
         // Keep the daemon reachable for the status/recovery ceremony while

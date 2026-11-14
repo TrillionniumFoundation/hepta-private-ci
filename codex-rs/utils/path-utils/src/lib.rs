@@ -2,6 +2,13 @@
 
 pub(crate) mod env;
 pub use env::is_wsl;
+mod publish;
+pub use publish::publish_file_with_sync;
+
+#[cfg(windows)]
+pub mod windows_private_fs;
+#[cfg(windows)]
+pub mod windows_security;
 
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashSet;

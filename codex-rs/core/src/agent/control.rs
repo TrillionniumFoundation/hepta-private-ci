@@ -66,6 +66,7 @@ use uuid::Uuid;
 
 pub(crate) use self::execution::AgentExecutionGuard;
 use self::execution::AgentExecutionLimiter;
+pub(crate) use self::execution::TurnStartCapacity;
 use self::residency::V2Residency;
 
 mod execution;
@@ -225,8 +226,7 @@ impl AgentControl {
         let state = self.upgrade()?;
         if communication.trigger_turn {
             let thread = state.get_thread(agent_id).await?;
-            self.ensure_execution_capacity_for_turn_start(&thread)
-                .await?;
+            thread.ensure_mailbox_capacity_after_finish().await?;
         }
         self.send_inter_agent_communication_after_capacity_check(
             agent_id,

@@ -1,13 +1,13 @@
 use crate::RewriteProfile;
 use crate::invalid_data_error;
 use crate::scope::is_redirected_destination;
-use serde_yaml::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::path::Path;
 use std::path::PathBuf;
 use toml::Value as TomlValue;
+use yaml_serde::Value as YamlValue;
 
 #[derive(Debug)]
 pub(crate) struct ParsedDocument {
@@ -164,7 +164,7 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
+    let parsed: YamlValue = match yaml_serde::from_str(raw_frontmatter) {
         Ok(parsed) => parsed,
         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
     };
@@ -309,3 +309,7 @@ impl FrontmatterValue {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "subagents_yaml_tests.rs"]
+mod yaml_tests;

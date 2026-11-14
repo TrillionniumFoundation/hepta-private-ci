@@ -193,6 +193,13 @@ impl FileSystemHandler {
                         .to_string(),
                 )
             })?;
+        // The generic stream fallback cannot provide the stable-handle
+        // provenance advertised by this RPC's capability.
+        if !crate::local_file_system::stable_handle_authorized_read_available() {
+            return Err(internal_error(
+                "bounded authorized file reads are unsupported".to_string(),
+            ));
+        }
         let bytes = self
             .file_system
             .read_file_bounded_authorized(&params.path, &params.sandbox, max_bytes)

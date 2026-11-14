@@ -122,6 +122,10 @@ pub struct LandlockCommand {
     #[arg(long = "apply-seccomp-then-exec", hide = true, default_value_t = false)]
     pub apply_seccomp_then_exec: bool,
 
+    /// Internal descriptor for the outer bubblewrap process, consumed before any fork.
+    #[arg(long = "parent-lifetime-fd", hide = true)]
+    pub parent_lifetime_fd: Option<libc::c_int>,
+
     /// Internal compatibility flag.
     ///
     /// By default, restricted-network sandboxing uses isolated networking.
@@ -163,12 +167,22 @@ pub fn run_main() -> ! {
         permission_profile,
         use_legacy_landlock,
         apply_seccomp_then_exec,
+        parent_lifetime_fd,
         allow_network_for_proxy,
         proxy_route_spec,
         verify_fd_mounts,
         no_proc,
         command,
     } = LandlockCommand::parse();
+
+    if apply_seccomp_then_exec {
+        let descriptor = parent_lifetime_fd
+            .unwrap_or_else(|| panic!("inner sandbox requires --parent-lifetime-fd"));
+        crate::parent_lifetime::bind_inner_to_parent(descriptor)
+            .unwrap_or_else(|error| panic!("failed to bind bubblewrap parent lifetime: {error}"));
+    } else if parent_lifetime_fd.is_some() {
+        panic!("--parent-lifetime-fd is only supported in the inner sandbox stage");
+    }
 
     if command.is_empty() {
         panic!("No command specified to execute.");

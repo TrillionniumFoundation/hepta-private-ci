@@ -5506,3 +5506,6 @@ async fn setup_rollout_fixture(codex_home: &Path, server_uri: &str) -> Result<Ro
         before_modified,
     })
 }
+
+#[path = "thread_resume_permission_environment_tests.rs"]
+mod permission_environment;
