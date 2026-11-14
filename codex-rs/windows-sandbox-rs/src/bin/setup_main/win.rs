@@ -1,6 +1,9 @@
+use codex_windows_sandbox::SandboxAccountLeaseWitness;
+use codex_windows_sandbox::SandboxAccountSetupGuard;
 mod firewall;
 mod no_reparse_dir;
 mod read_acl_mutex;
+mod read_capability_acl;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -38,11 +41,8 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::io::Write;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
-use std::process::Stdio;
 use std::sync::mpsc;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HLOCAL;
@@ -74,7 +74,6 @@ mod sandbox_users;
 mod setup_runtime_bin;
 use no_reparse_dir::open_or_create_no_reparse;
 use read_acl_mutex::acquire_read_acl_mutex;
-use read_acl_mutex::read_acl_mutex_exists;
 use sandbox_users::commit_setup_marker;
 use sandbox_users::prepare_setup_marker;
 use sandbox_users::provision_sandbox_users;
@@ -85,6 +84,7 @@ use sandbox_users::sid_bytes_to_psid;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 struct Payload {
     version: u32,
+    account_lease: SandboxAccountLeaseWitness,
     offline_username: String,
     online_username: String,
     codex_home: PathBuf,
@@ -161,24 +161,6 @@ fn workspace_write_cap_sids_for_path(
         }
     }
     Ok(sid_strs)
-}
-
-fn spawn_read_acl_helper(payload: &Payload, _log: &mut dyn Write) -> Result<()> {
-    let mut read_payload = payload.clone();
-    read_payload.mode = SetupMode::ReadAclsOnly;
-    read_payload.refresh_only = true;
-    let payload_json = serde_json::to_vec(&read_payload)?;
-    let payload_b64 = BASE64.encode(payload_json);
-    let exe = std::env::current_exe().context("locate setup helper")?;
-    Command::new(&exe)
-        .arg(payload_b64)
-        .stdin(Stdio::null())
-        .stdout(Stdio::null())
-        .stderr(Stdio::null())
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
-        .spawn()
-        .context("spawn read ACL helper")?;
-    Ok(())
 }
 
 struct ReadAclSubjects<'a> {
@@ -466,6 +448,7 @@ fn real_main() -> Result<()> {
             ),
         )));
     }
+    let _account_mutation = SandboxAccountSetupGuard::acquire(&payload.account_lease)?;
     let sbx_dir = sandbox_dir(&payload.codex_home);
     std::fs::create_dir_all(&sbx_dir).map_err(|err| {
         anyhow::Error::new(SetupFailure::new(
@@ -529,13 +512,7 @@ fn run_setup(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<(
 }
 
 fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
-    let _read_acl_guard = match acquire_read_acl_mutex()? {
-        Some(guard) => guard,
-        None => {
-            log_line(log, "read ACL helper already running; skipping")?;
-            return Ok(());
-        }
-    };
+    let _read_acl_guard = acquire_read_acl_mutex()?;
     log_line(log, "read-acl-only mode: applying read ACLs")?;
     let sandbox_group_sid = resolve_sandbox_users_group_sid()?;
     let sandbox_group_psid = sid_bytes_to_psid(&sandbox_group_sid)?;
@@ -754,6 +731,7 @@ fn run_provision_only(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) ->
 }
 
 fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Result<()> {
+    let _read_acl_guard = acquire_read_acl_mutex()?;
     let refresh_only = payload.refresh_only;
     if !refresh_only {
         provision_and_hide_sandbox_users(payload, log, sbx_dir)?;
@@ -808,37 +786,7 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
         )?;
     }
 
-    if payload.read_roots.is_empty() {
-        log_line(log, "no read roots to grant; skipping read ACL helper")?;
-    } else {
-        match read_acl_mutex_exists() {
-            Ok(true) => {
-                log_line(log, "read ACL helper already running; skipping spawn")?;
-            }
-            Ok(false) => {
-                spawn_read_acl_helper(payload, log).map_err(|err| {
-                    anyhow::Error::new(SetupFailure::new(
-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
-                        format!("spawn read ACL helper failed: {err}"),
-                    ))
-                })?;
-            }
-            Err(err) => {
-                log_line(
-                    log,
-                    &format!("read ACL mutex check failed: {err}; spawning anyway"),
-                )?;
-                spawn_read_acl_helper(payload, log).map_err(|spawn_err| {
-                    anyhow::Error::new(SetupFailure::new(
-                        SetupErrorCode::HelperReadAclHelperSpawnFailed,
-                        format!(
-                            "spawn read ACL helper failed after mutex error {err}: {spawn_err}"
-                        ),
-                    ))
-                })?;
-            }
-        }
-    }
+    read_capability_acl::apply(&payload.read_roots, sandbox_group_psid)?;
 
     if refresh_only {
         setup_runtime_bin::ensure_codex_app_runtime_paths_readable(
@@ -1009,7 +957,7 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
         log_line(
             log,
             &format!(
-                "setup refresh: processed {} write roots (read roots delegated); errors={:?}",
+                "setup refresh: processed {} write roots (read grants completed); errors={:?}",
                 payload.write_roots.len(),
                 refresh_errors
             ),
@@ -1064,6 +1012,7 @@ mod tests {
     fn payload_json() -> serde_json::Value {
         json!({
             "version": SETUP_VERSION,
+            "account_lease": { "parent_process_id": 0, "parent_creation_time": 0, "closed_event": "fixture" },
             "offline_username": "CodexSandboxOffline",
             "online_username": "CodexSandboxOnline",
             "codex_home": "C:\\codex-home",

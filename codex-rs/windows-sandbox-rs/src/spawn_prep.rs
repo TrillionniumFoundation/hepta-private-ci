@@ -15,12 +15,17 @@ use crate::env::ensure_non_interactive_pager;
 use crate::env::inherit_path_env;
 use crate::env::normalize_null_device_env;
 use crate::identity::SandboxCreds;
-use crate::identity::require_logon_sandbox_creds;
+use crate::identity::SandboxIdentityRequest;
+use crate::identity::require_logon_sandbox_creds_with_lease;
 use crate::logging::log_start;
 use crate::path_normalization::canonicalize_path;
+use crate::read_capability::read_cap_sids_for_setup;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
+use crate::sandbox_account::SandboxAccountLease;
 use crate::sandbox_utils::ensure_codex_home_exists;
 use crate::sandbox_utils::inject_git_safe_directory;
+use crate::setup::SandboxSetupRequest;
+use crate::setup::SetupRootOverrides;
 use crate::setup::effective_write_roots_for_permissions;
 use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_cap;
@@ -52,6 +57,7 @@ pub(crate) struct ElevatedSpawnContext {
     pub(crate) logs_base_dir: Option<PathBuf>,
     pub(crate) sandbox_creds: SandboxCreds,
     pub(crate) cap_sids: Vec<String>,
+    pub(crate) read_cap_sids: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -332,6 +338,7 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
     deny_write_paths_override: &[PathBuf],
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
+    account_lease: &SandboxAccountLease,
 ) -> Result<ElevatedSpawnContext> {
     normalize_null_device_env(env_map);
     ensure_non_interactive_pager(env_map);
@@ -372,22 +379,41 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
     } else {
         write_roots_override
     };
-    let sandbox_creds = require_logon_sandbox_creds(
-        &permissions,
-        cwd,
-        env_map,
-        codex_home,
-        read_roots_override,
-        read_roots_include_platform_defaults,
-        setup_write_roots_override,
-        deny_read_paths_override,
-        if deny_write_paths_override.is_empty() {
-            &deny_write_paths
-        } else {
-            deny_write_paths_override
+    let sandbox_creds = require_logon_sandbox_creds_with_lease(
+        SandboxIdentityRequest {
+            permissions: &permissions,
+            command_cwd: cwd,
+            env_map,
+            codex_home,
+            read_roots_override,
+            read_roots_include_platform_defaults,
+            write_roots_override: setup_write_roots_override,
+            deny_read_paths_override,
+            deny_write_paths_override: if deny_write_paths_override.is_empty() {
+                &deny_write_paths
+            } else {
+                deny_write_paths_override
+            },
+            proxy_enforced,
+            proxy_settings_mode,
         },
-        proxy_enforced,
-        proxy_settings_mode,
+        account_lease,
+    )?;
+    let read_cap_sids = read_cap_sids_for_setup(
+        &SandboxSetupRequest {
+            permissions: &permissions,
+            command_cwd: cwd,
+            env_map,
+            codex_home,
+            proxy_enforced,
+        },
+        &SetupRootOverrides {
+            read_roots: read_roots_override.map(<[PathBuf]>::to_vec),
+            read_roots_include_platform_defaults,
+            write_roots: setup_write_roots_override.map(<[PathBuf]>::to_vec),
+            deny_read_paths: Some(deny_read_paths_override.to_vec()),
+            ..SetupRootOverrides::default()
+        },
     )?;
     let caps = load_or_create_cap_sids(codex_home)?;
     let (psid_to_use, cap_sids) = if uses_write_capabilities {
@@ -415,6 +441,7 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
         logs_base_dir,
         sandbox_creds,
         cap_sids,
+        read_cap_sids,
     })
 }
 

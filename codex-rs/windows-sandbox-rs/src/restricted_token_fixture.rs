@@ -1,9 +1,12 @@
 //! Native ACL fixtures. These tokens exercise object ACLs without claiming a
 //! filesystem sandbox: production workspace launches use the dedicated-account broker.
 
+use crate::token::get_logon_sid_bytes;
+use crate::token::set_default_dacl;
 use anyhow::Result;
 use anyhow::bail;
 use std::ffi::c_void;
+use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Security::CreateRestrictedToken;
@@ -45,6 +48,18 @@ pub(crate) unsafe fn capability_acl_fixture_token(
         bail!("CreateRestrictedToken ACL fixture failed: {}", unsafe {
             GetLastError()
         });
+    }
+    let configure = || -> Result<()> {
+        let mut logon = unsafe { get_logon_sid_bytes(base_token)? };
+        let mut dacl_sids = vec![logon.as_mut_ptr().cast()];
+        dacl_sids.extend_from_slice(capabilities);
+        unsafe { set_default_dacl(token, &dacl_sids) }
+    };
+    if let Err(error) = configure() {
+        unsafe {
+            CloseHandle(token);
+        }
+        return Err(error);
     }
     Ok(token)
 }

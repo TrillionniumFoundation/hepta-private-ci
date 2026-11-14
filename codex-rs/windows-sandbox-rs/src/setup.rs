@@ -1,3 +1,5 @@
+use crate::sandbox_account::SandboxAccountLease;
+use crate::sandbox_account_witness::SandboxAccountLeaseWitness;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::BTreeSet;
@@ -32,6 +34,8 @@ use crate::setup_error::extract_failure;
 use crate::setup_error::failure;
 use crate::setup_error::read_setup_error_report;
 use crate::ssh_config_dependencies::ssh_config_dependency_paths;
+#[cfg(test)]
+use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use base64::Engine;
@@ -46,7 +50,7 @@ use windows_sys::Win32::Security::CheckTokenMembership;
 use windows_sys::Win32::Security::FreeSid;
 use windows_sys::Win32::Security::SECURITY_NT_AUTHORITY;
 
-pub const SETUP_VERSION: u32 = 5;
+pub const SETUP_VERSION: u32 = 6;
 pub const OFFLINE_USERNAME: &str = "CodexSandboxOffline";
 pub const ONLINE_USERNAME: &str = "CodexSandboxOnline";
 const ERROR_CANCELLED: u32 = 1223;
@@ -236,6 +240,7 @@ pub fn run_setup_refresh(
     };
     let deny_read_paths =
         setup_refresh_deny_read_paths(permission_profile, workspace_roots, command_cwd)?;
+    let account_lease = SandboxAccountLease::acquire()?;
     run_setup_refresh_inner(
         SandboxSetupRequest {
             permissions: &permissions,
@@ -249,6 +254,7 @@ pub fn run_setup_refresh(
             ..SetupRootOverrides::default()
         },
         /*offline_proxy_settings_override*/ None,
+        &account_lease,
     )
 }
 
@@ -256,8 +262,14 @@ pub(crate) fn run_setup_refresh_with_overrides_and_proxy_settings(
     request: SandboxSetupRequest<'_>,
     overrides: SetupRootOverrides,
     offline_proxy_settings: &OfflineProxySettings,
+    account_lease: &SandboxAccountLease,
 ) -> Result<()> {
-    run_setup_refresh_inner(request, overrides, Some(offline_proxy_settings))
+    run_setup_refresh_inner(
+        request,
+        overrides,
+        Some(offline_proxy_settings),
+        account_lease,
+    )
 }
 
 pub fn run_setup_refresh_with_extra_read_roots(
@@ -281,6 +293,7 @@ pub fn run_setup_refresh_with_extra_read_roots(
         setup_refresh_deny_read_paths(permission_profile, workspace_roots, command_cwd)?;
     let mut read_roots = gather_read_roots(command_cwd, &permissions, env_map, codex_home);
     read_roots.extend(extra_read_roots);
+    let account_lease = SandboxAccountLease::acquire()?;
     run_setup_refresh_inner(
         SandboxSetupRequest {
             permissions: &permissions,
@@ -297,6 +310,7 @@ pub fn run_setup_refresh_with_extra_read_roots(
             deny_write_paths: None,
         },
         /*offline_proxy_settings_override*/ None,
+        &account_lease,
     )
 }
 
@@ -323,6 +337,7 @@ fn run_setup_refresh_inner(
     request: SandboxSetupRequest<'_>,
     overrides: SetupRootOverrides,
     offline_proxy_settings_override: Option<&OfflineProxySettings>,
+    account_lease: &SandboxAccountLease,
 ) -> Result<()> {
     if !request.permissions.is_enforceable_by_windows_sandbox() {
         anyhow::bail!("unsupported filesystem permissions for Windows sandbox setup");
@@ -334,6 +349,7 @@ fn run_setup_refresh_inner(
         offline_proxy_settings_for_request(&request, offline_proxy_settings_override);
     let payload = ElevationPayload {
         version: SETUP_VERSION,
+        account_lease: account_lease.witness(),
         offline_username: OFFLINE_USERNAME.to_string(),
         online_username: ONLINE_USERNAME.to_string(),
         codex_home: request.codex_home.to_path_buf(),
@@ -357,7 +373,7 @@ fn run_setup_refresh_inner(
 }
 
 fn run_setup_refresh_payload(b64: &str, codex_home: &Path) -> Result<()> {
-    let exe = find_setup_exe();
+    let exe = find_setup_exe()?;
     let sbx_dir = sandbox_dir(codex_home);
     let log_path = current_log_file_path(&sbx_dir);
     let cleared_report = match clear_setup_error_report(codex_home) {
@@ -669,6 +685,7 @@ pub(crate) fn effective_write_roots_for_permissions(
 #[derive(Serialize)]
 struct ElevationPayload {
     version: u32,
+    account_lease: SandboxAccountLeaseWitness,
     offline_username: String,
     online_username: String,
     codex_home: PathBuf,
@@ -849,13 +866,21 @@ fn quote_arg(arg: &str) -> String {
     out
 }
 
-fn find_setup_exe() -> PathBuf {
-    if let Ok(exe) = std::env::current_exe()
-        && let Some(setup_exe) = find_setup_exe_for_current_exe(&exe)
+fn find_setup_exe() -> Result<PathBuf> {
+    #[cfg(test)]
     {
-        return setup_exe;
+        codex_utils_cargo_bin::cargo_bin("codex-windows-sandbox-setup")
+            .context("resolve sandbox setup helper from test runfiles")
     }
-    PathBuf::from(SETUP_EXE_FILENAME)
+    #[cfg(not(test))]
+    {
+        if let Ok(exe) = std::env::current_exe()
+            && let Some(setup_exe) = find_setup_exe_for_current_exe(&exe)
+        {
+            return Ok(setup_exe);
+        }
+        Ok(PathBuf::from(SETUP_EXE_FILENAME))
+    }
 }
 
 fn find_setup_exe_for_current_exe(exe: &Path) -> Option<PathBuf> {
@@ -921,7 +946,7 @@ fn run_setup_exe_payload(
     use windows_sys::Win32::UI::Shell::SEE_MASK_NOCLOSEPROCESS;
     use windows_sys::Win32::UI::Shell::SHELLEXECUTEINFOW;
     use windows_sys::Win32::UI::Shell::ShellExecuteExW;
-    let exe = find_setup_exe();
+    let exe = find_setup_exe()?;
     let cleared_report = match clear_setup_error_report(codex_home) {
         Ok(()) => true,
         Err(err) => {
@@ -1022,8 +1047,12 @@ pub fn run_elevated_setup(
     request: SandboxSetupRequest<'_>,
     overrides: SetupRootOverrides,
 ) -> Result<()> {
+    let account_lease = SandboxAccountLease::acquire()?;
     run_elevated_setup_inner(
-        request, overrides, /*offline_proxy_settings_override*/ None,
+        request,
+        overrides,
+        /*offline_proxy_settings_override*/ None,
+        &account_lease,
     )
 }
 
@@ -1031,14 +1060,21 @@ pub(crate) fn run_elevated_setup_with_proxy_settings(
     request: SandboxSetupRequest<'_>,
     overrides: SetupRootOverrides,
     offline_proxy_settings: &OfflineProxySettings,
+    account_lease: &SandboxAccountLease,
 ) -> Result<()> {
-    run_elevated_setup_inner(request, overrides, Some(offline_proxy_settings))
+    run_elevated_setup_inner(
+        request,
+        overrides,
+        Some(offline_proxy_settings),
+        account_lease,
+    )
 }
 
 fn run_elevated_setup_inner(
     request: SandboxSetupRequest<'_>,
     overrides: SetupRootOverrides,
     offline_proxy_settings_override: Option<&OfflineProxySettings>,
+    account_lease: &SandboxAccountLease,
 ) -> Result<()> {
     if !request.permissions.is_enforceable_by_windows_sandbox() {
         anyhow::bail!("unsupported filesystem permissions for Windows sandbox setup");
@@ -1058,6 +1094,7 @@ fn run_elevated_setup_inner(
         offline_proxy_settings_for_request(&request, offline_proxy_settings_override);
     let payload = ElevationPayload {
         version: SETUP_VERSION,
+        account_lease: account_lease.witness(),
         offline_username: OFFLINE_USERNAME.to_string(),
         online_username: ONLINE_USERNAME.to_string(),
         codex_home: request.codex_home.to_path_buf(),
@@ -1123,8 +1160,10 @@ pub fn run_elevated_provisioning_setup(
             "sandbox provisioning setup must be run from an elevated process",
         ));
     }
+    let account_lease = SandboxAccountLease::acquire()?;
     let payload = ElevationPayload {
         version: SETUP_VERSION,
+        account_lease: account_lease.witness(),
         offline_username: OFFLINE_USERNAME.to_string(),
         online_username: ONLINE_USERNAME.to_string(),
         codex_home: codex_home.to_path_buf(),
@@ -1143,7 +1182,7 @@ pub fn run_elevated_provisioning_setup(
     run_setup_exe(&payload, /*needs_elevation*/ false, codex_home)
 }
 
-fn build_payload_roots(
+pub(crate) fn build_payload_roots(
     request: &SandboxSetupRequest<'_>,
     overrides: &SetupRootOverrides,
 ) -> (Vec<PathBuf>, Vec<PathBuf>) {

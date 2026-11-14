@@ -1,6 +1,7 @@
 use crate::dpapi;
 use crate::logging::debug_log;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
+use crate::sandbox_account::SandboxAccountLease;
 use crate::setup::SandboxNetworkIdentity;
 use crate::setup::SandboxUserRecord;
 use crate::setup::SandboxUsersFile;
@@ -142,6 +143,20 @@ fn select_identity(
     }))
 }
 
+pub(crate) struct SandboxIdentityRequest<'a> {
+    pub(crate) permissions: &'a ResolvedWindowsSandboxPermissions,
+    pub(crate) command_cwd: &'a Path,
+    pub(crate) env_map: &'a HashMap<String, String>,
+    pub(crate) codex_home: &'a Path,
+    pub(crate) read_roots_override: Option<&'a [PathBuf]>,
+    pub(crate) read_roots_include_platform_defaults: bool,
+    pub(crate) write_roots_override: Option<&'a [PathBuf]>,
+    pub(crate) deny_read_paths_override: &'a [PathBuf],
+    pub(crate) deny_write_paths_override: &'a [PathBuf],
+    pub(crate) proxy_enforced: bool,
+    pub(crate) proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn require_logon_sandbox_creds(
     permissions: &ResolvedWindowsSandboxPermissions,
@@ -156,6 +171,42 @@ pub fn require_logon_sandbox_creds(
     proxy_enforced: bool,
     proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
 ) -> Result<SandboxCreds> {
+    let account_lease = SandboxAccountLease::acquire()?;
+    require_logon_sandbox_creds_with_lease(
+        SandboxIdentityRequest {
+            permissions,
+            command_cwd,
+            env_map,
+            codex_home,
+            read_roots_override,
+            read_roots_include_platform_defaults,
+            write_roots_override,
+            deny_read_paths_override,
+            deny_write_paths_override,
+            proxy_enforced,
+            proxy_settings_mode,
+        },
+        &account_lease,
+    )
+}
+
+pub(crate) fn require_logon_sandbox_creds_with_lease(
+    request: SandboxIdentityRequest<'_>,
+    account_lease: &SandboxAccountLease,
+) -> Result<SandboxCreds> {
+    let SandboxIdentityRequest {
+        permissions,
+        command_cwd,
+        env_map,
+        codex_home,
+        read_roots_override,
+        read_roots_include_platform_defaults,
+        write_roots_override,
+        deny_read_paths_override,
+        deny_write_paths_override,
+        proxy_enforced,
+        proxy_settings_mode,
+    } = request;
     let sandbox_dir = crate::setup::sandbox_dir(codex_home);
     let needed_read = read_roots_override
         .map(<[PathBuf]>::to_vec)
@@ -224,6 +275,7 @@ pub fn require_logon_sandbox_creds(
                 deny_write_paths: Some(deny_write_paths_override.to_vec()),
             },
             &desired_offline_proxy_settings,
+            account_lease,
         )?;
         identity = select_identity(network_identity, codex_home)?;
     }
@@ -244,6 +296,7 @@ pub fn require_logon_sandbox_creds(
             deny_write_paths: Some(deny_write_paths_override.to_vec()),
         },
         &desired_offline_proxy_settings,
+        account_lease,
     )?;
     let identity = identity.ok_or_else(|| {
         anyhow!(
@@ -272,34 +325,12 @@ fn desired_offline_proxy_settings(
     }
 }
 
-#[allow(clippy::too_many_arguments)]
-pub(crate) fn refresh_logon_sandbox_creds(
-    permissions: &ResolvedWindowsSandboxPermissions,
-    command_cwd: &Path,
-    env_map: &HashMap<String, String>,
-    codex_home: &Path,
-    read_roots_override: Option<&[PathBuf]>,
-    read_roots_include_platform_defaults: bool,
-    write_roots_override: Option<&[PathBuf]>,
-    deny_read_paths_override: &[PathBuf],
-    deny_write_paths_override: &[PathBuf],
-    proxy_enforced: bool,
-    proxy_settings_mode: crate::WindowsSandboxProxySettingsMode,
+pub(crate) fn refresh_logon_sandbox_creds_with_lease(
+    request: SandboxIdentityRequest<'_>,
+    account_lease: &SandboxAccountLease,
 ) -> Result<SandboxCreds> {
-    remove_sandbox_users_file(codex_home, "sandbox user login failed")?;
-    require_logon_sandbox_creds(
-        permissions,
-        command_cwd,
-        env_map,
-        codex_home,
-        read_roots_override,
-        read_roots_include_platform_defaults,
-        write_roots_override,
-        deny_read_paths_override,
-        deny_write_paths_override,
-        proxy_enforced,
-        proxy_settings_mode,
-    )
+    remove_sandbox_users_file(request.codex_home, "sandbox user login failed")?;
+    require_logon_sandbox_creds_with_lease(request, account_lease)
 }
 
 #[cfg(test)]

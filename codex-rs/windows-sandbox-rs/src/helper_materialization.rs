@@ -182,13 +182,23 @@ fn store_helper_path(cache_key: String, path: PathBuf) {
 }
 
 fn sibling_source_path(kind: HelperExecutable) -> Result<PathBuf> {
-    let exe = std::env::current_exe().context("resolve current executable for helper lookup")?;
-    bundled_executable_path_for_exe(&exe, kind.file_name()).ok_or_else(|| {
-        anyhow!(
-            "helper not found next to current executable or under {RESOURCES_DIRNAME}: {}",
-            exe.display()
-        )
-    })
+    #[cfg(test)]
+    {
+        // Cargo and Bazel place test executables outside the installed bundle.
+        codex_utils_cargo_bin::cargo_bin(kind.file_name().trim_end_matches(".exe"))
+            .context("resolve command runner from test runfiles")
+    }
+    #[cfg(not(test))]
+    {
+        let exe =
+            std::env::current_exe().context("resolve current executable for helper lookup")?;
+        bundled_executable_path_for_exe(&exe, kind.file_name()).ok_or_else(|| {
+            anyhow!(
+                "helper not found next to current executable or under {RESOURCES_DIRNAME}: {}",
+                exe.display()
+            )
+        })
+    }
 }
 
 pub(crate) fn bundled_executable_path_for_exe(exe: &Path, file_name: &str) -> Option<PathBuf> {

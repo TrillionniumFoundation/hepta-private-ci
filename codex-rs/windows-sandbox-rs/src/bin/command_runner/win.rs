@@ -26,6 +26,7 @@ use codex_windows_sandbox::OutputPayload;
 use codex_windows_sandbox::OutputStream;
 use codex_windows_sandbox::PipeSpawnHandles;
 use codex_windows_sandbox::ResizePayload;
+use codex_windows_sandbox::RunnerWindowStation;
 use codex_windows_sandbox::SpawnReady;
 use codex_windows_sandbox::SpawnRequest;
 use codex_windows_sandbox::StderrMode;
@@ -90,6 +91,7 @@ struct IpcSpawnedProcess {
     conpty_owner: Option<codex_windows_sandbox::ConptyInstance>,
     hpc_handle: Option<HANDLE>,
     _pipe_handles: Option<PipeSpawnHandles>,
+    _window_station: Option<RunnerWindowStation>,
 }
 
 /// Small RAII wrapper for raw Win32 handles.
@@ -251,6 +253,12 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
     if cap_psids.is_empty() {
         anyhow::bail!("runner: empty capability SID list");
     }
+    let read_capabilities = req
+        .read_cap_sids
+        .iter()
+        .map(|sid| LocalSid::from_string(sid))
+        .collect::<Result<Vec<_>>>()
+        .context("parse read capability SIDs")?;
     let network_proxy_restricting_sid = req
         .network_proxy_restricting_sid
         .as_deref()
@@ -262,8 +270,9 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
     // wrappers for as long as possible. That way any failure after SID parsing but before the
     // child is fully spawned still releases the backing LocalAlloc memory automatically.
     let cap_psid_ptrs: Vec<*mut _> = cap_psids.iter().map(LocalSid::as_ptr).collect();
-    let additional_restricting_sid_ptrs: Vec<*mut _> = network_proxy_restricting_sid
+    let additional_restricting_sid_ptrs: Vec<*mut _> = read_capabilities
         .iter()
+        .chain(network_proxy_restricting_sid.iter())
         .map(LocalSid::as_ptr)
         .collect();
     let base = OwnedWinHandle::new(unsafe { get_current_token_for_restriction()? });
@@ -293,6 +302,8 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
             allow_null_device(*psid);
         }
     }
+
+    let window_station = unsafe { RunnerWindowStation::prepare(h_token.raw())? };
 
     let effective_cwd = effective_cwd(&req.cwd, Some(log_dir.as_path()));
 
@@ -371,6 +382,7 @@ fn spawn_ipc_process(req: &SpawnRequest) -> Result<IpcSpawnedProcess> {
         conpty_owner,
         hpc_handle,
         _pipe_handles: pipe_handles,
+        _window_station: window_station,
     })
 }
 

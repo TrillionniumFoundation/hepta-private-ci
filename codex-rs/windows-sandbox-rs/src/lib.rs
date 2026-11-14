@@ -53,6 +53,8 @@ mod allow;
 #[cfg(target_os = "windows")]
 mod audit;
 #[cfg(target_os = "windows")]
+mod blocking_caller;
+#[cfg(target_os = "windows")]
 mod cap;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
@@ -79,21 +81,43 @@ mod logging;
 #[cfg(target_os = "windows")]
 mod path_normalization;
 #[cfg(target_os = "windows")]
+mod private_object_capabilities;
+#[cfg(target_os = "windows")]
 mod process;
 #[cfg(target_os = "windows")]
+mod read_capability;
+#[cfg(target_os = "windows")]
+mod read_capability_acl;
+#[cfg(target_os = "windows")]
+pub use read_capability_acl::grant_read_capability_for_root;
+#[cfg(target_os = "windows")]
 mod resolved_permissions;
+#[cfg(target_os = "windows")]
+mod sandbox_account;
+#[cfg(target_os = "windows")]
+mod sandbox_account_witness;
+#[cfg(target_os = "windows")]
+pub use sandbox_account_witness::SandboxAccountLeaseWitness;
+#[cfg(target_os = "windows")]
+pub use sandbox_account_witness::SandboxAccountSetupGuard;
 #[cfg(all(target_os = "windows", test))]
 mod restricted_token_fixture;
 #[cfg(target_os = "windows")]
 mod token;
 #[cfg(target_os = "windows")]
+mod token_information;
+#[cfg(target_os = "windows")]
 mod wfp;
 #[cfg(target_os = "windows")]
 mod wfp_setup;
 #[cfg(target_os = "windows")]
+mod window_station;
+#[cfg(target_os = "windows")]
 mod winutil;
 #[cfg(target_os = "windows")]
 mod workspace_acl;
+#[cfg(target_os = "windows")]
+mod workspace_token;
 
 mod deny_read_resolver;
 
@@ -142,6 +166,10 @@ pub(crate) use elevated::runner_pipe;
 pub use acl::add_deny_read_ace;
 #[cfg(target_os = "windows")]
 pub use acl::add_deny_write_ace;
+#[cfg(target_os = "windows")]
+pub use read_capability::read_cap_sid_for_root;
+#[cfg(target_os = "windows")]
+pub use window_station::RunnerWindowStation;
 
 #[cfg(target_os = "windows")]
 pub use acl::allow_null_device;

@@ -91,6 +91,29 @@ jobs:
         if: always()
         uses: ./.github/actions/check-clean-worktree
 
+      - name: Collect native evidence in one directory
+        if: always()
+        shell: pwsh
+        run: |
+          $evidence = Join-Path $env:RUNNER_TEMP "windows-owner-evidence"
+          New-Item -ItemType Directory -Path $evidence -Force | Out-Null
+          Get-ChildItem -LiteralPath $env:RUNNER_TEMP -Filter "windows-owner-*" -File |
+            Copy-Item -Destination $evidence -Force
+          $nextest = Join-Path $env:CARGO_TARGET_DIR "nextest"
+          if (Test-Path -LiteralPath $nextest) {
+            Get-ChildItem -LiteralPath $nextest -Filter "junit.xml" -Recurse -File | ForEach-Object {
+              $relative = [IO.Path]::GetRelativePath($nextest, $_.FullName)
+              $destination = Join-Path (Join-Path $evidence "nextest") $relative
+              New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+              Copy-Item -LiteralPath $_.FullName -Destination $destination -Force
+            }
+          }
+          Get-ChildItem -LiteralPath $evidence -Recurse -File |
+            Where-Object Name -ne "manifest.json" |
+            Get-FileHash -Algorithm SHA256 |
+            Select-Object Path, Hash |
+            ConvertTo-Json | Set-Content -LiteralPath (Join-Path $evidence "manifest.json")
+
       - name: Preserve native evidence
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
@@ -98,7 +121,4 @@ jobs:
           name: hia-windows-owner-${{ github.sha }}
           retention-days: 14
           if-no-files-found: warn
-          path: |
-            ${{ runner.temp }}/windows-owner-*.log
-            ${{ runner.temp }}/windows-owner-*.txt
-            ${{ env.CARGO_TARGET_DIR }}/nextest/**/junit.xml
+          path: ${{ runner.temp }}/windows-owner-evidence/

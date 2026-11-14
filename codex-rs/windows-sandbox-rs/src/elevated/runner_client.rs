@@ -363,11 +363,12 @@ pub(crate) fn spawn_runner_transport(
             &mut pi,
         )
     };
+    // Preserve the failing API's thread-local status before restoring the mode.
+    let spawn_error = (spawn_res == 0).then(|| unsafe { GetLastError() });
     unsafe {
         SetErrorMode(previous_error_mode);
     }
-    if spawn_res == 0 {
-        let err = unsafe { GetLastError() };
+    if let Some(err) = spawn_error {
         unsafe {
             CloseHandle(h_pipe_in);
             CloseHandle(h_pipe_out);

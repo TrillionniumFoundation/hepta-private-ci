@@ -26,7 +26,7 @@ use std::path::PathBuf;
 const MAX_FRAME_LEN: usize = 8 * 1024 * 1024;
 
 /// Protocol version shared by the parent process and elevated command runner.
-pub const IPC_PROTOCOL_VERSION: u8 = 5;
+pub const IPC_PROTOCOL_VERSION: u8 = 6;
 
 /// Length-prefixed, JSON-encoded frame.
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -65,6 +65,8 @@ pub struct SpawnRequest {
     pub codex_home: PathBuf,
     pub real_codex_home: PathBuf,
     pub cap_sids: Vec<String>,
+    /// Current read-root identities. These never receive default-DACL write grants.
+    pub read_cap_sids: Vec<String>,
     /// Optional managed-network identity added only to the child's restricting SID set.
     #[serde(default)]
     pub network_proxy_restricting_sid: Option<String>,
@@ -227,6 +229,7 @@ mod tests {
                     codex_home: PathBuf::from(r"C:\codex"),
                     real_codex_home: PathBuf::from(r"C:\Users\codex"),
                     cap_sids: vec!["S-1-15-3-1024-1".to_string()],
+                    read_cap_sids: vec!["S-1-5-21-9-8-7-6".to_string()],
                     network_proxy_restricting_sid: Some("S-1-5-21-100-200-300-400".to_string()),
                     timeout_ms: Some(1000),
                     tty: false,

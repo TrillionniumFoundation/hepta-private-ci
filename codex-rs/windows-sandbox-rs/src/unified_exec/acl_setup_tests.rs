@@ -204,7 +204,8 @@ impl AclSetupFailureFixture {
         let workspace = test_root.path().join("workspace");
         fs::create_dir(&workspace).expect("create workspace");
         let codex_home = test_root.path().join("codex-home");
-        let protected_path = test_root.path().join("protected.txt");
+        // A deny-write carveout must lie inside a currently writable root.
+        let protected_path = workspace.join("protected.txt");
         fs::write(&protected_path, "protected").expect("seed protected file");
         let file = OpenOptions::new()
             .access_mode(READ_CONTROL | WRITE_DAC)

@@ -31,10 +31,12 @@ mod windows_impl {
     use crate::env::ensure_non_interactive_pager;
     use crate::env::inherit_path_env;
     use crate::env::normalize_null_device_env;
-    use crate::identity::refresh_logon_sandbox_creds;
-    use crate::identity::require_logon_sandbox_creds;
+    use crate::identity::SandboxIdentityRequest;
+    use crate::identity::refresh_logon_sandbox_creds_with_lease;
+    use crate::identity::require_logon_sandbox_creds_with_lease;
     use crate::ipc_framed::EmptyPayload;
     use crate::ipc_framed::FramedMessage;
+    use crate::ipc_framed::IPC_PROTOCOL_VERSION;
     use crate::ipc_framed::Message;
     use crate::ipc_framed::OutputStream;
     use crate::ipc_framed::SpawnRequest;
@@ -47,6 +49,7 @@ mod windows_impl {
     use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
     use crate::runner_client::retry_runner_spawn_once;
     use crate::runner_client::spawn_runner_transport;
+    use crate::sandbox_account::SandboxAccountLease;
     use crate::sandbox_utils::ensure_codex_home_exists;
     use crate::sandbox_utils::inject_git_safe_directory;
     use crate::setup::effective_write_roots_for_permissions;
@@ -81,7 +84,7 @@ mod windows_impl {
                     let _ = write_frame(
                         &mut pipe_write,
                         &FramedMessage {
-                            version: 1,
+                            version: IPC_PROTOCOL_VERSION,
                             message: Message::Terminate {
                                 payload: EmptyPayload::default(),
                             },
@@ -141,18 +144,38 @@ mod windows_impl {
 
         let logs_base_dir: Option<&Path> = Some(sandbox_base.as_path());
         log_start(&command, logs_base_dir);
-        let sandbox_creds = require_logon_sandbox_creds(
-            &permissions,
-            cwd,
-            &env_map,
-            codex_home,
-            read_roots_override,
-            read_roots_include_platform_defaults,
-            write_roots_override,
-            &deny_read_paths_override,
-            &deny_write_paths_override,
-            proxy_enforced,
-            crate::WindowsSandboxProxySettingsMode::Reconcile,
+        let account_lease = SandboxAccountLease::acquire()?;
+        let sandbox_creds = require_logon_sandbox_creds_with_lease(
+            SandboxIdentityRequest {
+                permissions: &permissions,
+                command_cwd: cwd,
+                env_map: &env_map,
+                codex_home,
+                read_roots_override,
+                read_roots_include_platform_defaults,
+                write_roots_override,
+                deny_read_paths_override: &deny_read_paths_override,
+                deny_write_paths_override: &deny_write_paths_override,
+                proxy_enforced,
+                proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Reconcile,
+            },
+            &account_lease,
+        )?;
+        let read_cap_sids = crate::read_capability::read_cap_sids_for_setup(
+            &crate::setup::SandboxSetupRequest {
+                permissions: &permissions,
+                command_cwd: cwd,
+                env_map: &env_map,
+                codex_home,
+                proxy_enforced,
+            },
+            &crate::setup::SetupRootOverrides {
+                read_roots: read_roots_override.map(<[std::path::PathBuf]>::to_vec),
+                read_roots_include_platform_defaults,
+                write_roots: write_roots_override.map(<[std::path::PathBuf]>::to_vec),
+                deny_read_paths: Some(deny_read_paths_override.clone()),
+                ..crate::setup::SetupRootOverrides::default()
+            },
         )?;
         // Build capability SID for ACL grants.
         let caps = load_or_create_cap_sids(codex_home)?;
@@ -192,6 +215,7 @@ mod windows_impl {
                 codex_home: sandbox_base.clone(),
                 real_codex_home: codex_home.to_path_buf(),
                 cap_sids,
+                read_cap_sids,
                 network_proxy_restricting_sid,
                 timeout_ms,
                 tty: false,
@@ -211,21 +235,26 @@ mod windows_impl {
                     )
                 },
                 || {
-                    refresh_logon_sandbox_creds(
-                        &permissions,
-                        cwd,
-                        &env_map,
-                        codex_home,
-                        read_roots_override,
-                        read_roots_include_platform_defaults,
-                        write_roots_override,
-                        &deny_read_paths_override,
-                        &deny_write_paths_override,
-                        proxy_enforced,
-                        crate::WindowsSandboxProxySettingsMode::Reconcile,
+                    refresh_logon_sandbox_creds_with_lease(
+                        SandboxIdentityRequest {
+                            permissions: &permissions,
+                            command_cwd: cwd,
+                            env_map: &env_map,
+                            codex_home,
+                            read_roots_override,
+                            read_roots_include_platform_defaults,
+                            write_roots_override,
+                            deny_read_paths_override: &deny_read_paths_override,
+                            deny_write_paths_override: &deny_write_paths_override,
+                            proxy_enforced,
+                            proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Reconcile,
+                        },
+                        &account_lease,
                     )
                 },
             )?;
+            // The runner has authenticated and completed its spawn handshake.
+            drop(account_lease);
             let (pipe_write, mut pipe_read) = transport.into_files();
             let cancel_writer = spawn_cancel_writer(&pipe_write, cancellation)?;
 

@@ -53,7 +53,7 @@ struct TokenDefaultDaclInfo {
 
 /// Sets a permissive default DACL so sandboxed processes can create pipes/IPC objects
 /// without hitting ACCESS_DENIED when PowerShell builds pipelines.
-unsafe fn set_default_dacl(h_token: HANDLE, sids: &[*mut c_void]) -> Result<()> {
+pub(crate) unsafe fn set_default_dacl(h_token: HANDLE, sids: &[*mut c_void]) -> Result<()> {
     if sids.is_empty() {
         return Ok(());
     }
@@ -276,7 +276,7 @@ pub unsafe fn get_logon_sid_bytes(h_token: HANDLE) -> Result<Vec<u8>> {
     Err(anyhow!("Logon SID not present on token"))
 }
 
-unsafe fn get_user_sid_bytes(h_token: HANDLE) -> Result<Vec<u8>> {
+pub(crate) unsafe fn get_user_sid_bytes(h_token: HANDLE) -> Result<Vec<u8>> {
     let mut needed: u32 = 0;
     GetTokenInformation(h_token, TokenUser, std::ptr::null_mut(), 0, &mut needed);
     if needed == 0 {
@@ -316,7 +316,7 @@ unsafe fn get_user_sid_bytes(h_token: HANDLE) -> Result<Vec<u8>> {
     Ok(user_sid_bytes)
 }
 
-unsafe fn enable_single_privilege(h_token: HANDLE, name: &str) -> Result<()> {
+pub(crate) unsafe fn enable_single_privilege(h_token: HANDLE, name: &str) -> Result<()> {
     let mut luid = LUID {
         LowPart: 0,
         HighPart: 0,
@@ -385,11 +385,12 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     anyhow::bail!(crate::filesystem_backend::ELEVATED_FILESYSTEM_REQUIRED)
 }
 
-/// Create a restricted token that includes all provided capability SIDs, the token user SID, and
-/// any additional restricting SIDs.
+/// Create a fully restricted workspace token from the dedicated sandbox account.
 ///
-/// This is intended for the elevated sandbox backend, where the token user is the dedicated
-/// sandbox account rather than the real signed-in user.
+/// The account identity remains in the normal token. The restricting SID set
+/// contains only the supplied capabilities and additional read or route identities,
+/// so ambient account, group, and Logon grants cannot authorize deletion outside
+/// the current writable roots. Additional SIDs receive no default-DACL write grant.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -398,7 +399,7 @@ pub unsafe fn create_workspace_write_token_with_caps_and_user_from(
     psid_capabilities: &[*mut c_void],
     additional_restricting_sids: &[*mut c_void],
 ) -> Result<HANDLE> {
-    create_token_with_caps_user_and_additional_restrictions_from(
+    crate::workspace_token::create_workspace_token(
         base_token,
         psid_capabilities,
         additional_restricting_sids,
