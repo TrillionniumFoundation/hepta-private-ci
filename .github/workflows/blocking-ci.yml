@@ -157,20 +157,30 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # This job runs exclusively on an ephemeral ubuntu-24.04 hosted
-          # runner. The selected Cargo owner/reverse-consumer graph must NOT
-          # be reduced to work around runner disk exhaustion.
+          : "${GITHUB_WORKSPACE:?checkout root required}"
+          # Reclaim only fixed SDK paths on the ephemeral hosted Linux runner.
+          # Preserve the checkout, Cargo/V8 artifacts, and exhaustive test selection.
           printf '%s\n' 'Runner disk before native prerequisites:'
-          df -h "$RUNNER_TEMP"
-          for unused in /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup; do
-            if [[ -d "$unused" ]]; then
-              echo "Removing unused preinstalled non-Rust toolchain: $unused"
-              sudo du -sh "$unused"
-              sudo rm -rf -- "$unused"
-            fi
-          done
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+          if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" || "${RUNNER_OS:-}" != "Linux" ]]; then
+            echo "Not a GitHub-hosted Linux runner: no SDK directories removed"
+          else
+            for unused in \
+              /usr/local/lib/android \
+              /usr/share/dotnet \
+              /opt/ghc \
+              /usr/local/.ghcup \
+              /usr/local/share/powershell
+            do
+              if [[ -d "$unused" && ! -L "$unused" ]]; then
+                echo "Removing unused preinstalled non-Rust toolchain: $unused"
+                sudo du -sh "$unused"
+                sudo rm -rf -- "$unused"
+              fi
+            done
+          fi
           printf '%s\n' 'Runner disk after reclaiming unused tools:'
-          df -h "$RUNNER_TEMP"
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
           free_kib="$(df -Pk "$RUNNER_TEMP" | awk 'NR==2 {print $4}')"
           if ! [[ "$free_kib" =~ ^[0-9]+$ ]] || (( free_kib < 6 * 1024 * 1024 )); then
             echo '::error::Less than 6 GiB free for exact-SHA native reverse-consumer tests'
