@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.cell.common-candidate.validation.v1",
+  "tested_source_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+  "tested_source_tree": "80f33dcd59cf3721dbec3a9cb2ee695db5187cd5",
+  "source_pr": 5890,
+  "status": "SOURCE_GATES_PASS_NATIVE_PENDING_ADOPTION_HOLD",
+  "source_guards": {
+    "status": "PASS_REQUESTED_SOURCE_AND_RESEARCH_GATES",
+    "source_unit_cases": 134,
+    "research_unit_cases": 76,
+    "engineering_union_unique_cases": 210,
+    "rust_files_scanned": 6298,
+    "boundaries": 213,
+    "all_unit_failures_errors_skips": 0,
+    "source_identity_unchanged": true,
+    "tracked_files": 14431,
+    "physical_scanned_source_files": 6683,
+    "source_guard_authority_granted": false
+  },
+  "native_local": {
+    "status": "NOT_RUN_RESOURCE_PREFLIGHT",
+    "started_cases": 0,
+    "passed_cases": null,
+    "failed_cases": null,
+    "source_failure_claim": false
+  },
+  "native_ci": {
+    "status": "IN_PROGRESS_NO_NATIVE_QUALIFICATION",
+    "current_combined_step": {
+      "number": 12,
+      "name": "Run ordinary and Root suites then scoped maintenance",
+      "status": "in_progress",
+      "started_at": "2026-11-11T01:32:50Z"
+    },
+    "ordinary_individual_result": null,
+    "root_individual_result": null,
+    "native_qualification": false
+  },
+  "ci_as_of": "2026-11-11 01:33:33 UTC",
+  "ci_runs": [
+    {
+      "name": "Hepta daemon learning native",
+      "run_id": 42937682992,
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937682992"
+    },
+    {
+      "name": "blocking-ci",
+      "run_id": 42937683233,
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683233"
+    },
+    {
+      "name": "Hepta architecture convergence",
+      "run_id": 42937682929,
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "status": "queued",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937682929"
+    },
+    {
+      "name": "Hepta Cell research stage evidence",
+      "run_id": 42937683069,
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683069"
+    },
+    {
+      "name": "v8-canary",
+      "run_id": 42937683149,
+      "head_sha": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42937683149"
+    }
+  ],
+  "maintenance": {
+    "status": "PASS_FORMAT_NO_CHANGE",
+    "exit_code": 0,
+    "tracked_diff_bytes": 0,
+    "behavior_tests_repeated_after_maintenance": false
+  },
+  "adoption": {
+    "P0": "HOLD",
+    "P1": "HOLD",
+    "P2_to_P4": "NOT_ADMITTED",
+    "complete_production_chain_confirmations_in_this_evidence": 0,
+    "new_independent_real_confirmations": 0,
+    "production_model_proposal_profile": "not established",
+    "original_stage_owner_product_enrollment": "not established",
+    "independent_B_evaluation": "not established",
+    "complete_correct_production_NoUpdate_and_cold_recovery": "not established",
+    "topology": "fixed"
+  },
+  "costs": {
+    "per_subprocess_wall_cpu_and_max_rss": "SOURCE_GUARDS.json and raw execution results",
+    "parallel_wall_times_are_not_summed": true,
+    "native_preflight_recorded_inventory_report_wall_seconds": 53.53729622300034,
+    "earlier_native_preflight_wall_seconds": null,
+    "maintenance_wall_seconds": 0.39879858099993726,
+    "complete_campaign_cost": null,
+    "communication_cost": null,
+    "hosted_compute_cost": null
+  },
+  "preserved_earlier_attempts": {
+    "unpublished_c36": "tests NOT_RUN",
+    "initial_published_R": "no local native/source PASS transferred",
+    "old_9821_source_run": "original 1 failure event +14 error events retained; fullscan CANCELLED",
+    "old_133_case_ids_retained": 133,
+    "new_case_ids": 1,
+    "removed_case_ids": 0
+  },
+  "raw_archive": {
+    "file": "raw-evidence.tar.xz",
+    "bytes": 1389552,
+    "sha256": "1f908b1e8c63ea97eb3175853e3f362fb9550f44214820c45738788d80903305",
+    "raw_files": 112,
+    "raw_bytes": 19607272
+  },
+  "evidence_commit_is_not_tested_source": true
+}

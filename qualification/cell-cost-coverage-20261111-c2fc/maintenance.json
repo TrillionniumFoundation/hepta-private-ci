@@ -1,0 +1,25 @@
+{
+  "source_commit": "0c99a30dbe9307d48aa50ffc63404235ade8ae9c",
+  "scope": "exact file projection; not whole-repository CI",
+  "command": [
+    "/home/qq/hepta-shared-framework-f8e4-20261109/tools/bin/just",
+    "fmt"
+  ],
+  "returncode": 0,
+  "before_sha256": {
+    "scripts/hepta_cell_research_gate.py": "681c73feeb0abbb3fa4af63e2f51de9e02ff90f3aafe0fa45e53dbefe97660d9",
+    "scripts/hepta_cell_research_units.py": "e81af36e400a7078762348285896d6b1f8639eb2f97ded5467ce03798beffc77",
+    "scripts/test_hepta_cell_research_units.py": "dce243f90221005ccb072f70ed037976e490582c0b14e04e88bea4d9a9c3ed53"
+  },
+  "after_sha256": {
+    "scripts/hepta_cell_research_gate.py": "681c73feeb0abbb3fa4af63e2f51de9e02ff90f3aafe0fa45e53dbefe97660d9",
+    "scripts/hepta_cell_research_units.py": "e81af36e400a7078762348285896d6b1f8639eb2f97ded5467ce03798beffc77",
+    "scripts/test_hepta_cell_research_units.py": "e9241adf6a477e6ed30dd2178902738966ce320f90595c23c9048459f39d8c58"
+  },
+  "python_ast_unchanged": {
+    "scripts/hepta_cell_research_gate.py": true,
+    "scripts/hepta_cell_research_units.py": true,
+    "scripts/test_hepta_cell_research_units.py": true
+  },
+  "stdout_stderr_log": "/home/qq/cell-cost-coverage-c2fc-20261111.fmt.log"
+}
