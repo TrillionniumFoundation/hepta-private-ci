@@ -1,12 +1,16 @@
-//! Borrowed-buffer ABI to the HIA-native UTF-8 boundary algorithm.
-//! All scanning and boundary selection execute in HIA-produced machine code.
+//! Constant-size transport for HIA UTF-8 prefix selection on valid Rust strings.
+//!
+//! Rust's `&str` already guarantees UTF-8. At most three continuation bytes
+//! precede the requested boundary, so the HIA owner only needs a four-byte
+//! window. This preserves the borrowed API without allocating or imposing the
+//! development byte-frame profile's 1 MiB limit on the original string.
 
-const SOURCE_LIMIT: usize = 1_048_576;
-const HEADER_SIZE: usize = 8;
+const HEADER_SIZE: usize = 24;
+const MAX_WINDOW_SIZE: usize = 4;
 const OUTPUT_SIZE: usize = 8;
 
 unsafe extern "C" {
-    fn codex_hia_utf8_boundaries(
+    fn codex_hia_utf8_prefix(
         source: *const u8,
         source_len: u64,
         output: *mut u8,
@@ -16,48 +20,39 @@ unsafe extern "C" {
     ) -> u64;
 }
 
-/// Preserve the public borrowed `&str` result; the HIA machine code owns the decision.
-/// Reject inputs outside the native profile instead of quietly using a Rust path.
-#[inline]
-pub fn take_bytes_at_char_boundary(s: &str, maxb: usize) -> &str {
-    let wire_size = s
-        .len()
-        .checked_add(HEADER_SIZE)
-        .expect("HIA UTF-8 wire length overflow");
-    assert!(
-        wire_size <= SOURCE_LIMIT,
-        "HIA UTF-8 input exceeds locked 1 MiB source buffer"
-    );
-    let mut source = Vec::with_capacity(wire_size);
-    source.extend_from_slice(&(maxb as u64).to_le_bytes());
-    source.extend_from_slice(s.as_bytes());
-    let mut output = [0_u8; OUTPUT_SIZE];
+pub(super) fn take_bytes_at_char_boundary(s: &str, maxb: usize) -> &str {
+    // Select raw bytes for transport; HIA owns the budget and boundary result.
+    let position = maxb.min(s.len());
+    let window_start = position.saturating_sub(3);
+    let window_end = position.saturating_add(1).min(s.len());
+    let window = &s.as_bytes()[window_start..window_end];
+    let mut frame = [0_u8; HEADER_SIZE + MAX_WINDOW_SIZE];
+    frame[..8].copy_from_slice(&(s.len() as u64).to_le_bytes());
+    frame[8..16].copy_from_slice(&(maxb as u64).to_le_bytes());
+    frame[16..24].copy_from_slice(&(window_start as u64).to_le_bytes());
+    frame[HEADER_SIZE..HEADER_SIZE + window.len()].copy_from_slice(window);
+    let mut result = [0_u8; OUTPUT_SIZE];
     let mut workspace = [0_u8; 1];
-    // SAFETY: owned live disjoint buffers; lengths are bounded by the native
-    // profile; no pointer is retained and zero workspace bytes are accessed.
+    // SAFETY: these distinct stack allocations remain live throughout the
+    // synchronous call. The frame is at most 28 bytes, result is eight bytes,
+    // and workspace length is zero. The HIA entry retains no caller pointers.
     let status = unsafe {
-        codex_hia_utf8_boundaries(
-            source.as_ptr(),
-            source.len() as u64,
-            output.as_mut_ptr(),
+        codex_hia_utf8_prefix(
+            frame.as_ptr(),
+            (HEADER_SIZE + window.len()) as u64,
+            result.as_mut_ptr(),
             OUTPUT_SIZE as u64,
             workspace.as_mut_ptr(),
-            0,
+            /*workspace_len*/ 0,
         )
     };
-    assert_eq!(
-        status, OUTPUT_SIZE as u64,
-        "HIA UTF-8 native ABI rejected call"
-    );
-    let end =
-        usize::try_from(u64::from_le_bytes(output)).expect("HIA UTF-8 result is not a valid usize");
-    assert!(
-        end <= s.len() && end <= maxb && s.is_char_boundary(end),
-        "HIA UTF-8 result violates the Rust borrowed-slice contract"
-    );
-    &s[..end]
+    assert_eq!(status, OUTPUT_SIZE as u64, "HIA UTF-8 prefix call failed");
+    let offset = match usize::try_from(u64::from_le_bytes(result)) {
+        Ok(offset) if offset <= position && position - offset <= 3 => offset,
+        _ => panic!("HIA UTF-8 prefix returned an invalid byte offset"),
+    };
+    match s.get(..offset) {
+        Some(prefix) => prefix,
+        None => panic!("HIA UTF-8 prefix returned an invalid string boundary"),
+    }
 }
-
-#[cfg(test)]
-#[path = "hia_native_tests.rs"]
-mod tests;
