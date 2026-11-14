@@ -76,7 +76,8 @@ impl AuthBusAuthorityOwner {
         owner_id: &str,
     ) -> Result<Self, AuthBusAuthorityError> {
         let lease = AuthorityWriterLease::acquire(&checkpoint_path, database_path, owner_id)?;
-        let host = match AuthBusAuthorityHost::open(database_path, checkpoint_path, owner_id).await {
+        let host = match AuthBusAuthorityHost::open(database_path, checkpoint_path, owner_id).await
+        {
             Ok(host) => host,
             Err(error) => {
                 drop(lease);
@@ -195,12 +196,9 @@ impl AuthBusAdminPort<'_> {
     ) -> Result<IssuerRetirement, AuthBusAuthorityError> {
         serialized_mutation!(
             self,
-            self.owner.host.retire_issuer_epoch(
-                purpose,
-                issuer_id,
-                key_epoch,
-                expected_revision
-            )
+            self.owner
+                .host
+                .retire_issuer_epoch(purpose, issuer_id, key_epoch, expected_revision)
         )
     }
 
@@ -304,7 +302,9 @@ impl AuthBusEffectPort<'_> {
     ) -> Result<TrustedTimeSample, AuthBusAuthorityError> {
         serialized_mutation!(
             self,
-            self.owner.host.observe_trusted_time_attestation(attestation)
+            self.owner
+                .host
+                .observe_trusted_time_attestation(attestation)
         )
     }
 
@@ -387,11 +387,9 @@ impl AuthBusEffectPort<'_> {
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         serialized_mutation!(
             self,
-            self.owner.host.reconcile_expired_reservation(
-                reservation_id,
-                expected_revision,
-                time
-            )
+            self.owner
+                .host
+                .reconcile_expired_reservation(reservation_id, expected_revision, time)
         )
     }
 
@@ -472,10 +470,8 @@ impl AuthorityWriterLease {
             schema_version: WRITER_LEASE_SCHEMA_VERSION,
             owner_id,
             process_id: std::process::id(),
-            database_path_digest: Digest32::of_bytes(
-                database_path.to_string_lossy().as_bytes(),
-            )
-            .to_string(),
+            database_path_digest: Digest32::of_bytes(database_path.to_string_lossy().as_bytes())
+                .to_string(),
             checkpoint_path_digest: Digest32::of_bytes(
                 checkpoint_path.to_string_lossy().as_bytes(),
             )

@@ -96,10 +96,7 @@ async fn configured() -> (
     (root, store, decision, reservation)
 }
 
-async fn enroll_settlement(
-    store: &AuthBusAuthorityStore,
-    key: &SigningKey,
-) -> IssuerRecord {
+async fn enroll_settlement(store: &AuthBusAuthorityStore, key: &SigningKey) -> IssuerRecord {
     store
         .enroll_issuer(
             IssuerPurpose::Settlement,
@@ -206,9 +203,7 @@ async fn completed_settlement_is_conservative_and_idempotent() {
     );
     let changed = evidence(&key, &dispatched, SettlementStatus::Completed, 4, 1_600);
     assert!(matches!(
-        store
-            .settle(&changed, sample(8, 1_800))
-            .await,
+        store.settle(&changed, sample(8, 1_800)).await,
         Err(AuthBusAuthorityError::IdempotencyConflict)
     ));
 }
@@ -398,7 +393,6 @@ async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_ca
         .expect("quota snapshot");
     assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
 }
-
 
 #[tokio::test]
 async fn settlement_rejects_a_signature_not_registered_in_the_owner_transaction() {

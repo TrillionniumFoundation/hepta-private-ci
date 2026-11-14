@@ -13,7 +13,6 @@ pub enum SettlementStatus {
     Rejected,
 }
 
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SettlementEvidenceClaims {
     pub issuer_id: StableId,

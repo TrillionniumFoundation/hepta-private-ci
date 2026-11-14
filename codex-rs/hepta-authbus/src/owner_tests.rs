@@ -20,44 +20,29 @@ async fn fixture() -> (TempDir, TempDir, PathBuf, PathBuf, AuthBusAuthorityOwner
     let checkpoint_root = private_tempdir();
     let database = database_root.path().join("authority.sqlite");
     let checkpoint = checkpoint_root.path().join("authority-checkpoint.json");
-    let owner = AuthBusAuthorityOwner::bootstrap_new(
-        &database,
-        checkpoint.clone(),
-        "authbus-owner-test",
-    )
-    .await
-    .expect("bootstrap owner");
-    (
-        database_root,
-        checkpoint_root,
-        database,
-        checkpoint,
-        owner,
-    )
+    let owner =
+        AuthBusAuthorityOwner::bootstrap_new(&database, checkpoint.clone(), "authbus-owner-test")
+            .await
+            .expect("bootstrap owner");
+    (database_root, checkpoint_root, database, checkpoint, owner)
 }
 
 #[tokio::test]
 async fn writer_lease_fences_a_second_owner_and_releases_on_drop() {
     let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await;
-    let second = AuthBusAuthorityOwner::open(
-        &database,
-        checkpoint.clone(),
-        "authbus-owner-test",
-    )
-    .await;
+    let second =
+        AuthBusAuthorityOwner::open(&database, checkpoint.clone(), "authbus-owner-test").await;
     assert!(matches!(
         second,
         Err(AuthBusAuthorityError::WriterLeaseHeld)
     ));
 
     drop(owner);
-    let reopened = AuthBusAuthorityOwner::open(
-        &database,
-        checkpoint,
-        "authbus-owner-test",
-    )
-    .await;
-    assert!(reopened.is_ok(), "normal owner drop must release the writer lease");
+    let reopened = AuthBusAuthorityOwner::open(&database, checkpoint, "authbus-owner-test").await;
+    assert!(
+        reopened.is_ok(),
+        "normal owner drop must release the writer lease"
+    );
 }
 
 #[tokio::test]
@@ -72,16 +57,12 @@ async fn stale_writer_lease_fails_closed_until_explicitly_recovered() {
         .mode(0o600)
         .open(&lock_path)
         .expect("create stale lock");
-    lock.write_all(b"{\"stale\":true}").expect("write stale lock");
+    lock.write_all(b"{\"stale\":true}")
+        .expect("write stale lock");
     lock.sync_all().expect("sync stale lock");
 
     assert!(matches!(
-        AuthBusAuthorityOwner::open(
-            &database,
-            checkpoint.clone(),
-            "authbus-owner-test",
-        )
-        .await,
+        AuthBusAuthorityOwner::open(&database, checkpoint.clone(), "authbus-owner-test",).await,
         Err(AuthBusAuthorityError::WriterLeaseHeld)
     ));
 
@@ -206,7 +187,8 @@ async fn serialized_mutation_cancellation_preserves_single_operation_slot() {
     assert!(next.as_mut().poll(&mut context).is_pending());
     assert!(!waiter_entered.load(Ordering::SeqCst));
     drop(first);
-    next.await.expect("cancelling the active operation releases its slot");
+    next.await
+        .expect("cancelling the active operation releases its slot");
     assert!(waiter_entered.load(Ordering::SeqCst));
     owner
         .admin()
