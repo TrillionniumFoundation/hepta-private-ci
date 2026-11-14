@@ -60,6 +60,17 @@ jobs:
             "$HEPTA_E16_ARCHIVE" | sha256sum -c -
           sha256sum "$HEPTA_E16_ARCHIVE" > "$OUTPUT/original-multirc-real-source.sha256"
           test -s "$OUTPUT/original-multirc-real-source.sha256"
+      - name: Restore ALL original SHA-locked E20/E21/E22 + historic E9 inputs before full inherited test discovery
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python qualification/shared-stem-system2-architecture/e22_artifact_fetch.py \
+            --stage full --with-e9 --source-archive "$HEPTA_E16_ARCHIVE" \
+            --out /tmp/hepta-e6-e8-complete-original-evidence --github-env "$GITHUB_ENV" \
+            | tee "$OUTPUT/complete-inherited-original-source-inventory.txt"
+          test -s "$OUTPUT/complete-inherited-original-source-inventory.txt"
       - name: Run fail-closed E0/E6/E7/E8 plus ALL inherited research contracts normally and with -O
         shell: bash
         run: |
