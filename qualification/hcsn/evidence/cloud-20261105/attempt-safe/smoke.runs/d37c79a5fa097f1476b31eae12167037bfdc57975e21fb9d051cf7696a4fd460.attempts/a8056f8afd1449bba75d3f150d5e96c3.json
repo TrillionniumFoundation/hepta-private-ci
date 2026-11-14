@@ -1,0 +1,121 @@
+{
+  "key": "d37c79a5fa097f1476b31eae12167037bfdc57975e21fb9d051cf7696a4fd460",
+  "source_sha256": "f6debd63e6ac6979144a923efdaad5d1f4a99ad2cd602b9174831bcebc6bb2ad",
+  "config": {
+    "profile": "smoke",
+    "device": "cpu",
+    "tasks": [
+      "delayed_recall"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "data_seed": 271828,
+    "train_count": 128,
+    "validation_count": 32,
+    "test_count": 64,
+    "length": 8,
+    "hidden_size": 8,
+    "batch_size": 16,
+    "train_steps": 8,
+    "learning_rate": 0.003,
+    "dt": 0.1,
+    "latency_repeats": 7,
+    "cpu_threads": 2
+  },
+  "dataset": {
+    "split_sha256": [
+      "1ecc3a567b3b4359948876f79f51cd44b1c42ba4d125604845fa666f384bc3ad",
+      "8bae8824da9018c9c8d39ce8eae69f9ad06b8511729c09a7a4a4ed4272c9c3ce",
+      "8adc6dbef831cbc0ed3a85a5a451e403ade660944bc63af8582cd45ef30b9979"
+    ],
+    "constant_predictor_test_mse": 0.3680054843425751
+  },
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpu_count": 5,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu",
+    "device": "cpu",
+    "device_name": "AMD EPYC 9V74 80-Core Processor",
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": null,
+    "cuda_available": false
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "ncps": "1.0.1",
+    "mamba-ssm": null,
+    "triton": null,
+    "causal-conv1d": null,
+    "nvidia-ml-py": null
+  },
+  "task": "delayed_recall",
+  "model": "no_rollover",
+  "seed": 2,
+  "attempt_id": "a8056f8afd1449bba75d3f150d5e96c3",
+  "started_utc": "2026-11-05T14:13:22.825866+00:00",
+  "result": {
+    "task": "delayed_recall",
+    "model": "no_rollover",
+    "seed": 2,
+    "status": "completed",
+    "training_status": "completed",
+    "training_examples_seen": 128,
+    "training_tokens_seen": 1024,
+    "training_steps_completed": 8,
+    "budget_measurement_scope": "examples/tokens submitted to training forward; optimizer steps counted separately",
+    "energy": {
+      "joules_by_physical_counter": null,
+      "scope": "training wall interval; device/package, not process attribution",
+      "sampling_interval_seconds": 1.0,
+      "partial_unavailable_reasons": [],
+      "missing_reason": "no accessible RAPL package or NVML device energy counter"
+    },
+    "encoder_class": "ValueKernelCell",
+    "parameters": 257,
+    "trainable_parameters": 257,
+    "peak_gpu_allocated_bytes": null,
+    "peak_gpu_missing_reason": "CPU execution has no GPU allocation",
+    "training_wall_seconds_including_validation": 0.16619718800006922,
+    "training_examples_per_second": 770.1694688116305,
+    "best_checkpoint": "/workspace/hepta-private-ci/qualification/hcsn/evidence/cloud-20261105/attempt-safe/smoke.runs/d37c79a5fa097f1476b31eae12167037bfdc57975e21fb9d051cf7696a4fd460.attempts/a8056f8afd1449bba75d3f150d5e96c3.pt",
+    "best_checkpoint_sha256": "df2bf417101afa3918815daec4cf3a5d57b03c18c47a61cf33b3a6cf53c08686",
+    "test_mse": 0.39965152740478516,
+    "best_validation_mse": 0.30655139684677124,
+    "initial_training_mse": 0.5228250026702881,
+    "final_training_mse": 0.2631819546222687,
+    "inference_batch_size": 16,
+    "inference_examples_per_second": 3731.5825991572146,
+    "latency_p50_ms": 4.132915999889519,
+    "latency_p95_ms": 4.696836000039184,
+    "best_checkpoint_relative": "d37c79a5fa097f1476b31eae12167037bfdc57975e21fb9d051cf7696a4fd460.attempts/a8056f8afd1449bba75d3f150d5e96c3.pt"
+  },
+  "finished_utc": "2026-11-05T14:13:23.059292+00:00"
+}
