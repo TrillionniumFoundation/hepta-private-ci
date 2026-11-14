@@ -103,8 +103,14 @@ jobs:
           )
 
           if [[ "${RUNNER_OS}" == "Linux" ]]; then
-            # This target runs in the required native step immediately below.
-            bazel_targets+=(-//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests)
+            # These targets run in required native steps below. OpenSSH and
+            # nested Linux user/network namespaces belong to the runner host;
+            # the generic RBE container does not provide those capabilities.
+            bazel_targets+=(
+              -//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+              -//codex-rs/linux-sandbox:linux-sandbox-all-test
+              -//codex-rs/cli:cli-sandbox_network_proxy-test
+            )
           fi
 
           bazel_wrapper_args=(
@@ -142,6 +148,29 @@ jobs:
             --build_metadata=TAG_job=native-openssh-test \
             -- \
             //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+
+      - name: Run Linux sandbox integration on the native kernel
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          # Keep compilation remote while executing the unchanged tests inside
+          # the runner's Linux sandbox. Required failures remain blocking.
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --strategy=TestRunner=linux-sandbox \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_job=native-linux-sandbox-tests \
+            -- \
+            //codex-rs/linux-sandbox:linux-sandbox-all-test \
+            //codex-rs/cli:cli-sandbox_network_proxy-test
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
