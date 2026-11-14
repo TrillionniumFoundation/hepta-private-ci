@@ -339,9 +339,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    # Upstream sandbox-enabled V8 from-source builds can exceed 30 minutes
-    # on MSVC. Retain all link/smoke checks and the existing job matrix.
-    timeout-minutes: 120
+    # The cold ARM64 cross build reached the two-hour job limit before linking.
+    # Keep its source-build budget separate from the x64 job and runtime gates.
+    timeout-minutes: ${{ matrix.target == 'aarch64-pc-windows-msvc' && 240 || 120 }}
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
@@ -444,7 +444,19 @@ jobs:
           V8_FROM_SOURCE: "1"
         shell: bash
         working-directory: upstream-rusty-v8
-        run: cargo +1.91.0 build --locked --release --target "${TARGET}" --features v8_enable_sandbox
+        run: |
+          set -euo pipefail
+          cargo +1.91.0 build --verbose --verbose --locked --release \
+            --target "${TARGET}" --features v8_enable_sandbox \
+            2>&1 | tee "$RUNNER_TEMP/v8-source-build.log"
+
+      - name: Upload source-build diagnostics
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: v8-source-build-log-${{ matrix.target }}
+          path: ${{ runner.temp }}/v8-source-build.log
+          if-no-files-found: warn
 
       - name: Stage upstream sandbox release pair
         env:
