@@ -10,6 +10,13 @@ pub enum ApplyPatchFileUpdateMode {
     PreserveLineEndings,
 }
 
+// The included module also contains the production dispatcher. This oracle
+// compiles without hia-native and calls only the unchanged Rust matcher below.
+#[derive(Debug)]
+pub enum ApplyPatchError {
+    ComputeReplacements(String),
+}
+
 #[path = "../../codex-rs/apply-patch/src/seek_sequence.rs"]
 mod reference;
 
