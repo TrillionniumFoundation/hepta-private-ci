@@ -1,0 +1,126 @@
+diff --git a/.github/workflows/bazel.yml b/.github/workflows/bazel.yml
+index 6e9f0629ee20502aa5e467e7d45db439507f6754..5c518c829bc65ff1cbf558d75164fde15799c5bc 100644
+--- a/.github/workflows/bazel.yml
++++ b/.github/workflows/bazel.yml
+@@ -6,7 +6,7 @@ name: Bazel
+ on:
+   push:
+     branches:
+-      - dot/platform-leaf-qualification-20261006
++      - dot/platform-supervisor-qualification-20261006
+   workflow_call:
+     inputs:
+       reusable-call:
+@@ -31,12 +31,12 @@ permissions:
+ concurrency:
+   # Cancel previous actions from the same PR or branch except 'main' branch.
+   # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.
+-  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true && '::diagnostic-platform-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
++  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-supervisor-qualification-20261006' && inputs.reusable-call != true && '::diagnostic-supervisor-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
+   cancel-in-progress: ${{ github.ref_name != 'main' }}
+ 
+ jobs:
+   test:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-supervisor-qualification-20261006' && inputs.reusable-call != true) }}
+     # PRs use the sharded Windows cross-compiled test jobs below. Post-merge
+     # pushes to main also run the native Windows test job for broader Windows
+     # signal without putting PR latency back on the critical path. When
+@@ -152,7 +152,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   test-windows-shard:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-supervisor-qualification-20261006' && inputs.reusable-call != true) }}
+     # Split the native Windows Bazel test leg across separate Windows hosts.
+     # Build actions and host-loaded proc macros use the same MSVC ABI as the
+     # test binaries, avoiding cross-ABI native archive linkage.
+@@ -267,7 +267,7 @@ jobs:
+     timeout-minutes: 30
+     # Preserve the existing required-check surface while the real work happens
+     # in the sharded Windows jobs above.
+-    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-supervisor-qualification-20261006' && inputs.reusable-call != true) }}
+     needs: test-windows-shard
+     runs-on: ubuntu-24.04
+     name: Bazel test on windows-latest for x86_64-pc-windows-msvc
+@@ -361,7 +361,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   clippy:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-supervisor-qualification-20261006' && inputs.reusable-call != true) }}
+     timeout-minutes: 60
+     strategy:
+       fail-fast: false
+@@ -479,7 +479,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   verify-release-build:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-supervisor-qualification-20261006' && inputs.reusable-call != true) }}
+     timeout-minutes: 60
+     strategy:
+       fail-fast: false
+@@ -590,7 +590,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   fixed-linux-supervisor:
+-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'linux-supervisor') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'linux-supervisor') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-supervisor-qualification-20261006' && inputs.reusable-call != true) }}
+     runs-on: ubuntu-24.04
+     timeout-minutes: 60
+     environment:
+@@ -639,7 +639,7 @@ jobs:
+           if-no-files-found: error
+ 
+   fixed-windows-platform:
+-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform'
+     runs-on: windows-latest
+     timeout-minutes: 60
+     environment:
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index 7ab1cf2563911ec4b123203c4dd69475e73cc7a5..4a5826de1680cdfecb852b08ba58b99c186ad00b 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -4238,6 +4238,7 @@ dependencies = [
+  "codex-hepta-paths",
+  "codex-hepta-types",
+  "codex-uds",
++ "codex-utils-cargo-bin",
+  "constant_time_eq 0.3.1",
+  "ed25519-dalek 2.2.0",
+  "jsonschema",
+diff --git a/codex-rs/hepta-supervisor/Cargo.toml b/codex-rs/hepta-supervisor/Cargo.toml
+index 3ed96436070a4e0d5a06aca8f247c25f28a798f1..3a5c9f790aca3e0ee660d69d6d8f592b28e76abc 100644
+--- a/codex-rs/hepta-supervisor/Cargo.toml
++++ b/codex-rs/hepta-supervisor/Cargo.toml
+@@ -90,6 +90,7 @@ uuid = { workspace = true, features = ["v4"] }
+ zeroize = { workspace = true }
+ 
+ [dev-dependencies]
++codex-utils-cargo-bin = { workspace = true }
+ jsonschema = { version = "=0.33.0", default-features = false }
+ pretty_assertions = { workspace = true }
+ tempfile = { workspace = true }
+diff --git a/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs b/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs
+index 01dfc5694bf9750464233eb7e0ace3b89827e08d..b03541d816fd0e1c6cefe953b2d95ad7874a7843 100644
+--- a/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs
++++ b/codex-rs/hepta-supervisor/tests/robrix_control_projection.rs
+@@ -349,9 +349,12 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
+ }
+ 
+ fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
+-    read_artifacts(
+-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
+-    )
++    let manifest_resource = format!("fixtures/robrix-control-v2/{MANIFEST_FILE}");
++    let manifest = codex_utils_cargo_bin::find_resource!(manifest_resource)?;
++    let root = manifest
++        .parent()
++        .context("tracked projection manifest must have a parent directory")?;
++    read_artifacts(root)
+ }
+ 
+ fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {

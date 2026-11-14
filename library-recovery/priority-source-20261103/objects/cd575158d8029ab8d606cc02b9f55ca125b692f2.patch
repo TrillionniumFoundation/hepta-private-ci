@@ -1,0 +1,12 @@
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_tests.rs b/codex-rs/hepta-memory/src/cognitive_store_tests.rs
+index b5462745d3..8d6c50dc01 100644
+--- a/codex-rs/hepta-memory/src/cognitive_store_tests.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_tests.rs
+@@ -1098,6 +1098,6 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
+         .fetch_one(&migrated.pool)
+         .await
+         .expect("migration ledger"),
+-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
++        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16"
+     );
+ }

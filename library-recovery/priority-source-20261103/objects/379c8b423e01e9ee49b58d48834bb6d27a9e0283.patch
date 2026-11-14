@@ -1,0 +1,2769 @@
+diff --git a/codex-rs/hepta-cognitive-store/src/durable.rs b/codex-rs/hepta-cognitive-store/src/durable.rs
+index 6ace80385b..fdc7f1639b 100644
+--- a/codex-rs/hepta-cognitive-store/src/durable.rs
++++ b/codex-rs/hepta-cognitive-store/src/durable.rs
+@@ -44,9 +44,16 @@ pub use codex_hepta_memory::ProductionDispatchFuture;
+ pub use codex_hepta_memory::ProductionDispatchReceipt;
+ pub use codex_hepta_memory::ProductionDispatchRequest;
+ pub use codex_hepta_memory::ProductionDurableWriter;
++pub use codex_hepta_memory::ProductionEntryDispatchRequest;
++pub use codex_hepta_memory::ProductionEntryOutboxDispatcher;
++pub use codex_hepta_memory::ProductionEntryOutboxTarget;
+ pub use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
++pub use codex_hepta_memory::ProductionOperationEntry;
+ pub use codex_hepta_memory::ProductionOutboxTarget;
+ pub use codex_hepta_memory::ProductionQueuedReceipt;
++pub use codex_hepta_memory::ProductionTargetOutcome;
++pub use codex_hepta_memory::ProductionTerminalObservation;
++pub use codex_hepta_memory::ProductionTerminalObservationFuture;
+ pub use codex_hepta_memory::ProductionWriterError;
+ pub use codex_hepta_memory::RecoveredCognitiveReadOnly;
+ pub use codex_hepta_memory::SourceDraft;
+diff --git a/codex-rs/hepta-cognitive-store/src/lib.rs b/codex-rs/hepta-cognitive-store/src/lib.rs
+index d0f2495678..4c41a393e1 100644
+--- a/codex-rs/hepta-cognitive-store/src/lib.rs
++++ b/codex-rs/hepta-cognitive-store/src/lib.rs
+@@ -57,9 +57,16 @@ pub use durable::ProductionDispatchFuture;
+ pub use durable::ProductionDispatchReceipt;
+ pub use durable::ProductionDispatchRequest;
+ pub use durable::ProductionDurableWriter;
++pub use durable::ProductionEntryDispatchRequest;
++pub use durable::ProductionEntryOutboxDispatcher;
++pub use durable::ProductionEntryOutboxTarget;
+ pub use durable::ProductionFinalUseOutboxDispatcher;
++pub use durable::ProductionOperationEntry;
+ pub use durable::ProductionOutboxTarget;
+ pub use durable::ProductionQueuedReceipt;
++pub use durable::ProductionTargetOutcome;
++pub use durable::ProductionTerminalObservation;
++pub use durable::ProductionTerminalObservationFuture;
+ pub use durable::ProductionWriterError;
+ pub use durable::RecoveredCognitiveReadOnly;
+ pub use durable::SourceDraft;
+diff --git a/codex-rs/hepta-memory/src/cognitive_store.rs b/codex-rs/hepta-memory/src/cognitive_store.rs
+index 3e7f33eedf..b0f2bd1430 100644
+--- a/codex-rs/hepta-memory/src/cognitive_store.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store.rs
+@@ -239,10 +239,17 @@ pub struct CognitiveStore {
+ 
+ #[derive(Debug)]
+ pub(crate) struct CognitiveStoreOpenGuard {
++    // Present only for an exclusive recovered open generation. Legacy shared
++    // and read-only handles must never mint a production provider-entry cap.
++    operation_entry_gate: Option<Arc<crate::operation_entry_gate::OperationEntryGate>>,
+     _file: File,
+     _path: PathBuf,
+ }
+ 
++/// Bounds all pending, active, mutating and unknown-commit gate reservations
++/// within one exclusive recovered store generation. Exhaustion fails closed.
++pub(crate) const MAX_OPERATION_ENTRY_RESERVATIONS: usize = 4_096;
++
+ impl CognitiveStoreOpenGuard {
+     fn open_lock_file(root: &Path) -> Result<(File, PathBuf), CognitiveStoreError> {
+         let path = root.join(COGNITIVE_STORE_LOCK_FILENAME);
+@@ -289,6 +296,7 @@ impl CognitiveStoreOpenGuard {
+             ))
+         })?;
+         Ok(Arc::new(Self {
++            operation_entry_gate: None,
+             _file: file,
+             _path: path,
+         }))
+@@ -302,6 +310,14 @@ impl CognitiveStoreOpenGuard {
+             ))
+         })?;
+         Ok(Self {
++            operation_entry_gate: Some(
++                crate::operation_entry_gate::OperationEntryGate::new(
++                    MAX_OPERATION_ENTRY_RESERVATIONS,
++                )
++                .map_err(|_| {
++                    CognitiveStoreError::Unavailable("invalid operation-entry capacity".into())
++                })?,
++            ),
+             _file: file,
+             _path: path,
+         })
+@@ -309,6 +325,14 @@ impl CognitiveStoreOpenGuard {
+ }
+ 
+ impl CognitiveStore {
++    pub(crate) fn operation_entry_gate(
++        &self,
++    ) -> Option<&Arc<crate::operation_entry_gate::OperationEntryGate>> {
++        self._open_guard
++            .as_ref()
++            .and_then(|guard| guard.operation_entry_gate.as_ref())
++    }
++
+     pub(crate) fn from_read_only_pool(
+         pool: SqlitePool,
+         owner_agent_id: AgentId,
+@@ -1675,6 +1699,10 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
+ #[path = "cognitive_schema_tests.rs"]
+ mod schema_tests;
+ 
++#[cfg(all(test, unix))]
++#[path = "cognitive_store_entry_gate_tests.rs"]
++mod entry_gate_tests;
++
+ #[cfg(test)]
+ #[path = "cognitive_store_schema_oracle_tests.rs"]
+ mod schema_oracle_tests;
+diff --git a/codex-rs/hepta-memory/src/cognitive_store_entry_gate_tests.rs b/codex-rs/hepta-memory/src/cognitive_store_entry_gate_tests.rs
+new file mode 100644
+index 0000000000..f7b981899c
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_store_entry_gate_tests.rs
+@@ -0,0 +1,42 @@
++use super::*;
++
++#[test]
++fn shared_open_has_no_product_entry_gate_and_excludes_recovered_open() {
++    let root = tempfile::tempdir().unwrap();
++    let shared = CognitiveStoreOpenGuard::acquire_shared(root.path()).unwrap();
++    assert!(shared.operation_entry_gate.is_none());
++    assert!(CognitiveStoreOpenGuard::acquire_exclusive(root.path()).is_err());
++    drop(shared);
++    assert!(CognitiveStoreOpenGuard::acquire_exclusive(root.path()).is_ok());
++}
++
++#[test]
++fn exclusive_open_clones_share_gate_and_keep_file_exclusion() {
++    let root = tempfile::tempdir().unwrap();
++    let owner = Arc::new(CognitiveStoreOpenGuard::acquire_exclusive(root.path()).unwrap());
++    let clone = Arc::clone(&owner);
++    assert!(Arc::ptr_eq(
++        owner.operation_entry_gate.as_ref().unwrap(),
++        clone.operation_entry_gate.as_ref().unwrap()
++    ));
++    assert!(CognitiveStoreOpenGuard::acquire_shared(root.path()).is_err());
++    let pending = clone
++        .operation_entry_gate
++        .as_ref()
++        .unwrap()
++        .reserve_entry("lease", "op")
++        .unwrap();
++    assert!(matches!(
++        owner
++            .operation_entry_gate
++            .as_ref()
++            .unwrap()
++            .reserve_lease_mutation("lease"),
++        Err(crate::operation_entry_gate::EntryGateError::EntryInProgress)
++    ));
++    drop(pending);
++    drop(owner);
++    assert!(CognitiveStoreOpenGuard::acquire_shared(root.path()).is_err());
++    drop(clone);
++    assert!(CognitiveStoreOpenGuard::acquire_shared(root.path()).is_ok());
++}
+diff --git a/codex-rs/hepta-memory/src/lib.rs b/codex-rs/hepta-memory/src/lib.rs
+index 8d70d05e03..4991f06716 100644
+--- a/codex-rs/hepta-memory/src/lib.rs
++++ b/codex-rs/hepta-memory/src/lib.rs
+@@ -34,7 +34,10 @@ mod memory_admission;
+ mod model_receipt;
+ mod neuron_proposal;
+ mod operation_claims;
++mod operation_entry_gate;
++mod operation_entry_mutation;
+ mod production_cognitive_source_target;
++mod production_operation_entry;
+ mod production_writer;
+ mod recall;
+ mod shadow_advisory;
+@@ -377,6 +380,10 @@ pub use production_cognitive_source_target::COGNITIVE_SOURCE_TOPIC_V1;
+ pub use production_cognitive_source_target::CognitiveSourceOperationV1;
+ pub use production_cognitive_source_target::CognitiveSourceOutboxTarget;
+ pub use production_cognitive_source_target::CognitiveSourceTerminalObservation;
++pub use production_operation_entry::ProductionEntryDispatchRequest;
++pub use production_operation_entry::ProductionEntryOutboxDispatcher;
++pub use production_operation_entry::ProductionEntryOutboxTarget;
++pub use production_operation_entry::ProductionOperationEntry;
+ pub use production_writer::FinalUseProductionOutboxTarget;
+ pub use production_writer::PRODUCTION_COGNITIVE_MUTATION_NAMESPACE;
+ pub use production_writer::PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION;
+diff --git a/codex-rs/hepta-memory/src/local_lease_outbox.rs b/codex-rs/hepta-memory/src/local_lease_outbox.rs
+index 1c07918ae1..959b8a147f 100644
+--- a/codex-rs/hepta-memory/src/local_lease_outbox.rs
++++ b/codex-rs/hepta-memory/src/local_lease_outbox.rs
+@@ -32,6 +32,7 @@ use thiserror::Error;
+ use crate::CognitiveStore;
+ use crate::CognitiveStoreError;
+ use crate::framing::frame_part;
++use crate::operation_entry_mutation::MutationExclusion;
+ 
+ pub const LOCAL_LEASE_OUTBOX_NAMESPACE: &str = "local_development_only";
+ pub const LOCAL_LEASE_OUTBOX_SCHEMA_VERSION: u32 = 1;
+@@ -52,6 +53,12 @@ const GENESIS_OUTBOX_SHA256: &[u8] = b"hepta-memory:local-outbox:genesis:v1";
+ 
+ #[derive(Debug, Error)]
+ pub enum LocalLeaseOutboxError {
++    #[error("operation {operation_id} has a pending or active provider entry")]
++    EntryInProgress { operation_id: String },
++    #[error("lease {lease_id} has a pending or active provider entry")]
++    LeaseEntryInProgress { lease_id: String },
++    #[error("lease {lease_id} has an in-flight or unresolved owner mutation")]
++    OwnerMutationInProgress { lease_id: String },
+     #[error(transparent)]
+     Store(#[from] CognitiveStoreError),
+     #[error("invalid local lease/outbox input: {0}")]
+@@ -474,6 +481,7 @@ impl LocalLeaseOutbox {
+                 "host-bound lease requires an explicit authority/owner/expiry binding".to_string(),
+             ));
+         }
++        let mut entry_exclusion = MutationExclusion::for_lease(store, &lease_id)?;
+         let mut transaction = store
+             .pool
+             .begin_with("BEGIN IMMEDIATE")
+@@ -593,10 +601,12 @@ impl LocalLeaseOutbox {
+                 }
+             }
+         };
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         let handle = Self::from_lease(store, &state)?;
+         Ok(if replay {
+             LocalLeaseAcquire::Replay(handle)
+@@ -760,6 +770,7 @@ impl LocalLeaseOutbox {
+             ));
+         }
+ 
++        let mut entry_exclusion = MutationExclusion::for_lease(store, &lease_id)?;
+         let mut transaction = store
+             .pool
+             .begin_with("BEGIN IMMEDIATE")
+@@ -814,10 +825,12 @@ impl LocalLeaseOutbox {
+             binding.as_ref(),
+         )
+         .await?;
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         Ok(LocalLeaseAcquire::Acquired(Self::from_lease(
+             store, &lease,
+         )?))
+@@ -1196,6 +1209,7 @@ impl LocalLeaseOutbox {
+         })?;
+         validate_lease_binding(&handle_binding)?;
+ 
++        let mut entry_exclusion = MutationExclusion::for_lease(&self.store, &self.lease_id)?;
+         let mut transaction = self
+             .store
+             .pool
+@@ -1254,10 +1268,12 @@ impl LocalLeaseOutbox {
+         }
+ 
+         if previous.state == LocalLeaseState::RolledBack {
++            entry_exclusion.commit_started()?;
+             transaction
+                 .commit()
+                 .await
+                 .map_err(crate::cognitive_store::unavailable)?;
++            entry_exclusion.committed()?;
+             return Ok(previous);
+         }
+         if previous.state != LocalLeaseState::Active {
+@@ -1277,10 +1293,12 @@ impl LocalLeaseOutbox {
+             Some(&persisted_binding),
+         )
+         .await?;
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         Ok(lease)
+     }
+ 
+@@ -1288,6 +1306,7 @@ impl LocalLeaseOutbox {
+         &self,
+         state: LocalLeaseState,
+     ) -> Result<LocalLease, LocalLeaseOutboxError> {
++        let mut entry_exclusion = MutationExclusion::for_lease(&self.store, &self.lease_id)?;
+         let mut transaction = self
+             .store
+             .pool
+@@ -1333,10 +1352,12 @@ impl LocalLeaseOutbox {
+             binding.as_ref(),
+         )
+         .await?;
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         Ok(lease)
+     }
+ 
+@@ -1967,6 +1988,8 @@ impl LocalLeaseOutbox {
+                 "inherited queued payload digest mismatch".to_string(),
+             ));
+         }
++        let mut entry_exclusion =
++            MutationExclusion::for_operation(&self.store, &self.lease_id, occurrence_key)?;
+         let mut transaction = self
+             .store
+             .pool
+@@ -2109,10 +2132,12 @@ impl LocalLeaseOutbox {
+             },
+         )
+         .await?;
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         Ok(LocalOutcomeReceipt {
+             lease_id: self.lease_id.clone(),
+             occurrence_key: occurrence_key.to_string(),
+@@ -2366,6 +2391,8 @@ impl LocalLeaseOutbox {
+         let payload = outcome.as_str().to_string();
+         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
+ 
++        let mut entry_exclusion =
++            MutationExclusion::for_operation(&self.store, &self.lease_id, &occurrence_key)?;
+         let mut transaction = self
+             .store
+             .pool
+@@ -2460,10 +2487,12 @@ impl LocalLeaseOutbox {
+                     "reconciliation replay changed its outcome payload".to_string(),
+                 ));
+             }
++            entry_exclusion.commit_started()?;
+             transaction
+                 .commit()
+                 .await
+                 .map_err(crate::cognitive_store::unavailable)?;
++            entry_exclusion.committed()?;
+             return Ok(LocalOutcomeReceipt {
+                 lease_id: self.lease_id.clone(),
+                 occurrence_key,
+@@ -2506,10 +2535,12 @@ impl LocalLeaseOutbox {
+             },
+         )
+         .await?;
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         Ok(LocalOutcomeReceipt {
+             lease_id: self.lease_id.clone(),
+             occurrence_key,
+@@ -2569,6 +2600,8 @@ impl LocalLeaseOutbox {
+         resulting_state: LocalOutcomeState,
+         allow_exact_replay: bool,
+     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
++        let mut entry_exclusion =
++            MutationExclusion::for_operation(&self.store, &self.lease_id, &occurrence_key)?;
+         let mut transaction = self
+             .store
+             .pool
+@@ -2586,10 +2619,12 @@ impl LocalLeaseOutbox {
+                 allow_exact_replay,
+             )
+             .await?;
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         Ok(outcome)
+     }
+ 
+@@ -2602,7 +2637,9 @@ impl LocalLeaseOutbox {
+         transaction: &mut Transaction<'_, Sqlite>,
+         occurrence_key: String,
+         receipt: String,
++        entry_exclusion: &MutationExclusion,
+     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
++        entry_exclusion.require_operation(&self.store, &self.lease_id, &occurrence_key)?;
+         self.append_outcome_in_transaction(
+             transaction,
+             occurrence_key,
+@@ -2920,6 +2957,7 @@ impl LocalLeaseOutbox {
+     ) -> Result<LocalReplayFinalization, LocalLeaseOutboxError> {
+         let occurrence_key = occurrence_key.into();
+         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
++        let mut entry_exclusion = MutationExclusion::for_lease(&self.store, &self.lease_id)?;
+         let mut transaction = self
+             .store
+             .pool
+@@ -2946,10 +2984,12 @@ impl LocalLeaseOutbox {
+             // row commits but before the first event/outbox pair.  This is a
+             // recoverable replay, not journal corruption: the caller keeps
+             // the verified active handle and retries the original admit.
++            entry_exclusion.commit_started()?;
+             transaction
+                 .commit()
+                 .await
+                 .map_err(crate::cognitive_store::unavailable)?;
++            entry_exclusion.committed()?;
+             return Ok(LocalReplayFinalization::NotAdmitted);
+         };
+         let outbox = find_outbox(
+@@ -2969,10 +3009,12 @@ impl LocalLeaseOutbox {
+         )
+         .await?;
+         if outcome == LocalOutcomeState::Queued {
++            entry_exclusion.commit_started()?;
+             transaction
+                 .commit()
+                 .await
+                 .map_err(crate::cognitive_store::unavailable)?;
++            entry_exclusion.committed()?;
+             return Ok(LocalReplayFinalization::Queued(queued));
+         }
+         // Recovery of one occurrence must not close the lease while another
+@@ -3000,10 +3042,12 @@ impl LocalLeaseOutbox {
+             binding.as_ref(),
+         )
+         .await?;
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         Ok(LocalReplayFinalization::Released {
+             outcome,
+             lease: released,
+diff --git a/codex-rs/hepta-memory/src/operation_claims.rs b/codex-rs/hepta-memory/src/operation_claims.rs
+index c5c6f0aa8e..a03404b9ea 100644
+--- a/codex-rs/hepta-memory/src/operation_claims.rs
++++ b/codex-rs/hepta-memory/src/operation_claims.rs
+@@ -5,6 +5,7 @@ use sqlx::Transaction;
+ 
+ use crate::CognitiveStore;
+ use crate::LocalLeaseOutboxError;
++use crate::operation_entry_mutation::MutationExclusion;
+ 
+ pub(crate) const MAX_DURABLE_DISPATCH_ATTEMPTS: u32 = 64;
+ pub(crate) const MAX_DURABLE_CLAIM_LEASE_MS: u64 = 60_000;
+@@ -81,6 +82,7 @@ pub(crate) async fn claim(
+         now_unix_ms,
+         lease_duration_ms,
+     )?;
++    let mut entry_exclusion = MutationExclusion::for_operation_id(store, operation_id).await?;
+     let mut transaction = store
+         .pool
+         .begin_with("BEGIN IMMEDIATE")
+@@ -103,10 +105,12 @@ pub(crate) async fn claim(
+                     && previous.fencing_token == fencing_token
+                     && now_unix_ms < previous.lease_expires_at_unix_ms
+                 {
++                    entry_exclusion.commit_started()?;
+                     transaction
+                         .commit()
+                         .await
+                         .map_err(crate::cognitive_store::unavailable)?;
++                    entry_exclusion.committed()?;
+                     return Ok(to_receipt(operation_id, previous));
+                 }
+                 if now_unix_ms < previous.lease_expires_at_unix_ms {
+@@ -173,10 +177,12 @@ pub(crate) async fn claim(
+         now_unix_ms,
+     )
+     .await?;
++    entry_exclusion.commit_started()?;
+     transaction
+         .commit()
+         .await
+         .map_err(crate::cognitive_store::unavailable)?;
++    entry_exclusion.committed()?;
+     Ok(to_receipt(operation_id, &row))
+ }
+ 
+@@ -193,6 +199,8 @@ pub(crate) async fn renew(
+         now_unix_ms,
+         lease_duration_ms,
+     )?;
++    let mut entry_exclusion =
++        MutationExclusion::for_operation_id(store, &claim.operation_id).await?;
+     let mut transaction = store
+         .pool
+         .begin_with("BEGIN IMMEDIATE")
+@@ -252,10 +260,12 @@ pub(crate) async fn renew(
+         now_unix_ms,
+     )
+     .await?;
++    entry_exclusion.commit_started()?;
+     transaction
+         .commit()
+         .await
+         .map_err(crate::cognitive_store::unavailable)?;
++    entry_exclusion.committed()?;
+     Ok(to_receipt(&claim.operation_id, &row))
+ }
+ 
+@@ -286,6 +296,8 @@ async fn transition_claim(
+             "dispatch claim timestamp must be non-zero".to_string(),
+         ));
+     }
++    let mut entry_exclusion =
++        MutationExclusion::for_operation_id(store, &claim.operation_id).await?;
+     let mut transaction = store
+         .pool
+         .begin_with("BEGIN IMMEDIATE")
+@@ -311,10 +323,12 @@ async fn transition_claim(
+         && previous.owner_generation == claim.owner_generation
+         && previous.fencing_token == claim.fencing_token
+     {
++        entry_exclusion.commit_started()?;
+         transaction
+             .commit()
+             .await
+             .map_err(crate::cognitive_store::unavailable)?;
++        entry_exclusion.committed()?;
+         return Ok(to_receipt(&claim.operation_id, &previous));
+     }
+ 
+@@ -351,13 +365,47 @@ async fn transition_claim(
+         now_unix_ms,
+     )
+     .await?;
++    entry_exclusion.commit_started()?;
+     transaction
+         .commit()
+         .await
+         .map_err(crate::cognitive_store::unavailable)?;
++    entry_exclusion.committed()?;
+     Ok(to_receipt(&claim.operation_id, &row))
+ }
+ 
++pub(crate) async fn verify_entered(
++    store: &CognitiveStore,
++    claim: &DurableDispatchClaim,
++) -> Result<(), LocalLeaseOutboxError> {
++    let mut transaction = store
++        .pool
++        .begin()
++        .await
++        .map_err(crate::cognitive_store::unavailable)?;
++    verify_operation_fence(
++        &mut transaction,
++        store,
++        &claim.operation_id,
++        claim.owner_generation,
++        &claim.fencing_token,
++    )
++    .await?;
++    let current = latest_claim(&mut transaction, &claim.operation_id)
++        .await?
++        .ok_or_else(|| LocalLeaseOutboxError::StaleFence("entered claim is missing".into()))?;
++    if current.state != ClaimState::Entered || to_receipt(&claim.operation_id, &current) != *claim {
++        return Err(LocalLeaseOutboxError::StaleFence(
++            "entered claim is no longer current".into(),
++        ));
++    }
++    transaction
++        .commit()
++        .await
++        .map_err(crate::cognitive_store::unavailable)?;
++    Ok(())
++}
++
+ async fn verify_operation_fence(
+     transaction: &mut Transaction<'_, Sqlite>,
+     store: &CognitiveStore,
+diff --git a/codex-rs/hepta-memory/src/operation_entry_gate.rs b/codex-rs/hepta-memory/src/operation_entry_gate.rs
+new file mode 100644
+index 0000000000..a316ffe6ae
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/operation_entry_gate.rs
+@@ -0,0 +1,276 @@
++//! Owner-local exclusion reservations. This module never grants authority.
++//!
++//! Callers reserve before database validation, keep the reservation through the
++//! relevant commit/effect, and validate durable identities under that exclusion.
++//! No mutex guard escapes a method or is held across an await.
++
++use std::collections::BTreeMap;
++use std::sync::Arc;
++use std::sync::Mutex;
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(crate) enum EntryGateError {
++    Busy,
++    EntryInProgress,
++    Capacity,
++    Invalid,
++    Unavailable,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++enum Phase {
++    Pending,
++    Active,
++    MutationReserved,
++    MutationAttempted,
++}
++
++#[derive(Debug)]
++struct OperationSlot {
++    lease_id: String,
++    phase: Phase,
++}
++
++#[derive(Debug, Default)]
++struct State {
++    operations: BTreeMap<String, OperationSlot>,
++    leases: BTreeMap<String, Phase>,
++}
++
++#[derive(Debug)]
++pub(crate) struct OperationEntryGate {
++    capacity: usize,
++    state: Mutex<State>,
++}
++
++impl OperationEntryGate {
++    pub(crate) fn new(capacity: usize) -> Result<Arc<Self>, EntryGateError> {
++        if capacity == 0 {
++            return Err(EntryGateError::Invalid);
++        }
++        Ok(Arc::new(Self {
++            capacity,
++            state: Mutex::new(State::default()),
++        }))
++    }
++
++    fn check_capacity(&self, state: &State) -> Result<(), EntryGateError> {
++        if state.operations.len().saturating_add(state.leases.len()) >= self.capacity {
++            return Err(EntryGateError::Capacity);
++        }
++        Ok(())
++    }
++
++    fn reserve_operation(
++        self: &Arc<Self>,
++        lease_id: &str,
++        operation_id: &str,
++        phase: Phase,
++    ) -> Result<Reservation, EntryGateError> {
++        check_identity(lease_id)?;
++        check_identity(operation_id)?;
++        let mut state = self.state.lock().map_err(|_| EntryGateError::Unavailable)?;
++        if state.leases.contains_key(lease_id) {
++            return Err(EntryGateError::Busy);
++        }
++        if let Some(slot) = state.operations.get(operation_id) {
++            return Err(if matches!(slot.phase, Phase::Pending | Phase::Active) {
++                EntryGateError::EntryInProgress
++            } else {
++                EntryGateError::Busy
++            });
++        }
++        self.check_capacity(&state)?;
++        state.operations.insert(
++            operation_id.to_string(),
++            OperationSlot {
++                lease_id: lease_id.to_string(),
++                phase,
++            },
++        );
++        Ok(Reservation {
++            gate: Arc::clone(self),
++            key: Some(Key::Operation(operation_id.to_string())),
++        })
++    }
++
++    pub(crate) fn reserve_entry(
++        self: &Arc<Self>,
++        lease_id: &str,
++        operation_id: &str,
++    ) -> Result<EntryReservation, EntryGateError> {
++        Ok(EntryReservation(self.reserve_operation(
++            lease_id,
++            operation_id,
++            Phase::Pending,
++        )?))
++    }
++
++    pub(crate) fn reserve_terminal(
++        self: &Arc<Self>,
++        lease_id: &str,
++        operation_id: &str,
++    ) -> Result<MutationReservation, EntryGateError> {
++        Ok(MutationReservation(self.reserve_operation(
++            lease_id,
++            operation_id,
++            Phase::MutationReserved,
++        )?))
++    }
++
++    pub(crate) fn reserve_lease_mutation(
++        self: &Arc<Self>,
++        lease_id: &str,
++    ) -> Result<MutationReservation, EntryGateError> {
++        check_identity(lease_id)?;
++        let mut state = self.state.lock().map_err(|_| EntryGateError::Unavailable)?;
++        if state.leases.contains_key(lease_id) {
++            return Err(EntryGateError::Busy);
++        }
++        if state.operations.values().any(|slot| {
++            slot.lease_id == lease_id && matches!(slot.phase, Phase::Pending | Phase::Active)
++        }) {
++            return Err(EntryGateError::EntryInProgress);
++        }
++        if state
++            .operations
++            .values()
++            .any(|slot| slot.lease_id == lease_id)
++        {
++            return Err(EntryGateError::Busy);
++        }
++        self.check_capacity(&state)?;
++        state
++            .leases
++            .insert(lease_id.to_string(), Phase::MutationReserved);
++        Ok(MutationReservation(Reservation {
++            gate: Arc::clone(self),
++            key: Some(Key::Lease(lease_id.to_string())),
++        }))
++    }
++}
++
++fn check_identity(identity: &str) -> Result<(), EntryGateError> {
++    if identity.is_empty() || identity.len() > 512 || identity.contains('\0') {
++        return Err(EntryGateError::Invalid);
++    }
++    Ok(())
++}
++
++#[derive(Debug)]
++enum Key {
++    Operation(String),
++    Lease(String),
++}
++
++#[derive(Debug)]
++struct Reservation {
++    gate: Arc<OperationEntryGate>,
++    key: Option<Key>,
++}
++
++impl Reservation {
++    fn change_phase(&mut self, from: Phase, to: Phase) -> Result<(), EntryGateError> {
++        let mut state = self
++            .gate
++            .state
++            .lock()
++            .map_err(|_| EntryGateError::Unavailable)?;
++        let phase = match self.key.as_ref() {
++            Some(Key::Operation(id)) => state.operations.get_mut(id).map(|slot| &mut slot.phase),
++            Some(Key::Lease(id)) => state.leases.get_mut(id),
++            None => None,
++        }
++        .ok_or(EntryGateError::Invalid)?;
++        if *phase != from {
++            return Err(EntryGateError::Invalid);
++        }
++        *phase = to;
++        Ok(())
++    }
++
++    fn finish_known(&mut self) -> Result<(), EntryGateError> {
++        let mut state = self
++            .gate
++            .state
++            .lock()
++            .map_err(|_| EntryGateError::Unavailable)?;
++        match self.key.take() {
++            Some(Key::Operation(id)) => {
++                state.operations.remove(&id);
++            }
++            Some(Key::Lease(id)) => {
++                state.leases.remove(&id);
++            }
++            None => return Err(EntryGateError::Invalid),
++        }
++        Ok(())
++    }
++}
++
++impl Drop for Reservation {
++    fn drop(&mut self) {
++        let Ok(mut state) = self.gate.state.lock() else {
++            return;
++        };
++        match self.key.as_ref() {
++            Some(Key::Operation(id)) => {
++                if state
++                    .operations
++                    .get(id)
++                    .is_some_and(|slot| slot.phase != Phase::MutationAttempted)
++                {
++                    state.operations.remove(id);
++                }
++            }
++            Some(Key::Lease(id)) => {
++                if state
++                    .leases
++                    .get(id)
++                    .is_some_and(|phase| *phase != Phase::MutationAttempted)
++                {
++                    state.leases.remove(id);
++                }
++            }
++            None => {}
++        }
++    }
++}
++
++/// Private pending/active enrollment. The enclosing owner future must retain
++/// the exclusive store-open guard too; this gate alone does not own that lock.
++#[derive(Debug)]
++pub(crate) struct EntryReservation(Reservation);
++
++impl EntryReservation {
++    /// Only call after fresh durable and live-authority validation succeeds.
++    pub(crate) fn activate(&mut self) -> Result<(), EntryGateError> {
++        self.0.change_phase(Phase::Pending, Phase::Active)
++    }
++}
++
++/// A non-cloneable mutation token. Cancellation before the first durable write
++/// releases it; cancellation after an attempted write remains conservatively
++/// fenced until the owner establishes a definite durable result.
++#[derive(Debug)]
++pub(crate) struct MutationReservation(Reservation);
++
++impl MutationReservation {
++    pub(crate) fn belongs_to(&self, gate: &Arc<OperationEntryGate>) -> bool {
++        Arc::ptr_eq(&self.0.gate, gate)
++    }
++
++    pub(crate) fn mark_db_attempted(&mut self) -> Result<(), EntryGateError> {
++        self.0
++            .change_phase(Phase::MutationReserved, Phase::MutationAttempted)
++    }
++
++    /// The caller must have observed successful commit or confirmed rollback.
++    pub(crate) fn finish_known(mut self) -> Result<(), EntryGateError> {
++        self.0.finish_known()
++    }
++}
++
++#[cfg(test)]
++#[path = "operation_entry_gate_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-memory/src/operation_entry_gate_tests.rs b/codex-rs/hepta-memory/src/operation_entry_gate_tests.rs
+new file mode 100644
+index 0000000000..243cebcf75
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/operation_entry_gate_tests.rs
+@@ -0,0 +1,198 @@
++use super::*;
++use std::sync::Weak;
++
++#[test]
++fn pending_and_active_entry_exclude_matching_mutation_and_lease_close() {
++    let gate = OperationEntryGate::new(/*capacity*/ 8).unwrap();
++    let mut entry = gate.reserve_entry("lease", "op").unwrap();
++    assert!(matches!(
++        gate.reserve_terminal("lease", "op"),
++        Err(EntryGateError::EntryInProgress)
++    ));
++    assert!(matches!(
++        gate.reserve_lease_mutation("lease"),
++        Err(EntryGateError::EntryInProgress)
++    ));
++    entry.activate().unwrap();
++    assert!(matches!(
++        gate.reserve_terminal("lease", "op"),
++        Err(EntryGateError::EntryInProgress)
++    ));
++    assert!(matches!(
++        gate.reserve_lease_mutation("lease"),
++        Err(EntryGateError::EntryInProgress)
++    ));
++    drop(entry);
++    gate.reserve_lease_mutation("lease")
++        .unwrap()
++        .finish_known()
++        .unwrap();
++}
++
++#[test]
++fn unrelated_operation_and_lease_progress_without_partitioning_same_operation() {
++    let gate = OperationEntryGate::new(/*capacity*/ 8).unwrap();
++    let _entry = gate.reserve_entry("lease-a", "op-a").unwrap();
++    gate.reserve_terminal("lease-a", "op-b")
++        .unwrap()
++        .finish_known()
++        .unwrap();
++    gate.reserve_lease_mutation("lease-b")
++        .unwrap()
++        .finish_known()
++        .unwrap();
++    assert!(matches!(
++        gate.reserve_entry("different-lease", "op-a"),
++        Err(EntryGateError::EntryInProgress)
++    ));
++}
++
++#[test]
++fn duplicate_terminal_token_cannot_clear_another_mutation() {
++    let gate = OperationEntryGate::new(/*capacity*/ 8).unwrap();
++    let terminal = gate.reserve_terminal("lease", "op").unwrap();
++    assert!(matches!(
++        gate.reserve_terminal("lease", "op"),
++        Err(EntryGateError::Busy)
++    ));
++    assert!(matches!(
++        gate.reserve_lease_mutation("lease"),
++        Err(EntryGateError::Busy)
++    ));
++    terminal.finish_known().unwrap();
++    gate.reserve_lease_mutation("lease")
++        .unwrap()
++        .finish_known()
++        .unwrap();
++}
++
++#[test]
++fn pre_database_cancellation_releases_both_reservation_kinds() {
++    let gate = OperationEntryGate::new(/*capacity*/ 1).unwrap();
++    drop(gate.reserve_terminal("lease", "op").unwrap());
++    drop(gate.reserve_lease_mutation("lease").unwrap());
++    let mut entry = gate.reserve_entry("lease", "op").unwrap();
++    entry.activate().unwrap();
++}
++
++#[test]
++fn unknown_database_outcome_remains_fenced_without_eviction() {
++    let gate = OperationEntryGate::new(/*capacity*/ 2).unwrap();
++    let mut terminal = gate.reserve_terminal("lease-a", "op").unwrap();
++    terminal.mark_db_attempted().unwrap();
++    drop(terminal);
++    assert!(matches!(
++        gate.reserve_entry("lease-a", "op"),
++        Err(EntryGateError::Busy)
++    ));
++    assert!(matches!(
++        gate.reserve_lease_mutation("lease-a"),
++        Err(EntryGateError::Busy)
++    ));
++    let mut close = gate.reserve_lease_mutation("lease-b").unwrap();
++    close.mark_db_attempted().unwrap();
++    drop(close);
++    assert!(matches!(
++        gate.reserve_entry("lease-b", "other"),
++        Err(EntryGateError::Busy)
++    ));
++    assert!(matches!(
++        gate.reserve_entry("lease-c", "other"),
++        Err(EntryGateError::Capacity)
++    ));
++}
++
++#[test]
++fn known_commit_or_rollback_reclaims_capacity_without_terminal_tombstones() {
++    let gate = OperationEntryGate::new(/*capacity*/ 1).unwrap();
++    for _ in 0..100 {
++        let mut terminal = gate.reserve_terminal("lease", "op").unwrap();
++        terminal.mark_db_attempted().unwrap();
++        terminal.finish_known().unwrap();
++        // A pending slot is possible again, but this gate is not authority:
++        // product entry must freshly reject the persisted terminal row.
++        drop(gate.reserve_entry("lease", "op").unwrap());
++    }
++    assert!(gate.state.lock().unwrap().operations.is_empty());
++    assert!(gate.state.lock().unwrap().leases.is_empty());
++}
++
++#[test]
++fn capacity_failure_never_evicts_pending_entry() {
++    let gate = OperationEntryGate::new(/*capacity*/ 1).unwrap();
++    let pending = gate.reserve_entry("lease", "op").unwrap();
++    assert!(matches!(
++        gate.reserve_entry("other", "other"),
++        Err(EntryGateError::Capacity)
++    ));
++    assert!(matches!(
++        gate.reserve_terminal("lease", "op"),
++        Err(EntryGateError::EntryInProgress)
++    ));
++    drop(pending);
++    drop(gate.reserve_entry("other", "other").unwrap());
++}
++
++#[test]
++fn reservation_retains_gate_but_weak_unused_reference_does_not() {
++    let gate = OperationEntryGate::new(/*capacity*/ 1).unwrap();
++    let weak = Arc::downgrade(&gate);
++    let pending = gate.reserve_entry("lease", "op").unwrap();
++    drop(gate);
++    assert!(Weak::upgrade(&weak).is_some());
++    drop(pending);
++    assert!(Weak::upgrade(&weak).is_none());
++}
++
++#[test]
++fn pending_validation_barrier_excludes_concurrent_close() {
++    let gate = OperationEntryGate::new(/*capacity*/ 8).unwrap();
++    let (ready_tx, ready_rx) = std::sync::mpsc::channel();
++    let (continue_tx, continue_rx) = std::sync::mpsc::channel();
++    let worker_gate = Arc::clone(&gate);
++    let worker = std::thread::spawn(move || {
++        let mut entry = worker_gate.reserve_entry("lease", "op").unwrap();
++        ready_tx.send(()).unwrap();
++        continue_rx.recv().unwrap();
++        entry.activate().unwrap();
++    });
++    ready_rx
++        .recv_timeout(std::time::Duration::from_secs(5))
++        .unwrap();
++    assert!(matches!(
++        gate.reserve_lease_mutation("lease"),
++        Err(EntryGateError::EntryInProgress)
++    ));
++    continue_tx.send(()).unwrap();
++    worker.join().unwrap();
++    gate.reserve_lease_mutation("lease")
++        .unwrap()
++        .finish_known()
++        .unwrap();
++}
++
++#[test]
++fn poisoned_gate_and_invalid_configuration_fail_closed() {
++    assert!(matches!(
++        OperationEntryGate::new(/*capacity*/ 0),
++        Err(EntryGateError::Invalid)
++    ));
++    let gate = OperationEntryGate::new(/*capacity*/ 1).unwrap();
++    assert!(matches!(
++        gate.reserve_entry("", "op"),
++        Err(EntryGateError::Invalid)
++    ));
++    let worker_gate = Arc::clone(&gate);
++    assert!(
++        std::thread::spawn(move || {
++            let _held = worker_gate.state.lock().unwrap();
++            panic!("fixture poison");
++        })
++        .join()
++        .is_err()
++    );
++    assert!(matches!(
++        gate.reserve_entry("lease", "op"),
++        Err(EntryGateError::Unavailable)
++    ));
++}
+diff --git a/codex-rs/hepta-memory/src/operation_entry_mutation.rs b/codex-rs/hepta-memory/src/operation_entry_mutation.rs
+new file mode 100644
+index 0000000000..73c45a0bd5
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/operation_entry_mutation.rs
+@@ -0,0 +1,142 @@
++//! Transaction-side owner exclusion. Reserve before BEGIN; arm the unknown
++//! outcome fence immediately before COMMIT, when cancellation can become
++//! ambiguous. Before that boundary a dropped SQL transaction only rolls back.
++
++use crate::CognitiveStore;
++use crate::CognitiveStoreError;
++use crate::LocalLeaseOutboxError;
++use crate::operation_entry_gate::EntryGateError;
++use crate::operation_entry_gate::MutationReservation;
++
++pub(crate) struct MutationExclusion {
++    reservation: Option<MutationReservation>,
++    operation: Option<(String, String)>,
++}
++
++impl MutationExclusion {
++    pub(crate) fn for_lease(
++        store: &CognitiveStore,
++        lease_id: &str,
++    ) -> Result<Self, LocalLeaseOutboxError> {
++        let reservation = store
++            .operation_entry_gate()
++            .map(|gate| gate.reserve_lease_mutation(lease_id))
++            .transpose()
++            .map_err(|error| map_error(error, lease_id, None))?;
++        Ok(Self {
++            reservation,
++            operation: None,
++        })
++    }
++
++    pub(crate) fn for_operation(
++        store: &CognitiveStore,
++        lease_id: &str,
++        operation_id: &str,
++    ) -> Result<Self, LocalLeaseOutboxError> {
++        let reservation = store
++            .operation_entry_gate()
++            .map(|gate| gate.reserve_terminal(lease_id, operation_id))
++            .transpose()
++            .map_err(|error| map_error(error, lease_id, Some(operation_id)))?;
++        Ok(Self {
++            reservation,
++            operation: Some((lease_id.to_string(), operation_id.to_string())),
++        })
++    }
++
++    pub(crate) async fn for_operation_id(
++        store: &CognitiveStore,
++        operation_id: &str,
++    ) -> Result<Self, LocalLeaseOutboxError> {
++        if store.operation_entry_gate().is_none() {
++            return Ok(Self {
++                reservation: None,
++                operation: None,
++            });
++        }
++        // Immutable association lookup does not grant entry. The existing
++        // transaction checks must still verify the current lease and claim.
++        let lease_id = sqlx::query_scalar::<_, String>(
++            "SELECT lease_id FROM cognitive_operation_ledger WHERE operation_id = ?",
++        )
++        .bind(operation_id)
++        .fetch_optional(&store.pool)
++        .await
++        .map_err(crate::cognitive_store::unavailable)?
++        .ok_or_else(|| LocalLeaseOutboxError::StaleFence("operation is missing".into()))?;
++        Self::for_operation(store, &lease_id, operation_id)
++    }
++
++    pub(crate) fn require_operation(
++        &self,
++        store: &CognitiveStore,
++        lease_id: &str,
++        operation_id: &str,
++    ) -> Result<(), LocalLeaseOutboxError> {
++        if !self
++            .operation
++            .as_ref()
++            .is_some_and(|(lease, operation)| lease == lease_id && operation == operation_id)
++        {
++            return Err(LocalLeaseOutboxError::Invalid(
++                "mutation reservation operation mismatch".into(),
++            ));
++        }
++        match (store.operation_entry_gate(), self.reservation.as_ref()) {
++            (None, None) => Ok(()),
++            (Some(gate), Some(reservation)) if reservation.belongs_to(gate) => Ok(()),
++            _ => Err(LocalLeaseOutboxError::Invalid(
++                "mutation reservation owner generation mismatch".into(),
++            )),
++        }
++    }
++
++    pub(crate) fn commit_started(&mut self) -> Result<(), LocalLeaseOutboxError> {
++        if let Some(reservation) = self.reservation.as_mut() {
++            reservation.mark_db_attempted().map_err(internal_error)?;
++        }
++        Ok(())
++    }
++
++    pub(crate) fn committed(self) -> Result<(), LocalLeaseOutboxError> {
++        if let Some(reservation) = self.reservation {
++            reservation.finish_known().map_err(internal_error)?;
++        }
++        Ok(())
++    }
++}
++
++fn internal_error(error: EntryGateError) -> LocalLeaseOutboxError {
++    LocalLeaseOutboxError::Store(CognitiveStoreError::Unavailable(format!(
++        "operation-entry reservation failed: {error:?}"
++    )))
++}
++
++fn map_error(
++    error: EntryGateError,
++    lease_id: &str,
++    operation_id: Option<&str>,
++) -> LocalLeaseOutboxError {
++    match error {
++        EntryGateError::EntryInProgress => match operation_id {
++            Some(operation_id) => LocalLeaseOutboxError::EntryInProgress {
++                operation_id: operation_id.to_string(),
++            },
++            None => LocalLeaseOutboxError::LeaseEntryInProgress {
++                lease_id: lease_id.to_string(),
++            },
++        },
++        EntryGateError::Busy => LocalLeaseOutboxError::OwnerMutationInProgress {
++            lease_id: lease_id.to_string(),
++        },
++        EntryGateError::Capacity => LocalLeaseOutboxError::CapacityExceeded {
++            resource: "operation-entry reservations",
++            maximum: crate::cognitive_store::MAX_OPERATION_ENTRY_RESERVATIONS,
++        },
++        EntryGateError::Invalid => {
++            LocalLeaseOutboxError::Invalid("invalid operation-entry identity".into())
++        }
++        EntryGateError::Unavailable => internal_error(error),
++    }
++}
+diff --git a/codex-rs/hepta-memory/src/production_entry_alias_tests.rs b/codex-rs/hepta-memory/src/production_entry_alias_tests.rs
+new file mode 100644
+index 0000000000..8d9295c2a8
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/production_entry_alias_tests.rs
+@@ -0,0 +1,372 @@
++//! Real SQLite/raw-alias checks of exclusion wiring. Entry is reserved directly
++//! by the private fixture; these tests do not qualify a provider-entry API.
++
++use super::*;
++use crate::CognitiveRecoveryRequirement;
++use crate::operation_entry_gate::EntryGateError;
++use codex_hepta_types::StableId;
++use tempfile::TempDir;
++
++#[derive(Default)]
++struct TestClock {
++    override_now: std::sync::atomic::AtomicU64,
++    fail: std::sync::atomic::AtomicBool,
++    validation_signal: std::sync::Mutex<Option<tokio::sync::oneshot::Sender<()>>>,
++}
++impl codex_hepta_contracts::AuthorityClock for TestClock {
++    fn now_unix_ms(&self) -> Result<u64, codex_hepta_contracts::AuthorityTrustError> {
++        use std::sync::atomic::Ordering;
++        if self.fail.load(Ordering::SeqCst) {
++            return Err(codex_hepta_contracts::AuthorityTrustError::Unavailable);
++        }
++        let value = self.override_now.load(Ordering::SeqCst);
++        if value != 0 {
++            return Ok(value);
++        }
++        // Compatibility time is only a test-fixture bootstrap, never selected
++        // by the production provider-entry constructor.
++        codex_hepta_contracts::AuthorityClock::now_unix_ms(
++            &codex_hepta_contracts::SystemAuthorityClock,
++        )
++    }
++}
++
++async fn fixture() -> (TempDir, ProductionDurableWriter, DurableDispatchClaim) {
++    let (temp, writer, claim, _clock) = fixture_with_clock().await;
++    (temp, writer, claim)
++}
++
++async fn prepared_fixture() -> (
++    TempDir,
++    ProductionDurableWriter,
++    ProductionQueuedReceipt,
++    Arc<TestClock>,
++) {
++    let temp = tempfile::tempdir().unwrap();
++    let root = temp.path().join("fleet");
++    std::fs::create_dir(&root).unwrap();
++    let fleet = codex_hepta_paths::HeptaFleetRoot::parse(root).unwrap();
++    let owner = AgentId::parse("00000000-0000-4000-8000-00000000c061").unwrap();
++    let layout = fleet.layout().agent(&owner);
++    let authority = ProductionAuthorityLease::from_verified_parts(
++        owner.clone(),
++        Sha256Digest::for_bytes(b"entry-alias-grant"),
++        7,
++        11,
++        now_unix_seconds().unwrap() + 3600,
++        ProductionAuthorityToken::from_verified_bytes(b"entry-alias-token".to_vec()).unwrap(),
++    )
++    .unwrap();
++    let clock = Arc::new(TestClock::default());
++    let verifier_clock = Arc::clone(&clock);
++    let verifier: Arc<dyn ProductionAuthorityVerifier> =
++        Arc::new(move |lease: &ProductionAuthorityLease, owner: &AgentId| {
++            if let Some(signal) = verifier_clock.validation_signal.lock().unwrap().take() {
++                let _ = signal.send(());
++            }
++            if lease.agent_id == *owner {
++                Ok(())
++            } else {
++                Err("fixture owner mismatch".to_string())
++            }
++        });
++    let legacy = CognitiveStore::open(&layout).await.unwrap();
++    let first = ProductionDurableWriter::open_with_live_verifier(
++        legacy.clone(),
++        authority.clone(),
++        Arc::clone(&verifier),
++        "entry-alias-lease",
++        1,
++    )
++    .await
++    .unwrap();
++    let anchor = legacy.recovery_anchor().await.unwrap();
++    drop(first);
++    legacy.pool.close().await;
++    drop(legacy);
++    let recovered = CognitiveStore::open_with_recovery(
++        &layout,
++        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
++        &authority,
++        verifier.as_ref(),
++    )
++    .await
++    .unwrap();
++    let writer = ProductionDurableWriter::open_with_entry_clock(
++        recovered,
++        authority,
++        verifier,
++        clock.clone(),
++        "entry-alias-lease",
++        1,
++    )
++    .await
++    .unwrap();
++    let payload = r#"{"operation":"entry-alias-op"}"#;
++    let intent = OperationIntentV1::new(
++        StableId::new("entry-alias-op").unwrap(),
++        StableId::new(owner.as_str()).unwrap(),
++        StableId::new("entry-alias-target").unwrap(),
++        codex_hepta_types::Digest32::of_bytes(payload.as_bytes()),
++        codex_hepta_types::Digest32::of_bytes(b"entry-alias-scope"),
++        codex_hepta_types::Generation::new(1).unwrap(),
++        None,
++    )
++    .unwrap();
++    let receipt = writer
++        .prepare_operation(intent, "entry.alias.test", payload)
++        .await
++        .unwrap();
++    (temp, writer, receipt, clock)
++}
++
++async fn fixture_with_clock() -> (
++    TempDir,
++    ProductionDurableWriter,
++    DurableDispatchClaim,
++    Arc<TestClock>,
++) {
++    let (temp, writer, receipt, clock) = prepared_fixture().await;
++    let owner = writer.entry_owner.as_ref().unwrap();
++    let claim = writer
++        .claim_dispatch_lease_with_time(&receipt, 60_000, &DispatchTime::Owner(owner))
++        .await
++        .unwrap();
++    writer
++        .mark_indeterminate("entry-alias-op", "fixture unknown effect")
++        .await
++        .unwrap();
++    let entered =
++        operation_claims::mark_entered(writer.store(), &claim, owner.now_unix_ms().unwrap())
++            .await
++            .unwrap();
++    (temp, writer, entered, clock)
++}
++
++#[tokio::test]
++async fn pending_and_active_entry_fence_raw_clones_claims_and_lease_finalization() {
++    let (_temp, writer, claim) = fixture().await;
++    let raw = writer.lease.clone();
++    let gate = Arc::clone(writer.store().operation_entry_gate().unwrap());
++    let mut entry = gate
++        .reserve_entry(writer.lease_id(), "entry-alias-op")
++        .unwrap();
++    for phase in ["pending", "active"] {
++        if phase == "active" {
++            entry.activate().unwrap();
++        }
++        assert!(matches!(
++            raw.reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++                .await,
++            Err(LocalLeaseOutboxError::EntryInProgress { .. })
++        ));
++        assert!(matches!(
++            raw.rollback_occurrence("entry-alias-op", "fixture").await,
++            Err(LocalLeaseOutboxError::EntryInProgress { .. })
++        ));
++        assert!(matches!(
++            raw.release().await,
++            Err(LocalLeaseOutboxError::LeaseEntryInProgress { .. })
++        ));
++        assert!(matches!(
++            raw.rollback_lease().await,
++            Err(LocalLeaseOutboxError::LeaseEntryInProgress { .. })
++        ));
++        assert!(matches!(
++            raw.expire_lease_at_unix_seconds(writer.authority.lease_expires_at_unix_seconds)
++                .await,
++            Err(LocalLeaseOutboxError::LeaseEntryInProgress { .. })
++        ));
++
++        assert!(matches!(
++            raw.finalize_replayed_occurrence("entry-alias-op").await,
++            Err(LocalLeaseOutboxError::LeaseEntryInProgress { .. })
++        ));
++        assert!(matches!(
++            operation_claims::mark_settled(writer.store(), &claim, now_unix_ms().unwrap()).await,
++            Err(LocalLeaseOutboxError::EntryInProgress { .. })
++        ));
++        assert!(matches!(
++            operation_claims::renew(writer.store(), &claim, now_unix_ms().unwrap(), 60_000).await,
++            Err(LocalLeaseOutboxError::EntryInProgress { .. })
++        ));
++        assert!(matches!(
++            operation_claims::claim(
++                writer.store(),
++                &claim.operation_id,
++                claim.owner_generation,
++                &claim.fencing_token,
++                now_unix_ms().unwrap(),
++                60_000
++            )
++            .await,
++            Err(LocalLeaseOutboxError::EntryInProgress { .. })
++        ));
++    }
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++    drop(entry);
++    raw.reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++        .await
++        .unwrap();
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Committed
++    );
++}
++
++#[tokio::test]
++async fn caller_owned_transaction_rollback_releases_matching_reservation() {
++    let (_temp, writer, _claim) = fixture().await;
++    let raw = writer.lease.clone();
++    let exclusion =
++        MutationExclusion::for_operation(writer.store(), writer.lease_id(), "entry-alias-op")
++            .unwrap();
++    let mut transaction = writer
++        .store()
++        .pool
++        .begin_with("BEGIN IMMEDIATE")
++        .await
++        .unwrap();
++    raw.apply_in_transaction(
++        &mut transaction,
++        "entry-alias-op".into(),
++        "fixture receipt".into(),
++        &exclusion,
++    )
++    .await
++    .unwrap();
++    assert!(matches!(
++        writer
++            .store()
++            .operation_entry_gate()
++            .unwrap()
++            .reserve_entry(writer.lease_id(), "entry-alias-op"),
++        Err(EntryGateError::Busy)
++    ));
++    transaction.rollback().await.unwrap();
++    drop(exclusion);
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++    drop(
++        writer
++            .store()
++            .operation_entry_gate()
++            .unwrap()
++            .reserve_entry(writer.lease_id(), "entry-alias-op")
++            .unwrap(),
++    );
++}
++
++#[tokio::test]
++async fn caller_owned_transaction_rejects_reservation_from_other_open_generation() {
++    let (_first, writer, _claim) = fixture().await;
++    let (_second, other, _other_claim) = fixture().await;
++    let foreign =
++        MutationExclusion::for_operation(other.store(), other.lease_id(), "entry-alias-op")
++            .unwrap();
++    let mut transaction = writer
++        .store()
++        .pool
++        .begin_with("BEGIN IMMEDIATE")
++        .await
++        .unwrap();
++    assert!(matches!(
++        writer
++            .lease
++            .apply_in_transaction(
++                &mut transaction,
++                "entry-alias-op".into(),
++                "forged reservation".into(),
++                &foreign
++            )
++            .await,
++        Err(LocalLeaseOutboxError::Invalid(_))
++    ));
++    transaction.rollback().await.unwrap();
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++}
++
++#[tokio::test]
++async fn lost_commit_acknowledgement_keeps_owner_mutation_fenced() {
++    let (_temp, writer, _claim) = fixture().await;
++    let mut exclusion =
++        MutationExclusion::for_operation(writer.store(), writer.lease_id(), "entry-alias-op")
++            .unwrap();
++    let mut transaction = writer
++        .store()
++        .pool
++        .begin_with("BEGIN IMMEDIATE")
++        .await
++        .unwrap();
++    writer
++        .lease
++        .apply_in_transaction(
++            &mut transaction,
++            "entry-alias-op".into(),
++            "fixture committed receipt".into(),
++            &exclusion,
++        )
++        .await
++        .unwrap();
++    exclusion.commit_started().unwrap();
++    transaction.commit().await.unwrap();
++    // Deliberately omit acknowledgement to the guard, as if the future was
++    // canceled before it could process a successful commit response.
++    drop(exclusion);
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Committed
++    );
++    assert!(matches!(
++        writer
++            .store()
++            .operation_entry_gate()
++            .unwrap()
++            .reserve_entry(writer.lease_id(), "entry-alias-op"),
++        Err(EntryGateError::Busy)
++    ));
++    assert!(matches!(
++        writer
++            .lease
++            .finalize_replayed_occurrence("entry-alias-op")
++            .await,
++        Err(LocalLeaseOutboxError::OwnerMutationInProgress { .. })
++    ));
++}
++
++#[tokio::test]
++async fn entered_operation_lease_association_cannot_be_updated_or_replaced() {
++    let (_temp, writer, _claim) = fixture().await;
++    let mut connection = writer.store().pool.acquire().await.unwrap();
++    let foreign_keys: i64 = sqlx::query_scalar("PRAGMA foreign_keys")
++        .fetch_one(&mut *connection)
++        .await
++        .unwrap();
++    assert_eq!(foreign_keys, 1);
++    sqlx::query("PRAGMA recursive_triggers = OFF")
++        .execute(&mut *connection)
++        .await
++        .unwrap();
++    assert!(sqlx::query("UPDATE cognitive_operation_ledger SET lease_id = 'different-lease' WHERE operation_id = 'entry-alias-op'").execute(&mut *connection).await.is_err());
++    // The existing durable claim's ON DELETE RESTRICT binding also prevents
++    // REPLACE's implicit deletion, even when recursive DELETE triggers are off.
++    assert!(sqlx::query("INSERT OR REPLACE INTO cognitive_operation_ledger SELECT * FROM cognitive_operation_ledger WHERE operation_id = 'entry-alias-op'").execute(&mut *connection).await.is_err());
++    let lease: String = sqlx::query_scalar(
++        "SELECT lease_id FROM cognitive_operation_ledger WHERE operation_id = 'entry-alias-op'",
++    )
++    .fetch_one(&mut *connection)
++    .await
++    .unwrap();
++    assert_eq!(lease, writer.lease_id());
++}
++
++#[path = "production_entry_capability_tests.rs"]
++mod capability_tests;
+diff --git a/codex-rs/hepta-memory/src/production_entry_capability_tests.rs b/codex-rs/hepta-memory/src/production_entry_capability_tests.rs
+new file mode 100644
+index 0000000000..6bc91a6d31
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/production_entry_capability_tests.rs
+@@ -0,0 +1,392 @@
++use super::*;
++
++async fn entry_for(
++    writer: &ProductionDurableWriter,
++    claim: &DurableDispatchClaim,
++) -> (
++    crate::production_operation_entry::ProductionOperationEntry,
++    ProductionDispatchRequest,
++) {
++    let request = writer
++        .reconciliation_request(&claim.operation_id, "entry-alias-target")
++        .await
++        .unwrap();
++    let entry = crate::production_operation_entry::ProductionOperationEntry::new(
++        writer.entry_owner.as_ref().unwrap(),
++        claim.clone(),
++        request.clone(),
++        writer.entry_owner.as_ref().unwrap().now_unix_ms().unwrap(),
++    );
++    (entry, request)
++}
++
++#[tokio::test]
++async fn unused_entry_capability_does_not_retain_writer_or_exclusive_generation() {
++    let (temp, writer, claim) = fixture().await;
++    let (entry, request) = entry_for(&writer, &claim).await;
++    let weak = Arc::downgrade(writer.entry_owner.as_ref().unwrap());
++    drop(writer);
++    assert!(weak.upgrade().is_none());
++    let fleet = codex_hepta_paths::HeptaFleetRoot::parse(temp.path().join("fleet")).unwrap();
++    let owner = AgentId::parse("00000000-0000-4000-8000-00000000c061").unwrap();
++    let layout = fleet.layout().agent(&owner);
++    let _shared =
++        crate::cognitive_store::CognitiveStoreOpenGuard::acquire_shared(&layout.cognitive_root())
++            .unwrap();
++    assert!(matches!(
++        entry
++            .with_entry(&request, || async {
++                panic!("released owner must not enter provider")
++            })
++            .await,
++        Err(ProductionWriterError::StaleReceipt)
++    ));
++}
++
++#[tokio::test]
++async fn entry_rejects_changed_metadata_before_provider_factory() {
++    let (_temp, writer, claim) = fixture().await;
++    let (entry, mut request) = entry_for(&writer, &claim).await;
++    assert_eq!(entry.operation_id(), claim.operation_id);
++    request.payload_json.push(' ');
++    assert!(matches!(
++        entry
++            .with_entry(&request, || async {
++                panic!("changed request must not enter provider")
++            })
++            .await,
++        Err(ProductionWriterError::StaleReceipt)
++    ));
++    writer
++        .lease
++        .reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++        .await
++        .unwrap();
++}
++
++#[tokio::test]
++async fn terminal_commit_wins_before_entry_and_reclaimed_slot_is_not_authority() {
++    let (_temp, writer, claim) = fixture().await;
++    let (entry, request) = entry_for(&writer, &claim).await;
++    writer
++        .lease
++        .reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++        .await
++        .unwrap();
++    assert!(matches!(
++        entry
++            .with_entry(&request, || async {
++                panic!("terminal operation must not enter provider")
++            })
++            .await,
++        Err(ProductionWriterError::StaleReceipt)
++    ));
++}
++
++#[tokio::test]
++async fn active_entry_retains_owner_and_cancellation_releases_alias_exclusion() {
++    let (_temp, writer, claim) = fixture().await;
++    let (entry, request) = entry_for(&writer, &claim).await;
++    let raw = writer.lease.clone();
++    let weak = Arc::downgrade(writer.entry_owner.as_ref().unwrap());
++    let (started_tx, started_rx) = tokio::sync::oneshot::channel();
++    let task = tokio::spawn(async move {
++        entry
++            .with_entry(&request, || async move {
++                started_tx.send(()).unwrap();
++                std::future::pending::<ProductionTargetOutcome>().await
++            })
++            .await
++    });
++    started_rx.await.unwrap();
++    drop(writer);
++    assert!(weak.upgrade().is_some());
++    assert!(matches!(
++        raw.reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++            .await,
++        Err(LocalLeaseOutboxError::EntryInProgress { .. })
++    ));
++    task.abort();
++    assert!(task.await.unwrap_err().is_cancelled());
++    assert!(weak.upgrade().is_none());
++    assert_eq!(
++        raw.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++    raw.reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++        .await
++        .unwrap();
++}
++
++#[tokio::test]
++async fn entry_drops_active_guard_before_returning_passive_outcome() {
++    let (_temp, writer, claim) = fixture().await;
++    let (entry, request) = entry_for(&writer, &claim).await;
++    let result = entry
++        .with_entry(&request, || async {
++            ProductionTargetOutcome::Committed {
++                receipt: "fixture observed effect".into(),
++            }
++        })
++        .await
++        .unwrap();
++    assert!(matches!(result, ProductionTargetOutcome::Committed { .. }));
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++    writer
++        .lease
++        .reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++        .await
++        .unwrap();
++}
++
++#[tokio::test]
++async fn final_entry_deadline_check_uses_explicit_clock_and_fails_closed() {
++    use std::sync::atomic::Ordering;
++    let (_temp, writer, claim, clock) = fixture_with_clock().await;
++    writer.verify_entry_now(&claim, clock.as_ref(), 1).unwrap();
++    clock
++        .override_now
++        .store(claim.lease_expires_at_unix_ms, Ordering::SeqCst);
++    assert!(matches!(
++        writer.verify_entry_now(&claim, clock.as_ref(), 1),
++        Err(ProductionWriterError::StaleReceipt)
++    ));
++    clock.fail.store(true, Ordering::SeqCst);
++    assert!(matches!(
++        writer.verify_entry_now(&claim, clock.as_ref(), 1),
++        Err(ProductionWriterError::AuthorityTime(
++            codex_hepta_contracts::AuthorityTrustError::Unavailable
++        ))
++    ));
++}
++
++#[tokio::test]
++async fn selected_clock_rollback_and_error_never_invoke_provider_factory() {
++    use std::sync::atomic::Ordering;
++    let (_temp, writer, claim, clock) = fixture_with_clock().await;
++    let (entry, request) = entry_for(&writer, &claim).await;
++    clock.override_now.store(1, Ordering::SeqCst);
++    assert!(matches!(
++        entry
++            .with_entry(&request, || async {
++                panic!("rollback must not enter provider")
++            })
++            .await,
++        Err(ProductionWriterError::AuthorityTime(
++            codex_hepta_contracts::AuthorityTrustError::Conflict
++        ))
++    ));
++    clock.override_now.store(0, Ordering::SeqCst);
++    let (entry, request) = entry_for(&writer, &claim).await;
++    clock.fail.store(true, Ordering::SeqCst);
++    assert!(matches!(
++        entry
++            .with_entry(&request, || async {
++                panic!("clock failure must not enter provider")
++            })
++            .await,
++        Err(ProductionWriterError::AuthorityTime(
++            codex_hepta_contracts::AuthorityTrustError::Unavailable
++        ))
++    ));
++    clock.fail.store(false, Ordering::SeqCst);
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++    writer
++        .lease
++        .reconcile("entry-alias-op", LocalReconcileOutcome::Committed)
++        .await
++        .unwrap();
++}
++
++#[tokio::test]
++async fn selected_clock_expiry_during_database_wait_is_rechecked_at_factory_entry() {
++    use std::sync::atomic::Ordering;
++    let (_temp, writer, claim, clock) = fixture_with_clock().await;
++    let (entry, request) = entry_for(&writer, &claim).await;
++    let mut held = Vec::new();
++    for _ in 0..writer.store().pool.options().get_max_connections() {
++        held.push(writer.store().pool.acquire().await.unwrap());
++    }
++    let (started_tx, started_rx) = tokio::sync::oneshot::channel();
++    *clock.validation_signal.lock().unwrap() = Some(started_tx);
++    let task = tokio::spawn(async move {
++        entry
++            .with_entry(&request, || async {
++                panic!("expired while waiting must not enter provider")
++            })
++            .await
++    });
++    started_rx.await.unwrap();
++    clock
++        .override_now
++        .store(claim.lease_expires_at_unix_ms, Ordering::SeqCst);
++    drop(held);
++    assert!(matches!(
++        task.await.unwrap(),
++        Err(ProductionWriterError::StaleReceipt)
++    ));
++    clock.override_now.store(0, Ordering::SeqCst);
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Indeterminate
++    );
++}
++
++struct EntryTarget {
++    calls: std::sync::atomic::AtomicUsize,
++}
++impl crate::production_operation_entry::ProductionEntryOutboxTarget for EntryTarget {
++    fn destination_id(&self) -> &str {
++        "entry-alias-target"
++    }
++    fn dispatch<'a>(
++        &'a self,
++        carrier: crate::production_operation_entry::ProductionEntryDispatchRequest,
++    ) -> ProductionDispatchFuture<'a> {
++        Box::pin(async move {
++            let crate::production_operation_entry::ProductionEntryDispatchRequest {
++                request,
++                entry,
++            } = carrier;
++            entry
++                .with_entry(&request, || async {
++                    self.calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
++                    ProductionTargetOutcome::Indeterminate {
++                        reason: "fixture provider outcome unknown".into(),
++                    }
++                })
++                .await
++                .unwrap_or_else(|_| ProductionTargetOutcome::Indeterminate {
++                    reason: "fixture entry denied; no automatic refund".into(),
++                })
++        })
++    }
++}
++
++fn signed_entry_grant(
++    temp: &TempDir,
++    writer: &ProductionDurableWriter,
++    binding: FinalUseBinding,
++    clock: Arc<TestClock>,
++) -> (FinalUseAuthority, SignedFinalUseGrant) {
++    use ed25519_dalek::Signer;
++    use std::os::unix::fs::PermissionsExt;
++    let issuer = ed25519_dalek::SigningKey::from_bytes(&[91; 32]);
++    let directory = temp.path().join("entry-kernel-authority");
++    std::fs::create_dir(&directory).unwrap();
++    std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(0o700)).unwrap();
++    let final_use = FinalUseAuthority::open_state_dir_with_clock(
++        &directory,
++        "entry-kernel-owner".into(),
++        issuer.verifying_key().to_bytes(),
++        codex_hepta_contracts::FinalUseRevocations {
++            authority_epoch: 71,
++            revision: 1,
++            revoked_grant_ids: Default::default(),
++        },
++        clock,
++    )
++    .unwrap();
++    let now = writer.entry_owner.as_ref().unwrap().now_unix_ms().unwrap();
++    let grant = codex_hepta_contracts::FinalUseGrant {
++        schema_version: 1,
++        signer_id: "entry-kernel-owner".into(),
++        authority_epoch: 71,
++        grant_id: "entry-dispatch-grant".into(),
++        nonce: [61; 32],
++        binding,
++        not_before_unix_ms: now.saturating_sub(1000),
++        expires_at_unix_ms: now + 30_000,
++    };
++    let signature = issuer
++        .sign(&grant.signing_bytes().unwrap())
++        .to_bytes()
++        .to_vec();
++    (final_use, SignedFinalUseGrant { grant, signature })
++}
++
++#[tokio::test]
++async fn dedicated_dispatcher_mints_one_entry_and_observer_never_redispatches() {
++    use std::sync::atomic::Ordering;
++    let (temp, writer, queued, clock) = prepared_fixture().await;
++    let binding = writer
++        .final_use_binding(&queued, "entry-alias-target")
++        .await
++        .unwrap();
++    let (final_use, signed) = signed_entry_grant(&temp, &writer, binding.clone(), clock);
++    let target = Arc::new(EntryTarget {
++        calls: Default::default(),
++    });
++    let dispatcher = crate::production_operation_entry::ProductionEntryOutboxDispatcher::attach(
++        final_use,
++        target.clone(),
++    );
++    let receipt = dispatcher
++        .dispatch(&writer, &signed, &binding, queued.clone())
++        .await
++        .unwrap();
++    assert_eq!(receipt.state, LocalOutcomeState::Indeterminate);
++    assert_eq!(target.calls.load(Ordering::SeqCst), 1);
++    assert_eq!(dispatcher.reconcile(&writer, 1).await.unwrap(), 0);
++    assert!(
++        dispatcher
++            .dispatch(&writer, &signed, &binding, queued)
++            .await
++            .is_err()
++    );
++    assert_eq!(target.calls.load(Ordering::SeqCst), 1);
++}
++
++#[tokio::test]
++async fn dedicated_dispatcher_never_falls_back_when_entry_clock_is_absent() {
++    let (temp, mut writer, queued, clock) = prepared_fixture().await;
++    let binding = writer
++        .final_use_binding(&queued, "entry-alias-target")
++        .await
++        .unwrap();
++    let (final_use, signed) = signed_entry_grant(&temp, &writer, binding.clone(), clock);
++    writer.entry_owner = None;
++    let target = Arc::new(EntryTarget {
++        calls: Default::default(),
++    });
++    let dispatcher = crate::production_operation_entry::ProductionEntryOutboxDispatcher::attach(
++        final_use,
++        target.clone(),
++    );
++    assert!(matches!(
++        dispatcher
++            .dispatch(&writer, &signed, &binding, queued)
++            .await,
++        Err(ProductionWriterError::RecoveredOwnerRequired)
++    ));
++    assert_eq!(target.calls.load(std::sync::atomic::Ordering::SeqCst), 0);
++    assert_eq!(
++        writer.status("entry-alias-op").await.unwrap(),
++        LocalOutcomeState::Queued
++    );
++}
++
++#[tokio::test]
++async fn lease_closure_wins_before_entry_and_never_calls_provider() {
++    let (_temp, writer, claim) = fixture().await;
++    let (entry, request) = entry_for(&writer, &claim).await;
++    writer
++        .lease
++        .finalize_replayed_occurrence("entry-alias-op")
++        .await
++        .unwrap();
++    assert!(
++        entry
++            .with_entry(&request, || async {
++                panic!("closed lease must not enter provider")
++            })
++            .await
++            .is_err()
++    );
++}
+diff --git a/codex-rs/hepta-memory/src/production_operation_entry.rs b/codex-rs/hepta-memory/src/production_operation_entry.rs
+new file mode 100644
+index 0000000000..dfc223415a
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/production_operation_entry.rs
+@@ -0,0 +1,268 @@
++//! One-shot provider enrollment owned by the recovered CognitiveStore writer.
++//! This capability is not provider authority. The registered adapter must keep
++//! its own final-use checks and await the entire effect, without detached I/O.
++
++use std::future::Future;
++use std::sync::Arc;
++use std::sync::Weak;
++
++use crate::LocalLeaseOutboxError;
++use crate::ProductionDispatchRequest;
++use crate::ProductionDurableWriter;
++use crate::ProductionTargetOutcome;
++use crate::ProductionWriterError;
++use crate::operation_claims::DurableDispatchClaim;
++use crate::operation_entry_gate::EntryGateError;
++
++pub(crate) struct ProductionEntryOwner {
++    // The captured writer has no entry_owner field set, so this retained
++    // snapshot cannot form an Arc cycle. It keeps both file locks alive only
++    // while the real writer or a running pending/active entry owns this Arc.
++    writer: ProductionDurableWriter,
++    clock: Arc<dyn codex_hepta_contracts::AuthorityClock>,
++}
++
++impl ProductionEntryOwner {
++    pub(crate) fn new(
++        writer: ProductionDurableWriter,
++        clock: Arc<dyn codex_hepta_contracts::AuthorityClock>,
++    ) -> Self {
++        Self { writer, clock }
++    }
++
++    pub(crate) fn now_unix_ms(&self) -> Result<u64, ProductionWriterError> {
++        let now = self
++            .clock
++            .now_unix_ms()
++            .map_err(ProductionWriterError::AuthorityTime)?;
++        if now == 0 {
++            return Err(ProductionWriterError::AuthorityTime(
++                codex_hepta_contracts::AuthorityTrustError::Invalid,
++            ));
++        }
++        Ok(now)
++    }
++}
++
++/// Native, non-cloneable and non-serializable entry permission for one exact
++/// durable Entered claim. An issued-but-unused value retains only a Weak owner.
++/// Only the CognitiveStore dispatcher can construct it.
++pub struct ProductionOperationEntry {
++    owner: Weak<ProductionEntryOwner>,
++    claim: DurableDispatchClaim,
++    request: ProductionDispatchRequest,
++    // Exact protected sample used for the durable Entered transition. Minting
++    // must not resample a potentially rolled-back clock and weaken this floor.
++    not_before_unix_ms: u64,
++}
++
++impl ProductionOperationEntry {
++    pub(crate) fn new(
++        owner: &Arc<ProductionEntryOwner>,
++        claim: DurableDispatchClaim,
++        request: ProductionDispatchRequest,
++        not_before_unix_ms: u64,
++    ) -> Self {
++        Self {
++            owner: Arc::downgrade(owner),
++            claim,
++            request,
++            not_before_unix_ms,
++        }
++    }
++
++    pub fn operation_id(&self) -> &str {
++        &self.claim.operation_id
++    }
++
++    /// Validate under pending exclusion, then retain active exclusion through
++    /// the complete awaited provider effect. The fixed passive outcome prevents
++    /// returning an unpolled effect future or exporting the private active guard.
++    /// Entry errors must not automatically refund a prior AuthBus dispatch hold.
++    pub async fn with_entry<F, Fut>(
++        self,
++        expected_request: &ProductionDispatchRequest,
++        factory: F,
++    ) -> Result<ProductionTargetOutcome, ProductionWriterError>
++    where
++        F: FnOnce() -> Fut + Send,
++        Fut: Future<Output = ProductionTargetOutcome> + Send,
++    {
++        if &self.request != expected_request
++            || self.claim.operation_id != self.request.occurrence_key
++        {
++            return Err(ProductionWriterError::StaleReceipt);
++        }
++        let owner = self
++            .owner
++            .upgrade()
++            .ok_or(ProductionWriterError::StaleReceipt)?;
++        if self.request.lease_id != owner.writer.lease_id() {
++            return Err(ProductionWriterError::StaleReceipt);
++        }
++        let gate = owner
++            .writer
++            .store()
++            .operation_entry_gate()
++            .ok_or(ProductionWriterError::RecoveredOwnerRequired)?;
++        let mut enrollment = gate
++            .reserve_entry(owner.writer.lease_id(), &self.claim.operation_id)
++            .map_err(|error| {
++                map_entry_error(error, owner.writer.lease_id(), &self.claim.operation_id)
++            })?;
++        owner.writer.verify_current_authority().await?;
++        owner
++            .writer
++            .verify_entry_request(&self.claim, &self.request)
++            .await?;
++        enrollment.activate().map_err(|error| {
++            map_entry_error(error, owner.writer.lease_id(), &self.claim.operation_id)
++        })?;
++        // The last trusted-time/authority check follows all async database work
++        // and the gate mutex acquisition. No await precedes factory invocation.
++        owner.writer.verify_entry_now(
++            &self.claim,
++            owner.clock.as_ref(),
++            self.not_before_unix_ms,
++        )?;
++        let outcome = factory().await;
++        drop(enrollment);
++        Ok(outcome)
++    }
++}
++
++/// Separate linear native carrier. Metadata remains independently cloneable;
++/// there is no optional serialized entry field or default bypass.
++pub struct ProductionEntryDispatchRequest {
++    pub request: ProductionDispatchRequest,
++    pub entry: ProductionOperationEntry,
++}
++
++fn map_entry_error(
++    error: EntryGateError,
++    lease_id: &str,
++    operation_id: &str,
++) -> ProductionWriterError {
++    let local = match error {
++        EntryGateError::EntryInProgress => LocalLeaseOutboxError::EntryInProgress {
++            operation_id: operation_id.to_string(),
++        },
++        EntryGateError::Busy => LocalLeaseOutboxError::OwnerMutationInProgress {
++            lease_id: lease_id.to_string(),
++        },
++        EntryGateError::Capacity => LocalLeaseOutboxError::CapacityExceeded {
++            resource: "operation-entry reservations",
++            maximum: crate::cognitive_store::MAX_OPERATION_ENTRY_RESERVATIONS,
++        },
++        EntryGateError::Invalid => {
++            LocalLeaseOutboxError::Invalid("invalid operation-entry reservation".into())
++        }
++        EntryGateError::Unavailable => LocalLeaseOutboxError::Store(
++            crate::CognitiveStoreError::Unavailable("operation-entry gate poisoned".into()),
++        ),
++    };
++    ProductionWriterError::Local(local)
++}
++
++/// Explicitly registered external adapter that accepts the linear owner entry
++/// carrier. There is no fallback to the metadata-only dispatch interface.
++pub trait ProductionEntryOutboxTarget: Send + Sync {
++    fn destination_id(&self) -> &str;
++    fn dispatch<'a>(
++        &'a self,
++        request: ProductionEntryDispatchRequest,
++    ) -> crate::ProductionDispatchFuture<'a>;
++    fn observe_terminal<'a>(
++        &'a self,
++        _request: &'a ProductionDispatchRequest,
++    ) -> crate::ProductionTerminalObservationFuture<'a> {
++        Box::pin(async {
++            crate::ProductionTerminalObservation::Unavailable {
++                reason: "entry target has no terminal observer".into(),
++            }
++        })
++    }
++}
++
++/// Dedicated composition path for external providers requiring final-use owner
++/// enrollment. Existing authoritative SQL mutation targets use their separate
++/// transaction path and are not recursively enrolled around their own writes.
++#[derive(Clone)]
++pub struct ProductionEntryOutboxDispatcher {
++    final_use: codex_hepta_contracts::FinalUseAuthority,
++    target: Arc<dyn ProductionEntryOutboxTarget>,
++}
++
++impl std::fmt::Debug for ProductionEntryOutboxDispatcher {
++    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        formatter
++            .debug_struct("ProductionEntryOutboxDispatcher")
++            .field("destination", &self.target.destination_id())
++            .finish_non_exhaustive()
++    }
++}
++
++impl ProductionEntryOutboxDispatcher {
++    pub fn attach(
++        final_use: codex_hepta_contracts::FinalUseAuthority,
++        target: Arc<dyn ProductionEntryOutboxTarget>,
++    ) -> Self {
++        Self { final_use, target }
++    }
++    pub fn destination_id(&self) -> &str {
++        self.target.destination_id()
++    }
++    pub async fn dispatch(
++        &self,
++        writer: &ProductionDurableWriter,
++        signed: &codex_hepta_contracts::SignedFinalUseGrant,
++        expected: &codex_hepta_contracts::FinalUseBinding,
++        receipt: crate::ProductionQueuedReceipt,
++    ) -> Result<crate::ProductionDispatchReceipt, ProductionWriterError> {
++        writer
++            .dispatch_entry_target(
++                &self.final_use,
++                self.target.as_ref(),
++                signed,
++                expected,
++                receipt,
++            )
++            .await
++    }
++    pub async fn reconcile(
++        &self,
++        writer: &ProductionDurableWriter,
++        limit: usize,
++    ) -> Result<usize, ProductionWriterError> {
++        writer
++            .reconcile_target_batch(&ObserverOnly(self.target.as_ref()), limit)
++            .await
++    }
++}
++
++// Private observer bridge reuses bounded discovery without granting a
++// metadata-only provider-dispatch route to an entry-aware target.
++struct ObserverOnly<'a>(&'a dyn ProductionEntryOutboxTarget);
++impl crate::ProductionOutboxTarget for ObserverOnly<'_> {
++    fn dispatch<'a>(
++        &'a self,
++        _request: ProductionDispatchRequest,
++    ) -> crate::ProductionDispatchFuture<'a> {
++        Box::pin(async {
++            ProductionTargetOutcome::Indeterminate {
++                reason: "observer bridge cannot dispatch".into(),
++            }
++        })
++    }
++}
++impl crate::FinalUseProductionOutboxTarget for ObserverOnly<'_> {
++    fn destination_id(&self) -> &str {
++        self.0.destination_id()
++    }
++    fn observe_terminal<'a>(
++        &'a self,
++        request: &'a ProductionDispatchRequest,
++    ) -> crate::ProductionTerminalObservationFuture<'a> {
++        self.0.observe_terminal(request)
++    }
++}
+diff --git a/codex-rs/hepta-memory/src/production_writer.rs b/codex-rs/hepta-memory/src/production_writer.rs
+index d38f713579..cb4daca124 100644
+--- a/codex-rs/hepta-memory/src/production_writer.rs
++++ b/codex-rs/hepta-memory/src/production_writer.rs
+@@ -56,6 +56,11 @@ use crate::local_lease_outbox::dispatch_operation_digest;
+ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
+ use crate::operation_claims;
+ use crate::operation_claims::DurableDispatchClaim;
++use crate::operation_entry_mutation::MutationExclusion;
++use crate::production_operation_entry::ProductionEntryDispatchRequest;
++use crate::production_operation_entry::ProductionEntryOutboxTarget;
++use crate::production_operation_entry::ProductionEntryOwner;
++use crate::production_operation_entry::ProductionOperationEntry;
+ 
+ /// Schema version of the externally-authorized H4 writer boundary.
+ pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
+@@ -95,6 +100,10 @@ pub enum ProductionWriterError {
+     FinalUse(#[from] FinalUseError),
+     #[error("production semantic mutation requires a retained live authority verifier")]
+     LiveVerifierRequired,
++    #[error("provider entry requires an exclusive recovered CognitiveStore owner")]
++    RecoveredOwnerRequired,
++    #[error("production authority clock failed: {0}")]
++    AuthorityTime(codex_hepta_contracts::AuthorityTrustError),
+ }
+ 
+ /// Opaque authority token supplied by an external grant verifier.
+@@ -236,13 +245,20 @@ impl ProductionAuthorityLease {
+     pub(crate) fn validate_for_agent(
+         &self,
+         agent_id: &AgentId,
++    ) -> Result<(), ProductionWriterError> {
++        self.validate_for_agent_at(agent_id, now_unix_seconds()?)
++    }
++
++    fn validate_for_agent_at(
++        &self,
++        agent_id: &AgentId,
++        now: u64,
+     ) -> Result<(), ProductionWriterError> {
+         if &self.agent_id != agent_id {
+             return Err(ProductionWriterError::AuthorityAgentMismatch(
+                 agent_id.clone(),
+             ));
+         }
+-        let now = now_unix_seconds()?;
+         if self.is_expired_at(now) {
+             return Err(ProductionWriterError::AuthorityExpired {
+                 deadline: self.lease_expires_at_unix_seconds,
+@@ -401,6 +417,20 @@ pub struct ProductionDurableWriter {
+     // plumbing only; it grants no authority and is released automatically on
+     // process exit/drop.
+     _writer_lock: Arc<DurableWriterLock>,
++    entry_owner: Option<Arc<ProductionEntryOwner>>,
++}
++
++enum DispatchTime<'a> {
++    LegacySystem,
++    Owner(&'a ProductionEntryOwner),
++}
++impl DispatchTime<'_> {
++    fn now_unix_ms(&self) -> Result<u64, ProductionWriterError> {
++        match self {
++            Self::LegacySystem => now_unix_ms(),
++            Self::Owner(owner) => owner.now_unix_ms(),
++        }
++    }
+ }
+ 
+ struct DurableWriterLock {
+@@ -612,6 +642,7 @@ impl ProductionDurableWriter {
+             lease_id: Arc::from(lease_id),
+             live_verifier: None,
+             _writer_lock: writer_lock,
++            entry_owner: None,
+         })
+     }
+ 
+@@ -632,6 +663,42 @@ impl ProductionDurableWriter {
+         Ok(writer)
+     }
+ 
++    /// Open the external-provider entry composition with an explicitly supplied
++    /// AuthorityClock. The embedding must qualify the concrete protected source;
++    /// implementing the trait alone is not an attestation. No default clock is
++    /// selected, and legacy/shared stores cannot expose provider entry.
++    pub async fn open_with_entry_clock(
++        store: CognitiveStore,
++        authority: ProductionAuthorityLease,
++        verifier: Arc<dyn ProductionAuthorityVerifier>,
++        clock: Arc<dyn codex_hepta_contracts::AuthorityClock>,
++        lease_id: impl Into<String>,
++        generation: u64,
++    ) -> Result<Self, ProductionWriterError> {
++        if store.operation_entry_gate().is_none() {
++            return Err(ProductionWriterError::RecoveredOwnerRequired);
++        }
++        let now = clock
++            .now_unix_ms()
++            .map_err(ProductionWriterError::AuthorityTime)?;
++        if now == 0 {
++            return Err(ProductionWriterError::AuthorityTime(
++                codex_hepta_contracts::AuthorityTrustError::Invalid,
++            ));
++        }
++        authority.validate_for_agent_at(store.owner_agent_id(), now / 1000)?;
++        let mut writer =
++            Self::open_with_live_verifier(store, authority, verifier, lease_id, generation).await?;
++        let mut snapshot = writer.clone();
++        snapshot.entry_owner = None;
++        let owner = Arc::new(ProductionEntryOwner::new(snapshot, clock));
++        writer
++            .authority
++            .validate_for_agent_at(writer.store.owner_agent_id(), owner.now_unix_ms()? / 1000)?;
++        writer.entry_owner = Some(owner);
++        Ok(writer)
++    }
++
+     /// Revalidate the external authority immediately before a semantic owner
+     /// mutation. Legacy qualification writers fail closed at this boundary.
+     pub async fn verify_current_authority(&self) -> Result<(), ProductionWriterError> {
+@@ -798,6 +865,16 @@ impl ProductionDurableWriter {
+         &self,
+         receipt: &ProductionQueuedReceipt,
+         lease_duration_ms: u64,
++    ) -> Result<DurableDispatchClaim, ProductionWriterError> {
++        self.claim_dispatch_lease_with_time(receipt, lease_duration_ms, &DispatchTime::LegacySystem)
++            .await
++    }
++
++    async fn claim_dispatch_lease_with_time(
++        &self,
++        receipt: &ProductionQueuedReceipt,
++        lease_duration_ms: u64,
++        time: &DispatchTime<'_>,
+     ) -> Result<DurableDispatchClaim, ProductionWriterError> {
+         self.verify_authority().await?;
+         self.validate_queued_receipt(receipt)?;
+@@ -806,7 +883,7 @@ impl ProductionDurableWriter {
+             &receipt.occurrence_key,
+             self.generation(),
+             self.lease.fencing_token(),
+-            now_unix_ms()?,
++            time.now_unix_ms()?,
+             lease_duration_ms,
+         )
+         .await?)
+@@ -931,24 +1008,30 @@ impl ProductionDurableWriter {
+             let request = self
+                 .reconciliation_request(&operation_id, target.destination_id())
+                 .await?;
+-            match target.observe_terminal(&request).await {
++            let outcome = match target.observe_terminal(&request).await {
+                 ProductionTerminalObservation::Applied { .. } => {
+-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
+-                        .await?;
+-                    reconciled += 1;
++                    Some(LocalReconcileOutcome::Committed)
+                 }
+                 ProductionTerminalObservation::NotApplied { .. }
+                 | ProductionTerminalObservation::Quarantined { .. } => {
+-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+-                        .await?;
+-                    reconciled += 1;
++                    Some(LocalReconcileOutcome::Rejected)
+                 }
+                 ProductionTerminalObservation::Indeterminate { .. } => {
+-                    self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
+-                        .await?;
+-                    reconciled += 1;
++                    Some(LocalReconcileOutcome::StillIndeterminate)
++                }
++                ProductionTerminalObservation::Unavailable { .. } => None,
++            };
++            if let Some(outcome) = outcome {
++                match self.reconcile(&operation_id, outcome).await {
++                    Ok(_) => reconciled += 1,
++                    // Only this exact operation's pending/active provider entry
++                    // is a routine bounded deferral. Unknown mutation outcomes,
++                    // stale authority/fences and corruption remain errors.
++                    Err(ProductionWriterError::Local(LocalLeaseOutboxError::EntryInProgress {
++                        operation_id: entered,
++                    })) if entered == operation_id => {}
++                    Err(error) => return Err(error),
+                 }
+-                ProductionTerminalObservation::Unavailable { .. } => {}
+             }
+         }
+         Ok(reconciled)
+@@ -1092,6 +1175,52 @@ impl ProductionDurableWriter {
+         Ok(())
+     }
+ 
++    pub(super) async fn verify_entry_request(
++        &self,
++        claim: &DurableDispatchClaim,
++        expected: &ProductionDispatchRequest,
++    ) -> Result<(), ProductionWriterError> {
++        operation_claims::verify_entered(&self.store, claim).await?;
++        let current = self
++            .reconciliation_request(&claim.operation_id, &expected.operation_destination_id)
++            .await?;
++        if &current != expected
++            || self.lease.status(&claim.operation_id).await? != LocalOutcomeState::Indeterminate
++        {
++            return Err(ProductionWriterError::StaleReceipt);
++        }
++        Ok(())
++    }
++
++    pub(super) fn verify_entry_now(
++        &self,
++        claim: &DurableDispatchClaim,
++        clock: &dyn codex_hepta_contracts::AuthorityClock,
++        not_before_unix_ms: u64,
++    ) -> Result<(), ProductionWriterError> {
++        let verifier = self
++            .live_verifier
++            .as_ref()
++            .ok_or(ProductionWriterError::LiveVerifierRequired)?;
++        verifier
++            .verify(&self.authority, self.store.owner_agent_id())
++            .map_err(ProductionWriterError::AuthorityRejected)?;
++        let now_unix_ms = clock
++            .now_unix_ms()
++            .map_err(ProductionWriterError::AuthorityTime)?;
++        if now_unix_ms == 0 || now_unix_ms < not_before_unix_ms {
++            return Err(ProductionWriterError::AuthorityTime(
++                codex_hepta_contracts::AuthorityTrustError::Conflict,
++            ));
++        }
++        self.authority
++            .validate_for_agent_at(self.store.owner_agent_id(), now_unix_ms / 1000)?;
++        if now_unix_ms >= claim.lease_expires_at_unix_ms {
++            return Err(ProductionWriterError::StaleReceipt);
++        }
++        Ok(())
++    }
++
+     fn validate_queued_receipt(
+         &self,
+         receipt: &ProductionQueuedReceipt,
+@@ -1197,6 +1326,63 @@ impl ProductionDurableWriter {
+         expected: &FinalUseBinding,
+         receipt: ProductionQueuedReceipt,
+     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
++        self.dispatch_final_use_with(
++            final_use,
++            target.destination_id(),
++            signed,
++            expected,
++            receipt,
++            DispatchTime::LegacySystem,
++            |request, _claim, _entered_at| target.dispatch(request),
++        )
++        .await
++    }
++
++    pub(super) async fn dispatch_entry_target<T: ProductionEntryOutboxTarget + ?Sized>(
++        &self,
++        final_use: &FinalUseAuthority,
++        target: &T,
++        signed: &SignedFinalUseGrant,
++        expected: &FinalUseBinding,
++        receipt: ProductionQueuedReceipt,
++    ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
++        let owner = self
++            .entry_owner
++            .as_ref()
++            .ok_or(ProductionWriterError::RecoveredOwnerRequired)?;
++        self.dispatch_final_use_with(
++            final_use,
++            target.destination_id(),
++            signed,
++            expected,
++            receipt,
++            DispatchTime::Owner(owner),
++            |request, claim, entered_at| {
++                let entry =
++                    ProductionOperationEntry::new(owner, claim, request.clone(), entered_at);
++                target.dispatch(ProductionEntryDispatchRequest { request, entry })
++            },
++        )
++        .await
++    }
++
++    async fn dispatch_final_use_with<'a, F>(
++        &self,
++        final_use: &FinalUseAuthority,
++        destination_id: &str,
++        signed: &SignedFinalUseGrant,
++        expected: &FinalUseBinding,
++        receipt: ProductionQueuedReceipt,
++        time: DispatchTime<'_>,
++        dispatch: F,
++    ) -> Result<ProductionDispatchReceipt, ProductionWriterError>
++    where
++        F: FnOnce(
++            ProductionDispatchRequest,
++            DurableDispatchClaim,
++            u64,
++        ) -> ProductionDispatchFuture<'a>,
++    {
+         self.verify_authority().await?;
+         self.validate_queued_receipt(&receipt)?;
+         if receipt.inherited_from_generation.is_none() {
+@@ -1219,7 +1405,7 @@ impl ProductionDurableWriter {
+         }
+         let durable_operation = self
+             .lease
+-            .verify_operation_dispatch_binding(&receipt.occurrence_key, target.destination_id())
++            .verify_operation_dispatch_binding(&receipt.occurrence_key, destination_id)
+             .await
+             .map_err(|error| match error {
+                 LocalLeaseOutboxError::StaleFence(_)
+@@ -1246,7 +1432,7 @@ impl ProductionDurableWriter {
+         };
+         verify_final_use_dispatch_binding(
+             self.store.owner_agent_id(),
+-            target.destination_id(),
++            destination_id,
+             &durable_operation.scope_sha256,
+             &request,
+             expected,
+@@ -1256,7 +1442,7 @@ impl ProductionDurableWriter {
+         // renewed or taken over after expiry only while the operation has not
+         // crossed the one-shot Indeterminate/effect-entry fence.
+         let owner_claim = self
+-            .claim_dispatch_lease(&receipt, PRODUCTION_DISPATCH_CLAIM_LEASE_MS)
++            .claim_dispatch_lease_with_time(&receipt, PRODUCTION_DISPATCH_CLAIM_LEASE_MS, &time)
+             .await?;
+ 
+         // Now make the ambiguous external boundary durable. A crash from this
+@@ -1296,8 +1482,9 @@ impl ProductionDurableWriter {
+             other => ProductionWriterError::Local(other),
+         })?
+         .event_id;
++        let entered_at = time.now_unix_ms()?;
+         let entered_claim =
+-            operation_claims::mark_entered(&self.store, &owner_claim, now_unix_ms()?).await?;
++            operation_claims::mark_entered(&self.store, &owner_claim, entered_at).await?;
+ 
+         // Then consume the single-use grant and revalidate it at the actual
+         // asynchronous target effect. The active-effect fence spans the whole
+@@ -1328,7 +1515,9 @@ impl ProductionDurableWriter {
+             }
+         };
+         let outcome = match final_use
+-            .with_verified_use_async(token, expected, || target.dispatch(request.clone()))
++            .with_verified_use_async(token, expected, || {
++                dispatch(request.clone(), entered_claim.clone(), entered_at)
++            })
+             .await
+         {
+             Ok(outcome) => outcome,
+@@ -1551,6 +1740,12 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
+             self.writer.verify_current_authority().await?;
+             let prepared =
+                 self.prepare_semantic_mutation("remember", source, None, &(draft, facts))?;
++            let mut entry_exclusion = MutationExclusion::for_operation(
++                self.writer.store(),
++                self.writer.lease_id(),
++                &prepared.occurrence_key,
++            )
++            .map_err(ProductionWriterError::from)?;
+             let mut transaction = self
+                 .writer
+                 .store()
+@@ -1567,12 +1762,24 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
+                 .remember_with_kg_tx(&mut transaction, access, source, draft, facts)
+                 .await?;
+             let receipt = self
+-                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
++                .finish_prepared_mutation(
++                    &mut transaction,
++                    prepared,
++                    queued,
++                    write,
++                    &entry_exclusion,
++                )
+                 .await?;
++            entry_exclusion
++                .commit_started()
++                .map_err(ProductionWriterError::from)?;
+             transaction
+                 .commit()
+                 .await
+                 .map_err(crate::cognitive_store::unavailable)?;
++            entry_exclusion
++                .committed()
++                .map_err(ProductionWriterError::from)?;
+             receipt.validate()?;
+             Ok(receipt)
+         })
+@@ -1595,6 +1802,12 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
+                 Some(expected_revision),
+                 &(memory_id.as_str(), draft, facts),
+             )?;
++            let mut entry_exclusion = MutationExclusion::for_operation(
++                self.writer.store(),
++                self.writer.lease_id(),
++                &prepared.occurrence_key,
++            )
++            .map_err(ProductionWriterError::from)?;
+             let mut transaction = self
+                 .writer
+                 .store()
+@@ -1619,12 +1832,24 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
+                 )
+                 .await?;
+             let receipt = self
+-                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
++                .finish_prepared_mutation(
++                    &mut transaction,
++                    prepared,
++                    queued,
++                    write,
++                    &entry_exclusion,
++                )
+                 .await?;
++            entry_exclusion
++                .commit_started()
++                .map_err(ProductionWriterError::from)?;
+             transaction
+                 .commit()
+                 .await
+                 .map_err(crate::cognitive_store::unavailable)?;
++            entry_exclusion
++                .committed()
++                .map_err(ProductionWriterError::from)?;
+             receipt.validate()?;
+             Ok(receipt)
+         })
+@@ -1646,6 +1871,12 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
+                 Some(expected_revision),
+                 &(memory_id.as_str(), draft),
+             )?;
++            let mut entry_exclusion = MutationExclusion::for_operation(
++                self.writer.store(),
++                self.writer.lease_id(),
++                &prepared.occurrence_key,
++            )
++            .map_err(ProductionWriterError::from)?;
+             let mut transaction = self
+                 .writer
+                 .store()
+@@ -1669,12 +1900,24 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
+                 )
+                 .await?;
+             let receipt = self
+-                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
++                .finish_prepared_mutation(
++                    &mut transaction,
++                    prepared,
++                    queued,
++                    write,
++                    &entry_exclusion,
++                )
+                 .await?;
++            entry_exclusion
++                .commit_started()
++                .map_err(ProductionWriterError::from)?;
+             transaction
+                 .commit()
+                 .await
+                 .map_err(crate::cognitive_store::unavailable)?;
++            entry_exclusion
++                .committed()
++                .map_err(ProductionWriterError::from)?;
+             receipt.validate()?;
+             Ok(receipt)
+         })
+@@ -1764,6 +2007,7 @@ impl ProductionCognitiveMutationCapability {
+         prepared: PreparedProductionCognitiveMutation,
+         queued: QueuedReceipt,
+         write: CognitiveWriteReceipt,
++        entry_exclusion: &MutationExclusion,
+     ) -> Result<ProductionCognitiveMutationReceiptV1, ProductionCognitiveMutationError> {
+         let write_digest = production_cognitive_write_digest(&write)?;
+         let commit_json = serde_json::to_string(&ProductionCognitiveMutationCommitJournalV1 {
+@@ -1783,7 +2027,12 @@ impl ProductionCognitiveMutationCapability {
+         let terminal = self
+             .writer
+             .lease
+-            .apply_in_transaction(transaction, prepared.occurrence_key, commit_json)
++            .apply_in_transaction(
++                transaction,
++                prepared.occurrence_key,
++                commit_json,
++                entry_exclusion,
++            )
+             .await
+             .map_err(ProductionWriterError::from)?;
+ 
+@@ -3926,3 +4175,7 @@ mod final_use_dispatch_tests {
+         );
+     }
+ }
++
++#[cfg(all(test, unix))]
++#[path = "production_entry_alias_tests.rs"]
++mod entry_alias_tests;

@@ -1,0 +1,401 @@
+diff --git a/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json b/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+index f9af35d9a..f00766fc5 100644
+--- a/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
++++ b/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+@@ -453,69 +453,6 @@
+         "runtime.agentd"
+       ]
+     },
+-    {
+-      "module": "secrets.heptabao",
+-      "profile": "bounded_external_secret_reader",
+-      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+-      "formalGuideRole": "target_architecture",
+-      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+-      "currentSpecificationRole": "current_executable_contract",
+-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+-      "states": {
+-        "source": "implemented",
+-        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
+-        "durability": "external_authority_plus_local_final_use_state",
+-        "qualification": "source_tests_and_exact_candidate_workflow_required",
+-        "activation": "registered_host_composed_not_product_activated",
+-        "acceptance": "not_granted"
+-      },
+-      "currentCapabilities": [
+-        "pinned-CA HTTPS read of one exact KV-v2 string field",
+-        "canonical final-use claim and delivery boundaries",
+-        "registered signed consumer-id to trusted callback mapping",
+-        "independent approval before dispatch and authenticated revocation ingestion",
+-        "metadata-only receipt without raw secret value"
+-      ],
+-      "targetOnlyCapabilities": [
+-        "secret mutation",
+-        "generic secret lease renewal API",
+-        "durable operation and evidence composition",
+-        "fleet revocation distribution and freshness enforcement",
+-        "automatic production enrollment and selected process caller"
+-      ],
+-      "sourceAnchors": [
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+-          "mustContain": [
+-            "pub struct BaoClient",
+-            "consume_kv_v2",
+-            "MAX_RESPONSE_BYTES",
+-            "claim_final_use(authority, grant, &binding)",
+-            "deliver_final_use(authority, verified, &binding"
+-          ],
+-          "mustNotContain": [
+-            ".claim(grant, &binding)",
+-            ".with_verified_use(verified"
+-          ]
+-        },
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+-          "mustContain": [
+-            "pub struct BaoFinalUseHost",
+-            "UnregisteredConsumer",
+-            "approval_verifier",
+-            "revocation_verifier"
+-          ]
+-        },
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/README.md",
+-          "mustContain": [
+-            "Authorized HeptaBao HTTPS consumer",
+-            "Only read operations exist here"
+-          ]
+-        }
+-      ]
+-    },
+     {
+       "module": "auth.authbus",
+       "profile": "durable_authorization_quota_with_signed_ingress",
+@@ -639,6 +576,69 @@
+       "namedProductCallers": [
+         "codex-hepta-agentd signed-text ingress"
+       ]
++    },
++    {
++      "module": "secrets.heptabao",
++      "profile": "bounded_external_secret_reader",
++      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
++      "formalGuideRole": "target_architecture",
++      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
++      "currentSpecificationRole": "current_executable_contract",
++      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
++      "states": {
++        "source": "implemented",
++        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
++        "durability": "external_authority_plus_local_final_use_state",
++        "qualification": "source_tests_and_exact_candidate_workflow_required",
++        "activation": "registered_host_composed_not_product_activated",
++        "acceptance": "not_granted"
++      },
++      "currentCapabilities": [
++        "pinned-CA HTTPS read of one exact KV-v2 string field",
++        "canonical final-use claim and delivery boundaries",
++        "registered signed consumer-id to trusted callback mapping",
++        "independent approval before dispatch and authenticated revocation ingestion",
++        "metadata-only receipt without raw secret value"
++      ],
++      "targetOnlyCapabilities": [
++        "secret mutation",
++        "generic secret lease renewal API",
++        "durable operation and evidence composition",
++        "fleet revocation distribution and freshness enforcement",
++        "automatic production enrollment and selected process caller"
++      ],
++      "sourceAnchors": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
++          "mustContain": [
++            "pub struct BaoClient",
++            "consume_kv_v2",
++            "MAX_RESPONSE_BYTES",
++            "claim_final_use(authority, grant, &binding)",
++            "deliver_final_use(authority, verified, &binding"
++          ],
++          "mustNotContain": [
++            ".claim(grant, &binding)",
++            ".with_verified_use(verified"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "mustContain": [
++            "pub struct BaoFinalUseHost",
++            "UnregisteredConsumer",
++            "approval_verifier",
++            "revocation_verifier"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-bao-adapter/README.md",
++          "mustContain": [
++            "Authorized HeptaBao HTTPS consumer",
++            "Only read operations exist here"
++          ]
++        }
++      ]
+     }
+   ]
+ }
+diff --git a/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json b/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
+index cbe6eb46e..8ce374d53 100644
+--- a/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
++++ b/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
+@@ -92,27 +92,29 @@
+         "the retained in-memory reference model is an oracle and grants no production authority",
+         "source implementation does not grant product activation operator acceptance promotion or release"
+       ],
+-      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1"
+-    },
+-    {
+-      "protocolId": "hepta.kernel.operations.durable-owner.v1",
+-      "module": "kernel.operations",
+-      "kind": "sqlite_durable_operation_outbox_and_reconciliation",
+-      "source": [
+-        "codex-rs/hepta-operations/src/model.rs",
+-        "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+-        "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+-        "codex-rs/hepta-memory/src/production_writer.rs",
+-        "codex-rs/hepta-memory/src/production_cognitive_source_target.rs"
+-      ],
+-      "invariants": [
+-        "OperationIntentV1 semantic digest binds operation subject destination payload scope policy generation and optional predecessor",
+-        "operation intent event and local outbox identity commit atomically before dispatch",
+-        "durable dispatch claims have bounded attempts lease expiry renewal backoff and stale claimant fencing",
+-        "dispatch request carries full semantic digest and predecessor expectation to the destination",
+-        "final-use authority is consumed immediately before destination entry",
+-        "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
+-        "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
++      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1",
++      "additionalProtocols": [
++        {
++          "protocolId": "hepta.kernel.operations.durable-owner.v1",
++          "module": "kernel.operations",
++          "kind": "sqlite_durable_operation_outbox_and_reconciliation",
++          "source": [
++            "codex-rs/hepta-operations/src/model.rs",
++            "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
++            "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
++            "codex-rs/hepta-memory/src/production_writer.rs",
++            "codex-rs/hepta-memory/src/production_cognitive_source_target.rs"
++          ],
++          "invariants": [
++            "OperationIntentV1 semantic digest binds operation subject destination payload scope policy generation and optional predecessor",
++            "operation intent event and local outbox identity commit atomically before dispatch",
++            "durable dispatch claims have bounded attempts lease expiry renewal backoff and stale claimant fencing",
++            "dispatch request carries full semantic digest and predecessor expectation to the destination",
++            "final-use authority is consumed immediately before destination entry",
++            "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
++            "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
++          ]
++        }
+       ]
+     },
+     {
+diff --git a/docs/lane-a-foundation/README.md b/docs/lane-a-foundation/README.md
+index 0708fa074..118244f4a 100644
+--- a/docs/lane-a-foundation/README.md
++++ b/docs/lane-a-foundation/README.md
+@@ -58,3 +58,21 @@ distributed anti-rollback, durable operations, durable AuthBus policy/quota, or
+ any external effect not proven by an exact-candidate receipt. Remaining
+ implementation and external gates are listed in
+ [`REMAINING_GATES.md`](REMAINING_GATES.md).
++
++
++### Multiple protocol surfaces within one module
++
++The protocol registry retains exactly one top-level row per module in the fixed
++Lane A order. A row may contain `additionalProtocols`, a one-level list of full
++protocol records owned by that same module. Readers that resolve current protocol
++IDs must enumerate both the primary record and these additions; a flat-only
++reader remains a primary-surface reader and must not claim complete coverage.
++Current and legacy IDs are globally unique, source paths must exist, and nested
++additions/unknown record fields fail validation. No wire protocol or authority
++semantics are changed by this navigation representation.
++
++For kernel.operations, durable-ledger-outbox.v1 and its reference-model legacy ID
++retain the standalone/reference lineage. The complete durable-owner.v1 addition
++retains the CognitiveStore product-owner sources and invariants. The separate
++CAPABILITY_EVIDENCE_V2 file remains standalone source evidence; canonical Lane A
++capability receipt counts come only from CAPABILITY_EVIDENCE_MAP.json.
+diff --git a/qualification/module-execution-dossiers/test_lane_a_foundation.py b/qualification/module-execution-dossiers/test_lane_a_foundation.py
+index 29a553f2b..8b6639699 100644
+--- a/qualification/module-execution-dossiers/test_lane_a_foundation.py
++++ b/qualification/module-execution-dossiers/test_lane_a_foundation.py
+@@ -22,7 +22,9 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+     def setUpClass(cls) -> None:
+         cls.matrix = verify.read_json(verify.MATRIX_PATH)
+         cls.capability_map = verify.read_json(verify.CAPABILITY_MAP_PATH)
+-        cls.operations_capability_map = verify.read_json(verify.OPS_CAPABILITY_MAP_PATH)
++        cls.operations_capability_map = verify.read_json(
++            ROOT / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json"
++        )
+ 
+     def test_exact_repository_truth_is_valid(self) -> None:
+         verify.validate_matrix(self.matrix)
+@@ -44,15 +46,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+         mapped = [
+             (entry["module"], entry["summary"])
+             for entry in self.capability_map["entries"]
+-            if entry["module"] != "kernel.operations"
+         ]
+-        mapped.extend(
+-            ("kernel.operations", entry["summary"])
+-            for entry in self.operations_capability_map["entries"]
+-        )
+-        mapped.append(
+-            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
+-        )
+         self.assertEqual(len(declared), len(set(declared)))
+         self.assertEqual(len(mapped), len(set(mapped)))
+         self.assertCountEqual(mapped, declared)
+@@ -61,6 +55,41 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+             len(self.operations_capability_map["entries"]),
+         )
+ 
++    def test_standalone_operations_extension_retains_complete_evidence(self) -> None:
++        value = self.operations_capability_map
++        self.assertEqual(value["schemaVersion"], 1)
++        self.assertEqual(value["module"], "kernel.operations")
++        self.assertEqual(value["entryCount"], len(value["entries"]))
++        ids = [row["capabilityId"] for row in value["entries"]]
++        self.assertEqual(len(ids), len(set(ids)))
++        for row in value["entries"]:
++            self.assertTrue(row["summary"])
++            self.assertTrue(row["publicSymbols"])
++            for field in ("sourceEvidence", "positiveTests", "negativeTests"):
++                self.assertTrue(row[field])
++                for anchor in row[field]:
++                    verify.validate_anchor("kernel.operations standalone", anchor)
++
++    def test_protocol_additions_reject_invalid_identity_owner_shape_and_paths(self) -> None:
++        original = verify.read_json(ROOT / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json")
++        mutations = [
++            lambda x: x["protocols"].append(deepcopy(x["protocols"][3])),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(protocolId=x["protocols"][3]["protocolId"]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(module="kernel.evidence"),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(additionalProtocols=[]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(unknown=True),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=[]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(invariants=[]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=["."]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=["../outside"]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=["missing/file"]),
++        ]
++        for mutate in mutations:
++            value = deepcopy(original)
++            mutate(value)
++            with self.assertRaises(verify.VerificationError):
++                verify.validate_protocol_registry(value)
++
+     def test_operations_cannot_claim_unimplemented_durability(self) -> None:
+         value = deepcopy(self.matrix)
+         value["modules"][3]["states"]["durability"] = "durable"
+@@ -135,8 +164,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+         self.assertEqual(receipt["moduleCoverage"], 7)
+         self.assertEqual(
+             receipt["capabilityCoverage"],
+-            self.capability_map["entryCount"]
+-            + self.operations_capability_map["entryCount"],
++            self.capability_map["entryCount"],
+         )
+         self.assertEqual(
+             receipt["currentImplementationTruth"], "source_and_test_anchored"
+@@ -207,6 +235,9 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+                 encoding="utf-8"
+             )
+         )
++        current = verify.validate_protocol_registry(registry)
++        self.assertIn("hepta.kernel.operations.durable-owner.v1", current)
++        self.assertIn("hepta.kernel.operations.durable-ledger-outbox.v1", current)
+         self.assertEqual(registry["schemaVersion"], 1)
+         self.assertEqual(registry["lane"], "LANE-A-FOUNDATION")
+         self.assertEqual(registry["authority"], "none")
+diff --git a/scripts/lane_a_foundation_core.py b/scripts/lane_a_foundation_core.py
+index bb8726903..dff9750c3 100644
+--- a/scripts/lane_a_foundation_core.py
++++ b/scripts/lane_a_foundation_core.py
+@@ -113,6 +113,66 @@ def validate_anchor(owner: str, item: Any, root: Path = ROOT) -> None:
+                 )
+ 
+ 
++def validate_protocol_registry(value: dict[str, Any], root: Path = ROOT) -> dict[str, dict]:
++    """Validate one module row plus optional same-owner protocol surfaces."""
++    header = {"schemaVersion", "lane", "role", "authority", "protocols"}
++    if (not isinstance(value, dict) or set(value) != header
++        or value.get("schemaVersion") != 1
++        or value.get("lane") != "LANE-A-FOUNDATION"
++        or value.get("role") != "current_executable_protocol_index"
++        or value.get("authority") != "none"):
++        raise VerificationError("protocol registry header mismatch")
++    rows = value.get("protocols")
++    if (not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows)
++        or [row.get("module") for row in rows] != EXPECTED_MODULES):
++        raise VerificationError("protocol registry module order/uniqueness mismatch")
++    identities: set[str] = set()
++    current: dict[str, dict] = {}
++    required = {"protocolId", "module", "kind", "source", "invariants"}
++
++    def record(row: Any, owner: str, *, nested: bool) -> None:
++        allowed = required | {"legacyProtocolId"}
++        if not nested:
++            allowed.add("additionalProtocols")
++        if (not isinstance(row, dict) or not required.issubset(row)
++            or not set(row).issubset(allowed) or row.get("module") != owner):
++            raise VerificationError("invalid protocol shape, owner or nesting")
++        for field in ("protocolId", "legacyProtocolId"):
++            if field not in row:
++                continue
++            identity = row[field]
++            if (not isinstance(identity, str)
++                or re.fullmatch(r"hepta\.[a-z0-9]+(?:[.-][a-z0-9]+)*", identity) is None
++                or identity in identities):
++                raise VerificationError("invalid/duplicate protocol identity")
++            identities.add(identity)
++        if not isinstance(row["kind"], str) or not row["kind"].strip():
++            raise VerificationError("protocol kind required")
++        for field in ("source", "invariants"):
++            items = row[field]
++            if not isinstance(items, list) or not items or any(
++                not isinstance(item, str) or not item.strip() for item in items
++            ):
++                raise VerificationError(f"nonempty protocol {field} required")
++        for source in row["source"]:
++            path = Path(source)
++            if (path.is_absolute() or not path.parts or ".." in path.parts
++                or "\\" in source or path.as_posix() != source
++                or not (root / path).exists()
++                or not (root / path).resolve().is_relative_to(root.resolve())):
++                raise VerificationError("invalid/missing protocol source path")
++        current[row["protocolId"]] = row
++        additions = row.get("additionalProtocols", [])
++        if not isinstance(additions, list) or ("additionalProtocols" in row and not additions):
++            raise VerificationError("additionalProtocols must be a nonempty list")
++        for extra in additions:
++            record(extra, owner, nested=True)
++
++    for row in rows:
++        record(row, row["module"], nested=False)
++    return current
++
++
+ def validate_capability_map(
+     matrix: dict[str, Any], value: dict[str, Any], root: Path = ROOT
+ ) -> None:
+diff --git a/scripts/lane_a_foundation_lib.py b/scripts/lane_a_foundation_lib.py
+index dca49b46d..d0435167d 100644
+--- a/scripts/lane_a_foundation_lib.py
++++ b/scripts/lane_a_foundation_lib.py
+@@ -113,6 +113,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
+     for (module, axis), value in exact.items():
+         if by_name[module]["states"][axis] != value:
+             raise VerificationError(f"{module}: {axis} drift")
++    validate_protocol_registry(read_json(root / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"), root)
+     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
+     validate_capability_map(matrix, capability, root)
+     native = validate_native_bindings(root)

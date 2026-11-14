@@ -1,0 +1,307 @@
+"""Development checks retain authority validation and delegate source profiles."""
+
+import contextlib
+import copy
+import importlib.util
+import io
+import json
+from pathlib import Path
+import sys
+import subprocess
+import os
+import tempfile
+import re
+import textwrap
+import unittest
+from unittest.mock import patch
+
+SCRIPTS = Path(__file__).resolve().parent
+sys.path.insert(0, str(SCRIPTS))
+
+
+def verifier(name):
+    spec = importlib.util.spec_from_file_location(
+        name.replace("-", "_"), SCRIPTS / name
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+DOCS = verifier("hepta-docs.py")
+MODULES = verifier("hepta-module-docs.py")
+MAPS = verifier("hepta-implementation-maps.py")
+GAP = verifier("hepta-gap-closure.py")
+
+
+class VerificationProfileTests(unittest.TestCase):
+    def test_cli_routes_ordinary_checks_and_explicit_qualification(self):
+        for module in (DOCS, MODULES, MAPS):
+            for arguments, expected in (
+                ([], "development"),
+                (["--profile", "qualification"], "qualification"),
+            ):
+                with (
+                    self.subTest(module=module.__name__, arguments=arguments),
+                    patch.object(sys, "argv", [module.__file__, "verify", *arguments]),
+                    patch.object(module, "verify", return_value=0) as verify,
+                ):
+                    module.main()
+                    if module is MAPS:
+                        self.assertEqual(verify.call_args.kwargs["profile"], expected)
+                    else:
+                        verify.assert_called_once_with(expected)
+
+    def test_legacy_exact_source_cli_keeps_qualification_semantics(self):
+        with (
+            patch.object(
+                sys, "argv", [MAPS.__file__, "verify", "--require-current-source"]
+            ),
+            patch.object(MAPS, "verify", return_value=0) as verify,
+        ):
+            MAPS.main()
+            self.assertEqual(verify.call_args.kwargs["profile"], "qualification")
+
+    def test_exact_source_cli_rejects_an_explicit_conflicting_profile(self):
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    MAPS.__file__,
+                    "verify",
+                    "--require-current-source",
+                    "--profile",
+                    "development",
+                ],
+            ),
+            patch.object(MAPS, "verify") as verify,
+            contextlib.redirect_stderr(io.StringIO()),
+            self.assertRaises(SystemExit),
+        ):
+            MAPS.main()
+        verify.assert_not_called()
+
+    def test_real_development_tree_reports_a_shared_path_touch_without_activating_the_lease(
+        self,
+    ):
+        lease = DOCS.load(DOCS.FILES["paths"])["activeLeases"][0]
+        changed = {lease["normalizedExactPaths"][0]}
+        output = io.StringIO()
+        with (
+            patch.object(DOCS, "pull_request_changed_paths", return_value=changed),
+            contextlib.redirect_stdout(output),
+        ):
+            self.assertEqual(DOCS.verify("development"), 0)
+        report = json.loads(output.getvalue().splitlines()[-1])
+        self.assertEqual(report["touchedLeaseCount"], 1)
+        self.assertEqual(report["externallyAttestedLeaseCount"], 0)
+        self.assertFalse(report["leaseActivationEvaluated"])
+        self.assertFalse(report["historicalEvidenceRevalidated"])
+
+    def test_gap_owner_development_checks_the_real_tree_without_renewing_stale_maps(
+        self,
+    ):
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(GAP.verify("development"), [])
+
+    def test_gap_profiles_are_forwarded_to_the_document_child(self):
+        for profile in ("development", "qualification"):
+            with (
+                self.subTest(profile=profile),
+                patch.object(GAP.subprocess, "run") as run,
+            ):
+                run.return_value.returncode = 0
+                self.assertEqual(GAP.verify(profile), [])
+                self.assertEqual(
+                    run.call_args.args[0],
+                    [
+                        sys.executable,
+                        str(GAP.ROOT / "scripts/hepta-module-docs.py"),
+                        "verify",
+                        "--profile",
+                        profile,
+                    ],
+                )
+
+    def test_gap_unknown_profile_is_rejected_before_reading_source(self):
+        with patch.object(GAP.CARGO_MANIFEST.__class__, "read_text") as read:
+            self.assertEqual(GAP.verify("permissive"), ["unknown verification profile"])
+        read.assert_not_called()
+
+    def test_real_cli_propagates_development_through_the_aggregate(self):
+        result = subprocess.run(
+            [sys.executable, str(SCRIPTS / "hepta-docs.py"), "verify"],
+            cwd=SCRIPTS.parent,
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        report = json.loads(result.stdout.splitlines()[-1])
+        self.assertEqual(report["verificationProfile"], "development")
+        self.assertFalse(report["historicalEvidenceRevalidated"])
+
+    def test_workflow_shells_route_ordinary_and_qualifying_checks(self):
+        workflows = SCRIPTS.parent / ".github/workflows"
+        subjects = (
+            (
+                "hepta-contract-gate.yml",
+                "Validate canonical contract and readiness documents",
+            ),
+            ("hepta-development-docs.yml", "Verify source and emit receipts"),
+            ("hepta-development-docs.yml", "Verify merge candidate and emit receipts"),
+        )
+        for workflow, step in subjects:
+            content = (workflows / workflow).read_text()
+            block = content.split("      - name: " + step + "\n", 1)[1]
+            block = block.split("      - name:", 1)[0]
+            command = textwrap.dedent(block.split("        run: |\n", 1)[1])
+            for profile in ("development", "qualification"):
+                with self.subTest(workflow=workflow, step=step, profile=profile):
+                    with tempfile.TemporaryDirectory() as directory:
+                        log = Path(directory) / "commands"
+                        preamble = (
+                            'python3() { printf "%s\\n" "$*" >> "$COMMAND_LOG"; }\n'
+                            'git() { if [ "$1" = rev-parse ]; then printf "%s\\n" "$EXPECTED_SHA"; fi; }\n'
+                        )
+                        result = subprocess.run(
+                            ["bash", "-c", preamble + command],
+                            cwd=SCRIPTS.parent,
+                            text=True,
+                            capture_output=True,
+                            env={
+                                **os.environ,
+                                "VERIFICATION_PROFILE": profile,
+                                "EXPECTED_SHA": "a" * 40,
+                                "GITHUB_SHA": "a" * 40,
+                                "COMMAND_LOG": str(log),
+                            },
+                        )
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        calls = log.read_text().splitlines()
+                    self.assertIn(
+                        "scripts/hepta-docs.py verify --profile " + profile, calls
+                    )
+                    evidence = [
+                        call
+                        for call in calls
+                        if any(
+                            token in call
+                            for token in (
+                                "cleanup-inventory",
+                                "receipt --kind",
+                                "receipt-verify",
+                                "hepta-technical-receipts.py",
+                                "hepta-implementation-dossiers.py",
+                            )
+                        )
+                    ]
+                    self.assertEqual(bool(evidence), profile == "qualification")
+
+    def test_qualification_callers_are_explicit_and_defaults_stay_strict(self):
+        workflows = SCRIPTS.parent / ".github/workflows"
+        expected = {
+            "hepta-knowledge-graph-qualification.yml": ["development"],
+            "hepta-gap-agentd-process.yml": ["development"],
+            "hepta-objective-admission.yml": ["development"],
+            "hepta-lane-d-semantic-conformance.yml": ["development"],
+            "memory-federation-v2-final-verify.yml": ["qualification"] * 2,
+            "hepta-kernel-evidence-qualification.yml": ["qualification", "development"]
+            * 2,
+        }
+        for name, profiles in expected.items():
+            with self.subTest(workflow=name):
+                calls = re.findall(
+                    r"python3 scripts/hepta-(?:docs|implementation-maps)\.py verify([^\n]*)",
+                    (workflows / name).read_text(),
+                )
+                self.assertEqual(len(calls), len(profiles))
+                self.assertEqual(
+                    [
+                        re.search(
+                            r"--profile (development|qualification)\b", call
+                        ).group(1)
+                        for call in calls
+                    ],
+                    profiles,
+                )
+        contract = (workflows / "hepta-contract-gate.yml").read_text()
+        for event in ("workflow_call", "workflow_dispatch"):
+            block = contract.split("  " + event + ":\n", 1)[1].split("\n\n", 1)[0]
+            self.assertIn("        default: qualification", block)
+        docs = (workflows / "hepta-development-docs.yml").read_text()
+        self.assertIn(
+            "        default: qualification", docs.split("  workflow_dispatch:", 1)[1]
+        )
+        self.assertIn("inputs.profile || 'development'", docs)
+        blocking = (workflows / "blocking-ci.yml").read_text()
+        self.assertIn(
+            "uses: ./.github/workflows/hepta-contract-gate.yml\n    with:\n      profile: development",
+            blocking,
+        )
+        for name in ("single-main-foundation.yml", "single-main-consolidation.yml"):
+            self.assertIn(
+                "'verify', '--require-current-source'", (workflows / name).read_text()
+            )
+        with (
+            patch.object(sys, "argv", [GAP.__file__, "verify"]),
+            patch.object(GAP, "verify", return_value=[]) as verify,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            GAP.main()
+            verify.assert_called_once_with("qualification")
+
+    def test_unknown_profile_is_rejected_before_reading_source(self):
+        for module in (DOCS, MODULES):
+            with (
+                self.subTest(module=module.__name__),
+                self.assertRaisesRegex(SystemExit, "profile"),
+            ):
+                module.verify("permissive")
+
+    def test_authority_types_and_permissions_remain_mandatory_in_both_profiles(self):
+        for module in (DOCS, MODULES):
+            original_load = module.load
+            for profile in ("development", "qualification"):
+                for value in (True, 0, "", None):
+
+                    def altered(path):
+                        document = copy.deepcopy(original_load(path))
+                        if path == "docs/modules/MODULES.json":
+                            document["authorityFlags"]["merge"] = value
+                        return document
+
+                    with self.subTest(
+                        module=module.__name__, profile=profile, value=value
+                    ):
+                        with (
+                            patch.object(module, "load", altered),
+                            self.assertRaisesRegex(SystemExit, "authority"),
+                        ):
+                            module.verify(profile)
+
+    def test_module_profile_reaches_the_real_map_verifier(self):
+        # All registry/path/navigation checks run against actual repository inputs.
+        # The source-map subprocess is observed separately from execution evidence.
+        for profile in ("development", "qualification"):
+            with (
+                self.subTest(profile=profile),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                with patch.object(MODULES.subprocess, "run") as run:
+                    run.return_value.returncode = 0
+                    MODULES.verify(profile)
+                    self.assertEqual(
+                        run.call_args.args[0],
+                        [
+                            "python3",
+                            "scripts/hepta-implementation-maps.py",
+                            "verify",
+                            "--profile",
+                            profile,
+                        ],
+                    )
+
+
+if __name__ == "__main__":
+    unittest.main()

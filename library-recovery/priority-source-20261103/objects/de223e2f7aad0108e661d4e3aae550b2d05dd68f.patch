@@ -1,0 +1,757 @@
+diff --git a/.github/scripts/test_rust_ci_source_integrity.py b/.github/scripts/test_rust_ci_source_integrity.py
+index 0eded703c..b5a3b39d9 100644
+--- a/.github/scripts/test_rust_ci_source_integrity.py
++++ b/.github/scripts/test_rust_ci_source_integrity.py
+@@ -2,9 +2,11 @@
+ 
+ import glob
+ import importlib.util
++import json
+ import os
+ from pathlib import Path
+ import subprocess
++import sys
+ import tempfile
+ import unittest
+ 
+@@ -220,5 +222,96 @@ class RustSourceIntegrityTests(unittest.TestCase):
+         self.assertCountEqual(artifacts, [{timing}, {before, after}])
+ 
+ 
++class V8SmokeToolchainTests(unittest.TestCase):
++    """Run the workflow shell with recording executables, not a V8 build."""
++
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.root = Path(temporary.name)
++        self.toolchain = self.root / "rustup with spaces/toolchains/1.96.0-fixture/bin"
++        self.toolchain.mkdir(parents=True)
++        self.env = {
++            **os.environ,
++            "RUSTUP_HOME": str(self.root / "rustup with spaces"),
++            "GITHUB_WORKSPACE": str(self.root),
++            "GITHUB_ENV": str(self.root / "environment"),
++            "RUNNER_TEMP": str(self.root / "temporary"),
++            "RUSTUP_TOOLCHAIN": "1.91.0",
++            "RUSTC": "/not/the/selected/compiler",
++        }
++        workflow = WORKFLOW_COMMANDS.load_workflow(
++            (ROOT / ".github/workflows/v8-canary.yml").read_text()
++        )
++        self.steps = workflow["jobs"]["build"]["steps"]
++
++    def executable(self, name, source):
++        path = self.toolchain / name
++        path.write_text(f"#!{sys.executable}\n{source}")
++        path.chmod(0o755)
++        return path
++
++    def execute(self, name):
++        script = next(step["run"] for step in self.steps if step.get("name") == name)
++        return subprocess.run(
++            ["bash", "-c", script],
++            cwd=self.root,
++            env=self.env,
++            capture_output=True,
++            text=True,
++        )
++
++    def test_installed_pair_selection_rejects_missing_compiler(self):
++        self.executable("cargo", "raise SystemExit(0)\n")
++        result = self.execute("Pin installed Cargo and rustc binaries")
++        self.assertNotEqual(result.returncode, 0)
++        self.assertIn("compiler is missing", result.stderr)
++
++    def test_smoke_pins_nested_compiler_and_keeps_profile_arguments(self):
++        compiler = self.executable("rustc", "print('fixture-rustc-1.96.0')\n")
++        receipt = self.root / "receipt.json"
++        self.executable(
++            "cargo",
++            "import json, os, pathlib, subprocess, sys\n"
++            "os.chdir('nested-dependency')\n"
++            "assert os.environ['RUSTUP_TOOLCHAIN'] == '1.96.0'\n"
++            f"assert os.environ['RUSTC'] == {str(compiler)!r}\n"
++            "version = subprocess.check_output([os.environ['RUSTC']], text=True).strip()\n"
++            f"pathlib.Path({str(receipt)!r}).write_text(json.dumps([sys.argv[1:], version]))\n",
++        )
++        selected = self.execute("Pin installed Cargo and rustc binaries")
++        self.assertEqual(selected.returncode, 0, selected.stdout + selected.stderr)
++        for line in (self.root / "environment").read_text().splitlines():
++            key, value = line.split("=", 1)
++            self.env[key] = value
++        nested = self.root / "codex-rs/nested-dependency"
++        nested.mkdir(parents=True)
++        (nested / "rust-toolchain.toml").write_text('[toolchain]\nchannel = "1.91.0"\n')
++        machine = subprocess.check_output(["uname", "-m"], text=True).strip()
++        target = {
++            ("darwin", "arm64"): "aarch64-apple-darwin",
++            ("darwin", "x86_64"): "x86_64-apple-darwin",
++            ("linux", "aarch64"): "aarch64-unknown-linux-gnu",
++            ("linux", "x86_64"): "x86_64-unknown-linux-gnu",
++        }[(sys.platform, machine)]
++        staged = self.root / "dist" / target
++        staged.mkdir(parents=True)
++        (staged / "librusty_v8_fixture.a.gz").write_bytes(b"recording fixture")
++        (staged / "src_binding_fixture.rs").write_text("// recording fixture\n")
++        self.env["TARGET"] = target
++        for sandbox in ("false", "true"):
++            with self.subTest(sandbox=sandbox):
++                self.env["SANDBOX"] = sandbox
++                result = self.execute("Smoke test staged artifact with Cargo")
++                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++                arguments = ["test", "-p", "codex-v8-poc"]
++                if sandbox == "true":
++                    arguments += ["--features", "sandbox"]
++                self.assertEqual(
++                    json.loads(receipt.read_text()), [arguments, "fixture-rustc-1.96.0"]
++                )
++                self.assertEqual(self.env["RUSTUP_TOOLCHAIN"], "1.91.0")
++
++
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/.github/scripts/test_v8_canary_matrix.py b/.github/scripts/test_v8_canary_matrix.py
+new file mode 100644
+index 000000000..1d8fbd59a
+--- /dev/null
++++ b/.github/scripts/test_v8_canary_matrix.py
+@@ -0,0 +1,173 @@
++import json
++import os
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++import unittest
++
++import v8_canary_matrix as selector
++from v8_canary_changes import canary_required, windows_source_required
++
++
++class V8MatrixTests(unittest.TestCase):
++    def setUp(self):
++        temporary = tempfile.TemporaryDirectory()
++        self.addCleanup(temporary.cleanup)
++        self.root = Path(temporary.name)
++        self.repo = self.root / "repo"
++        self.repo.mkdir()
++        scripts = self.repo / ".github/scripts"
++        scripts.mkdir(parents=True)
++        self.catalog = scripts / selector.CATALOG.name
++        self.catalog.write_bytes(selector.CATALOG.read_bytes())
++        self.script = scripts / "v8_canary_matrix.py"
++        self.script.write_bytes(Path(selector.__file__).read_bytes())
++        self.git("init", "-q")
++        self.git("config", "user.name", "V8 fixture")
++        self.git("config", "user.email", "fixture@example.invalid")
++        self.git("add", ".")
++        self.git("commit", "-qm", "exact source")
++        self.sha = self.git("rev-parse", "HEAD")
++
++    def git(self, *args):
++        return subprocess.check_output(
++            ["git", *args], cwd=self.repo, text=True, stderr=subprocess.PIPE
++        ).strip()
++
++    def plan(self, scope="full", event="pull_request", windows="true", sha=None):
++        return selector.plan(
++            scope, event, sha or self.sha, windows,
++            root=self.repo, catalog=self.catalog,
++        )
++
++    def test_full_default_preserves_complete_target_feature_catalog_and_budget(self):
++        targets = {
++            "x86_64-unknown-linux-gnu", "aarch64-unknown-linux-gnu",
++            "x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl",
++            "x86_64-apple-darwin", "aarch64-apple-darwin",
++        }
++        for event in ("pull_request", "workflow_call", "push", "workflow_dispatch"):
++            receipt = self.plan(event=event)
++            rows = receipt["build_matrix"]["include"]
++            self.assertEqual(len(rows), 12)
++            self.assertEqual(
++                {(row["target"], row["sandbox"]) for row in rows},
++                {(target, sandbox) for target in targets for sandbox in (True, False)},
++            )
++            self.assertEqual(receipt["build_timeout_minutes"], 30)
++            self.assertEqual(receipt["windows_source_required"], "true")
++            self.assertFalse(receipt["qualification_pass"])
++        self.assertEqual(self.plan(windows="false")["windows_source_required"], "false")
++
++    def test_manual_diagnostic_is_one_fixed_arm_release_and_never_full_pass(self):
++        receipt = self.plan(selector.DIAGNOSTIC, "workflow_dispatch")
++        self.assertEqual(receipt["build_matrix"]["include"], [{
++            "runner": "ubuntu-24.04-arm", "bazel_config": "ci-v8",
++            "platform": "linux_arm64", "sandbox": False,
++            "target": "aarch64-unknown-linux-gnu", "v8_cpu": "arm64",
++            "variant": "release",
++        }])
++        self.assertEqual(receipt["build_timeout_minutes"], 150)
++        self.assertEqual(receipt["windows_source_required"], "false")
++        self.assertEqual(receipt["coverage"], "manual-source-only-partial")
++        self.assertFalse(receipt["qualification_pass"])
++        self.assertEqual(receipt["source_sha"], self.sha)
++        self.assertEqual(receipt["source_tree"], self.git("rev-parse", "HEAD^{tree}"))
++
++    def test_missing_manual_input_is_safe_on_dedicated_diagnostic_branch(self):
++        receipt = self.plan("", "workflow_dispatch")
++        self.assertEqual(receipt["scope"], selector.DIAGNOSTIC)
++        self.assertEqual(len(receipt["build_matrix"]["include"]), 1)
++        self.assertEqual(receipt["build_timeout_minutes"], 150)
++        self.assertEqual(receipt["windows_source_required"], "false")
++        for event in ("pull_request", "workflow_call", "push"):
++            full = self.plan("", event)
++            self.assertEqual(full["scope"], "full")
++            self.assertEqual(len(full["build_matrix"]["include"]), 12)
++            self.assertEqual(full["windows_source_required"], "true")
++
++    def test_partial_selector_rejected_for_every_nonmanual_event(self):
++        for event in ("pull_request", "workflow_call", "push", "", "schedule"):
++            with self.subTest(event=event), self.assertRaises(ValueError):
++                self.plan(selector.DIAGNOSTIC, event)
++
++    def test_invalid_scope_source_and_missing_classifier_are_rejected(self):
++        for kwargs in ({"scope": "arbitrary-target"}, {"sha": "0" * 40},
++                       {"sha": "main"}, {"windows": ""}):
++            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
++                self.plan(**kwargs)
++
++    def test_tracked_source_mutation_rejected_before_receipt(self):
++        self.catalog.write_text("[]\n")
++        with self.assertRaisesRegex(ValueError, "tracked source changed"):
++            self.plan(selector.DIAGNOSTIC, "workflow_dispatch")
++
++    def test_changed_diagnostic_configuration_rejected_even_when_committed(self):
++        rows = json.loads(self.catalog.read_text())
++        for row in rows:
++            if row["target"] == "aarch64-unknown-linux-gnu" and not row["sandbox"]:
++                row["runner"] = "unexpected-runner"
++        self.catalog.write_text(json.dumps(rows))
++        self.git("add", ".")
++        self.git("commit", "-qm", "changed catalog")
++        self.sha = self.git("rev-parse", "HEAD")
++        with self.assertRaisesRegex(ValueError, "diagnostic target configuration"):
++            self.plan(selector.DIAGNOSTIC, "workflow_dispatch")
++
++    def test_cli_retains_receipt_and_emits_exact_matrix_outputs(self):
++        receipt_path = self.root / "receipt.json"
++        outputs = self.root / "outputs"
++        result = subprocess.run([
++            sys.executable, str(self.script), "--scope", selector.DIAGNOSTIC,
++            "--event", "workflow_dispatch", "--expected-sha", self.sha,
++            "--windows-source-required", "true", "--github-output", str(outputs),
++            "--receipt", str(receipt_path),
++        ], cwd=self.repo, capture_output=True, text=True, env=os.environ)
++        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++        receipt = json.loads(receipt_path.read_text())
++        values = dict(line.split("=", 1) for line in outputs.read_text().splitlines())
++        self.assertEqual(json.loads(values["build_matrix"]), receipt["build_matrix"])
++        self.assertEqual(values["build_timeout_minutes"], "150")
++        self.assertEqual(receipt["source_sha"], self.sha)
++
++    def test_selector_catalog_changes_remain_real_canary_inputs(self):
++        for path in (".github/scripts/v8_canary_matrix.py", ".github/scripts/v8_canary_matrix.json"):
++            self.assertTrue(canary_required({path}, "150.4.0", "150.4.0"))
++            self.assertTrue(windows_source_required({path}, "150.4.0", "150.4.0"))
++
++
++class WorkflowSelectionTests(unittest.TestCase):
++    def test_workflow_wires_manual_choice_exact_source_and_existing_full_guards(self):
++        sys.path.insert(0, str(selector.ROOT / "scripts"))
++        from hepta_workflow_commands import load_workflow
++        workflow = load_workflow((selector.ROOT / ".github/workflows/v8-canary.yml").read_text())
++        choice = workflow["on"]["workflow_dispatch"]["inputs"]["scope"]
++        self.assertEqual(choice["default"], selector.DIAGNOSTIC)
++        self.assertEqual(choice["options"], ["full", selector.DIAGNOSTIC])
++        jobs = workflow["jobs"]
++        metadata = jobs["metadata"]
++        step = next(s for s in metadata["steps"] if s.get("id") == "matrix")
++        self.assertEqual(step["env"]["EXPECTED_SHA"], "${{ github.sha }}")
++        self.assertEqual(step["env"]["V8_SCOPE"], "${{ inputs.scope }}")
++        self.assertIn("--expected-sha", step["run"])
++        self.assertIn("--receipt", step["run"])
++        self.assertEqual(metadata["outputs"]["build_matrix"], "${{ steps.matrix.outputs.build_matrix }}")
++        self.assertEqual(metadata["outputs"]["windows_source_required"], "${{ steps.matrix.outputs.windows_source_required }}")
++        self.assertEqual(jobs["build"]["strategy"]["matrix"], "${{ fromJSON(needs.metadata.outputs.build_matrix) }}")
++        self.assertEqual(jobs["build"]["timeout-minutes"], "${{ fromJSON(needs.metadata.outputs.build_timeout_minutes) }}")
++        self.assertEqual(jobs["build-windows-source"]["timeout-minutes"], "30")
++        for name in ("build", "build-windows-source"):
++            job = jobs[name]
++            checkout = job["steps"][0]
++            self.assertEqual(checkout["with"]["ref"], "${{ github.sha }}")
++            guard = next(s for s in job["steps"] if s.get("name") == "Verify exact triggering source")
++            self.assertIn('test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"', guard["run"])
++            self.assertEqual(job["strategy"]["fail-fast"], "false")
++            self.assertTrue(any(s.get("name", "").startswith("Smoke") for s in job["steps"]))
++            self.assertTrue(any(s.get("name") == "Check for a clean worktree" for s in job["steps"]))
++        self.assertIn("needs.metadata.outputs.windows_source_required", jobs["build-windows-source"]["if"])
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/.github/scripts/v8_canary_changes.py b/.github/scripts/v8_canary_changes.py
+index e36e77316..8bbbae247 100644
+--- a/.github/scripts/v8_canary_changes.py
++++ b/.github/scripts/v8_canary_changes.py
+@@ -27,6 +27,8 @@ CANARY_PATH_PATTERNS = {
+     ".github/scripts/rusty_v8_module_bazel.py",
+     ".github/scripts/setup-dev-drive.ps1",
+     ".github/scripts/v8_canary_changes.py",
++    ".github/scripts/v8_canary_matrix.py",
++    ".github/scripts/v8_canary_matrix.json",
+     ".github/workflows/postmerge-ci.yml",
+     ".github/workflows/rusty-v8-release.yml",
+     ".github/workflows/v8-canary.yml",
+@@ -47,6 +49,8 @@ WINDOWS_SOURCE_BUILD_PATHS = {
+     ".github/scripts/rusty_v8_module_bazel.py",
+     ".github/scripts/setup-dev-drive.ps1",
+     ".github/scripts/v8_canary_changes.py",
++    ".github/scripts/v8_canary_matrix.py",
++    ".github/scripts/v8_canary_matrix.json",
+     ".github/workflows/rusty-v8-release.yml",
+     ".github/workflows/v8-canary.yml",
+ }
+diff --git a/.github/scripts/v8_canary_matrix.json b/.github/scripts/v8_canary_matrix.json
+new file mode 100644
+index 000000000..0122bad96
+--- /dev/null
++++ b/.github/scripts/v8_canary_matrix.json
+@@ -0,0 +1,110 @@
++[
++  {
++    "runner": "ubuntu-24.04",
++    "bazel_config": "ci-v8",
++    "platform": "linux_amd64",
++    "sandbox": false,
++    "target": "x86_64-unknown-linux-gnu",
++    "v8_cpu": "x64",
++    "variant": "release"
++  },
++  {
++    "runner": "ubuntu-24.04",
++    "bazel_config": "ci-v8",
++    "platform": "linux_amd64",
++    "sandbox": true,
++    "target": "x86_64-unknown-linux-gnu",
++    "v8_cpu": "x64",
++    "variant": "ptrcomp-sandbox"
++  },
++  {
++    "runner": "ubuntu-24.04-arm",
++    "bazel_config": "ci-v8",
++    "platform": "linux_arm64",
++    "sandbox": false,
++    "target": "aarch64-unknown-linux-gnu",
++    "v8_cpu": "arm64",
++    "variant": "release"
++  },
++  {
++    "runner": "ubuntu-24.04-arm",
++    "bazel_config": "ci-v8",
++    "platform": "linux_arm64",
++    "sandbox": true,
++    "target": "aarch64-unknown-linux-gnu",
++    "v8_cpu": "arm64",
++    "variant": "ptrcomp-sandbox"
++  },
++  {
++    "runner": "macos-15-intel",
++    "bazel_config": "ci-macos",
++    "platform": "macos_amd64",
++    "sandbox": false,
++    "target": "x86_64-apple-darwin",
++    "v8_cpu": "x64",
++    "variant": "release"
++  },
++  {
++    "runner": "macos-15-intel",
++    "bazel_config": "ci-macos",
++    "platform": "macos_amd64",
++    "sandbox": true,
++    "target": "x86_64-apple-darwin",
++    "v8_cpu": "x64",
++    "variant": "ptrcomp-sandbox"
++  },
++  {
++    "runner": "macos-15",
++    "bazel_config": "ci-macos",
++    "platform": "macos_arm64",
++    "sandbox": false,
++    "target": "aarch64-apple-darwin",
++    "v8_cpu": "arm64",
++    "variant": "release"
++  },
++  {
++    "runner": "macos-15",
++    "bazel_config": "ci-macos",
++    "platform": "macos_arm64",
++    "sandbox": true,
++    "target": "aarch64-apple-darwin",
++    "v8_cpu": "arm64",
++    "variant": "ptrcomp-sandbox"
++  },
++  {
++    "runner": "ubuntu-24.04",
++    "bazel_config": "ci-v8",
++    "platform": "linux_amd64_musl",
++    "sandbox": false,
++    "target": "x86_64-unknown-linux-musl",
++    "v8_cpu": "x64",
++    "variant": "release"
++  },
++  {
++    "runner": "ubuntu-24.04",
++    "bazel_config": "ci-v8",
++    "platform": "linux_amd64_musl",
++    "sandbox": true,
++    "target": "x86_64-unknown-linux-musl",
++    "v8_cpu": "x64",
++    "variant": "ptrcomp-sandbox"
++  },
++  {
++    "runner": "ubuntu-24.04-arm",
++    "bazel_config": "ci-v8",
++    "platform": "linux_arm64_musl",
++    "sandbox": false,
++    "target": "aarch64-unknown-linux-musl",
++    "v8_cpu": "arm64",
++    "variant": "release"
++  },
++  {
++    "runner": "ubuntu-24.04-arm",
++    "bazel_config": "ci-v8",
++    "platform": "linux_arm64_musl",
++    "sandbox": true,
++    "target": "aarch64-unknown-linux-musl",
++    "v8_cpu": "arm64",
++    "variant": "ptrcomp-sandbox"
++  }
++]
+diff --git a/.github/scripts/v8_canary_matrix.py b/.github/scripts/v8_canary_matrix.py
+new file mode 100644
+index 000000000..3845b9b08
+--- /dev/null
++++ b/.github/scripts/v8_canary_matrix.py
+@@ -0,0 +1,86 @@
++#!/usr/bin/env python3
++"""Select fixed canary coverage; a manual diagnostic is never a full receipt."""
++
++import argparse
++import json
++from pathlib import Path
++import re
++import subprocess
++
++ROOT = Path(__file__).resolve().parents[2]
++CATALOG = Path(__file__).with_suffix(".json")
++DIAGNOSTIC = "linux-arm64-release-diagnostic"
++
++
++def plan(scope, event, expected_sha, windows_required, *, root=ROOT, catalog=CATALOG):
++    # The Actions UI may obtain its input form from the default branch. A manual
++    # dispatch with no new selector input must never launch the full matrix here.
++    scope = scope or (DIAGNOSTIC if event == "workflow_dispatch" else "full")
++    if scope not in {"full", DIAGNOSTIC}:
++        raise ValueError("unsupported V8 scope")
++    if scope != "full" and event != "workflow_dispatch":
++        raise ValueError("partial diagnostics require explicit manual dispatch")
++    if windows_required not in {"true", "false"}:
++        raise ValueError("missing or invalid Windows coverage decision")
++    if re.fullmatch(r"[0-9a-f]{40}", expected_sha) is None:
++        raise ValueError("expected source must be an exact commit")
++
++    def git(*args):
++        return subprocess.check_output(
++            ["git", "--no-replace-objects", *args], cwd=root, text=True
++        ).strip()
++
++    if git("rev-parse", "HEAD") != expected_sha:
++        raise ValueError("checkout is not the exact triggering source")
++    if git("status", "--porcelain", "--untracked-files=no"):
++        raise ValueError("tracked source changed before coverage selection")
++    rows = json.loads(catalog.read_text())
++    if not isinstance(rows, list) or len(rows) != 12:
++        raise ValueError("unexpected complete canary catalog")
++    if scope == DIAGNOSTIC:
++        rows = [
++            row for row in rows
++            if row["target"] == "aarch64-unknown-linux-gnu"
++            and row["sandbox"] is False
++        ]
++        expected = {
++            "runner": "ubuntu-24.04-arm", "bazel_config": "ci-v8",
++            "platform": "linux_arm64", "sandbox": False,
++            "target": "aarch64-unknown-linux-gnu", "v8_cpu": "arm64",
++            "variant": "release",
++        }
++        if rows != [expected]:
++            raise ValueError("diagnostic target configuration changed")
++    return {
++        "scope": scope,
++        "event": event,
++        "source_sha": expected_sha,
++        "source_tree": git("rev-parse", "HEAD^{tree}"),
++        "coverage": "configured-full" if scope == "full" else "manual-source-only-partial",
++        "qualification_pass": False,
++        "build_matrix": {"include": rows},
++        "build_timeout_minutes": 30 if scope == "full" else 150,
++        "windows_source_required": windows_required if scope == "full" else "false",
++    }
++
++
++def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--scope", required=True)
++    parser.add_argument("--event", required=True)
++    parser.add_argument("--expected-sha", required=True)
++    parser.add_argument("--windows-source-required", required=True)
++    parser.add_argument("--github-output", type=Path, required=True)
++    parser.add_argument("--receipt", type=Path, required=True)
++    args = parser.parse_args()
++    receipt = plan(args.scope, args.event, args.expected_sha, args.windows_source_required)
++    args.receipt.write_text(json.dumps(receipt, indent=2) + "\n")
++    with args.github_output.open("a") as output:
++        for key in ("scope", "build_timeout_minutes", "windows_source_required"):
++            output.write(f"{key}={receipt[key]}\n")
++        output.write("build_matrix=" + json.dumps(receipt["build_matrix"]) + "\n")
++    print(json.dumps(receipt, sort_keys=True))
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/.github/workflows/v8-canary.yml b/.github/workflows/v8-canary.yml
+index 9dd0b2f1e..4b3271f4f 100644
+--- a/.github/workflows/v8-canary.yml
++++ b/.github/workflows/v8-canary.yml
+@@ -7,7 +7,19 @@ name: v8-canary
+ on:
+   workflow_call:
+   pull_request: {}
++  # Dedicated diagnostic branch: omitted manual inputs safely select ARM only.
++  # PR/reusable events retain complete coverage; do not merge this manual default
++  # into the ordinary workflow without a separate policy review.
+   workflow_dispatch:
++    inputs:
++      scope:
++        description: Full canary or one explicitly partial cold-build diagnostic
++        type: choice
++        required: true
++        default: linux-arm64-release-diagnostic
++        options:
++          - full
++          - linux-arm64-release-diagnostic
+ 
+ concurrency:
+   group: ${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}
+@@ -26,11 +38,15 @@ jobs:
+       # coverage while reporting success.
+       canary_required: ${{ steps.changes.outputs.canary_required || 'true' }}
+       v8_version: ${{ steps.v8_version.outputs.version }}
+-      windows_source_required: ${{ steps.changes.outputs.windows_source_required }}
++      windows_source_required: ${{ steps.matrix.outputs.windows_source_required }}
++      build_matrix: ${{ steps.matrix.outputs.build_matrix }}
++      build_timeout_minutes: ${{ steps.matrix.outputs.build_timeout_minutes }}
++      scope: ${{ steps.matrix.outputs.scope }}
+ 
+     steps:
+       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+         with:
++          ref: ${{ github.sha }}
+           fetch-depth: 0
+           persist-credentials: false
+ 
+@@ -69,13 +85,35 @@ jobs:
+           echo "${output}"
+           echo "${output}" >> "${GITHUB_OUTPUT}"
+ 
++      - name: Bind exact source and select bounded diagnostic scope
++        id: matrix
++        env:
++          V8_SCOPE: ${{ inputs.scope }}
++          V8_EVENT: ${{ github.event_name }}
++          EXPECTED_SHA: ${{ github.sha }}
++          WINDOWS_SOURCE_REQUIRED: ${{ steps.changes.outputs.windows_source_required }}
++        shell: bash
++        run: |
++          python3 .github/scripts/v8_canary_matrix.py \
++            --scope "${V8_SCOPE}" --event "${V8_EVENT}" \
++            --expected-sha "${EXPECTED_SHA}" \
++            --windows-source-required "${WINDOWS_SOURCE_REQUIRED}" \
++            --github-output "${GITHUB_OUTPUT}" \
++            --receipt "${RUNNER_TEMP}/v8-selection-receipt.json"
++
++      - name: Retain exact source and selected coverage receipt
++        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
++        with:
++          name: v8-selection-receipt
++          path: ${{ runner.temp }}/v8-selection-receipt.json
++
+       - name: Check for a clean worktree
+         if: always() && !cancelled()
+         uses: ./.github/actions/check-clean-worktree
+ 
+   build:
+-    timeout-minutes: 30
+-    name: Build ${{ matrix.variant }} ${{ matrix.target }}
++    timeout-minutes: ${{ fromJSON(needs.metadata.outputs.build_timeout_minutes) }}
++    name: ${{ needs.metadata.outputs.scope == 'full' && 'Build' || 'Diagnostic only' }} ${{ matrix.variant }} ${{ matrix.target }}
+     needs: metadata
+     # Metadata always runs; only relevant changes pay for the large matrix.
+     if: ${{ needs.metadata.outputs.canary_required == 'true' }}
+@@ -88,97 +126,19 @@ jobs:
+       deployment: false
+     strategy:
+       fail-fast: false
+-      matrix:
+-        include:
+-          - runner: ubuntu-24.04
+-            bazel_config: ci-v8
+-            platform: linux_amd64
+-            sandbox: false
+-            target: x86_64-unknown-linux-gnu
+-            v8_cpu: x64
+-            variant: release
+-          - runner: ubuntu-24.04
+-            bazel_config: ci-v8
+-            platform: linux_amd64
+-            sandbox: true
+-            target: x86_64-unknown-linux-gnu
+-            v8_cpu: x64
+-            variant: ptrcomp-sandbox
+-          - runner: ubuntu-24.04-arm
+-            bazel_config: ci-v8
+-            platform: linux_arm64
+-            sandbox: false
+-            target: aarch64-unknown-linux-gnu
+-            v8_cpu: arm64
+-            variant: release
+-          - runner: ubuntu-24.04-arm
+-            bazel_config: ci-v8
+-            platform: linux_arm64
+-            sandbox: true
+-            target: aarch64-unknown-linux-gnu
+-            v8_cpu: arm64
+-            variant: ptrcomp-sandbox
+-          - runner: macos-15-intel
+-            bazel_config: ci-macos
+-            platform: macos_amd64
+-            sandbox: false
+-            target: x86_64-apple-darwin
+-            v8_cpu: x64
+-            variant: release
+-          - runner: macos-15-intel
+-            bazel_config: ci-macos
+-            platform: macos_amd64
+-            sandbox: true
+-            target: x86_64-apple-darwin
+-            v8_cpu: x64
+-            variant: ptrcomp-sandbox
+-          - runner: macos-15
+-            bazel_config: ci-macos
+-            platform: macos_arm64
+-            sandbox: false
+-            target: aarch64-apple-darwin
+-            v8_cpu: arm64
+-            variant: release
+-          - runner: macos-15
+-            bazel_config: ci-macos
+-            platform: macos_arm64
+-            sandbox: true
+-            target: aarch64-apple-darwin
+-            v8_cpu: arm64
+-            variant: ptrcomp-sandbox
+-          - runner: ubuntu-24.04
+-            bazel_config: ci-v8
+-            platform: linux_amd64_musl
+-            sandbox: false
+-            target: x86_64-unknown-linux-musl
+-            v8_cpu: x64
+-            variant: release
+-          - runner: ubuntu-24.04
+-            bazel_config: ci-v8
+-            platform: linux_amd64_musl
+-            sandbox: true
+-            target: x86_64-unknown-linux-musl
+-            v8_cpu: x64
+-            variant: ptrcomp-sandbox
+-          - runner: ubuntu-24.04-arm
+-            bazel_config: ci-v8
+-            platform: linux_arm64_musl
+-            sandbox: false
+-            target: aarch64-unknown-linux-musl
+-            v8_cpu: arm64
+-            variant: release
+-          - runner: ubuntu-24.04-arm
+-            bazel_config: ci-v8
+-            platform: linux_arm64_musl
+-            sandbox: true
+-            target: aarch64-unknown-linux-musl
+-            v8_cpu: arm64
+-            variant: ptrcomp-sandbox
++      matrix: ${{ fromJSON(needs.metadata.outputs.build_matrix) }}
+     steps:
+       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+         with:
++          ref: ${{ github.sha }}
+           persist-credentials: false
+ 
++      - name: Verify exact triggering source
++        shell: bash
++        run: |
++          set -euo pipefail
++          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
++
+       - name: Set up Bazel
+         uses: ./.github/actions/setup-bazel-ci
+         with:
+@@ -194,7 +154,7 @@ jobs:
+         with:
+           toolchain: "1.96.0"
+ 
+-      - name: Pin installed Cargo binary
++      - name: Pin installed Cargo and rustc binaries
+         shell: bash
+         run: |
+           set -euo pipefail
+@@ -204,7 +164,13 @@ jobs:
+             echo "Rust 1.96.0 Cargo binary is not installed under ${rustup_home}." >&2
+             exit 1
+           fi
++          rustc_bin="${cargo_bin%/cargo}/rustc"
++          if [[ ! -x "${rustc_bin}" ]]; then
++            echo "Matching Rust 1.96.0 compiler is missing beside ${cargo_bin}." >&2
++            exit 1
++          fi
+           echo "CARGO_1_96=${cargo_bin}" >> "${GITHUB_ENV}"
++          echo "RUSTC_1_96=${rustc_bin}" >> "${GITHUB_ENV}"
+ 
+       - name: Build Bazel V8 release pair
+         env:
+@@ -319,6 +285,10 @@ jobs:
+ 
+           (
+             cd codex-rs
++            # Cargo's absolute path alone does not pin rustup's rustc proxy
++            # inside dependencies with their own rust-toolchain.toml.
++            RUSTUP_TOOLCHAIN=1.96.0 \
++            RUSTC="${RUSTC_1_96}" \
+             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
+             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
+@@ -355,8 +325,15 @@ jobs:
+     steps:
+       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+         with:
++          ref: ${{ github.sha }}
+           persist-credentials: false
+ 
++      - name: Verify exact triggering source
++        shell: bash
++        run: |
++          set -euo pipefail
++          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
++
+       - id: setup_ci
+         uses: ./.github/actions/setup-ci
+ 

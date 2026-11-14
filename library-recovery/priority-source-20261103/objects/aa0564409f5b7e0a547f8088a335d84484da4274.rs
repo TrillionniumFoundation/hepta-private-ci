@@ -1,0 +1,611 @@
+//! Bounded recovery/terminal observation for durable automation occurrences.
+//!
+//! Recovery never invents a fresh queue identity. Lost replies use the App
+//! Server's atomic `thread/queue/reconcile` lookup with `ReconcileOnly`; a
+//! terminal occurrence is published only after a persisted turn reports a
+//! terminal status and the durable TaskFlow step/run have been reconciled.
+
+use codex_app_server_client::RemoteAppServerClient;
+use codex_app_server_client::RemoteAppServerConnectArgs;
+use codex_app_server_client::RemoteAppServerEndpoint;
+use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::SortDirection;
+use codex_app_server_protocol::ThreadQueueReconcileMode;
+use codex_app_server_protocol::ThreadQueueReconcileOutcome;
+use codex_app_server_protocol::ThreadQueueReconcileParams;
+use codex_app_server_protocol::ThreadQueueReconcileResponse;
+use codex_app_server_protocol::ThreadTurnsListParams;
+use codex_app_server_protocol::ThreadTurnsListResponse;
+use codex_app_server_protocol::Turn;
+use codex_app_server_protocol::TurnItemsView;
+use codex_app_server_protocol::TurnStatus;
+use codex_app_server_protocol::UserInput;
+use codex_hepta_automation::AutomationAdmission;
+use codex_hepta_automation::AutomationOccurrenceState;
+use codex_hepta_automation::AutomationOccurrenceTerminalState;
+use codex_hepta_automation::AutomationOccurrenceWork;
+use codex_hepta_automation::AutomationQueueReceipt;
+use codex_hepta_automation::AutomationStore;
+use codex_hepta_contracts::Sha256Digest;
+use codex_protocol::user_input::user_input_payload_sha256;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use std::future::Future;
+use std::time::Duration;
+
+use crate::AgentdError;
+use crate::AgentdIdentity;
+use crate::AgentdState;
+
+const TURN_PAGE_SIZE: u32 = 100;
+const MAX_TURN_PAGES: usize = 16;
+const RECOVERY_RUN_LEASE_MS: u64 = 30_000;
+const RECOVERY_OBSERVATION_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// A read-only observation timeout preserves durable uncertainty. It is not a
+/// protocol or integrity failure and must not disable unrelated schedules.
+/// `None` means no observation was obtained, never provider absence.
+async fn bounded_observation<T>(
+    observation: impl Future<Output = Result<T, AgentdError>>,
+) -> Result<Option<T>, AgentdError> {
+    match tokio::time::timeout(RECOVERY_OBSERVATION_TIMEOUT, observation).await {
+        Ok(result) => result.map(Some),
+        Err(_) => Ok(None),
+    }
+}
+
+enum TurnLookup {
+    Found(Turn),
+    Continue(String),
+    Exhausted,
+    Deferred,
+}
+
+pub(crate) async fn reconcile_one(
+    store: &AutomationStore,
+    state: &AgentdState,
+    identity: &AgentdIdentity,
+    now_ms: u64,
+) -> Result<bool, AgentdError> {
+    if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
+        return Ok(true);
+    }
+    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
+        return Ok(false);
+    };
+    let observed_occurrence = work.occurrence.clone();
+    reconcile_work(store, state, identity, work, now_ms).await?;
+    // A long-running, unresolved or timed-out occurrence must not monopolize
+    // the bounded observer. Semantic changes during the lookup make this exact
+    // CAS a no-op.
+    store
+        .defer_occurrence_observation(&observed_occurrence, now_ms)
+        .await?;
+    Ok(true)
+}
+
+async fn reconcile_one_unknown_dispatch(
+    store: &AutomationStore,
+    state: &AgentdState,
+    identity: &AgentdIdentity,
+    now_ms: u64,
+) -> Result<bool, AgentdError> {
+    let Some(uncertain) = store.uncertain_dispatches(1).await?.into_iter().next() else {
+        return Ok(false);
+    };
+    let task = store
+        .task(uncertain.task_id)
+        .await?
+        .ok_or_else(|| AgentdError::Protocol("uncertain automation task is missing".to_string()))?;
+    let input = prompt_input(&task.prompt);
+    let expected = input_digest(&input)?;
+    let client = connect(state, identity).await?;
+    let response = reconcile_queue(
+        &client,
+        &task.thread_id,
+        input,
+        &uncertain.client_user_message_id,
+        &expected,
+    )
+    .await;
+    let _ = client.shutdown().await;
+    state.refresh_generation()?;
+    let Some(response) = response? else {
+        // Preserve the exact unknown dispatch. Continue to the ordinary
+        // observer and independent admission; never retry this effect.
+        return Ok(false);
+    };
+    validate_reconcile_identity(&response, &uncertain.client_user_message_id, &expected)?;
+    match &response.outcome {
+        ThreadQueueReconcileOutcome::Queued {
+            queued_submission,
+            created,
+        } => {
+            if *created
+                || queued_submission.client_user_message_id != uncertain.client_user_message_id
+                || queued_submission.id.is_empty()
+                || input_digest(&queued_submission.input)? != expected
+            {
+                return Err(AgentdError::Protocol(
+                    "automation recovery queue receipt mismatched durable intent".to_string(),
+                ));
+            }
+            store
+                .reconcile_uncertain_occurrence_admitted(
+                    uncertain.task_id,
+                    uncertain.occurrence,
+                    &AutomationQueueReceipt {
+                        queued_submission_id: queued_submission.id.clone(),
+                        client_user_message_id: uncertain.client_user_message_id.clone(),
+                    },
+                    now_ms,
+                )
+                .await?;
+        }
+        ThreadQueueReconcileOutcome::Persisted { turn_id } if !turn_id.is_empty() => {
+            let occurrence = store
+                .reconcile_uncertain_occurrence_admitted(
+                    uncertain.task_id,
+                    uncertain.occurrence,
+                    &AutomationQueueReceipt {
+                        queued_submission_id: format!("persisted:{turn_id}"),
+                        client_user_message_id: uncertain.client_user_message_id.clone(),
+                    },
+                    now_ms,
+                )
+                .await?;
+            store
+                .record_occurrence_turn(
+                    occurrence.task_id,
+                    occurrence.occurrence,
+                    &occurrence.client_user_message_id,
+                    turn_id,
+                    &response.payload_sha256,
+                    now_ms,
+                )
+                .await?;
+        }
+        ThreadQueueReconcileOutcome::Missing => {
+            let proof_digest = observation_digest(&response)?;
+            store
+                .reconcile_uncertain_occurrence_absent(
+                    uncertain.task_id,
+                    uncertain.occurrence,
+                    &uncertain.client_user_message_id,
+                    &proof_digest,
+                    now_ms,
+                )
+                .await?;
+        }
+        ThreadQueueReconcileOutcome::Cancelled => {
+            let occurrence = store
+                .reconcile_uncertain_occurrence_admitted(
+                    uncertain.task_id,
+                    uncertain.occurrence,
+                    &AutomationQueueReceipt {
+                        queued_submission_id: "cancelled-before-turn".to_string(),
+                        client_user_message_id: uncertain.client_user_message_id.clone(),
+                    },
+                    now_ms,
+                )
+                .await?;
+            // This exact admitted row is already returned by the owner. Looking
+            // for it in a capped global frontier can miss it behind older work.
+            let work = AutomationOccurrenceWork {
+                admission: AutomationAdmission {
+                    agent_id: identity.agent_id.clone(),
+                    task_id: occurrence.task_id,
+                    occurrence: occurrence.occurrence,
+                    scheduled_for_ms: occurrence.scheduled_for_ms,
+                    thread_id: task.thread_id.clone(),
+                    prompt: task.prompt.clone(),
+                    client_user_message_id: occurrence.client_user_message_id.clone(),
+                },
+                occurrence,
+            };
+            complete_work(
+                store,
+                &work,
+                AutomationOccurrenceTerminalState::Cancelled,
+                observation_digest(&response)?,
+                now_ms,
+                identity.spawn_generation,
+            )
+            .await?;
+        }
+        ThreadQueueReconcileOutcome::Persisted { .. } => {
+            return Err(AgentdError::Protocol(
+                "automation recovery returned an empty persisted turn id".to_string(),
+            ));
+        }
+    }
+    Ok(true)
+}
+
+async fn reconcile_work(
+    store: &AutomationStore,
+    state: &AgentdState,
+    identity: &AgentdIdentity,
+    work: AutomationOccurrenceWork,
+    now_ms: u64,
+) -> Result<(), AgentdError> {
+    store
+        .ensure_admitted_taskflow_uncertainty(&work, now_ms)
+        .await
+        .map_err(taskflow_error)?;
+    if let Some(turn_id) = work.occurrence.turn_id.as_deref() {
+        let client = connect(state, identity).await?;
+        let observed = find_turn(
+            &client,
+            &work.admission.thread_id,
+            turn_id,
+            work.occurrence.terminal_scan_cursor.as_deref(),
+        )
+        .await;
+        let _ = client.shutdown().await;
+        state.refresh_generation()?;
+        let turn = match observed? {
+            TurnLookup::Found(turn) => turn,
+            TurnLookup::Deferred => return Ok(()),
+            TurnLookup::Continue(next_cursor) => {
+                store
+                    .record_terminal_scan_cursor(
+                        work.occurrence.task_id,
+                        work.occurrence.occurrence,
+                        turn_id,
+                        work.occurrence.terminal_scan_cursor.as_deref(),
+                        &next_cursor,
+                        now_ms,
+                    )
+                    .await?;
+                return Ok(());
+            }
+            TurnLookup::Exhausted => {
+                if work.occurrence.state == AutomationOccurrenceState::Indeterminate {
+                    store
+                        .reset_terminal_scan_after_exhaustion(&work.occurrence, now_ms)
+                        .await?;
+                    return Ok(());
+                }
+                let mut bytes = b"hepta.automation.turn-history-exhausted.v1\0".to_vec();
+                bytes.extend_from_slice(work.occurrence.occurrence_id.as_bytes());
+                bytes.push(0);
+                bytes.extend_from_slice(turn_id.as_bytes());
+                let digest = Sha256Digest::for_bytes(&bytes);
+                store
+                    .mark_occurrence_indeterminate(
+                        work.occurrence.task_id,
+                        work.occurrence.occurrence,
+                        &digest,
+                        now_ms,
+                    )
+                    .await?;
+                return Ok(());
+            }
+        };
+        match turn.status {
+            TurnStatus::InProgress => Ok(()),
+            TurnStatus::Completed => {
+                complete_work(
+                    store,
+                    &work,
+                    AutomationOccurrenceTerminalState::Succeeded,
+                    observation_digest(&turn)?,
+                    now_ms,
+                    identity.spawn_generation,
+                )
+                .await
+            }
+            TurnStatus::Failed => {
+                complete_work(
+                    store,
+                    &work,
+                    AutomationOccurrenceTerminalState::Failed,
+                    observation_digest(&turn)?,
+                    now_ms,
+                    identity.spawn_generation,
+                )
+                .await
+            }
+            TurnStatus::Interrupted => {
+                complete_work(
+                    store,
+                    &work,
+                    AutomationOccurrenceTerminalState::Cancelled,
+                    observation_digest(&turn)?,
+                    now_ms,
+                    identity.spawn_generation,
+                )
+                .await
+            }
+        }
+    } else {
+        reconcile_admitted_without_turn(store, state, identity, &work, now_ms).await
+    }
+}
+
+async fn reconcile_admitted_without_turn(
+    store: &AutomationStore,
+    state: &AgentdState,
+    identity: &AgentdIdentity,
+    work: &AutomationOccurrenceWork,
+    now_ms: u64,
+) -> Result<(), AgentdError> {
+    let input = prompt_input(&work.admission.prompt);
+    let expected = input_digest(&input)?;
+    let client = connect(state, identity).await?;
+    let response = reconcile_queue(
+        &client,
+        &work.admission.thread_id,
+        input,
+        &work.admission.client_user_message_id,
+        &expected,
+    )
+    .await;
+    let _ = client.shutdown().await;
+    state.refresh_generation()?;
+    let Some(response) = response? else {
+        // The caller rotates this exact still-pending snapshot. Timeout is
+        // neither a terminal observation nor permission to readmit the work.
+        return Ok(());
+    };
+    validate_reconcile_identity(&response, &work.admission.client_user_message_id, &expected)?;
+    match &response.outcome {
+        ThreadQueueReconcileOutcome::Queued {
+            queued_submission,
+            created,
+        } => {
+            if *created
+                || queued_submission.client_user_message_id != work.admission.client_user_message_id
+                || input_digest(&queued_submission.input)? != expected
+            {
+                return Err(AgentdError::Protocol(
+                    "automation queued reconciliation changed identity or payload".to_string(),
+                ));
+            }
+            Ok(())
+        }
+        ThreadQueueReconcileOutcome::Persisted { turn_id } if !turn_id.is_empty() => {
+            store
+                .record_occurrence_turn(
+                    work.occurrence.task_id,
+                    work.occurrence.occurrence,
+                    &work.occurrence.client_user_message_id,
+                    turn_id,
+                    &response.payload_sha256,
+                    now_ms,
+                )
+                .await?;
+            Ok(())
+        }
+        ThreadQueueReconcileOutcome::Cancelled => {
+            complete_work(
+                store,
+                work,
+                AutomationOccurrenceTerminalState::Cancelled,
+                observation_digest(&response)?,
+                now_ms,
+                identity.spawn_generation,
+            )
+            .await
+        }
+        ThreadQueueReconcileOutcome::Missing => {
+            let digest = observation_digest(&response)?;
+            store
+                .mark_occurrence_indeterminate(
+                    work.occurrence.task_id,
+                    work.occurrence.occurrence,
+                    &digest,
+                    now_ms,
+                )
+                .await?;
+            Ok(())
+        }
+        ThreadQueueReconcileOutcome::Persisted { .. } => Err(AgentdError::Protocol(
+            "automation reconciliation returned an empty persisted turn id".to_string(),
+        )),
+    }
+}
+
+async fn complete_work(
+    store: &AutomationStore,
+    work: &AutomationOccurrenceWork,
+    terminal: AutomationOccurrenceTerminalState,
+    receipt_digest: Sha256Digest,
+    now_ms: u64,
+    recovery_generation: u64,
+) -> Result<(), AgentdError> {
+    store
+        .ensure_admitted_taskflow_uncertainty(work, now_ms)
+        .await
+        .map_err(taskflow_error)?;
+    store
+        .reconcile_occurrence_taskflow_terminal_with_recovery(
+            work,
+            terminal,
+            &receipt_digest,
+            now_ms,
+            recovery_generation,
+            RECOVERY_RUN_LEASE_MS,
+        )
+        .await
+        .map_err(taskflow_error)?;
+    store
+        .complete_occurrence(
+            work.occurrence.task_id,
+            work.occurrence.occurrence,
+            terminal,
+            &receipt_digest,
+            now_ms,
+        )
+        .await?;
+    Ok(())
+}
+
+async fn connect(
+    state: &AgentdState,
+    identity: &AgentdIdentity,
+) -> Result<RemoteAppServerClient, AgentdError> {
+    if !state.automation_admission_ready()? {
+        return Err(AgentdError::Protocol(
+            "automation recovery requires a ready owning Agent generation".to_string(),
+        ));
+    }
+    let socket_path =
+        AbsolutePathBuf::from_absolute_path(&identity.app_server_socket).map_err(|error| {
+            AgentdError::Protocol(format!("automation socket path invalid: {error}"))
+        })?;
+    let client = RemoteAppServerClient::connect_with_bounded_events(
+        RemoteAppServerConnectArgs {
+            endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+            client_name: "hepta-agentd-automation-recovery".to_string(),
+            client_version: env!("CARGO_PKG_VERSION").to_string(),
+            experimental_api: true,
+            mcp_server_openai_form_elicitation: false,
+            opt_out_notification_methods: Vec::new(),
+            channel_capacity: 8,
+        },
+        16,
+    )
+    .await
+    .map_err(|error| {
+        AgentdError::Protocol(format!("automation recovery connect failed: {error}"))
+    })?;
+    let expected_home = identity.home_root.to_string_lossy();
+    if client.codex_home() != Some(expected_home.as_ref()) {
+        let _ = client.shutdown().await;
+        return Err(AgentdError::GenerationFenced(
+            "automation recovery App Server home differs from owning Agent home".to_string(),
+        ));
+    }
+    Ok(client)
+}
+
+async fn reconcile_queue(
+    client: &RemoteAppServerClient,
+    thread_id: &str,
+    input: Vec<UserInput>,
+    client_user_message_id: &str,
+    expected_payload_sha256: &str,
+) -> Result<Option<ThreadQueueReconcileResponse>, AgentdError> {
+    bounded_observation(async {
+        client
+            .request_handle()
+            .request_typed(ClientRequest::ThreadQueueReconcile {
+                request_id: RequestId::Integer(1),
+                params: ThreadQueueReconcileParams {
+                    thread_id: thread_id.to_string(),
+                    input,
+                    client_user_message_id: client_user_message_id.to_string(),
+                    expected_payload_sha256: expected_payload_sha256.to_string(),
+                    mode: ThreadQueueReconcileMode::ReconcileOnly,
+                },
+            })
+            .await
+            .map_err(|error| {
+                AgentdError::Protocol(format!("automation queue reconcile failed: {error}"))
+            })
+    })
+    .await
+}
+
+async fn find_turn(
+    client: &RemoteAppServerClient,
+    thread_id: &str,
+    turn_id: &str,
+    start_cursor: Option<&str>,
+) -> Result<TurnLookup, AgentdError> {
+    let mut cursor = start_cursor.map(str::to_owned);
+    let deadline = tokio::time::Instant::now() + RECOVERY_OBSERVATION_TIMEOUT;
+    let request_handle = client.request_handle();
+    for page_index in 0..MAX_TURN_PAGES {
+        let request = request_handle.request_typed(ClientRequest::ThreadTurnsList {
+            request_id: RequestId::Integer(i64::try_from(page_index + 2).unwrap_or(i64::MAX)),
+            params: ThreadTurnsListParams {
+                thread_id: thread_id.to_string(),
+                cursor: cursor.clone(),
+                limit: Some(TURN_PAGE_SIZE),
+                sort_direction: Some(SortDirection::Desc),
+                items_view: Some(TurnItemsView::NotLoaded),
+            },
+        });
+        let response: ThreadTurnsListResponse = match tokio::time::timeout_at(deadline, request)
+            .await
+        {
+            Ok(response) => response,
+            // Preserve pages already observed under this bounded scan instead
+            // of discarding their continuation when the last page is slow.
+            Err(_) if page_index > 0 => {
+                return cursor.map(TurnLookup::Continue).ok_or_else(|| {
+                    AgentdError::Protocol("automation recovery lost scan continuation".to_string())
+                });
+            }
+            Err(_) => return Ok(TurnLookup::Deferred),
+        }
+        .map_err(|error| {
+            AgentdError::Protocol(format!("automation turn observation failed: {error}"))
+        })?;
+        if let Some(turn) = response.data.into_iter().find(|turn| turn.id == turn_id) {
+            return Ok(TurnLookup::Found(turn));
+        }
+        let Some(next) = response.next_cursor else {
+            return Ok(TurnLookup::Exhausted);
+        };
+        if cursor.as_deref() == Some(next.as_str()) {
+            return Err(AgentdError::Protocol(
+                "automation turn observation returned a repeated cursor".to_string(),
+            ));
+        }
+        cursor = Some(next);
+    }
+    cursor.map(TurnLookup::Continue).ok_or_else(|| {
+        AgentdError::Protocol(
+            "automation bounded turn observation ended without a continuation cursor".to_string(),
+        )
+    })
+}
+
+fn prompt_input(prompt: &str) -> Vec<UserInput> {
+    vec![UserInput::Text {
+        text: prompt.to_string(),
+        text_elements: Vec::new(),
+    }]
+}
+
+pub(crate) fn input_digest(input: &[UserInput]) -> Result<String, AgentdError> {
+    user_input_payload_sha256(
+        &input
+            .iter()
+            .cloned()
+            .map(UserInput::into_core)
+            .collect::<Vec<_>>(),
+    )
+    .map_err(|error| AgentdError::Protocol(format!("automation input digest failed: {error}")))
+}
+
+pub(crate) fn validate_reconcile_identity(
+    response: &ThreadQueueReconcileResponse,
+    client_user_message_id: &str,
+    expected_payload_sha256: &str,
+) -> Result<(), AgentdError> {
+    if response.client_user_message_id != client_user_message_id
+        || response.payload_sha256 != expected_payload_sha256
+    {
+        return Err(AgentdError::Protocol(
+            "automation reconciliation identity or payload mismatch".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn observation_digest(value: &impl serde::Serialize) -> Result<Sha256Digest, AgentdError> {
+    Ok(Sha256Digest::for_bytes(&serde_json::to_vec(value)?))
+}
+
+fn taskflow_error(error: codex_hepta_automation::TaskFlowError) -> AgentdError {
+    AgentdError::Protocol(format!("automation TaskFlow recovery failed: {error}"))
+}
+
+#[cfg(test)]
+#[path = "automation_recovery_tests.rs"]
+mod tests;

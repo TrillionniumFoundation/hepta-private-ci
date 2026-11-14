@@ -1,0 +1,69 @@
+diff --git a/scripts/test_hepta_ci_exec_deadline.py b/scripts/test_hepta_ci_exec_deadline.py
+index 221b0535d..70b3ec03c 100644
+--- a/scripts/test_hepta_ci_exec_deadline.py
++++ b/scripts/test_hepta_ci_exec_deadline.py
+@@ -2,6 +2,7 @@
+ from __future__ import annotations
+ 
+ import contextlib
++import errno
+ import hashlib
+ import io
+ import json
+@@ -18,6 +19,15 @@ from unittest.mock import patch
+ import hepta_ci_exec as executor
+ 
+ 
++def _process_is_live(pid: int) -> bool:
++    """Observe an unreaped Linux process without racing its disappearance."""
++    try:
++        state = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()[0]
++    except (FileNotFoundError, ProcessLookupError):
++        return False
++    return state != "Z"
++
++
+ class CommandDeadlineTests(unittest.TestCase):
+     def setUp(self):
+         temporary = tempfile.TemporaryDirectory()
+@@ -68,18 +78,34 @@ class CommandDeadlineTests(unittest.TestCase):
+         # An orphan may briefly remain a zombie until init reaps it. It must no
+         # longer execute or retain a pipe after process-group cancellation.
+         for _ in range(100):
+-            stat = Path(f"/proc/{child_pid}/stat")
+-            try:
+-                state = stat.read_text().rsplit(")", 1)[1].split()[0]
+-            except FileNotFoundError:
+-                break
+-            if state == "Z":
++            if not _process_is_live(child_pid):
+                 break
+             time.sleep(0.01)
+         else:
+             os.kill(child_pid, signal.SIGKILL)
+             self.fail("descendant survived process-group cancellation")
+ 
++    def test_process_observation_accepts_only_confirmed_disappearance(self):
++        for code in (errno.ENOENT, errno.ESRCH):
++            with self.subTest(code=code), patch.object(
++                Path, "read_text", side_effect=OSError(code, "process disappeared")
++            ):
++                self.assertFalse(_process_is_live(123))
++        for code in (errno.EACCES, errno.EPERM, errno.EIO):
++            error = OSError(code, "observation failed")
++            with self.subTest(code=code), patch.object(
++                Path, "read_text", side_effect=error
++            ), self.assertRaises(OSError) as raised:
++                _process_is_live(123)
++            self.assertIs(raised.exception, error)
++
++    def test_process_observation_distinguishes_live_and_zombie_states(self):
++        for state in ("R", "S", "Z"):
++            with self.subTest(state=state), patch.object(
++                Path, "read_text", return_value=f"123 (fixture) {state} 1 2 3"
++            ):
++                self.assertEqual(_process_is_live(123), state != "Z")
++
+     @unittest.skipUnless(os.name == "posix", "POSIX session semantics")
+     def test_detached_pipe_holder_does_not_deadlock_stream_close(self):
+         child_pid = None

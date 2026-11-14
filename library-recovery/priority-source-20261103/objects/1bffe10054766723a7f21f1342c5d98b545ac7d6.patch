@@ -1,0 +1,636 @@
+--- a/codex-rs/hepta-authbus/src/authority.rs
++++ b/codex-rs/hepta-authbus/src/authority.rs
+@@ -13,6 +13,15 @@
+     pub(crate) wall_time_ms: u64,
+     pub(crate) source_revision: u64,
+     pub(crate) source_digest: Digest32,
++    pub(crate) issuer: Option<TrustedTimeIssuer>,
++}
++
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub(crate) struct TrustedTimeIssuer {
++    pub(crate) issuer_id: StableId,
++    pub(crate) key_epoch: codex_hepta_types::Generation,
++    pub(crate) public_key: [u8; 32],
++    pub(crate) revision: u64,
+ }
+ 
+ impl TrustedTimeSample {
+@@ -30,7 +39,17 @@
+             wall_time_ms,
+             source_revision,
+             source_digest,
++            issuer: None,
+         })
++    }
++
++    // Persisted floors and internal fixtures are observations, not exported
++    // credentials. Publicly returned samples acquire issuer provenance only
++    // after signature verification in SignedTrustedTimeAttestation::verify.
++    pub(crate) fn same_observation(&self, other: &Self) -> bool {
++        self.wall_time_ms == other.wall_time_ms
++            && self.source_revision == other.source_revision
++            && self.source_digest == other.source_digest
+     }
+ 
+     pub fn wall_time_ms(&self) -> u64 {
+@@ -252,4 +271,3 @@
+         }
+     }
+ }
+-
+--- a/codex-rs/hepta-authbus/src/trust.rs
++++ b/codex-rs/hepta-authbus/src/trust.rs
+@@ -82,11 +82,18 @@
+                 &Signature::from_bytes(&self.signature),
+             )
+             .map_err(|_| AuthBusAuthorityError::InvalidTrustedTimeSignature)?;
+-        crate::TrustedTimeSample::new(
++        let mut sample = crate::TrustedTimeSample::new(
+             self.claims.wall_time_ms,
+             self.claims.source_revision,
+             self.claims.source_digest,
+-        )
++        )?;
++        sample.issuer = Some(crate::authority::TrustedTimeIssuer {
++            issuer_id: record.issuer_id.clone(),
++            key_epoch: record.key_epoch,
++            public_key: record.verifying_key.to_bytes(),
++            revision: record.revision,
++        });
++        Ok(sample)
+     }
+ }
+ 
+@@ -140,4 +147,3 @@
+         }
+     }
+ }
+-
+--- a/codex-rs/hepta-authbus/src/authority_store.rs
++++ b/codex-rs/hepta-authbus/src/authority_store.rs
+@@ -338,6 +338,21 @@
+     tx: &mut Transaction<'_, Sqlite>,
+     sample: &TrustedTimeSample,
+ ) -> Result<(), AuthBusAuthorityError> {
++    if let Some(issuer) = &sample.issuer {
++        let current = crate::trust_store::load_issuer(
++            tx,
++            crate::IssuerPurpose::TrustedTime,
++            &issuer.issuer_id,
++            issuer.key_epoch,
++        )
++        .await?;
++        if current.state != crate::IssuerLifecycleState::Active
++            || current.revision != issuer.revision
++            || current.verifying_key.to_bytes() != issuer.public_key
++        {
++            return Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch);
++        }
++    }
+     if sample.wall_time_ms == 0 || sample.source_revision == 0 || sample.source_digest.is_zero() {
+         return Err(AuthBusAuthorityError::InvalidInput(
+             "trusted time must bind non-zero time, revision and source digest",
+@@ -357,10 +372,10 @@
+         {
+             return Err(AuthBusAuthorityError::ClockRollback);
+         }
+-        if sample.source_revision == prior.source_revision && sample != &prior {
++        if sample.source_revision == prior.source_revision && !sample.same_observation(&prior) {
+             return Err(AuthBusAuthorityError::TimeConflict);
+         }
+-        if sample == &prior {
++        if sample.same_observation(&prior) {
+             return Ok(());
+         }
+     }
+@@ -537,4 +552,3 @@
+ #[cfg(test)]
+ #[path = "authority_store_tests.rs"]
+ mod tests;
+-
+--- a/codex-rs/hepta-authbus/src/trust_store_tests.rs
++++ b/codex-rs/hepta-authbus/src/trust_store_tests.rs
+@@ -125,10 +125,12 @@
+         .await
+         .expect("observe trusted time");
+     assert_eq!(observed.wall_time_ms, 2_000);
+-    assert_eq!(
+-        store.last_trusted_time().await.expect("last trusted time"),
+-        Some(observed)
+-    );
++    let floor = store
++        .last_trusted_time()
++        .await
++        .expect("last trusted time")
++        .expect("floor");
++    assert!(floor.same_observation(&observed));
+ 
+     let mut tampered = SignedTrustedTimeAttestation {
+         claims,
+@@ -152,5 +154,77 @@
+         store.observe_trusted_time_attestation(&signed).await,
+         Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
+     ));
+-}
+-
++    assert!(matches!(
++        store.observe_time(observed).await,
++        Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
++    ));
++}
++
++#[tokio::test]
++async fn verified_time_is_revalidated_in_the_consuming_registry() {
++    let (_source_root, source) = store().await;
++    let (_target_root, target) = store().await;
++    let key = SigningKey::from_bytes(&[41; 32]);
++    source
++        .enroll_issuer(IssuerPurpose::TrustedTime, spec("issuer:time", 1, &key))
++        .await
++        .expect("enroll source time issuer");
++    let claims = TrustedTimeAttestationClaims {
++        issuer_id: id("issuer:time"),
++        key_epoch: Generation::new(1).expect("generation"),
++        wall_time_ms: 2_000,
++        source_revision: 7,
++        source_digest: Digest32::of_bytes(b"external-time-source"),
++    };
++    let signed = SignedTrustedTimeAttestation {
++        signature: key.sign(&claims.signing_bytes()).to_bytes(),
++        claims,
++    };
++    let sample = source
++        .observe_trusted_time_attestation(&signed)
++        .await
++        .expect("source verification");
++    source
++        .observe_time(sample.clone())
++        .await
++        .expect("current sample reuse");
++    assert!(matches!(
++        target.observe_time(sample.clone()).await,
++        Err(AuthBusAuthorityError::IssuerMissing)
++    ));
++    assert_eq!(target.last_trusted_time().await.expect("target floor"), None);
++
++    let other_key = SigningKey::from_bytes(&[42; 32]);
++    target
++        .enroll_issuer(IssuerPurpose::TrustedTime, spec("issuer:time", 1, &other_key))
++        .await
++        .expect("same identity, independently trusted key");
++    assert!(matches!(
++        target.observe_time(sample.clone()).await,
++        Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
++    ));
++    assert_eq!(target.last_trusted_time().await.expect("target floor"), None);
++
++    source
++        .rotate_issuer(
++            IssuerPurpose::TrustedTime,
++            spec("issuer:time", 2, &other_key),
++            Generation::new(1).expect("generation"),
++            1,
++        )
++        .await
++        .expect("rotate source issuer");
++    assert!(matches!(
++        source.observe_time(sample).await,
++        Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
++    ));
++    assert_eq!(
++        source
++            .last_trusted_time()
++            .await
++            .expect("source floor")
++            .expect("floor")
++            .wall_time_ms(),
++        2_000
++    );
++}
+--- a/docs/modules/auth.authbus/KEY_ROTATION.md
++++ b/docs/modules/auth.authbus/KEY_ROTATION.md
+@@ -17,18 +17,23 @@
+ 
+ ## Rotation
+ 
+-1. Create epoch `n+1`; epochs strictly increase.
+-2. Enroll the new public key while epoch `n` remains available for bounded in-flight verification.
+-3. Move signers to `n+1` and verify telemetry.
+-4. Revoke epoch `n`; settlement reloads the durable registry so stale handles immediately fail.
+-5. After the maximum message/evidence validity window and incident-retention window, retire epoch `n`.
+-6. Publish checkpoint after every lifecycle transition.
++1. Prepare epoch `n+1` in KMS/HSM; epochs strictly increase.
++2. Stop new traffic and reconcile in-flight work that still needs epoch `n`.
++3. Call the admin port's `rotate_issuer` with the exact active epoch and revision.
++   One transaction revokes epoch `n` and inserts active epoch `n+1`. Overlapping
++   active epochs are not supported; `enroll_issuer` cannot add an epoch to an
++   existing issuer/purpose chain.
++4. Publish the checkpoint, move signers to `n+1`, and verify positive and
++   old-epoch rejection probes before resuming traffic.
++5. Retire revoked epoch `n` only after the applicable evidence and incident
++   retention windows. Retirement never restores its authority.
++6. Publish the checkpoint after every lifecycle transition.
+ 
+ Public-key bytes, purpose and epoch are immutable. Rotation creates a new row; it never updates an existing key in place.
+ 
+ ## Emergency revocation
+ 
+-Stop the affected signer, revoke the exact purpose/epoch, publish checkpoint, stop mutation admission if publication fails, and inspect verification failures and messages signed since the suspected compromise time. Do not release reservations merely because a settlement signer was revoked; recover terminal state through an independently trusted path.
++Stop the affected signer, revoke the exact purpose/epoch, publish checkpoint, stop mutation admission if publication fails, and inspect verification failures and messages signed since the suspected compromise time. Do not release reservations merely because a settlement signer was revoked; recover terminal state through an independently trusted path. Once the last active epoch is revoked, `rotate_issuer` fails with `IssuerMissing` and enrollment under that same issuer/purpose remains blocked. Recovery requires an independently approved new issuer identity and corresponding signer/caller provisioning; there is no API to reactivate a revoked chain.
+ 
+ ## Dual control and audit
+ 
+--- a/docs/modules/auth.authbus/TIME_AUTHORITY.md
++++ b/docs/modules/auth.authbus/TIME_AUTHORITY.md
+@@ -38,3 +38,17 @@
+ against the deployed filesystem and checkpoint domains. Source tests and schema
+ triggers are not production evidence.
+ 
++
++## Signed authority-store samples
++
++The separate policy/quota authority owner verifies signed time attestations
++against its durable issuer registry. Exported samples retain sealed issuer ID,
++epoch, public key and registry revision. Each consuming mutation revalidates
++that provenance in its own transaction before using the sample. A sample from
++an untrusted registry or a revoked/rotated issuer cannot advance authority time.
++
++The persisted numeric floor is a historical observation used by internal
++restart maintenance; it does not manufacture a public trusted-time capability.
++Issuer-provenance validation does not by itself establish wall-clock freshness.
++The configured time provider must still supply fresh authenticated observations;
++repeated identical valid attestations do not prove elapsed time.
+--- /dev/null
++++ b/codex-rs/hepta-authbus/migrations/0008_dispatch_observation.sql
+@@ -0,0 +1,52 @@
++-- Preserve the effect-entry instant independently of later lifecycle updates.
++-- Historical indeterminate rows have no recoverable dispatch instant. They
++-- retain the old, conservative updated_at_ms settlement bound; never invent a
++-- pre-dispatch timestamp during migration or recreate historical authority.
++CREATE TABLE authbus_dispatch_observation (
++    reservation_id TEXT PRIMARY KEY,
++    dispatched_at_ms BLOB NOT NULL CHECK (
++        typeof(dispatched_at_ms) = 'blob' AND length(dispatched_at_ms) = 8
++        AND dispatched_at_ms > X'0000000000000000'
++    )
++) WITHOUT ROWID;
++
++CREATE TRIGGER authbus_dispatch_observation_insert_guard
++BEFORE INSERT ON authbus_dispatch_observation
++WHEN EXISTS (
++    SELECT 1 FROM authbus_dispatch_observation
++    WHERE reservation_id = NEW.reservation_id
++) OR NOT EXISTS (
++    SELECT 1 FROM authbus_quota_reservation
++    WHERE reservation_id = NEW.reservation_id
++      AND state = 'dispatch_attempted'
++      AND dispatch_digest = effect_digest
++      AND updated_at_ms = NEW.dispatched_at_ms
++)
++BEGIN SELECT RAISE(ABORT, 'dispatch observation must match effect entry'); END;
++
++CREATE TRIGGER authbus_dispatch_observation_immutable_update
++BEFORE UPDATE ON authbus_dispatch_observation
++BEGIN SELECT RAISE(ABORT, 'dispatch observation is immutable'); END;
++
++CREATE TRIGGER authbus_dispatch_observation_immutable_delete
++BEFORE DELETE ON authbus_dispatch_observation
++BEGIN SELECT RAISE(ABORT, 'dispatch observation is immutable'); END;
++
++CREATE TRIGGER authbus_reservation_record_dispatch
++AFTER UPDATE OF state ON authbus_quota_reservation
++WHEN OLD.state = 'held' AND NEW.state = 'dispatch_attempted'
++BEGIN
++    INSERT INTO authbus_dispatch_observation(reservation_id, dispatched_at_ms)
++    VALUES (NEW.reservation_id, NEW.updated_at_ms);
++END;
++
++CREATE TRIGGER authbus_frontier_dispatch_observation_insert
++AFTER INSERT ON authbus_dispatch_observation
++BEGIN
++    INSERT INTO authbus_frontier_change(domain, operation, record_key, canonical_record)
++    VALUES (
++        'dispatch_observation', 'upsert', NEW.reservation_id,
++        hex(CAST(NEW.reservation_id AS BLOB))||'|'||hex(NEW.dispatched_at_ms)
++    );
++    UPDATE authbus_authority_checkpoint_dirty SET dirty = 1 WHERE singleton = 1;
++END;
+--- a/codex-rs/hepta-authbus/src/settlement_store.rs
++++ b/codex-rs/hepta-authbus/src/settlement_store.rs
+@@ -262,7 +262,24 @@
+         ) {
+             return Err(AuthBusAuthorityError::InvalidTransition);
+         }
+-        if authenticated.claims().observed_at_ms < reservation.updated_at_ms {
++        // A timeout/sweep updates lifecycle time, not the instant the effect
++        // became possible. Evidence may arrive after that update while naming
++        // an observation between dispatch and timeout. Legacy rows without an
++        // independently retained dispatch instant keep the conservative bound.
++        let dispatch_time: Option<Vec<u8>> = sqlx::query_scalar(
++            "SELECT dispatched_at_ms FROM authbus_dispatch_observation WHERE reservation_id = ?",
++        )
++        .bind(reservation.reservation_id.as_str())
++        .fetch_optional(&mut *tx)
++        .await
++        .map_err(storage)?;
++        let earliest_observation = match dispatch_time {
++            Some(bytes) => u64::from_be_bytes(bytes.try_into().map_err(|_| {
++                AuthBusAuthorityError::CorruptState("invalid dispatch observation time")
++            })?),
++            None => reservation.updated_at_ms,
++        };
++        if authenticated.claims().observed_at_ms < earliest_observation {
+             return Err(AuthBusAuthorityError::InvalidSettlementEvidence);
+         }
+         if authenticated.claims().observed_cost > reservation.amount {
+@@ -470,4 +487,3 @@
+ #[cfg(test)]
+ #[path = "settlement_store_tests.rs"]
+ mod tests;
+-
+--- a/codex-rs/hepta-authbus/src/settlement_store_tests.rs
++++ b/codex-rs/hepta-authbus/src/settlement_store_tests.rs
+@@ -128,6 +128,160 @@
+ }
+ 
+ #[tokio::test]
++async fn late_terminal_evidence_uses_dispatch_time_after_timeout_and_restart() {
++    let (root, store, _decision, reservation) = configured().await;
++    let dispatched = store
++        .mark_dispatch_attempted(
++            &reservation.reservation_id,
++            reservation.revision,
++            reservation.effect_digest,
++            sample(5, 1_500),
++        )
++        .await
++        .expect("dispatch");
++    let indeterminate = store
++        .mark_indeterminate(
++            &reservation.reservation_id,
++            dispatched.revision,
++            sample(6, 1_800),
++        )
++        .await
++        .expect("timeout");
++    assert_eq!(indeterminate.updated_at_ms, 1_800);
++    store.pool.close().await;
++    let reopened = AuthBusAuthorityStore::open(&root.path().join("authbus.sqlite"))
++        .await
++        .expect("reopen");
++    let key = SigningKey::from_bytes(&[9; 32]);
++    let premature = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_499);
++    assert!(matches!(
++        reopened.settle(&premature, sample(7, 1_900)).await,
++        Err(AuthBusAuthorityError::InvalidSettlementEvidence)
++    ));
++    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
++    let settled = reopened
++        .settle(&signed, sample(7, 1_900))
++        .await
++        .expect("earlier observation delivered after timeout");
++    assert_eq!(settled.state, ReservationState::Settled);
++    reopened
++        .compact_terminal_reservations(2_000, 16)
++        .await
++        .expect("compact");
++    let dispatch_time: Vec<u8> = sqlx::query_scalar(
++        "SELECT dispatched_at_ms FROM authbus_dispatch_observation WHERE reservation_id = ?",
++    )
++    .bind(reservation.reservation_id.as_str())
++    .fetch_one(&reopened.pool)
++    .await
++    .expect("retained dispatch time");
++    assert_eq!(dispatch_time, u64_bytes(1_500));
++    let quota = reopened
++        .quota_snapshot(&reservation.quota_key)
++        .await
++        .expect("quota");
++    assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
++}
++
++#[tokio::test]
++async fn expiry_sweep_does_not_move_terminal_evidence_lower_bound() {
++    let (_root, store, _decision, reservation) = configured().await;
++    let dispatched = store
++        .mark_dispatch_attempted(
++            &reservation.reservation_id,
++            reservation.revision,
++            reservation.effect_digest,
++            sample(5, 1_500),
++        )
++        .await
++        .expect("dispatch");
++    let key = SigningKey::from_bytes(&[9; 32]);
++    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 4_900);
++    let sweep = store
++        .sweep_expired_reservations(sample(6, 5_100), 16)
++        .await
++        .expect("sweep");
++    assert_eq!(sweep.marked_indeterminate, 1);
++    store
++        .settle(&signed, sample(7, 5_200))
++        .await
++        .expect("late evidence after expiry");
++}
++
++#[tokio::test]
++async fn dispatch_observation_is_immutable_and_frontier_bound() {
++    for seed_first in [false, true] {
++        let (_root, store, _decision, reservation) = configured().await;
++        if seed_first {
++            store
++                .authority_frontier_digest()
++                .await
++                .expect("seed frontier");
++        }
++        store
++            .mark_dispatch_attempted(
++                &reservation.reservation_id,
++                reservation.revision,
++                reservation.effect_digest,
++                sample(5, 1_500),
++            )
++            .await
++            .expect("dispatch");
++        let events: i64 = sqlx::query_scalar(
++            "SELECT COUNT(*) FROM authbus_frontier_change WHERE domain = 'dispatch_observation'",
++        )
++        .fetch_one(&store.pool)
++        .await
++        .expect("dispatch frontier event");
++        assert_eq!(events, 1);
++        let folded = store.authority_frontier_digest().await.expect("fold frontier");
++        assert_eq!(
++            store.authority_frontier_digest().await.expect("stable frontier"),
++            folded
++        );
++        for query in [
++            "UPDATE authbus_dispatch_observation SET dispatched_at_ms = dispatched_at_ms",
++            "DELETE FROM authbus_dispatch_observation",
++        ] {
++            assert!(sqlx::query(query).execute(&store.pool).await.is_err());
++        }
++        let extra = sqlx::query(
++            "INSERT INTO authbus_dispatch_observation VALUES ('reservation:foreign', ?)",
++        )
++        .bind(u64_bytes(1_500).as_slice())
++        .execute(&store.pool)
++        .await;
++        assert!(extra.is_err());
++        let mut connection = store.pool.acquire().await.expect("connection");
++        sqlx::query("PRAGMA recursive_triggers = OFF")
++            .execute(&mut *connection)
++            .await
++            .expect("disable recursive triggers on this connection");
++        sqlx::query("UPDATE authbus_quota_reservation SET updated_at_ms = ?")
++            .bind(u64_bytes(1_450).as_slice())
++            .execute(&mut *connection)
++            .await
++            .expect("adversarial lifecycle timestamp rewrite");
++        assert!(
++            sqlx::query("INSERT OR REPLACE INTO authbus_dispatch_observation VALUES (?, ?)")
++                .bind(reservation.reservation_id.as_str())
++                .bind(u64_bytes(1_450).as_slice())
++                .execute(&mut *connection)
++                .await
++                .is_err()
++        );
++        let retained: Vec<u8> = sqlx::query_scalar(
++            "SELECT dispatched_at_ms FROM authbus_dispatch_observation WHERE reservation_id = ?",
++        )
++        .bind(reservation.reservation_id.as_str())
++        .fetch_one(&mut *connection)
++        .await
++        .expect("retained observation");
++        assert_eq!(retained, u64_bytes(1_500));
++    }
++}
++
++#[tokio::test]
+ async fn dispatch_rejects_effect_digest_drift_before_crossing_the_boundary() {
+     let (_root, store, _decision, reservation) = configured().await;
+     assert!(matches!(
+@@ -404,4 +558,3 @@
+         .expect("quota snapshot");
+     assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
+ }
+-
+--- a/codex-rs/hepta-authbus/src/recovery.rs
++++ b/codex-rs/hepta-authbus/src/recovery.rs
+@@ -491,6 +491,25 @@
+          FROM authbus_issuer_registry ORDER BY issuer_id, purpose, key_epoch",
+     )
+     .await?;
++    // Preserve the legacy seed bytes for databases upgraded before any new
++    // dispatch. New dispatch observations are included in an unseeded store's
++    // full snapshot, and otherwise in the same-transaction change journal.
++    let has_dispatch_observations: bool = sqlx::query_scalar(
++        "SELECT EXISTS(SELECT 1 FROM authbus_dispatch_observation)",
++    )
++    .fetch_one(&mut **tx)
++    .await
++    .map_err(storage)?;
++    if has_dispatch_observations {
++        append_rows(
++            tx,
++            &mut bytes,
++            "dispatch_observation",
++            "SELECT hex(CAST(reservation_id AS BLOB))||'|'||hex(dispatched_at_ms)
++             FROM authbus_dispatch_observation ORDER BY reservation_id",
++        )
++        .await?;
++    }
+     Ok(Digest32::of_bytes(&bytes))
+ }
+ 
+@@ -540,4 +559,3 @@
+ #[cfg(test)]
+ #[path = "recovery_tests.rs"]
+ mod tests;
+-
+--- a/codex-rs/hepta-authbus/src/bootstrap.rs
++++ b/codex-rs/hepta-authbus/src/bootstrap.rs
+@@ -19,7 +19,7 @@
+ use crate::AuthBusAuthorityStore;
+ use crate::owner_fence::OwnerFence;
+ 
+-const EXPECTED_AUTHBUS_MIGRATIONS: i64 = 7;
++const EXPECTED_AUTHBUS_MIGRATIONS: i64 = 8;
+ const AUTHORITATIVE_TABLES: &[&str] = &[
+     "authbus_trusted_time",
+     "authbus_policy",
+@@ -28,6 +28,7 @@
+     "authbus_quota_registry",
+     "authbus_quota_reservation",
+     "authbus_quota_reservation_archive",
++    "authbus_dispatch_observation",
+     "authbus_issuer_registry",
+ ];
+ 
+@@ -349,4 +350,3 @@
+         ));
+     }
+ }
+-
+--- a/docs/modules/auth.authbus/SCHEMA_COMPATIBILITY.md
++++ b/docs/modules/auth.authbus/SCHEMA_COMPATIBILITY.md
+@@ -52,14 +52,38 @@
+ and applied ID commit together. Existing databases with a newer external
+ witness still fail closed.
+ 
++## Migration 0008: retained dispatch observation
++
++`0008_dispatch_observation.sql` adds an immutable dispatch-time record in the
++existing authority database. The `Held -> DispatchAttempted` transition records
++it atomically; its insertion participates in the same dirty frontier and change
++journal. Timeout, expiry, restart and terminal archival never move or delete
++that instant. Settlement can therefore accept still-valid signed evidence
++observed after dispatch but delivered after a later lifecycle update, while
++continuing to reject evidence observed before dispatch.
++
++The table starts empty on upgrade. Old rows without a retained dispatch instant
++continue to use their existing `updated_at_ms` as a conservative lower bound.
++No historical time is invented or lowered. Such an old indeterminate operation
++may require a new, independently authenticated terminal observation; the
++upgrade alone cannot release its quota. The legacy full-state seed is unchanged
++when the new table is empty. Nonempty unseeded stores include these records in
++the snapshot, while seeded stores fold the new journal domain.
++
++This is a coordinated storage upgrade and a downgrade boundary. Deploy only
++with matching binary, migration and checkpoint qualification. An old binary
++must not reopen the new schema. The dispatch record shares the reservation's
++immutable retention obligation and remains present after terminal archival.
++
+ ## Binary/store matrix
+ 
+ | Binary | Store | Result |
+ | --- | --- | --- |
+-| current | predecessor through 0005 | migrate through 0007, seed legacy root at first frontier evaluation, verify, open |
+-| current | current 0006/0007 | verify accumulator/journal/guards/schema, open |
++| current | predecessor through 0005 | migrate through 0008, seed legacy root at first frontier evaluation, verify, open |
++| current | predecessor 0006/0007 | add empty dispatch-observation table, verify accumulator/journal/guards/schema, open |
++| current | current 0008 | verify dispatch-observation and frontier guards, open |
+ | current | newer unknown | fail closed |
+-| predecessor | current 0006/0007 | unsupported; restore a matched pre-0006 pair |
++| predecessor | current 0008 | unsupported; restore only an independently approved matched backup pair |
+ | any | schema drift with unchanged ledger | fail closed |
+ 
+ ## Rollback
+@@ -78,4 +102,3 @@
+ promotion bypass and predecessor restore.
+ 
+ See `INCREMENTAL_FRONTIER.md`, `RECOVERY.md` and `ADMINISTRATION.md`.
+-
+--- a/docs/modules/auth.authbus/BOOTSTRAP_RECOVERY.md
++++ b/docs/modules/auth.authbus/BOOTSTRAP_RECOVERY.md
+@@ -22,7 +22,7 @@
+ and all of the following are true:
+ 
+ - SQLite `quick_check` succeeds;
+-- exactly migrations 1 through 7 are present and successful;
++- exactly migrations 1 through 8 are present and successful;
+ - every trusted-time, policy/history/archive, quota, reservation/archive and
+   issuer table is empty;
+ - no local authority checkpoint exists;

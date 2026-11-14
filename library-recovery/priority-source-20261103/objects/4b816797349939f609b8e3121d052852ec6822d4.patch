@@ -1,0 +1,48 @@
+--- a/codex-rs/hepta-automation/src/authorized_effect.rs
++++ b/codex-rs/hepta-automation/src/authorized_effect.rs
+@@ -537,6 +537,10 @@
+ }
+ 
+ #[derive(Clone, Debug, Eq, PartialEq)]
++#[expect(
++    clippy::large_enum_variant,
++    reason = "Return one owned receipt without an extra recovery allocation or public API change"
++)]
+ pub enum AuthorizedEffectRecoveryResult {
+     ProvenAbsent,
+     Observed(TaskFlowStepReceipt),
+@@ -641,6 +645,10 @@
+     ///
+     /// If a process dies after step 3, a subsequent call returns
+     /// `RecoveryRequired` and cannot re-dispatch even with a fresh grant.
++    #[expect(
++        clippy::too_many_arguments,
++        reason = "Keep authority, driver, wire bytes, fence, signed grant and expected binding explicit"
++    )]
+     pub async fn execute_authorized_taskflow_effect<D: AuthorizedEffectDriver>(
+         &self,
+         authority: &FinalUseAuthority,
+@@ -863,6 +871,10 @@
+     /// provider-stable logical key is then derived from destination + run +
+     /// step, deliberately excluding the local attempt so a safely retried
+     /// attempt reuses the same provider occurrence identity.
++    #[expect(
++        clippy::too_many_arguments,
++        reason = "Keep authority, driver, wire bytes, fence, signed grant and expected binding explicit"
++    )]
+     pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
+         &self,
+         authority: &FinalUseAuthority,
+--- a/codex-rs/hepta-automation/src/neural_circuit.rs
++++ b/codex-rs/hepta-automation/src/neural_circuit.rs
+@@ -122,6 +122,10 @@
+ }
+ 
+ impl NeuralCircuitCandidateV1 {
++    #[expect(
++        clippy::too_many_arguments,
++        reason = "Retain the public schema-v1 constructor with explicit canonical fields before normalization"
++    )]
+     pub fn new(
+         circuit_id: impl Into<String>,
+         version: u32,

@@ -1,0 +1,1454 @@
+diff --git a/codex-rs/core/src/client.rs b/codex-rs/core/src/client.rs
+index 4ea165d99..efe81e84a 100644
+--- a/codex-rs/core/src/client.rs
++++ b/codex-rs/core/src/client.rs
+@@ -390,8 +390,18 @@ impl WebsocketConnectionIdentity {
+         beta_features_header: Option<&str>,
+         responses_metadata: &CodexResponsesMetadata,
+     ) -> std::result::Result<Self, ApiError> {
++        // A prewarm prepares the same socket for the following turn. Its
++        // request label belongs to the request/recovery identity, not to the
++        // transport identity; preserve every other compatibility field.
++        let mut compatibility_metadata = responses_metadata.clone();
++        if matches!(
++            compatibility_metadata.request_kind,
++            Some(CodexResponsesRequestKind::Prewarm)
++        ) {
++            compatibility_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
++        }
+         let compatibility_projection_json =
+-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
++            serde_json::to_vec(&compatibility_metadata.turn_recovery_compatibility_projection())
+                 .map_err(|error| {
+                     ApiError::Stream(format!(
+                         "failed to bind websocket compatibility identity: {error}"
+diff --git a/codex-rs/core/src/client_tests.rs b/codex-rs/core/src/client_tests.rs
+index 7670273e9..a6f539f1c 100644
+--- a/codex-rs/core/src/client_tests.rs
++++ b/codex-rs/core/src/client_tests.rs
+@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
+ use crate::config::Config;
+ use crate::model_provider_policy::ModelProviderPolicyContext;
+ use crate::responses_metadata::CodexResponsesMetadata;
++use crate::responses_metadata::CodexResponsesRequestKind;
+ use crate::test_support::TestCodexResponsesRequestKind;
+ use crate::test_support::responses_metadata as test_responses_metadata;
+ use codex_api::AgentIdentityTelemetry;
+@@ -349,12 +350,62 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
+         "thread-a".to_string(),
+         "window-a".to_string(),
+     );
++    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
+     metadata_a.sandbox_mode = Some("workspace-write".to_string());
+     metadata_a.turn_started_at_unix_ms = Some(1);
+     let identity_a =
+         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
+             .expect("identity a");
+ 
++    let mut default_metadata = metadata_a.clone();
++    default_metadata.request_kind = None;
++    assert_eq!(
++        identity_a,
++        WebsocketConnectionIdentity::from_provider(
++            &provider,
++            Some("feature-a"),
++            &default_metadata,
++        )
++        .expect("default transport identity")
++    );
++
++    let mut prewarm_metadata = metadata_a.clone();
++    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
++    assert_eq!(
++        identity_a,
++        WebsocketConnectionIdentity::from_provider(
++            &provider,
++            Some("feature-a"),
++            &prewarm_metadata,
++        )
++        .expect("prewarm transport identity")
++    );
++    // Reusing a socket must not make a prewarm equivalent to a turn for
++    // recovery, or mutate the caller's wire metadata.
++    assert_ne!(
++        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
++            .expect("turn recovery identity"),
++        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
++            .expect("prewarm recovery identity"),
++    );
++    prewarm_metadata.sandbox_mode = Some("danger-full-access".to_string());
++    assert_ne!(
++        identity_a,
++        WebsocketConnectionIdentity::from_provider(
++            &provider,
++            Some("feature-a"),
++            &prewarm_metadata,
++        )
++        .expect("changed prewarm sandbox identity")
++    );
++    let mut memory_metadata = metadata_a.clone();
++    memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
++    assert_ne!(
++        identity_a,
++        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &memory_metadata,)
++            .expect("memory transport identity")
++    );
++
+     let mut volatile_metadata = metadata_a.clone();
+     volatile_metadata.session_id = "session-after-restart".to_string();
+     volatile_metadata.window_id = "window-after-restart".to_string();
+diff --git a/codex-rs/ext/queue/tests/queue_service.rs b/codex-rs/ext/queue/tests/queue_service.rs
+index de399717b..4aac96f4f 100644
+--- a/codex-rs/ext/queue/tests/queue_service.rs
++++ b/codex-rs/ext/queue/tests/queue_service.rs
+@@ -156,24 +156,55 @@ fn install_registered_queue(
+ fn python_hook_command(script_path: &Path) -> String {
+     #[cfg(windows)]
+     {
+-        let _python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
++        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+             .into_iter()
+             .chain(std::env::var_os("PATH"))
+             .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+             .map(|directory| directory.join("python.exe"))
+             .find(|candidate| candidate.is_file())
+             .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+-        // Command hooks run through cmd.exe on Windows. Resolve Python above so
+-        // the fixture fails clearly when it is unavailable, but invoke it by
+-        // name: cmd.exe misparses some absolute Bazel tool paths when the
+-        // complete command line is wrapped for `/C`.
+-        return format!("python.exe \"{}\"", script_path.display());
++        // The hook inherits a session environment whose PATH need not include
++        // CODEX_BAZEL_WINDOWS_PATH. Keep the interpreter we actually resolved;
++        // the command runner supplies cmd.exe's outer /C quoting.
++        return format!("\"{}\" \"{}\"", python.display(), script_path.display());
+     }
+ 
+     #[cfg(not(windows))]
+     format!("python3 \"{}\"", script_path.display())
+ }
+ 
++#[cfg(windows)]
++#[test]
++fn python_hook_uses_resolved_interpreter_without_child_path() {
++    use std::os::windows::process::CommandExt;
++
++    let fixture = tempfile::tempdir().expect("create hook fixture");
++    let script_path = fixture.path().join("queue hook with spaces.py");
++    std::fs::write(&script_path, "print('queue-python-exact-path')\n")
++        .expect("write Python hook fixture");
++    let command = python_hook_command(&script_path);
++    let shell = std::env::var_os("COMSPEC").unwrap_or_else(|| "cmd.exe".into());
++    // Match CommandHookRuntime's /C envelope. Only the child environment is
++    // changed: interpreter discovery still uses the test runner's search paths.
++    let output = std::process::Command::new(shell)
++        .args(["/D", "/C"])
++        .raw_arg(format!(r#""{command}""#))
++        .env("PATH", "")
++        .current_dir(fixture.path())
++        .output()
++        .expect("run Python hook without a child search path");
++    assert!(
++        output.status.success(),
++        "hook failed: stdout={} stderr={}",
++        String::from_utf8_lossy(&output.stdout),
++        String::from_utf8_lossy(&output.stderr),
++    );
++    assert_eq!(
++        String::from_utf8_lossy(&output.stdout).trim(),
++        "queue-python-exact-path",
++    );
++}
++
+ fn write_rejecting_prompt_hook(home: &Path) {
+     let script_path = home.join("queue prompt hook.py");
+     let log_path = home.join("queue_prompt_hook.log");
+diff --git a/codex-rs/hepta-fleet/src/error.rs b/codex-rs/hepta-fleet/src/error.rs
+index 4f94e6a67..b9b21f45d 100644
+--- a/codex-rs/hepta-fleet/src/error.rs
++++ b/codex-rs/hepta-fleet/src/error.rs
+@@ -13,6 +13,12 @@ pub enum FleetRegistryError {
+     AlreadyRegistered(AgentId),
+     #[error("unknown fleet release {0}")]
+     UnknownRelease(String),
++    #[error("release {release_id} was published, but its commit durability is uncertain: {source}")]
++    ReleasePublicationDurabilityUncertain {
++        release_id: String,
++        #[source]
++        source: std::io::Error,
++    },
+     #[error("release {release_id} is not allowed for agent {agent_id}")]
+     ReleaseNotAllowed {
+         agent_id: AgentId,
+diff --git a/codex-rs/hepta-fleet/src/release.rs b/codex-rs/hepta-fleet/src/release.rs
+index 6837da0c2..ce922ace5 100644
+--- a/codex-rs/hepta-fleet/src/release.rs
++++ b/codex-rs/hepta-fleet/src/release.rs
+@@ -24,6 +24,10 @@ use sha2::Sha256;
+ use crate::FleetRegistry;
+ use crate::FleetRegistryError;
+ 
++#[cfg(unix)]
++#[path = "release_publication.rs"]
++mod publication;
++
+ pub const RELEASE_METADATA_SCHEMA_VERSION: u32 = 2;
+ pub const AGENT_RELEASE_STATE_SCHEMA_VERSION: u32 = 1;
+ const RELEASE_MANIFEST_FILE: &str = "release.json";
+@@ -227,6 +231,11 @@ impl FleetRegistry {
+     /// when configured, its exact matrixd companion. Control clients still
+     /// select only the opaque [`ReleaseId`]; executable paths never cross the
+     /// supervisor wire.
++    ///
++    /// On Unix, interrupted publication stays quarantined for operator review.
++    /// `ReleasePublicationDurabilityUncertain` means admission has committed,
++    /// but the final directory sync failed: the release may already be in use,
++    /// and this error must not be treated as a rollback or permission to replace it.
+     pub fn install_release_bundle(
+         &self,
+         release_id: ReleaseId,
+@@ -245,11 +254,8 @@ impl FleetRegistry {
+         let source_agentd = validate_source_program(source_agentd)?;
+         let source_matrixd = source_matrixd.map(validate_source_program).transpose()?;
+         let final_root = self.layout().releases_root().join(release_id.as_str());
+-        if final_root.exists() {
+-            return Err(FleetRegistryError::Invalid(format!(
+-                "release {release_id} is already installed"
+-            )));
+-        }
++        reject_pending_install(self.layout().releases_root(), &release_id)?;
++        require_absent_release(&final_root, &release_id)?;
+         let staging = self.layout().releases_root().join(format!(
+             ".staging-{release_id}-{}-{}",
+             std::process::id(),
+@@ -293,23 +299,31 @@ impl FleetRegistry {
+             set_mode(&bin_root, /*mode*/ 0o555)?;
+             sync_directory(&bin_root)?;
+             sync_directory(&staging)?;
+-            set_mode(&staging, /*mode*/ 0o555)?;
+-            std::fs::rename(&staging, &final_root).inspect_err(|error| {
+-                if cfg!(debug_assertions) {
+-                    eprintln!(
+-                        "fleet release publication failed at staged-directory rename: {error}"
+-                    );
+-                }
+-            })?;
+-            sync_directory(self.layout().releases_root())?;
+-            Ok(())
++            #[cfg(unix)]
++            {
++                let expected_manifest = sha256_file(&manifest)?;
++                publication::publish(
++                    self.layout().releases_root(),
++                    &staging,
++                    &release_id,
++                    &expected_manifest,
++                )
++            }
++            #[cfg(not(unix))]
++            {
++                set_mode(&staging, /*mode*/ 0o555)?;
++                std::fs::rename(&staging, &final_root)?;
++                sync_directory(self.layout().releases_root())?;
++                resolve_catalog_release(self.layout().releases_root(), &release_id)
++            }
+         })();
+-        if let Err(error) = result {
++        if result.is_err() {
++            // Never make a renamed candidate writable or remove its fence here.
++            // A post-commit durability error also must not promise rollback.
+             make_tree_removable(&staging);
+             let _ = std::fs::remove_dir_all(&staging);
+-            return Err(error);
+         }
+-        resolve_catalog_release(self.layout().releases_root(), &release_id)
++        result
+     }
+ 
+     /// Allows one registered agent to use an already installed release. The
+@@ -601,6 +615,18 @@ pub(crate) fn load_release_state(
+ fn resolve_catalog_release(
+     catalog_root: &Path,
+     release_id: &ReleaseId,
++) -> Result<RegisteredRelease, FleetRegistryError> {
++    reject_pending_install(catalog_root, release_id)?;
++    let release = validate_catalog_release(catalog_root, release_id)?;
++    reject_pending_install(catalog_root, release_id)?;
++    Ok(release)
++}
++
++// Structural validation alone is not admission. Only the installer uses this
++// while holding the pending fence; all catalog consumers use the wrapper above.
++fn validate_catalog_release(
++    catalog_root: &Path,
++    release_id: &ReleaseId,
+ ) -> Result<RegisteredRelease, FleetRegistryError> {
+     validate_physical_directory(catalog_root, /*immutable*/ false)?;
+     let release_root = catalog_root.join(release_id.as_str());
+@@ -831,6 +857,32 @@ fn release_manifest_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
+     root.join(release_id.as_str()).join(RELEASE_MANIFEST_FILE)
+ }
+ 
++fn pending_install_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
++    // '@' cannot occur in a ReleaseId, so fences never collide with a valid
++    // legacy release name or reserve a previously accepted identity.
++    root.join(format!(".pending-install@{release_id}"))
++}
++
++fn reject_pending_install(root: &Path, release_id: &ReleaseId) -> Result<(), FleetRegistryError> {
++    match std::fs::symlink_metadata(pending_install_path(root, release_id)) {
++        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
++        Err(error) => Err(error.into()),
++        Ok(_) => Err(FleetRegistryError::Corrupt(format!(
++            "release {release_id} has an incomplete installation; operator review required"
++        ))),
++    }
++}
++
++fn require_absent_release(path: &Path, release_id: &ReleaseId) -> Result<(), FleetRegistryError> {
++    match std::fs::symlink_metadata(path) {
++        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
++        Err(error) => Err(error.into()),
++        Ok(_) => Err(FleetRegistryError::Invalid(format!(
++            "release {release_id} is already installed"
++        ))),
++    }
++}
++
+ fn release_state_path(root: &Path, generation: u64) -> PathBuf {
+     root.join(format!(
+         "{RELEASE_STATE_PREFIX}{generation:020}{RELEASE_STATE_SUFFIX}"
+diff --git a/codex-rs/hepta-fleet/src/release_copy_tests.rs b/codex-rs/hepta-fleet/src/release_copy_tests.rs
+index b3346a70a..007173c5c 100644
+--- a/codex-rs/hepta-fleet/src/release_copy_tests.rs
++++ b/codex-rs/hepta-fleet/src/release_copy_tests.rs
+@@ -27,10 +27,14 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
+     }
+     let reopened = FleetRegistry::open_existing(root)?;
+     assert!(matches!(
+-        reopened.install_release(release_id, &source, Vec::new()),
++        reopened.install_release(release_id.clone(), &source, Vec::new()),
+         Err(FleetRegistryError::Invalid(_))
+     ));
+     assert_eq!(std::fs::read(&installed.program)?, content);
++    assert_eq!(
++        resolve_catalog_release(reopened.layout().releases_root(), &release_id)?,
++        installed
++    );
+     // Windows read-only attributes also affect cleanup; restore only fixtures.
+     make_tree_removable(
+         installed
+diff --git a/codex-rs/hepta-fleet/src/release_publication.rs b/codex-rs/hepta-fleet/src/release_publication.rs
+new file mode 100644
+index 000000000..856744b53
+--- /dev/null
++++ b/codex-rs/hepta-fleet/src/release_publication.rs
+@@ -0,0 +1,167 @@
++//! Unix publication keeps Darwin's rename source writable until it is placed.
++//! A catalog advisory lock serializes live installers; the durable per-release
++//! fence is the admission barrier. Interrupted candidates stay fenced for review;
++//! dropping this object, restarting, or retrying never clears that quarantine.
++
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::fs::OpenOptionsExt;
++use std::os::unix::fs::PermissionsExt;
++
++use super::*;
++
++struct PendingPublication<'a> {
++    catalog: &'a Path,
++    catalog_lock: File,
++    release_id: &'a ReleaseId,
++    staging: &'a Path,
++    destination: PathBuf,
++    directory: File,
++    fence: File,
++    fence_path: PathBuf,
++}
++
++pub(super) fn publish(
++    catalog: &Path,
++    staging: &Path,
++    release_id: &ReleaseId,
++    expected_manifest: &str,
++) -> Result<RegisteredRelease, FleetRegistryError> {
++    let publication = PendingPublication::begin(catalog, staging, release_id)?;
++    publication.rename()?;
++    let release = publication.seal_and_validate(expected_manifest)?;
++    publication.commit(sync_directory)?;
++    Ok(release)
++}
++
++impl<'a> PendingPublication<'a> {
++    fn begin(
++        catalog: &'a Path,
++        staging: &'a Path,
++        release_id: &'a ReleaseId,
++    ) -> Result<Self, FleetRegistryError> {
++        validate_physical_directory(catalog, /*immutable*/ false)?;
++        let catalog_lock = File::open(catalog)?;
++        catalog_lock.try_lock().map_err(std::io::Error::from)?;
++        require_same_file(&catalog_lock, catalog)?;
++        // The authoritative absence check and fence creation share this OS
++        // lock through commit. A losing installer must never fence a winner
++        // that committed after the loser's earlier public preflight check.
++        let destination = catalog.join(release_id.as_str());
++        require_absent_release(&destination, release_id)?;
++        validate_physical_directory(staging, /*immutable*/ false)?;
++        let directory = File::open(staging)?;
++        require_same_file(&directory, staging)?;
++        let fence_path = pending_install_path(catalog, release_id);
++        let fence = OpenOptions::new()
++            .write(true)
++            .create_new(true)
++            .mode(0o600)
++            .open(&fence_path)?;
++        fence.sync_all()?;
++        sync_directory(catalog)?;
++        Ok(Self {
++            catalog,
++            catalog_lock,
++            release_id,
++            staging,
++            destination,
++            directory,
++            fence,
++            fence_path,
++        })
++    }
++
++    fn rename(&self) -> Result<(), FleetRegistryError> {
++        require_same_file(&self.catalog_lock, self.catalog)?;
++        require_same_file(&self.directory, self.staging)?;
++        require_same_file(&self.fence, &self.fence_path)?;
++        std::fs::rename(self.staging, &self.destination)?;
++        Ok(())
++    }
++
++    fn seal_and_validate(
++        &self,
++        expected_manifest: &str,
++    ) -> Result<RegisteredRelease, FleetRegistryError> {
++        require_same_file(&self.directory, &self.destination)?;
++        // Seal the retained object, never a path replacement. A same-owner
++        // attacker with permission to rewrite the catalog is not sandboxed by
++        // this protocol, but substitutions observed here must fail closed.
++        self.directory
++            .set_permissions(std::fs::Permissions::from_mode(/*mode*/ 0o555))?;
++        let release = validate_catalog_release(self.catalog, self.release_id)?;
++        let manifest = self.destination.join(RELEASE_MANIFEST_FILE);
++        if sha256_file(&manifest)? != expected_manifest {
++            return Err(FleetRegistryError::Corrupt(format!(
++                "release {} manifest changed during publication",
++                self.release_id
++            )));
++        }
++        for (path, mode) in [
++            (&self.destination, 0o555),
++            (&self.destination.join("bin"), 0o555),
++            (&manifest, 0o444),
++            (&release.program, 0o555),
++        ]
++        .into_iter()
++        .chain(
++            release
++                .matrixd
++                .iter()
++                .map(|program| (&program.program, 0o555)),
++        ) {
++            if std::fs::symlink_metadata(path)?.permissions().mode() & 0o7777 != mode {
++                return Err(FleetRegistryError::Corrupt(format!(
++                    "release publication mode changed: {}",
++                    path.display()
++                )));
++            }
++        }
++        // Program contents and permissions were synced through their writing
++        // handles. Persist the manifest's chmod and the root's final seal too.
++        File::open(manifest)?.sync_all()?;
++        self.directory.sync_all()?;
++        require_same_file(&self.directory, &self.destination)?;
++        Ok(release)
++    }
++
++    fn commit(
++        self,
++        sync_catalog: impl Fn(&Path) -> Result<(), FleetRegistryError>,
++    ) -> Result<(), FleetRegistryError> {
++        require_same_file(&self.catalog_lock, self.catalog)?;
++        sync_catalog(self.catalog)?;
++        require_same_file(&self.directory, &self.destination)?;
++        require_same_file(&self.fence, &self.fence_path)?;
++        // Admission commits at this unlink. A subsequent sync failure must
++        // NOT restore a fence or mutate an already observable release.
++        std::fs::remove_file(&self.fence_path)?;
++        sync_catalog(self.catalog).map_err(|error| {
++            FleetRegistryError::ReleasePublicationDurabilityUncertain {
++                release_id: self.release_id.to_string(),
++                source: match error {
++                    FleetRegistryError::Io(error) => error,
++                    error => std::io::Error::other(error),
++                },
++            }
++        })
++    }
++}
++
++fn require_same_file(handle: &File, path: &Path) -> Result<(), FleetRegistryError> {
++    let expected = handle.metadata()?;
++    let actual = std::fs::symlink_metadata(path)?;
++    if actual.file_type().is_symlink()
++        || (actual.dev(), actual.ino()) != (expected.dev(), expected.ino())
++    {
++        return Err(FleetRegistryError::Corrupt(format!(
++            "release publication object was replaced: {}",
++            path.display()
++        )));
++    }
++    Ok(())
++}
++
++#[cfg(test)]
++#[path = "release_publication_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-fleet/src/release_publication_tests.rs b/codex-rs/hepta-fleet/src/release_publication_tests.rs
+new file mode 100644
+index 000000000..a257cf896
+--- /dev/null
++++ b/codex-rs/hepta-fleet/src/release_publication_tests.rs
+@@ -0,0 +1,450 @@
++use std::cell::Cell;
++use std::os::unix::fs::symlink;
++
++use codex_hepta_paths::HeptaFleetRoot;
++use pretty_assertions::assert_eq;
++
++use super::*;
++use crate::AgentManifest;
++use crate::ResourceBudget;
++use crate::WorkspaceBinding;
++
++struct Fixture {
++    _temp: tempfile::TempDir,
++    registry: FleetRegistry,
++    agent: AgentId,
++    release: ReleaseId,
++    staging: PathBuf,
++    manifest_hash: String,
++}
++
++impl Fixture {
++    fn new() -> Result<Self, Box<dyn std::error::Error>> {
++        let temp = tempfile::tempdir()?;
++        let root = HeptaFleetRoot::parse(temp.path().canonicalize()?.join("fleet"))?;
++        let registry = FleetRegistry::initialize(root.clone())?;
++        let workspace = temp.path().join("workspace");
++        std::fs::create_dir(&workspace)?;
++        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
++        registry.register(AgentManifest::new(
++            agent.clone(),
++            WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
++            ResourceBudget::local_default(),
++        )?)?;
++        let source = temp.path().join("source");
++        std::fs::write(&source, b"original executable bytes")?;
++        let release = ReleaseId::parse("candidate")?;
++        registry.install_release_bundle(
++            release.clone(),
++            &source,
++            vec!["--original".to_owned()],
++            Some(&source),
++            Vec::new(),
++        )?;
++        registry.allow_release(&agent, &release)?;
++        let destination = registry.layout().releases_root().join(release.as_str());
++        let manifest_hash = sha256_file(&destination.join(RELEASE_MANIFEST_FILE))?;
++        // Recreate the installer boundary with an existing exact allowance, so
++        // failures cannot hide behind a missing allow marker in reader tests.
++        let staging = registry.layout().releases_root().join(".staging-test");
++        set_mode(&destination, /*mode*/ 0o755)?;
++        std::fs::rename(&destination, &staging)?;
++        Ok(Self {
++            _temp: temp,
++            registry,
++            agent,
++            release,
++            staging,
++            manifest_hash,
++        })
++    }
++
++    fn begin(&self) -> Result<PendingPublication<'_>, FleetRegistryError> {
++        PendingPublication::begin(
++            self.registry.layout().releases_root(),
++            &self.staging,
++            &self.release,
++        )
++    }
++
++    fn assert_quarantined(&self) -> Result<(), Box<dyn std::error::Error>> {
++        let registry = FleetRegistry::open_existing(self.registry.layout().fleet_root().clone())?;
++        assert!(registry.allow_release(&self.agent, &self.release).is_err());
++        assert!(
++            registry
++                .resolve_release(&self.agent, &self.release)
++                .is_err()
++        );
++        assert!(
++            registry
++                .resolve_release_binding(&self.agent, &self.release)
++                .is_err()
++        );
++        assert!(registry.allowed_releases(&self.agent).is_err());
++        assert!(
++            registry
++                .install_release(
++                    self.release.clone(),
++                    &self._temp.path().join("source"),
++                    Vec::new(),
++                )
++                .is_err()
++        );
++        assert!(
++            std::fs::symlink_metadata(pending_install_path(
++                registry.layout().releases_root(),
++                &self.release,
++            ))
++            .is_ok()
++        );
++        Ok(())
++    }
++}
++
++impl Drop for Fixture {
++    fn drop(&mut self) {
++        for path in [
++            self.staging.clone(),
++            self.registry
++                .layout()
++                .releases_root()
++                .join(self.release.as_str()),
++            self.registry.layout().releases_root().join("displaced"),
++        ] {
++            make_tree_removable(&path);
++        }
++    }
++}
++
++#[test]
++fn crashed_publication_stays_quarantined_after_reopen() -> Result<(), Box<dyn std::error::Error>> {
++    const CHILD_ROOT: &str = "HEPTA_RELEASE_CRASH_TEST_ROOT";
++    const CHILD_PHASE: &str = "HEPTA_RELEASE_CRASH_TEST_PHASE";
++    if let Some(root_record) = std::env::var_os(CHILD_ROOT) {
++        let fixture = Fixture::new()?;
++        let phase: u32 = std::env::var(CHILD_PHASE)?.parse()?;
++        let publication = fixture.begin()?;
++        if phase >= 1 {
++            publication.rename()?;
++        }
++        if phase >= 2 {
++            publication.seal_and_validate(&fixture.manifest_hash)?;
++        }
++        std::fs::write(
++            root_record,
++            fixture
++                .registry
++                .layout()
++                .fleet_root()
++                .as_path()
++                .as_os_str()
++                .as_encoded_bytes(),
++        )?;
++        // Terminate without unwinding or running any publication/tempdir Drop.
++        std::process::exit(/*code*/ 86);
++    }
++    for phase in 0..3 {
++        let temporary = tempfile::tempdir()?;
++        let root_record = temporary.path().join("crashed-root");
++        let status = std::process::Command::new(std::env::current_exe()?)
++            .args([
++                "--exact",
++                "release::publication::tests::crashed_publication_stays_quarantined_after_reopen",
++            ])
++            .env(CHILD_ROOT, &root_record)
++            .env(CHILD_PHASE, phase.to_string())
++            .env("TMPDIR", temporary.path())
++            .status()?;
++        assert_eq!(status.code(), Some(86));
++        let root = HeptaFleetRoot::parse(std::fs::read_to_string(&root_record)?)?;
++        let registry = FleetRegistry::open_existing(root)?;
++        // Process termination releases the live writer lock without clearing
++        // the durable admission fence belonging to its unfinished candidate.
++        let catalog_lock = File::open(registry.layout().releases_root())?;
++        catalog_lock.try_lock().map_err(std::io::Error::from)?;
++        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
++        let release = ReleaseId::parse("candidate")?;
++        assert!(registry.allow_release(&agent, &release).is_err());
++        assert!(registry.resolve_release(&agent, &release).is_err());
++        assert!(
++            std::fs::symlink_metadata(pending_install_path(
++                registry.layout().releases_root(),
++                &release
++            ))
++            .is_ok()
++        );
++        for path in [".staging-test", "candidate"] {
++            make_tree_removable(&registry.layout().releases_root().join(path));
++        }
++    }
++    Ok(())
++}
++
++#[test]
++fn unwinding_cancellation_keeps_the_fence() -> Result<(), Box<dyn std::error::Error>> {
++    let fixture = Fixture::new()?;
++    let publication = fixture.begin()?;
++    assert!(
++        std::panic::catch_unwind(|| {
++            publication.rename().expect("rename candidate");
++            drop(publication);
++            panic!("cancel publication before sealing");
++        })
++        .is_err()
++    );
++    fixture.assert_quarantined()
++}
++
++#[test]
++fn stale_installer_preflight_cannot_refence_a_committed_winner()
++-> Result<(), Box<dyn std::error::Error>> {
++    let fixture = Fixture::new()?;
++    let catalog = fixture.registry.layout().releases_root();
++    let destination = catalog.join(fixture.release.as_str());
++    // The contender's public preflight passed before the winner began.
++    require_absent_release(&destination, &fixture.release)?;
++    let winner = fixture.begin()?;
++    assert!(
++        matches!(fixture.begin(), Err(FleetRegistryError::Io(error)) if error.kind() == ErrorKind::WouldBlock)
++    );
++    winner.rename()?;
++    let expected = winner.seal_and_validate(&fixture.manifest_hash)?;
++    winner.commit(sync_directory)?;
++    // After the winner unlinks its fence, the stale contender must recheck
++    // under the OS lock before creating any new durable fence.
++    assert!(matches!(
++        fixture.begin(),
++        Err(FleetRegistryError::Invalid(_))
++    ));
++    assert!(!pending_install_path(catalog, &fixture.release).exists());
++    assert_eq!(
++        fixture
++            .registry
++            .resolve_release(&fixture.agent, &fixture.release)?,
++        expected
++    );
++    Ok(())
++}
++
++#[test]
++fn concurrent_reader_and_installer_cannot_admit_pending_candidate()
++-> Result<(), Box<dyn std::error::Error>> {
++    let fixture = Fixture::new()?;
++    let publication = fixture.begin()?;
++    std::thread::scope(|scope| -> Result<(), FleetRegistryError> {
++        let (phase_tx, phase_rx) = std::sync::mpsc::channel();
++        let (checked_tx, checked_rx) = std::sync::mpsc::channel();
++        let reader = &fixture;
++        scope.spawn(move || {
++            for _ in phase_rx {
++                assert!(
++                    reader
++                        .registry
++                        .resolve_release(&reader.agent, &reader.release)
++                        .is_err()
++                );
++                assert!(
++                    reader
++                        .registry
++                        .allow_release(&reader.agent, &reader.release)
++                        .is_err()
++                );
++                assert!(
++                    reader
++                        .registry
++                        .install_release(
++                            reader.release.clone(),
++                            &reader._temp.path().join("source"),
++                            Vec::new(),
++                        )
++                        .is_err()
++                );
++                checked_tx.send(()).expect("report rejection");
++            }
++        });
++        for phase in 0..3 {
++            if phase == 1 {
++                publication.rename()?;
++            }
++            if phase == 2 {
++                publication.seal_and_validate(&fixture.manifest_hash)?;
++            }
++            phase_tx.send(()).expect("check pending phase");
++            checked_rx.recv().expect("reader checked pending phase");
++        }
++        drop(phase_tx);
++        Ok(())
++    })?;
++    publication.commit(sync_directory)?;
++    fixture
++        .registry
++        .resolve_release(&fixture.agent, &fixture.release)?;
++    Ok(())
++}
++
++#[test]
++fn original_manifest_programs_and_modes_are_rechecked() -> Result<(), Box<dyn std::error::Error>> {
++    for target in ["manifest", "agentd", "matrixd", "mode", "extra", "symlink"] {
++        let fixture = Fixture::new()?;
++        let publication = fixture.begin()?;
++        publication.rename()?;
++        let root = &publication.destination;
++        match target {
++            "manifest" => {
++                let manifest = root.join(RELEASE_MANIFEST_FILE);
++                let mut metadata: ReleaseMetadata =
++                    read_bounded_json(&manifest, MAX_RELEASE_MANIFEST_BYTES)?;
++                metadata.agentd.args = vec!["--substituted".to_owned()];
++                set_mode(&manifest, /*mode*/ 0o644)?;
++                std::fs::write(&manifest, serde_json::to_vec(&metadata)?)?;
++                set_mode(&manifest, /*mode*/ 0o444)?;
++                // The replacement is internally consistent; only binding the
++                // installer's original manifest detects this substitution.
++            }
++            "agentd" | "matrixd" => {
++                let program = root.join(format!("bin/hepta-{target}"));
++                set_mode(&program, /*mode*/ 0o755)?;
++                std::fs::write(&program, b"substituted executable")?;
++                set_mode(&program, /*mode*/ 0o555)?;
++            }
++            "mode" => set_mode(&root.join(RELEASE_MANIFEST_FILE), /*mode*/ 0o555)?,
++            "extra" => std::fs::write(root.join("unexpected"), b"extra")?,
++            "symlink" => {
++                set_mode(&root.join("bin"), /*mode*/ 0o755)?;
++                std::fs::remove_file(root.join(AGENTD_RELEASE_PROGRAM))?;
++                symlink(
++                    fixture._temp.path().join("source"),
++                    root.join(AGENTD_RELEASE_PROGRAM),
++                )?;
++                set_mode(&root.join("bin"), /*mode*/ 0o555)?;
++            }
++            _ => unreachable!(),
++        }
++        assert!(
++            publication
++                .seal_and_validate(&fixture.manifest_hash)
++                .is_err()
++        );
++        fixture.assert_quarantined()?;
++    }
++    Ok(())
++}
++
++#[test]
++fn replaced_directory_is_not_sealed_or_committed() -> Result<(), Box<dyn std::error::Error>> {
++    for sealed in [false, true] {
++        let fixture = Fixture::new()?;
++        let publication = fixture.begin()?;
++        publication.rename()?;
++        if sealed {
++            publication.seal_and_validate(&fixture.manifest_hash)?;
++        }
++        set_mode(&publication.destination, /*mode*/ 0o755)?;
++        std::fs::rename(
++            &publication.destination,
++            publication.catalog.join("displaced"),
++        )?;
++        std::fs::create_dir(&publication.destination)?;
++        set_mode(&publication.destination, /*mode*/ 0o755)?;
++        assert!(
++            publication
++                .seal_and_validate(&fixture.manifest_hash)
++                .is_err()
++        );
++        assert_eq!(
++            std::fs::metadata(&publication.destination)?
++                .permissions()
++                .mode()
++                & 0o777,
++            0o755
++        );
++        assert!(publication.commit(sync_directory).is_err());
++        fixture.assert_quarantined()?;
++    }
++    Ok(())
++}
++
++#[test]
++fn durability_failure_distinguishes_precommit_from_committed_uncertainty()
++-> Result<(), Box<dyn std::error::Error>> {
++    for failed_sync in 1..=2 {
++        let fixture = Fixture::new()?;
++        let publication = fixture.begin()?;
++        publication.rename()?;
++        let expected = publication.seal_and_validate(&fixture.manifest_hash)?;
++        let calls = Cell::new(/*value*/ 0);
++        let result = publication.commit(|path| {
++            calls.set(calls.get() + 1);
++            if calls.get() == failed_sync {
++                return Err(std::io::Error::other("injected catalog fsync failure").into());
++            }
++            sync_directory(path)
++        });
++        if failed_sync == 1 {
++            assert!(matches!(result, Err(FleetRegistryError::Io(_))));
++            fixture.assert_quarantined()?;
++        } else {
++            assert!(matches!(
++                result,
++                Err(FleetRegistryError::ReleasePublicationDurabilityUncertain { .. })
++            ));
++            assert_eq!(
++                fixture
++                    .registry
++                    .resolve_release(&fixture.agent, &fixture.release)?,
++                expected
++            );
++            assert!(
++                !pending_install_path(fixture.registry.layout().releases_root(), &fixture.release)
++                    .exists()
++            );
++        }
++    }
++    Ok(())
++}
++
++#[test]
++fn any_pending_entry_including_dangling_symlink_denies_admission()
++-> Result<(), Box<dyn std::error::Error>> {
++    for entry in ["file", "directory", "symlink"] {
++        let fixture = Fixture::new()?;
++        publish(
++            fixture.registry.layout().releases_root(),
++            &fixture.staging,
++            &fixture.release,
++            &fixture.manifest_hash,
++        )?;
++        let fence =
++            pending_install_path(fixture.registry.layout().releases_root(), &fixture.release);
++        match entry {
++            "file" => std::fs::write(&fence, b"")?,
++            "directory" => std::fs::create_dir(&fence)?,
++            "symlink" => symlink("missing-target", &fence)?,
++            _ => unreachable!(),
++        }
++        fixture.assert_quarantined()?;
++    }
++    Ok(())
++}
++
++#[test]
++fn pending_fence_does_not_reserve_legacy_release_names() -> Result<(), Box<dyn std::error::Error>> {
++    let fixture = Fixture::new()?;
++    let legacy_name = ReleaseId::parse(".pending-install-candidate")?;
++    fixture.registry.install_release(
++        legacy_name.clone(),
++        &fixture._temp.path().join("source"),
++        Vec::new(),
++    )?;
++    let catalog = fixture.registry.layout().releases_root();
++    publish(
++        catalog,
++        &fixture.staging,
++        &fixture.release,
++        &fixture.manifest_hash,
++    )?;
++    resolve_catalog_release(catalog, &fixture.release)?;
++    resolve_catalog_release(catalog, &legacy_name)?;
++    make_tree_removable(&catalog.join(legacy_name.as_str()));
++    Ok(())
++}
+diff --git a/codex-rs/hepta-memory/src/cognitive_database_init_tests.rs b/codex-rs/hepta-memory/src/cognitive_database_init_tests.rs
+new file mode 100644
+index 000000000..e5813e5b2
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_database_init_tests.rs
+@@ -0,0 +1,270 @@
++use super::*;
++use crate::CognitiveAccess;
++use crate::CognitiveRecoveryAnchor;
++use crate::CognitiveRecoveryRequirement;
++use crate::CognitiveScope;
++use crate::ProductionAuthorityLease;
++use crate::ProductionAuthorityToken;
++use crate::cognitive_test_support::agent_id;
++use crate::cognitive_test_support::source;
++use codex_hepta_paths::HeptaFleetRoot;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::fs::OpenOptionsExt;
++use std::os::unix::fs::PermissionsExt;
++use std::process::Command;
++use std::time::Duration;
++use std::time::Instant;
++
++const CHILD: &str = "cognitive_store::database_init_tests::bootstrap_child";
++
++fn layout(root: &Path) -> HeptaAgentLayout {
++    HeptaFleetRoot::parse(root.join("fleet"))
++        .expect("fixture fleet")
++        .layout()
++        .agent(&agent_id(/*suffix*/ 249))
++}
++
++fn bootstrap(root: &Path, mask: &str) {
++    // Prepare only the directory/lock before changing the CHILD's umask. This
++    // isolates DB creation, including masks which remove every requested bit.
++    let layout = layout(root);
++    super::create_private_directory(layout.cognitive_root()).expect("private root");
++    drop(
++        super::CognitiveStoreOpenGuard::acquire_shared(layout.cognitive_root())
++            .expect("private lock"),
++    );
++    let mut child = Command::new("sh")
++        .arg("-c")
++        .arg(format!("umask {mask}; exec \"$@\""))
++        .arg("private-db-child")
++        .arg(std::env::current_exe().expect("test binary"))
++        .args(["--exact", CHILD, "--ignored", "--nocapture"])
++        .env("HEPTA_PRIVATE_DB_CHILD_ROOT", root)
++        .spawn()
++        .expect("start cold bootstrap child");
++    let deadline = Instant::now() + Duration::from_secs(/*secs*/ 30);
++    loop {
++        if let Some(status) = child.try_wait().expect("child status") {
++            assert!(status.success(), "bootstrap child failed: {status}");
++            return;
++        }
++        if Instant::now() >= deadline {
++            let _ = child.kill();
++            let _ = child.wait();
++            panic!("cold bootstrap child exceeded its deadline");
++        }
++        // Process supervision only: recovery is never attempted before exit.
++        std::thread::sleep(Duration::from_millis(/*millis*/ 10));
++    }
++}
++
++#[tokio::test]
++#[ignore = "child-only abrupt SQLite bootstrap"]
++async fn bootstrap_child() {
++    let root = PathBuf::from(std::env::var_os("HEPTA_PRIVATE_DB_CHILD_ROOT").expect("child root"));
++    let store = CognitiveStore::open(&layout(&root))
++        .await
++        .expect("bootstrap");
++    store
++        .append_source(
++            &CognitiveAccess::agent_private(agent_id(/*suffix*/ 249)),
++            &source(
++                CognitiveScope::AgentPrivate,
++                "cold-source",
++                "durable cold fact",
++            ),
++        )
++        .await
++        .expect("committed source");
++    let anchor = store.recovery_anchor().await.expect("current cut");
++    let mut witness = OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .mode(0o600)
++        .open(root.join("anchor.json"))
++        .expect("new witness");
++    witness
++        .set_permissions(fs::Permissions::from_mode(/*mode*/ 0o600))
++        .expect("private new witness");
++    witness
++        .write_all(&serde_json::to_vec(&anchor).expect("encode cut"))
++        .expect("write cut");
++    witness.sync_all().expect("durable witness");
++    // Deliberately skip Rust/SQLite cleanup: public recovery must accept a real
++    // cold WAL bundle, not only a pool.close() fixture with sidecars removed.
++    std::process::exit(/*code*/ 0);
++}
++
++fn authority() -> ProductionAuthorityLease {
++    ProductionAuthorityLease::from_verified_parts(
++        agent_id(/*suffix*/ 249),
++        Sha256Digest::for_bytes(b"private-bootstrap-grant"),
++        /*authority_epoch*/ 7,
++        /*owner_epoch*/ 11,
++        u64::MAX,
++        ProductionAuthorityToken::from_verified_bytes(b"private-bootstrap-fence".to_vec())
++            .expect("fixture token"),
++    )
++    .expect("fixture authority")
++}
++
++async fn recover(root: &Path) -> Result<CognitiveStore, crate::CognitiveRecoveryError> {
++    let anchor: CognitiveRecoveryAnchor =
++        serde_json::from_slice(&fs::read(root.join("anchor.json")).expect("read cut"))
++            .expect("decode cut");
++    CognitiveStore::open_with_recovery(
++        &layout(root),
++        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
++        &authority(),
++        &|lease: &ProductionAuthorityLease, owner: &AgentId| {
++            if &lease.agent_id == owner {
++                Ok(())
++            } else {
++                Err("fixture owner mismatch".into())
++            }
++        },
++    )
++    .await
++}
++
++#[tokio::test]
++async fn abrupt_child_keeps_private_sidecars_and_public_exact_cut_recovery() {
++    for mask in ["022", "077", "777"] {
++        let temp = tempfile::tempdir().expect("fixture");
++        let root = temp.path().canonicalize().expect("canonical fixture");
++        bootstrap(&root, mask);
++        for name in [
++            "cognitive_1.sqlite3",
++            "cognitive_1.sqlite3-wal",
++            "cognitive_1.sqlite3-shm",
++        ] {
++            let metadata = fs::symlink_metadata(layout(&root).cognitive_root().join(name))
++                .expect("retained cold bundle");
++            assert_eq!(metadata.mode() & 0o7777, 0o600, "mask {mask}, {name}");
++            assert_eq!(metadata.nlink(), 1);
++        }
++        let recovered = recover(&root).await.expect("public cold recovery");
++        let expected: CognitiveRecoveryAnchor =
++            serde_json::from_slice(&fs::read(root.join("anchor.json")).expect("cut"))
++                .expect("decode cut");
++        assert_eq!(
++            recovered.recovery_anchor().await.expect("recovered cut"),
++            expected
++        );
++        recovered.pool.close().await;
++    }
++}
++
++#[tokio::test]
++async fn recovery_does_not_repair_an_unsafe_existing_sidecar() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = temp.path().canonicalize().expect("canonical fixture");
++    bootstrap(&root, "022");
++    let wal = layout(&root)
++        .cognitive_root()
++        .join("cognitive_1.sqlite3-wal");
++    fs::set_permissions(&wal, fs::Permissions::from_mode(/*mode*/ 0o644))
++        .expect("unsafe fixture mode");
++    let before = fs::read(&wal).expect("retain WAL bytes");
++    assert!(matches!(
++        recover(&root).await,
++        Err(crate::CognitiveRecoveryError::Indeterminate(_))
++    ));
++    assert_eq!(fs::metadata(&wal).expect("WAL mode").mode() & 0o7777, 0o644);
++    assert_eq!(fs::read(&wal).expect("unchanged WAL"), before);
++}
++
++#[test]
++fn existing_private_bytes_are_neither_truncated_nor_rewritten() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = create_private_directory(temp.path()).expect("private canonical fixture root");
++    let path = root.join("existing");
++    fs::write(&path, b"retained bytes").expect("seed");
++    fs::set_permissions(&path, fs::Permissions::from_mode(/*mode*/ 0o600)).expect("private mode");
++    let before = fs::metadata(&path).expect("metadata");
++    drop(prepare(&path).expect("existing private file"));
++    let after = fs::metadata(&path).expect("metadata");
++    assert_eq!(
++        (before.dev(), before.ino(), before.mode()),
++        (after.dev(), after.ino(), after.mode())
++    );
++    assert_eq!(fs::read(&path).expect("retained"), b"retained bytes");
++}
++
++#[test]
++fn existing_links_and_restrictive_permissions_are_rejected_without_repair() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = create_private_directory(temp.path()).expect("private canonical fixture root");
++    let original = root.join("original");
++    fs::write(&original, b"unchanged").expect("seed");
++    fs::set_permissions(&original, fs::Permissions::from_mode(/*mode*/ 0o600))
++        .expect("private mode");
++    let symlink = root.join("symlink");
++    std::os::unix::fs::symlink(&original, &symlink).expect("symlink");
++    assert!(prepare(&symlink).is_err());
++    let hardlink = root.join("hardlink");
++    fs::hard_link(&original, &hardlink).expect("hardlink");
++    assert!(prepare(&hardlink).is_err());
++    assert_eq!(fs::read(&original).expect("unchanged target"), b"unchanged");
++    let restricted = root.join("restricted");
++    fs::write(&restricted, b"private").expect("seed");
++    fs::set_permissions(&restricted, fs::Permissions::from_mode(/*mode*/ 0o000))
++        .expect("restricted fixture");
++    assert!(prepare(&restricted).is_err());
++    assert_eq!(
++        fs::metadata(&restricted).expect("unchanged mode").mode() & 0o7777,
++        0o000
++    );
++}
++
++#[test]
++fn existing_fifo_is_rejected_without_waiting_for_a_peer() {
++    use std::os::unix::fs::FileTypeExt;
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = create_private_directory(temp.path()).expect("private canonical fixture root");
++    let path = root.join("fifo");
++    assert!(
++        Command::new("mkfifo")
++            .arg(&path)
++            .status()
++            .expect("create fixture FIFO")
++            .success()
++    );
++    assert!(prepare(&path).is_err());
++    assert!(
++        fs::symlink_metadata(&path)
++            .expect("retained FIFO")
++            .file_type()
++            .is_fifo()
++    );
++}
++
++fn prepare(path: &Path) -> Result<File, codex_state::SqliteRecoveryError> {
++    let home = AbsolutePathBuf::try_from(path.parent().expect("fixture parent").to_path_buf())
++        .expect("absolute fixture root");
++    SqliteConfig::from_sqlite_home(home).prepare_private_bootstrap_database(path)
++}
++
++#[tokio::test]
++async fn open_rejects_existing_nonprivate_main_without_repair() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = temp.path().canonicalize().expect("canonical fixture");
++    let store = CognitiveStore::open(&layout(&root))
++        .await
++        .expect("valid private store");
++    store.pool.close().await;
++    drop(store);
++    let path = layout(&root).cognitive_root().join("cognitive_1.sqlite3");
++    fs::set_permissions(&path, fs::Permissions::from_mode(/*mode*/ 0o644))
++        .expect("nonprivate existing fixture");
++    let before = fs::read(&path).expect("valid database bytes");
++    assert!(matches!(
++        CognitiveStore::open(&layout(&root)).await,
++        Err(CognitiveStoreError::Unavailable(_))
++    ));
++    assert_eq!(
++        fs::metadata(&path).expect("unchanged mode").mode() & 0o7777,
++        0o644
++    );
++    assert_eq!(fs::read(&path).expect("unchanged bytes"), before);
++}
+diff --git a/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs b/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs
+index 0e92e8677..72a549e85 100644
+--- a/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs
++++ b/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs
+@@ -153,6 +153,10 @@ impl CognitiveStore {
+         Ok(receipt)
+     }
+ 
++    #[expect(
++        clippy::too_many_arguments,
++        reason = "keep correction authority, expected revision, source and KG facts explicit within the caller-owned transaction"
++    )]
+     pub(crate) async fn correct_with_kg_tx(
+         &self,
+         transaction: &mut Transaction<'_, Sqlite>,
+diff --git a/codex-rs/hepta-memory/src/cognitive_store.rs b/codex-rs/hepta-memory/src/cognitive_store.rs
+index 86cc3f7b9..7cbb14a0c 100644
+--- a/codex-rs/hepta-memory/src/cognitive_store.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store.rs
+@@ -313,17 +313,26 @@ impl CognitiveStore {
+     /// This entry point has no independent current-cut witness and cannot detect
+     /// rollback to an internally valid old backup. Hosts requiring that guarantee
+     /// must use `open_with_recovery` and never fall back here on recovery failure.
++    /// Existing Unix main files must already be owner-held, single-link and mode 0600;
++    /// bootstrap creates new private files but does not repair existing modes.
+     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
+         let root = create_private_directory(layout.cognitive_root())?;
+         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
+         let path = resolve_active_database_path(&root)?;
+         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
+             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
++        let sqlite_config = SqliteConfig::from_sqlite_home(sqlite_home);
++        // SQLite derives new sidecar permissions from the main database file.
++        #[cfg(unix)]
++        let _database_file = sqlite_config
++            .prepare_private_bootstrap_database(&path)
++            .map_err(unavailable)?;
++        let pool = sqlite_config
+             .open_durable_evidence_pool(&path)
+             .await
+             .map_err(unavailable)?;
+         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
++        #[cfg(not(unix))]
+         protect_database_file(&path)?;
+         sqlx::query(
+             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
+@@ -1659,3 +1668,7 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
+ #[cfg(test)]
+ #[path = "cognitive_schema_tests.rs"]
+ mod schema_tests;
++
++#[cfg(all(test, unix))]
++#[path = "cognitive_database_init_tests.rs"]
++mod database_init_tests;
+diff --git a/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs b/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs
+index 94422ac7f..68f023de8 100644
+--- a/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs
++++ b/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs
+@@ -484,6 +484,17 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
+     let current = store.lane_c_snapshot(&access, &scope, 200).await.unwrap();
+     let retained_witness = current.cut_digest().to_string();
+     store.pool.close().await;
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::PermissionsExt;
++        // VACUUM creates this fixture's new backup with the process umask.
++        // Restore a valid private bundle; opening must not repair unsafe files.
++        std::fs::set_permissions(&backup, std::fs::Permissions::from_mode(/*mode*/ 0o600)).unwrap();
++        assert_eq!(
++            std::fs::metadata(&backup).unwrap().permissions().mode() & 0o7777,
++            0o600
++        );
++    }
+     std::fs::copy(&backup, layout.cognitive_root().join("cognitive_1.sqlite3")).unwrap();
+     // Legacy open verifies internal integrity, but cannot know which backup is latest.
+     let reopened = CognitiveStore::open(&layout).await.unwrap();
+diff --git a/codex-rs/hepta-memory/src/local_lease_outbox.rs b/codex-rs/hepta-memory/src/local_lease_outbox.rs
+index 1c07918ae..724fca8e2 100644
+--- a/codex-rs/hepta-memory/src/local_lease_outbox.rs
++++ b/codex-rs/hepta-memory/src/local_lease_outbox.rs
+@@ -2615,6 +2615,10 @@ impl LocalLeaseOutbox {
+         .await
+     }
+ 
++    #[expect(
++        clippy::too_many_arguments,
++        reason = "keep allowed states, resulting state and exact-replay policy explicit at the existing transaction boundary"
++    )]
+     async fn append_outcome_in_transaction(
+         &self,
+         transaction: &mut Transaction<'_, Sqlite>,
+diff --git a/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs b/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs
+index ed10af742..22f1c4163 100644
+--- a/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs
++++ b/codex-rs/http-client/src/outbound_proxy_redirect_coverage_tests.rs
+@@ -208,6 +208,11 @@ fn spawn_failing_listener() -> (std::net::SocketAddr, std::thread::JoinHandle<()
+                 Err(error) => panic!("failing listener should accept: {error}"),
+             }
+         };
++        // Accepted sockets inherit nonblocking mode on Windows. The fixture
++        // uses synchronous reads after polling the listener for a connection.
++        stream
++            .set_nonblocking(false)
++            .expect("accepted failing stream should become blocking");
+         stream
+             .set_read_timeout(Some(Duration::from_secs(2)))
+             .expect("failing stream should get a read timeout");
+diff --git a/codex-rs/http-client/src/route_aware_redirect_integration_tests.rs b/codex-rs/http-client/src/route_aware_redirect_integration_tests.rs
+index 91119ca08..c83f38472 100644
+--- a/codex-rs/http-client/src/route_aware_redirect_integration_tests.rs
++++ b/codex-rs/http-client/src/route_aware_redirect_integration_tests.rs
+@@ -98,6 +98,11 @@ fn spawn_response(
+                 Err(error) => panic!("HTTP listener should accept: {error}"),
+             }
+         };
++        // Accepted sockets inherit nonblocking mode on Windows. The fixture
++        // uses synchronous reads after polling the listener for a connection.
++        stream
++            .set_nonblocking(false)
++            .expect("accepted HTTP stream should become blocking");
+         stream
+             .set_read_timeout(Some(Duration::from_secs(2)))
+             .expect("read timeout");
+diff --git a/codex-rs/state/src/sqlite_bootstrap.rs b/codex-rs/state/src/sqlite_bootstrap.rs
+new file mode 100644
+index 000000000..fe1f1aec3
+--- /dev/null
++++ b/codex-rs/state/src/sqlite_bootstrap.rs
+@@ -0,0 +1,64 @@
++//! Private main-file initialization before SQLite derives sidecar permissions.
++
++use super::*;
++use std::os::unix::fs::PermissionsExt;
++
++impl SqliteConfig {
++    /// Prepare one owner-held private main file before opening a bootstrap pool.
++    ///
++    /// Only newly created files are permission-normalized. Existing files must
++    /// already satisfy the recovery filesystem owner's private-file checks.
++    /// Retain the returned descriptor through initialization. This is not a
++    /// recovery capability or a descriptor-backed SQLite VFS; later path-based
++    /// SQLite opens do not gain hostile same-user replacement protection.
++    pub fn prepare_private_bootstrap_database(
++        &self,
++        path: &Path,
++    ) -> Result<File, SqliteRecoveryError> {
++        if path.parent() != Some(self.home())
++            || self.home().canonicalize().map_err(indeterminate)? != self.home()
++        {
++            return Err(SqliteRecoveryError::Indeterminate);
++        }
++        let parent = RetainedObject::bind_parent(self.home())?;
++        let (file, created) = match OpenOptions::new()
++            .read(true)
++            .write(true)
++            .create_new(true)
++            .mode(0o600)
++            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK)
++            .open(path)
++        {
++            Ok(file) => (file, true),
++            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => (
++                OpenOptions::new()
++                    .read(true)
++                    .write(true)
++                    .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK)
++                    .open(path)
++                    .map_err(indeterminate)?,
++                false,
++            ),
++            Err(error) => return Err(indeterminate(error)),
++        };
++        if created {
++            let metadata = file.metadata().map_err(indeterminate)?;
++            if !metadata.is_file() || metadata.nlink() != 1 {
++                return Err(SqliteRecoveryError::Indeterminate);
++            }
++            // A restrictive umask can remove owner bits. Normalize only this
++            // exclusive newly created descriptor, never an existing pathname.
++            file.set_permissions(std::fs::Permissions::from_mode(/*mode*/ 0o600))
++                .map_err(indeterminate)?;
++        }
++        FileSnapshot::validated(
++            &file.metadata().map_err(indeterminate)?,
++            ObjectKind::PrivateFile,
++        )?;
++        if created {
++            file.sync_all().map_err(indeterminate)?;
++            parent.descriptor.sync_all().map_err(indeterminate)?;
++        }
++        Ok(file)
++    }
++}
+diff --git a/codex-rs/state/src/sqlite_recovery.rs b/codex-rs/state/src/sqlite_recovery.rs
+index 7093f94b4..114b92395 100644
+--- a/codex-rs/state/src/sqlite_recovery.rs
++++ b/codex-rs/state/src/sqlite_recovery.rs
+@@ -15,6 +15,10 @@ use std::path::Path;
+ use std::path::PathBuf;
+ use std::sync::Arc;
+ 
++#[cfg(unix)]
++#[path = "sqlite_bootstrap.rs"]
++mod bootstrap;
++
+ #[path = "sqlite_recovery_image.rs"]
+ mod image;
+ 

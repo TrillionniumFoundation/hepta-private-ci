@@ -1,0 +1,394 @@
+diff --git a/apps/hepta-control-ui/package.json b/apps/hepta-control-ui/package.json
+index b67627c837..a8f70c84a8 100644
+--- a/apps/hepta-control-ui/package.json
++++ b/apps/hepta-control-ui/package.json
+@@ -22,7 +22,8 @@
+     "start": "node tools/serve-robrix.mjs",
+     "test:robrix": "playwright test --config=playwright.robrix.config.mjs",
+     "desktop": "python3 tools/run-desktop.py",
+-    "prepare:fonts": "python3 tools/prepare-fonts.py"
++    "prepare:fonts": "python3 tools/prepare-fonts.py",
++    "product": "python3 tools/run-product.py"
+   },
+   "devDependencies": {
+     "@axe-core/playwright": "4.13.0",
+diff --git a/apps/hepta-control-ui/rust/core/src/lib.rs b/apps/hepta-control-ui/rust/core/src/lib.rs
+index f0658c699b..059da659f6 100644
+--- a/apps/hepta-control-ui/rust/core/src/lib.rs
++++ b/apps/hepta-control-ui/rust/core/src/lib.rs
+@@ -14,3 +14,6 @@ pub mod projection;
+ pub mod recovery;
+ pub mod scheduler;
+ pub mod theme;
++
++/// Read-only runtime status projection; no business authority.
++pub mod runtime_view;
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+index ff9b13fa19..9925986db3 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+@@ -46,6 +46,9 @@ pub struct App {
+     workspace: ChatWorkspace,
+     #[rust]
+     ime_router: ImeRouter,
++    #[cfg(target_arch = "wasm32")]
++    #[rust]
++    runtime_status: crate::runtime_status::RuntimeClient,
+     #[cfg(feature = "native-host")]
+     #[rust]
+     native_host: NativeRenderer,
+@@ -117,6 +120,15 @@ impl AppMain for App {
+         crate::visual_theme::apply_tree(cx, &self.ui);
+         self.ime_router
+             .dispatch(cx, &self.ui, event, &mut self.workspace);
++        #[cfg(target_arch = "wasm32")]
++        self.runtime_status.handle_event(
++            cx,
++            &self.ui,
++            event,
++            self.workspace.tab == hepta_control_core::chat::WorkspaceTab::Console
++                && !self.workspace.navigation_open,
++            self.workspace.presentation_epoch(),
++        );
+         #[cfg(feature = "native-host")]
+         if matches!(event, Event::Draw(_)) {
+             self.native_host.after_draw(cx, &self.ui);
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+index 273755366e..0f6c7bab7d 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+@@ -6,6 +6,8 @@ pub mod app;
+ mod native_status;
+ #[cfg(feature = "ui")]
+ pub mod robrix;
++#[cfg(feature = "ui")]
++mod runtime_status;
+ 
+ #[cfg(any(feature = "ui", test))]
+ mod ime_pointer_gate;
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+index cefd2fe71c..71157ba3a2 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+@@ -34,10 +34,10 @@ script_mod! {
+    home_tab := DockTab {name: "Chat" kind: @room_screen template: @PermanentTab}
+    console_tab := DockTab {name: "Console" kind: @console_screen template: @PermanentTab}
+    room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
+-   console_screen := View {
++   console_screen := ScrollYView {
+     flow: Down padding: 24 spacing: 12
+     Label {text: "Console" draw_text.color: COLOR_TEXT}
+-    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Runtime controls are not yet composed into this Robrix host. No operation is dispatched from this view." draw_text.color: COLOR_TEXT}
++    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable." draw_text.color: COLOR_TEXT}
+    }
+   }
+  }
+@@ -96,8 +96,8 @@ script_mod! {
+       back_to_chat := mod.widgets.AuroraButton {text: "Back to conversation"}
+       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
+      }
+-     console_page := View {flow: Down padding: 16
+-      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Console controls are awaiting composition. No runtime operation is dispatched here."}
++     console_page := ScrollYView {flow: Down padding: 16
++      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable."}
+      }
+     }
+    }
+@@ -116,6 +116,13 @@ impl Widget for MainConversationUI {
+         self.view.handle_event(cx, event, scope);
+     }
+     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
++        let status = cx
++            .global::<crate::runtime_status::RuntimeDisplay>()
++            .text
++            .clone();
++        self.view
++            .label(cx, ids!(console_status))
++            .set_text(cx, &status);
+         // This child is created lazily by the outer layout Dock. Select here,
+         // before its first draw, so a cached Console stays Console on resize.
+         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+@@ -314,6 +321,13 @@ impl Widget for HomeScreen {
+             } else {
+                 id!(chat_page)
+             };
++            let status = cx
++                .global::<crate::runtime_status::RuntimeDisplay>()
++                .text
++                .clone();
++            self.view
++                .label(cx, ids!(mobile_console_status))
++                .set_text(cx, &status);
+             self.view
+                 .page_flip(cx, ids!(mobile_pages))
+                 .set_active_page(cx, page);
+diff --git a/apps/hepta-control-ui/tools/robrix-source-identity.mjs b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+index e53f6bf321..a8637173a4 100644
+--- a/apps/hepta-control-ui/tools/robrix-source-identity.mjs
++++ b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+@@ -18,6 +18,6 @@ export async function robrixSourceIdentity(root){
+  await walk(join(root,'rust/robrix-ui/resources'));
+  await add(join(root,'rust/robrix-ui/UPSTREAM.json'));
+  await add(join(root,'rust/robrix-ui/build.rs'));
+- for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py'])await add(join(root,'tools',name));
++ for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py','run-product.py'])await add(join(root,'tools',name));
+  return {sha256:sha(JSON.stringify(files)),files};
+ }
+diff --git a/codex-rs/Cargo.lock b/codex-rs/Cargo.lock
+index d6ca3388cd..b255596840 100644
+--- a/codex-rs/Cargo.lock
++++ b/codex-rs/Cargo.lock
+@@ -4051,7 +4051,10 @@ dependencies = [
+  "codex-hepta-runtime",
+  "codex-hepta-wire",
+  "pretty_assertions",
++ "rustix 1.1.4",
++ "serde",
+  "serde_json",
++ "sha2 0.10.9",
+  "tokio",
+ ]
+ 
+diff --git a/codex-rs/hepta-native-gateway/Cargo.toml b/codex-rs/hepta-native-gateway/Cargo.toml
+index ecad366f0c..5aaa2763c6 100644
+--- a/codex-rs/hepta-native-gateway/Cargo.toml
++++ b/codex-rs/hepta-native-gateway/Cargo.toml
+@@ -17,7 +17,9 @@ workspace = true
+ anyhow = { workspace = true }
+ codex-hepta-paths = { workspace = true }
+ codex-hepta-runtime = { workspace = true }
++serde = { workspace = true, features = ["derive"] }
+ serde_json = { workspace = true }
++sha2 = { workspace = true }
+ tokio = { workspace = true, features = [
+     "io-util",
+     "macros",
+@@ -27,6 +29,9 @@ tokio = { workspace = true, features = [
+     "time",
+ ] }
+ 
++[target.'cfg(unix)'.dependencies]
++rustix = { workspace = true, features = ["fs"] }
++
+ [dev-dependencies]
+ codex-hepta-wire = { path = "../hepta-wire" }
+ pretty_assertions = { workspace = true }
+diff --git a/codex-rs/hepta-native-gateway/src/lib.rs b/codex-rs/hepta-native-gateway/src/lib.rs
+index 990e07d87d..d4e5378a76 100644
+--- a/codex-rs/hepta-native-gateway/src/lib.rs
++++ b/codex-rs/hepta-native-gateway/src/lib.rs
+@@ -7,6 +7,7 @@
+ 
+ use std::env;
+ use std::net::SocketAddr;
++use std::path::PathBuf;
+ use std::sync::Arc;
+ use std::time::Duration;
+ 
+@@ -19,6 +20,11 @@ use tokio::io::AsyncWriteExt;
+ use tokio::net::TcpListener;
+ use tokio::net::TcpStream;
+ 
++mod ui_bundle;
++
++use ui_bundle::UiBundle;
++pub use ui_bundle::UiBundleOptions;
++
+ pub const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:7373";
+ pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
+ pub const LIVE_SHELL_CONTRACT_ARG: &str = "--hepta-vnext-live-shell-contract-v1";
+@@ -52,6 +58,7 @@ const CLOSED_EFFECT_ENV_VARS: &[&str] = &[
+ pub struct NativeGatewayOptions {
+     pub listen_addr: SocketAddr,
+     pub state_root: HeptaStateRoot,
++    pub ui_bundle: Option<UiBundleOptions>,
+ }
+ 
+ impl NativeGatewayOptions {
+@@ -59,6 +66,8 @@ impl NativeGatewayOptions {
+         let mut listen_addr = DEFAULT_LISTEN_ADDR.to_string();
+         let mut state_root = default_root;
+         let mut positional_listen_seen = false;
++        let mut ui_directory = None;
++        let mut ui_manifest_sha256 = None;
+         let mut index = 0;
+         while index < raw_args.len() {
+             match raw_args[index].as_str() {
+@@ -69,6 +78,23 @@ impl NativeGatewayOptions {
+                         .context("--listen requires HOST:PORT")?
+                         .clone();
+                 }
++                "--ui-bundle" => {
++                    index += 1;
++                    ui_directory = Some(PathBuf::from(
++                        raw_args
++                            .get(index)
++                            .context("--ui-bundle requires an absolute directory")?,
++                    ));
++                }
++                "--ui-manifest-sha256" => {
++                    index += 1;
++                    ui_manifest_sha256 = Some(
++                        raw_args
++                            .get(index)
++                            .context("--ui-manifest-sha256 requires a digest")?
++                            .clone(),
++                    );
++                }
+                 "--state-root" => {
+                     index += 1;
+                     let value = raw_args.get(index).context("--state-root requires PATH")?;
+@@ -87,9 +113,18 @@ impl NativeGatewayOptions {
+             .parse::<SocketAddr>()
+             .with_context(|| format!("parse loopback listen address {listen_addr}"))?;
+         validate_loopback(listen_addr)?;
++        let ui_bundle = match (ui_directory, ui_manifest_sha256) {
++            (None, None) => None,
++            (Some(directory), Some(manifest_sha256)) => Some(UiBundleOptions {
++                directory,
++                manifest_sha256,
++            }),
++            _ => anyhow::bail!("--ui-bundle and --ui-manifest-sha256 must be supplied together"),
++        };
+         Ok(Self {
+             listen_addr,
+             state_root,
++            ui_bundle,
+         })
+     }
+ }
+@@ -135,6 +170,15 @@ pub fn run_serve_ui_if_requested(raw_args: &[String]) -> Result<bool> {
+ 
+ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+     validate_closed_effect_environment()?;
++    let ui = options
++        .ui_bundle
++        .as_ref()
++        .map(UiBundle::load)
++        .transpose()?
++        .map(Arc::new);
++    if let Some(ui) = &ui {
++        eprintln!("Rust UI artifact source identity {}", ui.source_identity);
++    }
+     let runtime = Arc::new(HeptaRuntime::open_existing(options.state_root).await?);
+     let listener = TcpListener::bind(options.listen_addr)
+         .await
+@@ -153,8 +197,9 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+                     continue;
+                 }
+                 let runtime = Arc::clone(&runtime);
++                let ui = ui.clone();
+                 tokio::spawn(async move {
+-                    if let Err(error) = serve_connection(stream, runtime).await {
++                    if let Err(error) = serve_connection(stream, runtime, ui).await {
+                         eprintln!("hepta loopback request failed: {error:#}");
+                     }
+                 });
+@@ -227,21 +272,47 @@ fn runtime_representation(request: &str) -> RuntimeRepresentation {
+     RuntimeRepresentation::Json
+ }
+ 
+-async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> Result<()> {
++async fn serve_connection(
++    mut stream: TcpStream,
++    runtime: Arc<HeptaRuntime>,
++    ui: Option<Arc<UiBundle>>,
++) -> Result<()> {
+     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
+         .await
+         .context("loopback request timed out")??;
+-    let response = route_request(&request, &runtime)?;
+-    tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
++    if let Some(asset) = ui.as_ref().and_then(|ui| ui_response(&request, ui)) {
++        tokio::time::timeout(RESPONSE_TIMEOUT, async {
++            stream.write_all(&asset.headers).await?;
++            stream.write_all(&asset.body).await
++        })
+         .await
+-        .context("loopback response timed out")?
+-        .context("write loopback response")?;
++        .context("UI response timed out")?
++        .context("write UI response")?;
++    } else {
++        let response = route_request(&request, &runtime)?;
++        tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
++            .await
++            .context("loopback response timed out")?
++            .context("write loopback response")?;
++    }
+     tokio::time::timeout(RESPONSE_TIMEOUT, stream.shutdown())
+         .await
+         .context("loopback shutdown timed out")?
+         .context("close loopback response")
+ }
+ 
++fn ui_response(request: &[u8], ui: &UiBundle) -> Option<ui_bundle::UiResponse> {
++    let text = std::str::from_utf8(request).ok()?;
++    let mut fields = text.lines().next()?.split_whitespace();
++    let method = fields.next()?;
++    let target = fields.next()?;
++    let version = fields.next()?;
++    if method != "GET" || !matches!(version, "HTTP/1.0" | "HTTP/1.1") || fields.next().is_some() {
++        return None;
++    }
++    ui.response(target)
++}
++
+ async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
+     let mut bytes = Vec::with_capacity(2048);
+     let mut buffer = [0_u8; 2048];
+@@ -328,9 +399,9 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
+             )),
+         },
+         "/" => Ok(response(
+-            "200 OK",
+-            "text/html; charset=utf-8",
+-            CONTROL_SHELL.as_bytes(),
++            "503 Service Unavailable",
++            "application/json; charset=utf-8",
++            br#"{"error":"Rust UI bundle unavailable; configure the owned build artifact"}"#,
+         )),
+         _ => Ok(response(
+             "404 Not Found",
+@@ -351,19 +422,6 @@ fn response(status: &str, content_type: &str, body: &[u8]) -> Vec<u8> {
+     response
+ }
+ 
+-const CONTROL_SHELL: &str = r#"<!doctype html>
+-<html lang="en">
+-<meta charset="utf-8">
+-<meta name="viewport" content="width=device-width, initial-scale=1">
+-<title>Hepta vNext</title>
+-<style>body{font:16px system-ui;margin:3rem;max-width:58rem}pre{padding:1rem;background:#111;color:#eee;overflow:auto}</style>
+-<h1>Hepta vNext live shell</h1>
+-<p>Loopback-only, read-only internal canary surface.</p>
+-<pre id="status">loading…</pre>
+-<script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
+-</html>
+-"#;
+-
+ #[cfg(test)]
+ #[path = "organ_request_tests.rs"]
+ mod organ_request_tests;
+@@ -493,7 +551,7 @@ mod tests {
+         let server = tokio::spawn(async move {
+             let (stream, peer) = listener.accept().await?;
+             assert!(peer.ip().is_loopback());
+-            serve_connection(stream, runtime).await
++            serve_connection(stream, runtime, /*ui*/ None).await
+         });
+ 
+         let mut client = TcpStream::connect(address).await?;
+diff --git a/codex-rs/hepta-native-gateway/src/organ_request_tests.rs b/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
+index 48740c3c5f..ac72479baf 100644
+--- a/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
++++ b/codex-rs/hepta-native-gateway/src/organ_request_tests.rs
+@@ -40,7 +40,7 @@ async fn loopback_http_request_reaches_the_read_only_status_organ() -> Result<()
+     let address = listener.local_addr()?;
+     let server = tokio::spawn(async move {
+         let (stream, _) = listener.accept().await?;
+-        serve_connection(stream, runtime).await
++        serve_connection(stream, runtime, /*ui*/ None).await
+     });
+     let mut client = TcpStream::connect(address).await?;
+     client

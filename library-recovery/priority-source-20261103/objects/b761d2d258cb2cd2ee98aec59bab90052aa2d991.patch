@@ -1,0 +1,177 @@
+diff --git a/.github/workflows/bazel.yml b/.github/workflows/bazel.yml
+index 6e9f0629ee20502aa5e467e7d45db439507f6754..5cabc62614a54b042f87ed7a1e468587bd9a470c 100644
+--- a/.github/workflows/bazel.yml
++++ b/.github/workflows/bazel.yml
+@@ -6,7 +6,7 @@ name: Bazel
+ on:
+   push:
+     branches:
+-      - dot/platform-leaf-qualification-20261006
++      - dot/platform-windows-qualification-20261006
+   workflow_call:
+     inputs:
+       reusable-call:
+@@ -31,12 +31,12 @@ permissions:
+ concurrency:
+   # Cancel previous actions from the same PR or branch except 'main' branch.
+   # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.
+-  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true && '::diagnostic-platform-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
++  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true && '::diagnostic-windows-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
+   cancel-in-progress: ${{ github.ref_name != 'main' }}
+ 
+ jobs:
+   test:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
+     # PRs use the sharded Windows cross-compiled test jobs below. Post-merge
+     # pushes to main also run the native Windows test job for broader Windows
+     # signal without putting PR latency back on the critical path. When
+@@ -152,7 +152,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   test-windows-shard:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
+     # Split the native Windows Bazel test leg across separate Windows hosts.
+     # Build actions and host-loaded proc macros use the same MSVC ABI as the
+     # test binaries, avoiding cross-ABI native archive linkage.
+@@ -267,7 +267,7 @@ jobs:
+     timeout-minutes: 30
+     # Preserve the existing required-check surface while the real work happens
+     # in the sharded Windows jobs above.
+-    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
+     needs: test-windows-shard
+     runs-on: ubuntu-24.04
+     name: Bazel test on windows-latest for x86_64-pc-windows-msvc
+@@ -361,7 +361,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   clippy:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
+     timeout-minutes: 60
+     strategy:
+       fail-fast: false
+@@ -479,7 +479,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   verify-release-build:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
+     timeout-minutes: 60
+     strategy:
+       fail-fast: false
+@@ -590,7 +590,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   fixed-linux-supervisor:
+-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'linux-supervisor') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'linux-supervisor'
+     runs-on: ubuntu-24.04
+     timeout-minutes: 60
+     environment:
+@@ -639,7 +639,7 @@ jobs:
+           if-no-files-found: error
+ 
+   fixed-windows-platform:
+-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-leaf-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
+     runs-on: windows-latest
+     timeout-minutes: 60
+     environment:
+@@ -677,7 +677,9 @@ jobs:
+         run: python scripts/hepta_fixed_bazel.py budget --github-output "$GITHUB_OUTPUT"
+       - name: Run fixed ACL/helper native targets
+         timeout-minutes: ${{ fromJSON(steps.acl-budget.outputs.minutes) }}
+-        run: python scripts/hepta_fixed_bazel.py windows --group windows-acl-helper --directory "$RUNNER_TEMP/hepta-fixed-windows"
++        run: |
++          export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
++          python scripts/hepta_fixed_bazel.py windows --group windows-acl-helper --directory "$RUNNER_TEMP/hepta-fixed-windows"
+       - name: Retain ACL/helper receipt before Core compilation
+         if: always()
+         timeout-minutes: 3
+@@ -696,7 +698,9 @@ jobs:
+       - name: Run fixed Core/Queue native targets
+         if: always() && !cancelled() && steps.core-budget.outcome == 'success'
+         timeout-minutes: ${{ fromJSON(steps.core-budget.outputs.minutes) }}
+-        run: python scripts/hepta_fixed_bazel.py windows --group windows-core-queue --directory "$RUNNER_TEMP/hepta-fixed-windows"
++        run: |
++          export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
++          python scripts/hepta_fixed_bazel.py windows --group windows-core-queue --directory "$RUNNER_TEMP/hepta-fixed-windows"
+       - name: Retain Core/Queue receipt
+         if: always()
+         timeout-minutes: 3
+diff --git a/scripts/hepta_fixed_bazel.py b/scripts/hepta_fixed_bazel.py
+index e2c0560aaa11e81c1ce2d7f95e62e51f7b596abb..7b04b4305d1c06d3e3d9f37f39ca2fa107aaeb9d 100644
+--- a/scripts/hepta_fixed_bazel.py
++++ b/scripts/hepta_fixed_bazel.py
+@@ -10,7 +10,7 @@ import hashlib
+ import json
+ import math
+ import os
+-from pathlib import Path
++from pathlib import Path, PureWindowsPath
+ import stat
+ import subprocess
+ import sys
+@@ -128,8 +128,15 @@ def replace_receipt(path: Path, record: dict) -> None:
+ def windows_command(group: str, directory: Path) -> list[str]:
+     if group not in ("windows-acl-helper", "windows-core-queue"):
+         raise ValueError("not a fixed Windows group")
++    bash = os.environ.get("HEPTA_BAZEL_BASH", "")
++    parsed = PureWindowsPath(bash)
++    # MSYS may expose its running executable without the native .exe suffix.
++    if parsed.name.lower() == "bash":
++        parsed = parsed.with_name(parsed.name + ".exe")
++    if not parsed.is_absolute() or parsed.name.lower() != "bash.exe":
++        raise ValueError("an absolute Actions Git Bash executable is required")
+     return [
+-        "bash", ".github/scripts/run-bazel-ci.sh",
++        str(parsed), ".github/scripts/run-bazel-ci.sh",
+         "--print-failed-action-summary", "--print-failed-test-logs",
+         "--windows-msvc-host-platform", "--remote-download-toplevel", "--",
+         "test", "--platforms=//:windows_x86_64_msvc", "--nocache_test_results",
+@@ -151,6 +158,8 @@ def run_windows(group: str, directory: Path) -> int:
+     directory.mkdir(parents=True, exist_ok=True)
+     record_path = directory / (group + '.json')
+     command = windows_command(group, directory)
++    if not Path(command[0]).is_file():
++        raise ValueError("the Actions Git Bash executable is unavailable")
+     record = {"scope": "source-only fixed native targets", "group": group,
+               "source_before": before, "command": command, "status": "running",
+               "command_exit_code": None, "run_id": os.environ.get("GITHUB_RUN_ID"),
+diff --git a/scripts/test_hepta_fixed_bazel.py b/scripts/test_hepta_fixed_bazel.py
+index 0a200df8eb947ed476b12f194759c8b3de057494..7720b8928ea51514569693b2c3756d86a059eb65 100644
+--- a/scripts/test_hepta_fixed_bazel.py
++++ b/scripts/test_hepta_fixed_bazel.py
+@@ -64,6 +64,7 @@ class FixedQualificationTests(unittest.TestCase):
+         for now in (2800, 2750, 99, float('nan')):
+             with self.assertRaises(ValueError): fixed.budget_minutes(100, now)
+ 
++    @patch.dict(fixed.os.environ, {"HEPTA_BAZEL_BASH": r"C:\Program Files\Git\bin\bash.exe"})
+     def test_windows_commands_share_exact_native_platform_and_no_cached_tests(self):
+         for group in ('windows-acl-helper', 'windows-core-queue'):
+             command = fixed.windows_command(group, self.directory)
+@@ -74,6 +75,21 @@ class FixedQualificationTests(unittest.TestCase):
+             self.assertNotIn('//...', command)
+         with self.assertRaises(ValueError): fixed.windows_command('linux-supervisor', self.directory)
+ 
++    def test_bare_or_relative_bash_is_rejected_even_with_path_available(self):
++        for value in ('', 'bash', 'bash.exe', r'bin\bash.exe', r'C:\Windows\System32\wsl.exe'):
++            with self.subTest(value=value), patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': value, 'PATH': r'C:\Windows\System32'}):
++                with self.assertRaisesRegex(ValueError, 'absolute Actions Git Bash'):
++                    fixed.windows_command('windows-acl-helper', self.directory)
++
++    def test_absolute_msys_shell_without_exe_keeps_its_directory(self):
++        with patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': r'C:\Program Files\Git\usr\bin\bash'}):
++            command = fixed.windows_command('windows-acl-helper', self.directory)
++        self.assertEqual(command[0], r'C:\Program Files\Git\usr\bin\bash.exe')
++
++    def test_both_windows_steps_pass_the_actual_running_shell(self):
++        text = (Path(__file__).resolve().parents[1] / '.github/workflows/bazel.yml').read_text()
++        self.assertEqual(text.count('export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"'), 2)
++
+     def test_linux_command_is_only_supervisor(self):
+         command = pilot.native_command(Path('/source'), self.directory)
+         self.assertEqual(command[-1:], list(fixed.GROUPS['linux-supervisor']))

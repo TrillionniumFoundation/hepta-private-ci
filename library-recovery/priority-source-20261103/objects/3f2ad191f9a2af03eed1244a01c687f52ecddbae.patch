@@ -1,0 +1,507 @@
+diff --git a/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json b/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+index f9af35d9a..577bd9a53 100644
+--- a/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
++++ b/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+@@ -82,7 +82,59 @@
+           ]
+         }
+       ],
+-      "productCallerState": "not_composed"
++      "productCallerState": "not_composed",
++      "currentSpecificationSections": {
++        "## Current executable contract": {
++          "heading": "## Current executable contract",
++          "mustContain": [
++            "authority-free",
++            "owns no clock"
++          ]
++        },
++        "## Public symbols and source bindings": {
++          "heading": "## Public symbols and source bindings",
++          "mustContain": [
++            "canonical_validate_v1",
++            "src/"
++          ]
++        },
++        "## Durability and activation": {
++          "heading": "## Durability and product composition",
++          "mustContain": [
++            "stateless",
++            "not_composed"
++          ]
++        },
++        "## Target-only design": {
++          "heading": "## Owned target protocols still source-pending",
++          "mustContain": [
++            "no native",
++            "source\ncomplete"
++          ]
++        },
++        "## Known limits and non-claims": {
++          "heading": "## Authority boundary",
++          "mustContain": [
++            "cannot represent a grant",
++            "not an authority"
++          ]
++        },
++        "## Verification": {
++          "heading": "## Verification",
++          "mustContain": [
++            "Executed workflow artifacts",
++            "candidate receipts"
++          ]
++        },
++        "## Integration prerequisites": {
++          "heading": "## Durability and product composition",
++          "mustContain": [
++            "authenticated",
++            "target-host qualification and operator acceptance",
++            "separate gates"
++          ]
++        }
++      }
+     },
+     {
+       "module": "platform.wire",
+diff --git a/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json b/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
+index cbe6eb46e..8ce374d53 100644
+--- a/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
++++ b/docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json
+@@ -92,27 +92,29 @@
+         "the retained in-memory reference model is an oracle and grants no production authority",
+         "source implementation does not grant product activation operator acceptance promotion or release"
+       ],
+-      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1"
+-    },
+-    {
+-      "protocolId": "hepta.kernel.operations.durable-owner.v1",
+-      "module": "kernel.operations",
+-      "kind": "sqlite_durable_operation_outbox_and_reconciliation",
+-      "source": [
+-        "codex-rs/hepta-operations/src/model.rs",
+-        "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+-        "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+-        "codex-rs/hepta-memory/src/production_writer.rs",
+-        "codex-rs/hepta-memory/src/production_cognitive_source_target.rs"
+-      ],
+-      "invariants": [
+-        "OperationIntentV1 semantic digest binds operation subject destination payload scope policy generation and optional predecessor",
+-        "operation intent event and local outbox identity commit atomically before dispatch",
+-        "durable dispatch claims have bounded attempts lease expiry renewal backoff and stale claimant fencing",
+-        "dispatch request carries full semantic digest and predecessor expectation to the destination",
+-        "final-use authority is consumed immediately before destination entry",
+-        "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
+-        "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
++      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1",
++      "additionalProtocols": [
++        {
++          "protocolId": "hepta.kernel.operations.durable-owner.v1",
++          "module": "kernel.operations",
++          "kind": "sqlite_durable_operation_outbox_and_reconciliation",
++          "source": [
++            "codex-rs/hepta-operations/src/model.rs",
++            "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
++            "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
++            "codex-rs/hepta-memory/src/production_writer.rs",
++            "codex-rs/hepta-memory/src/production_cognitive_source_target.rs"
++          ],
++          "invariants": [
++            "OperationIntentV1 semantic digest binds operation subject destination payload scope policy generation and optional predecessor",
++            "operation intent event and local outbox identity commit atomically before dispatch",
++            "durable dispatch claims have bounded attempts lease expiry renewal backoff and stale claimant fencing",
++            "dispatch request carries full semantic digest and predecessor expectation to the destination",
++            "final-use authority is consumed immediately before destination entry",
++            "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
++            "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
++          ]
++        }
+       ]
+     },
+     {
+diff --git a/docs/lane-a-foundation/README.md b/docs/lane-a-foundation/README.md
+index 0708fa074..dbc71f154 100644
+--- a/docs/lane-a-foundation/README.md
++++ b/docs/lane-a-foundation/README.md
+@@ -58,3 +58,30 @@ distributed anti-rollback, durable operations, durable AuthBus policy/quota, or
+ any external effect not proven by an exact-candidate receipt. Remaining
+ implementation and external gates are listed in
+ [`REMAINING_GATES.md`](REMAINING_GATES.md).
++
++
++### Multiple protocol surfaces within one module
++
++The protocol registry retains exactly one top-level row per module in the complete
++Lane A module set. A row may contain `additionalProtocols`, a one-level list of full
++protocol records owned by that same module. Readers that resolve current protocol
++IDs must enumerate both the primary record and these additions; a flat-only
++reader remains a primary-surface reader and must not claim complete coverage.
++Current and legacy IDs are globally unique, source paths must exist, and nested
++additions/unknown record fields fail validation. No wire protocol or authority
++semantics are changed by this navigation representation.
++
++For kernel.operations, durable-ledger-outbox.v1 and its reference-model legacy ID
++retain the standalone/reference lineage. The complete durable-owner.v1 addition
++retains the CognitiveStore product-owner sources and invariants. The separate
++CAPABILITY_EVIDENCE_V2 file remains standalone source evidence; canonical Lane A
++capability receipt counts come only from CAPABILITY_EVIDENCE_MAP.json.
++
++Editable module/protocol rows and capability coverage are order-independent;
++missing, duplicate or foreign identities still fail. Current documents may bind
++all seven semantic section roles explicitly with `currentSpecificationSections`
++(heading plus required content anchors). Presentation order or an explicitly
++mapped descriptive heading does not change qualification. Missing/duplicate
++sections, required content, source anchors and false authority/acceptance claims
++remain errors. Historical native observation arrays and their digests retain
++their exact original ordering and bytes.
+diff --git a/qualification/module-execution-dossiers/test_lane_a_foundation.py b/qualification/module-execution-dossiers/test_lane_a_foundation.py
+index 29a553f2b..7fe2451de 100644
+--- a/qualification/module-execution-dossiers/test_lane_a_foundation.py
++++ b/qualification/module-execution-dossiers/test_lane_a_foundation.py
+@@ -22,15 +22,17 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+     def setUpClass(cls) -> None:
+         cls.matrix = verify.read_json(verify.MATRIX_PATH)
+         cls.capability_map = verify.read_json(verify.CAPABILITY_MAP_PATH)
+-        cls.operations_capability_map = verify.read_json(verify.OPS_CAPABILITY_MAP_PATH)
++        cls.operations_capability_map = verify.read_json(
++            ROOT / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json"
++        )
+ 
+     def test_exact_repository_truth_is_valid(self) -> None:
+         verify.validate_matrix(self.matrix)
+ 
+     def test_closed_world_module_set(self) -> None:
+-        self.assertEqual(
+-            [row["module"] for row in self.matrix["modules"]],
+-            verify.EXPECTED_MODULES,
++        verify.validate_module_set(self.matrix["modules"])
++        self.assertCountEqual(
++            [row["module"] for row in self.matrix["modules"]], verify.EXPECTED_MODULES
+         )
+         self.assertEqual(self.matrix["moduleCoverage"], 7)
+ 
+@@ -44,15 +46,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+         mapped = [
+             (entry["module"], entry["summary"])
+             for entry in self.capability_map["entries"]
+-            if entry["module"] != "kernel.operations"
+         ]
+-        mapped.extend(
+-            ("kernel.operations", entry["summary"])
+-            for entry in self.operations_capability_map["entries"]
+-        )
+-        mapped.append(
+-            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
+-        )
+         self.assertEqual(len(declared), len(set(declared)))
+         self.assertEqual(len(mapped), len(set(mapped)))
+         self.assertCountEqual(mapped, declared)
+@@ -61,9 +55,85 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+             len(self.operations_capability_map["entries"]),
+         )
+ 
++    def test_standalone_operations_extension_retains_complete_evidence(self) -> None:
++        value = self.operations_capability_map
++        self.assertEqual(value["schemaVersion"], 1)
++        self.assertEqual(value["module"], "kernel.operations")
++        self.assertEqual(value["entryCount"], len(value["entries"]))
++        ids = [row["capabilityId"] for row in value["entries"]]
++        self.assertEqual(len(ids), len(set(ids)))
++        for row in value["entries"]:
++            self.assertTrue(row["summary"])
++            self.assertTrue(row["publicSymbols"])
++            for field in ("sourceEvidence", "positiveTests", "negativeTests"):
++                self.assertTrue(row[field])
++                for anchor in row[field]:
++                    verify.validate_anchor("kernel.operations standalone", anchor)
++
++    def test_protocol_additions_reject_invalid_identity_owner_shape_and_paths(self) -> None:
++        original = verify.read_json(ROOT / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json")
++        mutations = [
++            lambda x: x["protocols"].append(deepcopy(x["protocols"][3])),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(protocolId=x["protocols"][3]["protocolId"]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(module="kernel.evidence"),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(additionalProtocols=[]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(unknown=True),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=[]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(invariants=[]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=["."]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=["../outside"]),
++            lambda x: x["protocols"][3]["additionalProtocols"][0].update(source=["missing/file"]),
++        ]
++        for mutate in mutations:
++            value = deepcopy(original)
++            mutate(value)
++            with self.assertRaises(verify.VerificationError):
++                verify.validate_protocol_registry(value)
++
++    def test_presentation_order_is_not_a_module_or_protocol_gate(self) -> None:
++        verify.validate_module_set(list(reversed(self.matrix["modules"])))
++        registry = verify.read_json(ROOT / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json")
++        expected = verify.validate_protocol_registry(registry)
++        registry["protocols"].reverse()
++        self.assertEqual(verify.validate_protocol_registry(registry), expected)
++        for rows in (self.matrix["modules"][:-1], self.matrix["modules"] + [self.matrix["modules"][0]],
++                     [self.matrix["modules"][0]] + self.matrix["modules"][:-1]):
++            with self.assertRaises(verify.VerificationError):
++                verify.validate_module_set(rows)
++
++    def test_capability_presentation_order_preserves_exact_unique_coverage(self) -> None:
++        declared = [(row["module"], capability) for row in self.matrix["modules"]
++                    for capability in row["currentCapabilities"]]
++        mapped = [(row["module"], row["summary"]) for row in self.capability_map["entries"]]
++        verify.validate_capability_coverage(list(reversed(mapped)), declared)
++        for invalid in (mapped[:-1], mapped + [mapped[0]], [mapped[0]] + mapped[:-1]):
++            with self.assertRaises(verify.VerificationError):
++                verify.validate_capability_coverage(invalid, declared)
++
++    def test_explicit_semantic_roles_accept_order_and_reject_missing_content(self) -> None:
++        row = next(row for row in self.matrix["modules"] if row["module"] == "platform.types")
++        text = (ROOT / row["currentSpecification"]).read_text()
++        verify.validate_current_sections(row, text)
++        parts = text.split("\n## ")
++        reordered = parts[0] + "".join("\n## " + part for part in reversed(parts[1:]))
++        verify.validate_current_sections(row, reordered)
++        renamed = deepcopy(row)
++        renamed["currentSpecificationSections"]["## Known limits and non-claims"]["heading"] = "## Grant limitations"
++        verify.validate_current_sections(renamed, text.replace("## Authority boundary", "## Grant limitations"))
++        for invalid in (text.replace("cannot represent a grant", "can represent a grant"),
++                        text + "\n## Authority boundary\nDuplicate.",
++                        text.replace("## Authority boundary", "## Unknown boundary"),
++                        text.replace(text.split("## Authority boundary")[1].split("## Canonical compatibility")[0], "\n\n")):
++            with self.assertRaises(verify.VerificationError):
++                verify.validate_current_sections(row, invalid)
++        missing = deepcopy(row)
++        del missing["currentSpecificationSections"]["## Integration prerequisites"]
++        with self.assertRaises(verify.VerificationError):
++            verify.validate_current_sections(missing, text)
++
+     def test_operations_cannot_claim_unimplemented_durability(self) -> None:
+         value = deepcopy(self.matrix)
+-        value["modules"][3]["states"]["durability"] = "durable"
++        next(row for row in value["modules"] if row["module"] == "kernel.operations")["states"]["durability"] = "durable"
+         with self.assertRaises(verify.VerificationError):
+             verify.validate_matrix(value)
+ 
+@@ -75,13 +145,13 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+         ):
+             with self.subTest(capability=capability):
+                 value = deepcopy(self.matrix)
+-                value["modules"][5]["currentCapabilities"].append(capability)
++                next(row for row in value["modules"] if row["module"] == "auth.authbus")["currentCapabilities"].append(capability)
+                 with self.assertRaises(verify.VerificationError):
+                     verify.validate_matrix(value)
+ 
+     def test_authbus_cannot_claim_all_replay_paths_are_durable(self) -> None:
+         value = deepcopy(self.matrix)
+-        value["modules"][5]["states"]["durability"] = "durable"
++        next(row for row in value["modules"] if row["module"] == "auth.authbus")["states"]["durability"] = "durable"
+         with self.assertRaises(verify.VerificationError):
+             verify.validate_matrix(value)
+ 
+@@ -135,8 +205,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+         self.assertEqual(receipt["moduleCoverage"], 7)
+         self.assertEqual(
+             receipt["capabilityCoverage"],
+-            self.capability_map["entryCount"]
+-            + self.operations_capability_map["entryCount"],
++            self.capability_map["entryCount"],
+         )
+         self.assertEqual(
+             receipt["currentImplementationTruth"], "source_and_test_anchored"
+@@ -207,19 +276,21 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+                 encoding="utf-8"
+             )
+         )
++        current = verify.validate_protocol_registry(registry)
++        self.assertIn("hepta.kernel.operations.durable-owner.v1", current)
++        self.assertIn("hepta.kernel.operations.durable-ledger-outbox.v1", current)
+         self.assertEqual(registry["schemaVersion"], 1)
+         self.assertEqual(registry["lane"], "LANE-A-FOUNDATION")
+         self.assertEqual(registry["authority"], "none")
+-        self.assertEqual(
+-            [row["module"] for row in registry["protocols"]],
+-            verify.EXPECTED_MODULES,
++        self.assertCountEqual(
++            [row["module"] for row in registry["protocols"]], verify.EXPECTED_MODULES
+         )
+         self.assertEqual(len(registry["protocols"]), 7)
+         for row in registry["protocols"]:
+             self.assertTrue(row["protocolId"].startswith("hepta."))
+             self.assertTrue(row["source"])
+             self.assertTrue(row["invariants"])
+-        operations = registry["protocols"][3]
++        operations = next(row for row in registry["protocols"] if row["module"] == "kernel.operations")
+         self.assertEqual(
+             operations["protocolId"],
+             "hepta.kernel.operations.durable-ledger-outbox.v1",
+diff --git a/scripts/lane_a_foundation_core.py b/scripts/lane_a_foundation_core.py
+index bb8726903..47be76e95 100644
+--- a/scripts/lane_a_foundation_core.py
++++ b/scripts/lane_a_foundation_core.py
+@@ -113,6 +113,106 @@ def validate_anchor(owner: str, item: Any, root: Path = ROOT) -> None:
+                 )
+ 
+ 
++def validate_module_set(rows: Any, field: str = "module") -> None:
++    if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
++        raise VerificationError("module records must be objects")
++    names = [row.get(field) for row in rows]
++    if (len(names) != len(EXPECTED_MODULES)
++        or any(not isinstance(name, str) for name in names)
++        or set(names) != set(EXPECTED_MODULES)):
++        raise VerificationError("complete unique module set required")
++
++
++def validate_current_sections(row: dict, current: str) -> None:
++    """Check explicit semantic roles without imposing presentation order."""
++    headings = list(re.finditer(r"^## [^\n]+$", current, re.MULTILINE))
++    bodies: dict[str, str] = {}
++    for index, match in enumerate(headings):
++        heading = match.group()
++        if heading in bodies:
++            raise VerificationError("duplicate current-contract section")
++        end = headings[index + 1].start() if index + 1 < len(headings) else len(current)
++        bodies[heading] = current[match.end():end].strip()
++    roles = row.get("currentSpecificationSections")
++    if roles is None:
++        roles = {role: {"heading": role, "mustContain": []} for role in SECTIONS}
++    if not isinstance(roles, dict) or set(roles) != set(SECTIONS):
++        raise VerificationError("complete semantic section roles required")
++    for role, binding in roles.items():
++        if (not isinstance(binding, dict) or set(binding) != {"heading", "mustContain"}
++            or not isinstance(binding["heading"], str)
++            or not isinstance(binding["mustContain"], list)
++            or any(not isinstance(x, str) or not x for x in binding["mustContain"])):
++            raise VerificationError(f"invalid semantic section binding: {role}")
++        body = bodies.get(binding["heading"], "")
++        if not body or any(needle not in body for needle in binding["mustContain"]):
++            raise VerificationError(f"missing semantic section content: {role}")
++
++
++def validate_protocol_registry(value: dict[str, Any], root: Path = ROOT) -> dict[str, dict]:
++    """Validate one module row plus optional same-owner protocol surfaces."""
++    header = {"schemaVersion", "lane", "role", "authority", "protocols"}
++    if (not isinstance(value, dict) or set(value) != header
++        or value.get("schemaVersion") != 1
++        or value.get("lane") != "LANE-A-FOUNDATION"
++        or value.get("role") != "current_executable_protocol_index"
++        or value.get("authority") != "none"):
++        raise VerificationError("protocol registry header mismatch")
++    rows = value.get("protocols")
++    validate_module_set(rows)
++    identities: set[str] = set()
++    current: dict[str, dict] = {}
++    required = {"protocolId", "module", "kind", "source", "invariants"}
++
++    def record(row: Any, owner: str, *, nested: bool) -> None:
++        allowed = required | {"legacyProtocolId"}
++        if not nested:
++            allowed.add("additionalProtocols")
++        if (not isinstance(row, dict) or not required.issubset(row)
++            or not set(row).issubset(allowed) or row.get("module") != owner):
++            raise VerificationError("invalid protocol shape, owner or nesting")
++        for field in ("protocolId", "legacyProtocolId"):
++            if field not in row:
++                continue
++            identity = row[field]
++            if (not isinstance(identity, str)
++                or re.fullmatch(r"hepta\.[a-z0-9]+(?:[.-][a-z0-9]+)*", identity) is None
++                or identity in identities):
++                raise VerificationError("invalid/duplicate protocol identity")
++            identities.add(identity)
++        if not isinstance(row["kind"], str) or not row["kind"].strip():
++            raise VerificationError("protocol kind required")
++        for field in ("source", "invariants"):
++            items = row[field]
++            if not isinstance(items, list) or not items or any(
++                not isinstance(item, str) or not item.strip() for item in items
++            ):
++                raise VerificationError(f"nonempty protocol {field} required")
++        for source in row["source"]:
++            path = Path(source)
++            if (path.is_absolute() or not path.parts or ".." in path.parts
++                or "\\" in source or path.as_posix() != source
++                or not (root / path).exists()
++                or not (root / path).resolve().is_relative_to(root.resolve())):
++                raise VerificationError("invalid/missing protocol source path")
++        current[row["protocolId"]] = row
++        additions = row.get("additionalProtocols", [])
++        if not isinstance(additions, list) or ("additionalProtocols" in row and not additions):
++            raise VerificationError("additionalProtocols must be a nonempty list")
++        for extra in additions:
++            record(extra, owner, nested=True)
++
++    for row in rows:
++        record(row, row["module"], nested=False)
++    return current
++
++
++def validate_capability_coverage(observed: list[tuple[str, str]], expected: list[tuple[str, str]]) -> None:
++    if (len(observed) != len(set(observed)) or len(expected) != len(set(expected))
++        or set(observed) != set(expected)):
++        raise VerificationError("capability map must cover each current capability exactly once")
++
++
+ def validate_capability_map(
+     matrix: dict[str, Any], value: dict[str, Any], root: Path = ROOT
+ ) -> None:
+@@ -189,10 +289,7 @@ def validate_capability_map(
+                 raise VerificationError(f"{capability_id}: {field} required")
+             for anchor in anchors:
+                 validate_anchor(f"{capability_id}/{field}", anchor, root)
+-    if observed != expected:
+-        raise VerificationError(
+-            "capability map does not exactly cover ordered current capabilities"
+-        )
++    validate_capability_coverage(observed, expected)
+ 
+ 
+ def git_blob_sha(data: bytes) -> str:
+diff --git a/scripts/lane_a_foundation_lib.py b/scripts/lane_a_foundation_lib.py
+index dca49b46d..073edd950 100644
+--- a/scripts/lane_a_foundation_lib.py
++++ b/scripts/lane_a_foundation_lib.py
+@@ -49,12 +49,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
+         if phrase not in policy:
+             raise VerificationError(f"boundary policy missing {phrase!r}")
+     modules = matrix.get("modules")
+-    if (
+-        not isinstance(modules, list)
+-        or [row.get("module") for row in modules if isinstance(row, dict)]
+-        != EXPECTED_MODULES
+-    ):
+-        raise VerificationError("closed-world module order mismatch")
++    validate_module_set(modules)
+     for row in modules:
+         module = row["module"]
+         states = row.get("states")
+@@ -71,11 +66,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
+             if not isinstance(row.get(field), str) or not (root / row[field]).is_file():
+                 raise VerificationError(f"{module}: missing {field}")
+         current = read_text(root / row["currentSpecification"])
+-        positions = [current.find(heading) for heading in SECTIONS]
+-        if -1 in positions or positions != sorted(positions):
+-            raise VerificationError(
+-                f"{module}: current-contract sections missing/out of order"
+-            )
++        validate_current_sections(row, current)
+         current_caps = row.get("currentCapabilities")
+         target_caps = row.get("targetOnlyCapabilities")
+         if (
+@@ -113,6 +104,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
+     for (module, axis), value in exact.items():
+         if by_name[module]["states"][axis] != value:
+             raise VerificationError(f"{module}: {axis} drift")
++    validate_protocol_registry(read_json(root / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"), root)
+     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
+     validate_capability_map(matrix, capability, root)
+     native = validate_native_bindings(root)
+@@ -236,7 +228,7 @@ def self_test() -> None:
+     matrix = read_json(MATRIX_PATH)
+     validate_matrix(matrix)
+     for mutation in (
+-        lambda value: value["modules"][3]["states"].__setitem__(
++        lambda value: next(row for row in value["modules"] if row["module"] == "kernel.operations")["states"].__setitem__(
+             "durability", "durable"
+         ),
+         lambda value: value["closure"].__setitem__("externalAcceptance", "closed"),

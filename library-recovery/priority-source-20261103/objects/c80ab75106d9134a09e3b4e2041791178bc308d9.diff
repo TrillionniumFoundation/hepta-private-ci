@@ -1,0 +1,105 @@
+diff --git a/.github/workflows/authbus-ofd-lock-refresh.yml b/.github/workflows/authbus-ofd-lock-refresh.yml
+deleted file mode 100644
+index 9c995ee72f..0000000000
+--- a/.github/workflows/authbus-ofd-lock-refresh.yml
++++ /dev/null
+@@ -1,46 +0,0 @@
+-name: Temporary AuthBus source authoring
+-
+-on:
+-  push:
+-    branches:
+-      - auth-authbus-boundary-convergence-20260928
+-    paths:
+-      - .github/workflows/authbus-ofd-lock-refresh.yml
+-
+-permissions:
+-  contents: write
+-
+-concurrency:
+-  group: authbus-source-authoring-${{ github.ref }}
+-  cancel-in-progress: false
+-
+-jobs:
+-  author:
+-    if: github.actor != 'github-actions[bot]'
+-    runs-on: ubuntu-24.04
+-    timeout-minutes: 30
+-    steps:
+-      - uses: actions/checkout@v4
+-        with:
+-          fetch-depth: 0
+-          ref: ${{ github.ref_name }}
+-
+-      - uses: dtolnay/rust-toolchain@stable
+-        with:
+-          components: rustfmt
+-
+-      - name: Materialize canonical AuthBus formatting
+-        shell: bash
+-        run: |
+-          set -euo pipefail
+-          cargo fmt --all --manifest-path codex-rs/Cargo.toml
+-          git add -- codex-rs/hepta-authbus
+-          if git diff --cached --quiet; then
+-            echo 'AuthBus source is already formatted.'
+-            exit 0
+-          fi
+-          git diff --cached --check
+-          git config user.name github-actions[bot]
+-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+-          git commit -s -m 'style(auth.authbus): apply canonical formatting'
+-          git push origin "HEAD:${GITHUB_REF_NAME}"
+diff --git a/scripts/test_authbus_caller_api.py b/scripts/test_authbus_caller_api.py
+index 650e31f492..db22d5934c 100644
+--- a/scripts/test_authbus_caller_api.py
++++ b/scripts/test_authbus_caller_api.py
+@@ -119,5 +119,48 @@ class ProductContractTests(unittest.TestCase):
+                 self.check("agentd_signed_text", source + f"\n// {forbidden}\n")
+ 
+ 
++class WorkflowSourceTruthTests(unittest.TestCase):
++    def check(self, text):
++        spec = importlib.util.spec_from_file_location(
++            "authbus_source_truth", ROOT / "scripts/check-authbus-source-truth.py"
++        )
++        checker = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(checker)
++        with tempfile.TemporaryDirectory() as temporary:
++            root = Path(temporary)
++            workflows = root / ".github/workflows"
++            workflows.mkdir(parents=True)
++            path = workflows / "authbus-regression.yml"
++            path.write_text(text)
++            with (
++                patch.object(checker, "ROOT", root),
++                patch.object(checker, "WORKFLOW_ROOT", workflows),
++            ):
++                return checker.verify_workflow_immutability(
++                    {path.relative_to(root).as_posix()}
++                )
++
++    def test_read_only_formatting_remains_allowed(self):
++        workflow = (ROOT / ".github/workflows/authbus-authoring-format.yml").read_text()
++        self.assertEqual(self.check(workflow), [])
++
++    def test_reintroduced_authoring_mutations_remain_rejected(self):
++        for mutation in [
++            "permissions:\n  contents: write",
++            "run: git add source",
++            "run: git commit -m generated",
++            "run: git push origin HEAD",
++        ]:
++            with self.subTest(mutation=mutation):
++                self.assertTrue(
++                    any(
++                        "must be read-only" in error
++                        for error in self.check(
++                            "name: AuthBus authoring\n" + mutation + "\n"
++                        )
++                    )
++                )
++
++
+ if __name__ == "__main__":
+     unittest.main()

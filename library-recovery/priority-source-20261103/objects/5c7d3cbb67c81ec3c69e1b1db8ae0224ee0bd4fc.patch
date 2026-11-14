@@ -1,0 +1,437 @@
+--- a/codex-rs/hepta-automation/src/taskflow_guard.rs
++++ b/codex-rs/hepta-automation/src/taskflow_guard.rs
+@@ -11,6 +11,7 @@
+     owner: &AgentId,
+     run_id: &str,
+     step_id: Option<&str>,
++    except_attempt: Option<u32>,
+ ) -> Result<(), TaskFlowError> {
+     // Only each chain's latest row describes pending work. An indeterminate
+     // record followed by a terminal reconciliation must stop blocking recovery.
+@@ -19,6 +20,7 @@
+             SELECT 1 FROM taskflow_step_outbox s
+             WHERE s.owner_agent_id = ? AND s.run_id = ?
+               AND (? IS NULL OR s.step_id = ?)
++              AND (? IS NULL OR s.attempt != ?)
+               AND (s.event_kind = 'claimed'
+                    OR (s.event_kind = 'recorded' AND s.observation = 'indeterminate'))
+               AND NOT EXISTS (
+@@ -33,6 +35,8 @@
+     .bind(run_id)
+     .bind(step_id)
+     .bind(step_id)
++    .bind(except_attempt.map(i64::from))
++    .bind(except_attempt.map(i64::from))
+     .fetch_one(&mut **tx)
+     .await
+     .map_err(|_| TaskFlowError::Unavailable)?;
+--- a/codex-rs/hepta-automation/src/taskflow.rs
++++ b/codex-rs/hepta-automation/src/taskflow.rs
+@@ -1028,6 +1028,7 @@
+             self.taskflow_owner_agent_id(),
+             run_id,
+             /*step_id*/ None,
++            /*except_attempt*/ None,
+         )
+         .await?;
+         let effect_attempts: i64 = sqlx::query_scalar(
+@@ -1390,6 +1391,7 @@
+                 self.taskflow_owner_agent_id(),
+                 &command.run_id,
+                 /*step_id*/ None,
++                /*except_attempt*/ None,
+             )
+             .await?;
+         }
+--- a/codex-rs/hepta-automation/src/taskflow_step.rs
++++ b/codex-rs/hepta-automation/src/taskflow_step.rs
+@@ -287,6 +287,7 @@
+             self.taskflow_owner_agent_id(),
+             run_id,
+             Some(step_id),
++            /*except_attempt*/ None,
+         )
+         .await?;
+         let event = append_step_event(
+@@ -887,6 +888,17 @@
+                 if current.event_kind != TaskFlowStepState::Prepared {
+                     return Err(invalid_step_transition("claim requires prepared state"));
+                 }
++                // Multiple attempts may have been prepared before the first
++                // claim. Serialize the actual admission against siblings, not
++                // only preparation. Exact command replay returned above.
++                reject_unresolved_steps(
++                    &mut tx,
++                    self.taskflow_owner_agent_id(),
++                    run_id,
++                    Some(step_id),
++                    /*except_attempt*/ None,
++                )
++                .await?;
+             }
+             "record" => {
+                 check_run_identity_for_observation(&run, fence)?;
+@@ -1859,3 +1871,6 @@
+ fn is_constraint(error: &sqlx::Error) -> bool {
+     matches!(error, sqlx::Error::Database(database) if database.is_unique_violation() || database.is_foreign_key_violation() || database.is_check_violation())
+ }
++#[cfg(test)]
++#[path = "taskflow_sibling_admission_tests.rs"]
++mod sibling_admission_tests;
+--- a/codex-rs/hepta-automation/src/effect_dispatch_ledger.rs
++++ b/codex-rs/hepta-automation/src/effect_dispatch_ledger.rs
+@@ -144,6 +144,16 @@
+             .begin_with("BEGIN IMMEDIATE")
+             .await
+             .map_err(|_| TaskFlowError::Unavailable)?;
++        // Older source versions could claim multiple pre-prepared attempts.
++        // Do not let such retained history bypass the final dispatch boundary.
++        crate::taskflow_guard::reject_unresolved_steps(
++            &mut tx,
++            self.taskflow_owner_agent_id(),
++            run_id,
++            Some(step_id),
++            Some(attempt),
++        )
++        .await?;
+         let started_at_ms = admitted_at()?;
+         let inserted = sqlx::query(
+             "INSERT INTO taskflow_effect_dispatch_attempts (
+--- a/codex-rs/hepta-automation/tests/taskflow_step.rs
++++ b/codex-rs/hepta-automation/tests/taskflow_step.rs
+@@ -814,3 +814,82 @@
+         store.close().await;
+     }
+ }
++
++#[tokio::test]
++async fn preprepared_sibling_attempt_cannot_claim_until_prior_outcome_is_terminal() {
++    let fixture = Fixture::new();
++    let (store, owner, intent, payload) = prepared_store(&fixture).await;
++    for attempt in [1, 2] {
++        store
++            .prepare_taskflow_step(
++                "step-run", "work", attempt, &owner, &intent, &payload,
++                &format!("prepare-{attempt}"), /*now_ms*/ 21,
++            )
++            .await
++            .expect("prepare before any claim");
++    }
++    let second_before = store
++        .read_taskflow_step("step-run", "work", /*attempt*/ 2, &owner)
++        .await
++        .expect("second attempt")
++        .expect("prepared");
++    store
++        .claim_taskflow_step(
++            "step-run", "work", /*attempt*/ 1, &owner, &intent, &payload,
++            "claim-1", /*now_ms*/ 22,
++        )
++        .await
++        .expect("first claim");
++    for observed_unknown in [false, true] {
++        if observed_unknown {
++            store
++                .record_taskflow_step(
++                    "step-run", "work", /*attempt*/ 1, &owner, &intent, &payload,
++                    "unknown-1", &Sha256Digest::for_bytes(b"unknown"),
++                    TaskFlowStepObservation::Indeterminate, /*now_ms*/ 23,
++                )
++                .await
++                .expect("record uncertainty");
++        }
++        assert!(matches!(
++            store
++                .claim_taskflow_step(
++                    "step-run", "work", /*attempt*/ 2, &owner, &intent, &payload,
++                    "claim-2", /*now_ms*/ 24,
++                )
++                .await,
++            Err(codex_hepta_automation::TaskFlowError::Conflict(_))
++        ));
++        pretty_assertions::assert_eq!(
++            store
++                .read_taskflow_step("step-run", "work", /*attempt*/ 2, &owner)
++                .await
++                .expect("read rejected claim"),
++            Some(second_before.clone())
++        );
++    }
++    store
++        .reconcile_taskflow_step(
++            "step-run", "work", /*attempt*/ 1, &owner, &intent, &payload,
++            "terminal-1", &Sha256Digest::for_bytes(b"terminal"),
++            TaskFlowReconcileOutcome::Failed, /*now_ms*/ 25,
++        )
++        .await
++        .expect("settle first attempt");
++    store
++        .claim_taskflow_step(
++            "step-run", "work", /*attempt*/ 2, &owner, &intent, &payload,
++            "claim-2", /*now_ms*/ 26,
++        )
++        .await
++        .expect("settled predecessor permits retry");
++    let replay = store
++        .claim_taskflow_step(
++            "step-run", "work", /*attempt*/ 2, &owner, &intent, &payload,
++            "claim-2", /*now_ms*/ 26,
++        )
++        .await
++        .expect("exact claim replay");
++    assert_eq!(replay.status, TaskFlowStepCommandStatus::AlreadyApplied);
++    store.close().await;
++}
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/taskflow_sibling_admission_tests.rs
+@@ -0,0 +1,250 @@
++//! Valid historical double-claimed chains must not cross effect admission.
++
++use super::*;
++use crate::effect_dispatch_ledger::EffectDispatchStart;
++use pretty_assertions::assert_eq;
++
++#[tokio::test]
++async fn historical_sibling_claim_blocks_dispatch_until_terminal_settlement() {
++    let (_temp, layout, store, fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let intent = Sha256Digest::for_bytes(b"effect-intent");
++    let payload = Sha256Digest::for_bytes(b"effect-payload");
++    // Reconstruct exactly the valid append-only history authored by the old
++    // prepare/claim implementation, without weakening current admission.
++    let mut tx = store.begin_step_write_tx().await.expect("writer");
++    for (operation, state) in [
++        ("prepare", TaskFlowStepState::Prepared),
++        ("claim", TaskFlowStepState::Claimed),
++    ] {
++        let command = format!("historical-sibling-{operation}");
++        let digest = operation_digest(
++            operation,
++            store.taskflow_owner_agent_id(),
++            "effect-run",
++            "work",
++            /*attempt*/ 2,
++            &command,
++            intent.as_str(),
++            payload.as_str(),
++            &fence,
++            /*receipt_digest*/ None,
++            /*observation*/ None,
++            /*final_outcome*/ None,
++            /*now_ms*/ 20,
++        )
++        .expect("historical command digest");
++        append_step_event(
++            &mut tx,
++            &store,
++            "effect-run",
++            "work",
++            /*attempt*/ 2,
++            state,
++            &command,
++            digest.as_str(),
++            intent.as_str(),
++            payload.as_str(),
++            /*receipt_digest*/ None,
++            /*observation*/ None,
++            /*final_outcome*/ None,
++            &fence,
++            /*recorded_at_ms*/ 20,
++        )
++        .await
++        .expect("append valid historical event");
++    }
++    tx.commit().await.expect("commit historical chain");
++    store.close().await;
++    let store = AutomationStore::open(&layout).await.expect("reopen history");
++    let mut before = Vec::new();
++    for attempt in [1, 2] {
++        before.push(
++            store
++                .read_taskflow_step("effect-run", "work", attempt, &fence)
++                .await
++                .expect("historical receipt"),
++        );
++        assert_eq!(
++            store
++                .read_taskflow_step("effect-run", "work", attempt, &fence)
++                .await
++                .expect("verify complete historical chain")
++                .expect("historical step")
++                .state,
++            TaskFlowStepState::Claimed
++        );
++    }
++    let binding = Sha256Digest::for_bytes(b"effect-binding");
++    let nonce = Sha256Digest::for_bytes(b"effect-nonce");
++    let clock_called = std::sync::atomic::AtomicBool::new(false);
++    let rejected = store
++        .begin_effect_dispatch_attempt(
++            "effect-run",
++            "work",
++            /*attempt*/ 1,
++            &intent,
++            &payload,
++            &binding,
++            "provider:test",
++            /*authority_epoch*/ 7,
++            "sibling-grant",
++            &nonce,
++            "sibling-record",
++            || {
++                clock_called.store(true, std::sync::atomic::Ordering::SeqCst);
++                Ok(21)
++            },
++            &fence,
++            /*provider_contract_binding*/ None,
++        )
++        .await;
++    assert!(matches!(rejected, Err(TaskFlowError::Conflict(_))));
++    assert!(!clock_called.load(std::sync::atomic::Ordering::SeqCst));
++    assert!(
++        store
++            .effect_dispatch_attempt("effect-run", "work", /*attempt*/ 1)
++            .await
++            .expect("no new dispatch")
++            .is_none()
++    );
++    for (index, attempt) in [1, 2].into_iter().enumerate() {
++        assert_eq!(
++            store
++                .read_taskflow_step("effect-run", "work", attempt, &fence)
++                .await
++                .expect("unchanged historical receipt"),
++            before[index]
++        );
++    }
++    let dispatch_rows: i64 = sqlx::query_scalar(
++        "SELECT COUNT(*) FROM taskflow_effect_dispatch_attempts",
++    )
++    .fetch_one(store.taskflow_pool())
++    .await
++    .expect("all dispatch rows");
++    assert_eq!(dispatch_rows, 0);
++    store
++        .record_taskflow_step(
++            "effect-run",
++            "work",
++            /*attempt*/ 2,
++            &fence,
++            &intent,
++            &payload,
++            "sibling-terminal",
++            &Sha256Digest::for_bytes(b"terminal sibling"),
++            TaskFlowStepObservation::Failed,
++            /*now_ms*/ 22,
++        )
++        .await
++        .expect("settle sibling");
++    let admitted = store
++        .begin_effect_dispatch_attempt(
++            "effect-run",
++            "work",
++            /*attempt*/ 1,
++            &intent,
++            &payload,
++            &binding,
++            "provider:test",
++            /*authority_epoch*/ 7,
++            "sibling-grant",
++            &nonce,
++            "sibling-record",
++            || Ok(23),
++            &fence,
++            /*provider_contract_binding*/ None,
++        )
++        .await
++        .expect("terminal sibling permits dispatch admission");
++    assert!(matches!(admitted, EffectDispatchStart::Inserted(_)));
++    store.close().await;
++}
++
++#[tokio::test]
++async fn distinct_steps_and_runs_do_not_block_effect_admission() {
++    let (_temp, _layout, store, fence) =
++        crate::effect_dispatch_ledger::tests::prepared_store().await;
++    let intent = Sha256Digest::for_bytes(b"effect-intent");
++    let payload = Sha256Digest::for_bytes(b"effect-payload");
++    let definition = crate::TaskFlowDefinition::new(
++        "independent-steps",
++        /*version*/ 1,
++        "work",
++        vec![
++            crate::TaskFlowNodeSpec::new("work", crate::TaskFlowNodeKind::Activity),
++            crate::TaskFlowNodeSpec::new("other", crate::TaskFlowNodeKind::Activity),
++            crate::TaskFlowNodeSpec::new("done", crate::TaskFlowNodeKind::TerminalSuccess),
++            crate::TaskFlowNodeSpec::new("failed", crate::TaskFlowNodeKind::TerminalFailure),
++        ],
++        vec![
++            crate::TaskFlowEdgeSpec::new("work", "other"),
++            crate::TaskFlowEdgeSpec::new("other", "done"),
++            crate::TaskFlowEdgeSpec::new("other", "failed"),
++        ],
++        Vec::new(),
++        Sha256Digest::for_bytes(b"independent-policy"),
++    )
++    .expect("definition");
++    store
++        .register_taskflow_definition(&definition, &fence, /*registered_at_ms*/ 20)
++        .await
++        .expect("register");
++    store
++        .create_taskflow_run(
++            "independent-run",
++            &definition.workflow_id,
++            definition.version,
++            definition.definition_digest(),
++            "independent-thread",
++            /*created_at_ms*/ 20,
++        )
++        .await
++        .expect("create");
++    let claimed = store
++        .claim_taskflow_run(
++            "independent-run", &fence, /*now_ms*/ 20, /*lease_duration_ms*/ 1_000,
++        )
++        .await
++        .expect("claim run");
++    store
++        .apply_taskflow_command(
++            &crate::TaskFlowCommand::new(
++                "independent-run", "start-independent", fence.clone(), claimed.revision,
++                crate::TaskFlowTransition::Start, /*now_ms*/ 20,
++            )
++            .expect("start command"),
++        )
++        .await
++        .expect("start");
++    for step in ["work", "other"] {
++        store
++            .prepare_taskflow_step(
++                "independent-run", step, /*attempt*/ 1, &fence, &intent, &payload,
++                &format!("independent-prepare-{step}"), /*now_ms*/ 21,
++            )
++            .await
++            .expect("different step prepares");
++        store
++            .claim_taskflow_step(
++                "independent-run", step, /*attempt*/ 1, &fence, &intent, &payload,
++                &format!("independent-claim-{step}"), /*now_ms*/ 22,
++            )
++            .await
++            .expect("different step claims");
++    }
++    // Both effect-run/work and independent-run/other remain Claimed.
++    let admitted = store
++        .begin_effect_dispatch_attempt(
++            "independent-run", "work", /*attempt*/ 1, &intent, &payload,
++            &Sha256Digest::for_bytes(b"independent-binding"), "provider:test",
++            /*authority_epoch*/ 7, "independent-grant",
++            &Sha256Digest::for_bytes(b"independent-nonce"), "independent-record",
++            || Ok(23), &fence, /*provider_contract_binding*/ None,
++        )
++        .await
++        .expect("other steps and runs do not block");
++    assert!(matches!(admitted, EffectDispatchStart::Inserted(_)));
++    store.close().await;
++}

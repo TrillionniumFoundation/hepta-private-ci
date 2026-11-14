@@ -1,0 +1,52 @@
+--- /dev/fd/63	2026-10-05 22:07:10.154919004 +0900
++++ /workspace/shared/authbus-native-evidence/final_use_host.negative-control.rs	2026-10-05 22:07:10.151941030 +0900
+@@ -29,6 +29,9 @@
+ 
+ pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync + 'static>;
+ 
++#[cfg(test)]
++type RevocationAppliedHook = Arc<dyn Fn(&FinalUseRevocationReceipt) + Send + Sync>;
++
+ #[derive(Clone)]
+ pub struct RegisteredBaoConsumer {
+     id: String,
+@@ -65,6 +68,8 @@
+     revocation_verifier: FinalUseRevocationFeedVerifier,
+     clock: Arc<dyn AuthorityClock>,
+     revocation_fresh_until_unix_ms: Mutex<u64>,
++    #[cfg(test)]
++    after_revocation_applied: Mutex<Option<RevocationAppliedHook>>,
+     consumers: BTreeMap<String, BaoConsumerCallback>,
+ }
+ 
+@@ -102,6 +107,8 @@
+             revocation_verifier,
+             clock,
+             revocation_fresh_until_unix_ms: Mutex::new(0),
++            #[cfg(test)]
++            after_revocation_applied: Mutex::new(None),
+             consumers: registry,
+         })
+     }
+@@ -140,6 +147,13 @@
+             .revocation_verifier
+             .apply(&self.authority, update, now_unix_ms)
+             .map_err(BaoFinalUseHostError::Control)?;
++        #[cfg(test)]
++        {
++            let hook = self.after_revocation_applied.lock().unwrap().clone();
++            if let Some(hook) = hook {
++                hook(&receipt);
++            }
++        }
+         let mut fresh_until = self
+             .revocation_fresh_until_unix_ms
+             .lock()
+@@ -280,3 +294,7 @@
+         );
+     }
+ }
++
++#[cfg(all(test, unix))]
++#[path = "final_use_host_freshness_tests.rs"]
++mod freshness_tests;

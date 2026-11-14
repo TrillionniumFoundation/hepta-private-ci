@@ -1,0 +1,52 @@
+diff --git a/docs/lane-a-foundation/README.md b/docs/lane-a-foundation/README.md
+index dbc71f1549..691b04fa37 100644
+--- a/docs/lane-a-foundation/README.md
++++ b/docs/lane-a-foundation/README.md
+@@ -80,7 +80,8 @@ capability receipt counts come only from CAPABILITY_EVIDENCE_MAP.json.
+ Editable module/protocol rows and capability coverage are order-independent;
+ missing, duplicate or foreign identities still fail. Current documents may bind
+ all seven semantic section roles explicitly with `currentSpecificationSections`
+-(heading plus required content anchors). Presentation order or an explicitly
++(heading plus nonempty, non-whitespace content anchors). Legacy default
++roles require nonempty section bodies without additional prose anchors. Presentation order or an explicitly
+ mapped descriptive heading does not change qualification. Missing/duplicate
+ sections, required content, source anchors and false authority/acceptance claims
+ remain errors. Historical native observation arrays and their digests retain
+diff --git a/qualification/module-execution-dossiers/test_lane_a_foundation.py b/qualification/module-execution-dossiers/test_lane_a_foundation.py
+index 87ca2e1bee..bacac8dedc 100644
+--- a/qualification/module-execution-dossiers/test_lane_a_foundation.py
++++ b/qualification/module-execution-dossiers/test_lane_a_foundation.py
+@@ -132,6 +132,11 @@ class LaneAFoundationTruthTests(unittest.TestCase):
+                         text.replace(text.split("## Authority boundary")[1].split("## Canonical compatibility")[0], "\n\n")):
+             with self.assertRaises(verify.VerificationError):
+                 verify.validate_current_sections(row, invalid)
++        for anchors in ([" \n\t "], []):
++            invalid = deepcopy(row)
++            invalid["currentSpecificationSections"]["## Target-only design"]["mustContain"] = anchors
++            with self.assertRaises(verify.VerificationError):
++                verify.validate_current_sections(invalid, text)
+         missing = deepcopy(row)
+         del missing["currentSpecificationSections"]["## Integration prerequisites"]
+         with self.assertRaises(verify.VerificationError):
+diff --git a/scripts/lane_a_foundation_core.py b/scripts/lane_a_foundation_core.py
+index 94b7506696..c136a9ad89 100644
+--- a/scripts/lane_a_foundation_core.py
++++ b/scripts/lane_a_foundation_core.py
+@@ -134,6 +134,7 @@ def validate_current_sections(row: dict, current: str) -> None:
+         end = headings[index + 1].start() if index + 1 < len(headings) else len(current)
+         bodies[heading] = current[match.end():end].strip()
+     roles = row.get("currentSpecificationSections")
++    explicit_roles = roles is not None
+     if roles is None:
+         roles = {role: {"heading": role, "mustContain": []} for role in SECTIONS}
+     if not isinstance(roles, dict) or set(roles) != set(SECTIONS):
+@@ -142,7 +143,8 @@ def validate_current_sections(row: dict, current: str) -> None:
+         if (not isinstance(binding, dict) or set(binding) != {"heading", "mustContain"}
+             or not isinstance(binding["heading"], str)
+             or not isinstance(binding["mustContain"], list)
+-            or any(not isinstance(x, str) or not x for x in binding["mustContain"])):
++            or (explicit_roles and not binding["mustContain"])
++            or any(not isinstance(x, str) or not x.strip() for x in binding["mustContain"])):
+             raise VerificationError(f"invalid semantic section binding: {role}")
+         body = bodies.get(binding["heading"], "")
+         normalized_body = " ".join(body.split())

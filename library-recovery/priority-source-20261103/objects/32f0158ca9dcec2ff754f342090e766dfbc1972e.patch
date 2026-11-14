@@ -1,0 +1,759 @@
+diff --git a/.github/workflows/hepta-architecture-convergence.yml b/.github/workflows/hepta-architecture-convergence.yml
+index f2136fd48..17f8db914 100644
+--- a/.github/workflows/hepta-architecture-convergence.yml
++++ b/.github/workflows/hepta-architecture-convergence.yml
+@@ -187,9 +187,10 @@ jobs:
+           set -euo pipefail
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-owned-client.json" --minimum-tests 3 -- just test --locked -p codex-app-server-client --lib -E 'test(remote::shutdown_lifetime_tests)'
++          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-owned-client.json" --minimum-tests 4 -- just test --locked -p codex-app-server-client --lib -E 'test(remote::shutdown_lifetime_tests)'
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-frontiers.json" --minimum-tests 11 -- just test --locked -p codex-hepta-automation --lib -E 'test(pending_occurrence_scan) | test(uncertain_dispatch_scan)'
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-observation.json" --minimum-tests 14 -- just test --locked -p codex-hepta-agentd --lib -E 'test(automation_recovery::observation_policy_tests) | test(automation::service_tests::observation_stall_tests)'
++          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/taskflow-runtime-shutdown.json" --minimum-tests 15 -- just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(runtime_owned_client_tests) | test(native_app_server::tests)'
+       - name: Module lifecycle generations and migration rollback
+         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+         run: |
+diff --git a/codex-rs/app-server-client/src/lib.rs b/codex-rs/app-server-client/src/lib.rs
+index 7b324e095..aaa37b1b4 100644
+--- a/codex-rs/app-server-client/src/lib.rs
++++ b/codex-rs/app-server-client/src/lib.rs
+@@ -71,6 +71,8 @@ pub use crate::remote::RemoteAppServerObservedEvent;
+ pub use crate::remote::RemoteAppServerObservedResponse;
+ pub use crate::remote::RemoteAppServerObservedServerError;
+ pub use crate::remote::RemoteAppServerRequestHandle;
++#[cfg(feature = "test-support")]
++pub use crate::remote::RemoteBlockedCloseTestProbe;
+ pub use crate::remote::RemoteObservedTypedRequestError;
+ 
+ /// Transitional access to core-only embedded app-server types.
+diff --git a/codex-rs/app-server-client/src/remote.rs b/codex-rs/app-server-client/src/remote.rs
+index ee1094e78..72a529c10 100644
+--- a/codex-rs/app-server-client/src/remote.rs
++++ b/codex-rs/app-server-client/src/remote.rs
+@@ -391,6 +391,12 @@ impl std::ops::Deref for AbortOnDropRemoteAppServerClient {
+ }
+ 
+ impl AbortOnDropRemoteAppServerClient {
++    /// Read the next provenance-bearing event without exposing replaceable
++    /// access to the exclusively owned connection.
++    pub async fn next_observed_event(&mut self) -> Option<RemoteAppServerObservedEvent> {
++        self.client.next_observed_event().await
++    }
++
+     pub async fn shutdown(self) -> IoResult<()> {
+         let Self {
+             abort_guard,
+@@ -984,7 +990,7 @@ impl RemoteAppServerClient {
+     {
+         self.request_typed_observed_response(request)
+             .await
+-            .map(|observed| observed.into_response())
++            .map(RemoteAppServerObservedResponse::into_response)
+     }
+ 
+     pub async fn request_typed_observed_response<T>(
+@@ -1582,3 +1588,9 @@ mod tests {
+ #[cfg(test)]
+ #[path = "remote_shutdown_lifetime_tests.rs"]
+ mod shutdown_lifetime_tests;
++
++#[cfg(feature = "test-support")]
++#[path = "remote_blocked_close_test_support.rs"]
++mod blocked_close_test_support;
++#[cfg(feature = "test-support")]
++pub use blocked_close_test_support::RemoteBlockedCloseTestProbe;
+diff --git a/codex-rs/app-server-client/src/remote_blocked_close_test_support.rs b/codex-rs/app-server-client/src/remote_blocked_close_test_support.rs
+new file mode 100644
+index 000000000..13ca95690
+--- /dev/null
++++ b/codex-rs/app-server-client/src/remote_blocked_close_test_support.rs
+@@ -0,0 +1,266 @@
++//! Specific real-worker fixture for higher-level shutdown qualification.
++//! Compiled only by the existing `test-support` feature, never normal clients.
++use super::*;
++use std::pin::Pin;
++use std::sync::atomic::AtomicBool;
++use std::task::Context;
++use std::task::Poll;
++use tokio::io::DuplexStream;
++use tokio::io::ReadBuf;
++use tokio::task::AbortHandle;
++use tokio::task::JoinHandle;
++
++// Test-only diagnostics tolerate loaded runners; production budgets are unchanged.
++const PROBE_WAIT: Duration = Duration::from_secs(10);
++
++struct CloseFlushGate {
++    stream: DuplexStream,
++    armed: Arc<AtomicBool>,
++    close_written: bool,
++    blocked: Option<oneshot::Sender<()>>,
++    dropped: Option<oneshot::Sender<()>>,
++}
++
++impl Drop for CloseFlushGate {
++    fn drop(&mut self) {
++        if let Some(sender) = self.dropped.take() {
++            let _ = sender.send(());
++        }
++    }
++}
++
++impl AsyncRead for CloseFlushGate {
++    fn poll_read(
++        mut self: Pin<&mut Self>,
++        cx: &mut Context<'_>,
++        buf: &mut ReadBuf<'_>,
++    ) -> Poll<IoResult<()>> {
++        Pin::new(&mut self.stream).poll_read(cx, buf)
++    }
++}
++
++impl AsyncWrite for CloseFlushGate {
++    fn poll_write(
++        mut self: Pin<&mut Self>,
++        cx: &mut Context<'_>,
++        bytes: &[u8],
++    ) -> Poll<IoResult<usize>> {
++        let result = Pin::new(&mut self.stream).poll_write(cx, bytes);
++        if matches!(result, Poll::Ready(Ok(written)) if written > 0)
++            && self.armed.load(Ordering::SeqCst)
++            && bytes.first().is_some_and(|byte| byte & 0x0f == 0x08)
++        {
++            self.close_written = true;
++        }
++        result
++    }
++
++    fn poll_flush(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<IoResult<()>> {
++        if self.close_written {
++            if let Some(sender) = self.blocked.take() {
++                let _ = sender.send(());
++            }
++            // Deliberate permanent transport fault, only after an actual close
++            // frame. Cancellation, not a background cleanup task, releases it.
++            return Poll::Pending;
++        }
++        Pin::new(&mut self.stream).poll_flush(cx)
++    }
++
++    fn poll_shutdown(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<IoResult<()>> {
++        Pin::new(&mut self.stream).poll_shutdown(cx)
++    }
++}
++
++/// Test-only evidence from the real client's worker, not a synthetic task.
++#[doc(hidden)]
++pub struct RemoteBlockedCloseTestProbe {
++    worker: AbortHandle,
++    blocked: oneshot::Receiver<()>,
++    dropped: Option<oneshot::Receiver<()>>,
++    pending: Option<JoinHandle<IoResult<RequestResult>>>,
++    peer: Option<JoinHandle<IoResult<()>>>,
++}
++
++impl RemoteBlockedCloseTestProbe {
++    pub async fn wait_for_blocked_close(&mut self) -> IoResult<()> {
++        timeout(PROBE_WAIT, &mut self.blocked)
++            .await
++            .map_err(IoError::other)?
++            .map_err(IoError::other)
++    }
++
++    pub fn worker_finished(&self) -> bool {
++        self.worker.is_finished()
++    }
++
++    pub fn pending_request_finished(&self) -> bool {
++        self.pending.as_ref().is_none_or(JoinHandle::is_finished)
++    }
++
++    /// Observe actual resource destruction and waiter closure before cleanup.
++    /// This is completion after cancellation, not synchronous joining in Drop.
++    pub async fn observe_stopped(&mut self) -> IoResult<()> {
++        if let Some(dropped) = self.dropped.take() {
++            timeout(PROBE_WAIT, dropped)
++                .await
++                .map_err(IoError::other)?
++                .map_err(IoError::other)?;
++        }
++        if let Some(pending) = self.pending.as_mut() {
++            let result = timeout(PROBE_WAIT, pending)
++                .await
++                .map_err(IoError::other)?
++                .map_err(IoError::other)?;
++            self.pending.take();
++            if result.is_ok() {
++                return Err(IoError::other(
++                    "unanswered request unexpectedly received a response",
++                ));
++            }
++        }
++        if !self.worker.is_finished() {
++            return Err(IoError::other(
++                "transport dropped before worker completion was observed",
++            ));
++        }
++        Ok(())
++    }
++
++    /// Explicit bounded cleanup for the legacy negative control and peer.
++    pub async fn cleanup(&mut self) -> IoResult<()> {
++        self.worker.abort();
++        let result = self.observe_stopped().await;
++        if let Some(peer) = self.peer.take() {
++            peer.abort();
++            match timeout(PROBE_WAIT, peer).await.map_err(IoError::other)? {
++                Ok(result) => result?,
++                Err(error) if error.is_cancelled() => {}
++                Err(error) => return Err(IoError::other(error)),
++            }
++        }
++        result
++    }
++}
++
++impl Drop for RemoteBlockedCloseTestProbe {
++    fn drop(&mut self) {
++        self.worker.abort();
++        if let Some(pending) = &self.pending {
++            pending.abort();
++        }
++        if let Some(peer) = &self.peer {
++            peer.abort();
++        }
++    }
++}
++
++impl RemoteAppServerClient {
++    /// Existing test-support only: an exclusive client with one unanswered read
++    /// and a real worker that will block flushing its close frame.
++    #[doc(hidden)]
++    pub async fn blocked_close_fixture_for_test() -> IoResult<(Self, RemoteBlockedCloseTestProbe)> {
++        let (stream, peer_stream) = tokio::io::duplex(4096);
++        let armed = Arc::new(AtomicBool::new(false));
++        let (blocked_tx, blocked_rx) = oneshot::channel();
++        let (dropped_tx, dropped_rx) = oneshot::channel();
++        let stream = CloseFlushGate {
++            stream,
++            armed: Arc::clone(&armed),
++            close_written: false,
++            blocked: Some(blocked_tx),
++            dropped: Some(dropped_tx),
++        };
++        let client_stream = WebSocketStream::from_raw_socket(
++            stream,
++            tokio_tungstenite::tungstenite::protocol::Role::Client,
++            None,
++        )
++        .await;
++        let (read_tx, read_rx) = oneshot::channel();
++        let peer = tokio::spawn(async move {
++            let mut websocket = WebSocketStream::from_raw_socket(
++                peer_stream,
++                tokio_tungstenite::tungstenite::protocol::Role::Server,
++                None,
++            )
++            .await;
++            while let Some(Ok(Message::Text(text))) = websocket.next().await {
++                let request: serde_json::Value =
++                    serde_json::from_str(&text).map_err(IoError::other)?;
++                match request["method"].as_str() {
++                    Some("initialize") => websocket.send(Message::Text(serde_json::json!({
++                        "id":request["id"], "result":{"userAgent":"blocked-close/1","codexHome":"fixture"}
++                    }).to_string().into())).await.map_err(IoError::other)?,
++                    Some("initialized") => {},
++                    Some("thread/turns/list") => {
++                        if request["id"] != serde_json::json!(41) {
++                            return Err(IoError::other("fixture received a different read identity"));
++                        }
++                        read_tx.send(()).map_err(|_| IoError::other("read observer dropped"))?;
++                        std::future::pending::<()>().await;
++                        break;
++                    }
++                    other => return Err(IoError::other(format!("unexpected fixture method {other:?}"))),
++                }
++            }
++            Ok::<(), IoError>(())
++        });
++        let args = RemoteAppServerConnectArgs {
++            endpoint: RemoteAppServerEndpoint::WebSocket {
++                websocket_url: "ws://unused.test".into(),
++                auth_token: None,
++            },
++            client_name: "blocked-close".into(),
++            client_version: "1".into(),
++            experimental_api: true,
++            mcp_server_openai_form_elicitation: false,
++            opt_out_notification_methods: Vec::new(),
++            channel_capacity: 8,
++        };
++        let client = match Self::connect_with_stream(
++            8,
++            RemoteEventMode::Unbounded,
++            "in-memory blocked-close fixture".into(),
++            client_stream,
++            args.initialize_params(),
++        )
++        .await
++        {
++            Ok(client) => client,
++            Err(error) => {
++                peer.abort();
++                let _ = peer.await;
++                return Err(error);
++            }
++        };
++        let handle = client.request_handle();
++        let pending = tokio::spawn(async move {
++            handle
++                .request_json_rpc(JSONRPCRequest {
++                    id: RequestId::Integer(41),
++                    method: "thread/turns/list".into(),
++                    params: Some(serde_json::json!({"threadId":"019153a4-3088-7e03-a56a-9b1964f75ddd","limit":1})),
++                    trace: None,
++                })
++                .await
++        });
++        let mut probe = RemoteBlockedCloseTestProbe {
++            worker: client.worker_handle.abort_handle(),
++            blocked: blocked_rx,
++            dropped: Some(dropped_rx),
++            pending: Some(pending),
++            peer: Some(peer),
++        };
++        if let Err(error) = timeout(PROBE_WAIT, read_rx)
++            .await
++            .map_err(IoError::other)
++            .and_then(|result| result.map_err(IoError::other))
++        {
++            let _ = probe.cleanup().await;
++            return Err(error);
++        }
++        armed.store(true, Ordering::SeqCst);
++        Ok((client, probe))
++    }
++}
+diff --git a/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs b/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs
+index 21a3bd46c..ebeef7c15 100644
+--- a/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs
++++ b/codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs
+@@ -235,3 +235,113 @@ async fn cancelling_owned_shutdown_does_not_detach_worker_or_pending_waiters() {
+         "parent cancellation detached the exclusively owned worker"
+     );
+ }
++
++#[tokio::test]
++async fn owned_event_reader_preserves_real_notification_provenance_and_graceful_shutdown() {
++    let (stream, peer) = tokio::io::duplex(8192);
++    let peer = tokio::spawn(async move {
++        let mut peer = WebSocketStream::from_raw_socket(
++            peer,
++            tokio_tungstenite::tungstenite::protocol::Role::Server,
++            None,
++        )
++        .await;
++        while let Some(message) = peer.next().await {
++            match message.map_err(IoError::other)? {
++                Message::Text(text) => {
++                    let message: serde_json::Value =
++                        serde_json::from_str(&text).map_err(IoError::other)?;
++                    match message["method"].as_str() {
++                        Some("initialize") => {
++                            peer.send(Message::Text(serde_json::json!({
++                                "id": message["id"],
++                                "result": {"userAgent": "owned-events/1", "codexHome": "fixture-home"}
++                            }).to_string().into())).await.map_err(IoError::other)?;
++                        }
++                        Some("initialized") => {
++                            peer.send(Message::Text(
++                                serde_json::json!({
++                                    "method": "turn/completed",
++                                    "params": {"threadId": "thread-a", "turn": {
++                                        "id": "turn-a", "items": [], "itemsView": "full",
++                                        "status": "completed", "error": null
++                                    }}
++                                })
++                                .to_string()
++                                .into(),
++                            ))
++                            .await
++                            .map_err(IoError::other)?;
++                        }
++                        method => {
++                            return Err(IoError::other(format!("unexpected request {method:?}")));
++                        }
++                    }
++                }
++                Message::Close(_) => return Ok::<(), IoError>(()),
++                message => return Err(IoError::other(format!("unexpected frame {message:?}"))),
++            }
++        }
++        Err(IoError::other(
++            "peer ended before observing the close frame",
++        ))
++    });
++    let websocket = WebSocketStream::from_raw_socket(
++        stream,
++        tokio_tungstenite::tungstenite::protocol::Role::Client,
++        None,
++    )
++    .await;
++    let args = RemoteAppServerConnectArgs {
++        endpoint: RemoteAppServerEndpoint::WebSocket {
++            websocket_url: "ws://unused.test".into(),
++            auth_token: None,
++        },
++        client_name: "owned-events".into(),
++        client_version: "1".into(),
++        experimental_api: true,
++        mcp_server_openai_form_elicitation: false,
++        opt_out_notification_methods: Vec::new(),
++        channel_capacity: 8,
++    };
++    let mut client = RemoteAppServerClient::connect_with_stream(
++        8,
++        RemoteEventMode::Bounded { capacity: 16 },
++        "in-memory owned event fixture".into(),
++        websocket,
++        args.initialize_params(),
++    )
++    .await
++    .expect("initialized client")
++    .into_abort_on_drop();
++    let connection_id = client.connection_id();
++    let worker = client.worker_handle.abort_handle();
++    let event = timeout(Duration::from_secs(10), client.next_observed_event())
++        .await
++        .expect("event deadline")
++        .expect("actual notification");
++    assert_eq!(event.connection_id(), connection_id);
++    assert_eq!(event.server_version(), Some("1"));
++    assert_eq!(event.codex_home(), Some("fixture-home"));
++    let AppServerEvent::ServerNotification(notification) = event.event() else {
++        panic!("expected protocol notification");
++    };
++    let ServerNotification::TurnCompleted(notification) = notification.as_ref() else {
++        panic!("expected terminal notification");
++    };
++    assert_eq!(notification.thread_id, "thread-a");
++    assert_eq!(notification.turn.id, "turn-a");
++    timeout(
++        SHUTDOWN_TIMEOUT * 2 + Duration::from_secs(2),
++        client.shutdown(),
++    )
++    .await
++    .expect("owned shutdown deadline")
++    .expect("graceful owned shutdown");
++    assert!(worker.is_finished(), "graceful shutdown joined worker");
++    timeout(Duration::from_secs(10), peer)
++        .await
++        .expect("peer deadline")
++        .expect("peer task joined")
++        .expect("peer protocol completed");
++}
+diff --git a/codex-rs/core/src/client.rs b/codex-rs/core/src/client.rs
+index efe81e84a..aedaf1351 100644
+--- a/codex-rs/core/src/client.rs
++++ b/codex-rs/core/src/client.rs
+@@ -3107,6 +3107,10 @@ fn map_response_stream(
+     )
+ }
+ 
++#[expect(
++    clippy::too_many_arguments,
++    reason = "stream adaptation keeps provider ownership, terminal observation, redaction, and telemetry inputs explicit"
++)]
+ fn map_response_events<S>(
+     upstream_request_id: Option<String>,
+     api_stream: S,
+diff --git a/codex-rs/ext/hepta-memory/src/cognitive/federation.rs b/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
+index bac7c2e74..c315b346f 100644
+--- a/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/federation.rs
+@@ -14,7 +14,6 @@ use codex_extension_api::ExtensionMetrics;
+ use codex_extension_api::ModelProviderPolicyError;
+ use codex_extension_api::ModelProviderPolicyFuture;
+ use codex_extension_api::ModelProviderRequestKind;
+-use codex_extension_api::ModelProviderSha256Digest;
+ use codex_extension_api::TurnInputContext;
+ use codex_extension_api::TurnInputContributor;
+ use codex_hepta_contracts::AgentId;
+@@ -861,12 +860,6 @@ fn federation_source_binding(
+     ))
+ }
+ 
+-fn api_digest(
+-    digest: &Sha256Digest,
+-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
+-    ModelProviderSha256Digest::parse(digest.as_str())
+-}
+-
+ fn final_use_capability_window_current(
+     revalidation_started_at: i64,
+     final_use_now: i64,
+diff --git a/codex-rs/ext/hepta-memory/src/cognitive/mod.rs b/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
+index db3dba13d..91c3baa77 100644
+--- a/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
++++ b/codex-rs/ext/hepta-memory/src/cognitive/mod.rs
+@@ -271,6 +271,7 @@ pub(crate) struct CognitiveExtension {
+ }
+ 
+ impl CognitiveExtension {
++    #[cfg(test)]
+     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+         Self::new_with_mutation(runtime, None, false)
+     }
+diff --git a/codex-rs/hepta-infer-worker-host/src/lib.rs b/codex-rs/hepta-infer-worker-host/src/lib.rs
+index 8fdd321d8..5163ca87b 100644
+--- a/codex-rs/hepta-infer-worker-host/src/lib.rs
++++ b/codex-rs/hepta-infer-worker-host/src/lib.rs
+@@ -267,3 +267,6 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
+ #[cfg(test)]
+ #[path = "lib_tests.rs"]
+ mod tests;
++
++#[cfg(test)]
++mod runtime_owned_client_tests;
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+index 11f2db281..53708562d 100644
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+@@ -12,6 +12,7 @@ use std::time::Duration;
+ use std::time::SystemTime;
+ use std::time::UNIX_EPOCH;
+ 
++use codex_app_server_client::AbortOnDropRemoteAppServerClient;
+ use codex_app_server_client::AppServerEvent;
+ use codex_app_server_client::RemoteAppServerClient;
+ use codex_app_server_client::RemoteAppServerConnectArgs;
+@@ -254,7 +255,7 @@ impl AppServerModelDriver {
+         )
+         .await
+         {
+-            Ok(Ok(client)) => client,
++            Ok(Ok(client)) => client.into_abort_on_drop(),
+             _ => return Ok(None),
+         };
+         let observed_home = match client.codex_home() {
+@@ -471,7 +472,8 @@ impl AppServerModelDriver {
+                 /*event_channel_capacity*/ 256,
+             ),
+         )
+-        .await??;
++        .await??
++        .into_abort_on_drop();
+         let codex_home = client
+             .codex_home()
+             .ok_or("App Server initialize response omitted codex home")?
+@@ -913,17 +915,16 @@ impl AppServerModelDriver {
+         if let Err(reason) = result {
+             output.boundary_status = classify_observation_failure(&reason);
+             output.stop_reason = Some(reason.clone());
+-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
+-                if let Ok(cancelled) = owner
++            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
++                && let Ok(cancelled) = owner
+                     .run_cancel(
+                         binding.run_id.clone(),
+                         revision,
+                         reason.chars().take(512).collect(),
+                     )
+                     .await
+-                {
+-                    intelligence_revision = Some(cancelled.receipt.revision);
+-                }
++            {
++                intelligence_revision = Some(cancelled.receipt.revision);
+             }
+             // Persist cancellation intent, but still interrupt if that write
+             // fails. A failed journal write fences later admission/settlement.
+@@ -1006,7 +1007,7 @@ impl AppServerModelDriver {
+ 
+     async fn observe(
+         &self,
+-        client: &mut RemoteAppServerClient,
++        client: &mut AbortOnDropRemoteAppServerClient,
+         output: &mut NativeRunOutput,
+         deadline: Instant,
+         cancellation: &CancellationToken,
+@@ -1134,7 +1135,7 @@ fn validate_post_authority_fence(
+ }
+ 
+ async fn send_authorized_turn_start(
+-    client: &mut RemoteAppServerClient,
++    client: &mut AbortOnDropRemoteAppServerClient,
+     _entered: EnteredUseToken,
+     params: TurnStartParams,
+ ) -> std::result::Result<TurnStartResponse, RemoteObservedTypedRequestError> {
+@@ -1146,6 +1147,10 @@ async fn send_authorized_turn_start(
+         .await
+ }
+ 
++#[expect(
++    clippy::too_many_arguments,
++    reason = "Keep independently sourced authority, session and payload inputs explicit at the durable dispatch comparison"
++)]
+ fn verify_persisted_dispatch_binding(
+     control: &DurableInferenceControl,
+     request_id: &str,
+@@ -1218,7 +1223,7 @@ fn indeterminate_start_output(started: ThreadStartResponse, reason: String) -> N
+ /// connection, the worker may recover only from the authoritative
+ /// turn/started notification for this fresh per-request thread.
+ async fn reconcile_turn_start(
+-    client: &mut RemoteAppServerClient,
++    client: &mut AbortOnDropRemoteAppServerClient,
+     thread_id: &str,
+ ) -> Result<Option<codex_app_server_protocol::Turn>> {
+     let deadline = Instant::now() + TURN_START_RECONCILE_GRACE;
+@@ -1402,7 +1407,7 @@ fn downgrade_for_owner_loss(output: &mut NativeRunOutput) {
+     }
+ }
+ 
+-async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput) {
++async fn interrupt(client: &mut AbortOnDropRemoteAppServerClient, output: &NativeRunOutput) {
+     // An interrupt acknowledgement is not a terminal model outcome.
+     let _ = timeout(
+         RPC_TIMEOUT,
+diff --git a/codex-rs/hepta-infer-worker-host/src/runtime_owned_client_tests.rs b/codex-rs/hepta-infer-worker-host/src/runtime_owned_client_tests.rs
+new file mode 100644
+index 000000000..2a9bf5862
+--- /dev/null
++++ b/codex-rs/hepta-infer-worker-host/src/runtime_owned_client_tests.rs
+@@ -0,0 +1,96 @@
++//! Real host supervision and real transport-worker close in one qualification.
++use codex_app_server_client::RemoteAppServerClient;
++use codex_hepta_agentd::AgentdError;
++use codex_hepta_agentd::RuntimeTasks;
++use std::sync::Arc;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::Ordering;
++use std::time::Duration;
++use tokio::time::Instant;
++use tokio::time::timeout;
++use tokio_util::sync::CancellationToken;
++
++#[derive(Clone, Copy)]
++enum Ownership {
++    AbortOnDrop,
++    LegacyUnowned,
++}
++
++async fn exercise(ownership: Ownership) {
++    let (client, mut probe) = RemoteAppServerClient::blocked_close_fixture_for_test()
++        .await
++        .expect("real initialized worker and pending read");
++    // Match the production host's grace without shortening client timeouts.
++    let grace = Duration::from_secs(3);
++    let mut tasks = RuntimeTasks::new(CancellationToken::new(), grace).expect("host");
++    let returned = Arc::new(AtomicBool::new(false));
++    let child_returned = Arc::clone(&returned);
++    tasks
++        .spawn_required("blocked-owned-transport", async move {
++            let result = match ownership {
++                Ownership::AbortOnDrop => client.into_abort_on_drop().shutdown().await,
++                Ownership::LegacyUnowned => client.shutdown().await,
++            };
++            child_returned.store(true, Ordering::SeqCst);
++            result.map_err(|error| AgentdError::Protocol(error.to_string()))
++        })
++        .expect("host admission");
++    let start = Instant::now();
++    {
++        let shutdown = tasks.shutdown();
++        tokio::pin!(shutdown);
++        // On this current-thread runtime the child cannot start until we yield.
++        // The initial barrier is pending, so this select starts the real host
++        // grace before the child's five-second shutdown wait can begin. Prefer
++        // an already delivered barrier on later polls, before host completion.
++        tokio::select! {
++            biased;
++            blocked = probe.wait_for_blocked_close() => {
++                blocked.expect("actual close-frame flush is pending");
++            }
++            _ = &mut shutdown => panic!("host returned before the close-flush barrier"),
++        }
++        assert!(!probe.worker_finished());
++        assert!(!probe.pending_request_finished());
++        timeout(Duration::from_secs(6), &mut shutdown)
++            .await
++            .expect("host shutdown");
++    }
++    assert!(start.elapsed() >= grace, "the real host grace was bypassed");
++    assert_eq!(tasks.active_count(), 0);
++    assert!(
++        !returned.load(Ordering::SeqCst),
++        "child returned instead of being aborted by the host"
++    );
++    match ownership {
++        Ownership::AbortOnDrop => {
++            probe
++                .observe_stopped()
++                .await
++                .expect("actual transport and pending map released after abort");
++            assert!(probe.worker_finished());
++        }
++        Ownership::LegacyUnowned => {
++            assert!(
++                !probe.worker_finished(),
++                "negative control must expose the detached worker"
++            );
++            assert!(!probe.pending_request_finished());
++        }
++    }
++    // Only after the assertions: negative-control worker and fixture peer cleanup.
++    probe
++        .cleanup()
++        .await
++        .expect("explicit bounded fixture cleanup");
++}
++
++#[tokio::test(flavor = "current_thread")]
++async fn runtime_tasks_abort_drops_real_worker_blocked_in_close_flush() {
++    exercise(Ownership::AbortOnDrop).await;
++}
++
++#[tokio::test(flavor = "current_thread")]
++async fn runtime_tasks_negative_control_exposes_unowned_worker_after_host_abort() {
++    exercise(Ownership::LegacyUnowned).await;
++}
+diff --git a/scripts/test_hepta_ci_exec.py b/scripts/test_hepta_ci_exec.py
+index c105ee92f..66ebd93e4 100644
+--- a/scripts/test_hepta_ci_exec.py
++++ b/scripts/test_hepta_ci_exec.py
+@@ -37,7 +37,7 @@ class TaskflowObservationWorkflowTests(unittest.TestCase):
+         cases = (
+             (
+                 "taskflow-owned-client",
+-                "3",
++                "4",
+                 "codex-app-server-client",
+                 "test(remote::shutdown_lifetime_tests)",
+             ),
+@@ -47,6 +47,12 @@ class TaskflowObservationWorkflowTests(unittest.TestCase):
+                 "codex-hepta-automation",
+                 "test(pending_occurrence_scan) | test(uncertain_dispatch_scan)",
+             ),
++            (
++                "taskflow-runtime-shutdown",
++                "15",
++                "codex-hepta-infer-worker-host",
++                "test(runtime_owned_client_tests) | test(native_app_server::tests)",
++            ),
+             (
+                 "taskflow-observation",
+                 "14",
+diff --git a/scripts/test_hepta_ci_exec_output.py b/scripts/test_hepta_ci_exec_output.py
+index e9f5566e8..02988ded4 100644
+--- a/scripts/test_hepta_ci_exec_output.py
++++ b/scripts/test_hepta_ci_exec_output.py
+@@ -77,7 +77,7 @@ class CommandOutputTests(unittest.TestCase):
+ 
+     def test_taskflow_nextest_minimum_rejects_zero_and_partial_selections(self):
+         # Parser/command-contract fixtures, not claimed native test execution.
+-        for minimum in (3, 11, 14):
++        for minimum in (2, 3, 4, 11, 14, 15):
+             for passed in (0, minimum - 1, minimum):
+                 with self.subTest(minimum=minimum, passed=passed):
+                     self.receipt.unlink(missing_ok=True)

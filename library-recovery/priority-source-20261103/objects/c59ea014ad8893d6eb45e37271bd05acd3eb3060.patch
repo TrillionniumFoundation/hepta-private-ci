@@ -1,0 +1,288 @@
+--- a/codex-rs/hepta-memory/src/production_writer.rs
++++ b/codex-rs/hepta-memory/src/production_writer.rs
+@@ -393,6 +393,8 @@
+     lease: LocalLeaseOutbox,
+     lease_id: Arc<str>,
+     live_verifier: Option<Arc<dyn ProductionAuthorityVerifier>>,
++    reconciliation_cursors:
++        Arc<tokio::sync::Mutex<std::collections::BTreeMap<String, String>>>,
+     // Retain the OS-level lock for the lifetime of the writer.  SQLite's
+     // transaction lock serializes individual mutations, but it does not
+     // establish the H4 single-writer boundary: two processes could otherwise
+@@ -611,6 +613,7 @@
+             lease,
+             lease_id: Arc::from(lease_id),
+             live_verifier: None,
++            reconciliation_cursors: Arc::default(),
+             _writer_lock: writer_lock,
+         })
+     }
+@@ -883,75 +886,6 @@
+     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
+         self.verify_authority().await?;
+         Ok(self.lease.reconcile(occurrence_key, outcome).await?.into())
+-    }
+-
+-    /// Discover and reconcile a bounded batch of operations whose latest
+-    /// durable source state is indeterminate. Discovery is destination-scoped
+-    /// and reconciliation calls only the target observer, never dispatch.
+-    pub async fn reconcile_target_batch<T>(
+-        &self,
+-        target: &T,
+-        limit: usize,
+-    ) -> Result<usize, ProductionWriterError>
+-    where
+-        T: FinalUseProductionOutboxTarget + ?Sized,
+-    {
+-        self.verify_authority().await?;
+-        if !(1..=256).contains(&limit) {
+-            return Err(ProductionWriterError::Invalid(
+-                "reconcile batch limit must be 1..=256".to_string(),
+-            ));
+-        }
+-        let operation_ids = sqlx::query_scalar::<_, String>(
+-            "SELECT o.operation_id
+-             FROM cognitive_operation_ledger o
+-             WHERE o.lease_id = ? AND o.destination_id = ?
+-               AND (
+-                   SELECT e.event_kind
+-                   FROM cognitive_local_events e
+-                   WHERE e.lease_id = o.lease_id
+-                     AND e.occurrence_key = o.operation_id
+-                   ORDER BY e.event_sequence DESC
+-                   LIMIT 1
+-               ) IN ('indeterminate', 'reconcile_still_indeterminate')
+-             ORDER BY o.prepared_at_unix_seconds, o.operation_id
+-             LIMIT ?",
+-        )
+-        .bind(self.lease_id())
+-        .bind(target.destination_id())
+-        .bind(i64::try_from(limit).map_err(|_| {
+-            ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
+-        })?)
+-        .fetch_all(&self.store.pool)
+-        .await
+-        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+-
+-        let mut reconciled = 0_usize;
+-        for operation_id in operation_ids {
+-            let request = self
+-                .reconciliation_request(&operation_id, target.destination_id())
+-                .await?;
+-            match target.observe_terminal(&request).await {
+-                ProductionTerminalObservation::Applied { .. } => {
+-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
+-                        .await?;
+-                    reconciled += 1;
+-                }
+-                ProductionTerminalObservation::NotApplied { .. }
+-                | ProductionTerminalObservation::Quarantined { .. } => {
+-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+-                        .await?;
+-                    reconciled += 1;
+-                }
+-                ProductionTerminalObservation::Indeterminate { .. } => {
+-                    self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
+-                        .await?;
+-                    reconciled += 1;
+-                }
+-                ProductionTerminalObservation::Unavailable { .. } => {}
+-            }
+-        }
+-        Ok(reconciled)
+     }
+ 
+     async fn reconciliation_request(
+@@ -3926,3 +3860,6 @@
+         );
+     }
+ }
++
++#[path = "production_operation_reconciliation.rs"]
++mod operation_reconciliation;
+--- a/codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs
++++ b/codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs
+@@ -700,3 +700,87 @@
+     assert_eq!(target.observe_terminal(&request).await,
+         CognitiveSourceTerminalObservation::Applied { receipt });
+ }
++
++struct FairReconcileTarget {
++    inner: CognitiveSourceOutboxTarget,
++    observed: std::sync::Mutex<Vec<String>>,
++}
++
++impl ProductionOutboxTarget for FairReconcileTarget {
++    fn dispatch<'a>(&'a self, _request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
++        panic!("reconciliation must not dispatch")
++    }
++}
++
++impl crate::FinalUseProductionOutboxTarget for FairReconcileTarget {
++    fn destination_id(&self) -> &str { COGNITIVE_SOURCE_DESTINATION_V1 }
++
++    fn observe_terminal<'a>(
++        &'a self, request: &'a ProductionDispatchRequest,
++    ) -> ProductionTerminalObservationFuture<'a> {
++        self.observed.lock().expect("observations").push(request.occurrence_key.clone());
++        Box::pin(async move {
++            if request.occurrence_key == "operation:fair:0" {
++                ProductionTerminalObservation::Unavailable { reason: "temporarily unavailable".to_string() }
++            } else {
++                crate::FinalUseProductionOutboxTarget::observe_terminal(&self.inner, request).await
++            }
++        })
++    }
++}
++
++async fn fair_reconcile_fixture() -> (TempDir, ProductionDurableWriter, FairReconcileTarget) {
++    let temp = TempDir::new().expect("temp");
++    let store = store(&temp).await;
++    let owner = store.owner_agent_id().clone();
++    let writer = ProductionDurableWriter::open(
++        store.clone(), production_authority(owner.clone()), &AllowVerifier,
++        "production:h4:fair-reconcile", 1,
++    ).await.expect("writer");
++    let target = FairReconcileTarget {
++        inner: CognitiveSourceOutboxTarget::new(store, CognitiveAccess::agent_private(owner.clone()))
++            .expect("target"),
++        observed: std::sync::Mutex::new(Vec::new()),
++    };
++    for index in 0..3 {
++        let id = format!("operation:fair:{index}");
++        let (draft, payload) = source_payload(&id, b"fair-source");
++        let intent = operation(&owner, &id, &payload, &draft, None);
++        writer.prepare_operation(intent.clone(), COGNITIVE_SOURCE_TOPIC_V1, &payload)
++            .await.expect("prepare");
++        writer.mark_indeterminate(&id, "qualification lost result").await.expect("unknown");
++        if index == 2 {
++            assert!(matches!(target.inner.dispatch(direct_request(&intent, payload)).await,
++                ProductionTargetOutcome::Committed { .. }));
++        }
++    }
++    (temp, writer, target)
++}
++
++#[tokio::test]
++async fn reconciliation_wraps_past_unavailable_unknown_prefix_across_clones() {
++    let (_temp, writer, target) = fair_reconcile_fixture().await;
++    writer.reconcile_target_batch(&target, 2).await.expect("first batch");
++    assert_eq!(writer.status("operation:fair:2").await.expect("pending"), LocalOutcomeState::Indeterminate);
++    writer.clone().reconcile_target_batch(&target, 2).await.expect("shared cursor");
++    assert_eq!(writer.status("operation:fair:2").await.expect("settled"), LocalOutcomeState::Committed);
++    writer.reconcile_target_batch(&target, 2).await.expect("wrap");
++    assert_eq!(*target.observed.lock().expect("observations"),
++        [0, 1, 2, 0, 1, 0].map(|index| format!("operation:fair:{index}")).to_vec());
++}
++
++#[tokio::test]
++async fn reconstruction_error_does_not_starve_unattempted_tail() {
++    let (_temp, writer, target) = fair_reconcile_fixture().await;
++    // Qualification-only tamper; the corrupt operation must still fail closed.
++    sqlx::query("DROP TRIGGER cognitive_operation_ledger_no_update")
++        .execute(&target.inner.store.pool).await.expect("tamper fixture");
++    sqlx::query("UPDATE cognitive_operation_ledger SET policy_generation = policy_generation + 1 WHERE operation_id = 'operation:fair:0'")
++        .execute(&target.inner.store.pool).await.expect("poison first row");
++    assert!(writer.reconcile_target_batch(&target, 3).await.is_err());
++    assert!(target.observed.lock().expect("observations").is_empty());
++    assert!(writer.reconcile_target_batch(&target, 3).await.is_err());
++    assert_eq!(writer.status("operation:fair:2").await.expect("healthy tail"), LocalOutcomeState::Committed);
++    assert_eq!(*target.observed.lock().expect("observations"),
++        [1, 2].map(|index| format!("operation:fair:{index}")).to_vec());
++}
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/production_operation_reconciliation.rs
+@@ -0,0 +1,93 @@
++//! Bounded observer-only circular reconciliation.
++
++use super::*;
++
++impl ProductionDurableWriter {
++    pub async fn reconcile_target_batch<T>(
++        &self,
++        target: &T,
++        limit: usize,
++    ) -> Result<usize, ProductionWriterError>
++    where
++        T: FinalUseProductionOutboxTarget + ?Sized,
++    {
++        self.verify_authority().await?;
++        if !(1..=256).contains(&limit) {
++            return Err(ProductionWriterError::Invalid(
++                "reconcile batch limit must be 1..=256".to_string(),
++            ));
++        }
++        // Scheduling only: shared across clones, reset on reopen. Retain at
++        // most 256 lifetime nonempty destination cursors; never silently evict.
++        let destination = target.destination_id();
++        let mut cursors = self.reconciliation_cursors.lock().await;
++        let cursor = cursors.get(destination).cloned();
++        if cursor.is_none() && cursors.len() >= 256 {
++            return Err(ProductionWriterError::Invalid(
++                "reconciliation destination cursor capacity exceeded".to_string(),
++            ));
++        }
++        let operation_ids = sqlx::query_scalar::<_, String>(
++            "SELECT o.operation_id
++             FROM cognitive_operation_ledger o
++             WHERE o.lease_id = ? AND o.destination_id = ?
++               AND (
++                   SELECT e.event_kind
++                   FROM cognitive_local_events e
++                   WHERE e.lease_id = o.lease_id
++                     AND e.occurrence_key = o.operation_id
++                   ORDER BY e.event_sequence DESC
++                   LIMIT 1
++               ) IN ('indeterminate', 'reconcile_still_indeterminate')
++             ORDER BY CASE WHEN ? IS NULL OR o.operation_id > ? THEN 0 ELSE 1 END,
++                      o.operation_id
++             LIMIT ?",
++        )
++        .bind(self.lease_id())
++        .bind(destination)
++        .bind(cursor.as_deref())
++        .bind(cursor.as_deref())
++        .bind(i64::try_from(limit).map_err(|_| {
++            ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
++        })?)
++        .fetch_all(&self.store.pool)
++        .await
++        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
++
++        if !operation_ids.is_empty() {
++            cursors.entry(destination.to_string()).or_default();
++        }
++        drop(cursors);
++        let mut reconciled = 0_usize;
++        for operation_id in operation_ids {
++            // Advance only attempted rows, including errors/unavailable. A
++            // poisoned first row must not skip the unattempted batch tail.
++            self.reconciliation_cursors.lock().await
++                .insert(destination.to_string(), operation_id.clone());
++            let request = self
++                .reconciliation_request(&operation_id, target.destination_id())
++                .await?;
++            match target.observe_terminal(&request).await {
++                ProductionTerminalObservation::Applied { .. } => {
++                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
++                        .await?;
++                    reconciled += 1;
++                }
++                ProductionTerminalObservation::NotApplied { .. }
++                | ProductionTerminalObservation::Quarantined { .. } => {
++                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
++                        .await?;
++                    reconciled += 1;
++                }
++                ProductionTerminalObservation::Indeterminate { .. } => {
++                    self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
++                        .await?;
++                    reconciled += 1;
++                }
++                ProductionTerminalObservation::Unavailable { .. } => {}
++            }
++        }
++        Ok(reconciled)
++    }
++
++}

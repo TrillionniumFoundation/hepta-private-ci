@@ -1,0 +1,373 @@
+--- /dev/null
++++ b/codex-rs/hepta-authbus/migrations/0008_dispatch_observation.sql
+@@ -0,0 +1,52 @@
++-- Preserve the effect-entry instant independently of later lifecycle updates.
++-- Historical indeterminate rows have no recoverable dispatch instant. They
++-- retain the old, conservative updated_at_ms settlement bound; never invent a
++-- pre-dispatch timestamp during migration or recreate historical authority.
++CREATE TABLE authbus_dispatch_observation (
++    reservation_id TEXT PRIMARY KEY,
++    dispatched_at_ms BLOB NOT NULL CHECK (
++        typeof(dispatched_at_ms) = 'blob' AND length(dispatched_at_ms) = 8
++        AND dispatched_at_ms > X'0000000000000000'
++    )
++) WITHOUT ROWID;
++
++CREATE TRIGGER authbus_dispatch_observation_insert_guard
++BEFORE INSERT ON authbus_dispatch_observation
++WHEN EXISTS (
++    SELECT 1 FROM authbus_dispatch_observation
++    WHERE reservation_id = NEW.reservation_id
++) OR NOT EXISTS (
++    SELECT 1 FROM authbus_quota_reservation
++    WHERE reservation_id = NEW.reservation_id
++      AND state = 'dispatch_attempted'
++      AND dispatch_digest = effect_digest
++      AND updated_at_ms = NEW.dispatched_at_ms
++)
++BEGIN SELECT RAISE(ABORT, 'dispatch observation must match effect entry'); END;
++
++CREATE TRIGGER authbus_dispatch_observation_immutable_update
++BEFORE UPDATE ON authbus_dispatch_observation
++BEGIN SELECT RAISE(ABORT, 'dispatch observation is immutable'); END;
++
++CREATE TRIGGER authbus_dispatch_observation_immutable_delete
++BEFORE DELETE ON authbus_dispatch_observation
++BEGIN SELECT RAISE(ABORT, 'dispatch observation is immutable'); END;
++
++CREATE TRIGGER authbus_reservation_record_dispatch
++AFTER UPDATE OF state ON authbus_quota_reservation
++WHEN OLD.state = 'held' AND NEW.state = 'dispatch_attempted'
++BEGIN
++    INSERT INTO authbus_dispatch_observation(reservation_id, dispatched_at_ms)
++    VALUES (NEW.reservation_id, NEW.updated_at_ms);
++END;
++
++CREATE TRIGGER authbus_frontier_dispatch_observation_insert
++AFTER INSERT ON authbus_dispatch_observation
++BEGIN
++    INSERT INTO authbus_frontier_change(domain, operation, record_key, canonical_record)
++    VALUES (
++        'dispatch_observation', 'upsert', NEW.reservation_id,
++        hex(CAST(NEW.reservation_id AS BLOB))||'|'||hex(NEW.dispatched_at_ms)
++    );
++    UPDATE authbus_authority_checkpoint_dirty SET dirty = 1 WHERE singleton = 1;
++END;
+--- a/codex-rs/hepta-authbus/src/settlement_store.rs
++++ b/codex-rs/hepta-authbus/src/settlement_store.rs
+@@ -262,7 +262,24 @@
+         ) {
+             return Err(AuthBusAuthorityError::InvalidTransition);
+         }
+-        if authenticated.claims().observed_at_ms < reservation.updated_at_ms {
++        // A timeout/sweep updates lifecycle time, not the instant the effect
++        // became possible. Evidence may arrive after that update while naming
++        // an observation between dispatch and timeout. Legacy rows without an
++        // independently retained dispatch instant keep the conservative bound.
++        let dispatch_time: Option<Vec<u8>> = sqlx::query_scalar(
++            "SELECT dispatched_at_ms FROM authbus_dispatch_observation WHERE reservation_id = ?",
++        )
++        .bind(reservation.reservation_id.as_str())
++        .fetch_optional(&mut *tx)
++        .await
++        .map_err(storage)?;
++        let earliest_observation = match dispatch_time {
++            Some(bytes) => u64::from_be_bytes(bytes.try_into().map_err(|_| {
++                AuthBusAuthorityError::CorruptState("invalid dispatch observation time")
++            })?),
++            None => reservation.updated_at_ms,
++        };
++        if authenticated.claims().observed_at_ms < earliest_observation {
+             return Err(AuthBusAuthorityError::InvalidSettlementEvidence);
+         }
+         if authenticated.claims().observed_cost > reservation.amount {
+@@ -470,4 +487,3 @@
+ #[cfg(test)]
+ #[path = "settlement_store_tests.rs"]
+ mod tests;
+-
+--- a/codex-rs/hepta-authbus/src/settlement_store_tests.rs
++++ b/codex-rs/hepta-authbus/src/settlement_store_tests.rs
+@@ -128,6 +128,160 @@
+ }
+ 
+ #[tokio::test]
++async fn late_terminal_evidence_uses_dispatch_time_after_timeout_and_restart() {
++    let (root, store, _decision, reservation) = configured().await;
++    let dispatched = store
++        .mark_dispatch_attempted(
++            &reservation.reservation_id,
++            reservation.revision,
++            reservation.effect_digest,
++            sample(5, 1_500),
++        )
++        .await
++        .expect("dispatch");
++    let indeterminate = store
++        .mark_indeterminate(
++            &reservation.reservation_id,
++            dispatched.revision,
++            sample(6, 1_800),
++        )
++        .await
++        .expect("timeout");
++    assert_eq!(indeterminate.updated_at_ms, 1_800);
++    store.pool.close().await;
++    let reopened = AuthBusAuthorityStore::open(&root.path().join("authbus.sqlite"))
++        .await
++        .expect("reopen");
++    let key = SigningKey::from_bytes(&[9; 32]);
++    let premature = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_499);
++    assert!(matches!(
++        reopened.settle(&premature, sample(7, 1_900)).await,
++        Err(AuthBusAuthorityError::InvalidSettlementEvidence)
++    ));
++    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
++    let settled = reopened
++        .settle(&signed, sample(7, 1_900))
++        .await
++        .expect("earlier observation delivered after timeout");
++    assert_eq!(settled.state, ReservationState::Settled);
++    reopened
++        .compact_terminal_reservations(2_000, 16)
++        .await
++        .expect("compact");
++    let dispatch_time: Vec<u8> = sqlx::query_scalar(
++        "SELECT dispatched_at_ms FROM authbus_dispatch_observation WHERE reservation_id = ?",
++    )
++    .bind(reservation.reservation_id.as_str())
++    .fetch_one(&reopened.pool)
++    .await
++    .expect("retained dispatch time");
++    assert_eq!(dispatch_time, u64_bytes(1_500));
++    let quota = reopened
++        .quota_snapshot(&reservation.quota_key)
++        .await
++        .expect("quota");
++    assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
++}
++
++#[tokio::test]
++async fn expiry_sweep_does_not_move_terminal_evidence_lower_bound() {
++    let (_root, store, _decision, reservation) = configured().await;
++    let dispatched = store
++        .mark_dispatch_attempted(
++            &reservation.reservation_id,
++            reservation.revision,
++            reservation.effect_digest,
++            sample(5, 1_500),
++        )
++        .await
++        .expect("dispatch");
++    let key = SigningKey::from_bytes(&[9; 32]);
++    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 4_900);
++    let sweep = store
++        .sweep_expired_reservations(sample(6, 5_100), 16)
++        .await
++        .expect("sweep");
++    assert_eq!(sweep.marked_indeterminate, 1);
++    store
++        .settle(&signed, sample(7, 5_200))
++        .await
++        .expect("late evidence after expiry");
++}
++
++#[tokio::test]
++async fn dispatch_observation_is_immutable_and_frontier_bound() {
++    for seed_first in [false, true] {
++        let (_root, store, _decision, reservation) = configured().await;
++        if seed_first {
++            store
++                .authority_frontier_digest()
++                .await
++                .expect("seed frontier");
++        }
++        store
++            .mark_dispatch_attempted(
++                &reservation.reservation_id,
++                reservation.revision,
++                reservation.effect_digest,
++                sample(5, 1_500),
++            )
++            .await
++            .expect("dispatch");
++        let events: i64 = sqlx::query_scalar(
++            "SELECT COUNT(*) FROM authbus_frontier_change WHERE domain = 'dispatch_observation'",
++        )
++        .fetch_one(&store.pool)
++        .await
++        .expect("dispatch frontier event");
++        assert_eq!(events, 1);
++        let folded = store.authority_frontier_digest().await.expect("fold frontier");
++        assert_eq!(
++            store.authority_frontier_digest().await.expect("stable frontier"),
++            folded
++        );
++        for query in [
++            "UPDATE authbus_dispatch_observation SET dispatched_at_ms = dispatched_at_ms",
++            "DELETE FROM authbus_dispatch_observation",
++        ] {
++            assert!(sqlx::query(query).execute(&store.pool).await.is_err());
++        }
++        let extra = sqlx::query(
++            "INSERT INTO authbus_dispatch_observation VALUES ('reservation:foreign', ?)",
++        )
++        .bind(u64_bytes(1_500).as_slice())
++        .execute(&store.pool)
++        .await;
++        assert!(extra.is_err());
++        let mut connection = store.pool.acquire().await.expect("connection");
++        sqlx::query("PRAGMA recursive_triggers = OFF")
++            .execute(&mut *connection)
++            .await
++            .expect("disable recursive triggers on this connection");
++        sqlx::query("UPDATE authbus_quota_reservation SET updated_at_ms = ?")
++            .bind(u64_bytes(1_450).as_slice())
++            .execute(&mut *connection)
++            .await
++            .expect("adversarial lifecycle timestamp rewrite");
++        assert!(
++            sqlx::query("INSERT OR REPLACE INTO authbus_dispatch_observation VALUES (?, ?)")
++                .bind(reservation.reservation_id.as_str())
++                .bind(u64_bytes(1_450).as_slice())
++                .execute(&mut *connection)
++                .await
++                .is_err()
++        );
++        let retained: Vec<u8> = sqlx::query_scalar(
++            "SELECT dispatched_at_ms FROM authbus_dispatch_observation WHERE reservation_id = ?",
++        )
++        .bind(reservation.reservation_id.as_str())
++        .fetch_one(&mut *connection)
++        .await
++        .expect("retained observation");
++        assert_eq!(retained, u64_bytes(1_500));
++    }
++}
++
++#[tokio::test]
+ async fn dispatch_rejects_effect_digest_drift_before_crossing_the_boundary() {
+     let (_root, store, _decision, reservation) = configured().await;
+     assert!(matches!(
+@@ -404,4 +558,3 @@
+         .expect("quota snapshot");
+     assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
+ }
+-
+--- a/codex-rs/hepta-authbus/src/recovery.rs
++++ b/codex-rs/hepta-authbus/src/recovery.rs
+@@ -491,6 +491,25 @@
+          FROM authbus_issuer_registry ORDER BY issuer_id, purpose, key_epoch",
+     )
+     .await?;
++    // Preserve the legacy seed bytes for databases upgraded before any new
++    // dispatch. New dispatch observations are included in an unseeded store's
++    // full snapshot, and otherwise in the same-transaction change journal.
++    let has_dispatch_observations: bool = sqlx::query_scalar(
++        "SELECT EXISTS(SELECT 1 FROM authbus_dispatch_observation)",
++    )
++    .fetch_one(&mut **tx)
++    .await
++    .map_err(storage)?;
++    if has_dispatch_observations {
++        append_rows(
++            tx,
++            &mut bytes,
++            "dispatch_observation",
++            "SELECT hex(CAST(reservation_id AS BLOB))||'|'||hex(dispatched_at_ms)
++             FROM authbus_dispatch_observation ORDER BY reservation_id",
++        )
++        .await?;
++    }
+     Ok(Digest32::of_bytes(&bytes))
+ }
+ 
+@@ -540,4 +559,3 @@
+ #[cfg(test)]
+ #[path = "recovery_tests.rs"]
+ mod tests;
+-
+--- a/codex-rs/hepta-authbus/src/bootstrap.rs
++++ b/codex-rs/hepta-authbus/src/bootstrap.rs
+@@ -19,7 +19,7 @@
+ use crate::AuthBusAuthorityStore;
+ use crate::owner_fence::OwnerFence;
+ 
+-const EXPECTED_AUTHBUS_MIGRATIONS: i64 = 7;
++const EXPECTED_AUTHBUS_MIGRATIONS: i64 = 8;
+ const AUTHORITATIVE_TABLES: &[&str] = &[
+     "authbus_trusted_time",
+     "authbus_policy",
+@@ -28,6 +28,7 @@
+     "authbus_quota_registry",
+     "authbus_quota_reservation",
+     "authbus_quota_reservation_archive",
++    "authbus_dispatch_observation",
+     "authbus_issuer_registry",
+ ];
+ 
+@@ -349,4 +350,3 @@
+         ));
+     }
+ }
+-
+--- a/docs/modules/auth.authbus/SCHEMA_COMPATIBILITY.md
++++ b/docs/modules/auth.authbus/SCHEMA_COMPATIBILITY.md
+@@ -52,14 +52,38 @@
+ and applied ID commit together. Existing databases with a newer external
+ witness still fail closed.
+ 
++## Migration 0008: retained dispatch observation
++
++`0008_dispatch_observation.sql` adds an immutable dispatch-time record in the
++existing authority database. The `Held -> DispatchAttempted` transition records
++it atomically; its insertion participates in the same dirty frontier and change
++journal. Timeout, expiry, restart and terminal archival never move or delete
++that instant. Settlement can therefore accept still-valid signed evidence
++observed after dispatch but delivered after a later lifecycle update, while
++continuing to reject evidence observed before dispatch.
++
++The table starts empty on upgrade. Old rows without a retained dispatch instant
++continue to use their existing `updated_at_ms` as a conservative lower bound.
++No historical time is invented or lowered. Such an old indeterminate operation
++may require a new, independently authenticated terminal observation; the
++upgrade alone cannot release its quota. The legacy full-state seed is unchanged
++when the new table is empty. Nonempty unseeded stores include these records in
++the snapshot, while seeded stores fold the new journal domain.
++
++This is a coordinated storage upgrade and a downgrade boundary. Deploy only
++with matching binary, migration and checkpoint qualification. An old binary
++must not reopen the new schema. The dispatch record shares the reservation's
++immutable retention obligation and remains present after terminal archival.
++
+ ## Binary/store matrix
+ 
+ | Binary | Store | Result |
+ | --- | --- | --- |
+-| current | predecessor through 0005 | migrate through 0007, seed legacy root at first frontier evaluation, verify, open |
+-| current | current 0006/0007 | verify accumulator/journal/guards/schema, open |
++| current | predecessor through 0005 | migrate through 0008, seed legacy root at first frontier evaluation, verify, open |
++| current | predecessor 0006/0007 | add empty dispatch-observation table, verify accumulator/journal/guards/schema, open |
++| current | current 0008 | verify dispatch-observation and frontier guards, open |
+ | current | newer unknown | fail closed |
+-| predecessor | current 0006/0007 | unsupported; restore a matched pre-0006 pair |
++| predecessor | current 0008 | unsupported; restore only an independently approved matched backup pair |
+ | any | schema drift with unchanged ledger | fail closed |
+ 
+ ## Rollback
+@@ -78,4 +102,3 @@
+ promotion bypass and predecessor restore.
+ 
+ See `INCREMENTAL_FRONTIER.md`, `RECOVERY.md` and `ADMINISTRATION.md`.
+-
+--- a/docs/modules/auth.authbus/BOOTSTRAP_RECOVERY.md
++++ b/docs/modules/auth.authbus/BOOTSTRAP_RECOVERY.md
+@@ -22,7 +22,7 @@
+ and all of the following are true:
+ 
+ - SQLite `quick_check` succeeds;
+-- exactly migrations 1 through 7 are present and successful;
++- exactly migrations 1 through 8 are present and successful;
+ - every trusted-time, policy/history/archive, quota, reservation/archive and
+   issuer table is empty;
+ - no local authority checkpoint exists;

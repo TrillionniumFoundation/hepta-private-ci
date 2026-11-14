@@ -1,0 +1,97 @@
+--- a/.github/workflows/hepta-architecture-convergence.yml
++++ b/.github/workflows/hepta-architecture-convergence.yml
+@@ -187,6 +187,12 @@
+           set -euo pipefail
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
+           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
++      - name: Actual production host reconciliation fixtures
++        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
++        working-directory: codex-rs
++        run: |
++          set -euo pipefail
++          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/production-reconcile-host.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agentd --features qualification-cognitive-write --test production_reconcile_host --test-threads=1
+       - name: Module lifecycle generations and migration rollback
+         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+         run: |
+--- a/scripts/test_hepta_ci_exec_output.py
++++ b/scripts/test_hepta_ci_exec_output.py
+@@ -66,6 +66,24 @@
+         )
+         return result, json.loads(self.receipt.read_text())
+ 
++    def assert_host_fixture_count(self, passed):
++        result, record = self.execute(
++            f"print('Summary [0.01s] {passed} tests run: {passed} passed, 0 skipped')",
++            minimum=2,
++        )
++        self.assertEqual(record["observed_passed_tests"], passed)
++        self.assertEqual(result.returncode, 0 if passed == 2 else 1)
++        self.assertEqual(record["status"], "passed" if passed == 2 else "failed")
++
++    def test_host_fixture_zero_selection_is_rejected(self):
++        self.assert_host_fixture_count(0)
++
++    def test_host_fixture_partial_selection_is_rejected(self):
++        self.assert_host_fixture_count(1)
++
++    def test_host_fixture_two_passes_satisfy_own_receipt(self):
++        self.assert_host_fixture_count(2)
++
+     def test_zero_tests_is_failure_even_with_process_success(self):
+         result, record = self.execute(
+             "print('test result: ok. 0 passed; 0 failed; 0 ignored; 27 filtered out;')"
+--- /dev/null
++++ b/scripts/test_hepta_ci_exec_host_workflow.py
+@@ -0,0 +1,52 @@
++"""Check the explicit host fixture command, not incidental Cargo harness output."""
++
++from pathlib import Path
++import unittest
++
++from hepta_workflow_commands import workflow_commands
++
++ROOT = Path(__file__).resolve().parents[1]
++WORKFLOW = ROOT / ".github/workflows/hepta-architecture-convergence.yml"
++STEP = "      - name: Actual production host reconciliation fixtures\n"
++EXPECTED = [
++    "python3", "../scripts/hepta_ci_exec.py", "--output",
++    "$RUNNER_TEMP/hepta-command-records/production-reconcile-host.json",
++    "--minimum-tests", "2", "--", "just", "test", "--locked",
++    "-p", "codex-hepta-agentd", "--features", "qualification-cognitive-write",
++    "--test", "production_reconcile_host", "--test-threads=1",
++]
++
++
++def host_commands(text):
++    return [command for command in workflow_commands(text)
++            if "production_reconcile_host" in command]
++
++
++class ArchitectureHostCommandTests(unittest.TestCase):
++    def test_dedicated_feature_enabled_command_has_independent_two_test_receipt(self):
++        text = WORKFLOW.read_text()
++        self.assertEqual(host_commands(text), [EXPECTED])
++        block = text.split(STEP, 1)[1].split("      - name:", 1)[0]
++        self.assertIn("steps.execution.outputs.run_native == 'true'", block)
++        self.assertIn("steps.scope.outputs.effects == 'true'", block)
++        self.assertIn("working-directory: codex-rs", block)
++        self.assertNotIn("continue-on-error", block)
++
++    def test_missing_feature_partial_filter_and_weaker_minimum_are_rejected(self):
++        text = WORKFLOW.read_text()
++        for before, after in (
++            ("--minimum-tests 2 -- just", "--minimum-tests 0 -- just"),
++            ("--minimum-tests 2 -- just", "--minimum-tests 1 -- just"),
++            ("--features qualification-cognitive-write ", ""),
++            ("--test production_reconcile_host --test-threads=1",
++             "--test production_reconcile_host observer_budget --test-threads=1"),
++            ("--test production_reconcile_host", "--lib"),
++        ):
++            with self.subTest(mutation=before):
++                mutated = text.replace(before, after, 1)
++                self.assertNotEqual(mutated, text)
++                self.assertNotEqual(host_commands(mutated), [EXPECTED])
++
++
++if __name__ == "__main__":
++    unittest.main()

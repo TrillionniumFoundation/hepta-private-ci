@@ -1,0 +1,423 @@
+diff --git a/codex-rs/hepta-memory/src/cognitive_database_init_tests.rs b/codex-rs/hepta-memory/src/cognitive_database_init_tests.rs
+new file mode 100644
+index 0000000000..e5813e5b22
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_database_init_tests.rs
+@@ -0,0 +1,270 @@
++use super::*;
++use crate::CognitiveAccess;
++use crate::CognitiveRecoveryAnchor;
++use crate::CognitiveRecoveryRequirement;
++use crate::CognitiveScope;
++use crate::ProductionAuthorityLease;
++use crate::ProductionAuthorityToken;
++use crate::cognitive_test_support::agent_id;
++use crate::cognitive_test_support::source;
++use codex_hepta_paths::HeptaFleetRoot;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::fs::OpenOptionsExt;
++use std::os::unix::fs::PermissionsExt;
++use std::process::Command;
++use std::time::Duration;
++use std::time::Instant;
++
++const CHILD: &str = "cognitive_store::database_init_tests::bootstrap_child";
++
++fn layout(root: &Path) -> HeptaAgentLayout {
++    HeptaFleetRoot::parse(root.join("fleet"))
++        .expect("fixture fleet")
++        .layout()
++        .agent(&agent_id(/*suffix*/ 249))
++}
++
++fn bootstrap(root: &Path, mask: &str) {
++    // Prepare only the directory/lock before changing the CHILD's umask. This
++    // isolates DB creation, including masks which remove every requested bit.
++    let layout = layout(root);
++    super::create_private_directory(layout.cognitive_root()).expect("private root");
++    drop(
++        super::CognitiveStoreOpenGuard::acquire_shared(layout.cognitive_root())
++            .expect("private lock"),
++    );
++    let mut child = Command::new("sh")
++        .arg("-c")
++        .arg(format!("umask {mask}; exec \"$@\""))
++        .arg("private-db-child")
++        .arg(std::env::current_exe().expect("test binary"))
++        .args(["--exact", CHILD, "--ignored", "--nocapture"])
++        .env("HEPTA_PRIVATE_DB_CHILD_ROOT", root)
++        .spawn()
++        .expect("start cold bootstrap child");
++    let deadline = Instant::now() + Duration::from_secs(/*secs*/ 30);
++    loop {
++        if let Some(status) = child.try_wait().expect("child status") {
++            assert!(status.success(), "bootstrap child failed: {status}");
++            return;
++        }
++        if Instant::now() >= deadline {
++            let _ = child.kill();
++            let _ = child.wait();
++            panic!("cold bootstrap child exceeded its deadline");
++        }
++        // Process supervision only: recovery is never attempted before exit.
++        std::thread::sleep(Duration::from_millis(/*millis*/ 10));
++    }
++}
++
++#[tokio::test]
++#[ignore = "child-only abrupt SQLite bootstrap"]
++async fn bootstrap_child() {
++    let root = PathBuf::from(std::env::var_os("HEPTA_PRIVATE_DB_CHILD_ROOT").expect("child root"));
++    let store = CognitiveStore::open(&layout(&root))
++        .await
++        .expect("bootstrap");
++    store
++        .append_source(
++            &CognitiveAccess::agent_private(agent_id(/*suffix*/ 249)),
++            &source(
++                CognitiveScope::AgentPrivate,
++                "cold-source",
++                "durable cold fact",
++            ),
++        )
++        .await
++        .expect("committed source");
++    let anchor = store.recovery_anchor().await.expect("current cut");
++    let mut witness = OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .mode(0o600)
++        .open(root.join("anchor.json"))
++        .expect("new witness");
++    witness
++        .set_permissions(fs::Permissions::from_mode(/*mode*/ 0o600))
++        .expect("private new witness");
++    witness
++        .write_all(&serde_json::to_vec(&anchor).expect("encode cut"))
++        .expect("write cut");
++    witness.sync_all().expect("durable witness");
++    // Deliberately skip Rust/SQLite cleanup: public recovery must accept a real
++    // cold WAL bundle, not only a pool.close() fixture with sidecars removed.
++    std::process::exit(/*code*/ 0);
++}
++
++fn authority() -> ProductionAuthorityLease {
++    ProductionAuthorityLease::from_verified_parts(
++        agent_id(/*suffix*/ 249),
++        Sha256Digest::for_bytes(b"private-bootstrap-grant"),
++        /*authority_epoch*/ 7,
++        /*owner_epoch*/ 11,
++        u64::MAX,
++        ProductionAuthorityToken::from_verified_bytes(b"private-bootstrap-fence".to_vec())
++            .expect("fixture token"),
++    )
++    .expect("fixture authority")
++}
++
++async fn recover(root: &Path) -> Result<CognitiveStore, crate::CognitiveRecoveryError> {
++    let anchor: CognitiveRecoveryAnchor =
++        serde_json::from_slice(&fs::read(root.join("anchor.json")).expect("read cut"))
++            .expect("decode cut");
++    CognitiveStore::open_with_recovery(
++        &layout(root),
++        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
++        &authority(),
++        &|lease: &ProductionAuthorityLease, owner: &AgentId| {
++            if &lease.agent_id == owner {
++                Ok(())
++            } else {
++                Err("fixture owner mismatch".into())
++            }
++        },
++    )
++    .await
++}
++
++#[tokio::test]
++async fn abrupt_child_keeps_private_sidecars_and_public_exact_cut_recovery() {
++    for mask in ["022", "077", "777"] {
++        let temp = tempfile::tempdir().expect("fixture");
++        let root = temp.path().canonicalize().expect("canonical fixture");
++        bootstrap(&root, mask);
++        for name in [
++            "cognitive_1.sqlite3",
++            "cognitive_1.sqlite3-wal",
++            "cognitive_1.sqlite3-shm",
++        ] {
++            let metadata = fs::symlink_metadata(layout(&root).cognitive_root().join(name))
++                .expect("retained cold bundle");
++            assert_eq!(metadata.mode() & 0o7777, 0o600, "mask {mask}, {name}");
++            assert_eq!(metadata.nlink(), 1);
++        }
++        let recovered = recover(&root).await.expect("public cold recovery");
++        let expected: CognitiveRecoveryAnchor =
++            serde_json::from_slice(&fs::read(root.join("anchor.json")).expect("cut"))
++                .expect("decode cut");
++        assert_eq!(
++            recovered.recovery_anchor().await.expect("recovered cut"),
++            expected
++        );
++        recovered.pool.close().await;
++    }
++}
++
++#[tokio::test]
++async fn recovery_does_not_repair_an_unsafe_existing_sidecar() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = temp.path().canonicalize().expect("canonical fixture");
++    bootstrap(&root, "022");
++    let wal = layout(&root)
++        .cognitive_root()
++        .join("cognitive_1.sqlite3-wal");
++    fs::set_permissions(&wal, fs::Permissions::from_mode(/*mode*/ 0o644))
++        .expect("unsafe fixture mode");
++    let before = fs::read(&wal).expect("retain WAL bytes");
++    assert!(matches!(
++        recover(&root).await,
++        Err(crate::CognitiveRecoveryError::Indeterminate(_))
++    ));
++    assert_eq!(fs::metadata(&wal).expect("WAL mode").mode() & 0o7777, 0o644);
++    assert_eq!(fs::read(&wal).expect("unchanged WAL"), before);
++}
++
++#[test]
++fn existing_private_bytes_are_neither_truncated_nor_rewritten() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = create_private_directory(temp.path()).expect("private canonical fixture root");
++    let path = root.join("existing");
++    fs::write(&path, b"retained bytes").expect("seed");
++    fs::set_permissions(&path, fs::Permissions::from_mode(/*mode*/ 0o600)).expect("private mode");
++    let before = fs::metadata(&path).expect("metadata");
++    drop(prepare(&path).expect("existing private file"));
++    let after = fs::metadata(&path).expect("metadata");
++    assert_eq!(
++        (before.dev(), before.ino(), before.mode()),
++        (after.dev(), after.ino(), after.mode())
++    );
++    assert_eq!(fs::read(&path).expect("retained"), b"retained bytes");
++}
++
++#[test]
++fn existing_links_and_restrictive_permissions_are_rejected_without_repair() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = create_private_directory(temp.path()).expect("private canonical fixture root");
++    let original = root.join("original");
++    fs::write(&original, b"unchanged").expect("seed");
++    fs::set_permissions(&original, fs::Permissions::from_mode(/*mode*/ 0o600))
++        .expect("private mode");
++    let symlink = root.join("symlink");
++    std::os::unix::fs::symlink(&original, &symlink).expect("symlink");
++    assert!(prepare(&symlink).is_err());
++    let hardlink = root.join("hardlink");
++    fs::hard_link(&original, &hardlink).expect("hardlink");
++    assert!(prepare(&hardlink).is_err());
++    assert_eq!(fs::read(&original).expect("unchanged target"), b"unchanged");
++    let restricted = root.join("restricted");
++    fs::write(&restricted, b"private").expect("seed");
++    fs::set_permissions(&restricted, fs::Permissions::from_mode(/*mode*/ 0o000))
++        .expect("restricted fixture");
++    assert!(prepare(&restricted).is_err());
++    assert_eq!(
++        fs::metadata(&restricted).expect("unchanged mode").mode() & 0o7777,
++        0o000
++    );
++}
++
++#[test]
++fn existing_fifo_is_rejected_without_waiting_for_a_peer() {
++    use std::os::unix::fs::FileTypeExt;
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = create_private_directory(temp.path()).expect("private canonical fixture root");
++    let path = root.join("fifo");
++    assert!(
++        Command::new("mkfifo")
++            .arg(&path)
++            .status()
++            .expect("create fixture FIFO")
++            .success()
++    );
++    assert!(prepare(&path).is_err());
++    assert!(
++        fs::symlink_metadata(&path)
++            .expect("retained FIFO")
++            .file_type()
++            .is_fifo()
++    );
++}
++
++fn prepare(path: &Path) -> Result<File, codex_state::SqliteRecoveryError> {
++    let home = AbsolutePathBuf::try_from(path.parent().expect("fixture parent").to_path_buf())
++        .expect("absolute fixture root");
++    SqliteConfig::from_sqlite_home(home).prepare_private_bootstrap_database(path)
++}
++
++#[tokio::test]
++async fn open_rejects_existing_nonprivate_main_without_repair() {
++    let temp = tempfile::tempdir().expect("fixture");
++    let root = temp.path().canonicalize().expect("canonical fixture");
++    let store = CognitiveStore::open(&layout(&root))
++        .await
++        .expect("valid private store");
++    store.pool.close().await;
++    drop(store);
++    let path = layout(&root).cognitive_root().join("cognitive_1.sqlite3");
++    fs::set_permissions(&path, fs::Permissions::from_mode(/*mode*/ 0o644))
++        .expect("nonprivate existing fixture");
++    let before = fs::read(&path).expect("valid database bytes");
++    assert!(matches!(
++        CognitiveStore::open(&layout(&root)).await,
++        Err(CognitiveStoreError::Unavailable(_))
++    ));
++    assert_eq!(
++        fs::metadata(&path).expect("unchanged mode").mode() & 0o7777,
++        0o644
++    );
++    assert_eq!(fs::read(&path).expect("unchanged bytes"), before);
++}
+diff --git a/codex-rs/hepta-memory/src/cognitive_store.rs b/codex-rs/hepta-memory/src/cognitive_store.rs
+index 86cc3f7b93..7cbb14a0c8 100644
+--- a/codex-rs/hepta-memory/src/cognitive_store.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store.rs
+@@ -313,17 +313,26 @@ impl CognitiveStore {
+     /// This entry point has no independent current-cut witness and cannot detect
+     /// rollback to an internally valid old backup. Hosts requiring that guarantee
+     /// must use `open_with_recovery` and never fall back here on recovery failure.
++    /// Existing Unix main files must already be owner-held, single-link and mode 0600;
++    /// bootstrap creates new private files but does not repair existing modes.
+     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
+         let root = create_private_directory(layout.cognitive_root())?;
+         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
+         let path = resolve_active_database_path(&root)?;
+         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
+             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
++        let sqlite_config = SqliteConfig::from_sqlite_home(sqlite_home);
++        // SQLite derives new sidecar permissions from the main database file.
++        #[cfg(unix)]
++        let _database_file = sqlite_config
++            .prepare_private_bootstrap_database(&path)
++            .map_err(unavailable)?;
++        let pool = sqlite_config
+             .open_durable_evidence_pool(&path)
+             .await
+             .map_err(unavailable)?;
+         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
++        #[cfg(not(unix))]
+         protect_database_file(&path)?;
+         sqlx::query(
+             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
+@@ -1659,3 +1668,7 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
+ #[cfg(test)]
+ #[path = "cognitive_schema_tests.rs"]
+ mod schema_tests;
++
++#[cfg(all(test, unix))]
++#[path = "cognitive_database_init_tests.rs"]
++mod database_init_tests;
+diff --git a/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs b/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs
+index 94422ac7f6..68f023de83 100644
+--- a/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs
++++ b/codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs
+@@ -484,6 +484,17 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
+     let current = store.lane_c_snapshot(&access, &scope, 200).await.unwrap();
+     let retained_witness = current.cut_digest().to_string();
+     store.pool.close().await;
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::PermissionsExt;
++        // VACUUM creates this fixture's new backup with the process umask.
++        // Restore a valid private bundle; opening must not repair unsafe files.
++        std::fs::set_permissions(&backup, std::fs::Permissions::from_mode(/*mode*/ 0o600)).unwrap();
++        assert_eq!(
++            std::fs::metadata(&backup).unwrap().permissions().mode() & 0o7777,
++            0o600
++        );
++    }
+     std::fs::copy(&backup, layout.cognitive_root().join("cognitive_1.sqlite3")).unwrap();
+     // Legacy open verifies internal integrity, but cannot know which backup is latest.
+     let reopened = CognitiveStore::open(&layout).await.unwrap();
+diff --git a/codex-rs/state/src/sqlite_bootstrap.rs b/codex-rs/state/src/sqlite_bootstrap.rs
+new file mode 100644
+index 0000000000..fe1f1aec3e
+--- /dev/null
++++ b/codex-rs/state/src/sqlite_bootstrap.rs
+@@ -0,0 +1,64 @@
++//! Private main-file initialization before SQLite derives sidecar permissions.
++
++use super::*;
++use std::os::unix::fs::PermissionsExt;
++
++impl SqliteConfig {
++    /// Prepare one owner-held private main file before opening a bootstrap pool.
++    ///
++    /// Only newly created files are permission-normalized. Existing files must
++    /// already satisfy the recovery filesystem owner's private-file checks.
++    /// Retain the returned descriptor through initialization. This is not a
++    /// recovery capability or a descriptor-backed SQLite VFS; later path-based
++    /// SQLite opens do not gain hostile same-user replacement protection.
++    pub fn prepare_private_bootstrap_database(
++        &self,
++        path: &Path,
++    ) -> Result<File, SqliteRecoveryError> {
++        if path.parent() != Some(self.home())
++            || self.home().canonicalize().map_err(indeterminate)? != self.home()
++        {
++            return Err(SqliteRecoveryError::Indeterminate);
++        }
++        let parent = RetainedObject::bind_parent(self.home())?;
++        let (file, created) = match OpenOptions::new()
++            .read(true)
++            .write(true)
++            .create_new(true)
++            .mode(0o600)
++            .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK)
++            .open(path)
++        {
++            Ok(file) => (file, true),
++            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => (
++                OpenOptions::new()
++                    .read(true)
++                    .write(true)
++                    .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK)
++                    .open(path)
++                    .map_err(indeterminate)?,
++                false,
++            ),
++            Err(error) => return Err(indeterminate(error)),
++        };
++        if created {
++            let metadata = file.metadata().map_err(indeterminate)?;
++            if !metadata.is_file() || metadata.nlink() != 1 {
++                return Err(SqliteRecoveryError::Indeterminate);
++            }
++            // A restrictive umask can remove owner bits. Normalize only this
++            // exclusive newly created descriptor, never an existing pathname.
++            file.set_permissions(std::fs::Permissions::from_mode(/*mode*/ 0o600))
++                .map_err(indeterminate)?;
++        }
++        FileSnapshot::validated(
++            &file.metadata().map_err(indeterminate)?,
++            ObjectKind::PrivateFile,
++        )?;
++        if created {
++            file.sync_all().map_err(indeterminate)?;
++            parent.descriptor.sync_all().map_err(indeterminate)?;
++        }
++        Ok(file)
++    }
++}
+diff --git a/codex-rs/state/src/sqlite_recovery.rs b/codex-rs/state/src/sqlite_recovery.rs
+index 7093f94b44..114b923955 100644
+--- a/codex-rs/state/src/sqlite_recovery.rs
++++ b/codex-rs/state/src/sqlite_recovery.rs
+@@ -15,6 +15,10 @@ use std::path::Path;
+ use std::path::PathBuf;
+ use std::sync::Arc;
+ 
++#[cfg(unix)]
++#[path = "sqlite_bootstrap.rs"]
++mod bootstrap;
++
+ #[path = "sqlite_recovery_image.rs"]
+ mod image;
+ 

@@ -1,0 +1,486 @@
+--- a/.github/workflows/authbus-authority-qualification.yml
++++ b/.github/workflows/authbus-authority-qualification.yml
+@@ -28,18 +28,15 @@
+       - "scripts/authbus-*.py"
+       - "scripts/check-authbus-*.py"
+       - ".github/workflows/authbus-authority-qualification.yml"
++  # Manual runs validate only this workflow's own main commit. PR candidates
++  # use pull_request runs/reruns, never default-branch manual checkout.
+   workflow_dispatch:
+-    inputs:
+-      pull_request_number:
+-        description: Pull request number whose immutable head/base should be qualified
+-        required: false
+-        type: string
+ 
+ permissions:
+   contents: read
+ 
+ concurrency:
+-  group: authbus-authority-${{ github.event.pull_request.number || inputs.pull_request_number || github.ref }}
++  group: authbus-authority-${{ github.event.pull_request.number || github.ref }}
+   cancel-in-progress: false
+ 
+ env:
+@@ -60,44 +57,54 @@
+         id: resolve
+         shell: bash
+         env:
+-          GH_TOKEN: ${{ github.token }}
+           EVENT_NAME: ${{ github.event_name }}
+           EVENT_HEAD: ${{ github.event.pull_request.head.sha }}
+           EVENT_BASE: ${{ github.event.pull_request.base.sha }}
+-          INPUT_PR: ${{ inputs.pull_request_number }}
+-          REPOSITORY: ${{ github.repository }}
+           TRIGGER_SHA: ${{ github.sha }}
+-        run: |
+-          set -euo pipefail
+-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+-            head="$EVENT_HEAD"
+-            base="$EVENT_BASE"
+-            kind="exact_head"
+-          elif [[ "$EVENT_NAME" == "workflow_dispatch" && -n "${INPUT_PR:-}" ]]; then
+-            payload="$(curl --fail --silent --show-error \
+-              -H "Authorization: Bearer $GH_TOKEN" \
+-              -H "Accept: application/vnd.github+json" \
+-              "https://api.github.com/repos/$REPOSITORY/pulls/$INPUT_PR")"
+-            head="$(jq -er '.head.sha' <<<"$payload")"
+-            base="$(jq -er '.base.sha' <<<"$payload")"
+-            kind="exact_head"
+-          else
+-            head="$TRIGGER_SHA"
+-            base=""
+-            kind="main_head"
+-          fi
++          TRIGGER_REF: ${{ github.ref }}
++        run: |
++          set -euo pipefail
++          case "$EVENT_NAME" in
++            pull_request)
++              head="$EVENT_HEAD"
++              base="$EVENT_BASE"
++              kind="exact_head"
++              [[ "$base" =~ ^[0-9a-f]{40}$ ]]
++              ;;
++            push|workflow_dispatch)
++              if [[ "$TRIGGER_REF" != "refs/heads/main" ]]; then
++                echo "Push/manual qualification requires the workflow's own main ref; use PR runs/reruns for PR candidates." >&2
++                exit 1
++              fi
++              head="$TRIGGER_SHA"
++              base=""
++              kind="main_head"
++              ;;
++            *)
++              echo "Unsupported AuthBus qualification event" >&2
++              exit 1
++              ;;
++          esac
+           [[ "$head" =~ ^[0-9a-f]{40}$ ]]
+-          [[ -z "$base" || "$base" =~ ^[0-9a-f]{40}$ ]]
+           {
+             echo "head=$head"
+             echo "base=$base"
+             echo "kind=$kind"
+           } >> "$GITHUB_OUTPUT"
+ 
+-      - name: Checkout exact source
++      - name: Checkout exact PR source
++        if: github.event_name == 'pull_request'
+         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+         with:
+-          ref: ${{ steps.resolve.outputs.head }}
++          ref: ${{ github.event.pull_request.head.sha }}
++          fetch-depth: 0
++          persist-credentials: false
++
++      - name: Checkout workflow main source
++        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
++        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
++        with:
++          ref: ${{ github.sha }}
+           fetch-depth: 0
+           persist-credentials: false
+ 
+@@ -148,6 +155,7 @@
+           EXPECTED_HEAD: ${{ steps.resolve.outputs.head }}
+         run: |
+           set -euo pipefail
++          python3 scripts/authbus-workflow-trigger-tests.py
+           python3 scripts/authbus-evidence-projection-tests.py
+           python3 scripts/authbus-evidence-projection.py \
+             --candidate-kind "$CANDIDATE_KIND" \
+@@ -251,7 +259,7 @@
+ 
+   synthetic-merge:
+     name: Deterministic synthetic merge
+-    if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.pull_request_number != '')
++    if: github.event_name == 'pull_request'
+     runs-on: ubuntu-24.04
+     outputs:
+       candidate-sha: ${{ steps.resolve.outputs.head }}
+@@ -262,29 +270,17 @@
+         id: resolve
+         shell: bash
+         env:
+-          GH_TOKEN: ${{ github.token }}
+           EVENT_NAME: ${{ github.event_name }}
+           EVENT_PR: ${{ github.event.pull_request.number }}
+           EVENT_HEAD: ${{ github.event.pull_request.head.sha }}
+           EVENT_BASE: ${{ github.event.pull_request.base.sha }}
+-          INPUT_PR: ${{ inputs.pull_request_number }}
+-          REPOSITORY: ${{ github.repository }}
+-        run: |
+-          set -euo pipefail
+-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+-            pr="$EVENT_PR"
+-            head="$EVENT_HEAD"
+-            base="$EVENT_BASE"
+-          else
+-            pr="$INPUT_PR"
+-            payload="$(curl --fail --silent --show-error \
+-              -H "Authorization: Bearer $GH_TOKEN" \
+-              -H "Accept: application/vnd.github+json" \
+-              "https://api.github.com/repos/$REPOSITORY/pulls/$pr")"
+-            head="$(jq -er '.head.sha' <<<"$payload")"
+-            base="$(jq -er '.base.sha' <<<"$payload")"
+-          fi
+-          [[ "$pr" =~ ^[0-9]+$ ]]
++        run: |
++          set -euo pipefail
++          test "$EVENT_NAME" = "pull_request"
++          pr="$EVENT_PR"
++          head="$EVENT_HEAD"
++          base="$EVENT_BASE"
++          [[ "$pr" =~ ^[1-9][0-9]*$ ]]
+           [[ "$head" =~ ^[0-9a-f]{40}$ ]]
+           [[ "$base" =~ ^[0-9a-f]{40}$ ]]
+           {
+@@ -345,6 +341,7 @@
+           MERGE_SHA: ${{ steps.verify.outputs.merge }}
+         run: |
+           set -euo pipefail
++          python3 scripts/authbus-workflow-trigger-tests.py
+           python3 scripts/authbus-evidence-projection-tests.py
+           python3 scripts/authbus-evidence-projection.py \
+             --candidate-kind synthetic_merge \
+@@ -446,25 +443,41 @@
+         shell: bash
+         env:
+           EVENT_NAME: ${{ github.event_name }}
+-          INPUT_PR: ${{ inputs.pull_request_number }}
+           SOURCE_RESULT: ${{ needs.source-head.result }}
+           MERGE_RESULT: ${{ needs.synthetic-merge.result }}
+         run: |
+           set -euo pipefail
+           test "$SOURCE_RESULT" = "success"
+-          if [[ "$EVENT_NAME" == "pull_request" || \
+-                ( "$EVENT_NAME" == "workflow_dispatch" && -n "${INPUT_PR:-}" ) ]]; then
+-            test "$MERGE_RESULT" = "success"
+-          else
+-            test "$MERGE_RESULT" = "skipped"
+-          fi
+-
+-      - name: Checkout candidate controller
++          case "$EVENT_NAME" in
++            pull_request) test "$MERGE_RESULT" = "success" ;;
++            push|workflow_dispatch) test "$MERGE_RESULT" = "skipped" ;;
++            *) exit 1 ;;
++          esac
++
++      - name: Checkout PR candidate controller
++        if: github.event_name == 'pull_request'
+         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+         with:
+-          ref: ${{ needs.source-head.outputs.candidate-sha }}
++          ref: ${{ github.event.pull_request.head.sha }}
+           fetch-depth: 1
+           persist-credentials: false
++
++      - name: Checkout workflow main controller
++        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
++        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
++        with:
++          ref: ${{ github.sha }}
++          fetch-depth: 1
++          persist-credentials: false
++
++      - name: Verify controller identity
++        shell: bash
++        env:
++          EXPECTED_HEAD: ${{ needs.source-head.outputs.candidate-sha }}
++        run: |
++          set -euo pipefail
++          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
++          test -z "$(git status --porcelain)"
+ 
+       - name: Download exact-head evidence
+         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+--- /dev/null
++++ b/scripts/authbus-workflow-trigger-tests.py
+@@ -0,0 +1,218 @@
++#!/usr/bin/env python3
++"""Execute qualification resolver/identity shell blocks without GitHub or network.
++
++The extractor supports this workflow's literal step/run layout only. It is a
++small test harness, not a YAML parser or an Actions/CodeQL qualification oracle.
++"""
++import os
++from pathlib import Path
++import subprocess
++import tempfile
++import unittest
++
++ROOT = Path(__file__).resolve().parents[1]
++WORKFLOW = ROOT / '.github/workflows/authbus-authority-qualification.yml'
++HEAD = 'a' * 40
++BASE = 'b' * 40
++TRIGGER = 'c' * 40
++
++
++def step_text(name):
++    lines = WORKFLOW.read_text().splitlines()
++    marker = '      - name: ' + name
++    starts = [i for i, line in enumerate(lines) if line == marker]
++    if len(starts) != 1:
++        raise AssertionError('expected one literal workflow step: ' + name)
++    start = starts[0]
++    end = next((i for i in range(start + 1, len(lines))
++                if lines[i].strip() and not lines[i].startswith('        ')), len(lines))
++    return '\n'.join(lines[start:end])
++
++
++def literal_field(text, indentation, name):
++    prefix = ' ' * indentation + name + ': '
++    values = [line[len(prefix):] for line in text.splitlines() if line.startswith(prefix)]
++    if len(values) != 1:
++        raise AssertionError('expected one literal field: ' + name)
++    return values[0]
++
++
++def shell(name):
++    text = step_text(name)
++    before, marker, block = text.partition('        run: |\n')
++    if not marker or any(line.strip() and not line.startswith('          ') for line in block.splitlines()):
++        raise AssertionError('unsupported literal run layout: ' + name)
++    return '\n'.join(line[10:] if line.strip() else '' for line in block.splitlines())
++
++
++def run_step(name, values, cwd=None):
++    with tempfile.TemporaryDirectory() as directory:
++        output = Path(directory) / 'output'
++        environment = {**os.environ, 'GITHUB_OUTPUT': str(output), **values}
++        result = subprocess.run(['bash', '-c', shell(name)], env=environment, cwd=cwd,
++                                text=True, capture_output=True, timeout=20)
++        outputs = dict(line.split('=', 1) for line in output.read_text().splitlines()) if output.exists() else {}
++        return result, outputs
++
++
++def event(name='pull_request', **overrides):
++    return {'EVENT_NAME': name, 'EVENT_HEAD': HEAD, 'EVENT_BASE': BASE,
++            'EVENT_PR': '1272', 'TRIGGER_SHA': TRIGGER,
++            'TRIGGER_REF': 'refs/heads/main', **overrides}
++
++
++class TriggerIdentityTests(unittest.TestCase):
++    def test_pr_uses_event_head_and_base(self):
++        result, outputs = run_step('Resolve immutable candidate', event(INPUT_PR='other'))
++        self.assertEqual(result.returncode, 0, result.stderr)
++        self.assertEqual(outputs, {'head': HEAD, 'base': BASE, 'kind': 'exact_head'})
++
++    def test_manual_and_push_main_use_own_event_sha(self):
++        for name in ['workflow_dispatch', 'push']:
++            result, outputs = run_step('Resolve immutable candidate', event(name, INPUT_PR='999', EVENT_HEAD='d' * 40))
++            self.assertEqual(result.returncode, 0, result.stderr)
++            self.assertEqual(outputs, {'head': TRIGGER, 'base': '', 'kind': 'main_head'})
++
++    def test_manual_and_push_foreign_refs_rejected_before_checkout(self):
++        for name in ['workflow_dispatch', 'push']:
++            for ref in ['refs/heads/feature', 'refs/tags/main', 'refs/pull/1272/merge', '']:
++                result, outputs = run_step('Resolve immutable candidate', event(name, TRIGGER_REF=ref))
++                self.assertNotEqual(result.returncode, 0)
++                self.assertEqual(outputs, {})
++
++    def test_unknown_event_and_malformed_identity_rejected(self):
++        for values in [event('pull_request_target'), event('workflow_run'), event(EVENT_HEAD=''),
++                       event(EVENT_BASE=''), event(EVENT_HEAD='main'), event('workflow_dispatch', TRIGGER_SHA='$(false)')]:
++            result, outputs = run_step('Resolve immutable candidate', values)
++            self.assertNotEqual(result.returncode, 0)
++            self.assertEqual(outputs, {})
++
++    def test_merge_resolver_accepts_only_actual_pr_event(self):
++        result, outputs = run_step('Resolve pull request identity', event())
++        self.assertEqual(result.returncode, 0, result.stderr)
++        self.assertEqual(outputs, {'pr': '1272', 'head': HEAD, 'base': BASE})
++        for values in [event('workflow_dispatch', INPUT_PR='1272'), event('push'), event(EVENT_PR='0'), event(EVENT_PR='../1'), event(EVENT_BASE='')]:
++            result, outputs = run_step('Resolve pull request identity', values)
++            self.assertNotEqual(result.returncode, 0)
++            self.assertEqual(outputs, {})
++
++    def test_gate_rejects_missing_failed_or_skipped_required_lanes(self):
++        for name, merge in [('pull_request', 'success'), ('push', 'skipped'), ('workflow_dispatch', 'skipped')]:
++            result, _ = run_step('Reject incomplete required jobs', event(name, SOURCE_RESULT='success', MERGE_RESULT=merge))
++            self.assertEqual(result.returncode, 0, result.stderr)
++        for name, source, merge in [('pull_request','success','skipped'), ('pull_request','success','failure'),
++                                   ('workflow_dispatch','failure','skipped'), ('workflow_dispatch','success','success'),
++                                   ('workflow_run','success','skipped')]:
++            result, _ = run_step('Reject incomplete required jobs', event(name, SOURCE_RESULT=source, MERGE_RESULT=merge))
++            self.assertNotEqual(result.returncode, 0)
++
++    def test_checkout_steps_are_split_by_actual_event_scope(self):
++        for name in ['Checkout exact PR source', 'Checkout PR candidate controller']:
++            text = step_text(name)
++            self.assertEqual(literal_field(text, 8, "if"), "github.event_name == 'pull_request'")
++            self.assertEqual(literal_field(text, 10, 'ref'), '${{ github.event.pull_request.head.sha }}')
++            self.assertIn('          persist-credentials: false', text)
++        for name in ['Checkout workflow main source', 'Checkout workflow main controller']:
++            text = step_text(name)
++            self.assertEqual(literal_field(text, 8, "if"), "github.event_name == 'push' || github.event_name == 'workflow_dispatch'")
++            self.assertEqual(literal_field(text, 10, 'ref'), '${{ github.sha }}')
++            self.assertIn('          persist-credentials: false', text)
++        text = WORKFLOW.read_text()
++        self.assertNotIn('pull_request_number', text)
++        self.assertNotIn('INPUT_PR', text)
++        self.assertNotIn('curl ', text)
++        self.assertRegex(text, r"synthetic-merge:\n    name: [^\n]+\n    if: github.event_name == 'pull_request'\n")
++
++    def test_event_context_and_identity_checks_cannot_be_rebound_or_skipped(self):
++        expected = {
++            'Resolve immutable candidate': {'EVENT_NAME': '${{ github.event_name }}',
++                'EVENT_HEAD': '${{ github.event.pull_request.head.sha }}',
++                'EVENT_BASE': '${{ github.event.pull_request.base.sha }}',
++                'TRIGGER_SHA': '${{ github.sha }}', 'TRIGGER_REF': '${{ github.ref }}'},
++            'Verify source identity': {'EXPECTED_HEAD': '${{ steps.resolve.outputs.head }}'},
++            'Verify controller identity': {'EXPECTED_HEAD': '${{ needs.source-head.outputs.candidate-sha }}'},
++            'Reject incomplete required jobs': {'SOURCE_RESULT': '${{ needs.source-head.result }}',
++                'MERGE_RESULT': '${{ needs.synthetic-merge.result }}', 'EVENT_NAME': '${{ github.event_name }}'},
++        }
++        for step, fields in expected.items():
++            text = step_text(step)
++            self.assertFalse(any(line.startswith('        if:') for line in text.splitlines()))
++            for field, value in fields.items():
++                self.assertEqual(literal_field(text, 10, field), value)
++        text = WORKFLOW.read_text()
++        self.assertRegex(text, r"qualification-gate:\n    name: [^\n]+\n    if: always\(\)\n")
++
++    def test_identity_validation_precedes_candidate_execution(self):
++        text = WORKFLOW.read_text()
++        for earlier, later in [('Resolve immutable candidate', 'Checkout exact PR source'),
++                               ('Resolve immutable candidate', 'Checkout workflow main source'),
++                               ('Checkout exact PR source', 'Verify source identity'),
++                               ('Checkout workflow main source', 'Verify source identity'),
++                               ('Verify source identity', 'Bind commit-neutral AuthBus source map'),
++                               ('Reject incomplete required jobs', 'Checkout PR candidate controller'),
++                               ('Reject incomplete required jobs', 'Checkout workflow main controller'),
++                               ('Checkout PR candidate controller', 'Verify controller identity'),
++                               ('Checkout workflow main controller', 'Verify controller identity'),
++                               ('Verify controller identity', 'Assemble sole readiness manifest')]:
++            self.assertLess(text.index('      - name: ' + earlier + '\n'),
++                            text.index('      - name: ' + later + '\n'))
++        gate = text[text.index('  qualification-gate:\n'):]
++        needs = literal_field(gate, 4, 'needs').strip('[]')
++        self.assertTrue({'source-head', 'synthetic-merge'} <= {name.strip() for name in needs.split(',')})
++
++    def test_real_git_source_and_controller_identity_guards(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            subprocess.run(['git','init','-q'],cwd=root,check=True)
++            (root/'source').write_text('reviewed\n')
++            subprocess.run(['git','add','source'],cwd=root,check=True)
++            environment={**os.environ,'GIT_AUTHOR_NAME':'Fixture','GIT_AUTHOR_EMAIL':'fixture@example.invalid',
++                         'GIT_COMMITTER_NAME':'Fixture','GIT_COMMITTER_EMAIL':'fixture@example.invalid'}
++            subprocess.run(['git','commit','-qm','fixture'],cwd=root,env=environment,check=True)
++            commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
++            for name in ['Verify source identity','Verify controller identity']:
++                values={'EXPECTED_HEAD':commit,'EXPECTED_BASE':'','CANDIDATE_KIND':'main_head'}
++                result,_=run_step(name,values,root)
++                self.assertEqual(result.returncode,0,result.stderr)
++                result,_=run_step(name,{**values,'EXPECTED_HEAD':'0'*40},root)
++                self.assertNotEqual(result.returncode,0)
++                (root/'untracked').write_text('drift')
++                result,_=run_step(name,values,root)
++                self.assertNotEqual(result.returncode,0)
++                (root/'untracked').unlink()
++
++    def test_real_merge_parent_and_tree_guards_reject_stale_pr_reruns(self):
++        with tempfile.TemporaryDirectory() as directory:
++            root = Path(directory)
++            environment = {**os.environ, 'GIT_AUTHOR_NAME': 'Fixture', 'GIT_AUTHOR_EMAIL': 'fixture@example.invalid',
++                           'GIT_COMMITTER_NAME': 'Fixture', 'GIT_COMMITTER_EMAIL': 'fixture@example.invalid'}
++            def git(*args):
++                return subprocess.check_output(['git', *args], cwd=root, env=environment, text=True).strip()
++            git('init', '-q', '-b', 'main')
++            (root / 'initial').write_text('initial')
++            git('add', 'initial'); git('commit', '-qm', 'initial')
++            initial = git('rev-parse', 'HEAD')
++            git('checkout', '-qb', 'pr')
++            (root / 'pr').write_text('pr')
++            git('add', 'pr'); git('commit', '-qm', 'pr')
++            head = git('rev-parse', 'HEAD')
++            git('checkout', '-q', 'main')
++            (root / 'main').write_text('main')
++            git('add', 'main'); git('commit', '-qm', 'main')
++            base = git('rev-parse', 'HEAD')
++            git('merge', '--no-ff', '-qm', 'merge', 'pr')
++            result, _ = run_step('Verify deterministic merge identity', {'EXPECTED_HEAD': head, 'EXPECTED_BASE': base}, root)
++            self.assertEqual(result.returncode, 0, result.stderr)
++            for stale_head, stale_base in [(initial, base), (head, initial)]:
++                result, _ = run_step('Verify deterministic merge identity', {'EXPECTED_HEAD': stale_head, 'EXPECTED_BASE': stale_base}, root)
++                self.assertNotEqual(result.returncode, 0)
++            (root / 'substitution').write_text('unreviewed tree')
++            git('add', 'substitution')
++            wrong_tree = git('write-tree')
++            forged_merge = git('commit-tree', wrong_tree, '-p', base, '-p', head, '-m', 'wrong tree fixture')
++            git('reset', '--hard', '-q', forged_merge)
++            result, _ = run_step('Verify deterministic merge identity', {'EXPECTED_HEAD': head, 'EXPECTED_BASE': base}, root)
++            self.assertNotEqual(result.returncode, 0)
++
++
++if __name__ == '__main__': unittest.main()
+--- a/docs/modules/auth.authbus/IMPLEMENTATION_MAP.json
++++ b/docs/modules/auth.authbus/IMPLEMENTATION_MAP.json
+@@ -27,6 +27,7 @@
+     "docs/lane-a-foundation/auth.authbus",
+     "scripts/authbus-evidence-projection.py",
+     "scripts/authbus-evidence-projection-tests.py",
++    "scripts/authbus-workflow-trigger-tests.py",
+     "scripts/authbus-exact-head-evidence.py",
+     "scripts/authbus-readiness-manifest.py",
+     "scripts/check-authbus-source-truth.py",
+--- a/docs/modules/auth.authbus/EVIDENCE_CHAIN.md
++++ b/docs/modules/auth.authbus/EVIDENCE_CHAIN.md
+@@ -28,7 +28,7 @@
+ 
+ ## Required lanes
+ 
+-For a pull request or a manually selected pull request candidate, both lanes are
++For a pull-request event (including a rerun of that event), both lanes are
+ mandatory:
+ 
+ 1. exact PR source head;
+@@ -91,3 +91,25 @@
+ `approved_for_canary`; production activation, canary promotion and release stay
+ false until later signed observation evidence exists.
+ 
++
++## Manual qualification and cache trust scope
++
++Manual dispatch validates only the workflow's own `refs/heads/main` commit,
++selected by GitHub's immutable event SHA. It no longer accepts a PR number or
++fetches a different candidate for execution. Feature-branch or tag dispatches
++fail before checkout. Use the PR-triggered run or rerun that original run to
++qualify an unchanged PR head and synthetic merge in the PR event's scope. If
++the PR head/base advances, use its new PR-triggered run; old reruns fail the
++existing exact-parent/tree checks rather than relabeling a new merge. A manual main
++run does not substitute for either required PR lane.
++
++PR-source/controller checkouts are enabled only for `pull_request`. Main-source
++and main-controller checkouts use `github.sha`; the controller is checked
++against the source lane's exact identity before executing its scripts. Synthetic
++merge remains PR-only with exact parent/tree checks.
++
++This changes source selection, not cache permissions or repository settings.
++Read-only contents permission and disabled checkout credential persistence remain
++unchanged. CodeQL must evaluate the actual final workflow before the existing
++cache-security review threads can be considered resolved. Source regressions
++and this explanation do not waive those findings or grant activation.

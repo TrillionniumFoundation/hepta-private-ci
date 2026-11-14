@@ -1,0 +1,263 @@
+--- a/codex-rs/hepta-authbus/src/authority.rs
++++ b/codex-rs/hepta-authbus/src/authority.rs
+@@ -13,6 +13,15 @@
+     pub(crate) wall_time_ms: u64,
+     pub(crate) source_revision: u64,
+     pub(crate) source_digest: Digest32,
++    pub(crate) issuer: Option<TrustedTimeIssuer>,
++}
++
++#[derive(Clone, Debug, Eq, PartialEq)]
++pub(crate) struct TrustedTimeIssuer {
++    pub(crate) issuer_id: StableId,
++    pub(crate) key_epoch: codex_hepta_types::Generation,
++    pub(crate) public_key: [u8; 32],
++    pub(crate) revision: u64,
+ }
+ 
+ impl TrustedTimeSample {
+@@ -30,7 +39,17 @@
+             wall_time_ms,
+             source_revision,
+             source_digest,
++            issuer: None,
+         })
++    }
++
++    // Persisted floors and internal fixtures are observations, not exported
++    // credentials. Publicly returned samples acquire issuer provenance only
++    // after signature verification in SignedTrustedTimeAttestation::verify.
++    pub(crate) fn same_observation(&self, other: &Self) -> bool {
++        self.wall_time_ms == other.wall_time_ms
++            && self.source_revision == other.source_revision
++            && self.source_digest == other.source_digest
+     }
+ 
+     pub fn wall_time_ms(&self) -> u64 {
+@@ -252,4 +271,3 @@
+         }
+     }
+ }
+-
+--- a/codex-rs/hepta-authbus/src/trust.rs
++++ b/codex-rs/hepta-authbus/src/trust.rs
+@@ -82,11 +82,18 @@
+                 &Signature::from_bytes(&self.signature),
+             )
+             .map_err(|_| AuthBusAuthorityError::InvalidTrustedTimeSignature)?;
+-        crate::TrustedTimeSample::new(
++        let mut sample = crate::TrustedTimeSample::new(
+             self.claims.wall_time_ms,
+             self.claims.source_revision,
+             self.claims.source_digest,
+-        )
++        )?;
++        sample.issuer = Some(crate::authority::TrustedTimeIssuer {
++            issuer_id: record.issuer_id.clone(),
++            key_epoch: record.key_epoch,
++            public_key: record.verifying_key.to_bytes(),
++            revision: record.revision,
++        });
++        Ok(sample)
+     }
+ }
+ 
+@@ -140,4 +147,3 @@
+         }
+     }
+ }
+-
+--- a/codex-rs/hepta-authbus/src/authority_store.rs
++++ b/codex-rs/hepta-authbus/src/authority_store.rs
+@@ -338,6 +338,21 @@
+     tx: &mut Transaction<'_, Sqlite>,
+     sample: &TrustedTimeSample,
+ ) -> Result<(), AuthBusAuthorityError> {
++    if let Some(issuer) = &sample.issuer {
++        let current = crate::trust_store::load_issuer(
++            tx,
++            crate::IssuerPurpose::TrustedTime,
++            &issuer.issuer_id,
++            issuer.key_epoch,
++        )
++        .await?;
++        if current.state != crate::IssuerLifecycleState::Active
++            || current.revision != issuer.revision
++            || current.verifying_key.to_bytes() != issuer.public_key
++        {
++            return Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch);
++        }
++    }
+     if sample.wall_time_ms == 0 || sample.source_revision == 0 || sample.source_digest.is_zero() {
+         return Err(AuthBusAuthorityError::InvalidInput(
+             "trusted time must bind non-zero time, revision and source digest",
+@@ -357,10 +372,10 @@
+         {
+             return Err(AuthBusAuthorityError::ClockRollback);
+         }
+-        if sample.source_revision == prior.source_revision && sample != &prior {
++        if sample.source_revision == prior.source_revision && !sample.same_observation(&prior) {
+             return Err(AuthBusAuthorityError::TimeConflict);
+         }
+-        if sample == &prior {
++        if sample.same_observation(&prior) {
+             return Ok(());
+         }
+     }
+@@ -537,4 +552,3 @@
+ #[cfg(test)]
+ #[path = "authority_store_tests.rs"]
+ mod tests;
+-
+--- a/codex-rs/hepta-authbus/src/trust_store_tests.rs
++++ b/codex-rs/hepta-authbus/src/trust_store_tests.rs
+@@ -125,10 +125,12 @@
+         .await
+         .expect("observe trusted time");
+     assert_eq!(observed.wall_time_ms, 2_000);
+-    assert_eq!(
+-        store.last_trusted_time().await.expect("last trusted time"),
+-        Some(observed)
+-    );
++    let floor = store
++        .last_trusted_time()
++        .await
++        .expect("last trusted time")
++        .expect("floor");
++    assert!(floor.same_observation(&observed));
+ 
+     let mut tampered = SignedTrustedTimeAttestation {
+         claims,
+@@ -152,5 +154,77 @@
+         store.observe_trusted_time_attestation(&signed).await,
+         Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
+     ));
+-}
+-
++    assert!(matches!(
++        store.observe_time(observed).await,
++        Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
++    ));
++}
++
++#[tokio::test]
++async fn verified_time_is_revalidated_in_the_consuming_registry() {
++    let (_source_root, source) = store().await;
++    let (_target_root, target) = store().await;
++    let key = SigningKey::from_bytes(&[41; 32]);
++    source
++        .enroll_issuer(IssuerPurpose::TrustedTime, spec("issuer:time", 1, &key))
++        .await
++        .expect("enroll source time issuer");
++    let claims = TrustedTimeAttestationClaims {
++        issuer_id: id("issuer:time"),
++        key_epoch: Generation::new(1).expect("generation"),
++        wall_time_ms: 2_000,
++        source_revision: 7,
++        source_digest: Digest32::of_bytes(b"external-time-source"),
++    };
++    let signed = SignedTrustedTimeAttestation {
++        signature: key.sign(&claims.signing_bytes()).to_bytes(),
++        claims,
++    };
++    let sample = source
++        .observe_trusted_time_attestation(&signed)
++        .await
++        .expect("source verification");
++    source
++        .observe_time(sample.clone())
++        .await
++        .expect("current sample reuse");
++    assert!(matches!(
++        target.observe_time(sample.clone()).await,
++        Err(AuthBusAuthorityError::IssuerMissing)
++    ));
++    assert_eq!(target.last_trusted_time().await.expect("target floor"), None);
++
++    let other_key = SigningKey::from_bytes(&[42; 32]);
++    target
++        .enroll_issuer(IssuerPurpose::TrustedTime, spec("issuer:time", 1, &other_key))
++        .await
++        .expect("same identity, independently trusted key");
++    assert!(matches!(
++        target.observe_time(sample.clone()).await,
++        Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
++    ));
++    assert_eq!(target.last_trusted_time().await.expect("target floor"), None);
++
++    source
++        .rotate_issuer(
++            IssuerPurpose::TrustedTime,
++            spec("issuer:time", 2, &other_key),
++            Generation::new(1).expect("generation"),
++            1,
++        )
++        .await
++        .expect("rotate source issuer");
++    assert!(matches!(
++        source.observe_time(sample).await,
++        Err(AuthBusAuthorityError::TrustedTimeIssuerMismatch)
++    ));
++    assert_eq!(
++        source
++            .last_trusted_time()
++            .await
++            .expect("source floor")
++            .expect("floor")
++            .wall_time_ms(),
++        2_000
++    );
++}
+--- a/docs/modules/auth.authbus/KEY_ROTATION.md
++++ b/docs/modules/auth.authbus/KEY_ROTATION.md
+@@ -17,18 +17,23 @@
+ 
+ ## Rotation
+ 
+-1. Create epoch `n+1`; epochs strictly increase.
+-2. Enroll the new public key while epoch `n` remains available for bounded in-flight verification.
+-3. Move signers to `n+1` and verify telemetry.
+-4. Revoke epoch `n`; settlement reloads the durable registry so stale handles immediately fail.
+-5. After the maximum message/evidence validity window and incident-retention window, retire epoch `n`.
+-6. Publish checkpoint after every lifecycle transition.
++1. Prepare epoch `n+1` in KMS/HSM; epochs strictly increase.
++2. Stop new traffic and reconcile in-flight work that still needs epoch `n`.
++3. Call the admin port's `rotate_issuer` with the exact active epoch and revision.
++   One transaction revokes epoch `n` and inserts active epoch `n+1`. Overlapping
++   active epochs are not supported; `enroll_issuer` cannot add an epoch to an
++   existing issuer/purpose chain.
++4. Publish the checkpoint, move signers to `n+1`, and verify positive and
++   old-epoch rejection probes before resuming traffic.
++5. Retire revoked epoch `n` only after the applicable evidence and incident
++   retention windows. Retirement never restores its authority.
++6. Publish the checkpoint after every lifecycle transition.
+ 
+ Public-key bytes, purpose and epoch are immutable. Rotation creates a new row; it never updates an existing key in place.
+ 
+ ## Emergency revocation
+ 
+-Stop the affected signer, revoke the exact purpose/epoch, publish checkpoint, stop mutation admission if publication fails, and inspect verification failures and messages signed since the suspected compromise time. Do not release reservations merely because a settlement signer was revoked; recover terminal state through an independently trusted path.
++Stop the affected signer, revoke the exact purpose/epoch, publish checkpoint, stop mutation admission if publication fails, and inspect verification failures and messages signed since the suspected compromise time. Do not release reservations merely because a settlement signer was revoked; recover terminal state through an independently trusted path. Once the last active epoch is revoked, `rotate_issuer` fails with `IssuerMissing` and enrollment under that same issuer/purpose remains blocked. Recovery requires an independently approved new issuer identity and corresponding signer/caller provisioning; there is no API to reactivate a revoked chain.
+ 
+ ## Dual control and audit
+ 
+--- a/docs/modules/auth.authbus/TIME_AUTHORITY.md
++++ b/docs/modules/auth.authbus/TIME_AUTHORITY.md
+@@ -38,3 +38,17 @@
+ against the deployed filesystem and checkpoint domains. Source tests and schema
+ triggers are not production evidence.
+ 
++
++## Signed authority-store samples
++
++The separate policy/quota authority owner verifies signed time attestations
++against its durable issuer registry. Exported samples retain sealed issuer ID,
++epoch, public key and registry revision. Each consuming mutation revalidates
++that provenance in its own transaction before using the sample. A sample from
++an untrusted registry or a revoked/rotated issuer cannot advance authority time.
++
++The persisted numeric floor is a historical observation used by internal
++restart maintenance; it does not manufacture a public trusted-time capability.
++Issuer-provenance validation does not by itself establish wall-clock freshness.
++The configured time provider must still supply fresh authenticated observations;
++repeated identical valid attestations do not prove elapsed time.

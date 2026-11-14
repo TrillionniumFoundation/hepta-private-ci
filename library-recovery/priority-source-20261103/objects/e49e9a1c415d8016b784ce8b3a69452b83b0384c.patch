@@ -1,0 +1,101 @@
+diff --git a/codex-rs/Cargo.toml b/codex-rs/Cargo.toml
+index 973edf130..49ccab3cb 100644
+--- a/codex-rs/Cargo.toml
++++ b/codex-rs/Cargo.toml
+@@ -631,6 +631,14 @@ ignored = [
+ # across local dev builds.
+ debug = "limited"
+ 
++# Fleet admission rehashes complete release programs, including real process
++# test fixtures. Keep SHA-2 compression optimized in dev/test builds so those
++# checks measure lifecycle behavior, not an unoptimized cryptographic kernel.
++# This preserves full-byte verification, debug assertions and test deadlines;
++# all workspace code stays at the ordinary development optimization level.
++[profile.dev.package.sha2]
++opt-level = 3
++
+ [profile.dev-small]
+ inherits = "dev"
+ opt-level = 0
+diff --git a/codex-rs/hepta-supervisor/tests/paired_process_product.rs b/codex-rs/hepta-supervisor/tests/paired_process_product.rs
+index 520a02e30..e5b669cfb 100644
+--- a/codex-rs/hepta-supervisor/tests/paired_process_product.rs
++++ b/codex-rs/hepta-supervisor/tests/paired_process_product.rs
+@@ -13,9 +13,11 @@ use std::time::Instant;
+ use anyhow::Context;
+ use anyhow::Result;
+ use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
++use codex_hepta_agent_protocol::AgentdMethod;
+ use codex_hepta_agent_protocol::AgentdPayload;
+ use codex_hepta_agent_protocol::AgentdRequest;
+ use codex_hepta_agent_protocol::AgentdResponse;
++use codex_hepta_agent_protocol::DrainSnapshot;
+ use codex_hepta_agent_protocol::HealthSnapshot;
+ use codex_hepta_contracts::AgentId;
+ use codex_hepta_contracts::Sha256Digest;
+@@ -551,16 +553,35 @@ fn run_agent_child() -> Result<()> {
+             agent_id: agent_id.clone(),
+             spawn_generation,
+             current_generation: lifecycle.generation,
+-            payload: AgentdPayload::Health(HealthSnapshot {
+-                promotion_ready: true,
+-                ready: running,
+-                fenced: false,
+-                lifecycle: lifecycle.lifecycle,
+-                process_id: std::process::id(),
+-                workspace,
+-                home_root,
+-                run_root,
+-            }),
++            payload: match request.method {
++                AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
++                    promotion_ready: true,
++                    ready: running,
++                    fenced: false,
++                    lifecycle: lifecycle.lifecycle,
++                    process_id: std::process::id(),
++                    workspace,
++                    home_root,
++                    run_root,
++                }),
++                // This controlled child has no turns or effect work. Report
++                // drain only after the real Supervisor's durable lifecycle has
++                // reached Draining; a health reply cannot acknowledge a drain.
++                AgentdMethod::Drain => {
++                    let draining = lifecycle.lifecycle == AgentLifecycle::Draining;
++                    AgentdPayload::Drain(DrainSnapshot {
++                        admission_closed: draining,
++                        running_turns: 0,
++                        drained: draining,
++                        lifecycle: lifecycle.lifecycle,
++                        fenced: false,
++                    })
++                }
++                _ => AgentdPayload::Error {
++                    code: "fixture_unsupported_method".to_string(),
++                    message: "controlled pair child implements health and drain only".to_string(),
++                },
++            },
+         };
+         let mut stream = reader.into_inner();
+         serde_json::to_writer(&mut stream, &response)?;
+diff --git a/docs/modules/runtime.supervisor/TECHNICAL.md b/docs/modules/runtime.supervisor/TECHNICAL.md
+index fb392c3f3..cfd477ee0 100644
+--- a/docs/modules/runtime.supervisor/TECHNICAL.md
++++ b/docs/modules/runtime.supervisor/TECHNICAL.md
+@@ -192,6 +192,15 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
+ 
+ The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs) and the linked implementation components.
+ 
++Development and test profiles optimize the SHA-2 dependency while retaining
++ordinary debug assertions and the existing test deadlines. Fleet still hashes
++the complete currently admitted program bytes at each required boundary; no
++cached success, skipped digest or lighter identity proof substitutes for that
++validation. The real-process pair tests include fixture installation in their
++elapsed time, so unoptimized hashing of a large test executable can otherwise
++consume the lifecycle test budget before the scenario starts. This build-profile
++choice is not an installed-release performance or production-qualification claim.
++
+ [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+ 
+ ## 11. Observability and operations

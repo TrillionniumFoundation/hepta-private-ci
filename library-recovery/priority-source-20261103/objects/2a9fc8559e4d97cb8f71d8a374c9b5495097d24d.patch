@@ -1,0 +1,823 @@
+diff --git a/.github/workflows/bazel.yml b/.github/workflows/bazel.yml
+index 5cabc62614a54b042f87ed7a1e468587bd9a470c..246d9518df938f6e34d2cdb115a6f8107a568d5e 100644
+--- a/.github/workflows/bazel.yml
++++ b/.github/workflows/bazel.yml
+@@ -6,7 +6,7 @@ name: Bazel
+ on:
+   push:
+     branches:
+-      - dot/platform-windows-qualification-20261006
++      - dot/windows-permission-queue-probe-20261006
+   workflow_call:
+     inputs:
+       reusable-call:
+@@ -31,12 +31,12 @@ permissions:
+ concurrency:
+   # Cancel previous actions from the same PR or branch except 'main' branch.
+   # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.
+-  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true && '::diagnostic-windows-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
++  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-permission-queue-probe-20261006' && inputs.reusable-call != true && '::diagnostic-permission-queue-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
+   cancel-in-progress: ${{ github.ref_name != 'main' }}
+ 
+ jobs:
+   test:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-permission-queue-probe-20261006' && inputs.reusable-call != true) }}
+     # PRs use the sharded Windows cross-compiled test jobs below. Post-merge
+     # pushes to main also run the native Windows test job for broader Windows
+     # signal without putting PR latency back on the critical path. When
+@@ -152,7 +152,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   test-windows-shard:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-permission-queue-probe-20261006' && inputs.reusable-call != true) }}
+     # Split the native Windows Bazel test leg across separate Windows hosts.
+     # Build actions and host-loaded proc macros use the same MSVC ABI as the
+     # test binaries, avoiding cross-ABI native archive linkage.
+@@ -267,7 +267,7 @@ jobs:
+     timeout-minutes: 30
+     # Preserve the existing required-check surface while the real work happens
+     # in the sharded Windows jobs above.
+-    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-permission-queue-probe-20261006' && inputs.reusable-call != true) }}
+     needs: test-windows-shard
+     runs-on: ubuntu-24.04
+     name: Bazel test on windows-latest for x86_64-pc-windows-msvc
+@@ -361,7 +361,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   clippy:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-permission-queue-probe-20261006' && inputs.reusable-call != true) }}
+     timeout-minutes: 60
+     strategy:
+       fail-fast: false
+@@ -479,7 +479,7 @@ jobs:
+         uses: ./.github/actions/check-clean-worktree
+ 
+   verify-release-build:
+-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-permission-queue-probe-20261006' && inputs.reusable-call != true) }}
+     timeout-minutes: 60
+     strategy:
+       fail-fast: false
+@@ -639,7 +639,7 @@ jobs:
+           if-no-files-found: error
+ 
+   fixed-windows-platform:
+-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/platform-windows-qualification-20261006' && inputs.reusable-call != true) }}
++    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-permission-queue-probe-20261006' && inputs.reusable-call != true) }}
+     runs-on: windows-latest
+     timeout-minutes: 60
+     environment:
+@@ -672,45 +672,45 @@ jobs:
+       - name: Smoke test native MSVC header parser
+         timeout-minutes: 3
+         run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+-      - name: Compute remaining ACL/helper step budget
+-        id: acl-budget
++      - name: Compute remaining deletion diagnostic step budget
++        id: delete-budget
+         run: python scripts/hepta_fixed_bazel.py budget --github-output "$GITHUB_OUTPUT"
+-      - name: Run fixed ACL/helper native targets
+-        timeout-minutes: ${{ fromJSON(steps.acl-budget.outputs.minutes) }}
++      - name: Run fixed deletion diagnostic native targets
++        timeout-minutes: ${{ fromJSON(steps.delete-budget.outputs.minutes) }}
+         run: |
+           export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
+-          python scripts/hepta_fixed_bazel.py windows --group windows-acl-helper --directory "$RUNNER_TEMP/hepta-fixed-windows"
+-      - name: Retain ACL/helper receipt before Core compilation
++          python scripts/hepta_fixed_bazel.py windows --group windows-delete-diagnostic --directory "$RUNNER_TEMP/hepta-fixed-windows"
++      - name: Retain deletion diagnostic receipt before Queue compilation
+         if: always()
+         timeout-minutes: 3
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+-          name: fixed-windows-acl-helper-${{ github.run_id }}-${{ github.run_attempt }}
++          name: fixed-windows-delete-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+           path: |
+-            ${{ runner.temp }}/hepta-fixed-windows/windows-acl-helper.json
+-            ${{ runner.temp }}/hepta-fixed-windows/windows-acl-helper.log
+-            ${{ runner.temp }}/hepta-fixed-windows/windows-acl-helper.bep-tail.jsonl
++            ${{ runner.temp }}/hepta-fixed-windows/windows-delete-diagnostic.json
++            ${{ runner.temp }}/hepta-fixed-windows/windows-delete-diagnostic.log
++            ${{ runner.temp }}/hepta-fixed-windows/windows-delete-diagnostic.bep-tail.jsonl
+           if-no-files-found: error
+-      - name: Compute remaining Core/Queue step budget
+-        id: core-budget
+-        if: always() && !cancelled() && steps.acl-budget.outcome == 'success'
++      - name: Compute remaining Queue diagnostic step budget
++        id: queue-budget
++        if: always() && !cancelled() && steps.delete-budget.outcome == 'success'
+         run: python scripts/hepta_fixed_bazel.py budget --github-output "$GITHUB_OUTPUT"
+-      - name: Run fixed Core/Queue native targets
+-        if: always() && !cancelled() && steps.core-budget.outcome == 'success'
+-        timeout-minutes: ${{ fromJSON(steps.core-budget.outputs.minutes) }}
++      - name: Run fixed Queue diagnostic native targets
++        if: always() && !cancelled() && steps.queue-budget.outcome == 'success'
++        timeout-minutes: ${{ fromJSON(steps.queue-budget.outputs.minutes) }}
+         run: |
+           export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
+-          python scripts/hepta_fixed_bazel.py windows --group windows-core-queue --directory "$RUNNER_TEMP/hepta-fixed-windows"
+-      - name: Retain Core/Queue receipt
++          python scripts/hepta_fixed_bazel.py windows --group windows-queue-diagnostic --directory "$RUNNER_TEMP/hepta-fixed-windows"
++      - name: Retain Queue diagnostic receipt
+         if: always()
+         timeout-minutes: 3
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+-          name: fixed-windows-core-queue-${{ github.run_id }}-${{ github.run_attempt }}
++          name: fixed-windows-queue-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+           path: |
+-            ${{ runner.temp }}/hepta-fixed-windows/windows-core-queue.json
+-            ${{ runner.temp }}/hepta-fixed-windows/windows-core-queue.log
+-            ${{ runner.temp }}/hepta-fixed-windows/windows-core-queue.bep-tail.jsonl
++            ${{ runner.temp }}/hepta-fixed-windows/windows-queue-diagnostic.json
++            ${{ runner.temp }}/hepta-fixed-windows/windows-queue-diagnostic.log
++            ${{ runner.temp }}/hepta-fixed-windows/windows-queue-diagnostic.bep-tail.jsonl
+           if-no-files-found: error
+ 
+   reject-unknown-diagnostic:
+diff --git a/codex-rs/ext/queue/tests/queue_service.rs b/codex-rs/ext/queue/tests/queue_service.rs
+index 24e2621ca67c8f87186e8bf0b587a24df12e197c..bdce70957f6e81b7850d622682720fa3a6e67774 100644
+--- a/codex-rs/ext/queue/tests/queue_service.rs
++++ b/codex-rs/ext/queue/tests/queue_service.rs
+@@ -156,31 +156,38 @@ fn install_registered_queue(
+ fn python_hook_command(script_path: &Path) -> String {
+     #[cfg(windows)]
+     {
+-        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+-            .into_iter()
+-            .chain(std::env::var_os("PATH"))
+-            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+-            .map(|directory| directory.join("python.exe"))
+-            .find(|candidate| candidate.is_file())
+-            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+-        // Keep the resolved interpreter even when the session PATH differs.
+-        // Core runs hooks through the environment shell, normally PowerShell
+-        // on Windows; a quoted executable needs its call operator there.
+-        if codex_core::shell::default_user_shell().name() == "powershell" {
+-            return format!(
+-                "& '{}' '{}'",
+-                python.to_string_lossy().replace('\'', "''"),
+-                script_path.to_string_lossy().replace('\'', "''"),
+-            );
+-        }
+-        // The command runner supplies cmd.exe's outer /C quoting.
+-        return format!("\"{}\" \"{}\"", python.display(), script_path.display());
++        windows_python_hook_command(script_path).1
+     }
+ 
+     #[cfg(not(windows))]
+     format!("python3 \"{}\"", script_path.display())
+ }
+ 
++#[cfg(windows)]
++fn windows_python_hook_command(script_path: &Path) -> (std::path::PathBuf, String) {
++    let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
++        .into_iter()
++        .chain(std::env::var_os("PATH"))
++        .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
++        .map(|directory| directory.join("python.exe"))
++        .find(|candidate| candidate.is_file())
++        .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
++    // Keep the resolved interpreter even when the session PATH differs.
++    // Core runs hooks through the environment shell, normally PowerShell
++    // on Windows; a quoted executable needs its call operator there.
++    let command = if codex_core::shell::default_user_shell().name() == "powershell" {
++        format!(
++            "& '{}' '{}'",
++            python.to_string_lossy().replace('\'', "''"),
++            script_path.to_string_lossy().replace('\'', "''"),
++        )
++    } else {
++        // The command runner supplies cmd.exe's outer /C quoting.
++        format!("\"{}\" \"{}\"", python.display(), script_path.display())
++    };
++    (python, command)
++}
++
+ #[cfg(windows)]
+ #[test]
+ fn python_hook_uses_resolved_interpreter_without_child_path() {
+@@ -190,34 +197,114 @@ fn python_hook_uses_resolved_interpreter_without_child_path() {
+     let script_path = fixture.path().join("queue hook's spaces.py");
+     std::fs::write(&script_path, "print('queue-python-exact-path')\n")
+         .expect("write Python hook fixture");
+-    let command = python_hook_command(&script_path);
++    let (python, command) = windows_python_hook_command(&script_path);
+     let shell = codex_core::shell::default_user_shell();
+     let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
+     let program = argv.remove(0);
+     let _ = argv.pop();
+     // Match Core's environment-shell selection and CommandHookRuntime's
+     // argument handling, rather than testing only cmd.exe's fallback path.
+-    let mut child = std::process::Command::new(program);
++    let mut child = std::process::Command::new(&program);
+     child.args(&argv);
+     if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
+         child.raw_arg(format!(r#""{command}""#));
+     } else {
+-        child.arg(command);
++        child.arg(&command);
+     }
+     let output = child
+         .env("PATH", "")
+         .current_dir(fixture.path())
+         .output()
+         .expect("run Python hook without a child search path");
++    // Redact before debug/byte formatting so escaped paths cannot evade it.
++    // Never format Command itself: it also contains environment overrides.
++    let mut redactions = vec![(fixture.path().to_string_lossy().into_owned(), "<fixture>")];
++    for name in [
++        "USERPROFILE",
++        "HOME",
++        "LOCALAPPDATA",
++        "APPDATA",
++        "TEMP",
++        "TMP",
++    ] {
++        if let Some(value) = std::env::var_os(name) {
++            redactions.push((value.to_string_lossy().into_owned(), "<user-dir>"));
++        }
++    }
++    // Child startup errors can echo credential values from inherited settings.
++    // Use values only for redaction, never include names or the environment.
++    for (name, value) in std::env::vars_os() {
++        let name = name.to_string_lossy().to_ascii_uppercase();
++        if [
++            "TOKEN",
++            "SECRET",
++            "PASSWORD",
++            "CREDENTIAL",
++            "API_KEY",
++            "PRIVATE_KEY",
++        ]
++        .iter()
++        .any(|part| name.contains(part))
++        {
++            redactions.push((value.to_string_lossy().into_owned(), "<redacted>"));
++        }
++    }
++    redactions.retain(|(value, _)| !value.is_empty());
++    redactions.sort_by_key(|(value, _)| std::cmp::Reverse(value.len()));
++    let sanitize = |text: &str| {
++        // Fail closed for encodings/case folds this ASCII path redactor cannot
++        // safely match, including UTF-8-lossy replacements and UTF-16 output.
++        if !text.is_ascii() || text.contains('\0') {
++            return "<non-ASCII or NUL-containing diagnostic suppressed>".to_owned();
++        }
++        let mut text = text.to_owned();
++        for (value, replacement) in &redactions {
++            for value in [
++                value.clone(),
++                value.replace('\\', "/"),
++                value.replace('\\', "\\\\"),
++            ] {
++                // Windows paths are case insensitive. Preserve the remaining
++                // spelling, Python repr backslashes and PowerShell quotes.
++                for value in [value.clone(), value.replace('\'', "''")] {
++                    let lower = text.to_ascii_lowercase();
++                    let needle = value.to_ascii_lowercase();
++                    for (start, _) in lower
++                        .match_indices(&needle)
++                        .collect::<Vec<_>>()
++                        .into_iter()
++                        .rev()
++                    {
++                        text.replace_range(start..start + value.len(), replacement);
++                    }
++                }
++            }
++        }
++        text
++    };
++    let diagnostic = || {
++        let stdout = sanitize(&String::from_utf8_lossy(&output.stdout));
++        let stderr = sanitize(&String::from_utf8_lossy(&output.stderr));
++        let argv = argv.iter().map(|arg| sanitize(arg)).collect::<Vec<_>>();
++        format!(
++            "shell={:?} argv={argv:?} command={:?} python={:?} status={} stdout_len={} stdout_utf8_valid={} stdout_sanitized={stdout:?} stdout_sanitized_bytes={:?} stderr_len={} stderr_utf8_valid={} stderr_sanitized={stderr:?}",
++            sanitize(&program),
++            sanitize(&command),
++            sanitize(&python.to_string_lossy()),
++            output.status,
++            output.stdout.len(),
++            std::str::from_utf8(&output.stdout).is_ok(),
++            stdout.as_bytes(),
++            output.stderr.len(),
++            std::str::from_utf8(&output.stderr).is_ok(),
++        )
++    };
++    assert!(output.status.success(), "hook failed: {}", diagnostic());
++    // Keep raw output in the comparison, but not in assert_eq!'s unredacted diff.
+     assert!(
+-        output.status.success(),
+-        "hook failed: stdout={} stderr={}",
+-        String::from_utf8_lossy(&output.stdout),
+-        String::from_utf8_lossy(&output.stderr),
+-    );
+-    assert_eq!(
+-        String::from_utf8_lossy(&output.stdout).trim(),
+-        "queue-python-exact-path",
++        String::from_utf8_lossy(&output.stdout).trim() == "queue-python-exact-path",
++        "unexpected hook output: {}",
++        diagnostic(),
+     );
+ }
+ 
+diff --git a/codex-rs/windows-sandbox-rs/src/token_delete_diagnostics.rs b/codex-rs/windows-sandbox-rs/src/token_delete_diagnostics.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb82105ae8f9d87d14aa72e296793601cec33cf2
+--- /dev/null
++++ b/codex-rs/windows-sandbox-rs/src/token_delete_diagnostics.rs
+@@ -0,0 +1,394 @@
++//! Diagnostic-only decomposition of the broad-identity deletion regression.
++//! Every ACL mutation is confined to a fresh owned temporary fixture.
++use super::*;
++use std::path::Path;
++use std::path::PathBuf;
++use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
++use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
++use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
++use windows_sys::Win32::Security::ACE_HEADER;
++use windows_sys::Win32::Security::GetAce;
++use windows_sys::Win32::Security::GetSecurityDescriptorControl;
++use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
++use windows_sys::Win32::Security::SE_DACL_PROTECTED;
++use windows_sys::Win32::Security::TOKEN_GROUPS;
++use windows_sys::Win32::Security::TokenHasRestrictions;
++use windows_sys::Win32::Security::TokenIsAppContainer;
++use windows_sys::Win32::Storage::FileSystem::DeleteFileW;
++use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
++use windows_sys::Win32::Storage::FileSystem::RemoveDirectoryW;
++
++// No generic rights, inherited ACEs, owner-specific grant or ambient DACL may
++// silently reintroduce one of the two deletion routes under investigation.
++const NON_DELETE_ACCESS: u32 = FILE_ALL_ACCESS & !(DELETE | FILE_DELETE_CHILD);
++
++unsafe fn replace_diagnostic_dacl(path: &Path, grants: &[(*mut c_void, u32)]) -> Result<()> {
++    let entries: Vec<_> = grants
++        .iter()
++        .map(|&(sid, mask)| EXPLICIT_ACCESS_W {
++            grfAccessPermissions: mask,
++            grfAccessMode: GRANT_ACCESS,
++            grfInheritance: 0,
++            Trustee: TRUSTEE_W {
++                pMultipleTrustee: std::ptr::null_mut(),
++                MultipleTrusteeOperation: 0,
++                TrusteeForm: TRUSTEE_IS_SID,
++                TrusteeType: TRUSTEE_IS_UNKNOWN,
++                ptstrName: sid.cast(),
++            },
++        })
++        .collect();
++    let mut acl = std::ptr::null_mut();
++    let code = SetEntriesInAclW(
++        entries.len() as u32,
++        entries.as_ptr(),
++        std::ptr::null(),
++        &mut acl,
++    );
++    if code != ERROR_SUCCESS {
++        anyhow::bail!("diagnostic ACL construction: {code}");
++    }
++    let code = SetNamedSecurityInfoW(
++        to_wide(path).as_ptr() as *mut u16,
++        SE_FILE_OBJECT,
++        DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
++        std::ptr::null_mut(),
++        std::ptr::null_mut(),
++        acl,
++        std::ptr::null_mut(),
++    );
++    LocalFree(acl as HLOCAL);
++    anyhow::ensure!(code == ERROR_SUCCESS, "diagnostic ACL replacement: {code}");
++    Ok(())
++}
++
++unsafe fn verify_diagnostic_dacl(path: &Path, grants: &[(*mut c_void, u32)]) -> Result<()> {
++    let (acl, descriptor) = fetch_dacl_handle(path)?;
++    let verified = (|| -> Result<()> {
++        let mut control = 0;
++        let mut revision = 0;
++        anyhow::ensure!(
++            GetSecurityDescriptorControl(descriptor, &mut control, &mut revision) != 0,
++            "diagnostic descriptor control: {}",
++            GetLastError()
++        );
++        anyhow::ensure!(
++            control & SE_DACL_PROTECTED != 0,
++            "diagnostic DACL must be protected"
++        );
++        anyhow::ensure!(!acl.is_null(), "diagnostic DACL must not be null");
++        anyhow::ensure!(
++            (*acl).AceCount as usize == grants.len(),
++            "unexpected diagnostic ACE count"
++        );
++        let mut seen = vec![false; grants.len()];
++        for index in 0..(*acl).AceCount {
++            let mut ace = std::ptr::null_mut();
++            anyhow::ensure!(
++                GetAce(acl, index as u32, &mut ace) != 0,
++                "diagnostic GetAce: {}",
++                GetLastError()
++            );
++            let header = &*ace.cast::<ACE_HEADER>();
++            // ACCESS_ALLOWED_ACE_TYPE is zero. Reject every deny/object/generic
++            // or inherited variant instead of treating it as an ordinary allow.
++            anyhow::ensure!(
++                header.AceType == 0 && header.AceFlags == 0,
++                "unexpected diagnostic ACE type/flags"
++            );
++            let allow = &*ace.cast::<ACCESS_ALLOWED_ACE>();
++            let sid = std::ptr::addr_of!(allow.SidStart) as *mut c_void;
++            let matched = grants
++                .iter()
++                .enumerate()
++                .position(|(slot, &(expected, mask))| {
++                    !seen[slot] && EqualSid(sid, expected) != 0 && allow.Mask == mask
++                });
++            let slot = matched.ok_or_else(|| anyhow!("unexpected diagnostic ACE SID/mask"))?;
++            seen[slot] = true;
++        }
++        anyhow::ensure!(seen.iter().all(|entry| *entry), "missing diagnostic grant");
++        Ok(())
++    })();
++    LocalFree(descriptor as HLOCAL);
++    verified
++}
++
++// Drop runs after each impersonation guard. Restore cleanup rights on only the
++// owned paths, including on an early error; never weaken an external directory.
++struct DiagnosticFixture {
++    temp: tempfile::TempDir,
++    paths: Vec<PathBuf>,
++    everyone: LocalSid,
++}
++
++impl DiagnosticFixture {
++    fn new() -> Result<Self> {
++        Ok(Self {
++            temp: tempfile::tempdir()?,
++            paths: Vec::new(),
++            everyone: LocalSid::from_string("S-1-1-0")?,
++        })
++    }
++}
++
++impl Drop for DiagnosticFixture {
++    fn drop(&mut self) {
++        for path in &self.paths {
++            if path.exists() {
++                // SAFETY: paths were created inside temp; the SID remains owned.
++                if unsafe {
++                    replace_diagnostic_dacl(path, &[(self.everyone.as_ptr(), FILE_ALL_ACCESS)])
++                }
++                .is_err()
++                {
++                    eprintln!("delete diagnostic: owned fixture cleanup ACL restoration failed");
++                }
++            }
++        }
++    }
++}
++
++// Validate restricting-list header and entry bounds before using its count.
++// The handle is immutable throughout these queries; one entry plus the existing
++// allowed-membership check establishes an exact singleton capability set.
++unsafe fn token_restricting_sid_count(token: HANDLE) -> Result<u32> {
++    let mut needed = 0;
++    let queried = GetTokenInformation(
++        token,
++        TokenRestrictedSids,
++        std::ptr::null_mut(),
++        0,
++        &mut needed,
++    );
++    let query_error = GetLastError();
++    let entries_offset = std::mem::offset_of!(TOKEN_GROUPS, Groups);
++    anyhow::ensure!(
++        queried == 0 && query_error == ERROR_INSUFFICIENT_BUFFER,
++        "diagnostic restricting-list size query: {query_error}"
++    );
++    // This diagnostic expects one capability. Bound allocation independently of
++    // the returned size and reject malformed/truncated layouts rather than read.
++    anyhow::ensure!(
++        (entries_offset..=64 * 1024).contains(&(needed as usize)),
++        "unexpected diagnostic restricting-list size"
++    );
++    let capacity = needed;
++    let mut storage = vec![0_usize; (capacity as usize).div_ceil(std::mem::size_of::<usize>())];
++    anyhow::ensure!(
++        GetTokenInformation(
++            token,
++            TokenRestrictedSids,
++            storage.as_mut_ptr().cast(),
++            capacity,
++            &mut needed,
++        ) != 0,
++        "diagnostic restricting-list query: {}",
++        GetLastError()
++    );
++    anyhow::ensure!(
++        needed <= capacity && needed as usize >= entries_offset,
++        "diagnostic restricting-list returned invalid length"
++    );
++    let count = std::ptr::read_unaligned(storage.as_ptr().cast::<u32>());
++    let available_entries =
++        (needed as usize - entries_offset) / std::mem::size_of::<SID_AND_ATTRIBUTES>();
++    anyhow::ensure!(
++        count as usize <= available_entries,
++        "diagnostic restricting-list entries exceed buffer"
++    );
++    Ok(count)
++}
++
++unsafe fn token_diagnostic_u32(token: HANDLE, class: i32) -> Result<u32> {
++    let mut value = 0_u32;
++    let mut needed = 0;
++    anyhow::ensure!(
++        GetTokenInformation(
++            token,
++            class,
++            (&mut value as *mut u32).cast(),
++            4,
++            &mut needed,
++        ) != 0,
++        "diagnostic token query class={class}: {}",
++        GetLastError()
++    );
++    anyhow::ensure!(needed == 4, "unexpected diagnostic token query size");
++    Ok(value)
++}
++
++#[derive(Debug)]
++struct DeleteObservation {
++    capability: &'static str,
++    directory: bool,
++    restricted: bool,
++    win32_error: u32,
++    exists_after: bool,
++    expected_delete: bool,
++}
++
++fn deletion_permission_matrix(object_delete: bool, parent_delete_child: bool) -> Result<()> {
++    let mut fixture = DiagnosticFixture::new()?;
++    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
++    let allowed = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
++    let unrelated = LocalSid::from_string("S-1-5-21-191-292-393-494")?;
++    let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
++    let logon_sid = logon.as_mut_ptr().cast();
++    let everyone_sid = fixture.everyone.as_ptr();
++    let token = OwnedToken(unsafe {
++        create_workspace_write_token_with_caps_from(base.0, &[allowed.as_ptr()])?
++    });
++    let restricting_count = unsafe { token_restricting_sid_count(token.0)? };
++    let (has_restrictions, app_container, has_allowed, has_unrelated, has_world, has_logon) = unsafe {
++        (
++            token_diagnostic_u32(token.0, TokenHasRestrictions)?,
++            token_diagnostic_u32(token.0, TokenIsAppContainer)?,
++            token_has_restricting_sid(token.0, allowed.as_ptr())?,
++            token_has_restricting_sid(token.0, unrelated.as_ptr())?,
++            token_has_restricting_sid(token.0, everyone_sid)?,
++            token_has_restricting_sid(token.0, logon_sid)?,
++        )
++    };
++    // Creation flags are source-declared, not an inferred runtime TOKEN flag.
++    eprintln!(
++        "delete diagnostic object_delete={object_delete} parent_delete_child={parent_delete_child} declared_creation_flags={:#x} has_restrictions={has_restrictions} app_container={app_container} restricting_count={restricting_count} restricting_allowed={has_allowed} restricting_unrelated={has_unrelated} restricting_world={has_world} restricting_logon={has_logon}",
++        DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED,
++    );
++    anyhow::ensure!(
++        restricting_count == 1 && has_allowed && !has_unrelated && !has_world && !has_logon,
++        "diagnostic capability membership mismatch"
++    );
++    anyhow::ensure!(
++        unsafe { token_diagnostic_u32(base.0, TokenHasRestrictions)? } == 0,
++        "base-token control is already restricted"
++    );
++    let parent_mask = NON_DELETE_ACCESS
++        | if parent_delete_child {
++            FILE_DELETE_CHILD
++        } else {
++            0
++        };
++    let object_mask = NON_DELETE_ACCESS | if object_delete { DELETE } else { 0 };
++    let mut observations = Vec::new();
++    for (label, cap) in [
++        ("absent", None),
++        ("allowed", Some(allowed.as_ptr())),
++        ("unrelated", Some(unrelated.as_ptr())),
++    ] {
++        for directory in [false, true] {
++            for restricted in [false, true] {
++                let parent = fixture
++                    .temp
++                    .path()
++                    .join(format!("{label}-{directory}-{restricted}"));
++                std::fs::create_dir(&parent)?;
++                fixture.paths.push(parent.clone());
++                let child = parent.join("probe");
++                if directory {
++                    std::fs::create_dir(&child)?;
++                } else {
++                    std::fs::write(&child, b"deletion diagnostic")?;
++                }
++                fixture.paths.push(child.clone());
++                let mut parent_grants = vec![(everyone_sid, parent_mask), (logon_sid, parent_mask)];
++                let mut child_grants = vec![(everyone_sid, object_mask), (logon_sid, object_mask)];
++                if let Some(sid) = cap {
++                    parent_grants.push((sid, parent_mask));
++                    child_grants.push((sid, object_mask));
++                }
++                // SAFETY: fixture paths and every SID remain live; protected,
++                // explicit DACLs are read back before any impersonated action.
++                unsafe {
++                    replace_diagnostic_dacl(&parent, &parent_grants)?;
++                    replace_diagnostic_dacl(&child, &child_grants)?;
++                    verify_diagnostic_dacl(&parent, &parent_grants)?;
++                    verify_diagnostic_dacl(&child, &child_grants)?;
++                }
++                let wide = to_wide(&child);
++                let win32_error = {
++                    let selected = if restricted { token.0 } else { base.0 };
++                    let _impersonation = unsafe { Impersonation::enter(selected)? };
++                    // Record GetLastError immediately, before any other API call.
++                    let succeeded = unsafe {
++                        if directory {
++                            RemoveDirectoryW(wide.as_ptr())
++                        } else {
++                            DeleteFileW(wide.as_ptr())
++                        }
++                    };
++                    if succeeded != 0 {
++                        ERROR_SUCCESS
++                    } else {
++                        unsafe { GetLastError() }
++                    }
++                };
++                // Check existence only after reverting to the ordinary identity.
++                // Errors other than not-found must not masquerade as absence.
++                let exists_after = match std::fs::symlink_metadata(&child) {
++                    Ok(_) => true,
++                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
++                    Err(error) => return Err(error.into()),
++                };
++                let observation = DeleteObservation {
++                    capability: label,
++                    directory,
++                    restricted,
++                    win32_error,
++                    exists_after,
++                    expected_delete: (object_delete || parent_delete_child)
++                        && (!restricted || label == "allowed"),
++                };
++                eprintln!(
++                    "delete diagnostic capability={} directory={} restricted={} win32_error={} exists_after={} expected_delete={}",
++                    observation.capability,
++                    observation.directory,
++                    observation.restricted,
++                    observation.win32_error,
++                    observation.exists_after,
++                    observation.expected_delete,
++                );
++                observations.push(observation);
++            }
++        }
++    }
++    // Collect every case before asserting so one escape does not hide which
++    // independent route, object kind or capability control distinguished it.
++    let mismatches: Vec<_> = observations
++        .iter()
++        .filter(|observation| {
++            let expected_code = if observation.expected_delete {
++                ERROR_SUCCESS
++            } else {
++                ERROR_ACCESS_DENIED
++            };
++            observation.win32_error != expected_code
++                || observation.exists_after == observation.expected_delete
++        })
++        .collect();
++    anyhow::ensure!(
++        mismatches.is_empty(),
++        "deletion isolation mismatches: {mismatches:?}"
++    );
++    Ok(())
++}
++
++#[test]
++fn deletion_isolation_with_neither_delete_route() -> Result<()> {
++    deletion_permission_matrix(false, false)
++}
++
++#[test]
++fn deletion_isolation_with_object_delete_only() -> Result<()> {
++    deletion_permission_matrix(true, false)
++}
++
++#[test]
++fn deletion_isolation_with_parent_delete_child_only() -> Result<()> {
++    deletion_permission_matrix(false, true)
++}
++
++#[test]
++fn deletion_isolation_with_both_delete_routes() -> Result<()> {
++    deletion_permission_matrix(true, true)
++}
+diff --git a/codex-rs/windows-sandbox-rs/src/token_tests.rs b/codex-rs/windows-sandbox-rs/src/token_tests.rs
+index 2f69533094097dc6f02695858215809784575fbe..bb753368aec5e9f8813f06592f00948145a21e60 100644
+--- a/codex-rs/windows-sandbox-rs/src/token_tests.rs
++++ b/codex-rs/windows-sandbox-rs/src/token_tests.rs
+@@ -299,3 +299,6 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
+     }
+     Ok(())
+ }
++
++#[path = "token_delete_diagnostics.rs"]
++mod delete_diagnostics;
+diff --git a/scripts/hepta_fixed_bazel.py b/scripts/hepta_fixed_bazel.py
+index 7b04b4305d1c06d3e3d9f37f39ca2fa107aaeb9d..a382b03b8749dec87c913d0d17266412eda45294 100644
+--- a/scripts/hepta_fixed_bazel.py
++++ b/scripts/hepta_fixed_bazel.py
+@@ -21,12 +21,10 @@ import hepta_ci_candidate
+ import hepta_ci_exec
+ 
+ GROUPS = {
+-    "windows-acl-helper": (
++    "windows-delete-diagnostic": (
+         "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+-        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test",
+     ),
+-    "windows-core-queue": (
+-        "//codex-rs/core:core-unit-tests",
++    "windows-queue-diagnostic": (
+         "//codex-rs/ext/queue:queue-queue_service-test",
+     ),
+     "linux-supervisor": (
+@@ -126,7 +124,7 @@ def replace_receipt(path: Path, record: dict) -> None:
+ 
+ 
+ def windows_command(group: str, directory: Path) -> list[str]:
+-    if group not in ("windows-acl-helper", "windows-core-queue"):
++    if group not in ("windows-delete-diagnostic", "windows-queue-diagnostic"):
+         raise ValueError("not a fixed Windows group")
+     bash = os.environ.get("HEPTA_BAZEL_BASH", "")
+     parsed = PureWindowsPath(bash)
+diff --git a/scripts/test_hepta_fixed_bazel.py b/scripts/test_hepta_fixed_bazel.py
+index 7720b8928ea51514569693b2c3756d86a059eb65..c63cf2104df66aaa3a97341de63d22d18fe08fbf 100644
+--- a/scripts/test_hepta_fixed_bazel.py
++++ b/scripts/test_hepta_fixed_bazel.py
+@@ -14,7 +14,7 @@ class FixedQualificationTests(unittest.TestCase):
+         self.addCleanup(temp.cleanup)
+         self.directory = Path(temp.name)
+         self.bep = self.directory / 'events.json'
+-        self.labels = fixed.GROUPS['windows-acl-helper']
++        self.labels = fixed.GROUPS['windows-delete-diagnostic']
+ 
+     def events(self):
+         return [{'id': {'testSummary': {'label': label}},
+@@ -66,12 +66,14 @@ class FixedQualificationTests(unittest.TestCase):
+ 
+     @patch.dict(fixed.os.environ, {"HEPTA_BAZEL_BASH": r"C:\Program Files\Git\bin\bash.exe"})
+     def test_windows_commands_share_exact_native_platform_and_no_cached_tests(self):
+-        for group in ('windows-acl-helper', 'windows-core-queue'):
++        for group in ('windows-delete-diagnostic', 'windows-queue-diagnostic'):
+             command = fixed.windows_command(group, self.directory)
+             self.assertIn('--windows-msvc-host-platform', command)
+             self.assertIn('--platforms=//:windows_x86_64_msvc', command)
+             self.assertIn('--nocache_test_results', command)
+-            self.assertEqual(command[-2:], list(fixed.GROUPS[group]))
++            self.assertEqual(command[-1:], list(fixed.GROUPS[group]))
++            self.assertNotIn("//codex-rs/core:core-unit-tests", command)
++            self.assertNotIn("//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test", command)
+             self.assertNotIn('//...', command)
+         with self.assertRaises(ValueError): fixed.windows_command('linux-supervisor', self.directory)
+ 
+@@ -79,11 +81,11 @@ class FixedQualificationTests(unittest.TestCase):
+         for value in ('', 'bash', 'bash.exe', r'bin\bash.exe', r'C:\Windows\System32\wsl.exe'):
+             with self.subTest(value=value), patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': value, 'PATH': r'C:\Windows\System32'}):
+                 with self.assertRaisesRegex(ValueError, 'absolute Actions Git Bash'):
+-                    fixed.windows_command('windows-acl-helper', self.directory)
++                    fixed.windows_command('windows-delete-diagnostic', self.directory)
+ 
+     def test_absolute_msys_shell_without_exe_keeps_its_directory(self):
+         with patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': r'C:\Program Files\Git\usr\bin\bash'}):
+-            command = fixed.windows_command('windows-acl-helper', self.directory)
++            command = fixed.windows_command('windows-delete-diagnostic', self.directory)
+         self.assertEqual(command[0], r'C:\Program Files\Git\usr\bin\bash.exe')
+ 
+     def test_both_windows_steps_pass_the_actual_running_shell(self):
+@@ -137,8 +139,8 @@ class FixedQualificationTests(unittest.TestCase):
+         self.assertNotIn('secrets.', diagnostic)
+         self.assertNotIn('matrix:', diagnostic)
+         self.assertIn('reject-unknown-diagnostic:', diagnostic)
+-        self.assertIn('fromJSON(steps.acl-budget.outputs.minutes)', diagnostic)
+-        self.assertIn('fromJSON(steps.core-budget.outputs.minutes)', diagnostic)
++        self.assertIn('fromJSON(steps.delete-budget.outputs.minutes)', diagnostic)
++        self.assertIn('fromJSON(steps.queue-budget.outputs.minutes)', diagnostic)
+ 
+ 
+ if __name__ == '__main__':

@@ -1,0 +1,106 @@
+--- /dev/null
++++ b/codex-rs/hepta-memory/migrations/0017_kernel_operation_destination_terminal_insert_guard.sql
+@@ -0,0 +1,15 @@
++-- Preserve migration 0016 and existing terminal evidence. SQLite REPLACE
++-- bypasses DELETE triggers when recursive_triggers is OFF. Guard both logical
++-- identity and the implicit rowid conflict target before replacement begins.
++-- Official writers never assign rowid. A legacy explicit rowid=-1 causes
++-- automatic-rowid inserts to fail closed because SQLite uses -1 before assign.
++CREATE TRIGGER cognitive_operation_destination_terminal_no_replace
++BEFORE INSERT ON cognitive_operation_destination_terminal
++WHEN EXISTS (
++    SELECT 1 FROM cognitive_operation_destination_terminal
++    WHERE (destination_id = NEW.destination_id AND operation_id = NEW.operation_id)
++       OR rowid = NEW.rowid
++)
++BEGIN
++    SELECT RAISE(ABORT, 'operation destination terminal proof is immutable');
++END;
+--- a/codex-rs/hepta-memory/src/cognitive_store.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store.rs
+@@ -200,6 +200,10 @@
+     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
+     ("cognitive_operation_destination_terminal", "table"),
+     (
++        "cognitive_operation_destination_terminal_no_replace",
++        "trigger",
++    ),
++    (
+         "cognitive_operation_destination_terminal_no_update",
+         "trigger",
+     ),
+@@ -213,7 +217,7 @@
+     ),
+ ];
+ const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
+-    "f76aecab2b3d5a969ca1ac58b6543b64549a437d49ab7c6eeb7d246dd6ab1a66";
++    "05d134effd5acced0707c143694a2a394d51d9c39c1c622ffcd30fd8a349b287";
+ 
+ #[derive(Debug, thiserror::Error)]
+ pub enum CognitiveStoreError {
+--- a/codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs
++++ b/codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs
+@@ -1,6 +1,9 @@
+ #![cfg(unix)]
+ 
+ use super::*;
++
++#[path = "production_destination_proof_storage_tests.rs"]
++mod proof_storage_tests;
+ 
+ use std::collections::BTreeSet;
+ use std::os::unix::fs::PermissionsExt;
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/production_destination_proof_storage_tests.rs
+@@ -0,0 +1,51 @@
++use super::*;
++type ProofRow = (i64, String, String, String, String, String, i64);
++
++#[tokio::test]
++async fn immutable_proof_rejects_logical_and_rowid_replace_with_recursive_triggers_off() {
++    let temp = TempDir::new().expect("temp");
++    let store = store(&temp).await;
++    let mut connection = store.pool.acquire().await.expect("connection");
++    sqlx::query("PRAGMA recursive_triggers = OFF").execute(&mut *connection).await.expect("off");
++    let mode: i64 = sqlx::query_scalar("PRAGMA recursive_triggers").fetch_one(&mut *connection).await.expect("mode");
++    assert_eq!(mode, 0);
++    sqlx::query("INSERT INTO cognitive_operation_destination_terminal VALUES ('dest','op',?, 'applied','proof',1)")
++        .bind("a".repeat(64)).execute(&mut *connection).await.expect("first insert");
++    let before: Vec<ProofRow> = sqlx::query_as("SELECT rowid,* FROM cognitive_operation_destination_terminal ORDER BY rowid")
++        .fetch_all(&mut *connection).await.expect("before");
++    for (operation, disposition, evidence, rowid) in [
++        ("op", "applied", "proof", before[0].0),
++        ("op", "not_applied", "contradictory", before[0].0),
++        ("different-logical-identity", "not_applied", "rowid bypass", before[0].0),
++    ] {
++        let result = sqlx::query("INSERT OR REPLACE INTO cognitive_operation_destination_terminal(rowid,destination_id,operation_id,semantic_sha256,disposition,evidence,recorded_at_unix_ms) VALUES (?,'dest',?,?,?,?,1)")
++            .bind(rowid).bind(operation).bind("a".repeat(64)).bind(disposition).bind(evidence)
++            .execute(&mut *connection).await;
++        assert!(result.is_err(), "replacement must be refused");
++        let after: Vec<ProofRow> = sqlx::query_as("SELECT rowid,* FROM cognitive_operation_destination_terminal ORDER BY rowid")
++            .fetch_all(&mut *connection).await.expect("after");
++        assert_eq!(after, before);
++    }
++    sqlx::query("INSERT INTO cognitive_operation_destination_terminal VALUES ('dest','new',?,'applied','new proof',2)")
++        .bind("b".repeat(64)).execute(&mut *connection).await.expect("normal subsequent insert");
++}
++
++#[tokio::test]
++async fn missing_or_modified_proof_insert_guard_is_rejected_on_reopen() {
++    for modified in [false, true] {
++        let temp = TempDir::new().expect("temp");
++        let opened = store(&temp).await;
++        sqlx::query("DROP TRIGGER cognitive_operation_destination_terminal_no_replace")
++            .execute(&opened.pool).await.expect("remove guard fixture");
++        if modified {
++            sqlx::query("CREATE TRIGGER cognitive_operation_destination_terminal_no_replace BEFORE INSERT ON cognitive_operation_destination_terminal BEGIN SELECT 1; END")
++                .execute(&opened.pool).await.expect("weaken guard fixture");
++        }
++        opened.pool.close().await;
++        drop(opened);
++        let root = temp.path().join("fleet-real-target");
++        let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root")).expect("fleet");
++        let reopened = CognitiveStore::open(&fleet.layout().agent(&agent())).await;
++        assert!(matches!(reopened, Err(crate::CognitiveStoreError::Corrupt(_))));
++    }
++}
