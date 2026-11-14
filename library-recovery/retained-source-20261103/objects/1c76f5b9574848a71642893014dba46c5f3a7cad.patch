@@ -1,0 +1,540 @@
+diff --git a/apps/hepta-control-ui/.gitignore b/apps/hepta-control-ui/.gitignore
+index 80b6e70480..bff959246a 100644
+--- a/apps/hepta-control-ui/.gitignore
++++ b/apps/hepta-control-ui/.gitignore
+@@ -10,3 +10,6 @@ dist-chat-fixtures/
+ 
+ /.robrix-artifact-stage-*/
+ /.robrix-artifact-previous-*/
++
++.robrix-artifact.lock
++.robrix-*.journal.json*
+diff --git a/apps/hepta-control-ui/README.md b/apps/hepta-control-ui/README.md
+index ff7b353226..d3f30c4e74 100644
+--- a/apps/hepta-control-ui/README.md
++++ b/apps/hepta-control-ui/README.md
+@@ -90,16 +90,23 @@ production entry slice, preserving read-only API compatibility tests.
+ 
+ ## Build and preview lifetime
+ 
+-The owned builder and static preview acquire one exclusive workspace artifact
+-lease. A running preview blocks a rebuild rather than losing resources under
+-its requests. Normal preview shutdown releases the lease. A hard-killed owner
+-can leave a fail-closed lease requiring inspection; it is never removed merely
+-because a timeout elapsed.
+-
+-Builds clear only their internal generated package while holding that lease,
+-then assemble and verify a unique staging directory against the explicit
+-`patches/web-asset-paths.json` resource set. The previous published directory
+-remains intact through verification. Publication/rollback runs under the same
+-lease, excluding supported previews and concurrent builders. Stale archived
+-resource aliases cannot survive an incremental Cargo cache. The unused Lunar
+-landscape is preserved by immutable provenance, not shipped or displayed.
++The owned browser build/preview wrappers currently require POSIX `flock` and
++Python 3. The kernel lock descriptor is inherited by mutating compiler children;
++parent interruption cannot permit a second writer while a child is still alive.
++The last descriptor closing releases ownership automatically. The persistent
++lock file is not an ownership sentinel and must never be removed to unlock it.
++
++Preview startup recovers any interrupted publication, briefly holds a shared
++lock while checking every manifest hash and loading bounded immutable buffers,
++then releases the lock before listening. Existing previews keep their selected
++snapshot through rebuilds; a second preview may start on another port. Restart a
++preview to display a newly built version.
++
++Builds clear only their internal generated package under exclusive ownership,
++then verify unique same-filesystem staging against `patches/web-asset-paths.json`.
++An fsynced journal pins the new and previous manifests before either rename.
++Startup recovery verifies retained resources and completes only recognized
++publication states; unknown paths, symlinks or changed pins fail closed.
++Interrupted cleanup may leave an inert owned backup, without blocking later
++builds. Journal initialization failure leaves the previous artifact usable.
++The unused Lunar archive retains immutable provenance but is not packaged.
+diff --git a/apps/hepta-control-ui/test/artifact-lifetime.test.mjs b/apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+index 235089c485..32526bf73c 100644
+--- a/apps/hepta-control-ui/test/artifact-lifetime.test.mjs
++++ b/apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+@@ -1,49 +1,152 @@
+ import test from 'node:test';
+ import assert from 'node:assert/strict';
+-import {mkdtemp,mkdir,readFile,writeFile,rm,readdir,symlink} from 'node:fs/promises';
++import {mkdtemp,mkdir,writeFile,readFile,rm,rename,symlink,readdir} from 'node:fs/promises';
+ import {tmpdir} from 'node:os';
+ import {join} from 'node:path';
+-import {withArtifactLease,withStagedArtifact} from '../tools/owned-artifact-lease.mjs';
+-async function fixture(t){const root=await mkdtemp(join(tmpdir(),'hepta-artifact-'));t.after(()=>rm(root,{recursive:true,force:true}));await mkdir(join(root,'dist'));await writeFile(join(root,'dist/index.html'),'previous');return root;}
+-test('active preview excludes rebuild without deleting its files',async t=>{
+- const root=await fixture(t);let entered,finish;
+- const ready=new Promise(resolve=>{entered=resolve;}),hold=new Promise(resolve=>{finish=resolve;});
+- const preview=withArtifactLease(root,'preview',async()=>{entered();await hold;});
+- await ready;
+- await assert.rejects(withArtifactLease(root,'build',async()=>{assert.fail('concurrent build entered');}),/owns this artifact/);
+- assert.equal(await readFile(join(root,'dist/index.html'),'utf8'),'previous');
+- finish();await preview;
+- await withArtifactLease(root,'build',async()=>{});
+-});
+-test('failed staged verification retains the previous complete artifact',async t=>{
++import {fileURLToPath} from 'node:url';
++import {createHash} from 'node:crypto';
++import {spawn,spawnSync} from 'node:child_process';
++import {withStagedArtifact,recoverArtifact,loadArtifactSnapshot} from '../tools/owned-artifact-lease.mjs';
++const helper=new URL('../tools/owned-artifact-lease.mjs',import.meta.url).href;
++const runner=fileURLToPath(new URL('../tools/artifact-lock.py',import.meta.url));
++const sha=b=>createHash('sha256').update(b).digest('hex');
++async function fixture(t){const root=await mkdtemp(join(tmpdir(),'hepta-artifact-'));t.after(()=>rm(root,{recursive:true,force:true}));return root;}
++async function artifact(path,text,extra={}){await mkdir(path,{recursive:true});const files={'index.html':text,...extra};const pins={};for(const [name,body] of Object.entries(files)){await writeFile(join(path,name),body);pins[name]={bytes:Buffer.byteLength(body),sha256:sha(body)};}const manifest=JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',sourceIdentity:{sha256:'a'.repeat(64)},files:pins});await writeFile(join(path,'build-manifest.json'),manifest);return sha(manifest);}
++const locked=(root,script)=>spawnSync('python3',[runner,root,process.execPath,'--input-type=module','-e',script],{encoding:'utf8',timeout:5000});
++async function waitFor(check){const end=Date.now()+5000;while(Date.now()<end){try{if(await check())return;}catch{}await new Promise(r=>setTimeout(r,20));}throw new Error('Process fixture timed out');}
++
++test('kernel lock survives killed parent and child, then releases after final grandchild',{skip:process.platform==='win32',timeout:12000},async t=>{
+  const root=await fixture(t);
+- await assert.rejects(withArtifactLease(root,'build',lease=>withStagedArtifact(lease,'dist',async stage=>{
+-  await writeFile(join(stage,'index.html'),'incomplete');
+-  assert.equal(await readFile(join(root,'dist/index.html'),'utf8'),'previous');
+-  throw new Error('validation failed');
+- })),/validation failed/);
+- assert.equal(await readFile(join(root,'dist/index.html'),'utf8'),'previous');
+- assert.deepEqual(await readdir(join(root,'rust/target')),[]);
+- assert.deepEqual((await readdir(root)).sort(),['dist','rust']);
+-});
+-test('verified publication replaces the whole resource set without stale aliases',async t=>{
+- const root=await fixture(t);await writeFile(join(root,'dist/removed.png'),'old archive');
+- await withArtifactLease(root,'build',lease=>withStagedArtifact(lease,'dist',async stage=>{
+-  await writeFile(join(stage,'index.html'),'verified');
+-  assert.equal(await readFile(join(root,'dist/index.html'),'utf8'),'previous');
+- }));
+- assert.equal(await readFile(join(root,'dist/index.html'),'utf8'),'verified');
+- assert.deepEqual(await readdir(join(root,'dist')),['index.html']);
+- assert.deepEqual(await readdir(join(root,'rust/target')),[]);
+- assert.deepEqual((await readdir(root)).sort(),['dist','rust']);
+-});
+-test('lease ownership change cannot remove another owner token',async t=>{
+- const root=await fixture(t);let owner;
+- await assert.rejects(withArtifactLease(root,'build',async lease=>{owner=lease.owner;await writeFile(owner,JSON.stringify({token:'replacement'}));}),/ownership changed/);
+- assert.equal(JSON.parse(await readFile(owner,'utf8')).token,'replacement');
+-});
+-test('symlink artifact destination is refused without touching its target',{skip:process.platform==='win32'},async t=>{
+- const root=await fixture(t);await rm(join(root,'dist'),{recursive:true});await mkdir(join(root,'other'));await writeFile(join(root,'other/owned.txt'),'untouched');await symlink('other',join(root,'dist'));
+- await assert.rejects(withArtifactLease(root,'build',lease=>withStagedArtifact(lease,'dist',async stage=>{await writeFile(join(stage,'index.html'),'new');})),/regular directory/);
+- assert.equal(await readFile(join(root,'other/owned.txt'),'utf8'),'untouched');
++ const grand=`require('fs').writeFileSync(${JSON.stringify(join(root,'grand.pid'))},String(process.pid));setInterval(()=>{},1000)`;
++ const child=`import {execOwned} from ${JSON.stringify(helper)};import{writeFileSync}from'node:fs';writeFileSync(${JSON.stringify(join(root,'child.pid'))},String(process.pid));execOwned(process.execPath,['-e',${JSON.stringify(grand)}],{stdio:'inherit'});`;
++ const script=`import{withArtifactLease,execOwned}from ${JSON.stringify(helper)};await withArtifactLease(${JSON.stringify(root)},'build',async()=>execOwned(process.execPath,['--input-type=module','-e',${JSON.stringify(child)}],{stdio:'inherit'}));`;
++ const worker=spawn('python3',[runner,root,process.execPath,'--input-type=module','-e',script],{stdio:'ignore'});
++ const pids=[worker.pid];t.after(()=>{for(const pid of pids)try{process.kill(pid,'SIGKILL');}catch{}});
++ await waitFor(async()=>Boolean(await readFile(join(root,'grand.pid'),'utf8')));
++ pids.push(Number(await readFile(join(root,'child.pid'),'utf8')),Number(await readFile(join(root,'grand.pid'),'utf8')));
++ process.kill(pids[0],'SIGKILL');process.kill(pids[1],'SIGKILL');
++ assert.notEqual(locked(root,'').status,0);
++ process.kill(pids[2],'SIGKILL');
++ await waitFor(()=>locked(root,'').status===0);
++});
++
++test('SIGINT, SIGTERM and startup exceptions release the kernel lock',{skip:process.platform==='win32',timeout:12000},async t=>{
++ const root=await fixture(t);
++ for(const signal of ['SIGINT','SIGTERM']){
++  const marker=join(root,signal);
++  const script=`import{withArtifactLease}from ${JSON.stringify(helper)};import{writeFileSync}from'node:fs';await withArtifactLease(${JSON.stringify(root)},'build',async()=>{writeFileSync(${JSON.stringify(marker)},'ready');await new Promise(()=>setInterval(()=>{},1000));});`;
++  const worker=spawn('python3',[runner,root,process.execPath,'--input-type=module','-e',script],{stdio:'ignore'});
++  t.after(()=>{try{worker.kill('SIGKILL');}catch{}});
++  await waitFor(()=>readFile(marker));worker.kill(signal);await waitFor(()=>locked(root,'').status===0);
++ }
++ const failed=locked(root,`import{withArtifactLease}from ${JSON.stringify(helper)};await withArtifactLease(${JSON.stringify(root)},'preview',async()=>{throw Error('startup');});`);
++ assert.notEqual(failed.status,0);assert.equal(locked(root,'').status,0);
++});
++
++test('verified snapshot survives replacement and does not retain a preview lock',async t=>{
++ const root=await fixture(t);await artifact(join(root,'dist'),'old');
++ const script=`import{withArtifactLease,loadArtifactSnapshot}from ${JSON.stringify(helper)};const snapshot=await withArtifactLease(${JSON.stringify(root)},'preview',()=>loadArtifactSnapshot(${JSON.stringify(join(root,'dist'))}));console.log(snapshot.buffers.get('index.html').toString());`;
++ assert.equal(locked(root,script).stdout.trim(),'old');assert.equal(locked(root,'').status,0);
++ const snapshot=await loadArtifactSnapshot(join(root,'dist'));
++ await withStagedArtifact({root},'dist',stage=>artifact(stage,'new'));
++ assert.equal(snapshot.buffers.get('index.html').toString(),'old');assert.equal((await loadArtifactSnapshot(join(root,'dist'))).buffers.get('index.html').toString(),'new');
++});
++
++test('failed verification and journal initialization preserve the previous artifact',async t=>{
++ const root=await fixture(t);const old=await artifact(join(root,'dist'),'old');
++ await assert.rejects(withStagedArtifact({root},'dist',async()=>{throw Object.assign(Error('disk full'),{code:'ENOSPC'});}),/disk full/);
++ await mkdir(join(root,'.robrix-dist.journal.json'));
++ await assert.rejects(withStagedArtifact({root},'dist',stage=>artifact(stage,'new')));
++ assert.equal((await loadArtifactSnapshot(join(root,'dist'))).manifestDigest,old);
++ assert.deepEqual((await readdir(root)).sort(),['.robrix-dist.journal.json','dist']);
++});
++
++test('publication removes resources deleted from a reused package',async t=>{
++ const root=await fixture(t);await artifact(join(root,'dist'),'old',{'removed.png':'archive'});
++ await withStagedArtifact({root},'dist',stage=>artifact(stage,'new'));
++ assert.deepEqual((await readdir(join(root,'dist'))).sort(),['build-manifest.json','index.html']);
++});
++
++for(const crash of ['prepared','old-moved','new-moved'])test(`SIGKILL ${crash} recovers pinned complete version`,{skip:process.platform==='win32'},async t=>{
++ const root=await fixture(t);const stage='.robrix-artifact-stage-Test123';const previous='.robrix-artifact-previous-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
++ const old=await artifact(join(root,'dist'),'old'),next=await artifact(join(root,stage),'new');
++ const record={version:1,name:'dist',stage,previous,next,previousDigest:old};
++ const script=`import{open,rename}from'node:fs/promises';const f=await open(${JSON.stringify(join(root,'.robrix-dist.journal.json'))},'wx');await f.writeFile(${JSON.stringify(JSON.stringify(record))});await f.sync();await f.close();${crash!=='prepared'?`await rename(${JSON.stringify(join(root,'dist'))},${JSON.stringify(join(root,previous))});`:''}${crash==='new-moved'?`await rename(${JSON.stringify(join(root,stage))},${JSON.stringify(join(root,'dist'))});`:''}process.kill(process.pid,'SIGKILL');`;
++ assert.equal(locked(root,script).signal,'SIGKILL');
++ await recoverArtifact({root},'dist');
++ assert.equal((await loadArtifactSnapshot(join(root,'dist'))).manifestDigest,next);
++ assert.deepEqual((await readdir(root)).sort(),['.robrix-artifact.lock','dist']);
++});
++
++test('tampered journal, retained digest mismatch and symlink are fail-closed',async t=>{
++ const root=await fixture(t);const old=await artifact(join(root,'dist'),'old');
++ const path=join(root,'.robrix-dist.journal.json');await writeFile(path,JSON.stringify({stage:'../../escape'}));
++ await assert.rejects(recoverArtifact({root},'dist'),/Unknown publication/);
++ await rm(path);const stage='.robrix-artifact-stage-Test123';await artifact(join(root,stage),'new');
++ await writeFile(path,JSON.stringify({version:1,name:'dist',stage,previous:'.robrix-artifact-previous-aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',next:'b'.repeat(64),previousDigest:old}));
++ await assert.rejects(recoverArtifact({root},'dist'),/does not match/);
++ assert.equal((await loadArtifactSnapshot(join(root,'dist'))).manifestDigest,old);
++ await rm(path);await rename(join(root,'dist'),join(root,'actual'));await symlink('actual',join(root,'dist'));
++ await assert.rejects(withStagedArtifact({root},'dist',p=>artifact(p,'new')),/regular directory/);
++ assert.equal((await loadArtifactSnapshot(join(root,'actual'))).manifestDigest,old);
++});
++
++
++test('real journal write failure under a file-size limit keeps prior output and releases ownership',{skip:process.platform==='win32'},async t=>{
++ const root=await fixture(t);const old=await artifact(join(root,'dist'),'old');await artifact(join(root,'prepared'),'new');
++ const script=`import{withArtifactLease,withStagedArtifact}from ${JSON.stringify(helper)};import{rm,rename}from'node:fs/promises';await withArtifactLease(${JSON.stringify(root)},'build',lease=>withStagedArtifact(lease,'dist',async stage=>{await rm(stage,{recursive:true});await rename(${JSON.stringify(join(root,'prepared'))},stage);}));`;
++ const python="import resource,signal,os,sys; resource.setrlimit(resource.RLIMIT_FSIZE,(0,0)); signal.signal(signal.SIGXFSZ,signal.SIG_IGN); os.execvp(sys.argv[1],sys.argv[1:])";
++ const result=spawnSync('python3',['-c',python,'python3',runner,root,process.execPath,'--input-type=module','-e',script],{encoding:'utf8',timeout:5000});
++ assert.notEqual(result.status,0);assert.match(result.stderr,/EFBIG/);
++ assert.equal((await loadArtifactSnapshot(join(root,'dist'))).manifestDigest,old);
++ assert.equal(locked(root,'').status,0);
++ assert.deepEqual((await readdir(root)).sort(),['.robrix-artifact.lock','dist']);
++});
++
++test('ordinary Node wrapper forwards termination without retaining a preview process',{skip:process.platform==='win32',timeout:10000},async t=>{
++ const root=await fixture(t),marker=join(root,'ready'),entry=join(root,'entry.mjs');
++ await writeFile(entry,`import{withArtifactLease}from ${JSON.stringify(helper)};import{writeFileSync}from'node:fs';await withArtifactLease(${JSON.stringify(root)},'preview',async()=>{writeFileSync(${JSON.stringify(marker)},String(process.pid));await new Promise(()=>setInterval(()=>{},1000));});`);
++ const outer=spawn(process.execPath,[entry],{stdio:'ignore'});let inner;
++ t.after(()=>{for(const pid of [outer.pid,inner])if(pid)try{process.kill(pid,'SIGKILL');}catch{}});
++ await waitFor(async()=>{inner=Number(await readFile(marker,'utf8'));return inner;});
++ outer.kill('SIGTERM');await waitFor(()=>locked(root,'').status===0);
++ await waitFor(()=>{try{process.kill(inner,0);return false;}catch{return true;}});
++});
++
++test('two live previews keep immutable bytes while a rebuild publishes new output',{skip:process.platform==='win32',timeout:10000},async t=>{
++ const root=await fixture(t);await artifact(join(root,'dist'),'old');const servers=[];
++ t.after(()=>{for(const server of servers)server.kill('SIGTERM');});
++ for(let i=0;i<2;i++){
++  const marker=join(root,`preview-${i}`);
++  const script=`import{withArtifactLease,loadArtifactSnapshot}from ${JSON.stringify(helper)};import{createServer}from'node:http';import{writeFileSync}from'node:fs';const snapshot=await withArtifactLease(${JSON.stringify(root)},'preview',()=>loadArtifactSnapshot(${JSON.stringify(join(root,'dist'))}));const server=createServer((req,res)=>res.end(snapshot.buffers.get('index.html')));server.listen(0,'127.0.0.1',()=>writeFileSync(${JSON.stringify(marker)},String(server.address().port)));`;
++  servers.push(spawn('python3',[runner,root,process.execPath,'--input-type=module','-e',script],{stdio:'ignore'}));
++  await waitFor(()=>readFile(marker));
++ }
++ const rebuild=locked(root,`import{withArtifactLease}from ${JSON.stringify(helper)};await withArtifactLease(${JSON.stringify(root)},'build',async()=>{});`);
++ assert.equal(rebuild.status,0,rebuild.stderr);
++ await withStagedArtifact({root},'dist',p=>artifact(p,'new'));
++ for(let i=0;i<2;i++){const port=Number(await readFile(join(root,`preview-${i}`),'utf8'));assert.equal(await(await fetch(`http://127.0.0.1:${port}`)).text(),'old');}
++ assert.equal((await loadArtifactSnapshot(join(root,'dist'))).buffers.get('index.html').toString(),'new');
++});
++
++test('real Rust Command descendant retains the compiler lock after both parents die',{skip:process.platform==='win32',timeout:30000},async t=>{
++ const root=await fixture(t),source=join(root,'child.rs'),binary=join(root,'child');
++ await writeFile(source,`fn main(){let a:Vec<String>=std::env::args().collect();std::fs::write(&a[1],std::process::id().to_string()).unwrap();let status=std::process::Command::new(&a[2]).args(&a[3..]).status().unwrap();std::process::exit(status.code().unwrap_or(1));}`);
++ const compile=spawnSync('rustup',['run','1.95.0','rustc','--edition=2024',source,'-o',binary],{encoding:'utf8',timeout:20000});
++ assert.equal(compile.status,0,compile.stderr??String(compile.error));
++ for(const mode of ['parent-sigkill','wrapper-sigterm']){
++ const marker=join(root,mode+'.pid'),rustMarker=join(root,mode+'-rust.pid');
++ const grand=`require('fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000)`;
++ const script=`import{withArtifactLease,execOwned}from ${JSON.stringify(helper)};await withArtifactLease(${JSON.stringify(root)},'build',async()=>execOwned(${JSON.stringify(binary)},[${JSON.stringify(rustMarker)},process.execPath,'-e',${JSON.stringify(grand)}],{stdio:'inherit'}));`;
++ const entry=join(root,mode+'.mjs');await writeFile(entry,script);
++ const worker=mode==='parent-sigkill'?spawn('python3',[runner,root,process.execPath,entry],{stdio:'ignore'}):spawn(process.execPath,[entry],{stdio:'ignore'});
++ const pids=[worker.pid];t.after(()=>{for(const pid of pids)try{process.kill(pid,'SIGKILL');}catch{}});
++ await waitFor(()=>readFile(marker));
++ pids.push(Number(await readFile(rustMarker,'utf8')),Number(await readFile(marker,'utf8')));
++ process.kill(pids[0],mode==='parent-sigkill'?'SIGKILL':'SIGTERM');
++ assert.notEqual(locked(root,'').status,0);
++ process.kill(pids[1],'SIGKILL');assert.notEqual(locked(root,'').status,0);
++ process.kill(pids[2],'SIGKILL');await waitFor(()=>locked(root,'').status===0);
++ }
++
+ });
+diff --git a/apps/hepta-control-ui/tools/artifact-lock.py b/apps/hepta-control-ui/tools/artifact-lock.py
+new file mode 100644
+index 0000000000..fe15a6c642
+--- /dev/null
++++ b/apps/hepta-control-ui/tools/artifact-lock.py
+@@ -0,0 +1,29 @@
++"""POSIX kernel-owned build lock; inherited descriptors keep compiler children fenced."""
++
++import os
++import sys
++import stat
++
++if os.name != "posix":
++    raise SystemExit("Owned UI builds/previews currently require POSIX flock")
++import fcntl
++
++if sys.argv[1] == "--shared":
++    fcntl.flock(3, fcntl.LOCK_SH)
++    raise SystemExit(0)
++root, *command = sys.argv[1:]
++path = os.path.join(root, ".robrix-artifact.lock")
++fd = os.open(path, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
++if not stat.S_ISREG(os.fstat(fd).st_mode):
++    raise SystemExit("Artifact lock must be a regular file")
++try:
++    fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
++except BlockingIOError:
++    raise SystemExit("Another build/startup owns the artifact; retry after it exits")
++if fd != 3:
++    os.dup2(fd, 3, inheritable=True)
++    os.close(fd)
++else:
++    os.set_inheritable(3, True)
++os.environ["HEPTA_ARTIFACT_LOCK_ROOT"] = os.path.realpath(root)
++os.execvp(command[0], command)
+diff --git a/apps/hepta-control-ui/tools/build-robrix.mjs b/apps/hepta-control-ui/tools/build-robrix.mjs
+index 31ed8bd3c4..4c05f4dd13 100644
+--- a/apps/hepta-control-ui/tools/build-robrix.mjs
++++ b/apps/hepta-control-ui/tools/build-robrix.mjs
+@@ -1,5 +1,5 @@
+ // Build/packaging tooling only. Product UI and event handling live in Rust/Makepad.
+-import { execFileSync } from 'node:child_process';
++import {execOwned as execFileSync} from './owned-artifact-lease.mjs';
+ import { createHash } from 'node:crypto';
+ import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+ import { dirname, join, relative } from 'node:path';
+diff --git a/apps/hepta-control-ui/tools/build.mjs b/apps/hepta-control-ui/tools/build.mjs
+index aedd04925a..e54fb4652a 100644
+--- a/apps/hepta-control-ui/tools/build.mjs
++++ b/apps/hepta-control-ui/tools/build.mjs
+@@ -1,4 +1,2 @@
+-// Canonical product build: the same Robrix-derived Rust/Makepad UI as desktop.
+-import { execFileSync } from 'node:child_process';
+-import { fileURLToPath } from 'node:url';
+-execFileSync(process.execPath, [fileURLToPath(new URL('./build-robrix.mjs', import.meta.url))], {stdio:'inherit'});
++// Canonical build shares the kernel-owned entry and signal lifetime.
++import './build-robrix.mjs';
+diff --git a/apps/hepta-control-ui/tools/owned-artifact-lease.mjs b/apps/hepta-control-ui/tools/owned-artifact-lease.mjs
+index ed22112aeb..1c2425d1ec 100644
+--- a/apps/hepta-control-ui/tools/owned-artifact-lease.mjs
++++ b/apps/hepta-control-ui/tools/owned-artifact-lease.mjs
+@@ -1,45 +1,121 @@
+-// Build/preview lifetime ownership only; no UI or business behavior.
+-import {mkdir,mkdtemp,readFile,writeFile,rename,rm,lstat} from 'node:fs/promises';
+-import {randomUUID} from 'node:crypto';
+-import {join,resolve} from 'node:path';
++// Build/preview ownership only. The kernel releases the lock after the last
++// inheriting compiler exits, including when its Node parent is killed.
++import {execFileSync,spawn} from 'node:child_process';
++import {closeSync,fstatSync,statSync,constants} from 'node:fs';
++import {mkdtemp,rename,rm,lstat,open,readdir} from 'node:fs/promises';
++import {createHash,randomUUID} from 'node:crypto';
++import {join,resolve,basename} from 'node:path';
++import {fileURLToPath} from 'node:url';
++const runner=fileURLToPath(new URL('./artifact-lock.py',import.meta.url));
++const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
++const names=['dist','dist-robrix-fixtures'];
++const hashPattern=/^[a-f0-9]{64}$/;
++const exists=async path=>{try{return await lstat(path);}catch(e){if(e.code==='ENOENT')return null;throw e;}};
+ 
++// All mutating child processes must use this adapter. Rust Command preserves
++// the non-CLOEXEC descriptor when it starts Cargo/rustc descendants.
++export function execOwned(file,args,options={}){
++ if(!process.env.HEPTA_ARTIFACT_LOCK_ROOT)throw new Error('Missing kernel artifact lock');
++ const mode=options.stdio??'pipe';
++ if(!['pipe','inherit','ignore'].includes(mode))throw new Error('Unsupported owned child stdio');
++ return execFileSync(file,args,{...options,stdio:[mode,mode,mode,3]});
++}
+ export async function withArtifactLease(root,kind,work){
+  root=resolve(root);
+- const target=join(root,'rust/target');await mkdir(target,{recursive:true});
+- const path=join(target,'robrix-artifact-lease');
+- try{await mkdir(path);}catch(error){
+-  if(error.code==='EEXIST')throw new Error('Another build or preview owns this artifact. Stop the preview/wait for the build; never remove a live lease. An interrupted orphan requires owner inspection.');
+-  throw error;
++ if(process.env.HEPTA_ARTIFACT_LOCK_ROOT!==root){
++  const child=spawn('python3',[runner,root,process.execPath,...process.argv.slice(1)],{stdio:'inherit'});
++  const interrupt=()=>child.kill('SIGINT'),terminate=()=>child.kill('SIGTERM');
++  process.on('SIGINT',interrupt);process.on('SIGTERM',terminate);
++  const status=await new Promise((done,fail)=>{child.once('error',fail);child.once('exit',code=>done(code??1));});
++  process.off('SIGINT',interrupt);process.off('SIGTERM',terminate);
++  process.exit(status);
+  }
+- const token=randomUUID();
+- const owner=join(path,'owner.json');
+- const lease=Object.freeze({root,target,path,owner,token});
++ const fd=fstatSync(3),path=statSync(join(root,'.robrix-artifact.lock'));
++ if(!fd.isFile()||fd.ino!==path.ino||fd.dev!==path.dev)throw new Error('Invalid kernel artifact lock descriptor');
++ const lease={root};
+  try{
+-  await writeFile(owner,JSON.stringify({token,kind,pid:process.pid}));
++  for(const name of names)await recoverArtifact(lease,name);
++  if(kind==='preview')execOwned('python3',[runner,'--shared']);
+   return await work(lease);
+- }finally{
+-  const observed=JSON.parse(await readFile(owner,'utf8'));
+-  if(observed.token!==token)throw new Error('Artifact lease ownership changed; refusing cleanup');
+-  await rm(path,{recursive:true});
++ }finally{closeSync(3);delete process.env.HEPTA_ARTIFACT_LOCK_ROOT;}
++}
++async function boundedFile(path,limit){
++ const file=await open(path,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);
++ try{
++  const info=await file.stat();
++  if(!info.isFile()||info.size>limit)throw new Error('Nonregular or oversized artifact file');
++  const bytes=Buffer.alloc(info.size+1);let offset=0;
++  while(offset<bytes.length){const {bytesRead}=await file.read(bytes,offset,bytes.length-offset,null);if(!bytesRead)break;offset+=bytesRead;}
++  if(offset!==info.size)throw new Error('Artifact changed while reading');
++  return bytes.subarray(0,offset);
++ }finally{await file.close();}
++}
++export async function loadArtifactSnapshot(path,expectedDigest){
++ const info=await lstat(path);if(!info.isDirectory()||info.isSymbolicLink())throw new Error('Artifact root must be a regular directory');
++ const bytes=await boundedFile(join(path,'build-manifest.json'),2*1024*1024);
++ const manifestDigest=digest(bytes);
++ if(expectedDigest&&manifestDigest!==expectedDigest)throw new Error('Retained manifest pin mismatch');
++ const manifest=JSON.parse(bytes);
++ if(manifest.schema!=='hepta.robrix-ui.build.v1'||manifest.browserRuntime!=='rust-makepad-wasm'||!hashPattern.test(manifest.sourceIdentity?.sha256))throw new Error('Invalid artifact manifest');
++ const entries=Object.entries(manifest.files??{});
++ if(entries.length===0||entries.length>128)throw new Error('Invalid artifact resource count');
++ let total=0;const buffers=new Map([['build-manifest.json',bytes]]);
++ for(const [name,pin] of entries){
++  if(name==='build-manifest.json'||name.split('/').some(part=>!part||part==='.'||part==='..')||/[\\%\x00-\x1f]/.test(name)||!Number.isSafeInteger(pin.bytes)||pin.bytes<0||pin.bytes>64*1024*1024||!hashPattern.test(pin.sha256))throw new Error('Invalid artifact resource pin');
++  total+=pin.bytes;if(total>128*1024*1024)throw new Error('Artifact aggregate limit exceeded');
++  let parent=path;
++  for(const part of name.split('/').slice(0,-1)){parent=join(parent,part);const st=await lstat(parent);if(!st.isDirectory()||st.isSymbolicLink())throw new Error('Symlink/non-directory artifact component');}
++  const body=await boundedFile(join(path,name),pin.bytes);
++  if(body.length!==pin.bytes||digest(body)!==pin.sha256)throw new Error('Artifact resource digest mismatch');
++  buffers.set(name,body);
+  }
++ const actual=[];
++ async function walk(dir,prefix=''){for(const item of await readdir(dir,{withFileTypes:true})){const rel=prefix+item.name;if(item.isDirectory())await walk(join(dir,item.name),rel+'/');else if(item.isFile())actual.push(rel);else throw new Error('Nonregular artifact entry');}}
++ await walk(path);
++ if(JSON.stringify(actual.sort())!==JSON.stringify([...buffers.keys()].sort()))throw new Error('Unlisted artifact resources');
++ return {manifest,manifestDigest,buffers};
++}
++async function syncDirectory(path){const fd=await open(path,constants.O_RDONLY|constants.O_DIRECTORY|constants.O_NOFOLLOW);try{await fd.sync();}finally{await fd.close();}}
++async function syncTree(path){for(const item of await readdir(path,{withFileTypes:true})){const child=join(path,item.name);if(item.isDirectory())await syncTree(child);else{const fd=await open(child,constants.O_RDONLY|constants.O_NOFOLLOW);try{await fd.sync();}finally{await fd.close();}}}await syncDirectory(path);}
++function journalPath(root,name){if(!names.includes(name))throw new Error('Unexpected owned artifact name');return join(root,`.robrix-${name}.journal.json`);}
++export async function recoverArtifact(lease,name){
++ const path=journalPath(lease.root,name);if(!await exists(path))return;
++ const record=JSON.parse(await boundedFile(path,4096));
++ if(JSON.stringify(Object.keys(record).sort())!==JSON.stringify(['name','next','previous','previousDigest','stage','version'].sort())||record.version!==1||record.name!==name||!/^\.robrix-artifact-stage-[A-Za-z0-9]+$/.test(record.stage)||!/^\.robrix-artifact-previous-[a-f0-9-]{36}$/.test(record.previous)||!hashPattern.test(record.next)||(record.previousDigest!==null&&!hashPattern.test(record.previousDigest)))throw new Error('Unknown publication journal state');
++ const dest=join(lease.root,name),stage=join(lease.root,record.stage),previous=join(lease.root,record.previous);
++ const state=async p=>await exists(p)?(await loadArtifactSnapshot(p)).manifestDigest:null;
++ let [d,s,p]=await Promise.all([state(dest),state(stage),state(previous)]);
++ const old=record.previousDigest;
++ if(d===old&&s===record.next&&p===null){
++  if(old!==null){await rename(dest,previous);await syncDirectory(lease.root);}
++  await rename(stage,dest);await syncDirectory(lease.root);
++ }else if(d===null&&s===record.next&&p===old){
++  await rename(stage,dest);await syncDirectory(lease.root);
++ }else if(!(d===record.next&&s===null&&p===old))throw new Error('Publication state does not match retained manifest pins');
++ // Revalidate before deleting the previous version; all readers use snapshots.
++ await loadArtifactSnapshot(dest,record.next);
++ if(old!==null)await loadArtifactSnapshot(previous,old);
++ // Complete the transaction durably before garbage collection. A killed
++ // recursive cleanup may leave an inert owned backup, never a broken journal.
++ await rm(path);await syncDirectory(lease.root);
++ if(old!==null)await rm(previous,{recursive:true});
+ }
+-
+ export async function withStagedArtifact(lease,name,build){
+- if(!['dist','dist-robrix-fixtures'].includes(name))throw new Error('Unexpected owned artifact name');
+- const destination=join(lease.root,name);
+- // Stage beside the destination so target-cache mounts cannot make publication EXDEV.
++ const journal=journalPath(lease.root,name);
+  const stage=await mkdtemp(join(lease.root,'.robrix-artifact-stage-'));
+- const previous=join(lease.root,'.robrix-artifact-previous-'+lease.token);
+- let moved=false;
++ let journalCreated=false;
+  try{
+   await build(stage);
+-  if(JSON.parse(await readFile(lease.owner,'utf8')).token!==lease.token)throw new Error('Artifact lease ownership changed before publication');
++  const next=await loadArtifactSnapshot(stage);
++  const destination=join(lease.root,name);
++  const old=await exists(destination)?await loadArtifactSnapshot(destination):null;
++  await syncTree(stage);
++  const record={version:1,name,stage:basename(stage),previous:'.robrix-artifact-previous-'+randomUUID(),next:next.manifestDigest,previousDigest:old?.manifestDigest??null};
++  const temp=journal+'.'+randomUUID()+'.tmp';
+   try{
+-   const current=await lstat(destination);
+-   if(!current.isDirectory()||current.isSymbolicLink())throw new Error('Owned artifact destination is not a regular directory');
+-   await rename(destination,previous);moved=true;
+-  }catch(error){if(error.code!=='ENOENT')throw error;}
+-  try{await rename(stage,destination);}catch(error){if(moved)await rename(previous,destination);throw error;}
+-  if(moved)await rm(previous,{recursive:true});
+- }finally{await rm(stage,{recursive:true,force:true});}
++   const fd=await open(temp,'wx',0o600);try{await fd.writeFile(JSON.stringify(record));await fd.sync();}finally{await fd.close();}
++   await rename(temp,journal);journalCreated=true;await syncDirectory(lease.root);
++  }finally{await rm(temp,{force:true});}
++  await recoverArtifact(lease,name);
++ }finally{if(!journalCreated)await rm(stage,{recursive:true,force:true});}
+ }
+diff --git a/apps/hepta-control-ui/tools/prepare-makepad-platform.mjs b/apps/hepta-control-ui/tools/prepare-makepad-platform.mjs
+index 1eac9739a8..7f16bb2875 100644
+--- a/apps/hepta-control-ui/tools/prepare-makepad-platform.mjs
++++ b/apps/hepta-control-ui/tools/prepare-makepad-platform.mjs
+@@ -1,5 +1,5 @@
+ // Reproducible generated build overlay; never edits the Cargo Git cache.
+-import {execFileSync} from 'node:child_process';
++import {execOwned as execFileSync} from './owned-artifact-lease.mjs';
+ import {createHash} from 'node:crypto';
+ import {cp,mkdir,readFile,rm,writeFile} from 'node:fs/promises';
+ import {join} from 'node:path';
+diff --git a/apps/hepta-control-ui/tools/robrix-source-identity.mjs b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+index 92ce524b4f..19888f48f6 100644
+--- a/apps/hepta-control-ui/tools/robrix-source-identity.mjs
++++ b/apps/hepta-control-ui/tools/robrix-source-identity.mjs
+@@ -18,6 +18,6 @@ export async function robrixSourceIdentity(root){
+  await walk(join(root,'rust/robrix-ui/resources'));
+  await add(join(root,'rust/robrix-ui/UPSTREAM.json'));
+  await add(join(root,'rust/robrix-ui/build.rs'));
+- for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py','owned-artifact-lease.mjs','serve-robrix.mjs'])await add(join(root,'tools',name));
++ for(const name of ['build.mjs','build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py','owned-artifact-lease.mjs','artifact-lock.py','serve-robrix.mjs'])await add(join(root,'tools',name));
+  return {sha256:sha(JSON.stringify(files)),files};
+ }
+diff --git a/apps/hepta-control-ui/tools/serve-robrix.mjs b/apps/hepta-control-ui/tools/serve-robrix.mjs
+index 04d828b0c6..e25424d2aa 100644
+--- a/apps/hepta-control-ui/tools/serve-robrix.mjs
++++ b/apps/hepta-control-ui/tools/serve-robrix.mjs
+@@ -1,27 +1,30 @@
+ // Development static-file server, not an owner/API/chat transport.
+ import { createServer } from 'node:http';
+-import { readFile, stat } from 'node:fs/promises';
+-import { extname, resolve, sep } from 'node:path';
++import { extname } from 'node:path';
+ import { fileURLToPath } from 'node:url';
+ import {robrixSourceIdentity} from './robrix-source-identity.mjs';
+-import {withArtifactLease} from './owned-artifact-lease.mjs';
++import {withArtifactLease,loadArtifactSnapshot} from './owned-artifact-lease.mjs';
+ const sourceRoot=fileURLToPath(new URL('..',import.meta.url));
+-await withArtifactLease(sourceRoot,'preview',async()=>{
++const snapshot=await withArtifactLease(sourceRoot,'preview',async()=>{
+ const root=fileURLToPath(new URL(process.env.HEPTA_ROBRIX_FIXTURES==='1'?'../dist-robrix-fixtures/':'../dist/',import.meta.url));
+-const port=Number(process.env.PORT ?? 4175);
+-if (!Number.isInteger(port)||port<1024||port>65535) throw new Error('Invalid local development port');
+-const manifest=JSON.parse(await readFile(resolve(root,'build-manifest.json'),'utf8'));
++const snapshot=await loadArtifactSnapshot(root);
++const {manifest}=snapshot;
+ if((await robrixSourceIdentity(sourceRoot)).sha256!==manifest.sourceIdentity?.sha256) throw new Error('Built artifact is stale; rebuild current UI source');
+ if (manifest.browserRuntime!=='rust-makepad-wasm') throw new Error('Build the canonical Robrix UI first');
++return snapshot;
++});
++const port=Number(process.env.PORT ?? 4175);
++if (!Number.isInteger(port)||port<1024||port>65535) throw new Error('Invalid local development port');
+ const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.wasm':'application/wasm','.ttf':'font/ttf','.otf':'font/otf','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'};
+ const server=createServer(async(req,res)=>{
+  try {
+   if(req.method!=='GET'&&req.method!=='HEAD'){res.writeHead(405);res.end();return;}
+   const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
+-  const path=resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
+-  if(!path.startsWith(root.endsWith(sep)?root:root+sep)||!(await stat(path)).isFile()){res.writeHead(404);res.end();return;}
+-  res.writeHead(200,{'Content-Type':mime[extname(path)]??'application/octet-stream','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"});
+-  res.end(req.method==='HEAD'?undefined:await readFile(path));
++  const path=pathname==='/'?'index.html':pathname.slice(1);
++  const body=snapshot.buffers.get(path);
++  if(!body){res.writeHead(404);res.end();return;}
++  res.writeHead(200,{'Content-Length':body.length,'Content-Type':mime[extname(path)]??'application/octet-stream','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"});
++  res.end(req.method==='HEAD'?undefined:body);
+  }catch{res.writeHead(404);res.end();}
+ });
+ await new Promise((done,fail)=>{
+@@ -32,4 +35,3 @@ await new Promise((done,fail)=>{
+  process.once('SIGINT',stop);process.once('SIGTERM',stop);
+  server.listen(port,'127.0.0.1',()=>console.log(`Robrix-derived UI development artifact: http://127.0.0.1:${port}`));
+ });
+-});

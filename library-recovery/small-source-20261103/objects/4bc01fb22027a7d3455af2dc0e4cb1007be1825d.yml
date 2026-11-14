@@ -1,0 +1,91 @@
+name: Hepta V6 offline operator-signed stem material admission
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/multimodal_material_admission.py"
+      - "experiments/shared_stem_cell/test_multimodal_material_admission.py"
+      - "experiments/shared_stem_cell/OPERATOR_MATERIAL_ADMISSION_V6.md"
+      - ".github/workflows/hepta-stem-operator-material-v6.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/multimodal_material_admission.py"
+      - "experiments/shared_stem_cell/test_multimodal_material_admission.py"
+      - "experiments/shared_stem_cell/OPERATOR_MATERIAL_ADMISSION_V6.md"
+      - ".github/workflows/hepta-stem-operator-material-v6.yml"
+permissions:
+  contents: read
+concurrency:
+  group: stem-operator-material-v6-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  offline-operator-material-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install immutable offline material test dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-stem-v6
+          python3 -m venv /tmp/hepta-stem-v6-venv
+          /tmp/hepta-stem-v6-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu \
+            2>&1 | tee /tmp/hepta-stem-v6/install-torch.log
+          /tmp/hepta-stem-v6-venv/bin/pip install safetensors==0.6.2 cryptography==46.0.4 \
+            2>&1 | tee /tmp/hepta-stem-v6/install-verify.log
+          /tmp/hepta-stem-v6-venv/bin/pip check
+          /tmp/hepta-stem-v6-venv/bin/pip freeze > /tmp/hepta-stem-v6/environment.txt
+      - name: Verify real safetensors and Ed25519 without any skipped cases
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-stem-v6-venv/bin/python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_multimodal_material_admission.py' -v \
+            2>&1 | tee /tmp/hepta-stem-v6/contracts.log
+          grep -q 'Ran 17 tests' /tmp/hepta-stem-v6/contracts.log
+          grep -q '^OK$' /tmp/hepta-stem-v6/contracts.log
+          if grep -Ei 'skipped[=: ]|skipped .+ requires' /tmp/hepta-stem-v6/contracts.log; then
+            echo 'Skipped model-material contract is not admissible' >&2
+            exit 1
+          fi
+          /tmp/hepta-stem-v6-venv/bin/python -m py_compile \
+            experiments/shared_stem_cell/multimodal_material_admission.py \
+            experiments/shared_stem_cell/test_multimodal_material_admission.py
+      - name: Preserve actual job outcome and exact source identity
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/hepta-stem-v6/exact-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-stem-v6/exact-tree.txt
+          sha256sum experiments/shared_stem_cell/multimodal_material_admission.py \
+            experiments/shared_stem_cell/test_multimodal_material_admission.py \
+            experiments/shared_stem_cell/OPERATOR_MATERIAL_ADMISSION_V6.md \
+            .github/workflows/hepta-stem-operator-material-v6.yml \
+            > /tmp/hepta-stem-v6/source-SHA256SUMS
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          Path('/tmp/hepta-stem-v6/disposition.json').write_text(json.dumps({
+            'schema': 'hepta.stem-v6-operator-material-disposition.v1',
+            'tested_model': 'tiny randomly constructed local safetensors fixture',
+            'model_publisher_authenticated': False,
+            'real_mmbert_or_granite_loaded': False,
+            'real_model_task_quality': False,
+            'independent_ndu_verified': False,
+            'production_accepted': False}, sort_keys=True)+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-stem-v6-operator-material-mechanics-not-publisher-proof
+          path: /tmp/hepta-stem-v6
+          if-no-files-found: error

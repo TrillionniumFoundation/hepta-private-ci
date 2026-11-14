@@ -1,0 +1,1206 @@
+diff --git a/.github/workflows/ui-control-rust-parity.yml b/.github/workflows/ui-control-rust-parity.yml
+index b34304716..050a7a85e 100644
+--- a/.github/workflows/ui-control-rust-parity.yml
++++ b/.github/workflows/ui-control-rust-parity.yml
+@@ -259,7 +259,7 @@ jobs:
+         run: |
+           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+           npm run build --prefix apps/hepta-control-ui
+-          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs apps/hepta-control-ui/test/makepad-widget-borrow.test.mjs
++          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs apps/hepta-control-ui/test/makepad-widget-borrow.test.mjs apps/hepta-control-ui/test/makepad-ime-router.test.mjs
+           python3 apps/hepta-control-ui/test/check-makepad-ime-dto.py
+           cd apps/hepta-control-ui
+           npx playwright install --with-deps chromium firefox webkit
+diff --git a/apps/hepta-control-ui/README.md b/apps/hepta-control-ui/README.md
+index e317ae1a6..097d8e448 100644
+--- a/apps/hepta-control-ui/README.md
++++ b/apps/hepta-control-ui/README.md
+@@ -32,7 +32,55 @@ so local drafts are not live chat and Send remains disabled. Console identifies
+ its unported operational controls; the tab is not functional parity with the
+ retained native Console implementation.
+ 
+-Latest observed checks on 2026-10-03:
++### Rust entrypoints and input boundary
++
++- `rust/robrix-ui/src/app.rs` composes the shared Makepad host.
++- `rust/robrix-ui/src/robrix/` owns the actual conversation widgets.
++- `rust/robrix-ui/src/presentation.rs` projects the existing bounded Rust state.
++- `rust/robrix-ui/src/ime_router.rs` and `ime_pointer_gate.rs` guard application
++  event dispatch during observed preedit; platform IME completion and pointer
++  capture cleanup remain owned by Makepad and the OS/browser.
++- `rust/core` retains owner/session/history semantics. No input-routing change
++  authenticates a principal, signs a message, dispatches a chat request or
++  manufactures a terminal receipt.
++
++The router includes both search and composer fields. Rejected pointer releases
++stay rejected after preedit completion or account changes; mixed touch packets
++preserve forwarded hit claims. Adaptive layout is retained during composition.
++Exact SDK event, actual-browser and native IME tests are required before this
++candidate is considered qualified. In-field selection/cut, detached editors,
++keyboard candidate control and resource exhaustion are explicit review cases,
++not inferred successes from a compile or screenshot. In-field pointer editing
++retains SDK selection behavior and can cancel preedit locally; this candidate
++is not a claim of universal IME correctness. Pointer-capacity exhaustion is
++fail-closed and restart-only, not automatic timeout/account-change recovery.
++
++For current source-only tests, use the repository root:
++
++```sh
++just test --manifest-path "$PWD/apps/hepta-control-ui/rust/Cargo.toml" --locked -p hepta-control-core -p hepta-robrix-ui --no-default-features --lib
++cargo +1.95.0 check --manifest-path apps/hepta-control-ui/rust/Cargo.toml --locked -p hepta-robrix-ui --target wasm32-unknown-unknown
++```
++
++The owned browser packager additionally requires exactly `nightly-2026-10-02`
++(`rustc 1.101.0-nightly (c36f14571 2026-10-01)`) and its `rust-src` for build-std.
++Use the recorded toolchain file under `rust/robrix-ui/patches/`; keep application
++source, generated platform glue, WASM and resource manifests from one build.
++The development server rejects stale source artifacts. Do not bypass that guard.
++
++### Exact baseline evidence
++
++[Run 37222487722](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37222487722)
++completed successfully for `0490d0a1d5941f02280c567c195bf26a5cdec695`, including
++actual Makepad Web rendering: default 6/6 cases, 60/60 captures and 138/138
++semantic checks; populated 9/9 cases, 78/78 captures and 438/438 checks. That
++baseline does not qualify the later IME router or physical/native/live-owner
++behavior. Candidate claims require fresh source-bound execution and review.
++
++### Historical checkpoints from 2026-10-03
++
++The following earlier observations are retained as history, not current-head
++qualification:
+ 
+ - Standard WASM checks, pinned no-threads release packaging, and the strict-CSP
+   static bridge build have passed. Native display/OS qualification is still
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+index 71fb364eb..38c7e76ab 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/app.rs
+@@ -2,6 +2,7 @@
+ // Copyright 2023–2026 Project Robius Developers. MIT; see ../licenses/ROBRIX-MIT.txt.
+ // Source: src/app.rs Root/Window composition and AppMain registration lifecycle.
+ // Hepta owns the nonvisual state; this UI does not create a runtime or credentials.
++use crate::ime_router::ImeRouter;
+ #[cfg(feature = "native-host")]
+ use crate::native_host::render::RendererHost as NativeRenderer;
+ use hepta_control_core::chat::ChatWorkspace;
+@@ -43,6 +44,8 @@ pub struct App {
+     ui: WidgetRef,
+     #[rust]
+     workspace: ChatWorkspace,
++    #[rust]
++    ime_router: ImeRouter,
+     #[cfg(feature = "native-host")]
+     #[rust]
+     native_host: NativeRenderer,
+@@ -112,8 +115,8 @@ impl AppMain for App {
+             return;
+         }
+         crate::visual_theme::apply_tree(cx, &self.ui);
+-        self.ui
+-            .handle_event(cx, event, &mut Scope::with_data(&mut self.workspace));
++        self.ime_router
++            .dispatch(cx, &self.ui, event, &mut self.workspace);
+         #[cfg(feature = "native-host")]
+         if matches!(event, Event::Draw(_)) {
+             self.native_host.after_draw(cx, &self.ui);
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate.rs b/apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate.rs
+new file mode 100644
+index 000000000..5bf8ac8fd
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate.rs
+@@ -0,0 +1,107 @@
++//! Candidate pure Rust policy for pointer sequences rejected during IME preedit.
++//!
++//! The application adapter handles focus and routes mixed-touch packets while
++//! the platform retains responsibility for capture cleanup and IME completion.
++//! No backend action, authority, or successful IME commit is inferred here.
++use std::collections::BTreeSet;
++
++const MAX_BLOCKED_POINTERS: usize = 32;
++
++#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
++pub(crate) enum PointerId {
++    Mouse(u32),
++    Touch(u64),
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(crate) enum Preedit {
++    Active,
++    Inactive,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(crate) enum Position {
++    FocusedField,
++    OutsideFocusedField,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(crate) enum Capture {
++    FocusedField,
++    OtherOrNone,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(crate) enum Route {
++    Forward,
++    SuppressUiDispatch,
++}
++
++/// Bounded gesture fencing, deliberately not scoped to room/account state.
++/// An epoch switch must not make a previously rejected release actionable.
++#[derive(Default)]
++pub(crate) struct PointerGate {
++    blocked: BTreeSet<PointerId>,
++    overflowed: bool,
++}
++
++impl PointerGate {
++    pub(crate) fn start(&mut self, id: PointerId, preedit: Preedit, position: Position) -> Route {
++        if self.overflowed || self.blocked.contains(&id) {
++            return Route::SuppressUiDispatch;
++        }
++        if preedit == Preedit::Inactive || position == Position::FocusedField {
++            return Route::Forward;
++        }
++        if self.blocked.len() == MAX_BLOCKED_POINTERS {
++            self.overflowed = true;
++        } else {
++            self.blocked.insert(id);
++        }
++        Route::SuppressUiDispatch
++    }
++
++    pub(crate) fn motion(&self, id: PointerId) -> Route {
++        if self.overflowed || self.blocked.contains(&id) {
++            Route::SuppressUiDispatch
++        } else {
++            Route::Forward
++        }
++    }
++
++    pub(crate) fn finish(
++        &mut self,
++        id: PointerId,
++        preedit: Preedit,
++        position: Position,
++        capture: Capture,
++    ) -> Route {
++        let blocked = self.blocked.remove(&id);
++        if self.overflowed
++            || blocked
++            || (preedit == Preedit::Active
++                && position == Position::OutsideFocusedField
++                && capture != Capture::FocusedField)
++        {
++            Route::SuppressUiDispatch
++        } else {
++            Route::Forward
++        }
++    }
++
++    pub(crate) fn is_overflowed(&self) -> bool {
++        self.overflowed
++    }
++
++    /// Only after the platform has explicitly cancelled contacts and released
++    /// captures. Never call for a room/account change, elapsed timeout or redraw.
++    #[cfg(test)]
++    pub(crate) fn platform_input_reset_completed(&mut self) {
++        self.blocked.clear();
++        self.overflowed = false;
++    }
++}
++
++#[cfg(test)]
++#[path = "ime_pointer_gate_tests.rs"]
++mod tests;
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate_tests.rs b/apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate_tests.rs
+new file mode 100644
+index 000000000..4ccf1af59
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/ime_pointer_gate_tests.rs
+@@ -0,0 +1,164 @@
++use super::*;
++
++#[test]
++fn rejected_click_stays_rejected_after_preedit_ends() {
++    let mut gate = PointerGate::default();
++    let id = PointerId::Mouse(0);
++    assert_eq!(
++        gate.start(id, Preedit::Active, Position::OutsideFocusedField),
++        Route::SuppressUiDispatch
++    );
++    assert_eq!(gate.motion(id), Route::SuppressUiDispatch);
++    assert_eq!(
++        gate.finish(
++            id,
++            Preedit::Inactive,
++            Position::OutsideFocusedField,
++            Capture::OtherOrNone
++        ),
++        Route::SuppressUiDispatch
++    );
++    assert_eq!(
++        gate.start(id, Preedit::Inactive, Position::OutsideFocusedField),
++        Route::Forward
++    );
++}
++
++#[test]
++fn independent_touch_motion_and_release_remain_forwarded() {
++    let mut gate = PointerGate::default();
++    let outside = PointerId::Touch(1);
++    let inside = PointerId::Touch(2);
++    assert_eq!(
++        gate.start(outside, Preedit::Active, Position::OutsideFocusedField),
++        Route::SuppressUiDispatch
++    );
++    assert_eq!(
++        gate.start(inside, Preedit::Active, Position::FocusedField),
++        Route::Forward
++    );
++    assert_eq!(gate.motion(inside), Route::Forward);
++    assert_eq!(gate.motion(outside), Route::SuppressUiDispatch);
++    assert_eq!(
++        gate.finish(
++            inside,
++            Preedit::Active,
++            Position::OutsideFocusedField,
++            Capture::FocusedField
++        ),
++        Route::Forward
++    );
++    assert_eq!(
++        gate.finish(
++            outside,
++            Preedit::Active,
++            Position::FocusedField,
++            Capture::OtherOrNone
++        ),
++        Route::SuppressUiDispatch
++    );
++}
++
++#[test]
++fn outside_release_cannot_blur_preedit_without_a_recorded_start() {
++    let mut gate = PointerGate::default();
++    assert_eq!(
++        gate.finish(
++            PointerId::Mouse(0),
++            Preedit::Active,
++            Position::OutsideFocusedField,
++            Capture::OtherOrNone
++        ),
++        Route::SuppressUiDispatch
++    );
++}
++
++#[test]
++fn mouse_and_touch_identifiers_cannot_alias() {
++    let mut gate = PointerGate::default();
++    gate.start(
++        PointerId::Mouse(1),
++        Preedit::Active,
++        Position::OutsideFocusedField,
++    );
++    assert_eq!(gate.motion(PointerId::Touch(1)), Route::Forward);
++    assert_eq!(gate.motion(PointerId::Mouse(1)), Route::SuppressUiDispatch);
++}
++
++#[test]
++fn duplicate_start_does_not_unblock_an_existing_sequence() {
++    let mut gate = PointerGate::default();
++    let id = PointerId::Touch(2);
++    gate.start(id, Preedit::Active, Position::OutsideFocusedField);
++    assert_eq!(
++        gate.start(id, Preedit::Inactive, Position::FocusedField),
++        Route::SuppressUiDispatch
++    );
++    assert_eq!(gate.blocked.len(), 1);
++}
++
++#[test]
++fn capacity_failure_stays_closed_until_platform_reset() {
++    let mut gate = PointerGate::default();
++    for id in 0..=MAX_BLOCKED_POINTERS as u64 {
++        gate.start(
++            PointerId::Touch(id),
++            Preedit::Active,
++            Position::OutsideFocusedField,
++        );
++    }
++    assert_eq!(gate.blocked.len(), MAX_BLOCKED_POINTERS);
++    assert!(gate.is_overflowed());
++    assert_eq!(
++        gate.start(
++            PointerId::Mouse(0),
++            Preedit::Inactive,
++            Position::FocusedField
++        ),
++        Route::SuppressUiDispatch
++    );
++    for id in 0..=MAX_BLOCKED_POINTERS as u64 {
++        assert_eq!(
++            gate.finish(
++                PointerId::Touch(id),
++                Preedit::Inactive,
++                Position::OutsideFocusedField,
++                Capture::OtherOrNone
++            ),
++            Route::SuppressUiDispatch
++        );
++    }
++    assert_eq!(gate.motion(PointerId::Mouse(0)), Route::SuppressUiDispatch);
++    gate.platform_input_reset_completed();
++    assert_eq!(
++        gate.start(
++            PointerId::Mouse(0),
++            Preedit::Inactive,
++            Position::FocusedField
++        ),
++        Route::Forward
++    );
++}
++
++#[test]
++fn ordinary_noncomposing_input_is_not_retained() {
++    let mut gate = PointerGate::default();
++    for id in 0..1000 {
++        let id = PointerId::Touch(id);
++        assert_eq!(
++            gate.start(id, Preedit::Inactive, Position::OutsideFocusedField),
++            Route::Forward
++        );
++        assert_eq!(
++            gate.finish(
++                id,
++                Preedit::Inactive,
++                Position::OutsideFocusedField,
++                Capture::OtherOrNone
++            ),
++            Route::Forward
++        );
++    }
++    assert!(gate.blocked.is_empty());
++    assert!(!gate.is_overflowed());
++}
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs b/apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs
+new file mode 100644
+index 000000000..7b4e538fa
+--- /dev/null
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs
+@@ -0,0 +1,244 @@
++//! Pre-dispatch IME routing. Platform processing and capture cleanup stay outside
++//! this adapter; only application widget dispatch can be withheld.
++use crate::ime_pointer_gate::Capture;
++use crate::ime_pointer_gate::PointerGate;
++use crate::ime_pointer_gate::PointerId;
++use crate::ime_pointer_gate::Position;
++use crate::ime_pointer_gate::Preedit;
++use crate::ime_pointer_gate::Route;
++use hepta_control_core::chat::ChatWorkspace;
++use makepad_widgets::makepad_platform::event::finger::TouchState;
++use makepad_widgets::*;
++
++#[derive(Default)]
++pub(crate) struct CompositionLayout {
++    pub(crate) active: bool,
++    pub(crate) variant: Option<LiveId>,
++}
++
++struct Owner {
++    epoch: u64,
++    widget: WidgetUid,
++    input: TextInputRef,
++}
++
++#[derive(Default)]
++pub(crate) struct ImeRouter {
++    owner: Option<Owner>,
++    pointers: PointerGate,
++}
++
++impl ImeRouter {
++    pub(crate) fn synchronize(
++        &mut self,
++        cx: &mut Cx,
++        root: &WidgetRef,
++        workspace: &mut ChatWorkspace,
++    ) {
++        let epoch = workspace.presentation_epoch();
++        if self
++            .owner
++            .as_ref()
++            .is_some_and(|owner| owner.epoch != epoch)
++            && let Some(owner) = self.owner.take()
++        {
++            owner.input.restore_state(cx, TextInputState::default());
++            cx.set_key_focus(Area::Empty);
++        }
++        let focus = cx.key_focus();
++        let mut observed = None;
++        if focus.is_valid(cx) {
++            let mut stack = vec![root.clone()];
++            for _ in 0..4096 {
++                let Some(widget) = stack.pop() else { break };
++                let input = widget.as_text_input();
++                if input.area() == focus && input.is_composing() {
++                    observed = Some(Owner {
++                        epoch,
++                        widget: widget.widget_uid(),
++                        input,
++                    });
++                    break;
++                }
++                widget.children(&mut |_, child| stack.push(child));
++            }
++        }
++        if let Some(previous) = self.owner.take()
++            && observed
++                .as_ref()
++                .is_none_or(|owner| owner.widget != previous.widget)
++            && previous.input.is_composing()
++        {
++            // Detachment/focus loss is cancellation, not an IME commit. Preserve
++            // local draft text, but do not keep a dead editor locking navigation.
++            let selection = previous.input.selection();
++            previous.input.set_selection(cx, selection);
++            if focus == previous.input.area() {
++                cx.set_key_focus(Area::Empty);
++            }
++        }
++        self.owner = observed;
++        let composing = self.owner.is_some();
++        cx.global::<CompositionLayout>().active = composing;
++        if workspace.composing != composing {
++            workspace.composing = composing;
++            root.redraw(cx);
++        }
++    }
++
++    pub(crate) fn dispatch(
++        &mut self,
++        cx: &mut Cx,
++        root: &WidgetRef,
++        event: &Event,
++        workspace: &mut ChatWorkspace,
++    ) {
++        self.synchronize(cx, root, workspace);
++        let area = self.owner.as_ref().map(|owner| owner.input.area());
++        let preedit = if area.is_some() {
++            Preedit::Active
++        } else {
++            Preedit::Inactive
++        };
++        let position = |cx: &Cx, point| {
++            if area.is_some_and(|area| area.is_valid(cx) && area.clipped_rect(cx).contains(point)) {
++                Position::FocusedField
++            } else {
++                Position::OutsideFocusedField
++            }
++        };
++        let mut forward = true;
++        match event {
++            Event::MouseDown(mouse) => {
++                forward = self.pointers.start(
++                    PointerId::Mouse(mouse.button.bits()),
++                    preedit,
++                    position(cx, mouse.abs),
++                ) == Route::Forward;
++            }
++            Event::MouseMove(_) => {
++                if let Some((button, _)) = cx.fingers.first_mouse_button {
++                    forward =
++                        self.pointers.motion(PointerId::Mouse(button.bits())) == Route::Forward;
++                }
++            }
++            Event::MouseUp(mouse) => {
++                let captured = area.is_some_and(|area| {
++                    cx.fingers
++                        .first_mouse_button
++                        .is_some_and(|(button, _)| button == mouse.button)
++                        && cx.fingers.is_area_captured(area)
++                });
++                let capture = if captured {
++                    Capture::FocusedField
++                } else {
++                    Capture::OtherOrNone
++                };
++                forward = self.pointers.finish(
++                    PointerId::Mouse(mouse.button.bits()),
++                    preedit,
++                    position(cx, mouse.abs),
++                    capture,
++                ) == Route::Forward;
++            }
++            Event::TouchUpdate(touch) => {
++                let mut filtered = touch.clone();
++                filtered.touches.clear();
++                let mut indices = Vec::new();
++                for (index, point) in touch.touches.iter().enumerate() {
++                    let id = PointerId::Touch(point.uid);
++                    let location = position(cx, point.abs);
++                    let route = match point.state {
++                        TouchState::Start => self.pointers.start(id, preedit, location),
++                        TouchState::Move | TouchState::Stable => self.pointers.motion(id),
++                        TouchState::Stop | TouchState::Cancel => {
++                            let capture = if area.is_some_and(|area| {
++                                cx.fingers.touch_capture_area(point.uid) == Some(area)
++                            }) {
++                                Capture::FocusedField
++                            } else {
++                                Capture::OtherOrNone
++                            };
++                            self.pointers.finish(id, preedit, location, capture)
++                        }
++                    };
++                    if route == Route::Forward {
++                        indices.push(index);
++                        filtered.touches.push(point.clone());
++                    }
++                }
++                if !filtered.touches.is_empty() {
++                    let filtered_event = Event::TouchUpdate(filtered);
++                    root.handle_event(cx, &filtered_event, &mut Scope::with_data(&mut *workspace));
++                    if let Event::TouchUpdate(filtered) = filtered_event {
++                        // Cells are copied by Clone. Return real hit/sweep claims
++                        // to the original packet used by platform finalization.
++                        for (index, point) in indices.into_iter().zip(filtered.touches) {
++                            touch.touches[index].handled.set(point.handled.get());
++                            touch.touches[index].sweep_lock.set(point.sweep_lock.get());
++                        }
++                    }
++                }
++                forward = false;
++            }
++            Event::KeyDown(key) if preedit == Preedit::Active => {
++                // The OS/IME receives the original event before AppMain. Do not
++                // reinterpret candidate-selection/cancel/navigation keys as UI
++                // submit or focus changes; real TextInput commit still flows.
++                let edits_or_navigates = matches!(
++                    key.key_code,
++                    KeyCode::Tab
++                        | KeyCode::ReturnKey
++                        | KeyCode::NumpadEnter
++                        | KeyCode::Escape
++                        | KeyCode::ArrowLeft
++                        | KeyCode::ArrowRight
++                        | KeyCode::ArrowUp
++                        | KeyCode::ArrowDown
++                        | KeyCode::Home
++                        | KeyCode::End
++                        | KeyCode::PageUp
++                        | KeyCode::PageDown
++                        | KeyCode::Backspace
++                        | KeyCode::Delete
++                ) || (key.modifiers.is_primary()
++                    && matches!(key.key_code, KeyCode::KeyA | KeyCode::KeyZ));
++                forward = !edits_or_navigates;
++            }
++            Event::TextCut(_) if preedit == Preedit::Active => forward = false,
++            Event::ImeAction(_) if preedit == Preedit::Active => forward = false,
++            _ => {}
++        }
++        if forward {
++            root.handle_event(cx, event, &mut Scope::with_data(&mut *workspace));
++        }
++        if self.pointers.is_overflowed() {
++            let warning = "Input gesture capacity exceeded. Keyboard navigation remains available after composition; reopen the application to restore pointer input.";
++            if workspace
++                .presentation_note
++                .as_deref()
++                .is_none_or(|note| !note.contains(warning))
++            {
++                let existing = workspace.presentation_note.take().unwrap_or_default();
++                workspace.presentation_note = Some(format!("{warning}\n{existing}"));
++                root.redraw(cx);
++            }
++        }
++        self.synchronize(cx, root, workspace);
++    }
++}
++
++pub(crate) fn adaptive_variant(cx: &mut Cx, size: &Vec2d) -> LiveId {
++    let requested = if size.x >= 760.0 {
++        live_id!(Desktop)
++    } else {
++        live_id!(Mobile)
++    };
++    let state = cx.global::<CompositionLayout>();
++    if state.active {
++        state.variant.unwrap_or(requested)
++    } else {
++        state.variant = Some(requested);
++        requested
++    }
++}
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+index c7f56cb6d..273755366 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/lib.rs
+@@ -7,6 +7,10 @@ mod native_status;
+ #[cfg(feature = "ui")]
+ pub mod robrix;
+ 
++#[cfg(any(feature = "ui", test))]
++mod ime_pointer_gate;
++#[cfg(feature = "ui")]
++mod ime_router;
+ pub mod presentation;
+ 
+ #[cfg(feature = "ui")]
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/presentation.rs b/apps/hepta-control-ui/rust/robrix-ui/src/presentation.rs
+index 04042f641..f7e3aa347 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/presentation.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/presentation.rs
+@@ -3,9 +3,13 @@
+ //! The application retains one `ChatWorkspace` in its Scope. This module reads
+ //! that same model and forwards local UI actions; it introduces no transport,
+ //! grant, signing, runtime, history owner, or optimistic sent-message insertion.
+-use hepta_control_core::chat::{Appearance, ChatWorkspace, ComposeStatus, WorkspaceTab};
++use hepta_control_core::chat::Appearance;
++use hepta_control_core::chat::ChatWorkspace;
++use hepta_control_core::chat::ComposeStatus;
++use hepta_control_core::chat::WorkspaceTab;
+ use hepta_control_core::chat_owner::DeliveryView;
+-use hepta_control_core::chat_timeline::{MessagePhase, Role};
++use hepta_control_core::chat_timeline::MessagePhase;
++use hepta_control_core::chat_timeline::Role;
+ 
+ pub const MAX_VISIBLE_MESSAGES: usize = 128;
+ pub const MAX_FILTER_BYTES: usize = 512;
+@@ -367,6 +371,9 @@ pub fn apply_action(workspace: &mut ChatWorkspace, action: PresentationAction) -
+             true
+         }
+         PresentationCommand::SetNavigationOpen(open) => {
++            if workspace.composing {
++                return ActionResult::Ignored;
++            }
+             workspace.navigation_open = open;
+             true
+         }
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+index ac2017cc5..68565aea8 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+@@ -150,19 +150,15 @@ pub struct HomeScreen {
+     visual_selection: Option<VisualSelection>,
+     #[rust]
+     pending_visual_redraw: Option<NextFrame>,
++    #[rust]
++    last_composing: Option<bool>,
+ }
+ impl ScriptHook for HomeScreen {
+     fn on_after_new(&mut self, vm: &mut ScriptVm) {
+         vm.with_cx_mut(|cx| {
+             self.view
+                 .adaptive_view(cx, ids!(main_adaptive_view))
+-                .set_variant_selector(|_, size| {
+-                    if size.x >= 760.0 {
+-                        live_id!(Desktop)
+-                    } else {
+-                        live_id!(Mobile)
+-                    }
+-                })
++                .set_variant_selector(crate::ime_router::adaptive_variant)
+         });
+     }
+ }
+@@ -299,6 +295,12 @@ impl Widget for HomeScreen {
+     }
+     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
++            if self.last_composing != Some(workspace.composing) {
++                self.view
++                    .adaptive_view(cx, ids!(main_adaptive_view))
++                    .set_variant_selector(crate::ime_router::adaptive_variant);
++                self.last_composing = Some(workspace.composing);
++            }
+             self.rendered = Some(RoomKey {
+                 epoch: workspace.presentation_epoch(),
+                 local_id: workspace.active_id(),
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
+index eb5dcfafd..cb5842a0c 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/room.rs
+@@ -2,14 +2,17 @@
+ // Copyright 2023–2026 Project Robius Developers. MIT; see ../../licenses/ROBRIX-MIT.txt.
+ // Source: src/home/room_screen.rs:235–383,654–740. Adapted message profile/content
+ // hierarchy, virtual PortalList and room timeline/composer ownership. No Matrix behavior.
+-use crate::presentation::{
+-    PresentationAction, PresentationCommand, RoomKey, TimelineStatus, TimelineWindow,
+-    UserScrollTracker, apply_action, project,
+-};
+-use hepta_control_core::{
+-    chat::{ChatWorkspace, ComposeStatus},
+-    chat_timeline::Role,
+-};
++use crate::presentation::PresentationAction;
++use crate::presentation::PresentationCommand;
++use crate::presentation::RoomKey;
++use crate::presentation::TimelineStatus;
++use crate::presentation::TimelineWindow;
++use crate::presentation::UserScrollTracker;
++use crate::presentation::apply_action;
++use crate::presentation::project;
++use hepta_control_core::chat::ChatWorkspace;
++use hepta_control_core::chat::ComposeStatus;
++use hepta_control_core::chat_timeline::Role;
+ #[cfg(feature = "ui-fixtures")]
+ use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
+ use makepad_widgets::*;
+@@ -309,7 +312,6 @@ impl Widget for RoomScreen {
+             }
+         }
+         let mut apply = |command| apply_action(workspace, PresentationAction { source, command });
+-        apply(PresentationCommand::SetComposing(input.is_composing()));
+         if let Event::Actions(actions) = event {
+             let list = self.view.portal_list(cx, ids!(list));
+             if list.scrolled(actions) {
+diff --git a/apps/hepta-control-ui/test/fixtures/ime-router-probe.rs b/apps/hepta-control-ui/test/fixtures/ime-router-probe.rs
+new file mode 100644
+index 000000000..1012131be
+--- /dev/null
++++ b/apps/hepta-control-ui/test/fixtures/ime-router-probe.rs
+@@ -0,0 +1,306 @@
++extern crate hepta_control_core;
++extern crate makepad_widgets;
++#[path = "../../rust/robrix-ui/src/ime_pointer_gate.rs"]
++mod ime_pointer_gate;
++#[path = "../../rust/robrix-ui/src/ime_router.rs"]
++mod ime_router;
++use hepta_control_core::chat::ChatWorkspace;
++use makepad_widgets::makepad_draw::cx_draw::CxDraw;
++use makepad_widgets::*;
++use std::cell::Cell;
++use std::sync::atomic::{AtomicU32, Ordering};
++static STAGE: AtomicU32 = AtomicU32::new(0);
++#[unsafe(no_mangle)]
++pub extern "C" fn stage() -> u32 {
++    STAGE.load(Ordering::SeqCst)
++}
++fn setup() -> (Cx, WidgetRef, ChatWorkspace, ime_router::ImeRouter) {
++    std::panic::set_hook(Box::new(|info| {
++        STAGE.store(
++            info.location().map_or(9000, |l| 10000 + l.line()),
++            Ordering::SeqCst,
++        );
++    }));
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let root = cx.with_vm(|vm| {
++        makepad_widgets::script_mod(vm);
++        let value = vm.eval(
++            script! {use mod.prelude.widgets.* TextInput {width: 180 height: 40 empty_text: ""}},
++        );
++        WidgetRef::script_from_value(vm, value)
++    });
++    let pass = DrawPass::new(&mut cx);
++    pass.set_size(&mut cx, dvec2(300.0, 100.0));
++    let mut list = DrawList2d::new(&mut cx);
++    let event = DrawEvent::default();
++    {
++        let mut draw = CxDraw::new(&mut cx, &event);
++        let mut cx2d = Cx2d::new(&mut draw);
++        cx2d.begin_pass(&pass, None);
++        list.begin_always(&mut cx2d);
++        cx2d.begin_root_turtle(dvec2(300.0, 100.0), Layout::flow_overlay());
++        root.draw_all(&mut cx2d, &mut Scope::empty());
++        cx2d.end_pass_sized_turtle();
++        list.end(&mut cx2d);
++        cx2d.end_pass(&pass);
++    }
++    assert!(root.area().is_valid(&cx));
++    cx.set_key_focus(root.area());
++    cx.action(0u32);
++    cx.handle_actions();
++    assert_eq!(cx.key_focus(), root.area());
++    root.handle_event(
++        &mut cx,
++        &Event::TextInput(TextInputEvent {
++            input: "中".into(),
++            replace_last: true,
++            composition: Some(0..1),
++            ..Default::default()
++        }),
++        &mut Scope::empty(),
++    );
++    assert!(root.as_text_input().is_composing());
++    let mut workspace = ChatWorkspace::default();
++    let mut router = ime_router::ImeRouter::default();
++    router.synchronize(&mut cx, &root, &mut workspace);
++    assert!(workspace.composing);
++    (cx, root, workspace, router)
++}
++fn key(code: KeyCode) -> Event {
++    Event::KeyDown(KeyEvent {
++        key_code: code,
++        ..Default::default()
++    })
++}
++#[unsafe(no_mangle)]
++pub extern "C" fn check_keys() -> u32 {
++    STAGE.store(1, Ordering::SeqCst);
++    for code in [
++        KeyCode::ArrowLeft,
++        KeyCode::ArrowRight,
++        KeyCode::ArrowUp,
++        KeyCode::ArrowDown,
++        KeyCode::Home,
++        KeyCode::End,
++        KeyCode::PageUp,
++        KeyCode::PageDown,
++        KeyCode::Backspace,
++        KeyCode::Delete,
++        KeyCode::Tab,
++        KeyCode::ReturnKey,
++        KeyCode::Escape,
++    ] {
++        let (mut cx, root, mut workspace, mut router) = setup();
++        router.dispatch(&mut cx, &root, &key(code), &mut workspace);
++        assert!(root.as_text_input().is_composing());
++        assert!(workspace.composing);
++        assert_eq!(root.text(), "中");
++    }
++    STAGE.store(2, Ordering::SeqCst);
++    let (mut cx, root, mut workspace, mut router) = setup();
++    router.dispatch(
++        &mut cx,
++        &root,
++        &Event::TextInput(TextInputEvent {
++            input: "中文".into(),
++            replace_last: false,
++            composition: None,
++            ..Default::default()
++        }),
++        &mut workspace,
++    );
++    assert!(!workspace.composing);
++    assert_eq!(root.text(), "中文");
++    router.dispatch(&mut cx, &root, &key(KeyCode::ArrowLeft), &mut workspace);
++    assert_eq!(root.as_text_input().selection().cursor.index, 3);
++    14
++}
++#[unsafe(no_mangle)]
++pub extern "C" fn check_negative_control() -> u32 {
++    STAGE.store(3, Ordering::SeqCst);
++    let (mut cx, root, _, _) = setup();
++    root.handle_event(&mut cx, &key(KeyCode::ArrowLeft), &mut Scope::empty());
++    assert!(!root.as_text_input().is_composing());
++    1
++}
++#[unsafe(no_mangle)]
++pub extern "C" fn check_mouse() -> u32 {
++    STAGE.store(4, Ordering::SeqCst);
++    let (mut cx, root, mut workspace, mut router) = setup();
++    let down = Event::MouseDown(MouseDownEvent {
++        abs: dvec2(260.0, 90.0),
++        button: MouseButton::PRIMARY,
++        window_id: WindowId(0, 0),
++        modifiers: Default::default(),
++        handled: Cell::new(Area::Empty),
++        time: 1.0,
++    });
++    router.dispatch(&mut cx, &root, &down, &mut workspace);
++    let up = Event::MouseUp(MouseUpEvent {
++        abs: dvec2(260.0, 90.0),
++        button: MouseButton::PRIMARY,
++        window_id: WindowId(0, 0),
++        modifiers: Default::default(),
++        time: 1.1,
++    });
++    router.dispatch(&mut cx, &root, &up, &mut workspace);
++    assert!(root.as_text_input().is_composing());
++    assert!(workspace.composing);
++    STAGE.store(5, Ordering::SeqCst);
++    root.handle_event(&mut cx, &up, &mut Scope::empty());
++    assert!(!root.as_text_input().is_composing());
++    2
++}
++#[unsafe(no_mangle)]
++pub extern "C" fn check_scope_and_resize() -> u32 {
++    STAGE.store(6, Ordering::SeqCst);
++    let (mut cx, root, mut workspace, mut router) = setup();
++    cx.global::<ime_router::CompositionLayout>().variant = Some(live_id!(Desktop));
++    assert_eq!(
++        ime_router::adaptive_variant(&mut cx, &dvec2(640.0, 800.0)),
++        live_id!(Desktop)
++    );
++    workspace.disconnect_owner();
++    router.synchronize(&mut cx, &root, &mut workspace);
++    assert!(!workspace.composing);
++    assert_eq!(root.text(), "");
++    assert_eq!(
++        ime_router::adaptive_variant(&mut cx, &dvec2(640.0, 800.0)),
++        live_id!(Mobile)
++    );
++    2
++}
++
++#[unsafe(no_mangle)]
++pub extern "C" fn check_detached_and_focus_lost() -> u32 {
++    STAGE.store(7, Ordering::SeqCst);
++    let (mut cx, root, mut workspace, mut router) = setup();
++    router.synchronize(&mut cx, &WidgetRef::empty(), &mut workspace);
++    assert!(!workspace.composing);
++    assert!(!root.as_text_input().is_composing());
++    assert_eq!(root.text(), "中");
++    STAGE.store(8, Ordering::SeqCst);
++    let (mut cx, root, mut workspace, mut router) = setup();
++    cx.set_key_focus(Area::Empty);
++    cx.action(0u32);
++    cx.handle_actions();
++    assert!(root.as_text_input().is_composing());
++    router.synchronize(&mut cx, &root, &mut workspace);
++    assert!(!workspace.composing);
++    assert!(!root.as_text_input().is_composing());
++    assert_eq!(root.text(), "中");
++    2
++}
++#[unsafe(no_mangle)]
++pub extern "C" fn check_edit_shortcuts_and_clipboard() -> u32 {
++    STAGE.store(9, Ordering::SeqCst);
++    for code in [KeyCode::KeyA, KeyCode::KeyZ] {
++        let (mut cx, root, mut workspace, mut router) = setup();
++        let event = Event::KeyDown(KeyEvent {
++            key_code: code,
++            modifiers: KeyModifiers {
++                control: true,
++                ..Default::default()
++            },
++            ..Default::default()
++        });
++        let actions = cx.capture_actions(|cx| router.dispatch(cx, &root, &event, &mut workspace));
++        assert!(root.as_text_input().is_composing());
++        assert_eq!(root.text(), "中");
++        assert!(root.as_text_input().key_down_unhandled(&actions).is_none());
++    }
++    STAGE.store(10, Ordering::SeqCst);
++    let (mut cx, root, mut workspace, mut router) = setup();
++    let event = Event::KeyDown(KeyEvent {
++        key_code: KeyCode::KeyC,
++        modifiers: KeyModifiers {
++            control: true,
++            ..Default::default()
++        },
++        ..Default::default()
++    });
++    let actions = cx.capture_actions(|cx| router.dispatch(cx, &root, &event, &mut workspace));
++    assert_eq!(
++        root.as_text_input()
++            .key_down_unhandled(&actions)
++            .unwrap()
++            .key_code,
++        KeyCode::KeyC
++    );
++    let response = std::rc::Rc::new(std::cell::RefCell::new(None));
++    router.dispatch(
++        &mut cx,
++        &root,
++        &Event::TextCopy(TextClipboardEvent {
++            response: response.clone(),
++        }),
++        &mut workspace,
++    );
++    assert!(response.borrow().is_some());
++    assert!(root.as_text_input().is_composing());
++    *response.borrow_mut() = None;
++    router.dispatch(
++        &mut cx,
++        &root,
++        &Event::TextCut(TextClipboardEvent {
++            response: response.clone(),
++        }),
++        &mut workspace,
++    );
++    assert!(response.borrow().is_none());
++    assert!(root.as_text_input().is_composing());
++    5
++}
++
++fn mixed_touch(area: Area, cx: &Cx) -> Event {
++    use makepad_widgets::makepad_platform::event::finger::{
++        TouchPoint, TouchState, TouchUpdateEvent,
++    };
++    let rect = area.rect(cx);
++    let point = |uid, abs| TouchPoint {
++        state: TouchState::Start,
++        abs,
++        time: 1.0,
++        uid,
++        rotation_angle: 0.0,
++        force: 1.0,
++        radius: dvec2(0.0, 0.0),
++        handled: Cell::new(Area::Empty),
++        sweep_lock: Cell::new(Area::Empty),
++    };
++    Event::TouchUpdate(TouchUpdateEvent {
++        time: 1.0,
++        window_id: WindowId(0, 0),
++        modifiers: Default::default(),
++        touches: vec![
++            point(1, rect.pos + rect.size + dvec2(20.0, 20.0)),
++            point(2, rect.pos + rect.size * 0.5),
++        ],
++    })
++}
++
++// Tests actual SDK hit-claim propagation, not in-field preedit editing semantics
++// or platform contact-finalization/GPU behavior.
++#[unsafe(no_mangle)]
++pub extern "C" fn check_mixed_touch_claims() -> u32 {
++    STAGE.store(11, Ordering::SeqCst);
++    let (mut cx, root, mut workspace, mut router) = setup();
++    let area = root.area();
++    let event = mixed_touch(area, &cx);
++    router.dispatch(&mut cx, &root, &event, &mut workspace);
++    if let Event::TouchUpdate(touch) = &event {
++        assert_eq!(touch.touches[0].handled.get(), Area::Empty);
++        assert_eq!(touch.touches[1].handled.get(), area);
++    }
++    assert_eq!(cx.fingers.touch_capture_area(2), Some(area));
++    STAGE.store(12, Ordering::SeqCst);
++    let (mut cx, root, _, _) = setup();
++    let original = mixed_touch(root.area(), &cx);
++    if let Event::TouchUpdate(touch) = &original {
++        let clone = Event::TouchUpdate(touch.clone());
++        root.handle_event(&mut cx, &clone, &mut Scope::empty());
++        assert_eq!(touch.touches[1].handled.get(), Area::Empty);
++        assert_eq!(cx.fingers.touch_capture_area(2), Some(root.area()));
++    }
++    2
++}
+diff --git a/apps/hepta-control-ui/test/makepad-ime-router.test.mjs b/apps/hepta-control-ui/test/makepad-ime-router.test.mjs
+new file mode 100644
+index 000000000..89335203e
+--- /dev/null
++++ b/apps/hepta-control-ui/test/makepad-ime-router.test.mjs
+@@ -0,0 +1,72 @@
++// Executes the candidate Rust adapter against exact built Makepad TextInput.
++// This is a real SDK/WASM event probe, not GPU or physical-IME acceptance.
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {readFile,readdir,writeFile,mkdir,mkdtemp,rm} from 'node:fs/promises';
++import {dirname,join} from 'node:path';
++import {tmpdir} from 'node:os';
++import {fileURLToPath} from 'node:url';
++import {execFileSync} from 'node:child_process';
++import {createHash} from 'node:crypto';
++import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
++const root=fileURLToPath(new URL('..',import.meta.url));
++const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
++async function filesBelow(path){
++ const files=[];
++ for(const item of await readdir(path,{withFileTypes:true})){
++  const child=join(path,item.name);
++  if(item.isDirectory())files.push(...await filesBelow(child));
++  else if(item.isFile())files.push(child);
++ }
++ return files;
++}
++test('real TextInput preedit routing, negative controls and owner invalidation',async t=>{
++ const target=join(root,'rust/target/robrix-build/workspace/target');
++ const files=await filesBelow(target);
++ const dirs=[...new Set(files.filter(f=>/\.(rmeta|so|dylib|dll)$/.test(f)).map(dirname))];
++ const manifestBytes=await readFile(join(root,'dist/build-manifest.json'));
++ const manifest=JSON.parse(manifestBytes);
++ const upstream=JSON.parse(await readFile(join(root,'rust/robrix-ui/UPSTREAM.json'),'utf8'));
++ assert.equal(manifest.packagerSource,upstream.makepad.revision);
++ const sourceIdentity=await robrixSourceIdentity(root);
++ const sourceIdentityCurrent=sourceIdentity.sha256===manifest.sourceIdentity.sha256;
++ if(process.env.GITHUB_ACTIONS==='true')assert.equal(sourceIdentityCurrent,true,'CI probe requires current candidate build');
++ const compiler=execFileSync('rustup',['run','nightly-2026-10-02','rustc','--version'],{encoding:'utf8'}).trim();
++ assert.equal(compiler,manifest.nightly);
++ const temporary=await mkdtemp(join(tmpdir(),'hepta-ime-router-'));
++ t.after(()=>rm(temporary,{recursive:true,force:true}));
++ const source=join(root,'test/fixtures/ime-router-probe.rs');
++ const wasm=join(temporary,'probe.wasm');
++ const args=['-Zunstable-options','--edition=2024','--crate-type=cdylib','--target',join(target,'makepad-wasm-target/single/wasm32-unknown-unknown.json'),'-C','panic=abort',source,'-o',wasm];
++ const artifactHashes={};
++ for(const name of ['makepad_widgets','hepta_control_core','std']){
++  const matches=files.filter(f=>f.includes('wasm32-unknown-unknown')&&new RegExp('/lib'+name+'-[^/]+\\.rmeta$').test(f));
++  assert.equal(matches.length,1,'Require one exact '+name+' artifact');
++  for(const file of [matches[0],matches[0].replace(/\.rmeta$/,'.rlib')]){
++   args.push('--extern',name+'='+file);artifactHashes[file]=sha(await readFile(file));
++  }
++ }
++ for(const dir of dirs)args.push('-L','dependency='+dir);
++ execFileSync('rustup',['run','nightly-2026-10-02','rustc',...args],{stdio:'pipe',timeout:120000,env:{...process.env,CARGO_MANIFEST_DIR:dirname(source)}});
++ const bytes=await readFile(wasm),module=await WebAssembly.compile(bytes),env={};
++ for(const entry of WebAssembly.Module.imports(module)){
++  assert.equal(entry.module,'env');assert.equal(entry.kind,'function');
++  env[entry.name]=entry.name==='js_monotonic_now'?()=>performance.now()/1000
++   :entry.name==='js_time_now'?()=>Date.now()/1000
++   :['js_console_log','js_wake_ui'].includes(entry.name)?()=>{}
++   :()=>{throw Error('Unexpected probe import: '+entry.name);};
++ }
++ const results=[];
++ const cases={check_negative_control:1,check_keys:14,check_mouse:2,check_scope_and_resize:2,check_detached_and_focus_lost:2,check_edit_shortcuts_and_clipboard:5,check_mixed_touch_claims:2};
++ for(const [name,expected] of Object.entries(cases)){
++  const {exports}=await WebAssembly.instantiate(module,{env});
++  let count;
++  try{count=exports[name]();}catch(error){throw Error(`${name}: SDK probe failed at stage ${exports.stage()}`,{cause:error});}
++  assert.equal(count,expected);results.push({name,count,passed:true});
++ }
++ const sourceFiles={};
++ for(const path of ['test/fixtures/ime-router-probe.rs','rust/robrix-ui/src/ime_router.rs','rust/robrix-ui/src/ime_pointer_gate.rs'])sourceFiles[path]=sha(await readFile(join(root,path)));
++ const receipt={schema:'hepta.ime-router-probe.v1',scope:'actual SDK TextInput event behavior only; no GPU/physical-IME qualification',appQualified:false,sourceIdentityCurrent,sourceIdentity:sourceIdentity.sha256,producerManifestSha256:sha(manifestBytes),sdkRevision:upstream.makepad.revision,compiler,sourceFiles,artifactHashes,probeWasmSha256:sha(bytes),results};
++ await mkdir(join(root,'test-results'),{recursive:true});
++ await writeFile(join(root,'test-results/robrix-ime-router-results.json'),JSON.stringify(receipt,null,2)+'\n');
++});
+diff --git a/docs/modules/ui.control/TECHNICAL.md b/docs/modules/ui.control/TECHNICAL.md
+index 57675e5f0..c51908864 100644
+--- a/docs/modules/ui.control/TECHNICAL.md
++++ b/docs/modules/ui.control/TECHNICAL.md
+@@ -160,6 +160,29 @@ Makepad keyboard, IME and accessibility behavior still require host-specific
+ verification. Legacy automated checks do not replace manual screen-reader/operator
+ acceptance; that remains an external signed gate.
+ 
++### Shared Rust preedit routing candidate
++
++The canonical dispatcher is `apps/hepta-control-ui/rust/robrix-ui/src/app.rs`.
++`ime_router.rs` resolves the real composing search/composer field and current
++presentation epoch before application widget dispatch. `ime_pointer_gate.rs`
++retains bounded rejected gesture identities through release, independently of
++room/account changes. A cloned filtered touch packet returns each forwarded
++contact's real handled/sweep claims to the original event; platform processing
++still receives the original packet and owns capture cleanup.
++
++Raw focus-changing or editing key paths must not reinterpret active IME candidate
++controls as application commands. Real platform `TextInput` commit/cancel state
++continues through the existing typed input boundary. Responsive layout selection
++is held during preedit and re-evaluated on its completion. These are source
++mechanisms; their completeness must be tested against actual SDK event ordering,
++not a boolean-state model alone. In-field pointer edits, clipboard cut, detached
++owners and exhaustion/recovery remain mandatory adversarial cases.
++
++The standalone pointer-policy tests are distinct from a real Makepad TextInput
++probe and from actual OS/browser IME. Retained DOM/egui tests qualify neither the
++new router nor the canvas accessibility tree. Follow the source README for exact
++stable/nightly build commands and preserve all production owner/signing gates.
++
+ ## 9. Typed failures
+ 
+ Stable error codes include `UI_CONTROL_SESSION_EXPIRED`, `UI_CONTROL_PERMISSION_DENIED`, `UI_CONTROL_STALE_GENERATION`, `UI_CONTROL_STALE_REVISION`, `UI_CONTROL_SNAPSHOT_DRIFT`, `UI_CONTROL_PENDING_LIMIT`, `UI_CONTROL_OPERATION_CONFLICT`, `UI_CONTROL_BACKEND_REJECTED`, `UI_CONTROL_ACK_MISMATCH`, and `UI_CONTROL_AMBIGUOUS_SUBMISSION`.
+diff --git a/docs/modules/ui.native/TECHNICAL.md b/docs/modules/ui.native/TECHNICAL.md
+index 87f8c182f..a80bcba8e 100644
+--- a/docs/modules/ui.native/TECHNICAL.md
++++ b/docs/modules/ui.native/TECHNICAL.md
+@@ -12,6 +12,15 @@ neither compilation nor old screenshots establish new-host acceptance. Existing
+ read-only gateway credentials do not authorize chat writes. External authenticated
+ owner/signer and production browser bridge composition remain required.
+ 
++The shared input-routing candidate lives in Rust `robrix-ui/src/ime_router.rs`
++and `ime_pointer_gate.rs`, before widget dispatch. Native IME commit/cancel and
++pointer capture cleanup remain platform responsibilities. A WASM event probe,
++Web screenshot or source compile cannot establish native Chinese IME, clipboard,
++keyboard focus or assistive-technology acceptance. Use the [shared application
++build/status guide](../../../apps/hepta-control-ui/README.md) and preserve the
++existing native host lifecycle, shutdown and update-owner boundaries. No input
++fix enables the uncomposed Console controls or grants chat-write authority.
++
+ **Module:** `ui.native`
+ **Owner / deputy:** `ui-platform` / `accessibility`
+ **Historical native qualification branch:** `work/ui-native-qualified-integration-20260928`

@@ -1,0 +1,537 @@
+diff --git a/.github/scripts/test_hepta_neuron_artifact_preflight.py b/.github/scripts/test_hepta_neuron_artifact_preflight.py
+new file mode 100644
+index 0000000..03cb3f7
+--- /dev/null
++++ b/.github/scripts/test_hepta_neuron_artifact_preflight.py
+@@ -0,0 +1,97 @@
++"""Metadata + local byte checks: synthetic negative paths are not H2 evidence."""
++import copy
++import hashlib
++import json
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT / "scripts"))
++from hepta_neuron_model_trials import InvalidTrial, sha_file
++from hepta_neuron_artifact_preflight import (
++    _tensor_inventory, PUBLISHED_WEIGHTS, REPORT, REQUIRED, REVISION,
++    inspect_local, match_manifest_catalog, verify_catalog,
++)
++
++LOCK = ROOT / "qualification/neuron-model-trials/upstream-weights.lock.json"
++
++
++class ArtifactPreflightTests(unittest.TestCase):
++    def test_publisher_catalog_is_commit_pinned_and_not_a_download_claim(self):
++        obj = verify_catalog(json.loads(LOCK.read_text()))
++        self.assertEqual(obj["revision"], REVISION)
++        self.assertEqual(len(obj["variants"]), 3)
++        self.assertTrue(len(sha_file(LOCK)) == 64)
++        self.assertTrue(all(len(sha) == 64 for _, sha in PUBLISHED_WEIGHTS.values()))
++
++    def test_rejects_mutated_upstream_sha_or_aliased_subfolder(self):
++        original = json.loads(LOCK.read_text())
++        bad = copy.deepcopy(original)
++        bad["revision"] = "f" * 40
++        with self.assertRaisesRegex(InvalidTrial, "frozen Laya family"):
++            verify_catalog(bad)
++        bad = copy.deepcopy(original)
++        bad["variants"]["typed"]["subfolder"] = "multilingual"
++        with self.assertRaisesRegex(InvalidTrial, "upstream bytes/path"):
++            verify_catalog(bad)
++        bad = copy.deepcopy(original)
++        bad["variants"]["multilingual"]["weights_sha256"] = "f" * 64
++        with self.assertRaisesRegex(InvalidTrial, "upstream bytes/path"):
++            verify_catalog(bad)
++
++    def test_manifest_requires_frozen_lock_hash_all_arms_and_real_tree_digest(self):
++        catalog = json.loads(LOCK.read_text())
++        manifest = {"family": "decisions", "upstream_lock_sha256": sha_file(LOCK),
++                    "models": {arm: {"model_id": catalog["variants"][arm]["model_id"],
++                                     "revision": catalog["revision"],
++                                     "weights_sha256": catalog["variants"][arm]["weights_sha256"],
++                                     "artifact_tree_sha256": "b" * 64} for arm in ("laya", "typed")}}
++        self.assertTrue(match_manifest_catalog(manifest, catalog, sha_file(LOCK)))
++        wrong = copy.deepcopy(manifest)
++        wrong["models"]["typed"]["revision"] = "a" * 40
++        with self.assertRaisesRegex(InvalidTrial, "publisher-locked"):
++            match_manifest_catalog(wrong, catalog, sha_file(LOCK))
++        wrong = copy.deepcopy(manifest)
++        wrong["upstream_lock_sha256"] = "f" * 64
++        with self.assertRaisesRegex(InvalidTrial, "upstream artifact lock"):
++            match_manifest_catalog(wrong, catalog, sha_file(LOCK))
++        wrong = copy.deepcopy(manifest)
++        wrong["models"].pop("typed")
++        with self.assertRaisesRegex(InvalidTrial, "arm set"):
++            match_manifest_catalog(wrong, catalog, sha_file(LOCK))
++
++    def test_missing_weight_configs_and_directory_symlinks_fail_closed(self):
++        catalog = json.loads(LOCK.read_text())
++        with tempfile.TemporaryDirectory() as temp:
++            root = Path(temp)
++            with self.assertRaisesRegex(InvalidTrial, "incomplete"):
++                inspect_local(catalog, "typed", root)
++            (root / "model.safetensors").write_bytes(b"git-lfs pointer, NOT model weights")
++            for item in REQUIRED[1:]:
++                path = root / item
++                path.parent.mkdir(parents=True, exist_ok=True)
++                path.write_text('{"encoder":"answerdotai/ModernBERT-large","head_layers":2,"max_len":1024}', encoding="utf-8")
++            (root / "tokenizer" / "alias").symlink_to(root / "model.safetensors")
++            with self.assertRaisesRegex(InvalidTrial, "symlink"):
++                inspect_local(catalog, "typed", root)
++            (root / "tokenizer" / "alias").unlink()
++            with self.assertRaisesRegex(InvalidTrial, "local model weights"):
++                inspect_local(catalog, "typed", root)
++
++    def test_safetensors_header_is_parsed_without_loading_model(self):
++        try:
++            from safetensors.torch import save_file
++            import torch
++        except ImportError:
++            self.skipTest("optional local safetensors/torch smoke dependencies unavailable")
++        with tempfile.TemporaryDirectory() as temp:
++            path = Path(temp) / "small.safetensors"
++            save_file({"matrix": torch.zeros(3, 7), "bias": torch.ones(7)}, str(path))
++            count, keys = _tensor_inventory(path)
++            self.assertEqual((count, keys), (28, 2))
++
++
++if __name__ == "__main__":
++    unittest.main()
+diff --git a/.github/scripts/test_hepta_neuron_model_trials.py b/.github/scripts/test_hepta_neuron_model_trials.py
+index d33b977..375d9eb 100644
+--- a/.github/scripts/test_hepta_neuron_model_trials.py
++++ b/.github/scripts/test_hepta_neuron_model_trials.py
+@@ -33,7 +33,9 @@ def fixture(root, family="decisions"):
+                 "blind_dataset_sha256": hashlib.sha256(canonical_jsonl(blind_rows(rows, family))).hexdigest(),
+                 "host_profile_digest": "1" * 64,
+                 "parameter_cap": 262656 if family == "heads" else 425000000,
+-                "max_len": 512, "sdk_tree_sha256": "f" * 64, "head": {"input_dimension": 512, "state_width": 256, "encoder_digest": "d" * 64}}
++                "max_len": 512, "sdk_tree_sha256": "f" * 64,
++                "upstream_lock_sha256": "a" * 64,
++                "head": {"input_dimension": 512, "state_width": 256, "encoder_digest": "d" * 64}}
+     if family != "heads":
+         manifest["models"] = {a: {"model_id": {
+             "laya": "convaiinnovations/laya",
+@@ -74,7 +76,8 @@ def packet(manifest, rows, arm, damaged=False):
+         model = manifest["models"][arm]
+         result.update({"model_id": model["model_id"], "model_revision": model["revision"],
+                        "weights_sha256": model["weights_sha256"],
+-                       "runtime": {"artifact_tree_sha256": model["artifact_tree_sha256"],
++                       "runtime": {"upstream_lock_sha256": manifest["upstream_lock_sha256"],
++                                   "artifact_tree_sha256": model["artifact_tree_sha256"],
+                                    "sdk_tree_sha256": manifest["sdk_tree_sha256"],
+                                    "torch": "synthetic-constant"}})
+     return result
+diff --git a/.github/workflows/hepta-neuron-model-trials.yml b/.github/workflows/hepta-neuron-model-trials.yml
+index 516a5ce..2347517 100644
+--- a/.github/workflows/hepta-neuron-model-trials.yml
++++ b/.github/workflows/hepta-neuron-model-trials.yml
+@@ -5,6 +5,7 @@ on:
+     paths:
+       - 'scripts/hepta_neuron_model_trials.py'
+       - 'scripts/hepta_neuron_trial_evidence_gate.py'
++      - 'scripts/hepta_neuron_artifact_preflight.py'
+       - '.github/scripts/test_hepta_neuron_model_trials.py'
+       - '.github/scripts/test_hepta_neuron_trial_evidence_gate.py'
+       - '.github/workflows/hepta-neuron-model-trials.yml'
+@@ -28,6 +29,9 @@ jobs:
+           /tmp/hepta-neuron-trial-venv/bin/python -m pip install --disable-pip-version-check --no-input 'cryptography==46.0.4'
+       - name: Strict offline protocol checks (no weights, no production model claims)
+         run: |
+-          /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py
++          /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py scripts/hepta_neuron_artifact_preflight.py
+           /tmp/hepta-neuron-trial-venv/bin/python -m unittest discover -s .github/scripts -p 'test_hepta_neuron*.py' -v
++          /tmp/hepta-neuron-trial-venv/bin/python scripts/hepta_neuron_artifact_preflight.py catalog \
++            --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
++            --output "$RUNNER_TEMP/hepta-neuron-upstream-metadata.json"
+           git diff --check
+diff --git a/qualification/neuron-model-trials/README.md b/qualification/neuron-model-trials/README.md
+index ba4b960..70b152f 100644
+--- a/qualification/neuron-model-trials/README.md
++++ b/qualification/neuron-model-trials/README.md
+@@ -22,6 +22,54 @@ rounded by Laya's SDK; ECE10 is diagnostic, not a calibrated grant. `is_ood` is
+ external ground truth; the 0.8 confidence rejection is a **proxy**, not an
+ independent OOD head. The head trial is Q24 regression, not a decision-policy test.
+ 
++## Pinned upstream family: metadata first, local bytes second
++
++`upstream-weights.lock.json` freezes the single source repository
++`convaiinnovations/laya` at revision
++`7b928d828b7b0e022f929d9bd2e44165aa270148` and the three upstream
++**publisher-advertised** safetensors SHA-256 pointers. It does **not** mean
++any weight file was downloaded or any code executed. The historical variant IDs
++remain logical experiment arm IDs; `typed` and `multilingual` are stored under
++`typed-decisions/` and `multilingual/` inside that same upstream revision.
++
++Validate the metadata-only lock offline (no model weights, no network):
++
++```sh
++python scripts/hepta_neuron_artifact_preflight.py catalog \
++  --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
++  --output /absolute/new/catalog-diagnostic.json
++```
++
++A separately authorized operator must acquire each *complete* immutable source
++subtree onto the named host, without symlinks or implicit downloads during a
++trial. For illustration only, an authenticated HF CLI session could explicitly
++fetch the fixed revision's `model.safetensors`, `rl_agent_config.json`,
++`encoder/config.json`, and `tokenizer/{tokenizer.json,tokenizer_config.json}`
++and stage each variant in its own offline bundle directory. Do not use `main`
++for actual downloads and do not commit model weights or private data into Git.
++
++Physically verify bytes **after** staging (requires `safetensors`):
++
++```sh
++python scripts/hepta_neuron_artifact_preflight.py local \
++  --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
++  --arm typed --artifact-dir /absolute/staged/typed \
++  --output /absolute/new/typed-local-preflight.json
++```
++
++This computes a real full-file SHA-256, reads tensor shapes without model
++execution, checks model config, tokenizer/encoder metadata, symlink absence, and
++full local artifact-tree SHA. `local_weight_bytes_verified=true` only proves
++that those physical local bytes match the public metadata lock; neither that
++lock nor its receipt is independently authenticated production evidence.
++
++**Full-model manifests must bind** `upstream_lock_sha256` and use the locked
++common source revision and expected weight hash for each model. Pass
++`--upstream-lock qualification/neuron-model-trials/upstream-weights.lock.json`
++on `blind`, `run` and `compare`. The full-model CLI fails closed otherwise.
++The `artifact_tree_sha256` field is still filled **after** actual staging and
++must match the physically measured subtree; no synthetic placeholder qualifies.
++
+ ## Local inputs (no bundled labels or weights)
+ 
+ Create separate manifests and JSONL data for each family, with immutable sealed and blinded input
+@@ -103,14 +151,14 @@ Requires an isolated Python runtime and, for actual inference, PyTorch,
+ ```sh
+ python scripts/hepta_neuron_model_trials.py run --manifest decisions.json --dataset /model-runner/decisions-blind.jsonl \
+   --arm laya --artifact-dir /absolute/local/laya --weights-file model.safetensors \
+-  --sdk-sha256 EXACT_INSTALLED_LAYA_TREE_SHA256 --device cpu --output /absolute/laya.json
++  --sdk-sha256 EXACT_INSTALLED_LAYA_TREE_SHA256 --upstream-lock qualification/neuron-model-trials/upstream-weights.lock.json --device cpu --output /absolute/laya.json
+ python scripts/hepta_neuron_model_trials.py run --manifest heads.json --dataset /model-runner/heads-blind.jsonl \
+   --arm swiglu --device cpu --checkpoint-out /absolute/swiglu.safetensors \
+   --output /absolute/swiglu.json
+ python scripts/hepta_neuron_model_trials.py compare --manifest decisions.json \
+   --dataset /secure-evaluator/decisions.jsonl --receipt laya=/absolute/laya.json \
+   --receipt typed=/absolute/typed.json \
+-  --baseline-sha256 EXACT_EARLIER_FROZEN_LAYA_RECEIPT_SHA256 --output /absolute/compare.json
++  --baseline-sha256 EXACT_EARLIER_FROZEN_LAYA_RECEIPT_SHA256 --upstream-lock qualification/neuron-model-trials/upstream-weights.lock.json --output /absolute/compare.json
+ ```
+ 
+ Repeat per remaining arm/family. The evaluator interprets each probability by `option_order`, not JSON object
+diff --git a/qualification/neuron-model-trials/examples/decisions-manifest.TEMPLATE.json b/qualification/neuron-model-trials/examples/decisions-manifest.TEMPLATE.json
+index 9db7264..8579a1c 100644
+--- a/qualification/neuron-model-trials/examples/decisions-manifest.TEMPLATE.json
++++ b/qualification/neuron-model-trials/examples/decisions-manifest.TEMPLATE.json
+@@ -8,6 +8,7 @@
+   "parameter_cap": 425000000,
+   "max_len": 512,
+   "sdk_tree_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
++  "upstream_lock_sha256": "34ef3ad6433db371df4c8537cf17a93f3b9d65975baf33d745403d81ee21149d",
+   "models": {
+     "laya": {
+       "model_id": "convaiinnovations/laya",
+diff --git a/qualification/neuron-model-trials/examples/multilingual-manifest.TEMPLATE.json b/qualification/neuron-model-trials/examples/multilingual-manifest.TEMPLATE.json
+index 7cb6478..0c3f442 100644
+--- a/qualification/neuron-model-trials/examples/multilingual-manifest.TEMPLATE.json
++++ b/qualification/neuron-model-trials/examples/multilingual-manifest.TEMPLATE.json
+@@ -8,6 +8,7 @@
+   "parameter_cap": 425000000,
+   "max_len": 512,
+   "sdk_tree_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
++  "upstream_lock_sha256": "34ef3ad6433db371df4c8537cf17a93f3b9d65975baf33d745403d81ee21149d",
+   "models": {
+     "laya": {
+       "model_id": "convaiinnovations/laya",
+diff --git a/qualification/neuron-model-trials/upstream-weights.lock.json b/qualification/neuron-model-trials/upstream-weights.lock.json
+new file mode 100644
+index 0000000..ce19219
+--- /dev/null
++++ b/qualification/neuron-model-trials/upstream-weights.lock.json
+@@ -0,0 +1,34 @@
++{
++  "schema": "hepta.neuron.upstream-artifacts.v1",
++  "repository": "convaiinnovations/laya",
++  "revision": "7b928d828b7b0e022f929d9bd2e44165aa270148",
++  "licence": "apache-2.0",
++  "variants": {
++    "laya": {
++      "model_id": "convaiinnovations/laya",
++      "subfolder": "",
++      "weights_path": "model.safetensors",
++      "weights_sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
++      "required_files": ["model.safetensors", "rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json", "tokenizer/tokenizer_config.json"]
++    },
++    "typed": {
++      "model_id": "convaiinnovations/laya-typed-decisions",
++      "subfolder": "typed-decisions",
++      "weights_path": "model.safetensors",
++      "weights_sha256": "4fa56de72383a9d3efa9cfa78955733c81b9fc8067a587ca4beb82c78107a24e",
++      "required_files": ["model.safetensors", "rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json", "tokenizer/tokenizer_config.json"]
++    },
++    "multilingual": {
++      "model_id": "convaiinnovations/laya-multilingual",
++      "subfolder": "multilingual",
++      "weights_path": "model.safetensors",
++      "weights_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
++      "required_files": ["model.safetensors", "rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json", "tokenizer/tokenizer_config.json"]
++    }
++  },
++  "source_evidence_urls": {
++    "laya": "https://huggingface.co/convaiinnovations/laya/blob/main/model.safetensors",
++    "typed": "https://huggingface.co/convaiinnovations/laya/blob/main/typed-decisions/model.safetensors",
++    "multilingual": "https://huggingface.co/convaiinnovations/laya/blob/main/multilingual/model.safetensors"
++  }
++}
+diff --git a/scripts/hepta_neuron_artifact_preflight.py b/scripts/hepta_neuron_artifact_preflight.py
+new file mode 100644
+index 0000000..c086d7d
+--- /dev/null
++++ b/scripts/hepta_neuron_artifact_preflight.py
+@@ -0,0 +1,183 @@
++#!/usr/bin/env python3
++"""Offline publisher-metadata and physical-bytes gate for Laya-family shadow trials.
++
++The catalog is an UNSIGNED record of publisher metadata at a pinned revision.
++Inspecting it proves neither downloads nor trusted upstream provenance. Local
++inspection hashes complete already-materialized bytes, rejects symlinks, checks
++Laya configs and tensor shapes without executing the model, and still grants
++ZERO deployment or NDU selection authority. No network, HF login or download.
++"""
++from __future__ import annotations
++
++import argparse
++import math
++from pathlib import Path
++
++from hepta_neuron_model_trials import (
++    InvalidTrial, MODEL_IDS, is_sha, read_json, require, sha_file, sha_tree, write_new,
++)
++
++SCHEMA = "hepta.neuron.upstream-artifacts.v1"
++REPORT = "hepta.neuron.upstream-artifact-preflight.v1"
++REPOSITORY = "convaiinnovations/laya"
++REVISION = "7b928d828b7b0e022f929d9bd2e44165aa270148"
++# Public Hugging Face Xet SHA-256 pointer metadata, not checksums observed locally.
++PUBLISHED_WEIGHTS = {
++    "laya": ("", "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c"),
++    "typed": ("typed-decisions", "4fa56de72383a9d3efa9cfa78955733c81b9fc8067a587ca4beb82c78107a24e"),
++    "multilingual": ("multilingual", "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204"),
++}
++REQUIRED = (
++    "model.safetensors", "rl_agent_config.json", "encoder/config.json",
++    "tokenizer/tokenizer.json", "tokenizer/tokenizer_config.json",
++)
++
++
++def verify_catalog(catalog):
++    require(isinstance(catalog, dict) and set(catalog) ==
++            {"schema", "repository", "revision", "variants", "licence", "source_evidence_urls"},
++            "unexpected catalog schema/fields")
++    require(catalog["schema"] == SCHEMA and catalog["repository"] == REPOSITORY and
++            catalog["revision"] == REVISION and catalog["licence"] == "apache-2.0",
++            "upstream source is not the frozen Laya family")
++    variants = catalog["variants"]
++    require(isinstance(variants, dict) and set(variants) == set(PUBLISHED_WEIGHTS),
++            "missing or extra Laya variants")
++    for arm, (subfolder, published_sha) in PUBLISHED_WEIGHTS.items():
++        v = variants[arm]
++        require(isinstance(v, dict) and set(v) ==
++                {"model_id", "subfolder", "weights_sha256", "weights_path", "required_files"},
++                f"incomplete {arm} metadata")
++        require(v["model_id"] == MODEL_IDS[arm] and v["subfolder"] == subfolder and
++                v["weights_sha256"] == published_sha and v["weights_path"] == "model.safetensors"
++                and v["required_files"] == list(REQUIRED), f"unexpected {arm} upstream bytes/path")
++    urls = catalog["source_evidence_urls"]
++    require(isinstance(urls, dict) and set(urls) == set(PUBLISHED_WEIGHTS) and
++            all(isinstance(x, str) and x.startswith("https://huggingface.co/convaiinnovations/laya/")
++                for x in urls.values()), "source metadata URL missing")
++    return catalog
++
++
++def match_manifest_catalog(manifest, catalog, digest):
++    """Check the runner's frozen experiment manifest against all 3 source pins."""
++    verify_catalog(catalog)
++    require(manifest.get("upstream_lock_sha256") == digest,
++            "upstream artifact lock bytes differ from experiment manifest")
++    family = manifest.get("family")
++    require(family in ("decisions", "multilingual"), "only Laya families use upstream lock")
++    arms = ("laya", "typed") if family == "decisions" else ("laya", "multilingual")
++    models = manifest.get("models")
++    require(isinstance(models, dict) and set(models) == set(arms),
++            "full model arm set differs from frozen source lock")
++    for arm in arms:
++        entry = models[arm]
++        frozen = catalog["variants"][arm]
++        require(entry.get("model_id") == frozen["model_id"] and
++                entry.get("revision") == catalog["revision"] and
++                entry.get("weights_sha256") == frozen["weights_sha256"] and
++                is_sha(entry.get("artifact_tree_sha256")),
++                "model manifest differs from publisher-locked model/commit/checksum")
++    return True
++
++
++def _tensor_inventory(weights):
++    """Read safe tensor metadata only; never instantiate 421M/322M model weights."""
++    try:
++        from safetensors import safe_open
++    except ImportError as error:
++        raise InvalidTrial("safetensors is mandatory for physical tensor preflight") from error
++    total = 0
++    dtype_counts = {}
++    with safe_open(str(weights), framework="pt", device="cpu") as handle:
++        keys = handle.keys()
++        require(bool(keys), "empty weights tensor inventory")
++        for key in keys:
++            shape = handle.get_slice(key).get_shape()
++            require(isinstance(shape, list) and all(type(x) is int and x >= 0 for x in shape),
++                    "invalid tensor dimensions")
++            count = math.prod(shape)
++            require(count > 0, "empty tensor")
++            total += count
++    require(total > 0, "zero parameter count")
++    return total, len(keys)
++
++
++def inspect_local(catalog, arm, artifact_dir):
++    verify_catalog(catalog)
++    require(arm in PUBLISHED_WEIGHTS, "unknown model arm")
++    root = Path(artifact_dir)
++    require(root.is_absolute() and root.is_dir() and not root.is_symlink(),
++            "artifact directory must be a real absolute local directory")
++    # Do not resolve paths before checking links. A linked model root would
++    # otherwise become indistinguishable from an original physical directory.
++    children = list(root.rglob("*"))
++    require(not any(path.is_symlink() for path in children), "symlink in artifact tree")
++    require(all((root / file).is_file() and not (root / file).is_symlink()
++                for file in REQUIRED), "incomplete local Encoder/Tokenizer/weights bundle")
++    config = read_json(root / "rl_agent_config.json")
++    expected_encoder = ("jhu-clsp/mmBERT-base" if arm == "multilingual"
++                        else "answerdotai/ModernBERT-large")
++    require(isinstance(config, dict) and type(config.get("head_layers")) is int and
++            config["head_layers"] == 2 and type(config.get("max_len")) is int and
++            config["max_len"] >= 512 and
++            config.get("encoder") == expected_encoder,
++            "incompatible Laya model config")
++    # Local config/tokenizer content is still self-described, not independently
++    # certified; digest binds these bytes to the run's frozen manifest.
++    for file in ("encoder/config.json", "tokenizer/tokenizer_config.json"):
++        require(isinstance(read_json(root / file), dict), "invalid local model/tokenizer config")
++    weights = root / "model.safetensors"
++    # This exact full-file digest, not the Xet chunk hash, must match.
++    observed = sha_file(weights)
++    require(observed == catalog["variants"][arm]["weights_sha256"],
++            "local model weights do not match pinned publisher SHA-256")
++    params, tensor_count = _tensor_inventory(weights)
++    minimum, maximum = ((315_000_000, 330_000_000) if arm == "multilingual"
++                        else (415_000_000, 425_000_000))
++    require(minimum <= params <= maximum, "actual tensor inventory outside frozen model family")
++    return {
++        "schema": REPORT, "arm": arm, "model_id": catalog["variants"][arm]["model_id"],
++        "source_repository": catalog["repository"], "source_revision": catalog["revision"],
++        "source_subfolder": catalog["variants"][arm]["subfolder"],
++        "weights_sha256": observed, "artifact_tree_sha256": sha_tree(root),
++        "num_parameters_from_safetensors": params, "tensor_count": tensor_count,
++        "config_sha256": sha_file(root / "rl_agent_config.json"),
++        "tokenizer_sha256": sha_file(root / "tokenizer/tokenizer.json"),
++        "encoder_config_sha256": sha_file(root / "encoder/config.json"),
++        "local_weight_bytes_verified": True, "model_forward_executed": False,
++        "source_publisher_independently_authenticated": False,
++        "production_evidence_verified": False, "ndu_selection_authorized": False,
++        "promotion_authorized": False,
++    }
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("mode", choices=("catalog", "local"))
++    parser.add_argument("--catalog", type=Path, required=True)
++    parser.add_argument("--arm", choices=tuple(PUBLISHED_WEIGHTS))
++    parser.add_argument("--artifact-dir", type=Path)
++    parser.add_argument("--output", type=Path, required=True)
++    args = parser.parse_args()
++    try:
++        catalog = verify_catalog(read_json(args.catalog))
++        if args.mode == "local":
++            require(args.arm is not None and args.artifact_dir is not None,
++                    "physical model dir and arm mandatory")
++            result = inspect_local(catalog, args.arm, args.artifact_dir)
++        else:
++            require(args.arm is None and args.artifact_dir is None,
++                    "catalog mode does not inspect physical files")
++            result = {"schema": REPORT, "upstream_catalog_sha256": sha_file(args.catalog),
++                      "revision": catalog["revision"], "variants": list(PUBLISHED_WEIGHTS),
++                      "publisher_metadata_checked": True, "local_weight_bytes_verified": False,
++                      "source_publisher_independently_authenticated": False,
++                      "model_forward_executed": False, "production_evidence_verified": False,
++                      "ndu_selection_authorized": False, "promotion_authorized": False}
++        write_new(args.output, result)
++    except (ValueError, KeyError, TypeError, OSError) as error:
++        parser.exit(2, f"blocked: {error}\n")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/hepta_neuron_model_trials.py b/scripts/hepta_neuron_model_trials.py
+index 6b7102a..e5e3279 100644
+--- a/scripts/hepta_neuron_model_trials.py
++++ b/scripts/hepta_neuron_model_trials.py
+@@ -156,8 +156,9 @@ def load_inputs(manifest_file, dataset_file, role="evaluator"):
+     else:
+         require(type(manifest.get("max_len")) is int and manifest["max_len"] == 512 and
+                 is_sha(manifest.get("sdk_tree_sha256")) and
++                is_sha(manifest.get("upstream_lock_sha256")) and
+                 manifest["parameter_cap"] <= 425_000_000,
+-                "unmatched text context, SDK or oversized model budget")
++                "unmatched text context, SDK, upstream lock or oversized model budget")
+     rows = []
+     ids, source_splits = set(), {}
+     with open(dataset_file, encoding="utf-8") as f:
+@@ -522,6 +523,9 @@ def compare(manifest, rows, packets, baseline_sha):
+                 "model/dataset/host identity drift")
+         if family != "heads":
+             model = manifest.get("models", {}).get(arm, {})
++            require(receipt.get("runtime", {}).get("upstream_lock_sha256") ==
++                    manifest.get("upstream_lock_sha256"),
++                    "experiment receipt lost upstream source-lock binding")
+             require(receipt.get("runtime", {}).get("sdk_tree_sha256") == manifest.get("sdk_tree_sha256") and
+                     receipt.get("model_id") == MODEL_IDS[arm] == model.get("model_id") and
+                     receipt.get("model_revision") == model.get("revision") and
+@@ -600,6 +604,8 @@ def main():
+     parser.add_argument("--artifact-dir", type=Path)
+     parser.add_argument("--weights-file", type=Path, default=Path("model.safetensors"))
+     parser.add_argument("--sdk-sha256")
++    parser.add_argument("--upstream-lock", type=Path,
++                        help="physical model experiments require frozen upstream catalog")
+     parser.add_argument("--checkpoint-out", type=Path)
+     parser.add_argument("--receipt", action="append", default=[], help="arm=absolute-file-path")
+     parser.add_argument("--baseline-sha256")
+@@ -608,6 +614,13 @@ def main():
+         manifest, rows = load_inputs(args.manifest, args.dataset,
+                                      role="runner" if args.mode == "run" else "evaluator")
+         verify_checkout(manifest["source_sha"])
++        if manifest["family"] != "heads":
++            require(args.upstream_lock is not None, "frozen upstream model catalog required")
++            from hepta_neuron_artifact_preflight import match_manifest_catalog, verify_catalog
++            catalog = verify_catalog(read_json(args.upstream_lock))
++            match_manifest_catalog(manifest, catalog, sha_file(args.upstream_lock))
++        else:
++            require(args.upstream_lock is None, "heads have no upstream Laya catalog")
+         if args.mode == "blind":
+             data = canonical_jsonl(blind_rows(rows, manifest["family"]))
+             require(hashlib.sha256(data).hexdigest() == manifest["blind_dataset_sha256"],
+@@ -642,6 +655,8 @@ def main():
+                 torch.cuda.synchronize()
+                 gpu_memory = {"peak_allocated_bytes": torch.cuda.max_memory_allocated(),
+                               "peak_reserved_bytes": torch.cuda.max_memory_reserved()}
++            if manifest["family"] != "heads":
++                runtime["upstream_lock_sha256"] = manifest["upstream_lock_sha256"]
+             data = {"schema": SCHEMA, "family": manifest["family"], "arm": args.arm,
+                     "model_id": manifest.get("models", {}).get(args.arm, {}).get("model_id"),
+                     "model_revision": manifest.get("models", {}).get(args.arm, {}).get("revision"),

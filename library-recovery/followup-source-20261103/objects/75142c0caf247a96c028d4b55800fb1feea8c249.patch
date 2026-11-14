@@ -1,0 +1,40 @@
+diff --git a/codex-rs/hepta-plasticity/src/topology_governance.rs b/codex-rs/hepta-plasticity/src/topology_governance.rs
+--- a/codex-rs/hepta-plasticity/src/topology_governance.rs
++++ b/codex-rs/hepta-plasticity/src/topology_governance.rs
+@@ -40,6 +40,7 @@ pub enum TopologyGovernanceErrorV1 {
+     Proposal(crate::TopologyProposalErrorV2),
+     EmptyDigest(&'static str),
++    AuthenticationEvidenceCollision,
+     OwnerCollision(String),
+@@ -129,6 +130,12 @@ pub fn admit_governed_topology_v1(
+             "evaluation authentication",
+         ));
+     }
++    // These bindings must at least be distinct. Equal commitments cannot
++    // establish independent provenance; production callers must additionally
++    // verify separate signer identities and detached signatures.
++    if source_authentication_digest == evaluation_authentication_digest {
++        return Err(TopologyGovernanceErrorV1::AuthenticationEvidenceCollision);
++    }
+ 
+     handoffs.sort_by(|left, right| left.module_id.cmp(&right.module_id));
+@@ -297,4 +304,17 @@ mod tests {
+         ));
+     }
++
++    #[test]
++    fn governed_topology_rejects_identical_authentication_evidence() {
++        let prior = governed();
++        let error = admit_governed_topology_v1(
++            prior.proposal,
++            prior.handoffs,
++            digest(b"same-authentication-evidence"),
++            digest(b"same-authentication-evidence"),
++        )
++        .expect_err("source and evaluator evidence cannot be identical");
++        assert_eq!(
++            error,
++            TopologyGovernanceErrorV1::AuthenticationEvidenceCollision
++        );
++    }
+ }

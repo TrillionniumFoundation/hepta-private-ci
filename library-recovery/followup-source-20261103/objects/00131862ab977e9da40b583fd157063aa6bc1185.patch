@@ -1,0 +1,519 @@
+diff --git a/.github/workflows/ndu-v5-factorial-development.yml b/.github/workflows/ndu-v5-factorial-development.yml
+index 2ba230a..f75bd27 100644
+--- a/.github/workflows/ndu-v5-factorial-development.yml
++++ b/.github/workflows/ndu-v5-factorial-development.yml
+@@ -31,3 +31,18 @@ jobs:
+           python3 -m json.tool AUDIT_LOCK.json > /dev/null
+           python3 audit_development.py
+           python3 audit_independent.py
++          python3 -m compileall -q cost_parity_gate.py test_cost_parity_gate.py
++          python3 -m json.tool BLOCKER_STATUS.json > /dev/null
++          python3 cost_parity_gate.py > /tmp/hepta-v5-paired-cost-audit.json
++          python3 - <<'PY'
++          import json
++          from pathlib import Path
++          report = json.loads(Path('/tmp/hepta-v5-paired-cost-audit.json').read_text())
++          assert report['source_groups'] == 1536
++          assert report['four_arm_decoded_rows'] == 6144
++          assert not report['all_cost_matched_quality_gates']
++          assert not report['at_least_one_modality_refinement_executed']
++          assert not report['production_blockers_closed']
++          assert not report['selection_or_final_use_authority']
++          print('verified-v5-paired-cost-no-go', report['decoded_evidence_rows_digest'])
++          PY
+diff --git a/experiments/multimodal_output_portfolio/v5/BLOCKER_STATUS.json b/experiments/multimodal_output_portfolio/v5/BLOCKER_STATUS.json
+new file mode 100644
+index 0000000..d6bcf30
+--- /dev/null
++++ b/experiments/multimodal_output_portfolio/v5/BLOCKER_STATUS.json
+@@ -0,0 +1,26 @@
++{
++  "schema": "hepta.ndu-dmgp.v5.cost-parity-blockers.v1",
++  "source_pr": 3522,
++  "source_head": "d98229a03150fb598082c32b206bc22aeb6695ce",
++  "scope": "SHADOW_ONLY_RESEARCH",
++  "result": "HOLD_NO_GO",
++  "all_blockers_closed": false,
++  "prod_authority": false,
++  "source_level_extension": "additive cost-quality falsification only",
++  "blockers": {
++    "B1_independent_real_ndu": "OPEN",
++    "B2_real_crossmodal_perception_and_sync": "OPEN",
++    "B3_real_joint_conditional_covariance": "OPEN",
++    "B4_physical_equal_realized_cost": "OPEN",
++    "B5_future_window_learning_and_retention": "OPEN",
++    "B6_causal_local_credit_markov_sufficiency": "OPEN",
++    "A0_A5_same_source_fair_reference": "OPEN",
++    "four_modal_real_refinement_activation": "OPEN"
++  },
++  "measured_development_observation": {
++    "seed29_supervised_dynamic_quality_harm": true,
++    "observed_modality_refine_rate": 0,
++    "all_three_seeds_supervised_static_dynamic_realized_cost_equal_within_0_05": false,
++    "model_cost_units_not_hardware_measurement": true
++  }
++}
+diff --git a/experiments/multimodal_output_portfolio/v5/COST_PARITY_GATE.md b/experiments/multimodal_output_portfolio/v5/COST_PARITY_GATE.md
+new file mode 100644
+index 0000000..cd2d4ce
+--- /dev/null
++++ b/experiments/multimodal_output_portfolio/v5/COST_PARITY_GATE.md
+@@ -0,0 +1,89 @@
++# v5 NDU-DMGP: independent decoded-output × realized-cost gate
++
++Status: **RESEARCH_ONLY / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO**.  Additive extension to
++`research/ndu-v5-factorial-learning-20261023` at exact source head
++`d98229a03150fb598082c32b206bc22aeb6695ce` (PR #3522). Original frozen
++`factorial.py`, frozen `development-report.json`, `SOURCE_LOCK.json`,
++`AUDIT_LOCK.json`, independently scored output ledger and existing code remain
++unchanged. Neither scientific preregistration nor external model authorization is
++inferred by this addition.
++
++## Specific observed gap
++
++A shared per-episode budget **cap of 7 synthetic units** does not identify the
++quality-to-cost frontier if executed costs differ. On the frozen three seeds,
++the supervised-training static versus dynamic contrasts are:
++
++| Seed | External decoded mean loss static -> dynamic | Executed toy cost static -> dynamic | Refine activation |
++| --- | ---: | ---: | ---: |
++| 17 | 1.1953125 -> 0.78515625 | 4 -> 4.298828125 | 0 |
++| 29 | 0.1328125 -> 0.3359375 | 7 -> 4.7265625 | 0 |
++| 43 | 1.1796875 -> 0.861328125 | 4 -> 4.263671875 | 0 |
++
++Seed 29 is a retained *harm in output quality*, not a failed test to tune away.
++No supervised arm is equal-realized-cost within 0.05 toy unit, and the observed
++control change is overwhelmingly QUERY rather than a text/audio/image/video
++refinement. v5 currently tests a **one-action**, not full multistep generator
++portfolio, and only 2x2 training-by-inference contrasts, not A0-A5.
++
++## Executable reproducible gate
++
++`cost_parity_gate.py` generates all four raw decoded synthetic outputs for
++both training methods and both inference methods on the same test source group,
++re-scores each with the separately maintained `independent_observer.observe`,
++then validates exactly one source × arm row, common input digest, source truth,
++complete roster, admissible action, *executed* modeled cost and observed decoded
++loss. It reports paired static-minus-dynamic loss and dynamic-minus-static
++executed cost **per seed and training**, without treating four outputs as four
++independent sampling units.
++
++`test_cost_parity_gate.py` rejects forged scores, costs, action names, incomplete
++or repeated source/arm rows, cross-arm input changes, malformed media shapes,
++unknown train split, invalid numeric thresholds and unsupported census. An
++integration test exercises the real v5 `factorial` and `independent_observer`
++imports; the frozen report test preserves the seed-29 negative result and zero
++modality refinements. Tests use stdlib only.
++
++Use from the `v5` directory:
++
++```bash
++python3 -m unittest discover -p 'test_*.py' -v
++python3 -m compileall -q cost_parity_gate.py test_cost_parity_gate.py
++python3 cost_parity_gate.py > /tmp/hepta-v5-paired-cost-audit.json
++```
++
++The full run replays the **already used development** seed set (17,29,43), 768
++train + 256 dev + 512 test per seed. The output is a diagnostic, *not* a new
++prospective or physically attested confirmation experiment. The frozen v5
++independent observer already has its own source/audit locks, and this additive
++gate cannot substitute a second external institution, a hardware meter, or new
++natural source acquisition.
++
++The bounded-loss Hoeffding LCB is a deliberately conservative diagnostic with
++Bonferroni for six within-seed/training comparisons. Synthetic source worlds
++are the declared sampling units. It does not make a statistical claim about
++natural human task distributions or cross-seed scientific replication.
++
++## Exact blocker semantics (OPEN unless independent evidence exists)
++
++| Blocker | Required real-world close criterion |
++| --- | --- |
++| B1 NDU truth/reward | Registered fixed external objective; independent authentic source and signed observer, held-out groups, actual cost ledger, no Actor/Critic self-labelling |
++| B2 Cross-modal consistency | Actual forward/reverse audio-visual-text-image perception with event/entity/time/sync checks on held-out natural media |
++| B3 Conditional covariance | Paired joint real decoder-intervention trajectories, support/identifiability and PSD/low-rank/shrinkage plus deterministic fallback |
++| B4 Efficiency | Matched **realized** quality/cost, host CPU/GPU/RSS/energy/end-to-end p95/p99, controller overhead and equal-budget strong baselines |
++| B5 Stability | Frozen objective and independent Critic/Actor revisions, explicit trust region, signed next-snapshot candidate and future-window/retention/OOD results |
++| B6 Global credit | Independently supported source-level counterfactual local advantages, coalition residuals and history-vs-state sufficiency/Markov closure on real Cell/Circuit owners |
++
++Additional necessary bridge: A0-A5's qualified six-arm experiment must be
++source/version-integrated with v5's distinct 2x2 train/control experiment before
++any single combined superiority assertion. A static A1 comparator, a learned
++Top-k/MoE comparator, myopic NDU, covariance NDU and full dynamic NDU should
++all use the same frozen backbone/decoder/source groups/registered resource and
++observer revisions. Require source-level evidence first, actual host and
++independent acceptance later. A5<=A1 in existing synthetic A0-A5 reference
++must remain visible; do not relabel that negative result as a victory.
++
++All production capability flags remain false.  No current-run parameter
++replacement, authority, final-use, runtime dispatch, model promotion, or deployment
++is issued by this audit or its scores.
+diff --git a/experiments/multimodal_output_portfolio/v5/cost_parity_gate.py b/experiments/multimodal_output_portfolio/v5/cost_parity_gate.py
+new file mode 100644
+index 0000000..e29a24b
+--- /dev/null
++++ b/experiments/multimodal_output_portfolio/v5/cost_parity_gate.py
+@@ -0,0 +1,212 @@
++"""Non-authorizing, source-paired v5 output/cost attribution gate.
++
++The scorer operates on decoded synthetic outputs and external toy truth.  It
++makes no claim of natural multimodal output, physical cost parity, independent
++real-world facts, or production authorization.  Only exact four-arm, per-source
++comparisons are admitted; a common cost *cap* cannot certify cost matching.
++"""
++from __future__ import annotations
++
++from hashlib import sha256
++import json
++import math
++from typing import Any
++
++ARMS = (
++    "supervised|static",
++    "supervised|ndu_contextual",
++    "ndu_risk|static",
++    "ndu_risk|ndu_contextual",
++)
++COST_BY_ACTION = {
++    "EMIT": 4,
++    "REFINE_TEXT": 5,
++    "REFINE_AUDIO": 5,
++    "REFINE_IMAGE": 5,
++    "REFINE_VIDEO": 5,
++    "QUERY": 7,
++}
++
++
++def digest(data: Any) -> str:
++    return sha256(json.dumps(data, sort_keys=True, separators=(",", ":"),
++                             allow_nan=False).encode("utf-8")).hexdigest()
++
++
++def _strict_finite_real(v: Any) -> bool:
++    return type(v) in (int, float) and math.isfinite(v)
++
++
++def audit_paired_rows(rows: list[dict], *, seeds: tuple[int, ...],
++                      expected_sources: dict[int, tuple[str, ...]],
++                      min_sources: int = 32, cost_tolerance: float = 0.05,
++                      alpha: float = 0.05) -> dict:
++    """Audit independent decoded-score rows without looking at policy internals.
++
++    Different source groups count once, not once per output, Head or arm. The
++    Hoeffding lower confidence bound is intentionally conservative for bounded
++    *synthetic* loss changes in [-8,8], Bonferroni-adjusted for two arms/seeds.
++    It is diagnostic, not a valid human/real-data sampling guarantee.
++    """
++    if (not seeds or any(type(s) is not int for s in seeds)
++        or len(set(seeds)) != len(seeds) or not isinstance(rows, list)
++        or type(min_sources) is not int or min_sources < 32
++        or not _strict_finite_real(cost_tolerance) or not 0 <= cost_tolerance <= 0.05
++        or not _strict_finite_real(alpha) or not 0 < alpha <= 0.05):
++        raise ValueError("invalid preregistered audit settings")
++    if type(expected_sources) is not dict or set(expected_sources) != set(seeds):
++        raise ValueError("missing frozen source census")
++    census = {}
++    for seed in seeds:
++        expected = expected_sources[seed]
++        if (type(expected) is not tuple or len(expected) < min_sources
++            or any(type(s) is not str or not s.startswith(f"{seed}/test/")
++                   for s in expected) or len(expected) != len(set(expected))):
++            raise ValueError("invalid or non-test frozen source roster")
++        census[seed] = set(expected)
++    seen = {}
++    source_binding = {}
++    for r in rows:
++        if type(r) is not dict or set(r) != {
++            "seed", "source", "arm", "input_digest", "raw", "truth",
++            "action", "loss", "wrong", "mismatch", "cost_units",
++        }:
++            raise ValueError("incomplete or extended source row")
++        seed, source, arm = r["seed"], r["source"], r["arm"]
++        if (type(seed) is not int or seed not in census
++            or type(source) is not str or source not in census[seed]
++            or type(arm) is not str or arm not in ARMS):
++            raise ValueError("unregistered source, split or arm")
++        key = (seed, source, arm)
++        if key in seen:
++            raise ValueError("duplicate source-arm outcome")
++        input_digest = r["input_digest"]
++        if (type(input_digest) is not str or len(input_digest) != 64
++            or input_digest == "0" * 64
++            or any(x not in "0123456789abcdef" for x in input_digest)):
++            raise ValueError("invalid immutable input reference")
++        src_key = (seed, source)
++        if src_key in source_binding:
++            if source_binding[src_key] != (input_digest, r["truth"]):
++                raise ValueError("paired arms observe different source or truth")
++        else:
++            source_binding[src_key] = (input_digest, r["truth"])
++        action = r["action"]
++        if (type(action) is not str or action not in COST_BY_ACTION
++            or type(r["cost_units"]) is not int
++            or r["cost_units"] != COST_BY_ACTION[action]):
++            raise ValueError("unfunded or fabricated realized action cost")
++        # The actual raw decoded output is re-read through a scorer that is
++        # separate from the factorial's terminal loss and policy fitting.
++        from independent_observer import observe
++        loss, wrong, mismatch, cost = observe(r["raw"], r["truth"], action)
++        if (type(r["loss"]) is not int or type(r["wrong"]) is not int
++            or type(r["mismatch"]) is not int
++            or (loss, wrong, mismatch, cost) !=
++               (r["loss"], r["wrong"], r["mismatch"], r["cost_units"])):
++            raise ValueError("decoded terminal loss or resource tampering")
++        seen[key] = r
++    expected_keys = {(seed, source, arm)
++                     for seed in seeds for source in census[seed] for arm in ARMS}
++    if set(seen) != expected_keys:
++        raise ValueError("incomplete four-arm test roster")
++    effect = {}
++    all_refinements = 0
++    for seed in seeds:
++        sources = sorted(census[seed])
++        for training in ("supervised", "ndu_risk"):
++            static = f"{training}|static"
++            dynamic = f"{training}|ndu_contextual"
++            paired_quality = [seen[(seed, s, static)]["loss"]
++                              - seen[(seed, s, dynamic)]["loss"] for s in sources]
++            paired_cost = [seen[(seed, s, dynamic)]["cost_units"]
++                           - seen[(seed, s, static)]["cost_units"] for s in sources]
++            mean_gain = math.fsum(paired_quality) / len(sources)
++            mean_extra = math.fsum(paired_cost) / len(sources)
++            # Difference is bounded to [-8,8], not 4 independent Head samples.
++            comparisons = 2 * len(seeds)
++            radius = 16.0 * math.sqrt(math.log(2.0 * comparisons / alpha)
++                                       / (2.0 * len(sources)))
++            key = f"{seed}:{training}"
++            refinements = sum(seen[(seed, s, dynamic)]["action"].startswith("REFINE_")
++                              for s in sources)
++            all_refinements += refinements
++            effect[key] = {
++                "unique_source_groups": len(sources),
++                "mean_external_loss_gain_static_minus_dynamic": mean_gain,
++                "mean_executed_toy_cost_dynamic_minus_static": mean_extra,
++                "bonferroni_hoeffding_gain_lcb": mean_gain - radius,
++                "cost_cap_same_is_not_realized_cost_match": True,
++                "realized_cost_matched_at_declared_tolerance":
++                    abs(mean_extra) <= cost_tolerance,
++                "prospective_quality_at_cost_gate":
++                    (mean_gain - radius > 0 and abs(mean_extra) <= cost_tolerance),
++                "dynamic_refinement_activations": refinements,
++                "dynamic_query_activations": sum(
++                    seen[(seed, s, dynamic)]["action"] == "QUERY" for s in sources),
++            }
++    return {
++        "schema": "hepta.ndu-v5.paired-cost-falsification.v1",
++        "scope": "SYNTHETIC_SHADOW_NON_AUTHORIZING",
++        "source_groups": len(source_binding),
++        "four_arm_decoded_rows": len(seen),
++        "effects_by_seed_training": effect,
++        "at_least_one_modality_refinement_executed": all_refinements > 0,
++        "all_cost_matched_quality_gates": all(
++            v["prospective_quality_at_cost_gate"] for v in effect.values()),
++        "real_encoder_decoder_observed": False,
++        "physical_meter_attested": False,
++        "externally_signed_independent_truth": False,
++        "longitudinal_future_window_admitted": False,
++        "native_cell_causal_credit_admitted": False,
++        "production_blockers_closed": False,
++        "selection_or_final_use_authority": False,
++    }
++
++
++def execute_frozen_development_audit(seeds: tuple[int, ...] = (17, 29, 43),
++                                     *, ntrain: int = 768, ndev: int = 256,
++                                     ntest: int = 512, steps: int = 80) -> dict:
++    """Execute actual frozen synthetic Head/policy and independent raw scorer.
++
++    Work must not be relabelled as original-weight LLM or live hardware receipt.
++    Not a prospective trial: these seeds were used in prior development.
++    """
++    from factorial import (TRAININGS, CONTROLS, make_worlds, train, train_policies,
++                           predict, choose, apply_action, decode_raw)
++    from independent_observer import observe
++    rows = []
++    census = {}
++    for seed in seeds:
++        train_set = make_worlds(seed, "train", ntrain)
++        dev_set = make_worlds(seed, "dev", ndev)
++        test_set = make_worlds(seed, "test", ntest)
++        census[seed] = tuple(w.source_id for w in test_set)
++        for training in TRAININGS:
++            weights, _ = train(train_set, seed, training, steps=steps)
++            critic = train_policies(dev_set, weights)
++            for control in CONTROLS:
++                for world in test_set:
++                    public = world.public
++                    probabilities = predict(public, weights)
++                    action = choose(public, probabilities, critic, control)
++                    # No hidden truth, witness or common_flip enters choose().
++                    raw = decode_raw(apply_action(probabilities, action, world.witness))
++                    loss, wrong, mismatch, cost = observe(raw, world.truth, action)
++                    rows.append({
++                        "seed": seed, "source": world.source_id,
++                        "arm": f"{training}|{control}",
++                        "input_digest": digest((public.source_id, public.mode,
++                                                public.signals)),
++                        "raw": raw, "truth": world.truth,
++                        "action": action, "loss": loss, "wrong": wrong,
++                        "mismatch": mismatch, "cost_units": cost,
++                    })
++    result = audit_paired_rows(rows, seeds=seeds, expected_sources=census)
++    result["developed_source_roster_digest"] = digest(census)
++    result["decoded_evidence_rows_digest"] = digest(rows)
++    return result
++
++
++if __name__ == "__main__":
++    print(json.dumps(execute_frozen_development_audit(), sort_keys=True, indent=2))
+diff --git a/experiments/multimodal_output_portfolio/v5/test_cost_parity_gate.py b/experiments/multimodal_output_portfolio/v5/test_cost_parity_gate.py
+new file mode 100644
+index 0000000..0d1b643
+--- /dev/null
++++ b/experiments/multimodal_output_portfolio/v5/test_cost_parity_gate.py
+@@ -0,0 +1,145 @@
++"""Adversarial test matrix for v5 paired cost/quality non-promotion gate."""
++import copy
++import json
++import unittest
++
++from cost_parity_gate import audit_paired_rows, COST_BY_ACTION
++
++ARMS = ("supervised|static", "supervised|ndu_contextual",
++        "ndu_risk|static", "ndu_risk|ndu_contextual")
++
++
++def raw_of(bit):
++    return {"text": f"symbol:{bit}", "audio": (bit, -bit, bit, -bit),
++            "image": ((bit, bit), (bit, bit)),
++            "video": (((bit, bit), (bit, bit)), ((bit, bit), (bit, bit)))}
++
++
++def fixture(seed=17, n=32):
++    rows = []
++    roster = tuple(f"{seed}/test/{i:06d}" for i in range(n))
++    for source in roster:
++        for arm in ARMS:
++            dynamic = arm.endswith("ndu_contextual")
++            # This mimics a toy improvement that incurs unmatched costs.
++            action, raw = ("QUERY", raw_of(0)) if dynamic else ("EMIT", raw_of(1))
++            rows.append({"seed": seed, "source": source, "arm": arm,
++                         "input_digest": "a"*64, "raw": raw, "truth": 0,
++                         "action": action, "cost_units": COST_BY_ACTION[action],
++                         "loss": 0 if dynamic else 4,
++                         "wrong": 0 if dynamic else 4, "mismatch": 0})
++    return rows, {seed: roster}
++
++
++class CostParityGateTests(unittest.TestCase):
++    def _audit(self, rows, roster):
++        return audit_paired_rows(rows, seeds=tuple(roster),
++                                 expected_sources=roster)
++
++    def test_a_cost_cap_is_not_realized_cost_or_physical_gain(self):
++        rows, roster = fixture()
++        report = self._audit(rows, roster)
++        self.assertEqual(report["four_arm_decoded_rows"], 128)
++        self.assertEqual(report["source_groups"], 32)
++        row = report["effects_by_seed_training"]["17:supervised"]
++        self.assertEqual(row["mean_external_loss_gain_static_minus_dynamic"], 4)
++        self.assertEqual(row["mean_executed_toy_cost_dynamic_minus_static"], 3)
++        self.assertFalse(row["realized_cost_matched_at_declared_tolerance"])
++        self.assertFalse(report["all_cost_matched_quality_gates"])
++        self.assertFalse(report["real_encoder_decoder_observed"])
++        self.assertFalse(report["physical_meter_attested"])
++        self.assertFalse(report["production_blockers_closed"])
++        self.assertFalse(report["selection_or_final_use_authority"])
++
++    def test_rejects_missing_duplicate_and_unknown_source_arm(self):
++        rows, roster = fixture()
++        for bad in (rows[:-1], rows + [rows[0]],
++                    [dict(rows[0], arm="secret_arm")] + rows[1:],
++                    [dict(rows[0], source="17/train/000000")] + rows[1:]):
++            with self.subTest(len=len(bad)):
++                with self.assertRaises(ValueError):
++                    self._audit(bad, roster)
++
++    def test_rejects_inconsistent_source_binding_or_truth(self):
++        rows, roster = fixture()
++        for alteration in (dict(rows[1], input_digest="1"*64),
++                           dict(rows[1], truth=1)):
++            bad = rows.copy()
++            bad[1] = alteration
++            with self.assertRaises(ValueError):
++                self._audit(bad, roster)
++
++    def test_rejects_forged_cost_and_false_score(self):
++        rows, roster = fixture()
++        for alteration in (dict(rows[1], cost_units=4),
++                           dict(rows[0], loss=0),
++                           dict(rows[0], wrong=0),
++                           dict(rows[0], action="ELEVATE"),
++                           dict(rows[1], cost_units=True)):
++            bad = rows.copy()
++            bad[1 if alteration.get("arm") == rows[1]["arm"] else 0] = alteration
++            with self.assertRaises(ValueError):
++                self._audit(bad, roster)
++
++    def test_rejects_malformed_four_modal_content(self):
++        rows, roster = fixture()
++        corrupt = copy.deepcopy(rows[0]); corrupt["raw"].pop("video")
++        rows[0] = corrupt
++        with self.assertRaises(ValueError):
++            self._audit(rows, roster)
++
++    def test_fail_closed_on_float_nan_boolean_and_unsupported_census(self):
++        rows, roster = fixture()
++        for config in ({"alpha": float("nan")}, {"alpha": .99},
++                       {"cost_tolerance": float("inf")},
++                       {"cost_tolerance": 2}, {"min_sources": True},
++                       {"min_sources": 31}):
++            with self.assertRaises(ValueError):
++                audit_paired_rows(rows, seeds=(17,), expected_sources=roster, **config)
++        with self.assertRaises(ValueError):
++            self._audit(rows, {17: roster[17][:-1]})
++        with self.assertRaises(ValueError):
++            audit_paired_rows(rows, seeds=(17, 29), expected_sources=roster)
++
++    def test_fake_superiority_is_diagnostic_not_production_authority(self):
++        rows, roster = fixture(n=256)
++        # More groups narrow the bound but still cannot prove actual decoder costs.
++        report = self._audit(rows, roster)
++        self.assertFalse(report["at_least_one_modality_refinement_executed"])
++        self.assertFalse(report["externally_signed_independent_truth"])
++        self.assertFalse(report["longitudinal_future_window_admitted"])
++
++    def test_frozen_development_report_cannot_claim_cost_parity(self):
++        from pathlib import Path
++        report_path = Path(__file__).with_name("development-report.json")
++        if not report_path.is_file():
++            self.skipTest("frozen upstream v5 report is available only in repository")
++        frozen = json.loads(report_path.read_text())
++        self.assertEqual([x["seed"] for x in frozen["seeds"]], [17, 29, 43])
++        for seed in frozen["seeds"]:
++            for training in ("supervised", "ndu_risk"):
++                s = seed["arms"][f"{training}|static"]
++                d = seed["arms"][f"{training}|ndu_contextual"]
++                # All held-out real *modeled* costs differ by > 0.05.
++                self.assertGreater(abs(s["mean_cost_units"] - d["mean_cost_units"]), .05)
++                self.assertEqual(d["refine_rate"], 0)
++            if seed["seed"] == 29:
++                self.assertGreater(
++                    seed["arms"]["supervised|ndu_contextual"]["mean_loss"],
++                    seed["arms"]["supervised|static"]["mean_loss"])
++
++    def test_actual_v5_small_paired_execution_if_available(self):
++        try:
++            import factorial  # noqa: F401
++        except ImportError:
++            self.skipTest("standalone local gate tests; integrated v5 only in repo")
++        from cost_parity_gate import execute_frozen_development_audit
++        report = execute_frozen_development_audit((17,), ntrain=96,
++                                                 ndev=64, ntest=32, steps=4)
++        self.assertEqual(report["source_groups"], 32)
++        self.assertEqual(report["four_arm_decoded_rows"], 128)
++        self.assertFalse(report["production_blockers_closed"])
++
++
++if __name__ == "__main__":
++    unittest.main()

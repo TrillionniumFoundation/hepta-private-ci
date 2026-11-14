@@ -1,0 +1,436 @@
+diff --git a/apps/hepta-control-ui/rust/core/src/owner_view.rs b/apps/hepta-control-ui/rust/core/src/owner_view.rs
+index e953286..400db20 100644
+--- a/apps/hepta-control-ui/rust/core/src/owner_view.rs
++++ b/apps/hepta-control-ui/rust/core/src/owner_view.rs
+@@ -52,6 +52,27 @@ pub enum OwnerReadState {
+ }
+ 
+ impl OwnerReadState {
++    /// Display-only headline derived from validated metadata, never write authority.
++    /// Recorded dispositions are deliberately distinct from current health.
++    pub fn observation_headline(&self) -> &'static str {
++        match self {
++            Self::Unavailable(RuntimeUnavailable::NotConnected) => "Not requested",
++            Self::Unavailable(_) => "Unavailable",
++            Self::Loading => "Reading…",
++            Self::Received(document) => match document.observation {
++                Observation::NotAttached {} => "Not attached",
++                Observation::Unavailable { .. } => "Unavailable",
++                Observation::Observed { disposition, .. } => match disposition {
++                    Disposition::Missing => "Recorded missing",
++                    Disposition::Active => "Recorded active",
++                    Disposition::ExpiredActive => "Recorded expired active",
++                    Disposition::Released => "Recorded released",
++                    Disposition::RolledBack => "Recorded rolled back",
++                },
++            },
++        }
++    }
++
+     pub fn display_text(&self) -> String {
+         let detail = match self {
+             Self::Unavailable(RuntimeUnavailable::NotConnected) => "No owner observation has been requested for this view. Use the read-only control above to query metadata.".to_owned(),
+diff --git a/apps/hepta-control-ui/rust/core/src/owner_view_tests.rs b/apps/hepta-control-ui/rust/core/src/owner_view_tests.rs
+index 754f1f1..4e085af 100644
+--- a/apps/hepta-control-ui/rust/core/src/owner_view_tests.rs
++++ b/apps/hepta-control-ui/rust/core/src/owner_view_tests.rs
+@@ -91,3 +91,55 @@ fn ticket_exhaustion_does_not_recycle_request_identity() {
+         &OwnerReadState::Unavailable(RuntimeUnavailable::CounterExhausted)
+     );
+ }
++
++#[test]
++fn card_headlines_distinguish_absence_from_recorded_metadata() {
++    assert_eq!(
++        OwnerReader::default().state().observation_headline(),
++        "Not requested"
++    );
++    assert_eq!(OwnerReadState::Loading.observation_headline(), "Reading…");
++    for (observation, expected) in [
++        (serde_json::json!({"status":"not_attached"}), "Not attached"),
++        (
++            serde_json::json!({"status":"unavailable","reason":"busy"}),
++            "Unavailable",
++        ),
++        (
++            serde_json::json!({"status":"observed","generation":null,"disposition":"missing"}),
++            "Recorded missing",
++        ),
++        (
++            serde_json::json!({"status":"observed","generation":1,"disposition":"active"}),
++            "Recorded active",
++        ),
++        (
++            serde_json::json!({"status":"observed","generation":1,"disposition":"expired_active"}),
++            "Recorded expired active",
++        ),
++        (
++            serde_json::json!({"status":"observed","generation":1,"disposition":"released"}),
++            "Recorded released",
++        ),
++        (
++            serde_json::json!({"status":"observed","generation":1,"disposition":"rolled_back"}),
++            "Recorded rolled back",
++        ),
++    ] {
++        let state =
++            OwnerReadState::Received(parse(200, &document(observation)).expect("valid fixture"));
++        assert_eq!(state.observation_headline(), expected);
++        assert!(state.display_text().contains("not current write authority"));
++    }
++    for reason in [
++        RuntimeUnavailable::Transport,
++        RuntimeUnavailable::TimedOut,
++        RuntimeUnavailable::Oversize,
++        RuntimeUnavailable::InvalidStatus,
++        RuntimeUnavailable::CounterExhausted,
++    ] {
++        let state = OwnerReadState::Unavailable(reason);
++        assert_eq!(state.observation_headline(), "Unavailable");
++        assert!(state.display_text().contains(&format!("{reason:?}")));
++    }
++}
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/native_host/render.rs b/apps/hepta-control-ui/rust/robrix-ui/src/native_host/render.rs
+index 4ef69c2..545a4c3 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/native_host/render.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/native_host/render.rs
+@@ -207,9 +207,8 @@ impl RendererHost {
+             ui.widget(cx, ids!(native_host_status))
+                 .set_text(cx, &self.view.status);
+             let missing = "Linux development host: authenticated startup status and safe close are connected. Operation binding, final-use actions, reconciliation/history controls, update staging/activation controls and accessibility settings are not yet composed here. Chat Send remains unavailable without its independent writer owner.";
+-            ui.label(cx, ids!(console_status)).set_text(cx, missing);
+-            ui.label(cx, ids!(mobile_console_status))
+-                .set_text(cx, missing);
++            cx.global::<crate::runtime_status::RuntimeDisplay>()
++                .native_note = missing.to_owned();
+             ui.button(cx, ids!(native_retry_close))
+                 .set_visible(cx, self.view.can_retry_close);
+             ui.view(cx, ids!(native_content)).set_visible(
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+index 49d4ad7..46ed33e 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/robrix/home.rs
+@@ -13,6 +13,40 @@ use makepad_widgets::*;
+ script_mod! {
+  use mod.prelude.widgets.*
+  use mod.widgets.*
++ // A vertical shared composition: no fixed text heights or desktop-only facts.
++ mod.widgets.ObservationCard = View {
++  width: Fill height: Fit flow: Down padding: 18 spacing: 10
++  show_bg: true
++  draw_bg +: {
++   color: COLOR_SECONDARY border: uniform(COLOR_BORDER)
++   secondary: uniform(COLOR_ROBRIX_PURPLE)
++   pixel: fn() {
++    let sdf = Sdf2d.viewport(self.pos * self.rect_size)
++    sdf.box(0.5, 0.5, self.rect_size.x - 1.0, self.rect_size.y - 1.0, 8.0)
++    sdf.fill_keep(self.color)
++    sdf.stroke(self.border, 1.0)
++    // Static branding stroke, never an operational health indicator.
++    sdf.move_to(18.0, 1.0)
++    sdf.line_to(50.0, 1.0)
++    sdf.stroke(self.secondary, 2.0)
++    return sdf.result
++   }
++  }
++  card_title := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
++  headline := Label {width: Fill flow: Flow.Right{wrap: true} text: "Not requested" draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 22}}}
++  detail := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
++ }
++ mod.widgets.RuntimeObservationPanel = #(RuntimeObservationPanel::register_widget(vm)) {
++  width: Fill height: Fit flow: Down spacing: 16
++  owner_card := mod.widgets.ObservationCard {card_title +: {text: "Production owner"}}
++  legacy_card := mod.widgets.ObservationCard {card_title +: {text: "Legacy runtime observation"}}
++  authority_note := Label {width: Fill flow: Flow.Right{wrap: true} text: "These observations do not provide current write authority. Chat and operation commands remain unavailable." draw_text.color: COLOR_TEXT}
++  native_limitations := Label {visible: false width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
++ }
++ mod.widgets.ObservationHeading = Label {
++  width: Fill flow: Flow.Right{wrap: true} text: "Runtime observations"
++  draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 24}}
++ }
+  mod.widgets.HeptaBrandBar = View {
+   width: Fill height: 68 flow: Right align: Align{y: 0.5}
+   padding: Inset{left: 33, right: 24} spacing: 20
+@@ -36,9 +70,10 @@ script_mod! {
+    room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
+    console_screen := ScrollYView {
+     flow: Down padding: 24 spacing: 12
+-    Label {text: "Console" draw_text.color: COLOR_TEXT}
+-    owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
+-    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable." draw_text.color: COLOR_TEXT}
++    mod.widgets.ObservationHeading {}
++    Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only, point-in-time metadata" draw_text.color: COLOR_TEXT}
++    owner_refresh := mod.widgets.AuroraButton {height: 44 text: "Refresh observations" enabled: false}
++    observation_panel := mod.widgets.RuntimeObservationPanel {}
+    }
+   }
+  }
+@@ -98,14 +133,53 @@ script_mod! {
+       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
+      }
+      console_page := ScrollYView {flow: Down padding: 16 spacing: 12
+-      mobile_owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
+-      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable."}
++      mod.widgets.ObservationHeading {}
++      Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only, point-in-time metadata" draw_text.color: COLOR_TEXT}
++      mobile_owner_refresh := mod.widgets.AuroraButton {height: 44 text: "Refresh observations" enabled: false}
++      mobile_observation_panel := mod.widgets.RuntimeObservationPanel {}
+      }
+     }
+    }
+   }
+  }
+ }
++/// Read retained typed state before painting, including a newly created Dock panel.
++#[derive(Script, ScriptHook, Widget)]
++pub struct RuntimeObservationPanel {
++    #[deref]
++    view: View,
++}
++impl Widget for RuntimeObservationPanel {
++    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
++        self.view.handle_event(cx, event, scope);
++    }
++    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
++        let display = cx.global::<crate::runtime_status::RuntimeDisplay>().clone();
++        self.view
++            .label(cx, ids!(owner_card.headline))
++            .set_text(cx, display.owner.headline);
++        self.view
++            .label(cx, ids!(owner_card.detail))
++            .set_text(cx, &display.owner.detail);
++        self.view
++            .label(cx, ids!(legacy_card.headline))
++            .set_text(cx, display.legacy.headline);
++        self.view
++            .label(cx, ids!(legacy_card.detail))
++            .set_text(cx, &display.legacy.detail);
++        let native_note = self.view.widget(cx, ids!(native_limitations));
++        let show_native_note = !display.native_note.is_empty();
++        if native_note.visible() != show_native_note {
++            native_note.set_visible(cx, show_native_note);
++        }
++        if show_native_note {
++            native_note.set_text(cx, &display.native_note);
++        }
++        // Label setters skip identical strings; publication invalidates the tree.
++        self.view.draw_walk(cx, scope, walk)
++    }
++}
++
+ /// The existing Chat/Console Dock, under a shared display-only room heading.
+ /// It receives the original workspace and forwards every event unchanged.
+ #[derive(Script, ScriptHook, Widget)]
+@@ -135,10 +209,6 @@ impl Widget for MainConversationUI {
+         let step = self.view.draw_walk(cx, scope, walk);
+         // Dock creates this child lazily during drawing. Apply only after it
+         // exists, and avoid ButtonRef::set_enabled's unconditional redraw loop.
+-        let status = cx
+-            .global::<crate::runtime_status::RuntimeDisplay>()
+-            .text
+-            .clone();
+         let enabled = cfg!(target_arch = "wasm32")
+             && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+         let button = self.view.widget(cx, ids!(owner_refresh));
+@@ -147,11 +217,20 @@ impl Widget for MainConversationUI {
+             self.view
+                 .button(cx, ids!(owner_refresh))
+                 .set_enabled(cx, enabled);
++            let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
++            self.view.button(cx, ids!(owner_refresh)).set_text(
++                cx,
++                if busy {
++                    "Reading observations…"
++                } else {
++                    "Refresh observations"
++                },
++            );
+             self.owner_refresh_rendered = Some(key);
++            // A lazy button was already drawn with template defaults. The normal
++            // setter redraw is suppressed in Draw; schedule one bounded repaint.
++            cx.redraw_area_in_draw(button.area());
+         }
+-        self.view
+-            .label(cx, ids!(console_status))
+-            .set_text(cx, &status);
+         step
+     }
+ }
+@@ -370,10 +449,6 @@ impl Widget for HomeScreen {
+                 .set_enabled(cx, !workspace.composing);
+         }
+         let step = self.view.draw_walk(cx, scope, walk);
+-        let status = cx
+-            .global::<crate::runtime_status::RuntimeDisplay>()
+-            .text
+-            .clone();
+         let enabled = cfg!(target_arch = "wasm32")
+             && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+         let button = self.view.widget(cx, ids!(mobile_owner_refresh));
+@@ -382,11 +457,20 @@ impl Widget for HomeScreen {
+             self.view
+                 .button(cx, ids!(mobile_owner_refresh))
+                 .set_enabled(cx, enabled);
++            let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
++            self.view.button(cx, ids!(mobile_owner_refresh)).set_text(
++                cx,
++                if busy {
++                    "Reading observations…"
++                } else {
++                    "Refresh observations"
++                },
++            );
+             self.owner_refresh_rendered = Some(key);
++            // A lazy button was already drawn with template defaults. The normal
++            // setter redraw is suppressed in Draw; schedule one bounded repaint.
++            cx.redraw_area_in_draw(button.area());
+         }
+-        self.view
+-            .label(cx, ids!(mobile_console_status))
+-            .set_text(cx, &status);
+         step
+     }
+ }
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs b/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs
+index f52c24a..d735d1e 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/runtime_status.rs
+@@ -3,26 +3,63 @@ use hepta_control_core::owner_view::OwnerReadState;
+ use hepta_control_core::runtime_view::RuntimeReadState;
+ use hepta_control_core::runtime_view::RuntimeUnavailable;
+ 
++/// A display projection, not an owner or command-admission capability.
++#[derive(Clone, Debug, PartialEq, Eq)]
++pub(crate) struct ObservationCardPresentation {
++    pub(crate) headline: &'static str,
++    pub(crate) detail: String,
++}
++
++#[derive(Clone, Debug, PartialEq, Eq)]
+ pub(crate) struct RuntimeDisplay {
+-    pub(crate) text: String,
++    pub(crate) owner: ObservationCardPresentation,
++    pub(crate) legacy: ObservationCardPresentation,
++    pub(crate) native_note: String,
+     pub(crate) busy: bool,
+ }
++impl RuntimeDisplay {
++    fn from_observations(owner: &OwnerReadState, legacy: &RuntimeReadState) -> Self {
++        Self {
++            owner: ObservationCardPresentation {
++                headline: owner.observation_headline(),
++                // Preserve every validated field, bounded failure reason and caveat.
++                // Never recover typed state by parsing this human-readable text.
++                detail: owner.display_text(),
++            },
++            legacy: ObservationCardPresentation {
++                headline: match legacy {
++                    RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected) => {
++                        "Not requested"
++                    }
++                    RuntimeReadState::Unavailable(_) => "Unavailable",
++                    RuntimeReadState::Loading => "Reading…",
++                    RuntimeReadState::Ready(_) => "Snapshot received",
++                },
++                detail: legacy.display_text(),
++            },
++            native_note: String::new(),
++            busy: false,
++        }
++    }
++}
+ impl Default for RuntimeDisplay {
+     fn default() -> Self {
++        let mut display = Self::from_observations(
++            &OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected),
++            &RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected),
++        );
+         if !cfg!(target_arch = "wasm32") {
+-            return Self {
+-                text: "Read-only metadata is unavailable in this native product port. No native owner bridge is installed; chat and commands remain unavailable.".to_owned(),
+-                busy: false,
++            display.owner = ObservationCardPresentation {
++                headline: "Unavailable on native",
++                detail: "No native owner metadata bridge is installed.".to_owned(),
++            };
++            display.legacy = ObservationCardPresentation {
++                headline: "Unavailable on native",
++                detail: "Read-only runtime metadata is unavailable in this native product port."
++                    .to_owned(),
+             };
+         }
+-        Self {
+-            text: format!(
+-                "{}\n\nLegacy runtime observation\n{}",
+-                OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text(),
+-                RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text()
+-            ),
+-            busy: false,
+-        }
++        display
+     }
+ }
+ 
+@@ -215,23 +252,34 @@ mod web {
+             self.deadline = Timer::default();
+         }
+         fn publish(&self, cx: &mut Cx, ui: &WidgetRef) {
+-            let text = format!(
+-                "{}\n\nLegacy runtime observation\n{}",
+-                self.owner.state().display_text(),
+-                self.legacy.state().display_text()
+-            );
+-            let busy = self.active.is_some();
+-            if cx.global::<RuntimeDisplay>().text != text
+-                || cx.global::<RuntimeDisplay>().busy != busy
+-            {
+-                cx.global::<RuntimeDisplay>().text = text.clone();
+-                cx.global::<RuntimeDisplay>().busy = busy;
++            let mut display =
++                RuntimeDisplay::from_observations(self.owner.state(), self.legacy.state());
++            display.busy = self.active.is_some();
++            // This wording reflects the actual owner-then-legacy sequence only.
++            if matches!(
++                self.active,
++                Some(Flight {
++                    channel: Channel::Owner,
++                    ..
++                })
++            ) {
++                display.legacy.headline = "Waiting";
++                display.legacy.detail = "Waiting for the owner observation request to finish. No current legacy status is shown.".to_owned();
++            }
++            if *cx.global::<RuntimeDisplay>() != display {
++                let busy = display.busy;
++                *cx.global::<RuntimeDisplay>() = display;
+                 ui.button(cx, ids!(owner_refresh)).set_enabled(cx, !busy);
+                 ui.button(cx, ids!(mobile_owner_refresh))
+                     .set_enabled(cx, !busy);
+-                ui.label(cx, ids!(console_status)).set_text(cx, &text);
+-                ui.label(cx, ids!(mobile_console_status))
+-                    .set_text(cx, &text);
++                let caption = if busy {
++                    "Reading observations…"
++                } else {
++                    "Refresh observations"
++                };
++                ui.button(cx, ids!(owner_refresh)).set_text(cx, caption);
++                ui.button(cx, ids!(mobile_owner_refresh))
++                    .set_text(cx, caption);
+                 ui.redraw(cx);
+             }
+         }
+diff --git a/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs b/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs
+index abb17e4..e0d55a2 100644
+--- a/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs
++++ b/apps/hepta-control-ui/rust/robrix-ui/src/visual_theme.rs
+@@ -264,6 +264,9 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
+             if name == id!(brand_mark) {
+                 script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent)}});
+             }
++            if name == id!(owner_card) || name == id!(legacy_card) {
++                script_apply_eval!(cx,widget,{draw_bg +: {color: #(surface) border: #(border) secondary: #(secondary)}});
++            }
+             if name == id!(avatar_frame) {
+                 script_apply_eval!(cx,widget,{draw_bg +: {color: #(selected) border_color: #(accent)}});
+             }

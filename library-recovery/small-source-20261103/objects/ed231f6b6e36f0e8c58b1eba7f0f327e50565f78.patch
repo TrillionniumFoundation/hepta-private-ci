@@ -1,0 +1,594 @@
+diff --git a/codex-rs/hepta-authbus/src/lib.rs b/codex-rs/hepta-authbus/src/lib.rs
+index 9ff027483a..026ea35a2d 100644
+--- a/codex-rs/hepta-authbus/src/lib.rs
++++ b/codex-rs/hepta-authbus/src/lib.rs
+@@ -29,6 +29,8 @@ mod settlement_store;
+ mod signed;
+ mod trust;
+ mod trust_store;
++#[cfg(test)]
++mod trusted_time_v2;
+ mod worker;
+ pub use archive_capacity::AuthBusArchiveAlert;
+ pub use archive_capacity::AuthBusArchiveAlertKind;
+diff --git a/codex-rs/hepta-authbus/src/trusted_time_v2.rs b/codex-rs/hepta-authbus/src/trusted_time_v2.rs
+new file mode 100644
+index 0000000000..48aa01faab
+--- /dev/null
++++ b/codex-rs/hepta-authbus/src/trusted_time_v2.rs
+@@ -0,0 +1,205 @@
++//! Executable V2 protocol specification. Nothing here grants time authority.
++//!
++//! Inputs, including monotonic samples and policy, are unverified. The future
++//! owner acceptance path must verify signatures, live issuer/epoch, one-use
++//! challenges, clock qualification, durable floors, and checkpoint publication.
++
++use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
++use codex_hepta_types::StableId;
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++enum TimeSpecError {
++    InvalidPolicy,
++    InvalidSource,
++    Arithmetic,
++    ClockEpochMismatch,
++    ClockRollback,
++    RoundtripExceeded,
++    AnchorStale,
++    RequestMismatch,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++struct Rate {
++    ticks: u64,
++    milliseconds: u64,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++struct UnverifiedTimePolicy {
++    minimum_rate: Rate,
++    maximum_rate: Rate,
++    measurement_error_ticks: u64,
++    issuer_uncertainty_ms: u64,
++    maximum_roundtrip_ms: u64,
++    maximum_anchor_age_ms: u64,
++}
++
++impl UnverifiedTimePolicy {
++    fn validate(self) -> Result<(), TimeSpecError> {
++        let minimum = self.minimum_rate;
++        let maximum = self.maximum_rate;
++        if minimum.ticks == 0
++            || minimum.milliseconds == 0
++            || maximum.ticks == 0
++            || maximum.milliseconds == 0
++            || u128::from(minimum.ticks) * u128::from(maximum.milliseconds)
++                > u128::from(maximum.ticks) * u128::from(minimum.milliseconds)
++            || self.maximum_roundtrip_ms == 0
++            || self.maximum_anchor_age_ms == 0
++        {
++            return Err(TimeSpecError::InvalidPolicy);
++        }
++        Ok(())
++    }
++
++    fn elapsed(self, start: u64, end: u64) -> Result<(u64, u64), TimeSpecError> {
++        self.validate()?;
++        let delta = u128::from(end.checked_sub(start).ok_or(TimeSpecError::ClockRollback)?);
++        let error = 2 * u128::from(self.measurement_error_ticks);
++        // Elapsed time has a physical zero lower bound. Upper bounds never saturate.
++        let lower_ticks = delta.saturating_sub(error);
++        let lower = lower_ticks
++            .checked_mul(u128::from(self.maximum_rate.milliseconds))
++            .ok_or(TimeSpecError::Arithmetic)?
++            / u128::from(self.maximum_rate.ticks);
++        let upper_numerator = (delta + error)
++            .checked_mul(u128::from(self.minimum_rate.milliseconds))
++            .ok_or(TimeSpecError::Arithmetic)?;
++        let divisor = u128::from(self.minimum_rate.ticks);
++        let upper = upper_numerator / divisor + u128::from(upper_numerator % divisor != 0);
++        Ok((
++            u64::try_from(lower).map_err(|_| TimeSpecError::Arithmetic)?,
++            u64::try_from(upper).map_err(|_| TimeSpecError::Arithmetic)?,
++        ))
++    }
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++struct UnverifiedMonotonicSample {
++    epoch: Digest32,
++    ticks: u64,
++}
++
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++struct UnverifiedProjectedBounds {
++    earliest_ms: u64,
++    latest_ms: u64,
++}
++
++impl UnverifiedProjectedBounds {
++    fn project(
++        policy: UnverifiedTimePolicy,
++        sampled_wall_ms: u64,
++        sent: UnverifiedMonotonicSample,
++        received: UnverifiedMonotonicSample,
++        current: UnverifiedMonotonicSample,
++        committed_expiry_floor_ms: u64,
++    ) -> Result<Self, TimeSpecError> {
++        if sent.epoch != received.epoch || sent.epoch != current.epoch {
++            return Err(TimeSpecError::ClockEpochMismatch);
++        }
++        let (_, roundtrip_upper) = policy.elapsed(sent.ticks, received.ticks)?;
++        let (_, age_upper) = policy.elapsed(sent.ticks, current.ticks)?;
++        let (since_receipt_lower, _) = policy.elapsed(received.ticks, current.ticks)?;
++        if roundtrip_upper > policy.maximum_roundtrip_ms {
++            return Err(TimeSpecError::RoundtripExceeded);
++        }
++        if age_upper > policy.maximum_anchor_age_ms {
++            return Err(TimeSpecError::AnchorStale);
++        }
++        let earliest_ms = sampled_wall_ms
++            .checked_sub(policy.issuer_uncertainty_ms)
++            .and_then(|value| value.checked_add(since_receipt_lower))
++            .ok_or(TimeSpecError::Arithmetic)?;
++        let latest_ms = sampled_wall_ms
++            .checked_add(policy.issuer_uncertainty_ms)
++            .and_then(|value| value.checked_add(age_upper))
++            .ok_or(TimeSpecError::Arithmetic)?
++            .max(committed_expiry_floor_ms);
++        Ok(Self {
++            earliest_ms,
++            latest_ms,
++        })
++    }
++
++    fn fits_window(self, not_before_ms: u64, expires_at_ms: u64) -> bool {
++        self.earliest_ms >= not_before_ms && self.latest_ms < expires_at_ms
++    }
++}
++
++#[derive(Clone, Debug, Eq, PartialEq)]
++struct UnverifiedTimeChallengeV2 {
++    nonce: [u8; 32],
++    requester: StableId,
++    owner_incarnation: Digest32,
++    clock_domain: StableId,
++    policy_digest: Digest32,
++    issuer: StableId,
++    key_epoch: Generation,
++}
++
++impl UnverifiedTimeChallengeV2 {
++    fn canonical_bytes(&self) -> Vec<u8> {
++        let mut bytes = b"hepta.authbus.current-time.challenge.v2\0".to_vec();
++        bytes.extend_from_slice(&self.nonce);
++        crate::push_id(&mut bytes, &self.requester);
++        bytes.extend_from_slice(self.owner_incarnation.as_array());
++        crate::push_id(&mut bytes, &self.clock_domain);
++        bytes.extend_from_slice(self.policy_digest.as_array());
++        crate::push_id(&mut bytes, &self.issuer);
++        bytes.extend_from_slice(&self.key_epoch.get().to_be_bytes());
++        bytes
++    }
++
++    fn digest(&self) -> Digest32 {
++        Digest32::of_bytes(&self.canonical_bytes())
++    }
++}
++
++#[derive(Clone, Debug, Eq, PartialEq)]
++struct UnverifiedTimeResponseV2 {
++    request_digest: Digest32,
++    issuer: StableId,
++    key_epoch: Generation,
++    sampled_wall_ms: u64,
++    source_revision: u64,
++    source_digest: Digest32,
++}
++
++impl UnverifiedTimeResponseV2 {
++    // Retains V1's nonzero source-field invariants. This is not live verification.
++    fn validate_source(&self) -> Result<(), TimeSpecError> {
++        if self.sampled_wall_ms == 0 || self.source_revision == 0 || self.source_digest.is_zero() {
++            return Err(TimeSpecError::InvalidSource);
++        }
++        Ok(())
++    }
++
++    fn signing_bytes(&self) -> Vec<u8> {
++        let mut bytes = b"hepta.authbus.current-time.response.v2\0".to_vec();
++        bytes.extend_from_slice(self.request_digest.as_array());
++        crate::push_id(&mut bytes, &self.issuer);
++        bytes.extend_from_slice(&self.key_epoch.get().to_be_bytes());
++        bytes.extend_from_slice(&self.sampled_wall_ms.to_be_bytes());
++        bytes.extend_from_slice(&self.source_revision.to_be_bytes());
++        bytes.extend_from_slice(self.source_digest.as_array());
++        bytes
++    }
++
++    // Structural binding only. Success does not verify a signature or live state.
++    fn matches_request(&self, request: &UnverifiedTimeChallengeV2) -> Result<(), TimeSpecError> {
++        self.validate_source()?;
++        if self.request_digest != request.digest()
++            || self.issuer != request.issuer
++            || self.key_epoch != request.key_epoch
++        {
++            return Err(TimeSpecError::RequestMismatch);
++        }
++        Ok(())
++    }
++}
++
++#[path = "trusted_time_v2_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-authbus/src/trusted_time_v2_tests.rs b/codex-rs/hepta-authbus/src/trusted_time_v2_tests.rs
+new file mode 100644
+index 0000000000..8b9dfce6ec
+--- /dev/null
++++ b/codex-rs/hepta-authbus/src/trusted_time_v2_tests.rs
+@@ -0,0 +1,364 @@
++use super::*;
++use ed25519_dalek::Signature;
++use ed25519_dalek::Signer;
++use ed25519_dalek::SigningKey;
++
++fn policy() -> UnverifiedTimePolicy {
++    UnverifiedTimePolicy {
++        minimum_rate: Rate {
++            ticks: 1,
++            milliseconds: 1,
++        },
++        maximum_rate: Rate {
++            ticks: 1,
++            milliseconds: 1,
++        },
++        measurement_error_ticks: 0,
++        issuer_uncertainty_ms: 2,
++        maximum_roundtrip_ms: 20,
++        maximum_anchor_age_ms: 40,
++    }
++}
++
++fn sample(ticks: u64) -> UnverifiedMonotonicSample {
++    UnverifiedMonotonicSample {
++        epoch: Digest32::from_array([9; 32]),
++        ticks,
++    }
++}
++
++fn challenge() -> UnverifiedTimeChallengeV2 {
++    UnverifiedTimeChallengeV2 {
++        nonce: [1; 32],
++        requester: StableId::new("requester:a").unwrap(),
++        owner_incarnation: Digest32::from_array([2; 32]),
++        clock_domain: StableId::new("clock:a").unwrap(),
++        policy_digest: Digest32::from_array([3; 32]),
++        issuer: StableId::new("issuer:a").unwrap(),
++        key_epoch: Generation::new(1).unwrap(),
++    }
++}
++
++fn response(request: &UnverifiedTimeChallengeV2) -> UnverifiedTimeResponseV2 {
++    UnverifiedTimeResponseV2 {
++        request_digest: request.digest(),
++        issuer: request.issuer.clone(),
++        key_epoch: request.key_epoch,
++        sampled_wall_ms: 1000,
++        source_revision: 7,
++        source_digest: Digest32::from_array([4; 32]),
++    }
++}
++
++#[test]
++fn integer_projection_contains_fixture_true_time() {
++    // Exact integer clock rates; the Python model separately exercises rational
++    // rates and measurement errors. Every number here is a fixture policy.
++    for rate in 1..=3 {
++        for rtt in 0..=10 {
++            for age in rtt..=20 {
++                for issuer_sample_offset in 0..=rtt {
++                    for signed_error in [-2_i64, 0, 2] {
++                        let p = UnverifiedTimePolicy {
++                            minimum_rate: Rate {
++                                ticks: 1,
++                                milliseconds: 1,
++                            },
++                            maximum_rate: Rate {
++                                ticks: 3,
++                                milliseconds: 1,
++                            },
++                            maximum_roundtrip_ms: 100,
++                            maximum_anchor_age_ms: 100,
++                            ..policy()
++                        };
++                        let wall = u64::try_from(1000 + issuer_sample_offset as i64 + signed_error)
++                            .unwrap();
++                        let interval = UnverifiedProjectedBounds::project(
++                            p,
++                            wall,
++                            sample(0),
++                            sample(rate * rtt),
++                            sample(rate * age),
++                            0,
++                        )
++                        .unwrap();
++                        assert!(interval.earliest_ms <= 1000 + age);
++                        assert!(interval.latest_ms >= 1000 + age);
++                    }
++                }
++            }
++        }
++    }
++}
++
++#[test]
++fn outward_rounding_and_measurement_error_are_conservative() {
++    let p = UnverifiedTimePolicy {
++        minimum_rate: Rate {
++            ticks: 2,
++            milliseconds: 1,
++        },
++        maximum_rate: Rate {
++            ticks: 3,
++            milliseconds: 1,
++        },
++        ..policy()
++    };
++    assert_eq!(p.elapsed(0, 5), Ok((1, 3)));
++    let p = UnverifiedTimePolicy {
++        measurement_error_ticks: 1,
++        ..p
++    };
++    assert_eq!(p.elapsed(0, 5), Ok((1, 4)));
++    assert_eq!(p.elapsed(0, 1), Ok((0, 2)));
++}
++
++#[test]
++fn freshness_never_extends_expiry_or_activates_future_authority() {
++    let interval =
++        UnverifiedProjectedBounds::project(policy(), 1000, sample(0), sample(2), sample(8), 0)
++            .unwrap();
++    assert!(!interval.fits_window(900, 1007));
++    assert!(!interval.fits_window(1008, 2000));
++    assert!(interval.fits_window(900, 2000));
++    assert!(!interval.fits_window(900, interval.latest_ms));
++}
++
++#[test]
++fn durable_floor_only_tightens_expiry() {
++    let interval =
++        UnverifiedProjectedBounds::project(policy(), 1000, sample(0), sample(2), sample(3), 1100)
++            .unwrap();
++    assert_eq!(
++        interval,
++        UnverifiedProjectedBounds {
++            earliest_ms: 999,
++            latest_ms: 1100
++        }
++    );
++    assert!(!interval.fits_window(1010, 2000));
++    assert!(!interval.fits_window(900, 1100));
++}
++
++#[test]
++fn roundtrip_and_age_use_upper_elapsed_from_send() {
++    let p = UnverifiedTimePolicy {
++        minimum_rate: Rate {
++            ticks: 1,
++            milliseconds: 2,
++        },
++        maximum_rate: Rate {
++            ticks: 2,
++            milliseconds: 1,
++        },
++        maximum_roundtrip_ms: 15,
++        ..policy()
++    };
++    assert_eq!(
++        UnverifiedProjectedBounds::project(p, 1000, sample(0), sample(10), sample(10), 0),
++        Err(TimeSpecError::RoundtripExceeded)
++    );
++    let p = UnverifiedTimePolicy {
++        maximum_roundtrip_ms: 20,
++        maximum_anchor_age_ms: 15,
++        ..p
++    };
++    assert_eq!(
++        UnverifiedProjectedBounds::project(p, 1000, sample(0), sample(2), sample(10), 0),
++        Err(TimeSpecError::AnchorStale)
++    );
++    let p = UnverifiedTimePolicy {
++        maximum_anchor_age_ms: 10,
++        ..policy()
++    };
++    assert_eq!(
++        UnverifiedProjectedBounds::project(p, 1000, sample(0), sample(8), sample(11), 0),
++        Err(TimeSpecError::AnchorStale)
++    );
++}
++
++#[test]
++fn invalid_policy_clock_and_arithmetic_fail_closed() {
++    for bad_rate in [
++        Rate {
++            ticks: 0,
++            milliseconds: 1,
++        },
++        Rate {
++            ticks: 1,
++            milliseconds: 0,
++        },
++        Rate {
++            ticks: 2,
++            milliseconds: 1,
++        },
++    ] {
++        assert_eq!(
++            UnverifiedTimePolicy {
++                minimum_rate: bad_rate,
++                ..policy()
++            }
++            .validate(),
++            Err(TimeSpecError::InvalidPolicy)
++        );
++    }
++    assert_eq!(
++        UnverifiedTimePolicy {
++            maximum_anchor_age_ms: 0,
++            ..policy()
++        }
++        .validate(),
++        Err(TimeSpecError::InvalidPolicy)
++    );
++    assert_eq!(
++        UnverifiedTimePolicy {
++            maximum_roundtrip_ms: 0,
++            ..policy()
++        }
++        .validate(),
++        Err(TimeSpecError::InvalidPolicy)
++    );
++    assert_eq!(policy().elapsed(2, 1), Err(TimeSpecError::ClockRollback));
++    let changed_epoch = UnverifiedMonotonicSample {
++        epoch: Digest32::ZERO,
++        ticks: 3,
++    };
++    assert_eq!(
++        UnverifiedProjectedBounds::project(policy(), 1000, sample(0), sample(2), changed_epoch, 0),
++        Err(TimeSpecError::ClockEpochMismatch)
++    );
++    assert_eq!(
++        UnverifiedProjectedBounds::project(policy(), 1000, sample(0), sample(2), sample(1), 0),
++        Err(TimeSpecError::ClockRollback)
++    );
++    for wall in [1, u64::MAX] {
++        assert_eq!(
++            UnverifiedProjectedBounds::project(policy(), wall, sample(0), sample(1), sample(1), 0),
++            Err(TimeSpecError::Arithmetic)
++        );
++    }
++    let p = UnverifiedTimePolicy {
++        minimum_rate: Rate {
++            ticks: 1,
++            milliseconds: u64::MAX,
++        },
++        maximum_rate: Rate {
++            ticks: 1,
++            milliseconds: u64::MAX,
++        },
++        measurement_error_ticks: u64::MAX,
++        ..policy()
++    };
++    assert_eq!(p.elapsed(0, u64::MAX), Err(TimeSpecError::Arithmetic));
++}
++
++#[test]
++fn every_request_binding_changes_digest_and_rejects_substitution() {
++    let request = challenge();
++    let original = response(&request);
++    assert_eq!(original.matches_request(&request), Ok(()));
++    let mut variants = vec![request.clone(); 7];
++    variants[0].nonce[0] ^= 1;
++    variants[1].requester = StableId::new("requester:b").unwrap();
++    variants[2].owner_incarnation = Digest32::from_array([8; 32]);
++    variants[3].clock_domain = StableId::new("clock:b").unwrap();
++    variants[4].policy_digest = Digest32::from_array([8; 32]);
++    variants[5].issuer = StableId::new("issuer:b").unwrap();
++    variants[6].key_epoch = Generation::new(2).unwrap();
++    for changed in variants {
++        assert_ne!(changed.digest(), request.digest());
++        assert_eq!(
++            original.matches_request(&changed),
++            Err(TimeSpecError::RequestMismatch)
++        );
++    }
++    let mut changed = original.clone();
++    changed.issuer = StableId::new("issuer:b").unwrap();
++    assert_eq!(
++        changed.matches_request(&request),
++        Err(TimeSpecError::RequestMismatch)
++    );
++    changed = original;
++    changed.key_epoch = Generation::new(2).unwrap();
++    assert_eq!(
++        changed.matches_request(&request),
++        Err(TimeSpecError::RequestMismatch)
++    );
++}
++
++#[test]
++fn canonical_request_has_fixed_domain_lengths_and_field_order() {
++    let request = challenge();
++    let mut expected = b"hepta.authbus.current-time.challenge.v2\0".to_vec();
++    expected.extend_from_slice(&[1; 32]);
++    expected.extend_from_slice(b"\0\0\0\x0brequester:a");
++    expected.extend_from_slice(&[2; 32]);
++    expected.extend_from_slice(b"\0\0\0\x07clock:a");
++    expected.extend_from_slice(&[3; 32]);
++    expected.extend_from_slice(b"\0\0\0\x08issuer:a");
++    expected.extend_from_slice(&1_u64.to_be_bytes());
++    assert_eq!(request.canonical_bytes(), expected);
++}
++
++#[test]
++fn signed_response_binds_all_fields_and_cannot_cross_v1_domain() {
++    let request = challenge();
++    let original = response(&request);
++    let key = SigningKey::from_bytes(&[42; 32]);
++    let signature: Signature = key.sign(&original.signing_bytes());
++    assert!(
++        key.verifying_key()
++            .verify_strict(&original.signing_bytes(), &signature)
++            .is_ok()
++    );
++    let mut variants = vec![original.clone(); 6];
++    variants[0].request_digest = Digest32::ZERO;
++    variants[1].issuer = StableId::new("issuer:b").unwrap();
++    variants[2].key_epoch = Generation::new(2).unwrap();
++    variants[3].sampled_wall_ms += 1;
++    variants[4].source_revision += 1;
++    variants[5].source_digest = Digest32::ZERO;
++    for changed in variants {
++        assert!(
++            key.verifying_key()
++                .verify_strict(&changed.signing_bytes(), &signature)
++                .is_err()
++        );
++    }
++    let legacy = crate::TrustedTimeAttestationClaims {
++        issuer_id: original.issuer,
++        key_epoch: original.key_epoch,
++        wall_time_ms: original.sampled_wall_ms,
++        source_revision: original.source_revision,
++        source_digest: original.source_digest,
++    };
++    assert!(
++        legacy
++            .signing_bytes()
++            .starts_with(b"hepta.authbus.trusted-time.v1\0")
++    );
++    assert!(
++        key.verifying_key()
++            .verify_strict(&legacy.signing_bytes(), &signature)
++            .is_err()
++    );
++}
++
++#[test]
++fn source_validation_preserves_v1_nonzero_invariants() {
++    let request = challenge();
++    let original = response(&request);
++    assert_eq!(original.validate_source(), Ok(()));
++    let mut variants = vec![original; 3];
++    variants[0].sampled_wall_ms = 0;
++    variants[1].source_revision = 0;
++    variants[2].source_digest = Digest32::ZERO;
++    for changed in variants {
++        assert_eq!(changed.validate_source(), Err(TimeSpecError::InvalidSource));
++        assert_eq!(
++            changed.matches_request(&request),
++            Err(TimeSpecError::InvalidSource)
++        );
++    }
++}

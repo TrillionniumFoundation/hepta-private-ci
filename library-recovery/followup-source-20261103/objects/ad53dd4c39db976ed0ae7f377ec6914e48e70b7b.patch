@@ -1,0 +1,83 @@
+--- a/qualification/cell_meta_execution_af/gate.py
++++ b/qualification/cell_meta_execution_af/gate.py
+@@ -167,9 +167,13 @@
+     digest(field(obj, "objective_sha256", letter), letter + ".objective_sha256")
+     require(obj["objective_sha256"] == meta["objective_sha256"], f"{letter}: objective mismatch")
+     alpha = number(field(obj, "interval_alpha", letter), letter + ".interval_alpha")
+-    contrasts = sum(len(controls) for controls in CONTRASTS[letter].values())
+-    require(0 < alpha <= 0.05 / (2 * contrasts),
+-            f"{letter}: missing conservative two-window multiple-testing allocation")
++    # One A-F report exposes simultaneous claims across all four A-D families.
++    # Correct the *whole registered family*, not just one favorable study.
++    contrasts = sum(len(controls) for arms in CONTRASTS.values()
++                    for controls in arms.values())
++    familywise_alpha_ceiling = 0.05 / (2 * contrasts)
++    require(0 < alpha <= familywise_alpha_ceiling,
++            f"{letter}: missing global A-D familywise two-window multiple-testing correction")
+     records = sequence(field(obj, "records", letter), f"{letter}.records")
+     parsed = exact_membership(
+         [((record(r, letter + ".row").get("arm"), r.get("window")), r) for r in records],
+@@ -285,6 +289,7 @@
+         ):
+             passing.append(proposed)
+     return {"status": "shadow_structurally_complete", "provisional_gain_arms": passing,
++            "reported_interval_alpha": alpha, "familywise_alpha_ceiling": familywise_alpha_ceiling,
+             "behavior_difference_observed": causal_behavior_difference if letter == "C" else None,
+             "not_independent_qualification": True}
+ 
+@@ -323,8 +328,8 @@
+         calls = count(field(r, "backend_calls", name), name + ".backend_calls")
+         batch = count(field(r, "native_batch_requests", name), name + ".native_batch_requests")
+         require(batch <= completed and batch <= calls * 256, f"{name}: impossible batch accounting")
+-        if completed:
+-            require(calls > 0, f"{name}: completed execution without backend call")
++        require(completed > 0 and calls > 0,
++                f"{name}: no physically completed model requests/backend calls")
+         for key in ("rss_peak_bytes", "gpu_peak_bytes", "network_bytes", "fsync_count", "replayed_effects"):
+             count(field(r, key, name), name + "." + key)
+         require(r["rss_peak_bytes"] > 0 and r["replayed_effects"] == 0, f"{name}: invalid RSS or duplicate effect")
+--- a/qualification/cell_meta_execution_af/test_gate.py
++++ b/qualification/cell_meta_execution_af/test_gate.py
+@@ -75,7 +75,7 @@
+                     },
+                 })
+         result["studies"][study] = {
+-            "budget_sha256": meta["budget_sha256"], "interval_alpha": 0.01,
++            "budget_sha256": meta["budget_sha256"], "interval_alpha": 0.003,
+             "objective_sha256": meta["objective_sha256"], "records": rows,
+         }
+     resource_rows = []
+@@ -646,6 +646,33 @@
+             self.assertEqual(gate.main([str(fifo), "--out", str(out)]), 2)
+             self.assertIn("regular file", json.loads(out.read_text())["error"])
+ 
++    def test_study_local_alpha_without_global_correction_rejected(self):
++        self.d["studies"]["A"]["interval_alpha"] = 0.01
++        check_bad(self.d, "A", "global A-D familywise")
++
++    def test_all_studies_share_conservative_global_alpha_ceiling(self):
++        result = gate.verify(self.d)
++        for letter in gate.ARMS:
++            study = result["gates"][letter]
++            self.assertLessEqual(study["reported_interval_alpha"], study["familywise_alpha_ceiling"])
++            self.assertEqual(study["familywise_alpha_ceiling"], 0.05 / (2 * 8))
++
++    def test_full_E_matrix_with_zero_completed_is_not_a_benchmark(self):
++        for r in self.d["resources"]["runs"]:
++            r["completed"] = 0
++            r["failed"] = r["attempted"] - r["rejected"]
++            r["native_batch_requests"] = 0
++            r["backend_calls"] = 0
++        check_bad(self.d, "E", "no physically completed")
++
++    def test_single_E_placement_cannot_claim_measurement_with_zero_completed(self):
++        row = self.d["resources"]["runs"][0]
++        row["completed"] = 0
++        row["failed"] = row["attempted"] - row["rejected"]
++        row["native_batch_requests"] = 0
++        row["backend_calls"] = 0
++        check_bad(self.d, "E", "no physically completed")
++
+     def test_cli_missing_real_bundle_is_blocked(self):
+         with tempfile.TemporaryDirectory() as td:
+             p = Path(td) / "no-results.json"

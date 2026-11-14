@@ -1,0 +1,45 @@
+diff --git a/codex-rs/hepta-authbus/src/recovery_tests.rs b/codex-rs/hepta-authbus/src/recovery_tests.rs
+index 1024cd6094..5440829dc4 100644
+--- a/codex-rs/hepta-authbus/src/recovery_tests.rs
++++ b/codex-rs/hepta-authbus/src/recovery_tests.rs
+@@ -306,3 +306,40 @@ async fn restart_fences_new_reservations_until_dispatch_attempts_become_indeterm
+     let held = reopened.quota_snapshot(&quota.quota_key).await.unwrap();
+     assert_eq!((held.available, held.reserved, held.consumed), (1, 1, 0));
+ }
++
++#[tokio::test]
++async fn read_only_preflight_native_frontier_vector() {
++    let root = TempDir::new().unwrap();
++    let path = root.path().join("vector.sqlite");
++    let store = AuthBusAuthorityStore::open(&path).await.unwrap();
++    let mut tx = store.pool.begin().await.unwrap();
++    let empty = full_authority_frontier_digest_tx(&mut tx).await.unwrap();
++    tx.rollback().await.unwrap();
++    store
++        .create_policy(
++            policy(Digest32::of_bytes(b"preflight-vector-scope")),
++            sample(1, 2_000),
++        )
++        .await
++        .unwrap();
++    let mut tx = store.pool.begin().await.unwrap();
++    let populated = full_authority_frontier_digest_tx(&mut tx).await.unwrap();
++    tx.rollback().await.unwrap();
++    assert_ne!(empty, populated);
++    let vector = serde_json::json!({
++        "format": "hepta.authbus.authority-frontier.v1",
++        "empty": empty.to_string(),
++        "populated": populated.to_string(),
++    });
++    println!("NATIVE_PREFLIGHT_VECTOR {vector}");
++    store.pool.close().await;
++    if let Some(output) = std::env::var_os("HEPTA_AUTHBUS_PREFLIGHT_VECTOR_DIR") {
++        let output = std::path::PathBuf::from(output);
++        std::fs::copy(&path, output.join("native-vector.sqlite")).unwrap();
++        std::fs::write(
++            output.join("native-vector.json"),
++            serde_json::to_vec_pretty(&vector).unwrap(),
++        )
++        .unwrap();
++    }
++}

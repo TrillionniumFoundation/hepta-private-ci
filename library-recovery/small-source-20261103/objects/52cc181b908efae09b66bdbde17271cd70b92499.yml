@@ -1,0 +1,56 @@
+name: Hepta multimodal shared stem research contracts
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/multimodal_*.py"
+      - "experiments/shared_stem_cell/test_multimodal_*.py"
+      - "experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md"
+      - ".github/workflows/hepta-multimodal-stem-contract.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/multimodal_*.py"
+      - "experiments/shared_stem_cell/test_multimodal_*.py"
+      - "experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md"
+      - ".github/workflows/hepta-multimodal-stem-contract.yml"
+permissions:
+  contents: read
+concurrency:
+  group: multimodal-stem-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  reference-mechanics-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin CPU-only head test dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-multimodal-stem-venv
+          /tmp/hepta-multimodal-stem-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-multimodal-stem-venv/bin/pip freeze > /tmp/hepta-multimodal-stem-environment.txt
+      - name: Test frozen projection, feature reuse, scope fencing and local learning
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-multimodal-stem-venv/bin/python -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_*.py' -v
+          /tmp/hepta-multimodal-stem-venv/bin/python -m py_compile experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py
+      - name: Preserve exact source identity
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-multimodal-stem-artifact
+          git rev-parse HEAD > /tmp/hepta-multimodal-stem-artifact/source-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-multimodal-stem-artifact/source-tree.txt
+          cp /tmp/hepta-multimodal-stem-environment.txt /tmp/hepta-multimodal-stem-artifact/environment.txt || true
+          sha256sum experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md .github/workflows/hepta-multimodal-stem-contract.yml > /tmp/hepta-multimodal-stem-artifact/source-SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: multimodal-stem-contracts-not-model-quality
+          path: /tmp/hepta-multimodal-stem-artifact
+          if-no-files-found: error

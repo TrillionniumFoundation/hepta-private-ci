@@ -1,0 +1,289 @@
+name: Hepta E3 original-source learning curve (DENY_ALL)
+'on':
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/e3_original_group_learning_curve.py'
+      - 'experiments/shared_stem_cell/e3_group_learning_review.py'
+      - 'experiments/shared_stem_cell/e3_original_human_score.py'
+      - 'experiments/shared_stem_cell/test_e3_original_group_learning_curve.py'
+      - 'experiments/shared_stem_cell/test_e3_original_human_score.py'
+      - 'experiments/shared_stem_cell/E3_SOURCE_GROUP_LEARNING_CURVE.md'
+      - '.github/workflows/hepta-e3-original-source-group.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Preserve original E2 v2 exact Git source lineage
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha || github.sha }}'
+          git merge-base --is-ancestor 72c2316348b7537921ab5e3ef478c46be27a895e HEAD
+      - name: Pinned actual CPU Head kernel and source/optimized regressions
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          python -m pip check
+          export PYTHONPATH=experiments/shared_stem_cell
+          for SUITE in test_e1_matched_gated_head.py test_e2_original_human_score.py \
+                       test_e3_original_group_learning_curve.py test_e3_original_human_score.py; do
+            python -m unittest discover -s "$PYTHONPATH" -p "$SUITE" -v
+            python -O -m unittest discover -s "$PYTHONPATH" -p "$SUITE" -v
+          done
+          python -m py_compile experiments/shared_stem_cell/e3_original_group_learning_curve.py \
+            experiments/shared_stem_cell/e3_group_learning_review.py \
+            experiments/shared_stem_cell/e3_original_human_score.py
+
+  original-feature-source-budget:
+    needs: source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [granite_97m_r2, mmbert_small, embeddinggemma_2_text]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Exact immutable P0 original-human physical study MUST have succeeded
+        env:
+          GH_READ_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,urllib.request
+          url='https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38686023757'
+          req=urllib.request.Request(url,headers={'Authorization':'Bearer '+os.environ['GH_READ_TOKEN']})
+          with urllib.request.urlopen(req,timeout=30) as response: run=json.load(response)
+          if (run.get('head_sha')!='b3b3712828cb5814e1a87d1e69a030ec947c43c1' or
+              run.get('workflow_id')!=385031696 or run.get('status')!='completed' or
+              run.get('conclusion')!='success'):
+              raise SystemExit('DENY_ALL: incomplete original P0; no model/data fallback')
+          PY
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-fit-38686023757
+          path: ${{ runner.temp }}/e3/fit
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-blind-38686023757
+          path: ${{ runner.temp }}/e3/blind
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-arm-${{ matrix.model }}-38686023757
+          path: ${{ runner.temp }}/e3/arm
+      - name: Refit original E1 Head and learn source-budget E3 (physical CPU)
+        env:
+          MODEL: ${{ matrix.model }}
+          CURRENT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CURRENT_HEAD"
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'numpy==2.2.6' 'safetensors==0.8.0'
+          python -m pip check
+          ROOT="$RUNNER_TEMP/e3"
+          COMMON=(--fit "$ROOT/fit/fit.json" --blind "$ROOT/blind/blind.json" --model "$MODEL" \
+                  --original-report "$ROOT/arm/$MODEL.json" --replay-dir "$ROOT/arm/$MODEL.replay")
+          # New E3 run REPEATS the E1 Head work. This is paid additional work,
+          # not a claimed reuse of previous unrelated Runner/CI training.
+          python experiments/shared_stem_cell/e1_matched_gated_head.py "${COMMON[@]}" --output-dir "$ROOT/e1-probe"
+          python experiments/shared_stem_cell/e1_matched_gated_review.py "${COMMON[@]}" \
+            --probe-dir "$ROOT/e1-probe" --output "$ROOT/e1-numeric.json"
+          python experiments/shared_stem_cell/e2_seal_blind_predictions.py \
+            --blind "$ROOT/blind/blind.json" --probe-report "$ROOT/e1-probe/COMMITTED.json" \
+            --numeric-review "$ROOT/e1-numeric.json" --model "$MODEL" \
+            --candidate-head-sha "$CURRENT_HEAD" --candidate-run-id "$CURRENT_RUN" \
+            --output "$ROOT/e2-prelabel.json"
+          E3=("${COMMON[@]}" --e1-probe-dir "$ROOT/e1-probe" --e1-numeric-review "$ROOT/e1-numeric.json")
+          python experiments/shared_stem_cell/e3_original_group_learning_curve.py "${E3[@]}" \
+            --candidate-head-sha "$CURRENT_HEAD" --candidate-run-id "$CURRENT_RUN" \
+            --output-dir "$ROOT/e3-probe"
+          python experiments/shared_stem_cell/e3_group_learning_review.py "${E3[@]}" \
+            --e3-probe-dir "$ROOT/e3-probe" --output "$ROOT/e3-numeric.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e3-${{ matrix.model }}-prelabel-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e3/e2-prelabel.json
+            ${{ runner.temp }}/e3/e3-probe/COMMITTED.json
+            ${{ runner.temp }}/e3/e3-numeric.json
+            ${{ runner.temp }}/e3/e1-probe/COMMITTED.json
+            ${{ runner.temp }}/e3/e1-numeric.json
+          if-no-files-found: error
+          retention-days: 7
+
+  independent-original-human-learning-curve:
+    needs: [source, original-feature-source-budget]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-fit-38686023757
+          path: ${{ runner.temp }}/e3/score
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-original-blind-38686023757
+          path: ${{ runner.temp }}/e3/score
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          name: hepta-human-owner-labels-38686023757
+          path: ${{ runner.temp }}/e3/score
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 38686023757
+          pattern: hepta-human-original-arm-*-38686023757
+          merge-multiple: false
+          path: ${{ runner.temp }}/e3/p0-arms
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: e3-*-prelabel-${{ github.run_id }}
+          merge-multiple: false
+          path: ${{ runner.temp }}/e3/sealed
+      - name: Recheck real source, independently score original P0 then E2 then E3
+        env:
+          CURRENT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          CURRENT_RUN: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CURRENT_HEAD"
+          python -m pip install --only-binary=:all: 'huggingface-hub==1.33.0' 'pyarrow==21.0.0'
+          python -m pip check
+          ROOT="$RUNNER_TEMP/e3"
+          export ROOT
+          python - <<'PY'
+          import hashlib,os,shutil,sys
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from p0_multirc_semantic_material import read
+          root=Path(os.environ['ROOT'])/'score'; meta=read(root/'fit.json')['metadata']
+          rev='4e14482c58d790d467ecfb29b6790e1917bf8756'
+          for split,name in (('train','multirc/train-00000-of-00001.parquet'),
+                             ('validation','multirc/validation-00000-of-00001.parquet')):
+              src=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',revision=rev,filename=name))
+              if hashlib.sha256(src.read_bytes()).hexdigest()!=meta[split+'_sha256']:
+                  raise SystemExit('DENY_ALL: original source parquet SHA mismatch')
+              shutil.copyfile(src,root/(split+'.parquet'))
+          PY
+          COMMON=(--fit "$ROOT/score/fit.json" --blind "$ROOT/score/blind.json" \
+                  --labels "$ROOT/score/owner-only-human-labels.json" \
+                  --train-parquet "$ROOT/score/train.parquet" \
+                  --validation-parquet "$ROOT/score/validation.parquet")
+          E2ARGS=()
+          E3ARGS=()
+          for MODEL in granite_97m_r2 mmbert_small embeddinggemma_2_text; do
+            GROUP="$ROOT/sealed/e3-$MODEL-prelabel-$CURRENT_RUN"
+            test -s "$GROUP/e2-prelabel.json"
+            test -s "$GROUP/e3-probe/COMMITTED.json"
+            test -s "$GROUP/e3-numeric.json"
+            test -s "$GROUP/e1-probe/COMMITTED.json"
+            test -s "$GROUP/e1-numeric.json"
+            E3ARGS+=("--e2-seal-${MODEL//_/-}" "$GROUP/e2-prelabel.json")
+            E3ARGS+=("--e3-report-${MODEL//_/-}" "$GROUP/e3-probe/COMMITTED.json")
+            E3ARGS+=("--e3-numeric-${MODEL//_/-}" "$GROUP/e3-numeric.json")
+            test -s "$ROOT/p0-arms/hepta-human-original-arm-$MODEL-38686023757/$MODEL.json"
+          done
+          test -s "$ROOT/p0-arms/hepta-human-original-arm-laya421_nochange-38686023757/laya421_nochange.json"
+          # This step scores original P0 first, WITH true source and owner labels.
+          # E2 evaluation is a separately sourced prerequisite, not inferred.
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from p0_multirc_semantic_material import read,original_rows
+          from p0_multirc_semantic_review import review as original_review
+          from pathlib import Path
+          import os
+          root=Path(os.environ['ROOT'])
+          fit=read(root/'score/fit.json');blind=read(root/'score/blind.json')
+          labels=read(root/'score/owner-only-human-labels.json');meta=fit['metadata']
+          tr=original_rows(root/'score/train.parquet',meta['train_sha256'])
+          val=original_rows(root/'score/validation.parquet',meta['validation_sha256'])
+          models=('granite_97m_r2','mmbert_small','embeddinggemma_2_text','laya421_nochange')
+          reports={m:read(root/f'p0-arms/hepta-human-original-arm-{m}-38686023757/{m}.json') for m in models}
+          result=original_review(fit,blind,labels,tr,val,reports)
+          if result.get('authority')!='DENY_ALL' or result.get('model_winner_selected') is not False:
+              raise SystemExit('P0 original source independent review authority mismatch')
+          PY
+          # E2 human scorer consumes only the ORIGINAL source/labels and the
+          # independently reviewed, prelabel E1 forecasts and numeric results.
+          # This happens in the separate human owner job, never model producer.
+          python - <<'PY'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from e2_original_human_score import score,canonical
+          from p0_multirc_semantic_material import read
+          root=Path(os.environ['ROOT'])
+          fit=read(root/'score/fit.json');blind=read(root/'score/blind.json')
+          owner=read(root/'score/owner-only-human-labels.json')
+          labels=owner['original_human_candidate_labels']
+          models=('granite_97m_r2','mmbert_small','embeddinggemma_2_text')
+          p0={m:read(root/f'p0-arms/hepta-human-original-arm-{m}-38686023757/{m}.json') for m in models}
+          receipts={m:root/f'sealed/e3-{m}-prelabel-{os.environ["CURRENT_RUN"]}' for m in models}
+          numeric={m:read(receipts[m]/'e1-numeric.json') for m in models}
+          seals={m:read(receipts[m]/'e2-prelabel.json') for m in models}
+          probes={m:read(receipts[m]/'e1-probe/COMMITTED.json') for m in models}
+          result=score(blind,labels,p0,numeric,seals,probes,
+                       original_p0_scored=True,current_candidate_sha=os.environ['CURRENT_HEAD'],
+                       current_run_id=int(os.environ['CURRENT_RUN']))
+          with (root/'score/e2-original-human-summary.json').open('xb') as fd:
+              fd.write(canonical(result)+b'\n')
+          PY
+          python experiments/shared_stem_cell/e3_original_human_score.py "${COMMON[@]}" \
+            "${E3ARGS[@]}" --e2-scored "$ROOT/score/e2-original-human-summary.json" \
+            --candidate-head-sha "$CURRENT_HEAD" --candidate-run-id "$CURRENT_RUN" \
+            --output "$ROOT/score/e3-original-human-learning-curve.json"
+          python -m json.tool "$ROOT/score/e3-original-human-learning-curve.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        with:
+          name: e3-human-original-source-group-summary-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e3/score/e2-original-human-summary.json
+            ${{ runner.temp }}/e3/score/e3-original-human-learning-curve.json
+          if-no-files-found: error
+          retention-days: 7

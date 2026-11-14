@@ -1,0 +1,206 @@
+{
+  "schema": "plaintext-source-continuation-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "parent_commit": "dff5a52556b9bfde7fe96a87e634c4b98b80e3fb",
+  "branch": "archive/library-small-source-20261103-gpt6",
+  "candidate_count": 5,
+  "candidate_bytes": 71879,
+  "frozen_candidate_union_size": 6116,
+  "original_candidate_sets_unchanged": true,
+  "preserved_source_executed": false,
+  "patches_applied": false,
+  "scientific_or_runtime_acceptance": false,
+  "original_archive_and_history_completeness_proven": false,
+  "all_library_source_synced": false,
+  "eligible_to_clear_library": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "candidates": [
+    {
+      "git_blob_sha": "2a73844e59b0773242c66e559f9ec121ab83ed9c",
+      "sha256": "6102fc6039c6d6ff7124aad73974cffd6481676eb9e7b7a6ade31b203b82902a",
+      "bytes": 12811,
+      "relative_path": "objects/2a73844e59b0773242c66e559f9ec121ab83ed9c.patch",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "TaskFlow-new-fairness-transport-candidate-dfac7171-20261005.zip",
+          "member": "native-evidence/ordinary-frontier-WIP/documentation-followup.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical TaskFlow or Operations documentation patch",
+      "original_package": {
+        "name": "TaskFlow-new-fairness-transport-candidate-dfac7171-20261005.zip",
+        "sha256": "0084a89dc7e51c094754e83bd69bc07ac1d248af16dc821e6eb1c120416ddb3a",
+        "bytes": 3398072,
+        "member": "native-evidence/ordinary-frontier-WIP/documentation-followup.patch",
+        "unique_member_match": true,
+        "complete_member_crc_read": true
+      },
+      "patch_targets": [
+        "docs/modules/automation.taskflow/TECHNICAL.md",
+        "qualification/module-execution-dossiers/detail/automation.taskflow.md"
+      ],
+      "reuse_existing_blob": false,
+      "remote_blob_payload_verified_before_publication": false,
+      "attribution_basis": "Exact original archived member, already-preserved source peers in the same original package, and inspected docs/modules/automation.taskflow or kernel.operations paths with codex-rs/hepta-agentd interfaces establish the hepta-private-ci archival context. This is historical documentation preservation, not a new implementation or old-receipt renewal.",
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false
+    },
+    {
+      "git_blob_sha": "41792aa4cc31c3784bc406ba4c0b500f7dc9f4a1",
+      "sha256": "8227d56dfe528251e8d4484d211f7e3bc10b023a27a97e8a9b12417d3cd87fb2",
+      "bytes": 29655,
+      "relative_path": "objects/41792aa4cc31c3784bc406ba4c0b500f7dc9f4a1.txt",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "text-source-container"
+      ],
+      "original_occurrences": [
+        {
+          "file": "ndu_dmgp_reference_source.txt",
+          "member": "ndu_dmgp_reference_source.txt",
+          "archive_chain": []
+        }
+      ],
+      "role": "original NDU-DMGP shadow research Python reference source",
+      "source_language": "Python",
+      "original_plaintext_filename": "ndu_dmgp_reference_source.txt",
+      "attribution_basis": "The entire original .txt payload is Python source and names the existing Hepta E4 neuron_shared_encoder or NDU-DMGP research interfaces. The exact complete Git blob was independently returned by this repository. Existing repository ownership of the exact blob and inspected source interfaces establish current archival context; no claim of sole historical authorship or canonical source replacement.",
+      "reuse_existing_blob": true,
+      "remote_blob_payload_verified_before_publication": true,
+      "syntax_parsed_without_execution": true,
+      "imported_modules_observed_in_syntax": [
+        "__future__",
+        "dataclasses",
+        "hashlib",
+        "json",
+        "math",
+        "statistics",
+        "time",
+        "tracemalloc",
+        "typing"
+      ],
+      "preserved_source_executed": false,
+      "tests_executed": false,
+      "scientific_acceptance": false
+    },
+    {
+      "git_blob_sha": "54554757ea319016fd5dc74a16fc4f5ea1241b4d",
+      "sha256": "3f3e9624ea5277f998916549074b168a4277c841b44317a6ec0a763cce2fcf65",
+      "bytes": 8939,
+      "relative_path": "objects/54554757ea319016fd5dc74a16fc4f5ea1241b4d.txt",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "text-source-container"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_e4_prequential_v7_tests_final.txt",
+          "member": "hepta_e4_prequential_v7_tests_final.txt",
+          "archive_chain": []
+        }
+      ],
+      "role": "original E4 prequential event-chain adversarial test source",
+      "source_language": "Python",
+      "original_plaintext_filename": "hepta_e4_prequential_v7_tests_final.txt",
+      "attribution_basis": "The entire original .txt payload is Python source and names the existing Hepta E4 neuron_shared_encoder or NDU-DMGP research interfaces. The exact complete Git blob was independently returned by this repository. Existing repository ownership of the exact blob and inspected source interfaces establish current archival context; no claim of sole historical authorship or canonical source replacement.",
+      "reuse_existing_blob": true,
+      "remote_blob_payload_verified_before_publication": true,
+      "syntax_parsed_without_execution": true,
+      "imported_modules_observed_in_syntax": [
+        "__future__",
+        "copy",
+        "datetime",
+        "neuron_shared_encoder.prequential_receipts",
+        "neuron_shared_encoder.validation_v3",
+        "pytest"
+      ],
+      "preserved_source_executed": false,
+      "tests_executed": false,
+      "scientific_acceptance": false
+    },
+    {
+      "git_blob_sha": "5af07857378b92a86da62af1f1bb18558eefaece",
+      "sha256": "decfffbbd0a65c070daaf7e5443aa7a421abbd13c88d3bbf9a1796e2b90b27d1",
+      "bytes": 6059,
+      "relative_path": "objects/5af07857378b92a86da62af1f1bb18558eefaece.patch",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_occurrences": [
+        {
+          "file": "operations-host-fairness-candidate.zip",
+          "member": "current-document-audit/current-document-correction.patch",
+          "archive_chain": []
+        }
+      ],
+      "role": "unapplied historical TaskFlow or Operations documentation patch",
+      "original_package": {
+        "name": "operations-host-fairness-candidate.zip",
+        "sha256": "b4cfa6c7751e56cd83503eb13eb0180987bad30c1c15945832c9bd662c0313e9",
+        "bytes": 732500,
+        "member": "current-document-audit/current-document-correction.patch",
+        "unique_member_match": true,
+        "complete_member_crc_read": true
+      },
+      "patch_targets": [
+        "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json",
+        "docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json",
+        "docs/modules/kernel.operations/TECHNICAL.md"
+      ],
+      "reuse_existing_blob": false,
+      "remote_blob_payload_verified_before_publication": false,
+      "attribution_basis": "Exact original archived member, already-preserved source peers in the same original package, and inspected docs/modules/automation.taskflow or kernel.operations paths with codex-rs/hepta-agentd interfaces establish the hepta-private-ci archival context. This is historical documentation preservation, not a new implementation or old-receipt renewal.",
+      "patch_applied": false,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false
+    },
+    {
+      "git_blob_sha": "9c008e51253d29632189f9c6f457a03f23f039d3",
+      "sha256": "0055fc4d1c565351419f5308db25a4f43bfb30b0c685bdcdf039f92758bcc863",
+      "bytes": 14415,
+      "relative_path": "objects/9c008e51253d29632189f9c6f457a03f23f039d3.txt",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "text-source-container"
+      ],
+      "original_occurrences": [
+        {
+          "file": "ndu_dmgp_test_reference_source.txt",
+          "member": "ndu_dmgp_test_reference_source.txt",
+          "archive_chain": []
+        }
+      ],
+      "role": "original NDU-DMGP adversarial Python test source",
+      "source_language": "Python",
+      "original_plaintext_filename": "ndu_dmgp_test_reference_source.txt",
+      "attribution_basis": "The entire original .txt payload is Python source and names the existing Hepta E4 neuron_shared_encoder or NDU-DMGP research interfaces. The exact complete Git blob was independently returned by this repository. Existing repository ownership of the exact blob and inspected source interfaces establish current archival context; no claim of sole historical authorship or canonical source replacement.",
+      "reuse_existing_blob": true,
+      "remote_blob_payload_verified_before_publication": true,
+      "syntax_parsed_without_execution": true,
+      "imported_modules_observed_in_syntax": [
+        "dataclasses",
+        "math",
+        "reference",
+        "unittest"
+      ],
+      "preserved_source_executed": false,
+      "tests_executed": false,
+      "scientific_acceptance": false
+    }
+  ],
+  "notices": []
+}

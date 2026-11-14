@@ -1,0 +1,96 @@
+{
+  "schema": "retained-build-source-projection-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "branch": "archive/library-small-source-20261103-gpt6",
+  "parent_commit": "ccecddcdefb2d78868621c6deee8a52c2409844c",
+  "original_archival_base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "source_count": 2,
+  "source_bytes": 1866392,
+  "frozen_candidate_union_size": 6116,
+  "candidate_sets_unchanged": true,
+  "archived_source_executed": false,
+  "scientific_or_runtime_acceptance": false,
+  "deployment_or_production_activation": false,
+  "all_library_source_synced": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "packages": [
+    {
+      "name": "a32-exec-native-macos-arm-39791276999.zip",
+      "size_bytes": 3782313,
+      "sha256": "eaa769e568ac6012626bb6e58b2ce4773ff0a5fb164efec34dfcf416ceaef5f5",
+      "bytes": 3782313,
+      "physical_regular_members": 38
+    },
+    {
+      "name": "hepta-bazel-lock-guarded-evidence.zip",
+      "size_bytes": 440793,
+      "sha256": "e53a7e0dacdebb654d8991dd3e1bf33f5fcbaa7b1ff39605bcf6d9029b701800",
+      "bytes": 440793,
+      "physical_regular_members": 4
+    }
+  ],
+  "third_party_license_provenance": [],
+  "sources": [
+    {
+      "git_blob_sha": "6a67340b4e58b19161c2dfc70c60f90fffc6c6bf",
+      "sha256": "9302a67913ebd715eb399a9cb3fb93203f0d3dfcb3a4969909688b7e0a3ffad3",
+      "bytes": 16065,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_package_sha256": "eaa769e568ac6012626bb6e58b2ce4773ff0a5fb164efec34dfcf416ceaef5f5",
+      "original_package_bytes": 3782313,
+      "relative_path": "objects/6a67340b4e58b19161c2dfc70c60f90fffc6c6bf.patch",
+      "original_package": "a32-exec-native-macos-arm-39791276999.zip",
+      "original_member": "format/rustfmt.patch",
+      "archive_chain": [],
+      "sensitive_pattern_findings": [],
+      "existing_remote_blob_precheck": "404 NOT_FOUND in this target repository",
+      "source_kind": "original text formatting patch spanning five exec-server Rust files",
+      "attribution_basis": "All five patch paths are codex-rs/exec-server source files. Original macOS artifact receipts name the hepta-private-ci runner workspace and source 7d321397fda8b06afda8f29d7ef71520995d5f12/tree 0965610c959714c25b1b092770eff7fee4dce88c, independently read from that repository. No patch is applied.",
+      "original_commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7d321397fda8b06afda8f29d7ef71520995d5f12",
+      "patch_paths": [
+        "a/codex-rs/exec-server/src/authorized_read_error_tests.rs b/codex-rs/exec-server/src/authorized_read_error_tests.rs",
+        "a/codex-rs/exec-server/src/client.rs b/codex-rs/exec-server/src/client.rs",
+        "a/codex-rs/exec-server/src/remote_file_system.rs b/codex-rs/exec-server/src/remote_file_system.rs",
+        "a/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs b/codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs",
+        "a/codex-rs/exec-server/src/server/file_system_handler.rs b/codex-rs/exec-server/src/server/file_system_handler.rs"
+      ],
+      "patch_binary_sections": 0
+    },
+    {
+      "git_blob_sha": "b566b9f3055daec20a773a0e52d329760efc0e46",
+      "sha256": "d53194d23b13e5038ed8a7f346ba8da933be29ec22bfce01827ceaf3fd8b8fe5",
+      "bytes": 1850327,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_package_sha256": "e53a7e0dacdebb654d8991dd3e1bf33f5fcbaa7b1ff39605bcf6d9029b701800",
+      "original_package_bytes": 440793,
+      "relative_path": "objects/b566b9f3055daec20a773a0e52d329760efc0e46.patch",
+      "original_package": "hepta-bazel-lock-guarded-evidence.zip",
+      "original_member": "hepta_bazel_lock_evidence/MODULE.bazel.lock.patch",
+      "archive_chain": [],
+      "sensitive_pattern_findings": [],
+      "existing_remote_blob_precheck": "404 NOT_FOUND in this target repository",
+      "source_kind": "single-file textual Bazel resolved-input lock patch",
+      "attribution_basis": "Original hepta_bazel_lock_evidence/MODULE.bazel.lock.patch contains one plain-text diff. The same package postimage MODULE.bazel.lock is exact blob 5e7521332623144cb03ab6404e29069f06ae9ff9 already byte-verified in hepta-private-ci, and its apply_guarded.py is exact blob 7faaa30c6748652c8469dcfd0e08e477e013a126 independently verified at the immutable archival helper path below. These link the retained patch to the same repository dependency inputs. No log, executable binary or mixed UI image patch is included, and the patch is not applied.",
+      "original_helper_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/89ce0d431ec4d3914cc98c124a09aeeab4bb8c40/library-recovery/followup-source-20261103/objects/7faaa30c6748652c8469dcfd0e08e477e013a126.py",
+      "original_postimage_git_blob": "5e7521332623144cb03ab6404e29069f06ae9ff9",
+      "patch_paths": [
+        "a/MODULE.bazel.lock b/MODULE.bazel.lock"
+      ],
+      "patch_binary_sections": 0
+    }
+  ],
+  "notices": []
+}

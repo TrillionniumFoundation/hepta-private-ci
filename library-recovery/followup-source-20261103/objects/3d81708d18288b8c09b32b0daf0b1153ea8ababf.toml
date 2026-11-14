@@ -1,0 +1,7 @@
+[package]
+name = "hepta-matrix-isolated-security-probe"
+version = "0.0.0"
+edition = "2024"
+publish = false
+[dependencies]
+matrix-sdk = { version = "=0.19.1", default-features = false, features = ["e2e-encryption", "sqlite"] }

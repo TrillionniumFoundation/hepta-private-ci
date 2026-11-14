@@ -1,0 +1,197 @@
+name: Hepta Stem V34 original old-only first-stage Cell learning (DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v34_old_only_learning.py'
+      - 'qualification/stem-cell-v1/v34_independent_numpy_review.py'
+      - 'qualification/stem-cell-v1/test_v34_old_only_learning.py'
+      - 'qualification/stem-cell-v1/test_v34_original_replay.py'
+      - 'qualification/stem-cell-v1/STEM_V34_OLD_ONLY_FIRST_STAGE_20261017.md'
+      - 'qualification/stem-cell-v1/STEM_V34_ORIGINAL_OLD_ONLY_NO_GO_20261017.json'
+      - '.github/workflows/hepta-stem-v34-old-cell-isolated.yml'
+  push:
+    branches:
+      - research/stem-v34-old-only-source-20261017
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: stem-v34-${{ github.event_name }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned original CPU research dependency versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'numpy==2.3.5' 'safetensors==0.7.0'
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+      - name: Execute exact source-only adversarial old-input separation tests
+        working-directory: qualification/stem-cell-v1
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          python -m py_compile v34_old_only_learning.py v34_independent_numpy_review.py test_v34_old_only_learning.py test_v34_original_replay.py
+          python -m unittest -v test_v34_old_only_learning
+          python -O -m unittest -v test_v34_old_only_learning
+
+  physical-original-old-only-stages:
+    # Never run expensive published model work on PR synthetic merges/forks.
+    if: github.event_name == 'push' && github.ref_name == 'research/stem-v34-old-only-source-20261017' && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned CPU original-source Head training and NumPy review
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'numpy==2.3.5' 'safetensors==0.7.0'
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip check
+      - name: Prepare secure original-artifact fetch script (token first hop ONLY)
+        env:
+          EXACT_HEAD: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git rev-parse HEAD)" = "$EXACT_HEAD"
+          cat > "$RUNNER_TEMP/v34-fetch-original.sh" <<'SH'
+          #!/bin/bash
+          set -euo pipefail
+          destination="$1"
+          test ! -e "$destination"
+          scratch="$(mktemp -d)"
+          trap 'rm -rf "$scratch"' EXIT
+          status="$(curl --fail --silent --show-error --proto '=https' --max-redirs 0 \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            --dump-header "$scratch/headers" --output /dev/null --write-out '%{http_code}' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11890616195/zip')"
+          test "$status" = '302'
+          location="$(sed -n 's/^[Ll]ocation:[[:space:]]*//p' "$scratch/headers" | tr -d '\r')"
+          case "$location" in https://*) ;; *) echo 'Refuse non-HTTPS original redirect' >&2;exit 1;; esac
+          # Authorization MUST NOT be sent to CDN on this second HTTPS request.
+          curl --fail --location --silent --show-error --retry 2 \
+            --proto '=https' --proto-redir '=https' --output "$destination" "$location"
+          unset location
+          echo '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7  '"$destination" | sha256sum -c -
+          SH
+          chmod 0700 "$RUNNER_TEMP/v34-fetch-original.sh"
+      - name: Original 64-TRAIN source is seen by the PROJECTION owner only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          "$RUNNER_TEMP/v34-fetch-original.sh" "$RUNNER_TEMP/v34-original-mmbert.zip"
+          python qualification/stem-cell-v1/v32_original_cell_learning.py stage \
+            --archive "$RUNNER_TEMP/v34-original-mmbert.zip" --out "$RUNNER_TEMP/v34-original-train"
+          echo '69bdb09bb235c9cf490da400e239c5d9fabe8e13327cb255721090ea47d2e096  '"$RUNNER_TEMP/v34-original-train/train-source.json" | sha256sum -c -
+          echo '2530b62d48b593cebeeb783c3ee754f8229b924558340dd09fb7160c6d1e3cc3  '"$RUNNER_TEMP/v34-original-train/train-features.safetensors" | sha256sum -c -
+          python qualification/stem-cell-v1/v34_old_only_learning.py project-old \
+            --source "$RUNNER_TEMP/v34-original-train" --out "$RUNNER_TEMP/v34-old-capsules"
+          # A separate physical stage1 process now receives ONLY four 24-old
+          # capsules. Remove the 64-case original source and archive first.
+          rm -rf "$RUNNER_TEMP/v34-original-train"
+          rm -f "$RUNNER_TEMP/v34-original-mmbert.zip"
+          test ! -e "$RUNNER_TEMP/v34-original-train"
+          test ! -e "$RUNNER_TEMP/v34-original-mmbert.zip"
+      - name: Genuine old-only Head fit, no original new-Cell source on disk
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$RUNNER_TEMP/v34-original-train"
+          test ! -e "$RUNNER_TEMP/v34-original-mmbert.zip"
+          python qualification/stem-cell-v1/v34_old_only_learning.py train-old \
+            --old-capsules "$RUNNER_TEMP/v34-old-capsules" \
+            --out "$RUNNER_TEMP/v34-stage1-old-only.json"
+      - name: Only after old Head seal, reacquire original new-Cell TRAIN source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test -s "$RUNNER_TEMP/v34-stage1-old-only.json"
+          "$RUNNER_TEMP/v34-fetch-original.sh" "$RUNNER_TEMP/v34-original-mmbert.zip"
+          python qualification/stem-cell-v1/v32_original_cell_learning.py stage \
+            --archive "$RUNNER_TEMP/v34-original-mmbert.zip" --out "$RUNNER_TEMP/v34-original-train"
+          echo '69bdb09bb235c9cf490da400e239c5d9fabe8e13327cb255721090ea47d2e096  '"$RUNNER_TEMP/v34-original-train/train-source.json" | sha256sum -c -
+          echo '2530b62d48b593cebeeb783c3ee754f8229b924558340dd09fb7160c6d1e3cc3  '"$RUNNER_TEMP/v34-original-train/train-features.safetensors" | sha256sum -c -
+          rm -f "$RUNNER_TEMP/v34-original-mmbert.zip"
+      - name: 960 stage2 updates, independent NumPy original source/old retention audit
+        shell: bash
+        env:
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          HEPTA_V34_SOURCE: ${{ runner.temp }}/v34-original-train
+          HEPTA_V34_CAPSULES: ${{ runner.temp }}/v34-old-capsules
+          HEPTA_V34_STAGE1: ${{ runner.temp }}/v34-stage1-old-only.json
+          HEPTA_V34_PUBLIC: ${{ runner.temp }}/v34-public-A.json
+          HEPTA_V34_PRIVATE: ${{ runner.temp }}/v34-private-A.json
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$RUNNER_TEMP/v34-original-mmbert.zip"
+          python qualification/stem-cell-v1/v34_old_only_learning.py adapt \
+            --source "$HEPTA_V34_SOURCE" --old-capsules "$HEPTA_V34_CAPSULES" \
+            --stage1 "$HEPTA_V34_STAGE1" --public "$HEPTA_V34_PUBLIC" --private "$HEPTA_V34_PRIVATE"
+          python qualification/stem-cell-v1/v34_independent_numpy_review.py \
+            --source "$HEPTA_V34_SOURCE" --old-capsules "$HEPTA_V34_CAPSULES" \
+            --stage1 "$HEPTA_V34_STAGE1" --public "$HEPTA_V34_PUBLIC" --private "$HEPTA_V34_PRIVATE" \
+            --output "$RUNNER_TEMP/v34-numpy-review-A.json"
+          cd qualification/stem-cell-v1
+          python -m unittest -v test_v34_original_replay
+          python -O -m unittest -v test_v34_original_replay
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          report=json.loads((root/'v34-numpy-review-A.json').read_text())
+          expected=json.loads(Path('STEM_V34_ORIGINAL_OLD_ONLY_NO_GO_20261017.json').read_text())
+          assert report==expected, 'Pinned original old-only deterministic summary mismatch'
+          assert report['source_family_count']==1 and report['future_windows']==0
+          assert report['total_optimizer_updates']==1440
+          assert report['decision']=='HOLD_OLD_ONLY_STAGE1_NO_PROSPECTIVE_SELECTION'
+          assert report['production_authorized'] is False
+          print('Original old-only 480 + new 960 Head updates verified, NO-GO')
+          PY
+      - name: Upload ONLY sanitized independent NumPy results, no source/Heads/labels
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-v34-original-old-only-train-NO_GO-${{ github.sha }}
+          path: ${{ runner.temp }}/v34-numpy-review-A.json
+          if-no-files-found: error
+          retention-days: 7
