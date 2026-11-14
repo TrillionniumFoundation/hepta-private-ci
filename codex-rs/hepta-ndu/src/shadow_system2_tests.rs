@@ -166,3 +166,31 @@ fn depth_projection_never_emits_negative_risk_or_uncertainty() {
     assert_eq!(projected.projected_risk_q32, 0);
     assert_eq!(projected.projected_uncertainty_q32, 5);
 }
+
+#[test]
+fn shadow_identifiers_reject_controls_separators_and_unicode() {
+    for invalid in ["bad\nline", "bad\tfield", "bad/path", "bad id", "bad\u{202e}"] {
+        let mut invalid_policy = policy();
+        invalid_policy.policy_id = invalid.to_owned();
+        let input = request(&invalid_policy);
+        assert_eq!(
+            suggest_ndu_shadow_v1(&invalid_policy, &input),
+            Err(NduShadowError::InvalidId("policy_id"))
+        );
+
+        let valid_policy = policy();
+        let mut input = request(&valid_policy);
+        input.subject_id = invalid.to_owned();
+        assert_eq!(
+            suggest_ndu_shadow_v1(&valid_policy, &input),
+            Err(NduShadowError::InvalidId("subject_id"))
+        );
+
+        let mut input = request(&valid_policy);
+        input.run_id = invalid.to_owned();
+        assert_eq!(
+            suggest_ndu_shadow_v1(&valid_policy, &input),
+            Err(NduShadowError::InvalidId("run_id"))
+        );
+    }
+}
