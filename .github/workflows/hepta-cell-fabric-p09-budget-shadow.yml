@@ -1,0 +1,123 @@
+name: Hepta Neural Cell Fabric P0.9 budgeted shadow negative (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - research/hepta-neural-cell-fabric-p09-budget-shadow-20261017
+    paths:
+      - 'qualification/neural-cell-fabric-p0/p09_*.py'
+      - 'qualification/neural-cell-fabric-p0/test_p09_*.py'
+      - 'qualification/neural-cell-fabric-p0/P09_BUDGET_SHADOW_NEGATIVE.md'
+      - '.github/workflows/hepta-cell-fabric-p09-budget-shadow.yml'
+  pull_request:
+    paths:
+      - 'qualification/neural-cell-fabric-p0/p09_*.py'
+      - 'qualification/neural-cell-fabric-p0/test_p09_*.py'
+      - 'qualification/neural-cell-fabric-p0/P09_BUDGET_SHADOW_NEGATIVE.md'
+      - '.github/workflows/hepta-cell-fabric-p09-budget-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-p09-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Check exact source HEAD
+        run: |
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Source tests; ORIGINAL materials absent means explicit SKIP
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'safetensors==0.5.3'
+          python -m py_compile p09_budgeted_shadow.py test_p09_budgeted_shadow.py
+          python -m unittest -q test_p09_budgeted_shadow
+          python -O -m unittest -q test_p09_budgeted_shadow
+
+  historical-original:
+    name: Genuine frozen mmBERT historical P0.6 Head work and two-stage P0.9 review
+    needs: source-only
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Fixed CPU dependencies and authenticated historical source
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check 'numpy==2.2.6' 'safetensors==0.5.3'
+          mkdir -m 700 -p "$RUNNER_TEMP/p09-original"
+          python original_fetch.py --kind agnews --out "$RUNNER_TEMP/p09-original/original.zip"
+          cd "$RUNNER_TEMP/p09-original"
+          printf '%s  %s\n' '0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7' original.zip | sha256sum --check
+      - name: Original P0.6 train/label-blind prelabel (not NEW pretrained inference)
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/p09-original"
+          python matched_router_p06.py source --archive "$d/original.zip" --output "$d/source.json"
+          python matched_router_p06.py producer --source "$d/source.json" --prelabel "$d/prelabel.json" --seal "$d/prelabel-seal.json"
+      - name: Different process runs fixed P0.9 shadow choices before held labels
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/p09-original"
+          python p09_budgeted_shadow.py propose --source "$d/source.json" --prelabel "$d/prelabel.json" \
+            --seal "$d/prelabel-seal.json" --shadow "$d/shadow.json" --shadow-seal "$d/shadow-seal.json"
+      - name: Independent original model math audit then reopen historical publisher labels
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          P09_RUN_DIR: ${{ runner.temp }}/p09-original
+          P09_AGNEWS_ZIP: ${{ runner.temp }}/p09-original/original.zip
+        run: |
+          set -euo pipefail
+          d="$RUNNER_TEMP/p09-original"
+          python -m unittest -q test_p09_budgeted_shadow
+          python -O -m unittest -q test_p09_budgeted_shadow
+          python p09_budgeted_shadow.py review --archive "$d/original.zip" --source "$d/source.json" \
+            --prelabel "$d/prelabel.json" --seal "$d/prelabel-seal.json" \
+            --shadow "$d/shadow.json" --shadow-seal "$d/shadow-seal.json" \
+            --out "$d/anonymous-summary.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'p09-original'/'anonymous-summary.json').read_text())
+          assert r['schema']=='hepta.cell-fabric.p09.budgeted-shadow.v1.review.v1'
+          assert r['disposition']=='HOLD_NO_GO'
+          assert not r['prospective_2026_outcome']
+          assert not r['incremental_execution_latency_or_energy_measured']
+          assert not r['production_authorized']
+          assert [r['results'][s]['correct_when_abstentions_count_as_incorrect'] for s in ('101','211','307')]==[22,20,20]
+          assert [r['results'][s]['centroid_reference_correct'] for s in ('101','211','307')]==[28,28,28]
+          PY
+      - name: Upload anonymized negative-control report only
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p09-historical-negative-anonymous
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/p09-original/anonymous-summary.json
