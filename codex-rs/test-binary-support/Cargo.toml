@@ -9,9 +9,20 @@ path = "lib.rs"
 test = false
 doctest = false
 
+[[bin]]
+name = "codex-test-helper"
+path = "src/main.rs"
+test = false
+doctest = false
+
 [lints]
 workspace = true
 
 [dependencies]
 codex-arg0 = { workspace = true }
+codex-exec-server = { workspace = true }
+codex-http-client = { workspace = true }
+codex-sandboxing = { workspace = true }
+codex-utils-cargo-bin = { workspace = true }
 tempfile = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread"] }

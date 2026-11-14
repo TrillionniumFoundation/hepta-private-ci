@@ -5273,7 +5273,12 @@ name = "codex-test-binary-support"
 version = "0.0.0"
 dependencies = [
  "codex-arg0",
+ "codex-exec-server",
+ "codex-http-client",
+ "codex-sandboxing",
+ "codex-utils-cargo-bin",
  "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -6099,6 +6104,7 @@ dependencies = [
  "codex-model-provider-info",
  "codex-models-manager",
  "codex-protocol",
+ "codex-test-binary-support",
  "codex-thread-store",
  "codex-utils-absolute-path",
  "codex-utils-cargo-bin",

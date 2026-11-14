@@ -3,6 +3,8 @@
 use anyhow::Context as _;
 use anyhow::ensure;
 use codex_arg0::Arg0PathEntryGuard;
+use codex_test_binary_support::arg0_dispatch_for_test_binary;
+pub use codex_test_binary_support::test_binary_helper_exe;
 use codex_utils_cargo_bin::CargoBinError;
 use ctor::ctor;
 use std::sync::OnceLock;
@@ -56,7 +58,7 @@ fn enable_deterministic_unified_exec_process_ids_for_tests() {
 
 #[ctor]
 fn configure_arg0_dispatch_for_test_binaries() {
-    let _ = TEST_ARG0_PATH_ENTRY.get_or_init(codex_arg0::arg0_dispatch);
+    let _ = TEST_ARG0_PATH_ENTRY.get_or_init(arg0_dispatch_for_test_binary);
 }
 
 #[ctor]
@@ -252,6 +254,7 @@ pub fn find_codex_linux_sandbox_exe() -> Result<PathBuf, CargoBinError> {
         return Ok(path);
     }
 
+    #[cfg(not(all(target_os = "linux", target_env = "musl")))]
     if let Ok(path) = std::env::current_exe() {
         return Ok(path);
     }
