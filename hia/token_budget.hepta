@@ -1,0 +1,32 @@
+hia-asm.v1 hepta.hia.program.v8 codex_token_budget
+exports(f0)
+fn f0(value:u64,operation:u64) -> (u64) effects(trap) entry(entry)
+block entry(value:u64,operation:u64)
+  zero:u64 = const() {"value":0}
+  bytes_operation:bool = compare.eq(operation,zero)
+  branch bytes_operation bytes(value) choose_tokens(value,operation)
+block choose_tokens(t_value:u64,t_operation:u64)
+  one:u64 = const() {"value":1}
+  tokens_operation:bool = compare.eq(t_operation,one)
+  branch tokens_operation tokens(t_value) invalid()
+block bytes(b_value:u64)
+  bytes_maximum:u64 = const() {"value":18446744073709551615}
+  bytes_threshold:u64 = const() {"value":4611686018427387903}
+  bytes_four:u64 = const() {"value":4}
+  bytes_overflows:bool = compare.gt(b_value,bytes_threshold)
+  multiplied:u64 = int.mul.wrap(b_value,bytes_four)
+  byte_count:u64 = select(bytes_overflows,bytes_maximum,multiplied)
+  ret(byte_count)
+block tokens(c_value:u64)
+  tokens_maximum:u64 = const() {"value":18446744073709551615}
+  tokens_threshold:u64 = const() {"value":18446744073709551612}
+  tokens_three:u64 = const() {"value":3}
+  tokens_four:u64 = const() {"value":4}
+  tokens_overflows:bool = compare.gt(c_value,tokens_threshold)
+  added:u64 = int.add.wrap(c_value,tokens_three)
+  saturated:u64 = select(tokens_overflows,tokens_maximum,added)
+  token_count:u64 = int.div.checked(saturated,tokens_four)
+  ret(token_count)
+block invalid()
+  trap user
+end

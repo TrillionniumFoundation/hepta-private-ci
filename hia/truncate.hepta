@@ -1,4 +1,4 @@
-hia-asm.v1 hepta.hia.program.v8 codex_truncate
+hia-asm.v1 hepta.hia.program.v9 codex_truncate
 fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
 block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
   output_size:usize = buffer.len(output)
@@ -379,57 +379,7 @@ block scan(s_source:readbuf,s_index:usize,s_end:usize,s_count:u64)
   full_batch:bool = compare.ge(remaining,batch_size)
   branch full_batch batch(s_source,s_index,s_end,s_count) tail(s_source,s_index,s_end,s_count)
 block batch(b_source:readbuf,b_index:usize,b_end:usize,b_count:u64)
-  byte0:u8 = buffer.load(b_source,b_index)
-  word0:u64 = int.cast(byte0) {"mode":"wrap"}
-  offset1:usize = const() {"value":1}
-  address1:usize = int.add.checked(b_index,offset1)
-  byte1:u8 = buffer.load(b_source,address1)
-  word1:u64 = int.cast(byte1) {"mode":"wrap"}
-  shift1:u64 = const() {"value":8}
-  shifted1:u64 = int.shl.checked(word1,shift1)
-  combined1:u64 = bit.or(word0,shifted1)
-  offset2:usize = const() {"value":2}
-  address2:usize = int.add.checked(b_index,offset2)
-  byte2:u8 = buffer.load(b_source,address2)
-  word2:u64 = int.cast(byte2) {"mode":"wrap"}
-  shift2:u64 = const() {"value":16}
-  shifted2:u64 = int.shl.checked(word2,shift2)
-  combined2:u64 = bit.or(combined1,shifted2)
-  offset3:usize = const() {"value":3}
-  address3:usize = int.add.checked(b_index,offset3)
-  byte3:u8 = buffer.load(b_source,address3)
-  word3:u64 = int.cast(byte3) {"mode":"wrap"}
-  shift3:u64 = const() {"value":24}
-  shifted3:u64 = int.shl.checked(word3,shift3)
-  combined3:u64 = bit.or(combined2,shifted3)
-  offset4:usize = const() {"value":4}
-  address4:usize = int.add.checked(b_index,offset4)
-  byte4:u8 = buffer.load(b_source,address4)
-  word4:u64 = int.cast(byte4) {"mode":"wrap"}
-  shift4:u64 = const() {"value":32}
-  shifted4:u64 = int.shl.checked(word4,shift4)
-  combined4:u64 = bit.or(combined3,shifted4)
-  offset5:usize = const() {"value":5}
-  address5:usize = int.add.checked(b_index,offset5)
-  byte5:u8 = buffer.load(b_source,address5)
-  word5:u64 = int.cast(byte5) {"mode":"wrap"}
-  shift5:u64 = const() {"value":40}
-  shifted5:u64 = int.shl.checked(word5,shift5)
-  combined5:u64 = bit.or(combined4,shifted5)
-  offset6:usize = const() {"value":6}
-  address6:usize = int.add.checked(b_index,offset6)
-  byte6:u8 = buffer.load(b_source,address6)
-  word6:u64 = int.cast(byte6) {"mode":"wrap"}
-  shift6:u64 = const() {"value":48}
-  shifted6:u64 = int.shl.checked(word6,shift6)
-  combined6:u64 = bit.or(combined5,shifted6)
-  offset7:usize = const() {"value":7}
-  address7:usize = int.add.checked(b_index,offset7)
-  byte7:u8 = buffer.load(b_source,address7)
-  word7:u64 = int.cast(byte7) {"mode":"wrap"}
-  shift7:u64 = const() {"value":56}
-  shifted7:u64 = int.shl.checked(word7,shift7)
-  combined7:u64 = bit.or(combined6,shifted7)
+  combined7:u64 = buffer.load.u64.le(b_source,b_index)
   one:u64 = const() {"value":1}
   shifted_bits:u64 = int.shl.checked(combined7,one)
   inverse_second:u64 = bit.not(shifted_bits)
