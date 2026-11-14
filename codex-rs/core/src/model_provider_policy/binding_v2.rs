@@ -8,7 +8,6 @@
 
 use std::sync::Arc;
 
-use codex_extension_api::ExtensionData;
 use codex_extension_api::MODEL_PROVIDER_EXACT_TOKENIZER_SCHEMA_VERSION;
 use codex_extension_api::ModelProviderExactTokenizationState;
 use codex_extension_api::ModelProviderExactTokenizerHost;
@@ -38,7 +37,6 @@ mod compatibility;
 
 pub(crate) use compatibility::ModelProviderPolicyContext;
 pub(crate) use compatibility::PreparedModelProviderPolicy;
-#[cfg(test)]
 pub(crate) use compatibility::bytes_sha256;
 pub(crate) use compatibility::canonical_sha256;
 pub(crate) use compatibility::digest_parts_sha256;
@@ -213,9 +211,7 @@ fn exact_tokenizer_host(
         })
 }
 
-fn canonical_json_bytes<T: Serialize>(
-    value: &T,
-) -> Result<Vec<u8>, ModelProviderPolicyError> {
+fn canonical_json_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, ModelProviderPolicyError> {
     let value = serde_json::to_value(value).map_err(|error| {
         ModelProviderPolicyError::new(
             "exact_tokenizer_serialization_failed",
