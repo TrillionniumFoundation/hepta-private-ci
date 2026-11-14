@@ -9,6 +9,7 @@ codex_rust_crate(
         "@crates//:toml",
     ],
     extra_binaries = [
+        "//codex-rs/test-binary-support:codex-test-helper",
         "//codex-rs/bwrap:bwrap",
         "//codex-rs/windows-sandbox-rs:codex-command-runner",
         "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup",

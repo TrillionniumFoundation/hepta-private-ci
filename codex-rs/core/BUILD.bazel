@@ -13,6 +13,7 @@ codex_rust_crate(
     ),
     crate_name = "codex_core",
     extra_binaries = [
+        "//codex-rs/test-binary-support:codex-test-helper",
         "//codex-rs/bwrap:bwrap",
         "//codex-rs/code-mode-host:codex-code-mode-host",
         "//codex-rs/linux-sandbox:codex-linux-sandbox",

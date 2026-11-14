@@ -7,4 +7,5 @@ codex_rust_crate(
     deps_extra = [
         "@crates//:similar",
     ],
+    lib_data_extra = ["//codex-rs/test-binary-support:codex-test-helper"],
 )
