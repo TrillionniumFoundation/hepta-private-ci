@@ -31,6 +31,15 @@ max-threads = 1
 [test-groups.windows_process_heavy]
 max-threads = 2
 
+[test-groups.hepta_agentd_process]
+max-threads = 1
+
+[[profile.default.overrides]]
+# Each case starts a full Agentd fleet and exercises durable recovery. Avoid
+# competing fleets while retaining the default per-test timeout and assertions.
+filter = 'package(codex-hepta-agentd) & (binary(kernel_evidence_product) | binary(plasticity_process_e2e))'
+test-group = 'hepta_agentd_process'
+
 [[profile.default.overrides]]
 # Do not add new tests here
 filter = 'test(rmcp_client) | test(humanlike_typing_1000_chars_appears_live_no_placeholder)'
