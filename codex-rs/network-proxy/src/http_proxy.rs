@@ -1434,10 +1434,12 @@ mod tests {
 
     #[tokio::test]
     async fn http_connect_accept_blocks_hooked_host_in_full_mode_without_mitm_state() {
+        // Reach the MITM requirement check without depending on external DNS.
+        let target_host = "93.184.216.34";
         let mut policy = NetworkProxyConfig {
             mitm: true,
             mitm_hooks: vec![crate::mitm_hook::MitmHookConfig {
-                host: "api.github.com".to_string(),
+                host: target_host.to_string(),
                 matcher: crate::mitm_hook::MitmHookMatchConfig {
                     methods: vec!["POST".to_string()],
                     path_prefixes: vec!["/repos/openai/".to_string()],
@@ -1447,13 +1449,13 @@ mod tests {
             }],
             ..Default::default()
         };
-        policy.set_allowed_domains(vec!["api.github.com".to_string()]);
+        policy.set_allowed_domains(vec![target_host.to_string()]);
         let state = Arc::new(network_proxy_state_for_policy(policy));
 
         let req = Request::builder()
             .method(Method::CONNECT)
-            .uri("https://api.github.com:8443")
-            .header("host", "api.github.com:8443")
+            .uri(format!("https://{target_host}:8443"))
+            .header("host", format!("{target_host}:8443"))
             .body(Body::empty())
             .unwrap();
         req.extensions().insert_arc(state);

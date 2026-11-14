@@ -328,8 +328,9 @@ async fn native_request_handles_remote_proxy_config_for_platform() {
     let mut stream = tokio::net::TcpStream::connect(proxy_addr)
         .await
         .expect("connect to executor proxy");
+    // An unlisted public IP reaches the deny policy without an external DNS lookup.
     stream
-        .write_all(b"CONNECT blocked.example:443 HTTP/1.1\r\nHost: blocked.example:443\r\n\r\n")
+        .write_all(b"CONNECT 93.184.216.34:443 HTTP/1.1\r\nHost: 93.184.216.34:443\r\n\r\n")
         .await
         .expect("write CONNECT request");
     let mut response = [0_u8; 256];
