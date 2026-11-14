@@ -192,6 +192,12 @@ async fn cancelling_active_observation_returns_lease_to_dropped_owner() {
 
     drop(owner);
     assert!(matches!(terminal.try_recv(), Err(TryRecvError::Empty)));
+    assert_eq!(
+        observer
+            .observe_encoded_body(b"after owner drop")
+            .now_or_never(),
+        Some(Err(observation_stopped_error()))
+    );
     observation.abort();
     assert!(
         observation

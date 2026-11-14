@@ -53,6 +53,7 @@ impl EncodedRequestBodyObserver for LeaseFinalRequestObserver {
             commands
                 .send(OwnerCommand::ObserveFinalRequest { acknowledge })
                 .map_err(|_| observation_stopped_error())?;
+            drop(commands);
             let observation = acknowledged
                 .await
                 .map_err(|_| observation_stopped_error())?;
@@ -65,7 +66,6 @@ impl EncodedRequestBodyObserver for LeaseFinalRequestObserver {
                 .await
                 .map_err(|error| format!("{}: {}", error.reason_code(), error.detail()));
             drop(observation);
-            drop(commands);
             result
         })
     }
@@ -74,10 +74,10 @@ impl EncodedRequestBodyObserver for LeaseFinalRequestObserver {
 /// Cancellation-safe terminal owner for one admitted physical provider send.
 ///
 /// A detached supervisor owns the policy lease, lending it only while the
-/// final request callback runs. Dropping this handle closes its command channel
-/// after any active observation returns the lease and forces exactly one
-/// fallback terminal based on the shared dispatch witness. No drop hook
-/// spawns new async work.
+/// final request callback runs. Dropping this handle closes its command channel.
+/// The supervisor waits for any active observation to return the lease before
+/// recording exactly one fallback terminal based on the shared dispatch witness.
+/// No drop hook spawns new async work.
 #[must_use = "an admitted provider attempt must retain its terminal owner"]
 pub(crate) struct ProviderAttemptOwner {
     commands: mpsc::UnboundedSender<OwnerCommand>,
