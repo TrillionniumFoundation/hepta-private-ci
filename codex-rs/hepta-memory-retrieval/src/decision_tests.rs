@@ -93,7 +93,7 @@ fn candidate(number: u64, channel: RetrievalChannelV1, rank: u32) -> RetrievalCh
         normalized_score: FixedQ32::ONE,
         ood: ProbabilityQ32::ZERO,
         support_digest: digest(&format!("support:{number}:{channel:?}")),
-        contradiction_group_digest: None,
+        contradiction_evidence: None,
         generation_vector_digest: cue().snapshot_key.vector_digest,
     }
 }
