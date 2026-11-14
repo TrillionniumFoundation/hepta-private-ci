@@ -15,6 +15,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signature;
+use ed25519_dalek::VerifyingKey;
 
 pub const MAX_MEMORY_ADMISSION_SUPPORTS: usize = 64;
 pub const MAX_FEDERATED_RESULT_ITEMS: usize = 512;
@@ -28,6 +30,10 @@ const GRAPH_GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-graph.generation.v1";
 const PROJECTION_RECEIPT_DOMAIN: &[u8] = b"hepta.knowledge-graph.projection-receipt.v1";
 const COMPACT_CHECKPOINT_DOMAIN: &[u8] = b"hepta.compact.checkpoint.v1";
 const COMPACTION_PROOF_DOMAIN: &[u8] = b"hepta.compact.proof.v1";
+const COMPACTION_PROOF_V2_DOMAIN: &[u8] = b"hepta.compact.proof.v2";
+const COMPACTION_QUALIFICATION_DOMAIN: &[u8] = b"hepta.compaction-qualification.v3";
+const COMPACTION_SIGNATURE_VERIFICATION_DOMAIN: &[u8] =
+    b"hepta.compaction-signature-verification.v1";
 const PROMPT_REGISTRY_SNAPSHOT_DOMAIN: &[u8] = b"hepta.prompt-registry.snapshot-receipt.v1";
 const CONTEXT_DELIVERY_DOMAIN: &[u8] = b"hepta.context.delivery-observation.v1";
 
@@ -579,6 +585,7 @@ pub struct CompactCheckpointV1 {
     pub checkpoint_id: StableId,
     pub generation: Generation,
     pub source_snapshot: CognitiveSnapshotKeyV1,
+    pub source_memory_snapshot_digest: Digest32,
     pub support_manifest_digest: Digest32,
     pub algorithm_digest: Digest32,
     pub payload_digest: Digest32,
@@ -594,6 +601,10 @@ impl CompactCheckpointV1 {
     pub fn validate(&self) -> Result<(), LaneCContractError> {
         self.source_snapshot.validate()?;
         for (name, digest) in [
+            (
+                "compact_source_memory_snapshot",
+                self.source_memory_snapshot_digest,
+            ),
             ("compact_support_manifest", self.support_manifest_digest),
             ("compact_algorithm", self.algorithm_digest),
             ("compact_payload", self.payload_digest),
@@ -627,6 +638,7 @@ impl CompactCheckpointV1 {
         push_id(&mut bytes, &self.checkpoint_id);
         push_generation(&mut bytes, self.generation);
         push_digest(&mut bytes, self.source_snapshot.vector_digest);
+        push_digest(&mut bytes, self.source_memory_snapshot_digest);
         push_digest(&mut bytes, self.support_manifest_digest);
         push_digest(&mut bytes, self.algorithm_digest);
         push_digest(&mut bytes, self.payload_digest);
@@ -693,6 +705,193 @@ impl CompactionProofV1 {
         push_u64(&mut bytes, self.source_count);
         push_u64(&mut bytes, self.retained_count);
         Digest32::of_bytes(&bytes)
+    }
+}
+
+/// Audit-complete compaction qualification proof.
+///
+/// V2 retains the holdout/reconstruction obligations and additionally binds the
+/// exact candidate, tokenizer deployment identity, evaluator
+/// identity/implementation, evaluation artifact and signed qualification
+/// evidence. Raw public keys/signatures live in the separate non-authorizing
+/// witness used to replay durable verification. Current host enrollment remains
+/// a final-use admission check and is not granted by this authority-free proof.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompactionProofV2 {
+    pub checkpoint_digest: Digest32,
+    pub candidate_digest: Digest32,
+    pub tokenizer_implementation_digest: Digest32,
+    pub tokenizer_attestation_digest: Digest32,
+    pub tokenizer_key_digest: Digest32,
+    pub evaluator_id: StableId,
+    pub evaluator_implementation_digest: Digest32,
+    pub evaluation_artifact_digest: Digest32,
+    pub attestation_digest: Digest32,
+    pub attestation_signature_digest: Digest32,
+    pub signature_verification_receipt_digest: Digest32,
+    pub retained_query_suite_digest: Digest32,
+    pub reconstruction_obligation_digest: Digest32,
+    pub contradiction_holdout_digest: Digest32,
+    pub deletion_cutoff: u64,
+    pub source_count: u64,
+    pub retained_count: u64,
+    pub proof_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl CompactionProofV2 {
+    pub fn validate(&self) -> Result<(), LaneCContractError> {
+        for (name, digest) in [
+            ("proof_checkpoint", self.checkpoint_digest),
+            ("proof_candidate", self.candidate_digest),
+            (
+                "proof_tokenizer_implementation",
+                self.tokenizer_implementation_digest,
+            ),
+            (
+                "proof_tokenizer_attestation",
+                self.tokenizer_attestation_digest,
+            ),
+            ("proof_tokenizer_key", self.tokenizer_key_digest),
+            (
+                "proof_evaluator_implementation",
+                self.evaluator_implementation_digest,
+            ),
+            ("proof_evaluation_artifact", self.evaluation_artifact_digest),
+            ("proof_attestation", self.attestation_digest),
+            (
+                "proof_attestation_signature",
+                self.attestation_signature_digest,
+            ),
+            (
+                "proof_signature_verification_receipt",
+                self.signature_verification_receipt_digest,
+            ),
+            ("retained_query_suite", self.retained_query_suite_digest),
+            (
+                "reconstruction_obligation",
+                self.reconstruction_obligation_digest,
+            ),
+            ("contradiction_holdout", self.contradiction_holdout_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.retained_count > self.source_count {
+            return Err(LaneCContractError::InvalidState(
+                "compaction_retained_count",
+            ));
+        }
+        if self.proof_digest != self.compute_proof_digest() {
+            return Err(LaneCContractError::DigestMismatch("compaction_proof_v2"));
+        }
+        ensure_deny_all(self.authority)
+    }
+
+    #[must_use]
+    pub fn compute_proof_digest(&self) -> Digest32 {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(COMPACTION_PROOF_V2_DOMAIN);
+        push_digest(&mut bytes, self.checkpoint_digest);
+        push_digest(&mut bytes, self.candidate_digest);
+        push_digest(&mut bytes, self.tokenizer_implementation_digest);
+        push_digest(&mut bytes, self.tokenizer_attestation_digest);
+        push_digest(&mut bytes, self.tokenizer_key_digest);
+        push_id(&mut bytes, &self.evaluator_id);
+        push_digest(&mut bytes, self.evaluator_implementation_digest);
+        push_digest(&mut bytes, self.evaluation_artifact_digest);
+        push_digest(&mut bytes, self.attestation_digest);
+        push_digest(&mut bytes, self.attestation_signature_digest);
+        push_digest(&mut bytes, self.signature_verification_receipt_digest);
+        push_digest(&mut bytes, self.retained_query_suite_digest);
+        push_digest(&mut bytes, self.reconstruction_obligation_digest);
+        push_digest(&mut bytes, self.contradiction_holdout_digest);
+        push_u64(&mut bytes, self.deletion_cutoff);
+        push_u64(&mut bytes, self.source_count);
+        push_u64(&mut bytes, self.retained_count);
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+/// Public, non-authorizing witness needed to replay the exact evaluator
+/// signature check for a persisted `CompactionProofV2`.
+///
+/// Host trust enrollment remains external. Persisting this public key/signature
+/// proves only that the durable proof still carries the same signed
+/// qualification that was accepted at publication time.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompactionProofWitnessV1 {
+    pub evaluator_verifying_key: [u8; 32],
+    pub qualification_signature: [u8; 64],
+}
+
+impl CompactionProofWitnessV1 {
+    #[must_use]
+    pub fn verification_receipt_digest(
+        &self,
+        candidate_digest: Digest32,
+        evaluator_implementation_digest: Digest32,
+        attestation_digest: Digest32,
+    ) -> Digest32 {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(COMPACTION_SIGNATURE_VERIFICATION_DOMAIN);
+        push_digest(&mut bytes, candidate_digest);
+        push_digest(
+            &mut bytes,
+            Digest32::of_bytes(&self.evaluator_verifying_key),
+        );
+        push_digest(&mut bytes, evaluator_implementation_digest);
+        push_digest(&mut bytes, attestation_digest);
+        bytes.extend_from_slice(&self.qualification_signature);
+        Digest32::of_bytes(&bytes)
+    }
+
+    pub fn verify_proof(&self, proof: &CompactionProofV2) -> Result<(), LaneCContractError> {
+        proof.validate()?;
+        let key = VerifyingKey::from_bytes(&self.evaluator_verifying_key)
+            .map_err(|_| LaneCContractError::InvalidState("compaction_evaluator_key"))?;
+        if key.is_weak() {
+            return Err(LaneCContractError::InvalidState("compaction_evaluator_key"));
+        }
+        let mut signing_bytes = Vec::new();
+        signing_bytes.extend_from_slice(COMPACTION_QUALIFICATION_DOMAIN);
+        push_digest(&mut signing_bytes, proof.candidate_digest);
+        push_digest(&mut signing_bytes, proof.tokenizer_implementation_digest);
+        push_digest(&mut signing_bytes, proof.tokenizer_attestation_digest);
+        push_digest(&mut signing_bytes, proof.tokenizer_key_digest);
+        push_id(&mut signing_bytes, &proof.evaluator_id);
+        for digest in [
+            proof.evaluator_implementation_digest,
+            proof.evaluation_artifact_digest,
+            proof.attestation_digest,
+            proof.retained_query_suite_digest,
+            proof.reconstruction_obligation_digest,
+            proof.contradiction_holdout_digest,
+        ] {
+            push_digest(&mut signing_bytes, digest);
+        }
+        signing_bytes.extend_from_slice(&[1_u8; 4]);
+        key.verify_strict(
+            &signing_bytes,
+            &Signature::from_bytes(&self.qualification_signature),
+        )
+        .map_err(|_| LaneCContractError::InvalidState("compaction_qualification_signature"))?;
+        if proof.attestation_signature_digest != Digest32::of_bytes(&self.qualification_signature) {
+            return Err(LaneCContractError::DigestMismatch(
+                "compaction_attestation_signature",
+            ));
+        }
+        if proof.signature_verification_receipt_digest
+            != self.verification_receipt_digest(
+                proof.candidate_digest,
+                proof.evaluator_implementation_digest,
+                proof.attestation_digest,
+            )
+        {
+            return Err(LaneCContractError::DigestMismatch(
+                "compaction_signature_verification_receipt",
+            ));
+        }
+        Ok(())
     }
 }
 
