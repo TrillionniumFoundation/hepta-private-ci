@@ -502,7 +502,7 @@ fn typed_successor_rejects_reset_rollback_and_revocation_resurrection() {
     );
 
     let revoked_id = id("admission:revoked");
-    let revoked = successor_snapshot(&predecessor, 11, 8, vec![revoked_id.clone()])
+    let revoked = successor_snapshot(&predecessor, 11, 8, vec![revoked_id])
         .unwrap_or_else(|error| panic!("revoking successor: {error}"));
     let resurrection = ContextAdmissionSnapshotV2::new(
         id("snapshot:resurrection"),

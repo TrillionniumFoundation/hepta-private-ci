@@ -60,7 +60,7 @@ pub fn price_verified_factors_v2(
             now_unix_ms,
         )
         .map_err(|error| VerifiedPromptErrorV2::LearningEvidence(error.to_string()))?;
-    if &completeness.generator_id != &generator.principal().principal_id {
+    if completeness.generator_id != generator.principal().principal_id {
         return Err(VerifiedPromptErrorV2::IdentityMismatch(
             "candidate generator principal",
         ));
@@ -86,7 +86,7 @@ pub fn price_verified_factors_v2(
                 factor_id.to_string(),
             ));
         }
-        let candidate = by_factor.get(&factor_id).ok_or_else(|| {
+        let candidate = by_factor.get(&factor_id).ok_or({
             VerifiedPromptErrorV2::IdentityMismatch("pricing factor is outside candidate set")
         })?;
         if bound.candidate_set_digest != candidates.value.candidates_digest
