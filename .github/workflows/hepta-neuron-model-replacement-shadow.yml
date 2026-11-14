@@ -1,0 +1,63 @@
+name: Hepta Neuron five-model replacement shadow preflight
+
+on:
+  pull_request:
+    paths:
+      - "qa/stem-bakeoff/replacement_*.py"
+      - "qa/stem-bakeoff/replacement_models.json"
+      - "qa/stem-bakeoff/test_replacement_*.py"
+      - "docs/learning/HEPTA_NEURON_REPLACEMENT_EXECUTION.md"
+      - ".github/workflows/hepta-neuron-model-replacement-shadow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never cancel an evidence run for another exact commit.
+concurrency:
+  group: neuron-replacement-shadow-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  fail-closed-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Bind exact executing commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          test -n "$(git rev-parse HEAD)"
+      - name: Run five-model registry and six-stage adversarial gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_replacement_*.py' -v
+          python3 qa/stem-bakeoff/replacement_gate.py --assert-no-production
+          python3 -m py_compile qa/stem-bakeoff/replacement_gate.py qa/stem-bakeoff/replacement_metadata.py
+          test -z "$(git status --porcelain)"
+
+  publisher-weight-metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Inspect immutable upstream revision/LFS metadata (no weight load)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qa/stem-bakeoff/replacement_metadata.py --out "$RUNNER_TEMP/replacement-hub-pointers.json"
+      - name: Preserve provenance-preflight result
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-replacement-hub-pins-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/replacement-hub-pointers.json
+          if-no-files-found: ignore
+          retention-days: 30
