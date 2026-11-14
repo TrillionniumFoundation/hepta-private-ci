@@ -1,0 +1,21 @@
+{
+  "schema": "hcsn-n256-uniformization-positive-output-interval-source-freeze-v1",
+  "base_head": "afa445c6c99b40955da4bada29dcb2ce515e364c",
+  "files": {
+    ".github/workflows/hcsn-currentstate-n256-uniformization-output-interval.yml": "53d80265abbb0570921cc0b1d5e158da826f2f1ffdc6447528d370bb12b2bc55",
+    "qualification/hcsn_currentstate_n256_fp64_input_conversion/fp64_exact.py": "cae195ae453100625da9d9fb75146a0257d417701435a832ce0aa8d563e5ece9",
+    "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py": "4179ddeb850b62e4a239a7fbbcaf3de249b2f052d21a0db28374923795ae0917",
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/README.md": "a490cd6d9aa893c333b3d053547467d2acedca9f3aff1822494614de5a5bccca",
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/REQUEST.json": "4d499ebbdaf5c4736648957bff26381ae34039c50a1d27630ddd7708a65a5f35",
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/__init__.py": "458d568f2ea03a45fb5f833698b2bf573d8a0896bb73cd8af3899fd3913ff358",
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/output_interval.py": "5b714a52a276237654ea880f9c9ebc101db8c353daee4ab6e5dbc5eb08b1f1d5",
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/test_output_interval.py": "40399144c01a9d2078252b4d5475d45ba6c192cbef1c464b9077f6b848911ca0",
+    "qualification/hcsn_currentstate_n256_uniformization_output_interval/verify_source.py": "fb4f0295b2a1450d7cbdc2967e030dbb3fbf69bc5b9f33b0beda366121512341"
+  },
+  "exact_positive_rational_interval_certified": true,
+  "binary64_unique_rounding_certified": true,
+  "signed_vector_certified": false,
+  "non_substochastic_certified": false,
+  "authentic_n256_bundle_loaded": false,
+  "provider_qualified": false
+}
