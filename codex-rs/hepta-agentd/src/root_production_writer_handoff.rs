@@ -72,7 +72,7 @@ pub fn receive_root_production_writer_handoff(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: recvmsg writes only these bounded live buffers and gives received
     // rights CLOEXEC atomically. The shared original parser owns every right.
     let length = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };

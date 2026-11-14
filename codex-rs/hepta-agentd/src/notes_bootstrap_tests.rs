@@ -96,15 +96,15 @@ fn send_offer(socket: &UnixDatagram, payload: &[u8], descriptors: &[RawFd]) -> i
     if !descriptors.is_empty() {
         let bytes = mem::size_of_val(descriptors);
         message.msg_control = control.as_mut_ptr().cast();
-        message.msg_controllen = unsafe { libc::CMSG_SPACE(bytes as u32) } as usize;
-        assert!(message.msg_controllen <= mem::size_of_val(&control));
+        message.msg_controllen = unsafe { libc::CMSG_SPACE(bytes as u32) } as _;
+        assert!(message.msg_controllen as usize <= mem::size_of_val(&control));
         // SAFETY: the header and descriptor payload fit the retained control
         // buffer. Sending borrows the fixture's descriptors; it never owns them.
         unsafe {
             let header = libc::CMSG_FIRSTHDR(&message);
             (*header).cmsg_level = libc::SOL_SOCKET;
             (*header).cmsg_type = libc::SCM_RIGHTS;
-            (*header).cmsg_len = libc::CMSG_LEN(bytes as u32) as usize;
+            (*header).cmsg_len = libc::CMSG_LEN(bytes as u32) as _;
             std::ptr::copy_nonoverlapping(
                 descriptors.as_ptr(),
                 libc::CMSG_DATA(header).cast(),

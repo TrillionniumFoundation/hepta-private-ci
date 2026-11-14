@@ -74,7 +74,7 @@ fn receive_learning_packet(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: recvmsg writes only the live bounded buffers above and marks
     // every received descriptor CLOEXEC atomically.
     let length = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };

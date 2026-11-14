@@ -177,7 +177,7 @@ fn receive_packet(socket: &UnixDatagram, expected: libc::ucred) -> io::Result<St
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: recvmsg borrows the exact live buffers and gives any received
     // descriptors CLOEXEC, including descriptors on a rejected message.
     let count = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
@@ -206,7 +206,7 @@ fn receive_packet(socket: &UnixDatagram, expected: libc::ucred) -> io::Result<St
     let credential = unsafe {
         if (*header).cmsg_level != libc::SOL_SOCKET
             || (*header).cmsg_type != libc::SCM_CREDENTIALS
-            || (*header).cmsg_len != libc::CMSG_LEN(mem::size_of::<libc::ucred>() as u32) as usize
+            || (*header).cmsg_len != libc::CMSG_LEN(mem::size_of::<libc::ucred>() as u32) as _
             || (*header).cmsg_len > message.msg_controllen
             || !libc::CMSG_NXTHDR(&message, header).is_null()
         {

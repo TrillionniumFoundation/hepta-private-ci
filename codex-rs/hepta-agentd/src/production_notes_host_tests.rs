@@ -212,12 +212,11 @@ async fn notes_recovered_writer_persists_lost_reply_and_retires_without_replay()
             message.msg_iovlen = 1;
             message.msg_control = control.as_mut_ptr().cast();
             message.msg_controllen =
-                libc::CMSG_SPACE((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
+                libc::CMSG_SPACE((2 * mem::size_of::<libc::c_int>()) as u32) as _;
             let header = libc::CMSG_FIRSTHDR(&message);
             (*header).cmsg_level = libc::SOL_SOCKET;
             (*header).cmsg_type = libc::SCM_RIGHTS;
-            (*header).cmsg_len =
-                libc::CMSG_LEN((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
+            (*header).cmsg_len = libc::CMSG_LEN((2 * mem::size_of::<libc::c_int>()) as u32) as _;
             libc::CMSG_DATA(header)
                 .cast::<libc::c_int>()
                 .write(source_channel.as_raw_fd());

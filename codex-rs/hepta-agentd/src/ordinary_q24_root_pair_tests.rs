@@ -112,7 +112,7 @@ fn receive_rights(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: kernel writes only the bounded live buffers above.
     let size = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
     anyhow::ensure!(size >= 0, "{}", io::Error::last_os_error());
@@ -148,13 +148,13 @@ unsafe fn send_raw(socket: RawFd, bytes: &[u8], rights: &[RawFd]) -> io::Result<
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
     // SAFETY: callers pass at most MAX_PAIRS descriptors, fitting control.
-    message.msg_controllen = unsafe { libc::CMSG_SPACE(mem::size_of_val(rights) as u32) as usize };
+    message.msg_controllen = unsafe { libc::CMSG_SPACE(mem::size_of_val(rights) as u32) as _ };
     // SAFETY: control is aligned and sized for this exact single rights cmsg.
     unsafe {
         let header = libc::CMSG_FIRSTHDR(&message);
         (*header).cmsg_level = libc::SOL_SOCKET;
         (*header).cmsg_type = libc::SCM_RIGHTS;
-        (*header).cmsg_len = libc::CMSG_LEN(mem::size_of_val(rights) as u32) as usize;
+        (*header).cmsg_len = libc::CMSG_LEN(mem::size_of_val(rights) as u32) as _;
         std::ptr::copy_nonoverlapping(
             rights.as_ptr(),
             libc::CMSG_DATA(header).cast(),
@@ -220,7 +220,7 @@ fn child_original_pairs(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = ancillary.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&ancillary);
+    message.msg_controllen = mem::size_of_val(&ancillary) as _;
     // SAFETY: one actual daemon pidfd is received and duped to stdin for the
     // production --owner-pidfd-stdin entry. No PID is serialized into a pin.
     unsafe {
@@ -239,7 +239,7 @@ fn child_original_pairs(
         if header.is_null()
             || (*header).cmsg_level != libc::SOL_SOCKET
             || (*header).cmsg_type != libc::SCM_RIGHTS
-            || (*header).cmsg_len != libc::CMSG_LEN(mem::size_of::<RawFd>() as u32) as usize
+            || (*header).cmsg_len != libc::CMSG_LEN(mem::size_of::<RawFd>() as u32) as _
             || !libc::CMSG_NXTHDR(&message, header).is_null()
         {
             return Err(io::Error::from_raw_os_error(libc::EPROTO));
