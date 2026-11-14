@@ -5,6 +5,7 @@ use tempfile::TempDir;
 
 use super::*;
 use crate::IssuerPurpose;
+use crate::IssuerRecord;
 use crate::IssuerSpec;
 use crate::PolicyDecision;
 use crate::PolicySpec;
