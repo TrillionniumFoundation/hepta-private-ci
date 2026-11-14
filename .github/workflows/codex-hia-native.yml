@@ -9,6 +9,9 @@ on:
       - codex-rs/cli/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
+      - codex-rs/utils/output-truncation/**
+      - codex-rs/protocol/**
+      - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -24,6 +27,9 @@ on:
       - codex-rs/cli/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
+      - codex-rs/utils/output-truncation/**
+      - codex-rs/protocol/**
+      - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -240,6 +246,34 @@ jobs:
             --report "$RUNNER_TEMP/hia-ascii-json-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-abi.log"
 
+      - name: Compare native truncation APIs with the original Rust source
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_truncate_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-truncate-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-truncate-caller.log"
+
+      - name: Verify truncation UTF-8, budgets and buffer contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_truncate_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-truncate-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-truncate-abi.log"
+
+      - name: Test consumers of native truncation and token budgets
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments \
+            --features codex-utils-string/hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-truncate-consumers.log"
+
       - name: Verify installed HIA apply_patch executable
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -255,6 +289,26 @@ jobs:
             --reference-binary "$CARGO_TARGET_DIR/debug/apply_patch" \
             --report "$RUNNER_TEMP/hia-installed-patch.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-installed-patch.log"
+
+      - name: Provision system bubblewrap for real sandbox owner tests
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends bubblewrap apparmor apparmor-profiles
+          command -v bwrap
+          bwrap --version
+          # Ubuntu 24.04 restricts unprivileged namespaces by default. Load its
+          # distribution-maintained, executable-scoped bwrap profile, never
+          # disable the host-wide AppArmor restriction or change Codex's sandbox.
+          profile=/usr/share/apparmor/extra-profiles/bwrap-userns-restrict
+          test -f "$profile"
+          sudo apparmor_parser -Q -T "$profile"
+          sudo apparmor_parser -r "$profile"
+          test "$(sysctl -n kernel.apparmor_restrict_unprivileged_userns)" = 1
+          # Fail before the owner suite if user or network namespaces cannot
+          # actually start. Mere bwrap presence/version is not qualification.
+          bwrap --unshare-user --unshare-net --ro-bind / / --dev /dev --proc /proc -- /bin/true
 
       - name: Test full Codex owners with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -280,12 +334,13 @@ jobs:
             --report "$RUNNER_TEMP/hia-installed-codex.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-installed-codex.log"
 
-      - name: Verify default callers require no HIA artifacts
+      - name: Verify default callers and truncation consumers require no HIA artifacts
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string --locked \
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string \
+            -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
 
       - name: Upload original build and test results
@@ -313,6 +368,11 @@ jobs:
             ${{ runner.temp }}/hia-ascii-json-caller.log
             ${{ runner.temp }}/hia-ascii-json-abi.json
             ${{ runner.temp }}/hia-ascii-json-abi.log
+            ${{ runner.temp }}/hia-truncate-caller.json
+            ${{ runner.temp }}/hia-truncate-caller.log
+            ${{ runner.temp }}/hia-truncate-abi.json
+            ${{ runner.temp }}/hia-truncate-abi.log
+            ${{ runner.temp }}/hia-truncate-consumers.log
             ${{ runner.temp }}/hia-native-crates.log
             ${{ runner.temp }}/hia-installed-patch-build.log
             ${{ runner.temp }}/hia-original-patch-build.log
