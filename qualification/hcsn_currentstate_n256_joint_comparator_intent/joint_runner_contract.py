@@ -1,5 +1,7 @@
 """Static manifest validator for a future admitted N256 joint run."""
 
+import math
+
 from .contract import BYTE_PAIR_NAMES, EXPECTED_CAPSULES, EXPECTED_DENOMINATOR, EXPECTED_LANE_CAPSULES
 
 
@@ -8,6 +10,17 @@ def _sha256(value, name):
         character not in "0123456789abcdef" for character in value
     ):
         raise ValueError(f"{name} must be a lowercase SHA-256")
+
+
+def _nonnegative_hex(value, name):
+    if not isinstance(value, str):
+        raise ValueError(f"{name} must be a canonical FP64 hexadecimal string")
+    number = float.fromhex(value)
+    if not math.isfinite(number) or number < 0.0 or number == 0.0 and value.startswith("-"):
+        raise ValueError(f"{name} must be finite and non-negative")
+    if number.hex() != value:
+        raise ValueError(f"{name} must be canonical FP64 hexadecimal")
+    return number
 
 
 def validate_future_manifest(manifest):
@@ -29,11 +42,25 @@ def validate_future_manifest(manifest):
     if not isinstance(errors, dict) or set(errors) != {"candidate", "oracle"}:
         raise ValueError("candidate and oracle require separate error gates")
     for lane, result in errors.items():
-        if result.get("passed") is not True:
+        fields = (
+            "max_abs_error_hex",
+            "sum_abs_error_hex",
+            "max_abs_threshold_hex",
+            "sum_abs_threshold_hex",
+        )
+        if any(field not in result for field in fields):
+            raise ValueError(f"{lane} separate error fields missing")
+        maximum = _nonnegative_hex(result["max_abs_error_hex"], f"{lane} maximum error")
+        total = _nonnegative_hex(result["sum_abs_error_hex"], f"{lane} summed error")
+        maximum_threshold = _nonnegative_hex(
+            result["max_abs_threshold_hex"], f"{lane} maximum threshold"
+        )
+        total_threshold = _nonnegative_hex(
+            result["sum_abs_threshold_hex"], f"{lane} summed threshold"
+        )
+        independently_passed = maximum <= maximum_threshold and total <= total_threshold
+        if result.get("passed") is not independently_passed or not independently_passed:
             raise ValueError(f"{lane} error gate did not pass independently")
-        for field in ("max_abs_error_hex", "sum_abs_error_hex", "threshold_hex"):
-            if field not in result:
-                raise ValueError(f"{lane} {field} missing")
     pairs = manifest.get("byte_exact_pairs")
     if not isinstance(pairs, list) or [pair.get("name") for pair in pairs] != list(
         BYTE_PAIR_NAMES
