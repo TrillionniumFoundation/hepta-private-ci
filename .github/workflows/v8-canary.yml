@@ -318,6 +318,10 @@ jobs:
           cargo_args=(test -p codex-v8-poc)
           if [[ "${SANDBOX}" == "true" ]]; then
             cargo_args+=(--features sandbox)
+          else
+            # The crate defaults to sandbox; match the non-sandbox archive
+            # rather than testing a sandbox-enabled crate against that archive.
+            cargo_args+=(--no-default-features)
           fi
 
           (
