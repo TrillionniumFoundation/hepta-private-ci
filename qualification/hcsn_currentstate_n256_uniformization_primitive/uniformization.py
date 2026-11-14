@@ -159,6 +159,9 @@ def uniformization_action(rows, vector, duration, absolute_l1_tolerance, *, prec
                 with localcontext() as rounded:
                     rounded.prec = precision
                     output = tuple(+value for value in total)
+                with localcontext() as rounded_bound:
+                    rounded_bound.prec = precision
+                    rounded_bound.rounding = ROUND_CEILING
                     certified = +bound
                 return output, TruncationCertificate(
                     term_index,
