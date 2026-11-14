@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.cell-causal.exact-format.v1",
+  "tool_sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+  "version": "ruff 0.15.13",
+  "config": "target-version = \"py310\"\nline-length = 88\n",
+  "input_archive_sha256": "782e69d2a048a8868375c45771136eb1f222f7d89ef25cfab2b4a6a1c707a69f",
+  "files": [
+    {
+      "path": "execution/analyze_b.py",
+      "before_sha256": "4c475b35eefe451860569e7f257df0ad6b6746d3017037cd82caead9dd2ce1c2",
+      "after_sha256": "c65f3eef739d1994aefedd6ef114d867d94b5f529470dc03ec78d4d329bcf29a",
+      "ast_equal": true
+    },
+    {
+      "path": "execution/build_evaluation.py",
+      "before_sha256": "530427179406d2b7d72b0a6abf3d58123d331657bab91625efec0bc2d899d6c9",
+      "after_sha256": "530427179406d2b7d72b0a6abf3d58123d331657bab91625efec0bc2d899d6c9",
+      "ast_equal": true
+    },
+    {
+      "path": "execution/evaluate_b.py",
+      "before_sha256": "5d2b1e5cfa227a15e36329751bf8eab67fd7a5042ded8b8f3669bbc29729c2c6",
+      "after_sha256": "5d2b1e5cfa227a15e36329751bf8eab67fd7a5042ded8b8f3669bbc29729c2c6",
+      "ast_equal": true
+    }
+  ],
+  "status": "PASS",
+  "behavioral_test_claim": false,
+  "output_archive_sha256": "b6ed0311bba56c631f6c646973277c4ca4aeb3bb4fd3c76a481413c822508e88",
+  "output_archive_bytes": 21894
+}

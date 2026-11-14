@@ -84,6 +84,82 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::Q24OriginalInitialTaskProgress { request } => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalInitialTaskProgress(
+                        AgentdState::read_original_q24_initial_task_progress(self, &request)
+                            .await?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    let _ = request;
+                    return Err(AgentdError::Protocol(
+                        "original Initial task progress unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::OriginalQ24TerminalAcceptance {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::OriginalQ24TerminalAcceptance {
+                        data: AgentdState::read_original_q24_terminal_acceptance(self)?,
+                    }
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original terminal acceptance unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::OriginalQ24CompletedHistory {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::OriginalQ24CompletedHistory {
+                        data: AgentdState::read_original_q24_completed_history(self)?,
+                    }
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original completed history unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::Q24OriginalTaskObservation {} => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalTaskObservation(
+                        self.read_original_q24_control_task()?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    return Err(AgentdError::Protocol(
+                        "original Q24 task observation unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::Q24OriginalTerminalOutcome { request } => {
+                #[cfg(target_os = "linux")]
+                {
+                    AgentdPayload::Q24OriginalTerminalOutcome(
+                        self.submit_original_q24_control_outcome(&request)?,
+                    )
+                }
+                #[cfg(not(target_os = "linux"))]
+                {
+                    let _ = request;
+                    return Err(AgentdError::Protocol(
+                        "original Q24 Outcome owner unavailable on this platform".into(),
+                    ));
+                }
+            }
+            crate::AgentdMethod::Generation { request } => {
+                AgentdPayload::Generation(self.generation_control(request).await?)
+            }
             crate::AgentdMethod::Capabilities => {
                 let mut capabilities = vec![
                     crate::AgentdCapability::new(
@@ -93,6 +169,46 @@ impl AgentdState {
                     )
                     .map_err(AgentdError::Protocol)?,
                 ];
+                #[cfg(target_os = "linux")]
+                if self.original_q24_completed_history.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_Q24_COMPLETED_HISTORY_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                #[cfg(target_os = "linux")]
+                if self.original_q24_outcome_control.get().is_some() {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_Q24_ORIGINAL_TASK_OBSERVATION_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_Q24_ORIGINAL_OUTCOME_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
+                if self.generation_control_enabled()? {
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            codex_hepta_agent_protocol::AGENTD_GENERATION_CONTROL_CAPABILITY,
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
+                    );
+                }
                 if self.automation_effect_host().is_some() {
                     capabilities.push(
                         crate::AgentdCapability::new(
@@ -129,6 +245,14 @@ impl AgentdState {
                     capabilities.push(
                         crate::AgentdCapability::new("objective.start", 1, 0)
                             .map_err(AgentdError::Protocol)?,
+                    );
+                    capabilities.push(
+                        crate::AgentdCapability::new(
+                            "objective.admission.read",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.canonical_intelligence_enabled() {
@@ -227,6 +351,15 @@ impl AgentdState {
                     },
                 }
             }
+            crate::AgentdMethod::ObjectiveAdmission { query } => {
+                let outcome = match self.objective_runtime.get() {
+                    Some(host) => host.admission_history(self.identity(), query),
+                    None => crate::ObjectiveAdmissionOutcome::Unknown {
+                        reason: crate::ObjectiveAdmissionUnknownReason::OwnerUnavailable,
+                    },
+                };
+                AgentdPayload::ObjectiveAdmission { outcome }
+            }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
             ),
@@ -234,6 +367,13 @@ impl AgentdState {
                 AgentdPayload::AuthBusTextStatus(
                     crate::authbus_ingress::status(self, delivery_id).await?,
                 )
+            }
+            crate::AgentdMethod::AuthBusTextLookup { delivery_id } => {
+                let status = crate::authbus_ingress::lookup(self, &delivery_id).await?;
+                AgentdPayload::AuthBusTextLookup {
+                    delivery_id,
+                    status,
+                }
             }
             crate::AgentdMethod::KernelEvidenceAppend { request } => {
                 AgentdPayload::KernelEvidenceResult(
@@ -275,10 +415,12 @@ impl AgentdState {
                     self.identity.spawn_generation,
                     &query,
                     limit,
-                    self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::CognitiveContextReadOptions {
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
@@ -352,11 +494,13 @@ impl AgentdState {
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
-                    &snapshot_digest,
-                    &read_digest,
-                    omitted_records,
-                    &items,
-                    plan.as_ref(),
+                    crate::cognitive_context::CognitiveContextRevalidationInput {
+                        snapshot_digest: &snapshot_digest,
+                        read_digest: &read_digest,
+                        omitted_records,
+                        items: &items,
+                        plan: plan.as_ref(),
+                    },
                     self.cognitive_ranker.get(),
                     self.identity.spawn_generation,
                     self.cognitive_retrieval_context.get(),
@@ -487,19 +631,7 @@ impl AgentdState {
                 run_id,
                 expected_revision,
                 reason,
-            } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let (disposition, receipt) = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .cancel_run(now_ms()?, &run_id, expected_revision, &reason)
-                    .map_err(run_error)?;
-                AgentdPayload::RunCancellation(crate::AgentRunCancellation {
-                    disposition: wire_cancellation_disposition(disposition),
-                    receipt: wire_run_receipt(receipt),
-                })
-            }
+            } => self.run_cancellation_payload(run_id, expected_revision, reason)?,
             crate::AgentdMethod::RunObserveTerminal {
                 run_id,
                 expected_revision,
@@ -520,16 +652,7 @@ impl AgentdState {
                     .map_err(run_error)?;
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
-            crate::AgentdMethod::RunStatus { run_id } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let run = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .run(&run_id)
-                    .map(wire_run_receipt);
-                AgentdPayload::RunStatus { run }
-            }
+            crate::AgentdMethod::RunStatus { run_id } => self.run_status_payload(run_id)?,
             crate::AgentdMethod::RunReleaseClosed {
                 run_id,
                 expected_revision,
@@ -666,7 +789,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {
@@ -1233,7 +1356,7 @@ fn require_run_admission_ready(
     }
 }
 
-fn require_run_reconciliation_ready(
+pub(super) fn require_run_reconciliation_ready(
     lifecycle: AgentLifecycle,
     fenced: bool,
 ) -> Result<(), AgentdError> {
@@ -1331,7 +1454,7 @@ fn wire_run_phase(value: crate::RunPhase) -> crate::AgentRunPhase {
     }
 }
 
-fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
+pub(super) fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
     crate::AgentRunReceipt {
         run_id: value.run_id,
         revision: value.revision,
@@ -1349,7 +1472,7 @@ fn wire_run_receipt(value: crate::RunReceipt) -> crate::AgentRunReceipt {
     }
 }
 
-fn wire_cancellation_disposition(
+pub(super) fn wire_cancellation_disposition(
     value: crate::CancellationDisposition,
 ) -> crate::AgentCancellationDisposition {
     match value {
@@ -1390,7 +1513,7 @@ fn require_automation_ready(
     }
 }
 
-fn now_ms() -> Result<u64, AgentdError> {
+pub(super) fn now_ms() -> Result<u64, AgentdError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|_| AgentdError::Protocol("system clock precedes Unix epoch".to_string()))?

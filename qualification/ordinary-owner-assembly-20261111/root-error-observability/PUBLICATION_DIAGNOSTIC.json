@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "classification": "static diagnosis of missing test failure evidence; production root cause still unknown",
+  "actual_failed_attempt": {
+    "commit": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "selected_tests": 17,
+    "selected_passed": 15,
+    "selected_failed": 2,
+    "selected_skipped": 0,
+    "console_nonselected_filtered_or_skipped": 1350,
+    "original_raw": {
+      "git_blob": "25319f8b638924e2cf507ef2d0595ac5767aebbe",
+      "bytes": 46301,
+      "sha256": "e11c42ce884d0b6a0fed01d3020e4008468468179eb9abbd2bbc7fecf3e5e669"
+    },
+    "junit_git_blob": "0cc7d2f7f17ef4b75f1490d640749654c8ceccfb",
+    "execution_git_blob": "d0375393546dc0f9b8f9e870e4f7b9e323ed4f2f",
+    "reported_command_exit": 100,
+    "reported_timeout": false,
+    "reported_truncated": false,
+    "reported_source_before_after_clean": true,
+    "failures": [
+      {
+        "name": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+        "elapsed_seconds": 15.663,
+        "reported_error": "Resource temporarily unavailable (os error 11)"
+      },
+      {
+        "name": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+        "elapsed_seconds": 10.751,
+        "reported_error": "Resource temporarily unavailable (os error 11)"
+      }
+    ]
+  },
+  "confirmed_test_observability_defects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_support_tests.rs",
+      "preimage": "b5e5e84aed65e4fb5156eb57f35c81598fb1a7a1",
+      "finding": "Child stdout/stderr were pipes read only by finish(). An earlier parent failure dropped ChildOwner, whose existing kill/wait cleanup discarded both original streams.",
+      "change": "Use two test-owned anonymous File sinks. Keep existing child timeout, credentials, inherited-rights setup, argv and cleanup. After original Drop cleanup, emit original stdout/stderr bytes to the parent error log. No extra pipe EOF wait and no added kill or process scope."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": "eeca436dab40d6b30c765fd95e69b1f3507e7427",
+      "finding": "Root service result was retained in served, but registration.join()?? returned before its print. A control error could mask a more useful original service result.",
+      "change": "Print original served result before propagating join/control failure and attach phase context. Preserve original acceptance of expected refused-frame service termination."
+    }
+  ],
+  "added_context": "Publication parent control identifies expected message and phase. Child adds original offer/five-lane/learning/CURRENT/grant/dispatch context and four fixed progress lines per phase, without changing error classification or negative checks.",
+  "independent_initial_patch": {
+    "manifest": "0cc7b64069463c6de870df2c4b110955dcc1fd6f",
+    "fixture": "88374031ceb8467684db2d987054b7394de41f8b",
+    "child": "d15885d6b7ba946d0ff248f543a133d2e928408d",
+    "separate_owner": "chain_nextuse"
+  },
+  "static_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_support_tests.rs",
+      "guard_and_timeout_tokens_equal": true,
+      "token_count": 6,
+      "exact_ops_replayed": true,
+      "native_executed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_tests.rs",
+      "guard_and_timeout_tokens_equal": true,
+      "token_count": 25,
+      "exact_ops_replayed": true,
+      "native_executed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "guard_and_timeout_tokens_equal": true,
+      "token_count": 18,
+      "exact_ops_replayed": true,
+      "native_executed": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "guard_and_timeout_tokens_equal": true,
+      "token_count": 66,
+      "exact_ops_replayed": true,
+      "native_executed": false
+    }
+  ],
+  "source_delta": {
+    "git_blob": "df8954c7b1c609b6be4d4f8936797453c9bd5957",
+    "bytes": 19302,
+    "sha256": "2f86483aea75f7f5076b0f76cded2a404be7ff003e6d930cc05bf8a49465aab1"
+  },
+  "unchanged": [
+    "All Root/FinalUse/CURRENT production implementations",
+    "All original assertions and typed negative cases",
+    "All original timeouts, alarm and child deadline",
+    "Original actual UID0 parent and UID60001 child restrictions",
+    "Original capability, signature, nonce, witness and durable-byte comparisons",
+    "Original checker and CALLERS registry",
+    "All old failed logs and run records"
+  ],
+  "not_claimed": [
+    "The EAGAIN source has been identified",
+    "Either failed test has passed",
+    "The other fifteen passes transfer to a new source",
+    "Native/Rust compilation of this patch",
+    "Ordinary learning chain acceptance or physical cold restart"
+  ],
+  "execution": {
+    "cargo_run": false,
+    "root_test_run": false,
+    "service_changed": false,
+    "refs_changed": false
+  }
+}

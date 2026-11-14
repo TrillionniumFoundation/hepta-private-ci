@@ -853,6 +853,7 @@ fn rollout_path_is_archived(store: &LocalThreadStore, path: &Path) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use crate::local::test_support::private_home;
     use codex_protocol::models::PermissionProfile;
     use codex_protocol::openai_models::ReasoningEffort;
     use codex_protocol::protocol::ThreadHistoryMode;
@@ -909,7 +910,7 @@ mod tests {
 
     #[tokio::test]
     async fn section_moves_persist_in_sqlite_without_changing_the_rollout() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(320);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1058,7 +1059,7 @@ mod tests {
 
     #[tokio::test]
     async fn paginated_name_updates_use_sqlite_without_rollout_writes() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(318);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1159,7 +1160,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_sets_memory_mode_on_active_rollout() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(302);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1200,7 +1201,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_updates_paginated_git_info_in_sqlite_only() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(303);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1304,7 +1305,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_preserves_memory_mode_when_updating_git_info() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(312);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1415,7 +1416,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_sets_git_info() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1459,7 +1460,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_updates_permission_profile_and_reasoning_effort() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1516,7 +1517,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_partially_updates_git_info() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1575,7 +1576,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_clears_git_info_fields() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             config.sqlite.clone(),
@@ -1780,7 +1781,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_applies_combined_explicit_patch() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             codex_state::SqliteConfig::new_for_testing(home.path().abs()),
@@ -1874,7 +1875,7 @@ mod tests {
 
     #[tokio::test]
     async fn metadata_patch_applies_title_over_existing_name() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             codex_state::SqliteConfig::new_for_testing(home.path().abs()),
@@ -1918,7 +1919,7 @@ mod tests {
 
     #[tokio::test]
     async fn metadata_patch_applies_latest_preview_and_first_user_message() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             codex_state::SqliteConfig::new_for_testing(home.path().abs()),
@@ -1977,7 +1978,7 @@ mod tests {
 
     #[tokio::test]
     async fn observed_metadata_rejects_unknown_thread_without_rollout() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             codex_state::SqliteConfig::new_for_testing(home.path().abs()),
@@ -2015,7 +2016,7 @@ mod tests {
 
     #[tokio::test]
     async fn observed_metadata_rebuilds_history_mode_from_canonical_session_meta() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(317);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -2061,7 +2062,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_recreates_missing_archived_sqlite_row_as_archived() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(315);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -2102,7 +2103,7 @@ mod tests {
 
     #[tokio::test]
     async fn observed_metadata_normalizes_cwd_for_list_filters() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let runtime = codex_state::StateRuntime::init(
             codex_state::SqliteConfig::new_for_testing(home.path().abs()),
@@ -2169,7 +2170,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_keeps_archived_thread_archived_in_sqlite() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(307);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -2233,7 +2234,7 @@ mod tests {
 
     #[tokio::test]
     async fn update_thread_metadata_keeps_live_archived_thread_archived_in_sqlite() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(308);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");

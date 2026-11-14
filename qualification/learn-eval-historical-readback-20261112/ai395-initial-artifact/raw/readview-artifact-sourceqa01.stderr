@@ -1,0 +1,38 @@
+......E.
+======================================================================
+ERROR: test_root_initial_reader_cannot_supply_writer_or_other_current_store (test_initial_artifact_readview_source_closure.InitialArtifactReadviewClosureTests.test_root_initial_reader_cannot_supply_writer_or_other_current_store)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/hepta-learn-ff41-ordinary-20261112/qa/b4-no-bypass/test_initial_artifact_readview_source_closure.py", line 123, in test_root_initial_reader_cannot_supply_writer_or_other_current_store
+    self.reject_removal("neuron_generation_current_initial_root.rs",
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        "fn revalidate_original_initial_artifacts(",
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        "self.store.original_initial_client()?")
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/hepta-learn-ff41-ordinary-20261112/qa/b4-no-bypass/test_initial_artifact_readview_source_closure.py", line 74, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/hepta-learn-ff41-ordinary-20261112/scripts/verify_hepta_callers.py", line 715, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qq/hepta-learn-ff41-ordinary-20261112/scripts/verify_hepta_callers.py", line 687, in _verify_function_order
+    _verify_required_order(
+    ~~~~~~~~~~~~~~~~~~~~~~^
+        {"required_order": [sequence]},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        literal_positions=literal_positions,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/qq/hepta-learn-ff41-ordinary-20261112/scripts/verify_hepta_callers.py", line 583, in _verify_required_order
+    raise VerificationFailure(
+        f"{relative}: required_order must contain marker sequences"
+    )
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/neuron_generation_current_initial_root.rs:fn revalidate_original_initial_artifacts(: required_order must contain marker sequences
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.183s
+
+FAILED (errors=1)

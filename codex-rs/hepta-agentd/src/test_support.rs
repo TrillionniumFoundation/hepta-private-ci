@@ -72,8 +72,11 @@ pub struct CognitiveTestHost {
 }
 
 impl CognitiveTestHost {
+    /// The executable must register Codex's arg0 helper dispatch before its
+    /// ordinary entry point, including when it is a test executable.
     pub async fn start(
         root: PathBuf,
+        codex_self_exe: PathBuf,
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
@@ -118,6 +121,10 @@ impl CognitiveTestHost {
         state.attach_cognitive_store(Arc::clone(&store))?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
+        // Match default startup after attaching this generation's real store.
+        // This host has no production effect owner, so it uses the original
+        // zero-authority revocation baseline before opening App Server admission.
+        state.mark_runtime_prerequisites_ready()?;
 
         codex_utils_home_dir::set_process_codex_home_override(
             AbsolutePathBuf::from_absolute_path(identity.home_root.clone())?,
@@ -133,10 +140,15 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_self_exe),
+                ..Default::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,
+            crate::app_runtime::AppServerSocket::Bind,
+            crate::app_runtime::AppServerModelToolProfile::Standard,
         ));
 
         let deadline = Instant::now() + READY_TIMEOUT;
@@ -330,4 +342,23 @@ stream_max_retries = 0
 fn now_seconds() -> TestResult<i64> {
     let seconds = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     Ok(i64::try_from(seconds)?)
+}
+
+/// Observe an idle test owner's original file without reopening its locked path.
+#[cfg(test)]
+pub(crate) fn read_file_bytes(file: &std::fs::File) -> std::io::Result<Vec<u8>> {
+    use std::io::Read;
+    use std::io::Seek;
+    use std::io::SeekFrom;
+
+    let mut observer = file.try_clone()?;
+    let position = observer.stream_position()?;
+    let mut bytes = Vec::new();
+    let read = observer
+        .seek(SeekFrom::Start(0))
+        .and_then(|_| observer.read_to_end(&mut bytes));
+    let restore = observer.seek(SeekFrom::Start(position));
+    read?;
+    restore?;
+    Ok(bytes)
 }

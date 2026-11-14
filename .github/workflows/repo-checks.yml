@@ -9,7 +9,7 @@ permissions:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     env:
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
@@ -25,6 +25,20 @@ jobs:
 
       - name: Test Cargo manifest migration boundaries
         run: python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'
+
+      - name: Verify preserved source archive custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 -B -m unittest discover -s scripts/tests -p test_verify_source_custody_container.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_mixed_patch_custody.py -v
+          python3 -B -m unittest discover -s scripts/tests -p test_verify_source_custody_volumes.py -v
+          python3 -B scripts/verify_source_custody_volumes.py --all
+          python3 -B library-recovery/followup-source-20261103/verify_projection.py
+          python3 -B library-recovery/20261107/verify_custody.py
+          python3 -B library-recovery/mixed-patch-new-files-20261103/verify_sources.py
+          python3 -B library-recovery/source-companion-documents-20261103/verify_projection.py
 
       - name: Verify Hepta privileged caller closed set
         run: |
@@ -109,7 +123,7 @@ jobs:
 
       - uses: ./.github/actions/setup-ci
 
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:

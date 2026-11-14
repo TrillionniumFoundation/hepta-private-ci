@@ -26,6 +26,12 @@ class ScopeTests(unittest.TestCase):
             with self.subTest(path=unknown):
                 self.assertTrue(select([unknown])["full_repo"])
 
+    def test_plasticity_process_fixture_requires_full_repo_bazel_validation(self):
+        scope = select(["codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs"])
+        self.assertTrue(all(scope[key] for key in GROUPS))
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["full_repo"])
+
     def test_readme_and_ordinary_prose_do_not_prepare_native_dependencies(self):
         self.assertFalse(
             select(["README.md", "docs/modules/inference.control/TECHNICAL.md"])[
@@ -146,6 +152,48 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["native"])
         self.assertFalse(scope["full_repo"])
 
+    def test_dossier_detail_only_trusts_markdown_as_prose(self):
+        prose = select(["qualification/module-execution-dossiers/detail/owner.md"])
+        self.assertTrue(prose["derived"])
+        self.assertFalse(prose["native"])
+        self.assertFalse(prose["full_repo"])
+
+        for suffix in (".py", ".rs", ".sh", ".json", ".yaml", ".txt"):
+            path = "qualification/module-execution-dossiers/detail/unsafe" + suffix
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["derived"])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(scope["native"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
+    def test_hepta_prefix_only_shortcuts_direct_python_helpers(self):
+        for python_helper in (
+            "scripts/hepta_repository_controls.py",
+            "scripts/test_hepta_control_hardening.py",
+            "scripts/tests/test_hepta_ci_exec.py",
+        ):
+            with self.subTest(path=python_helper):
+                scope = select([python_helper])
+                self.assertTrue(scope["derived"])
+                self.assertFalse(scope["native"])
+                self.assertFalse(scope["full_repo"])
+
+        for untrusted in (
+            "scripts/hepta_custom.rs",
+            "scripts/hepta_custom.sh",
+            "scripts/hepta_noextension",
+            "scripts/test_hepta_custom.toml",
+            "scripts/hepta_nested/driver.py",
+            "scripts/test_hepta_special/run.py",
+        ):
+            with self.subTest(path=untrusted):
+                scope = select([untrusted])
+                self.assertTrue(scope["derived"])
+                self.assertTrue(scope["full_repo"])
+                self.assertTrue(scope["native"])
+                self.assertTrue(all(scope[group] for group in GROUPS))
+
     def test_bad_paths_fail_instead_of_selecting_nothing(self):
         for path in [
             "",
@@ -154,9 +202,45 @@ class ScopeTests(unittest.TestCase):
             "docs/../foo.md",
             "docs\\foo.md",
             "docs/a\0.md",
+            "docs/a\nb.md",
+            "docs/a\rb.md",
+            "docs/a\tb.md",
+            "docs/a\x7fb.md",
+            "docs/control-plane/\nOBJECTIVES.json",
         ]:
             with self.subTest(path=path), self.assertRaises(ValueError):
                 select([path])
+
+    def test_required_workflow_concurrency_is_scoped_by_source_repository(self):
+        # Branch names are not globally unique: two forks can both use "fix".
+        # Keep push/PR coalescing within a repository, never across forks.
+        root = Path(__file__).resolve().parents[2]
+        workflows = (
+            "blocking-ci.yml",
+            "v8-canary.yml",
+            "automation-taskflow-focused.yml",
+            "hepta-architecture-convergence.yml",
+        )
+        for name in workflows:
+            with self.subTest(workflow=name):
+                content = (root / ".github" / "workflows" / name).read_text(
+                    encoding="utf-8"
+                )
+                keys = [
+                    line.strip()
+                    for line in content.splitlines()
+                    if line.startswith("  group: ")
+                ]
+                self.assertEqual(len(keys), 1)
+                key = keys[0]
+                self.assertIn(
+                    "::${{ github.event.pull_request.head.repo.full_name || github.repository }}::",
+                    key,
+                )
+                self.assertIn(
+                    "${{ github.event.pull_request.head.ref || github.ref_name }}",
+                    key,
+                )
 
     def test_commit_id_validation_precedes_subprocess(self):
         with patch("subprocess.run") as run, self.assertRaises(ValueError):

@@ -1,0 +1,420 @@
+{
+  "schema": "embedded-generated-library-source-projection-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "original_archival_base": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "parent_commit": "53cd848c4906748118eab01259596248d26d3808",
+  "branch": "archive/library-small-source-20261103-gpt6",
+  "source_count": 3,
+  "source_bytes": 321,
+  "frozen_candidate_union_size": 6116,
+  "candidate_sets_unchanged": true,
+  "archived_source_executed": false,
+  "scientific_or_runtime_acceptance": false,
+  "deployment_or_production_activation": false,
+  "all_library_source_synced": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "attribution_scope": "Current archival destination follows exact original project context and inspected source interfaces. Generated or embedded sources remain identified as such; no independent historical source-file existence is inferred.",
+  "packages": [
+    {
+      "name": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "bytes": 29613127,
+      "file_id": "file_0000000035d881f5a07626eff9c36b68",
+      "library_file_id": "libfile_af4efe12282081918f7002d781f594a8",
+      "sha256": "c51f3ee6528c77b9aa5318ff5b152011187761e2405fd6e78ce6f68e6432cdfd"
+    }
+  ],
+  "source_contexts": [
+    {
+      "package": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "member": "sprint_hepta_pq_20261029/component-evidence/contracts-native-complete-artifacts/manifest.json",
+      "git_blob_sha": "88ccc056a20b04f7069a809a864a43e1b3e46b75",
+      "sha256": "488a3e4d132223229c5661f34e1b9461106e12fcf976783174cb1fcc4c638ad2",
+      "bytes": 303676,
+      "repository_evidence": [
+        {
+          "line": 5938,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/clippy.toml\","
+        },
+        {
+          "line": 5963,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/Cargo.toml\","
+        },
+        {
+          "line": 5968,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/../CALLERS.toml\","
+        },
+        {
+          "line": 5973,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/../fixtures/AUTHBUS_SOURCE_MANIFEST.v1.json\","
+        },
+        {
+          "line": 5978,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/agent_id.rs\","
+        },
+        {
+          "line": 5983,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/agent_id_tests.rs\","
+        },
+        {
+          "line": 5988,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus.rs\","
+        },
+        {
+          "line": 5993,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_b1.rs\","
+        },
+        {
+          "line": 5998,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_b1_tests.rs\","
+        },
+        {
+          "line": 6003,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_b2.rs\","
+        },
+        {
+          "line": 6008,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_b2_tests.rs\","
+        },
+        {
+          "line": 6013,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_b3.rs\","
+        },
+        {
+          "line": 6018,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_b4.rs\","
+        },
+        {
+          "line": 6023,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_b5.rs\","
+        },
+        {
+          "line": 6028,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authbus_tests.rs\","
+        },
+        {
+          "line": 6033,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authority_lease.rs\","
+        },
+        {
+          "line": 6038,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/authority_trust.rs\","
+        },
+        {
+          "line": 6043,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/callers_manifest_tests.rs\","
+        },
+        {
+          "line": 6048,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/canonical.rs\","
+        },
+        {
+          "line": 6053,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use.rs\","
+        },
+        {
+          "line": 6058,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use_control.rs\","
+        },
+        {
+          "line": 6063,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2.rs\","
+        },
+        {
+          "line": 6068,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use_ml_dsa65_v2_tests.rs\","
+        },
+        {
+          "line": 6073,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use_store.rs\","
+        },
+        {
+          "line": 6078,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use_store_io.rs\","
+        },
+        {
+          "line": 6083,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use_store_tests.rs\","
+        },
+        {
+          "line": 6088,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/final_use_tests.rs\","
+        },
+        {
+          "line": 6093,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/identity.rs\","
+        },
+        {
+          "line": 6098,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/lib.rs\","
+        },
+        {
+          "line": 6103,
+          "text": "      \"path\": \"/workspace/scratch/d991ec408034/sprint_hepta_pq_20261029/repo/codex-rs/hepta-contracts/src/memory.rs\","
+        }
+      ]
+    },
+    {
+      "package": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "member": "sprint_consensus_20261030/ci540_readback/artifacts/12926554897-selected/source.json",
+      "git_blob_sha": "eaa3b5c6e28a4426e3fb40f5bba93c74285130e3",
+      "sha256": "6d1b9ad01747f5991e03386276f6259b56319b5a7f42660fb4ffc9ca81e76bf2",
+      "bytes": 421,
+      "repository_evidence": [
+        {
+          "line": 3,
+          "text": "  \"candidate\": \"540d72356a921da31dde1113537382e5c0f0c4fd\","
+        },
+        {
+          "line": 7,
+          "text": "  \"tested_commit\": \"540d72356a921da31dde1113537382e5c0f0c4fd\","
+        },
+        {
+          "line": 8,
+          "text": "  \"tested_tree\": \"37abfb254dd598226651cd0da42a78aa0560e23e\","
+        }
+      ]
+    },
+    {
+      "package": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "archive_chain": [
+        "sprint_consensus_20261030/ci540_readback/artifacts/12926554897.zip"
+      ],
+      "member": "source.json",
+      "git_blob_sha": "eaa3b5c6e28a4426e3fb40f5bba93c74285130e3",
+      "sha256": "6d1b9ad01747f5991e03386276f6259b56319b5a7f42660fb4ffc9ca81e76bf2",
+      "bytes": 421,
+      "identity": {
+        "base": null,
+        "candidate": "540d72356a921da31dde1113537382e5c0f0c4fd",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "540d72356a921da31dde1113537382e5c0f0c4fd",
+        "tested_tree": "37abfb254dd598226651cd0da42a78aa0560e23e",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 924391555,
+        "tracked_entries": 7114,
+        "tracked_worktree_verified": true
+      }
+    },
+    {
+      "package": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "archive_chain": [
+        "sprint_consensus_20261030/ci540_readback/artifacts/12932013130.zip"
+      ],
+      "member": "source.json",
+      "git_blob_sha": "eaa3b5c6e28a4426e3fb40f5bba93c74285130e3",
+      "sha256": "6d1b9ad01747f5991e03386276f6259b56319b5a7f42660fb4ffc9ca81e76bf2",
+      "bytes": 421,
+      "identity": {
+        "base": null,
+        "candidate": "540d72356a921da31dde1113537382e5c0f0c4fd",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "540d72356a921da31dde1113537382e5c0f0c4fd",
+        "tested_tree": "37abfb254dd598226651cd0da42a78aa0560e23e",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 924391555,
+        "tracked_entries": 7114,
+        "tracked_worktree_verified": true
+      }
+    }
+  ],
+  "third_party_license_provenance": [
+    {
+      "name": "serde",
+      "version": "1.0.229",
+      "registry_source": "registry+https://github.com/rust-lang/crates.io-index",
+      "archive_sha256": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba",
+      "archive_bytes": 83669,
+      "license_members": [
+        {
+          "member": "serde-1.0.229/LICENSE-MIT",
+          "git_blob_sha": "31aa79387f27e730e33d871925e152e35e428031",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        },
+        {
+          "member": "serde-1.0.229/LICENSE-APACHE",
+          "git_blob_sha": "1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        }
+      ]
+    },
+    {
+      "name": "serde_core",
+      "version": "1.0.229",
+      "registry_source": "registry+https://github.com/rust-lang/crates.io-index",
+      "archive_sha256": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48",
+      "archive_bytes": 63100,
+      "license_members": [
+        {
+          "member": "serde_core-1.0.229/LICENSE-MIT",
+          "git_blob_sha": "31aa79387f27e730e33d871925e152e35e428031",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        },
+        {
+          "member": "serde_core-1.0.229/LICENSE-APACHE",
+          "git_blob_sha": "1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        }
+      ]
+    },
+    {
+      "name": "thiserror",
+      "version": "2.0.21",
+      "registry_source": "registry+https://github.com/rust-lang/crates.io-index",
+      "archive_sha256": "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e",
+      "archive_bytes": 29021,
+      "license_members": [
+        {
+          "member": "thiserror-2.0.21/LICENSE-MIT",
+          "git_blob_sha": "31aa79387f27e730e33d871925e152e35e428031",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+        },
+        {
+          "member": "thiserror-2.0.21/LICENSE-APACHE",
+          "git_blob_sha": "1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+        }
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "git_blob_sha": "036d1e64765d272a2b3d0ea24ae03162bdc6b603",
+      "sha256": "f7906d652f9ff9cfb6ba31b096ffc511c7fb98ee44614c10d6fe41ad533bdc0c",
+      "bytes": 89,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_package": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "original_member": "sprint_hepta_pq_20261029/component-evidence/contracts-native-complete-artifacts/generated-inputs/debug/build/thiserror-448300f42377c74f/out/private.rs",
+      "archive_chain": [],
+      "json_pointer": null,
+      "container_fingerprint": {
+        "git_blob_sha": "036d1e64765d272a2b3d0ea24ae03162bdc6b603",
+        "sha256": "f7906d652f9ff9cfb6ba31b096ffc511c7fb98ee44614c10d6fe41ad533bdc0c",
+        "bytes": 89
+      },
+      "original_package_sha256": "c51f3ee6528c77b9aa5318ff5b152011187761e2405fd6e78ce6f68e6432cdfd",
+      "original_package_bytes": 29613127,
+      "relative_path": "objects/036d1e64765d272a2b3d0ea24ae03162bdc6b603.rs",
+      "attribution_basis": "Original generated-input manifest names codex-rs/hepta-contracts source files and package inputs; this preserves generated Rust required to reproduce that historical private-ci component build.",
+      "source_kind": "generated third-party Rust input; not authored product implementation",
+      "generator_package": "thiserror 2.0.21"
+    },
+    {
+      "git_blob_sha": "2da7a58d64f0578110e27d4aae1f2163afb29c3c",
+      "sha256": "899563ce84b59b13cd7036e25f7897c1e730906f62a43aff14472d11c4229f34",
+      "bytes": 90,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_package": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "original_member": "sprint_hepta_pq_20261029/component-evidence/contracts-native-complete-artifacts/generated-inputs/debug/build/serde_core-d006e32e1f28c567/out/private.rs",
+      "archive_chain": [],
+      "json_pointer": null,
+      "container_fingerprint": {
+        "git_blob_sha": "2da7a58d64f0578110e27d4aae1f2163afb29c3c",
+        "sha256": "899563ce84b59b13cd7036e25f7897c1e730906f62a43aff14472d11c4229f34",
+        "bytes": 90
+      },
+      "original_package_sha256": "c51f3ee6528c77b9aa5318ff5b152011187761e2405fd6e78ce6f68e6432cdfd",
+      "original_package_bytes": 29613127,
+      "relative_path": "objects/2da7a58d64f0578110e27d4aae1f2163afb29c3c.rs",
+      "attribution_basis": "Original generated-input manifest names codex-rs/hepta-contracts source files and package inputs; this preserves generated Rust required to reproduce that historical private-ci component build.",
+      "source_kind": "generated third-party Rust input; not authored product implementation",
+      "generator_package": "serde_core 1.0.229"
+    },
+    {
+      "git_blob_sha": "92008466a16dfd780ad0a58ff9568b5a014a0845",
+      "sha256": "edaefc31eb178d1c82d9ab94c18a374316f8ff13ad55147cc631698dc9498162",
+      "bytes": 142,
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "source"
+      ],
+      "original_package": "chain-hepta-terminal-evidence-metadata-20261029.zip",
+      "original_member": "sprint_hepta_pq_20261029/component-evidence/contracts-native-complete-artifacts/generated-inputs/debug/build/serde-08134285e4c49213/out/private.rs",
+      "archive_chain": [],
+      "json_pointer": null,
+      "container_fingerprint": {
+        "git_blob_sha": "92008466a16dfd780ad0a58ff9568b5a014a0845",
+        "sha256": "edaefc31eb178d1c82d9ab94c18a374316f8ff13ad55147cc631698dc9498162",
+        "bytes": 142
+      },
+      "original_package_sha256": "c51f3ee6528c77b9aa5318ff5b152011187761e2405fd6e78ce6f68e6432cdfd",
+      "original_package_bytes": 29613127,
+      "relative_path": "objects/92008466a16dfd780ad0a58ff9568b5a014a0845.rs",
+      "attribution_basis": "Original generated-input manifest names codex-rs/hepta-contracts source files and package inputs; this preserves generated Rust required to reproduce that historical private-ci component build.",
+      "source_kind": "generated third-party Rust input; not authored product implementation",
+      "generator_package": "serde 1.0.229"
+    }
+  ],
+  "notices": [
+    {
+      "git_blob_sha": "31aa79387f27e730e33d871925e152e35e428031",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+      "bytes": 1023,
+      "origins": [
+        {
+          "package": "serde",
+          "version": "1.0.229",
+          "member": "serde-1.0.229/LICENSE-MIT",
+          "archive_sha256": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba"
+        },
+        {
+          "package": "serde_core",
+          "version": "1.0.229",
+          "member": "serde_core-1.0.229/LICENSE-MIT",
+          "archive_sha256": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48"
+        },
+        {
+          "package": "thiserror",
+          "version": "2.0.21",
+          "member": "thiserror-2.0.21/LICENSE-MIT",
+          "archive_sha256": "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
+        }
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "relative_path": "notices/31aa79387f27e730e33d871925e152e35e428031.txt"
+    },
+    {
+      "git_blob_sha": "1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723,
+      "origins": [
+        {
+          "package": "serde",
+          "version": "1.0.229",
+          "member": "serde-1.0.229/LICENSE-APACHE",
+          "archive_sha256": "4148590afebada386688f18773da617792bf2ef03ffc1e4cbd2b1d45b023e0ba"
+        },
+        {
+          "package": "serde_core",
+          "version": "1.0.229",
+          "member": "serde_core-1.0.229/LICENSE-APACHE",
+          "archive_sha256": "67dca2c9c51e58a4791a4b1ed58308b39c64224d349a935ab5039aa360942a48"
+        },
+        {
+          "package": "thiserror",
+          "version": "2.0.21",
+          "member": "thiserror-2.0.21/LICENSE-APACHE",
+          "archive_sha256": "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
+        }
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "relative_path": "notices/1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d.txt"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationSchedule;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTaskDraft;
@@ -19,6 +20,9 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_operations::DispatchEffect;
+use codex_hepta_operations::DurableOperationError;
+use codex_hepta_operations::DurableOperationState;
+use codex_hepta_operations::ReconciliationReceiptV1;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -30,6 +34,7 @@ use std::time::Duration;
 use super::AgentdOperationsError;
 use super::AgentdOperationsHost;
 use super::AutomationGrantProvider;
+use super::classify_destination_absence;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const THREAD_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75ddd";
@@ -276,5 +281,185 @@ async fn newer_generation_reopen_reconciles_applied_destination_without_redispat
     );
     assert_eq!(terminal.intent.owner_generation, generation_two);
     assert_eq!(automation.list_tasks(10).await?.len(), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn quarantined_unknown_effect_survives_reopen_without_redispatch()
+-> Result<(), Box<dyn std::error::Error>> {
+    let temp = tempfile::tempdir()?;
+    #[cfg(unix)]
+    std::fs::set_permissions(temp.path(), std::fs::Permissions::from_mode(/*mode*/ 0o700))?;
+    let root = temp.path().canonicalize()?;
+    let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let workspace = root.join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let workspace = workspace.canonicalize()?;
+    let agent_id = AgentId::parse(AGENT_ID)?;
+    let manifest = AgentManifest::new(
+        agent_id,
+        WorkspaceBinding::new(workspace, &fleet_root)?,
+        ResourceBudget::local_default(),
+    )?;
+    let layout = registry.register(manifest)?.layout;
+    let automation = AutomationStore::open(&layout).await?;
+    let operations_path = layout
+        .agent_root()
+        .join("kernel-operations")
+        .join("automation.sqlite3");
+
+    let issuer = SigningKey::from_bytes(&[97; 32]);
+    let authority_dir = root.join("final-use-quarantine");
+    std::fs::create_dir(&authority_dir)?;
+    #[cfg(unix)]
+    std::fs::set_permissions(
+        &authority_dir,
+        std::fs::Permissions::from_mode(/*mode*/ 0o700),
+    )?;
+    let authority = FinalUseAuthority::open_state_dir(
+        &authority_dir,
+        "automation-security-owner".to_string(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 13,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )?;
+    let grants = Arc::new(SigningGrantProvider {
+        issuer,
+        authority_epoch: 13,
+    });
+    let generation = Generation::new(/*value*/ 1)?;
+    let host = AgentdOperationsHost::open(
+        &operations_path,
+        automation.clone(),
+        authority.clone(),
+        grants.clone(),
+        generation,
+    )
+    .await?;
+    let draft = draft();
+    let intent = automation_task_operation_intent(automation.owner_agent_id(), &draft, generation)?;
+    host.source_store().prepare_intent(&intent).await?;
+    let claim = host
+        .source_store()
+        .claim_operation(
+            &intent.scope_id,
+            &intent.operation_id,
+            &StableId::new("agentd:test-quarantine-worker")?,
+            generation,
+            Duration::from_secs(/*secs*/ 30),
+        )
+        .await?
+        .ok_or("expected initial dispatch claim")?;
+    let signed = grants.signed_grant(&intent)?;
+    let authorized = host
+        .source_store()
+        .authorize_dispatch(&authority, &signed, &claim)
+        .await?;
+    host.source_store()
+        .execute_authorized(authorized, |_| DispatchEffect::Dispatched {
+            value: (),
+            dispatch_digest: Digest32::of_bytes(b"quarantine-fixture-dispatched"),
+            acknowledgement_digest: Some(Digest32::of_bytes(b"quarantine-fixture-ack")),
+        })
+        .await?;
+
+    // Model a missing receipt after an uncertain owner result using the real
+    // source terminal transition, without invoking the destination again.
+    assert_eq!(automation.observe_task_operation(&intent).await?, None);
+    let (outcome, evidence_digest) = classify_destination_absence(&AutomationError::Unavailable);
+    let terminal = host
+        .source_store()
+        .observe_terminal(
+            &intent.scope_id,
+            &intent.operation_id,
+            &ReconciliationReceiptV1 {
+                outcome,
+                evidence_digest,
+                observer_id: StableId::new("agentd:automation-terminal-observer")?,
+                observer_generation: generation,
+            },
+        )
+        .await?;
+    assert_eq!(terminal.state, DurableOperationState::Quarantined);
+    let terminal_outbox = host
+        .source_store()
+        .outbox_status(&intent.destination, &intent.scope_id, &intent.operation_id)
+        .await?;
+    assert!(terminal_outbox.is_some());
+    drop(host);
+
+    let reopened = AgentdOperationsHost::open(
+        &operations_path,
+        automation.clone(),
+        authority.clone(),
+        grants.clone(),
+        generation,
+    )
+    .await?;
+    assert_eq!(
+        reopened
+            .source_store()
+            .operation(&intent.scope_id, &intent.operation_id)
+            .await?,
+        Some(terminal.clone())
+    );
+    assert!(matches!(
+        reopened.create_automation_task(draft.clone()).await,
+        Err(AgentdOperationsError::NotClaimable)
+    ));
+    assert!(automation.list_tasks(/*limit*/ 10).await?.is_empty());
+
+    // The original destination owner later commits this exact operation once.
+    // Its real receipt does not provide a quarantine-release API in the source.
+    let applied = automation
+        .create_task_from_operation(&intent, &draft)
+        .await?;
+    assert_eq!(
+        automation.observe_task_operation(&intent).await?,
+        Some(applied.destination_receipt.clone())
+    );
+    drop(reopened);
+    let reopened_after_receipt = AgentdOperationsHost::open(
+        &operations_path,
+        automation.clone(),
+        authority,
+        grants,
+        generation,
+    )
+    .await?;
+    assert_eq!(
+        reopened_after_receipt
+            .source_store()
+            .operation(&intent.scope_id, &intent.operation_id)
+            .await?,
+        Some(terminal.clone())
+    );
+    assert!(matches!(
+        reopened_after_receipt
+            .create_automation_task(draft.clone())
+            .await,
+        Err(AgentdOperationsError::Operation(DurableOperationError::Conflict(operation_id)))
+            if operation_id == intent.operation_id
+    ));
+    assert_eq!(automation.task(draft.task_id).await?, Some(applied.task));
+    assert_eq!(automation.list_tasks(/*limit*/ 10).await?.len(), 1);
+    assert_eq!(
+        reopened_after_receipt
+            .source_store()
+            .operation(&intent.scope_id, &intent.operation_id)
+            .await?,
+        Some(terminal)
+    );
+    assert_eq!(
+        reopened_after_receipt
+            .source_store()
+            .outbox_status(&intent.destination, &intent.scope_id, &intent.operation_id)
+            .await?,
+        terminal_outbox
+    );
     Ok(())
 }

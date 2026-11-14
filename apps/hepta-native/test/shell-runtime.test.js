@@ -8,7 +8,11 @@ const D2 = "2".repeat(64);
 const D3 = "3".repeat(64);
 const D4 = "4".repeat(64);
 
-function fixture({ permission = true, terminal = true, restarted = true } = {}) {
+function fixture({
+  permission = true,
+  terminal = true,
+  restarted = true,
+} = {}) {
   const calls = [];
   return {
     calls,
@@ -101,11 +105,17 @@ test("permission denial is terminal and does not invoke the platform", async () 
     grantPayloadDigest: D3,
   });
   assert.equal(receipt.status, "rejected");
-  assert.equal(io.calls.some(([name]) => name === "invoke"), false);
+  assert.equal(
+    io.calls.some(([name]) => name === "invoke"),
+    false,
+  );
 });
 
 test("failed restart quarantines update and rolls back", async () => {
-  const { runtime, io } = await connectedRuntime({ terminal: false, restarted: false });
+  const { runtime, io } = await connectedRuntime({
+    terminal: false,
+    restarted: false,
+  });
   const receipt = await runtime.applyShellUpdate({
     packageDigest: D2,
     predecessorDigest: D1,
@@ -116,7 +126,10 @@ test("failed restart quarantines update and rolls back", async () => {
     architecture: "x86_64",
   });
   assert.equal(receipt.status, "quarantined");
-  assert.equal(io.calls.some(([name]) => name === "rollback"), true);
+  assert.equal(
+    io.calls.some(([name]) => name === "rollback"),
+    true,
+  );
 });
 
 test("self-selected update is rejected", async () => {

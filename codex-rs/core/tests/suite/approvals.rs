@@ -1971,24 +1971,44 @@ fn scenarios() -> Vec<ScenarioSpec> {
     ]
 }
 
-#[test_case(ScenarioGroup::DangerFullAccess ; "danger_full_access")]
-#[test_case(ScenarioGroup::ReadOnly ; "read_only")]
-#[test_case(ScenarioGroup::WorkspaceWrite ; "workspace_write")]
-#[test_case(ScenarioGroup::ApplyPatch ; "apply_patch")]
-#[test_case(ScenarioGroup::UnifiedExec ; "unified_exec")]
-#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn approval_matrix_covers_group(group: ScenarioGroup) -> Result<()> {
-    run_scenario_group(group).await
+#[derive(Clone, Copy, Debug)]
+enum ScenarioBatch {
+    All,
+    Even,
+    Odd,
 }
 
-async fn run_scenario_group(group: ScenarioGroup) -> Result<()> {
+#[test_case(ScenarioGroup::DangerFullAccess, ScenarioBatch::All ; "danger_full_access")]
+#[test_case(ScenarioGroup::ReadOnly, ScenarioBatch::All ; "read_only")]
+#[test_case(ScenarioGroup::WorkspaceWrite, ScenarioBatch::Even ; "workspace_write_even")]
+#[test_case(ScenarioGroup::WorkspaceWrite, ScenarioBatch::Odd ; "workspace_write_odd")]
+#[test_case(ScenarioGroup::ApplyPatch, ScenarioBatch::All ; "apply_patch")]
+#[test_case(ScenarioGroup::UnifiedExec, ScenarioBatch::All ; "unified_exec")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn approval_matrix_covers_group(group: ScenarioGroup, batch: ScenarioBatch) -> Result<()> {
+    run_scenario_group(group, batch).await
+}
+
+async fn run_scenario_group(group: ScenarioGroup, batch: ScenarioBatch) -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let scenarios = scenarios()
         .into_iter()
         .filter(|scenario| scenario_group(scenario) == group)
+        .enumerate()
+        // Partition the complete runtime inventory after its platform cfgs.
+        // Each scenario already owns a fresh mock server, home, and workspace.
+        .filter(|(index, _)| match batch {
+            ScenarioBatch::All => true,
+            ScenarioBatch::Even => index % 2 == 0,
+            ScenarioBatch::Odd => index % 2 == 1,
+        })
+        .map(|(_, scenario)| scenario)
         .collect::<Vec<_>>();
-    assert!(!scenarios.is_empty(), "expected scenarios for {group:?}");
+    assert!(
+        !scenarios.is_empty(),
+        "expected scenarios for {group:?} batch {batch:?}"
+    );
 
     for scenario in scenarios {
         run_scenario(&scenario)
@@ -2020,8 +2040,14 @@ fn scenario_group(scenario: &ScenarioSpec) -> ScenarioGroup {
 }
 
 async fn run_scenario(scenario: &ScenarioSpec) -> Result<()> {
+    let started = std::time::Instant::now();
     eprintln!("running approval scenario: {}", scenario.name);
     let server = start_mock_server().await;
+    eprintln!(
+        "approval scenario {} mock server ready after {:?}",
+        scenario.name,
+        started.elapsed()
+    );
     let approval_policy = scenario.approval_policy;
     let sandbox_policy = scenario.sandbox_policy.clone();
     let features = scenario.features.clone();
@@ -2056,12 +2082,22 @@ async fn run_scenario(scenario: &ScenarioSpec) -> Result<()> {
         });
     }
     let test = builder.build(&server).await?;
+    eprintln!(
+        "approval scenario {} test instance ready after {:?}",
+        scenario.name,
+        started.elapsed()
+    );
 
     let call_id = scenario.name;
     let (event, expected_command) = scenario
         .action
         .prepare(&test, &server, call_id, scenario.sandbox_permissions)
         .await?;
+    eprintln!(
+        "approval scenario {} action prepared after {:?}",
+        scenario.name,
+        started.elapsed()
+    );
     if let Some(command) = expected_command.as_deref() {
         eprintln!("approval scenario {} command: {command}", scenario.name);
     }
@@ -2197,6 +2233,11 @@ async fn run_scenario(scenario: &ScenarioSpec) -> Result<()> {
     );
     let verification_result = scenario.expectation.verify(&test, &result);
     test.codex.shutdown_and_wait().await?;
+    eprintln!(
+        "approval scenario {} finished after {:?}",
+        scenario.name,
+        started.elapsed()
+    );
     verification_result
 }
 
@@ -2446,6 +2487,8 @@ async fn approving_execpolicy_amendment_persists_policy_and_skips_future_prompts
     let sandbox_policy_for_config = sandbox_policy.clone();
     let mut builder = test_codex().with_config(move |config| {
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
+        // This scenario checks saved approval rules, not host login profiles.
+        config.permissions.allow_login_shell = false;
         config
             .set_legacy_sandbox_policy(sandbox_policy_for_config)
             .expect("set sandbox policy");

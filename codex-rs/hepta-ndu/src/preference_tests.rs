@@ -8,7 +8,9 @@ use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
 use super::NduSolverIterationReceipt;
+use super::NduSolverTerminationReceipt;
 use super::PreferenceState;
+use super::RESIDUAL_TOLERANCE_RAW;
 use super::SolveDisposition;
 use super::UpdateGeneration;
 use super::solve_preference_target;
@@ -108,6 +110,43 @@ fn already_converged_solve_is_revision_stable_no_op() {
     assert_eq!(termination.iterations, 0);
     assert_eq!(termination.terminal_residual_raw, 0);
     assert_eq!(termination.maximum_residual_raw, 0);
+    assert!(receipts.is_empty());
+}
+
+#[test]
+fn nonzero_residual_at_tolerance_is_revision_stable_no_op() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-tolerance-noop"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let initial_digest = initial.state_digest;
+
+    let (terminal, termination, receipts) = must(solve_preference_target(
+        initial.clone(),
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::from_raw(RESIDUAL_TOLERANCE_RAW),
+        }],
+        FixedQ32::from_raw(1_i64 << 30),
+    ));
+
+    assert_eq!(terminal, initial);
+    assert_eq!(
+        termination,
+        NduSolverTerminationReceipt {
+            disposition: SolveDisposition::Converged,
+            iterations: 0,
+            terminal_residual_raw: RESIDUAL_TOLERANCE_RAW,
+            maximum_residual_raw: RESIDUAL_TOLERANCE_RAW,
+            projection_count: 0,
+            predecessor_digest: initial_digest,
+            terminal_state_digest: initial_digest,
+        }
+    );
     assert!(receipts.is_empty());
 }
 

@@ -1,0 +1,273 @@
+{
+  "comparison": {
+    "all_shared_bytes_and_sha256_equal": true,
+    "explanation": "The native capsule contains the imported HCSN closure. The complete Git checkout inventory additionally includes four inherited HCSN qualification/test files. Whole inventory digests intentionally differ.",
+    "github_ci_extra_inventory_files": [
+      "qualification/hcsn_differentiable/run_qualification.py",
+      "qualification/hcsn_differentiable/tests/test_encoder.py",
+      "qualification/hcsn_differentiable/tests/test_network.py",
+      "qualification/hcsn_differentiable/tests/test_operator.py"
+    ],
+    "native_only_files": [],
+    "same_executed_test_names": true,
+    "same_plan_digest": true,
+    "shared_file_count": 17
+  },
+  "github_ci_inventory": {
+    "digest": "0e978d9a952d7ac8c212da082c92cb064d034d635b470dc74c2becc55dc09640",
+    "files": {
+      "qualification/cell_common_foundations/__init__.py": {
+        "bytes": 224,
+        "sha256": "a5711ed3780544f3ad5b467255dc39b21efefd5c4b0fb5bd15e7b225b478b07f"
+      },
+      "qualification/cell_common_foundations/credit.py": {
+        "bytes": 42978,
+        "sha256": "d2044466e74b163ecfd92704c0aa9067ccfd989186ac12e473fd8afe51a1792b"
+      },
+      "qualification/cell_common_foundations/plasticity.py": {
+        "bytes": 38329,
+        "sha256": "91b15c9782dd625c3ef25753085bc1c855a348f4a236c7be037ca06c8228556d"
+      },
+      "qualification/cell_common_foundations/protocol.py": {
+        "bytes": 8898,
+        "sha256": "c9d31299a336b81e079632be84b1e5f9fafa898741f4d096dcf920e0197f2c3a"
+      },
+      "qualification/cell_common_foundations/run_reference.py": {
+        "bytes": 14929,
+        "sha256": "77c3826c88a31e7549fae003a83f780288b37d3eecf52d815821f05fec5a9c0f"
+      },
+      "qualification/cell_common_foundations/temporal.py": {
+        "bytes": 25688,
+        "sha256": "93c9ca91f2574e6f5b295e7c31b94a90f6d738159ba8a1584b38e7daec0e3b41"
+      },
+      "qualification/cell_common_foundations/test_credit.py": {
+        "bytes": 24885,
+        "sha256": "d924a4ee63d6409f45ba27f62261902e31117c3e4a62423a08d5e5028e2828ab"
+      },
+      "qualification/cell_common_foundations/test_plasticity.py": {
+        "bytes": 25841,
+        "sha256": "95ace7c02a6217b5d659468b0612c74cffa1790bb191e6958a2e28637b492009"
+      },
+      "qualification/cell_common_foundations/test_protocol.py": {
+        "bytes": 4586,
+        "sha256": "82ff25c2690bbecdbe3f30fa8fb52910efc56f9eb55288e1bb64a15a64b8f1f2"
+      },
+      "qualification/cell_common_foundations/test_runner.py": {
+        "bytes": 4492,
+        "sha256": "3065f2ac20f0af8c3b617cc9d0627aa7f5161165ca9ba79144ccb1009c4535b2"
+      },
+      "qualification/cell_common_foundations/test_temporal.py": {
+        "bytes": 9063,
+        "sha256": "16bf06bb666e1794c1e3d5493026f9288be745eba155ca54d4b750d91cf42eaa"
+      },
+      "qualification/hcsn_differentiable/__init__.py": {
+        "bytes": 237,
+        "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+      },
+      "qualification/hcsn_differentiable/checkpoint.py": {
+        "bytes": 7943,
+        "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+      },
+      "qualification/hcsn_differentiable/contract.py": {
+        "bytes": 4514,
+        "sha256": "35338e23a8809c1d5ec83159247e3ae7a3511b2857e60dbc78098bdedb8ec41f"
+      },
+      "qualification/hcsn_differentiable/encoder.py": {
+        "bytes": 7996,
+        "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+      },
+      "qualification/hcsn_differentiable/network.py": {
+        "bytes": 27528,
+        "sha256": "5b92871b84f24e6b3ccb8231e8068b1d834b5edb4b351a8caa684e52c80611bd"
+      },
+      "qualification/hcsn_differentiable/operator.py": {
+        "bytes": 23203,
+        "sha256": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5"
+      },
+      "qualification/hcsn_differentiable/run_qualification.py": {
+        "bytes": 8088,
+        "sha256": "01d52568e1a93fd6a646ab515ce15a1b0c439d7afeb4dc3b927bbb4059ba7911"
+      },
+      "qualification/hcsn_differentiable/tests/test_encoder.py": {
+        "bytes": 4515,
+        "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011"
+      },
+      "qualification/hcsn_differentiable/tests/test_network.py": {
+        "bytes": 24930,
+        "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759"
+      },
+      "qualification/hcsn_differentiable/tests/test_operator.py": {
+        "bytes": 28682,
+        "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779"
+      }
+    }
+  },
+  "github_ci_job": 128707779704,
+  "github_ci_result_sha256": "210a94c1972ff9085a0c4139f1ef46f78213222a1c0aa4727aa690a9412d2959",
+  "github_ci_run": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42472945935",
+  "native_inventory": {
+    "digest": "97409149d82298b731322cf022c3c9be62af9c181f59282ea95f8194abf1e4c8",
+    "files": {
+      "qualification/cell_common_foundations/__init__.py": {
+        "bytes": 224,
+        "sha256": "a5711ed3780544f3ad5b467255dc39b21efefd5c4b0fb5bd15e7b225b478b07f"
+      },
+      "qualification/cell_common_foundations/credit.py": {
+        "bytes": 42978,
+        "sha256": "d2044466e74b163ecfd92704c0aa9067ccfd989186ac12e473fd8afe51a1792b"
+      },
+      "qualification/cell_common_foundations/plasticity.py": {
+        "bytes": 38329,
+        "sha256": "91b15c9782dd625c3ef25753085bc1c855a348f4a236c7be037ca06c8228556d"
+      },
+      "qualification/cell_common_foundations/protocol.py": {
+        "bytes": 8898,
+        "sha256": "c9d31299a336b81e079632be84b1e5f9fafa898741f4d096dcf920e0197f2c3a"
+      },
+      "qualification/cell_common_foundations/run_reference.py": {
+        "bytes": 14929,
+        "sha256": "77c3826c88a31e7549fae003a83f780288b37d3eecf52d815821f05fec5a9c0f"
+      },
+      "qualification/cell_common_foundations/temporal.py": {
+        "bytes": 25688,
+        "sha256": "93c9ca91f2574e6f5b295e7c31b94a90f6d738159ba8a1584b38e7daec0e3b41"
+      },
+      "qualification/cell_common_foundations/test_credit.py": {
+        "bytes": 24885,
+        "sha256": "d924a4ee63d6409f45ba27f62261902e31117c3e4a62423a08d5e5028e2828ab"
+      },
+      "qualification/cell_common_foundations/test_plasticity.py": {
+        "bytes": 25841,
+        "sha256": "95ace7c02a6217b5d659468b0612c74cffa1790bb191e6958a2e28637b492009"
+      },
+      "qualification/cell_common_foundations/test_protocol.py": {
+        "bytes": 4586,
+        "sha256": "82ff25c2690bbecdbe3f30fa8fb52910efc56f9eb55288e1bb64a15a64b8f1f2"
+      },
+      "qualification/cell_common_foundations/test_runner.py": {
+        "bytes": 4492,
+        "sha256": "3065f2ac20f0af8c3b617cc9d0627aa7f5161165ca9ba79144ccb1009c4535b2"
+      },
+      "qualification/cell_common_foundations/test_temporal.py": {
+        "bytes": 9063,
+        "sha256": "16bf06bb666e1794c1e3d5493026f9288be745eba155ca54d4b750d91cf42eaa"
+      },
+      "qualification/hcsn_differentiable/__init__.py": {
+        "bytes": 237,
+        "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+      },
+      "qualification/hcsn_differentiable/checkpoint.py": {
+        "bytes": 7943,
+        "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+      },
+      "qualification/hcsn_differentiable/contract.py": {
+        "bytes": 4514,
+        "sha256": "35338e23a8809c1d5ec83159247e3ae7a3511b2857e60dbc78098bdedb8ec41f"
+      },
+      "qualification/hcsn_differentiable/encoder.py": {
+        "bytes": 7996,
+        "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+      },
+      "qualification/hcsn_differentiable/network.py": {
+        "bytes": 27528,
+        "sha256": "5b92871b84f24e6b3ccb8231e8068b1d834b5edb4b351a8caa684e52c80611bd"
+      },
+      "qualification/hcsn_differentiable/operator.py": {
+        "bytes": 23203,
+        "sha256": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5"
+      }
+    }
+  },
+  "native_result_sha256": "1980859e0f4b7a5551e08fb1807c80b163e2dbb027ab0117dc27cfc11731ac9a",
+  "parent": "bb048cb811c2b755b7e54e97d24c63ec7ec8d1b7",
+  "runtime_files": {
+    "qualification/cell_common_foundations/__init__.py": {
+      "bytes": 224,
+      "git_blob": "ca3cb6d9a71a23b11a7ab51e7cefa101ff9026bd",
+      "sha256": "a5711ed3780544f3ad5b467255dc39b21efefd5c4b0fb5bd15e7b225b478b07f"
+    },
+    "qualification/cell_common_foundations/credit.py": {
+      "bytes": 42978,
+      "git_blob": "f4c180f35ef6258bac1baffcf323d6d8eff6f44d",
+      "sha256": "d2044466e74b163ecfd92704c0aa9067ccfd989186ac12e473fd8afe51a1792b"
+    },
+    "qualification/cell_common_foundations/plasticity.py": {
+      "bytes": 38329,
+      "git_blob": "3ac2a7d7514f81e476c91fe12ce4a9d21ed58066",
+      "sha256": "91b15c9782dd625c3ef25753085bc1c855a348f4a236c7be037ca06c8228556d"
+    },
+    "qualification/cell_common_foundations/protocol.py": {
+      "bytes": 8898,
+      "git_blob": "c4707be51f495f252b67da938952c90ced2d684c",
+      "sha256": "c9d31299a336b81e079632be84b1e5f9fafa898741f4d096dcf920e0197f2c3a"
+    },
+    "qualification/cell_common_foundations/run_reference.py": {
+      "bytes": 14929,
+      "git_blob": "a2cc24203da8ee0b4844f9bee69838ef067f3c87",
+      "sha256": "77c3826c88a31e7549fae003a83f780288b37d3eecf52d815821f05fec5a9c0f"
+    },
+    "qualification/cell_common_foundations/temporal.py": {
+      "bytes": 25688,
+      "git_blob": "01a3478730856053575b76ffa507abd56aa4c811",
+      "sha256": "93c9ca91f2574e6f5b295e7c31b94a90f6d738159ba8a1584b38e7daec0e3b41"
+    },
+    "qualification/cell_common_foundations/test_credit.py": {
+      "bytes": 24885,
+      "git_blob": "92bdda412e6fdd57fcdc12e118d7c7e463222fd3",
+      "sha256": "d924a4ee63d6409f45ba27f62261902e31117c3e4a62423a08d5e5028e2828ab"
+    },
+    "qualification/cell_common_foundations/test_plasticity.py": {
+      "bytes": 25841,
+      "git_blob": "521ad634156bd65b42b3f572724a52f4bec4d276",
+      "sha256": "95ace7c02a6217b5d659468b0612c74cffa1790bb191e6958a2e28637b492009"
+    },
+    "qualification/cell_common_foundations/test_protocol.py": {
+      "bytes": 4586,
+      "git_blob": "f8ff2395e81b8e0950ce2ab6d089192912fe61ff",
+      "sha256": "82ff25c2690bbecdbe3f30fa8fb52910efc56f9eb55288e1bb64a15a64b8f1f2"
+    },
+    "qualification/cell_common_foundations/test_runner.py": {
+      "bytes": 4492,
+      "git_blob": "352a5db6d2689e991876211123a33e3ccc4062ce",
+      "sha256": "3065f2ac20f0af8c3b617cc9d0627aa7f5161165ca9ba79144ccb1009c4535b2"
+    },
+    "qualification/cell_common_foundations/test_temporal.py": {
+      "bytes": 9063,
+      "git_blob": "ed897ff0be4c4423d5ea4f75a656c165e1496e7d",
+      "sha256": "16bf06bb666e1794c1e3d5493026f9288be745eba155ca54d4b750d91cf42eaa"
+    },
+    "qualification/hcsn_differentiable/__init__.py": {
+      "bytes": 237,
+      "git_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    "qualification/hcsn_differentiable/checkpoint.py": {
+      "bytes": 7943,
+      "git_blob": "9080bd46bfeb49cbb7202b660b5f08deae729842",
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    "qualification/hcsn_differentiable/contract.py": {
+      "bytes": 4514,
+      "git_blob": "d96c579c655351f3730553653b530a77c4a917cd",
+      "sha256": "35338e23a8809c1d5ec83159247e3ae7a3511b2857e60dbc78098bdedb8ec41f"
+    },
+    "qualification/hcsn_differentiable/encoder.py": {
+      "bytes": 7996,
+      "git_blob": "3920420439e3a23c5bfabaf4602648dc6c81420d",
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    "qualification/hcsn_differentiable/network.py": {
+      "bytes": 27528,
+      "git_blob": "dcda8cf508f90ce6651db2a35fcc9d8697945014",
+      "sha256": "5b92871b84f24e6b3ccb8231e8068b1d834b5edb4b351a8caa684e52c80611bd"
+    },
+    "qualification/hcsn_differentiable/operator.py": {
+      "bytes": 23203,
+      "git_blob": "66cb2c5a4bd62b57f08d354457159bd8e1044b61",
+      "sha256": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5"
+    }
+  },
+  "schema": "hepta.cell-common-source-binding.v1",
+  "source_commit": "d967d91c177f413d6962fe8526976680618c441e",
+  "source_tree": "da4970894dbe9c07c8ea09eeda65c074bd8cd858"
+}

@@ -1,0 +1,162 @@
+{
+  "after": {
+    "head": "c1f7ac74ad3b49ef88900c1733986dc964282af1",
+    "status": "",
+    "tree": "7e831edec403b11a41059eedfba458ca78812c08"
+  },
+  "before": {
+    "head": "c1f7ac74ad3b49ef88900c1733986dc964282af1",
+    "status": "",
+    "tree": "7e831edec403b11a41059eedfba458ca78812c08"
+  },
+  "native_behavior_executed": false,
+  "official_full_verifier_executed": false,
+  "ordinary_counts": [
+    0,
+    0,
+    0
+  ],
+  "protected_diagnostic": {
+    "entries": 316,
+    "failures": [
+      {
+        "error": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs:fn connect_current(: required code order missing: ['self.original.require_current().await?', 'handoff\\n            .connect(', 'current.require_original_root_selection(', 'self.original.require_current().await?']",
+        "index": 280,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
+      },
+      {
+        "error": "codex-rs/hepta-contracts/src/final_use_root_observer.rs:fn issuer_trust_digest(: required_order must contain marker sequences",
+        "index": 281,
+        "path": "codex-rs/hepta-contracts/src/final_use_root_observer.rs"
+      },
+      {
+        "error": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs:fn capture(: required code order missing: ['if let Some(captured) = &state.captured', 'self.require_source(captured)?', 'return Ok(captured.clone())', 'OriginalTaskCustodyV1::Active { cell, published } = &self.task', 'original task capture was not retained', 'self\\n            .source\\n            .read_run_publication(', 'cell\\n            .committed(&publication)', 'CellQ24DatasetTaskV1::capture(', 'state.captured = Some(captured.clone())']",
+        "index": 304,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+      }
+    ]
+  },
+  "source_sha": "c1f7ac74ad3b49ef88900c1733986dc964282af1",
+  "source_tree": "7e831edec403b11a41059eedfba458ca78812c08",
+  "status": "failed-qa-or-protected-diagnostic",
+  "steps": [
+    {
+      "bytes": 112,
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/source"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/records/clone.log",
+      "name": "clone",
+      "sha256": "d8ab69338c6df7977139602b8d287b659546b848e4634cc7693c0c6c457bfa15"
+    },
+    {
+      "bytes": 142,
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "c1f7ac74ad3b49ef88900c1733986dc964282af1"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/records/fetch.log",
+      "name": "fetch",
+      "sha256": "7b125c1b6459d40da8acdb48b56e51cc570597fb86de3f63d87d9aecb4053547"
+    },
+    {
+      "bytes": 196,
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "c1f7ac74ad3b49ef88900c1733986dc964282af1"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/records/checkout.log",
+      "name": "checkout",
+      "sha256": "fbfb8f77a702635420b419bd82c7075c821c8bc7e079d8a1ad5394dd647f2751"
+    },
+    {
+      "bytes": 70740,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 1,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/records/b4-no-bypass.log",
+      "name": "b4-no-bypass",
+      "sha256": "145f2f6502efa6ed90ca64e44468984899e4e6ac41e0e3434eed6f4536c2124c"
+    },
+    {
+      "bytes": 808,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/fault-matrix",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/records/fault-matrix.log",
+      "name": "fault-matrix",
+      "sha256": "cdaac012b1e66926aec5bfc03b760a186f6caaddd9e27e64378f28dffafd5d81"
+    },
+    {
+      "bytes": 798,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/performance",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/records/performance.log",
+      "name": "performance",
+      "sha256": "d2e2593ee77736f956cca3f549cbae73da9b7113276c4db68ce1e54e82bd594f"
+    },
+    {
+      "bytes": 806,
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/vertical-slice",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "log": "/home/qq/af52-learning-local-decision-20261111/ordinary-c1f7ac-qa-caller-diagnostic-v1/records/vertical-slice.log",
+      "name": "vertical-slice",
+      "sha256": "0d46a2574bff0a38b57da271f9c648090d3d6b2e9bce9c78b59e37c679694fe6"
+    }
+  ]
+}

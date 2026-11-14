@@ -343,23 +343,10 @@ impl AclSetupFailureFixture {
     }
 
     fn assert_rejected(&self, error: anyhow::Error) {
-        assert_eq!(
-            (
-                error.to_string(),
-                error.root_cause().to_string(),
-                self.marker.try_exists().expect("inspect process marker"),
-            ),
-            (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
-                false,
-            ),
+        crate::legacy_admission_tests::assert_unavailable::<()>(Err(error));
+        assert!(
+            !self.marker.try_exists().expect("inspect process marker"),
+            "legacy admission must refuse before ACL setup or child launch"
         );
     }
 }
@@ -395,7 +382,9 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
             }
             Err(error) => Err(error),
         };
-        fixture.assert_rejected(result.expect_err("ACL setup failure must prevent session spawn"));
+        fixture.assert_rejected(
+            result.expect_err("legacy admission must refuse before ACL setup or session spawn"),
+        );
     });
 }
 
@@ -420,6 +409,6 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
     fixture.assert_rejected(
         result
             .map(|_| ())
-            .expect_err("ACL setup failure must prevent capture spawn"),
+            .expect_err("legacy admission must refuse before ACL setup or capture spawn"),
     );
 }

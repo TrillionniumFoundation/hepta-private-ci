@@ -1,8 +1,9 @@
 """Driver for the upstream MCP client conformance suite.
 
 The upstream suite owns the localhost HTTP server and the wire-level checks.
-This module deliberately invokes one scenario at a time because the upstream
-parallel suite path does not currently propagate the client adapter result.
+Each scenario runs as a separate upstream command in a bounded local pool.
+This retains every adapter result while avoiding the upstream parallel suite
+path, which does not currently propagate the client adapter result.
 """
 
 import json
@@ -14,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Mapping, Sequence
@@ -383,7 +385,7 @@ def _run_scenario(
     scenario_dir.mkdir(parents=True, exist_ok=True)
     adapter_report = scenario_dir / "codex-adapter.json"
     adapter_home = scenario_dir / "codex-home"
-    adapter_home.mkdir()
+    adapter_home.mkdir(mode=0o700)
 
     env = dict(base_env)
     env.update(
@@ -497,19 +499,22 @@ def run_official_mode(
         == "1",
     )
     try:
-        return [
-            _run_scenario(
-                conformance_command=conformance_command,
-                adapter_launcher=launcher,
-                codex_binary=codex_binary,
-                mode=mode,
-                scenario=scenario,
-                output_dir=output_dir,
-                timeout_seconds=timeout_seconds,
-                base_env=base_env,
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            return list(
+                executor.map(
+                    lambda scenario: _run_scenario(
+                        conformance_command=conformance_command,
+                        adapter_launcher=launcher,
+                        codex_binary=codex_binary,
+                        mode=mode,
+                        scenario=scenario,
+                        output_dir=output_dir,
+                        timeout_seconds=timeout_seconds,
+                        base_env=base_env,
+                    ),
+                    scenarios,
+                )
             )
-            for scenario in scenarios
-        ]
     finally:
         try:
             launcher.unlink()

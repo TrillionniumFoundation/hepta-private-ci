@@ -1,0 +1,293 @@
+{
+  "schema": "ctrl1.native-finalize-source.v3",
+  "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.007805416826158762,
+      "stdout": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.006974332965910435,
+      "stdout": "research/ctrl1-decision-cell-20261108\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.012604457791894674,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "pip",
+        "install",
+        "--python",
+        "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo/scripts/.venv/bin/python",
+        "--no-index",
+        "--find-links",
+        "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/dependencies",
+        "--no-deps",
+        "ruff==0.15.13"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.2618109998293221,
+      "stdout": "",
+      "stderr": "Using Python 3.10.19 environment at: scripts/.venv\nResolved 1 package in 6ms\nPrepared 1 package in 50ms\nInstalled 1 package in 2ms\n + ruff==0.15.13\n"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "scripts",
+        "ruff",
+        "--version"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 2.8169335830025375,
+      "stdout": "ruff 0.15.13\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo/codex-rs",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.13276737509295344,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--locked",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "scripts/ndu_ctrl1"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.02020566677674651,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "diff",
+        "--numstat",
+        "--",
+        ".github/workflows/hepta-ndu-recursion.yml"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.008327791932970285,
+      "stdout": "6\t0\t.github/workflows/hepta-ndu-recursion.yml\n",
+      "stderr": ""
+    }
+  ],
+  "stages": [],
+  "pushed": false,
+  "old_formatter_group_empty": true,
+  "already_applied_correction_verified": true,
+  "range_download": {
+    "prefix_bytes": 1048576,
+    "prefix_sha256": "cebc1e402908c7d2e41429e3abd3d4fd6ab5065ecb128457ce3ce6fe891168b7",
+    "completed": [
+      {
+        "start": 1048576,
+        "end": 1572863,
+        "bytes": 524288,
+        "content_range": "bytes 1048576-1572863/10460761",
+        "sha256": "5fb9fa061428d6f94201f34b103d6db2ae86b4295a1892b683d339e12a277ba2",
+        "status": 206
+      },
+      {
+        "start": 1572864,
+        "end": 2097151,
+        "bytes": 524288,
+        "content_range": "bytes 1572864-2097151/10460761",
+        "sha256": "472960c2c359018114678c0363a88e3693525fdd3a2a98476905f538223f04d0",
+        "status": 206
+      },
+      {
+        "start": 2097152,
+        "end": 2621439,
+        "bytes": 524288,
+        "content_range": "bytes 2097152-2621439/10460761",
+        "sha256": "088b8aeab12fc2135c1185f1317dafc07de20f0cede907ad394bd665f38a983e",
+        "status": 206
+      },
+      {
+        "start": 2621440,
+        "end": 3145727,
+        "bytes": 524288,
+        "content_range": "bytes 2621440-3145727/10460761",
+        "sha256": "81231b2ff83279d021cc74596bcd798a1e2668c50ab2883d2b5a2d78e39dc394",
+        "status": 206
+      },
+      {
+        "start": 3145728,
+        "end": 3670015,
+        "bytes": 524288,
+        "content_range": "bytes 3145728-3670015/10460761",
+        "sha256": "a8238e37986c259f67616b7779fd571848fe44b3841e3933457975a9ce9a2299",
+        "status": 206
+      },
+      {
+        "start": 3670016,
+        "end": 4194303,
+        "bytes": 524288,
+        "content_range": "bytes 3670016-4194303/10460761",
+        "sha256": "731a3fa3a3ee654fa4918348cbbd8b74418a8925c2fa0cf9c7a39ee74023f3b2",
+        "status": 206
+      },
+      {
+        "start": 4194304,
+        "end": 4718591,
+        "bytes": 524288,
+        "content_range": "bytes 4194304-4718591/10460761",
+        "sha256": "89275669aa2385c5a7697d0a67daf10e6176efbe247b4434f627820153a826b1",
+        "status": 206
+      },
+      {
+        "start": 4718592,
+        "end": 5242879,
+        "bytes": 524288,
+        "content_range": "bytes 4718592-5242879/10460761",
+        "sha256": "d93230865e24f50a4efdf518c0ca6ef3654c39ee106cbbd8426b597dc4268b89",
+        "status": 206
+      },
+      {
+        "start": 5242880,
+        "end": 5767167,
+        "bytes": 524288,
+        "content_range": "bytes 5242880-5767167/10460761",
+        "sha256": "f04ed6732aa51778c7cb6911cf730025a145fad6a30c13eeaa05c7d3b45b874e",
+        "status": 206
+      },
+      {
+        "start": 5767168,
+        "end": 6291455,
+        "bytes": 524288,
+        "content_range": "bytes 5767168-6291455/10460761",
+        "sha256": "6250de5fc03b24958403f644b698354eb0c2e6aa3844fe1ff4945d5893d55e46",
+        "status": 206
+      },
+      {
+        "start": 6291456,
+        "end": 6815743,
+        "bytes": 524288,
+        "content_range": "bytes 6291456-6815743/10460761",
+        "sha256": "2d0cf5a12ec340cc9840739663061ff67be2173876bbf10cd411266000f043ff",
+        "status": 206
+      },
+      {
+        "start": 6815744,
+        "end": 7340031,
+        "bytes": 524288,
+        "content_range": "bytes 6815744-7340031/10460761",
+        "sha256": "5064caded633c3aab3dfcd67d8fcd7a2c99e844f10b5e36fdf31d009fb8ff5cb",
+        "status": 206
+      },
+      {
+        "start": 7340032,
+        "end": 7864319,
+        "bytes": 524288,
+        "content_range": "bytes 7340032-7864319/10460761",
+        "sha256": "1e8824209e81d8c6ebe1896d19cce6ddcd2865140e1ed843cb8fb133f0017dc7",
+        "status": 206
+      },
+      {
+        "start": 7864320,
+        "end": 8388607,
+        "bytes": 524288,
+        "content_range": "bytes 7864320-8388607/10460761",
+        "sha256": "6be4e16978458ce4948ab57114b7d1208e7dee62c6ae177b5482a80eee3a1357",
+        "status": 206
+      },
+      {
+        "start": 8388608,
+        "end": 8912895,
+        "bytes": 524288,
+        "content_range": "bytes 8388608-8912895/10460761",
+        "sha256": "c03ad0f032765ffa5f6c3d94f42f3c1f16e4631d1251a3ba42b37f98885793cc",
+        "status": 206
+      },
+      {
+        "start": 8912896,
+        "end": 9437183,
+        "bytes": 524288,
+        "content_range": "bytes 8912896-9437183/10460761",
+        "sha256": "14d2e14972fe386f2fdd1252aa3f7db5e0ee378dfd6ea8cb5519e2b889130c1b",
+        "status": 206
+      },
+      {
+        "start": 9437184,
+        "end": 9961471,
+        "bytes": 524288,
+        "content_range": "bytes 9437184-9961471/10460761",
+        "sha256": "8a6230e8db96fd08b684b71b9cc22e778f2fb8f6cac0d92e0dff7567213a9ae6",
+        "status": 206
+      },
+      {
+        "start": 9961472,
+        "end": 10460760,
+        "bytes": 499289,
+        "content_range": "bytes 9961472-10460760/10460761",
+        "sha256": "15497c4686a67bd3dd192bb7eb6ccec33ea47f99cd7333adc4de72138185e9fc",
+        "status": 206
+      }
+    ],
+    "errors": []
+  },
+  "verified_wheel": {
+    "path": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/dependencies/ruff-0.15.13-py3-none-macosx_11_0_arm64.whl",
+    "bytes": 10460761,
+    "sha256": "1c26d2f66163deeb6e08d8b39fbbe983ce3c71cea06a6d7591cfd1421793c629",
+    "url": "https://files.pythonhosted.org/packages/d3/19/43f5f2e568dddde567fc41f8471f9432c09563e19d3e617a48cfa52f8f0a/ruff-0.15.13-py3-none-macosx_11_0_arm64.whl"
+  },
+  "status": "failed",
+  "error_type": "AssertionError",
+  "error": ""
+}

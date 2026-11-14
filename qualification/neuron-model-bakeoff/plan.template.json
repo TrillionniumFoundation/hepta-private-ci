@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.neuron.model-bakeoff.plan.v1",
+  "source_sha": null,
+  "dataset_sha256": null,
+  "dataset_origin": null,
+  "retrieval_query_sha256": null,
+  "retrieval_corpus_sha256": null,
+  "independent_evaluator": null,
+  "holdout_frozen_at": null,
+  "confidence_gate": 0.85,
+  "calibration_bins": 15,
+  "head_training": {"seed": 1907, "dimension": 256, "epochs": 40, "batch_size": 64, "learning_rate": 0.05, "weight_decay": 0.001},
+  "models": {
+    "laya_english": {"repo": "convaiinnovations/laya", "revision": null, "file_sha256": null, "kind": "laya", "parameters_m": 421},
+    "laya_typed": {"repo": "convaiinnovations/laya-typed-decisions", "revision": null, "file_sha256": null, "kind": "laya", "parameters_m": 421},
+    "laya_multilingual": {"repo": "convaiinnovations/laya-multilingual", "revision": null, "file_sha256": null, "kind": "laya", "parameters_m": 322},
+    "arctic": {"repo": "Snowflake/snowflake-arctic-embed-m-v2.0", "revision": null, "file_sha256": null, "kind": "embedding", "parameters_m": 305},
+    "harrier": {"repo": "microsoft/harrier-oss-v1-270m", "revision": null, "file_sha256": null, "kind": "embedding", "parameters_m": 270}
+  },
+  "lifecycle_cases": ["artifact_cas_write_read", "signed_model_load_receipt", "generation_fence_old_rejected", "upgrade_new_generation", "crash_reopen_no_double_dispatch", "revocation_no_resurrection", "rollback_compatible_checkpoint"],
+  "logical_cell_scales": [64, 256, 1024, 4096],
+  "required_decision_splits": ["calibration", "test", "ood", "retention"],
+  "pre_registered_gates": {
+    "max_ece": null,
+    "max_ood_false_acceptance": null,
+    "min_language_accuracy": null,
+    "max_old_task_accuracy_drop": null,
+    "max_peak_rss_bytes": null,
+    "max_peak_gpu_bytes": null,
+    "max_p99_ms": null
+  }
+}

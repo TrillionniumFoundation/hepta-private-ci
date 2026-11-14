@@ -104,6 +104,7 @@ supports_websockets = false
                 version: "0.1.0".into(),
             },
             Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: true,
                 request_attestation: true,
                 ..Default::default()

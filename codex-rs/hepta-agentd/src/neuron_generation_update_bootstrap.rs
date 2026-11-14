@@ -1,0 +1,192 @@
+//! Ordinary Agentd assembly for an already published task-boundary reset.
+//!
+//! This consumes the same guarded journal and bounded control port used by the
+//! ordinary generation service. It does not expose State readiness, change the
+//! service-retirement continuity rule, or choose a physical model.
+
+use std::sync::Arc;
+
+use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::CellCostEntryV2;
+use codex_hepta_neuron::CellGenerationControlPortV2;
+use codex_hepta_neuron::CellGenerationCurrentV1;
+use codex_hepta_neuron::CellGenerationJournalV2;
+use codex_hepta_neuron::CellGenerationOwnerBindingV1;
+
+use crate::AgentdConfig;
+use crate::AgentdError;
+use crate::NeuronGenerationRuntimeHandleV2;
+use crate::neuron_generation_current::PublishedNeuronGenerationUpdateV1;
+use crate::neuron_generation_runtime::GenerationLearningPublicationV1;
+use crate::neuron_generation_runtime::neuron_generation_channel_with_learning_v2;
+use crate::neuron_generation_update_live::LiveGenerationCurrent;
+
+#[path = "neuron_generation_update_adopted_learning.rs"]
+mod adopted_learning;
+#[path = "neuron_generation_update_learning.rs"]
+mod learning;
+
+pub use adopted_learning::learning_updated_task_operation_id_v1;
+pub(crate) use learning::GenerationLearningReadbackV1;
+pub use learning::learning_retained_task_operation_id_v1;
+#[cfg(test)]
+pub(crate) use learning::tests::baseline as learning_test_baseline;
+#[cfg(test)]
+pub(crate) use learning::tests::decision as learning_test_decision;
+#[cfg(test)]
+pub(crate) use learning::tests::observed as learning_test_receipt;
+
+pub struct AgentdGenerationUpdateRuntimeOptionsV1 {
+    pub queue_capacity: usize,
+    pub control_endpoint: bool,
+}
+
+impl Default for AgentdGenerationUpdateRuntimeOptionsV1 {
+    fn default() -> Self {
+        Self {
+            queue_capacity: 16,
+            control_endpoint: false,
+        }
+    }
+}
+
+/// A real Control publication plus its still exclusively held successor.
+/// Neither this value nor its DENY_ALL receipt is a new authority issuer.
+pub struct ReadyAgentdGenerationUpdateV1<W: AnchorWitnessStore> {
+    journal: CellGenerationJournalV2<W>,
+    publication: PublishedNeuronGenerationUpdateV1,
+    #[cfg(target_os = "linux")]
+    feature_current: Arc<LiveGenerationCurrent>,
+}
+
+impl<W: AnchorWitnessStore> ReadyAgentdGenerationUpdateV1<W> {
+    /// Only an internal backend assembly may add its already observed cost.
+    /// The original published owner and live CURRENT/FinalUse checks remain
+    /// authoritative; neither the journal nor a replacement guard is exposed.
+    pub(crate) fn record_backend_preparation(
+        &mut self,
+        expected: &CellGenerationOwnerBindingV1,
+        entry: CellCostEntryV2,
+    ) -> Result<(), AgentdError> {
+        if self.journal.owner_binding() != Some(expected) || self.publication.target() != expected {
+            return Err(AgentdError::GenerationFenced(
+                "prepared backend differs from its published guarded owner".into(),
+            ));
+        }
+        self.journal
+            .record_cost(entry)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))
+    }
+
+    pub(crate) fn new(
+        journal: CellGenerationJournalV2<W>,
+        publication: PublishedNeuronGenerationUpdateV1,
+        guard: Arc<LiveGenerationCurrent>,
+    ) -> Result<Self, AgentdError> {
+        if journal.owner_binding() != Some(publication.target()) {
+            return Err(AgentdError::GenerationFenced(
+                "published generation differs from its actual owner".into(),
+            ));
+        }
+        #[cfg(target_os = "linux")]
+        let feature_current = Arc::clone(&guard);
+        let guard: Arc<dyn CellGenerationCurrentV1> = guard;
+        let journal = journal
+            .rebind_current(guard)
+            .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+        Ok(Self {
+            journal,
+            publication,
+            #[cfg(target_os = "linux")]
+            feature_current,
+        })
+    }
+}
+
+/// The returned config goes through the ordinary run/run_with_shutdown body,
+/// including Fleet admission, AppServer startup, service drain and shutdown.
+pub struct AgentdGenerationUpdateRuntimeV1 {
+    pub config: AgentdConfig,
+    pub handle: NeuronGenerationRuntimeHandleV2,
+    pub publication: PublishedNeuronGenerationUpdateV1,
+}
+
+impl<W: AnchorWitnessStore + Send + 'static> ReadyAgentdGenerationUpdateV1<W> {
+    #[cfg(target_os = "linux")]
+    pub fn into_circuit_feature_task(
+        self,
+        definition: codex_hepta_neuron::CellDefinitionV1,
+        source: crate::CircuitTaskSourceInputV1,
+        previous: crate::PublishedCircuitFeatureCompletionV1,
+    ) -> Result<crate::PublishedCircuitFeatureTaskV1, AgentdError> {
+        crate::PublishedCircuitFeatureTaskV1::from_update(
+            self.journal,
+            self.publication,
+            self.feature_current,
+            definition,
+            source,
+            previous,
+        )
+    }
+
+    /// After actual Root/CURRENT recovery, reconstruct the predecessor from its
+    /// original fully acknowledged Cell and source history. No retained in-memory
+    /// completion token, new signature, witness repair or inference is needed.
+    #[cfg(target_os = "linux")]
+    pub fn recover_circuit_feature_task<CW: AnchorWitnessStore, SW: AnchorWitnessStore>(
+        self,
+        definition: codex_hepta_neuron::CellDefinitionV1,
+        source: crate::CircuitTaskSourceInputV1,
+        predecessor: crate::CircuitFeaturePredecessorFilesV1<CW>,
+        original_source: &crate::CircuitTaskSourceReadbackV1<SW>,
+        identity: &crate::AgentdIdentity,
+    ) -> Result<crate::PublishedCircuitFeatureTaskV1, AgentdError> {
+        let previous = crate::circuit_feature_current::recover_predecessor(
+            &self.publication,
+            &self.feature_current,
+            predecessor,
+            original_source,
+            identity,
+        )?;
+        self.into_circuit_feature_task(definition, source, previous)
+    }
+
+    pub fn into_runtime<P, C>(
+        self,
+        config: AgentdConfig,
+        control: P,
+        clock: C,
+        options: AgentdGenerationUpdateRuntimeOptionsV1,
+    ) -> Result<AgentdGenerationUpdateRuntimeV1, AgentdError>
+    where
+        P: CellGenerationControlPortV2 + Send + 'static,
+        C: FnMut() -> u64 + Send + 'static,
+    {
+        config.require_neuron_generation_profile()?;
+        if self.journal.owner_binding() != Some(self.publication.target()) {
+            return Err(AgentdError::GenerationFenced(
+                "published generation differs from its guarded journal".into(),
+            ));
+        }
+        // snapshot/channel consult the live Control floor. A deferred bootstrap
+        // cannot revive this owner after another admitted generation replaces it.
+        let (handle, bootstrap) = neuron_generation_channel_with_learning_v2(
+            config.identity(),
+            self.journal,
+            control,
+            clock,
+            options.queue_capacity,
+            GenerationLearningPublicationV1::Published(self.publication.clone()),
+        )?;
+        let bootstrap = if options.control_endpoint {
+            bootstrap.with_control_endpoint()?
+        } else {
+            bootstrap
+        };
+        Ok(AgentdGenerationUpdateRuntimeV1 {
+            config: config.with_neuron_generation_bootstrap(bootstrap)?,
+            handle,
+            publication: self.publication,
+        })
+    }
+}

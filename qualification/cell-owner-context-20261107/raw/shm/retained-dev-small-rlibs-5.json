@@ -1,0 +1,71 @@
+{
+  "time": "2026-11-07T12:14:25.079004+00:00",
+  "reason": "retain completed helper-graph cache with exact SHA and original paths while reducing tmpfs memory pressure",
+  "files": [
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_core-dec8dc3f0f49b8c1.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_core-dec8dc3f0f49b8c1.rlib",
+      "bytes": 168720242,
+      "sha256": "22a9f37f2f46ab748a2c76455f728a6bc26eeac76efd85765e4ea07ac0958f20"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_app_server_protocol-e31282a0a3df3387.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_app_server_protocol-e31282a0a3df3387.rlib",
+      "bytes": 100747670,
+      "sha256": "6346afbea8c08687d2c02423e3a5768c2a5971e771553c51bb990215c644a14d"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_mcp-14733f5e1c52c310.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_mcp-14733f5e1c52c310.rlib",
+      "bytes": 37966968,
+      "sha256": "0d2bbc7615b643edb70bec8e5577e491da09d0dab98c8a6ee63428bf306aa823"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_rollout-0939c8834de90dd3.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_rollout-0939c8834de90dd3.rlib",
+      "bytes": 35866592,
+      "sha256": "86e5777437ea5696ac43b4afb6274f3b6ada5679d3b3fdf19b48803fe72b1a15"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librmcp-9479a6261a895c0b.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librmcp-9479a6261a895c0b.rlib",
+      "bytes": 34879176,
+      "sha256": "6c1b20742759bc737fab9d186800a4e66c77b7d088fbc060d4a9c00e9cf2ab1a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_core_plugins-34bd632398391358.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_core_plugins-34bd632398391358.rlib",
+      "bytes": 30392722,
+      "sha256": "e72058407a839ab2a74a62344f3835a36b3d5eee1ab532abab53ad6062337bdc"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_code_mode-41e2c69014c1a434.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_code_mode-41e2c69014c1a434.rlib",
+      "bytes": 18768804,
+      "sha256": "e3004d5483418a663f0de22365aed733228873d16972330811961f09234e714f"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_rmcp_client-b71d6008b9db6d32.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_rmcp_client-b71d6008b9db6d32.rlib",
+      "bytes": 18324078,
+      "sha256": "1cc54e1a79e00bca3efba654712cdb50a91a89171eb20cf49dd3db81adda73c6"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_thread_store-2c4dec2dcb838bca.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_thread_store-2c4dec2dcb838bca.rlib",
+      "bytes": 18295678,
+      "sha256": "e6aa91573863972a11f377365c78e4a48885e1d70ca06ada884976e45df70216"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_rollout_trace-2421f5133efa66d4.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_rollout_trace-2421f5133efa66d4.rlib",
+      "bytes": 16727038,
+      "sha256": "766e31645cf7edd7cf4bf1131edd794f2f6095f1a20767d37b5e12453916eba5"
+    }
+  ],
+  "total_bytes": 480688968,
+  "after_free": {
+    "/workspace": 1369587712,
+    "/dev/shm": 1183723520
+  }
+}

@@ -275,6 +275,37 @@ if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then
 fi
 
 post_config_bazel_args=()
+linux_target_platform="${CODEX_BAZEL_LINUX_TARGET_PLATFORM:-}"
+if [[ -n "$linux_target_platform" ]]; then
+  if [[ "${RUNNER_OS:-}" != "Linux" || "$linux_target_platform" != "@rules_rs//rs/platforms:x86_64-unknown-linux-musl" ]]; then
+    echo "CODEX_BAZEL_LINUX_TARGET_PLATFORM requires a Linux runner and the supported x86_64 musl platform." >&2
+    exit 1
+  fi
+  for arg in "${bazel_args[@]}"; do
+    case "$arg" in
+      --platforms | --platforms=*)
+        echo "Do not combine CODEX_BAZEL_LINUX_TARGET_PLATFORM with --platforms." >&2
+        exit 1
+        ;;
+    esac
+  done
+  # ci-linux selects the GNU RBE target. Override only the target after that
+  # config; keep the GNU host/exec platform for compiler tools and proc macros.
+  # The keyless Python fallback also preserves this explicit platform.
+  post_config_bazel_args+=(
+    "--platforms=${linux_target_platform}"
+    "--extra_toolchains=//:linux_musl_tests_on_gnu_host_toolchain"
+  )
+fi
+
+if [[ "${RUNNER_OS:-}" == "macOS" ]]; then
+  # Remote --jobs=800 also selects the local Skyframe executor parallelism.
+  # Hosted macOS runners exhausted native threads before completing the test
+  # roster. Keep this host at the repository's ordinary 30-job bound after the
+  # remote config, with the same targets, sandbox strategy and test deadlines.
+  post_config_bazel_args+=(--jobs=30)
+fi
+
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then
   has_host_platform_override=0
   for arg in "${bazel_args[@]}"; do

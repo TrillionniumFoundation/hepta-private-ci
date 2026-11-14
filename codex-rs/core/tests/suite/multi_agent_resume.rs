@@ -1,3 +1,4 @@
+use anyhow::Context;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::AgentRoleConfig;
@@ -143,7 +144,9 @@ fn configure_multi_agent_v2_with_role(
         .expect("test config should allow feature update");
     config.multi_agent_v2.subagent_developer_instructions =
         Some(SUBAGENT_DEVELOPER_INSTRUCTIONS.to_string());
-    config.multi_agent_v2.max_concurrent_threads_per_session = 3;
+    // Keep root, worker, grandchild and sibling resident until this fixture's
+    // explicit flush/shutdown cutoff. Residency eviction has separate tests.
+    config.multi_agent_v2.max_concurrent_threads_per_session = 4;
     let role_path = config.codex_home.join("durable-worker-role.toml");
     std::fs::write(
         &role_path,
@@ -363,7 +366,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     })
     .await;
     sibling_thread.flush_rollout().await?;
-    worker_thread.flush_rollout().await?;
+    worker_thread
+        .flush_rollout()
+        .await
+        .context("flush original worker before the explicit cold restart")?;
     initial.codex.flush_rollout().await?;
     sibling_thread.shutdown_and_wait().await?;
     worker_thread.shutdown_and_wait().await?;
@@ -421,7 +427,10 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
     let mut resume_builder = test_codex().with_config(move |config| {
         configure_multi_agent_v2_with_role(config, &resumed_model_provider_base_url);
     });
-    let resumed = resume_builder.restart(&server, &initial).await?;
+    let resumed = resume_builder
+        .restart(&server, &initial)
+        .await
+        .context("cold-resume the root after flushing and stopping its children")?;
     drop(initial);
     assert_eq!(
         resumed.thread_manager.list_thread_ids().await,

@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-evidence-chain-v1",
+  "baseline_review": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "source_head": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+    "source_tree": "cc6ca8d7c05a2b5d6ccc9179a570c6efc71e4d83",
+    "review_date": "2026-11-10",
+    "scope": "source snapshot, not the prospective merge tree"
+  },
+  "bound_files": [
+    {
+      "id": "baseline-trainer-raw-archive",
+      "path": "qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip",
+      "sha256": "27d4f684ba9df1b9dec5c518377c50f80239d2a3f4998045f88939593fa01bcc",
+      "claims_supported": "Readable original 142-member five-baseline seed-101 development archive only; not the 18-interface-fit summary"
+    },
+    {
+      "id": "baseline-trainer-audit-summary",
+      "path": "qualification/hcsn-localization-trainer-20261108/NATIVE_AUDIT_SUMMARY.json",
+      "sha256": "eed311caf6e3b97ad37a2c4a5d81b815d52c8b984b0d9c4b83a79845db8ff1db",
+      "claims_supported": "Five baseline gradient-moment observations; does not establish equal effective capacity"
+    }
+  ],
+  "holds": [
+    {
+      "id": "localization-v2-18-interface-runs",
+      "expected_missing_path": "qualification/hcsn_differentiable/evidence/localization-v2-20261108/README.md",
+      "reason": "CURRENT.md reported 18 fits / 72 optimizer updates / 90 checkpoints / 528 audit checks, but its linked receipt directory is absent at baseline; historical claim not independently reconciled"
+    },
+    {
+      "id": "p1-trained-posterior-domain",
+      "reason": "No independent post-training mu/sigma/b/reset visitation grid with tail/log-risk/gradient and full long-context error receipts"
+    },
+    {
+      "id": "p2-independent-comparison",
+      "reason": "No sufficiently trained seven-family equal-resource fair comparison and independent confirmation (formal fits zero)"
+    },
+    {
+      "id": "p3-qvi",
+      "reason": "No independent dynamic-programming/QVI oracle and no incremental endogenous-boundary effect"
+    },
+    {
+      "id": "p4-p5-field-and-hardware",
+      "reason": "No independently confirmed real asynchronous multimodal gain; hardware cost and full daemon adoption not qualified"
+    }
+  ],
+  "semantics": "File hashing and link existence checks do not authenticate external training actors. HOLDs are not CI exceptions or completed scientific criteria."
+}

@@ -1,0 +1,886 @@
+{
+  "schema": "hepta.rust-ci-repair-final.v1",
+  "base_source_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+  "input_sha256": "84d5ff2d48596298907ed5ebd5d7d854df2bd035f86fe970341b8b9c85569d28",
+  "native_execution": {
+    "schema": "hepta.rust-ci-repair-execution.v1",
+    "source_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+    "input_sha256": "84d5ff2d48596298907ed5ebd5d7d854df2bd035f86fe970341b8b9c85569d28",
+    "checks": [
+      {
+        "name": "hepta-targeted-tests",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-infer-core",
+          "-p",
+          "codex-hepta-neuron"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+        "state": "completed",
+        "started_unix": 1794139259.2569995,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/hepta-targeted-tests.log",
+        "exit_code": 100,
+        "wall_seconds": 15.542586101975758,
+        "log": {
+          "bytes": 40306,
+          "sha256": "5366bdbdf3c7880086e7984d47ac67eb6d296af8f5177df8a0897a00bcc2003f",
+          "git_blob": "59ee4b119279b16312f02490dd7509783b7274c7"
+        },
+        "locks_after": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 417315,
+            "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+            "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1761877,
+            "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+            "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+          }
+        }
+      },
+      {
+        "name": "core-abort-tests",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-core",
+          "--test",
+          "all",
+          "abort_tasks::"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+        "state": "completed",
+        "started_unix": 1794139274.9359071,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/core-abort-tests.log",
+        "exit_code": 0,
+        "wall_seconds": 229.2808187319897,
+        "log": {
+          "bytes": 57135,
+          "sha256": "7afea54b19692914e5163abf9eff7914995b6a706d58faf326228996c8065341",
+          "git_blob": "8e4c5d821758fe940eeaa1858b57aff160c8f70b"
+        },
+        "locks_after": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 417315,
+            "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+            "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1761877,
+            "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+            "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+          }
+        }
+      },
+      {
+        "name": "exec-bwrap-tests",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-exec-server",
+          "--test",
+          "capability_discovery",
+          "--test",
+          "file_system_unix"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+        "state": "completed",
+        "started_unix": 1794139504.232845,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/exec-bwrap-tests.log",
+        "exit_code": 0,
+        "wall_seconds": 85.15154786896892,
+        "log": {
+          "bytes": 44547,
+          "sha256": "03f2eac1a7c41ae7c32114a49d1badda11086a584a1c68f22f4c52a5c214e545",
+          "git_blob": "a48eedb3e7594e3faba7425339e50a2b9b6890df"
+        },
+        "locks_after": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 417315,
+            "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+            "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1761877,
+            "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+            "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+          }
+        }
+      },
+      {
+        "name": "bazel-lock-update",
+        "command": [
+          "just",
+          "bazel-lock-update"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+        "state": "completed",
+        "started_unix": 1794139589.3946228,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/bazel-lock-update.log",
+        "exit_code": 0,
+        "wall_seconds": 65.45235362002859,
+        "log": {
+          "bytes": 3706,
+          "sha256": "62b4aa51927f81741e35169ad2788196f860dd2afd4be5cdde121a6852578ca3",
+          "git_blob": "e68033eb596f11e69f7d8712312218102781df43"
+        },
+        "locks_after": {
+          "codex-rs/Cargo.lock": {
+            "bytes": 417315,
+            "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+            "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+          },
+          "MODULE.bazel.lock": {
+            "bytes": 1761877,
+            "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+            "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+          }
+        }
+      }
+    ],
+    "state": "completed",
+    "host": "rog",
+    "platform": "x86_64-unknown-linux-gnu",
+    "environment": {
+      "CARGO_TARGET_DIR": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/cargo-target",
+      "CARGO_BUILD_JOBS": "4"
+    },
+    "windows_execution": false,
+    "musl_rbe_execution": false,
+    "formatted": false,
+    "tests_after_format": false,
+    "success": false,
+    "final_changed_files": [
+      "codex-rs/core/tests/common/test_codex.rs",
+      "codex-rs/core/tests/suite/abort_tasks.rs",
+      "codex-rs/exec-server/Cargo.toml",
+      "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_tests.rs"
+    ]
+  },
+  "candidate_commit": {
+    "sha": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+    "tree": "9352a943e5dd48798d1c6aa16cc0c0adcf340050",
+    "parents": [
+      "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3"
+    ],
+    "paths": [
+      "codex-rs/core/tests/common/test_codex.rs",
+      "codex-rs/core/tests/suite/abort_tasks.rs",
+      "codex-rs/exec-server/Cargo.toml",
+      "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_tests.rs"
+    ],
+    "local_only": true
+  },
+  "helper_validation": {
+    "schema": "hepta.rust-ci-repair-helper-validation.v1",
+    "base_source_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+    "input_sha256": "84d5ff2d48596298907ed5ebd5d7d854df2bd035f86fe970341b8b9c85569d28",
+    "candidate_source": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+    "candidate_commit": {
+      "sha": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+      "tree": "9352a943e5dd48798d1c6aa16cc0c0adcf340050",
+      "parents": [
+        "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3"
+      ],
+      "paths": [
+        "codex-rs/core/tests/common/test_codex.rs",
+        "codex-rs/core/tests/suite/abort_tasks.rs",
+        "codex-rs/exec-server/Cargo.toml",
+        "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+        "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_tests.rs"
+      ],
+      "local_only": true
+    },
+    "prior_hepta_attempt": {
+      "name": "hepta-targeted-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+      "state": "completed",
+      "started_unix": 1794139259.2569995,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/hepta-targeted-tests.log",
+      "exit_code": 100,
+      "wall_seconds": 15.542586101975758,
+      "log": {
+        "bytes": 40306,
+        "sha256": "5366bdbdf3c7880086e7984d47ac67eb6d296af8f5177df8a0897a00bcc2003f",
+        "git_blob": "59ee4b119279b16312f02490dd7509783b7274c7"
+      },
+      "locks_after": {
+        "codex-rs/Cargo.lock": {
+          "bytes": 417315,
+          "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+          "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+        },
+        "MODULE.bazel.lock": {
+          "bytes": 1761877,
+          "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+          "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+        }
+      }
+    },
+    "reason": "Create a local validation commit containing exactly the approved nine-file candidate, prepare and pin its real helper with the official clean-source gate, and test the original two-package selection.",
+    "state": "completed",
+    "checks": [
+      {
+        "name": "candidate-stage",
+        "command": [
+          "git",
+          "add",
+          "--",
+          "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+          "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+          "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+          "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+          "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+          "codex-rs/core/tests/common/test_codex.rs",
+          "codex-rs/core/tests/suite/abort_tasks.rs",
+          "codex-rs/exec-server/Cargo.toml",
+          "codex-rs/exec-server/tests/common/fake_bwrap.rs"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+        "state": "completed",
+        "started_unix": 1794140233.199157,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/candidate-stage.log",
+        "exit_code": 0,
+        "wall_seconds": 0.02956165897194296,
+        "log": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        }
+      },
+      {
+        "name": "candidate-local-commit",
+        "command": [
+          "git",
+          "commit",
+          "-m",
+          "Local validation of reviewed Rust CI test repairs"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+        "state": "completed",
+        "started_unix": 1794140233.259598,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/candidate-local-commit.log",
+        "exit_code": 0,
+        "wall_seconds": 0.03532042895676568,
+        "log": {
+          "bytes": 130,
+          "sha256": "5c8d897cb3a70b3d13481f6801cdd5750fefcbc640f3d68468d4f89714c3d62c",
+          "git_blob": "3a8fa04c9e139e135b24a1044b98e9ddda125936"
+        }
+      },
+      {
+        "name": "helper-preparation",
+        "command": [
+          "/usr/bin/python3",
+          "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/scripts/hepta_cell_test_helpers.py",
+          "--package",
+          "codex-hepta-infer-worker-host",
+          "--output-dir",
+          "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+        "state": "completed",
+        "started_unix": 1794140233.3272269,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/helper-preparation.log",
+        "exit_code": 0,
+        "wall_seconds": 169.1103478349978,
+        "log": {
+          "bytes": 192,
+          "sha256": "ad0acbb3c7707ecdd53d157cde3a43fbbb44f104bc461ae1904006baf52862e6",
+          "git_blob": "ebb7a26df46e0c74deda745f7d7dd1f47c8a6b18"
+        }
+      },
+      {
+        "name": "helper-verification-before",
+        "command": [
+          "/usr/bin/python3",
+          "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/scripts/hepta_cell_test_helpers.py",
+          "--package",
+          "codex-hepta-infer-worker-host",
+          "--output-dir",
+          "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification",
+          "--verify-only"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+        "state": "completed",
+        "started_unix": 1794140402.4706259,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/helper-verification-before.log",
+        "exit_code": 0,
+        "wall_seconds": 0.0694322029594332,
+        "log": {
+          "bytes": 1148,
+          "sha256": "1538cf3d040f1ed14a886ee7b8895b908307d8d9bbd8c750a5aa97f94b284942",
+          "git_blob": "0c4574383bfc0ac447b1f67b9970001747f59c90"
+        }
+      },
+      {
+        "name": "hepta-with-helper-tests",
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-infer-core",
+          "-p",
+          "codex-hepta-neuron"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+        "state": "completed",
+        "started_unix": 1794140402.5776932,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/hepta-with-helper-tests.log",
+        "exit_code": 0,
+        "wall_seconds": 9.05682009801967,
+        "log": {
+          "bytes": 31039,
+          "sha256": "edf37ca87a2076a92c63edc1f1adc2a900a10b3fdd4b79a33083fb74eb00847f",
+          "git_blob": "081ac22a1ea14ca3190715c511bbe9cfab09c2ff"
+        }
+      },
+      {
+        "name": "helper-verification-after",
+        "command": [
+          "/usr/bin/python3",
+          "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/scripts/hepta_cell_test_helpers.py",
+          "--package",
+          "codex-hepta-infer-worker-host",
+          "--output-dir",
+          "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification",
+          "--verify-only"
+        ],
+        "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+        "state": "completed",
+        "started_unix": 1794140411.669085,
+        "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/helper-verification-after.log",
+        "exit_code": 0,
+        "wall_seconds": 0.07277775398688391,
+        "log": {
+          "bytes": 1148,
+          "sha256": "1538cf3d040f1ed14a886ee7b8895b908307d8d9bbd8c750a5aa97f94b284942",
+          "git_blob": "0c4574383bfc0ac447b1f67b9970001747f59c90"
+        }
+      }
+    ],
+    "windows_execution": false,
+    "musl_rbe_execution": false,
+    "tests_after_format": false,
+    "published": false,
+    "helper_manifest": {
+      "schema_version": 1,
+      "source_sha": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+      "source_sha_after": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+      "source_status_before": "",
+      "source_status_after": "",
+      "workspace": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+      "selected_packages": [
+        "codex-hepta-infer-worker-host"
+      ],
+      "builds": [
+        {
+          "package": "codex-hepta-infer-worker-host",
+          "binaries": [
+            "hepta-joint-propose"
+          ],
+          "command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--message-format=json-render-diagnostics",
+            "-p",
+            "codex-hepta-infer-worker-host",
+            "--bin",
+            "hepta-joint-propose"
+          ],
+          "stdout": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/codex-hepta-infer-worker-host.jsonl",
+          "stderr": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/codex-hepta-infer-worker-host.stderr.log",
+          "exit_code": 0,
+          "cargo_finished": true,
+          "complete": true
+        }
+      ],
+      "artifacts": {
+        "hepta-joint-propose": {
+          "package": "codex-hepta-infer-worker-host",
+          "package_id": "path+file:///home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+          "compiler_executable": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/cargo-target/debug/hepta-joint-propose",
+          "executable": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/bin/hepta-joint-propose",
+          "profile": {
+            "opt_level": "0",
+            "debuginfo": 1,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          },
+          "sha256": "7a61bbfa6ee1bf625de0885453d92a1f282c76197f0689a6830b47bd315dd7b4",
+          "bytes": 6090640
+        }
+      },
+      "complete": true,
+      "exit_code": 0
+    },
+    "helper_environment": {
+      "CARGO_BIN_EXE_hepta-joint-propose": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/bin/hepta-joint-propose",
+      "CARGO_BIN_EXE_hepta_joint_propose": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/bin/hepta-joint-propose"
+    },
+    "helper_manifest_binding": {
+      "bytes": 1912,
+      "sha256": "d5ce3861596735948c97e82f5a1e36996a97db98ba8d23ae652294c8bcd1f62f",
+      "git_blob": "e0ff156d1d5fe662404fd0c99f41e85f18ab381b"
+    },
+    "helper_environment_binding": {
+      "bytes": 285,
+      "sha256": "d02dd284d341c1a9baaba0e80dfabac75c13318f7b86e217bd0eacbbbe09b30c",
+      "git_blob": "ae00649129d5c948fc9e91e028bcb0c0e7f6a253"
+    },
+    "exit_code": 0,
+    "success": true,
+    "locks_after": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 417315,
+        "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+        "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1761877,
+        "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+        "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+      }
+    },
+    "source_final": {
+      "head": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+      "tree": "9352a943e5dd48798d1c6aa16cc0c0adcf340050",
+      "status": ""
+    }
+  },
+  "command": [
+    "just",
+    "fmt",
+    "--base",
+    "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3"
+  ],
+  "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+  "tests_after_format": false,
+  "windows_execution": false,
+  "musl_rbe_execution": false,
+  "rustfmt": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\n",
+  "format_exit_code": 0,
+  "format_wall_seconds": 0.26424588001100346,
+  "format_log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "formatted": true,
+  "changed_files": [
+    "codex-rs/core/tests/common/test_codex.rs",
+    "codex-rs/core/tests/suite/abort_tasks.rs",
+    "codex-rs/exec-server/Cargo.toml",
+    "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+    "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+    "codex-rs/hepta-neuron/src/cell_generation_tests.rs"
+  ],
+  "files": [
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "original": {
+        "bytes": 51127,
+        "sha256": "e6a2e667c6bba42b71268720480d2d95c8952ffd62593041057416ad85fe83cc",
+        "git_blob": "8a34d9c73dc0a67a76c283ba4474ebf0d0f372c3"
+      },
+      "before_format": {
+        "bytes": 52412,
+        "sha256": "9eaa4d9f3ab772bd3ea02571bad0c4bba94e087857accd1bac5004c2eb89ac02",
+        "git_blob": "099ec8eb226394c2fc0543188e27d7c146a813c7"
+      },
+      "after_format": {
+        "bytes": 52412,
+        "sha256": "9eaa4d9f3ab772bd3ea02571bad0c4bba94e087857accd1bac5004c2eb89ac02",
+        "git_blob": "099ec8eb226394c2fc0543188e27d7c146a813c7"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "original": {
+        "bytes": 14438,
+        "sha256": "e95a4b608396f5cb8c34f83376d96693f025f78efb39972255e4aa063a600917",
+        "git_blob": "9b26fa2b628c6319f99ccad9452510c38415489c"
+      },
+      "before_format": {
+        "bytes": 15883,
+        "sha256": "5a7ab49eb5cbebc3ffc9ce59b87e3d1209151aaec96eb94eb40bf1233a576a2e",
+        "git_blob": "0ddb66609968a9860252579484df664eff39ace3"
+      },
+      "after_format": {
+        "bytes": 15883,
+        "sha256": "5a7ab49eb5cbebc3ffc9ce59b87e3d1209151aaec96eb94eb40bf1233a576a2e",
+        "git_blob": "0ddb66609968a9860252579484df664eff39ace3"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "original": {
+        "bytes": 2783,
+        "sha256": "32e26b8877ba57de6e870c7cf300dab437a0bdd3699de59cd2ef8cacbfdc9512",
+        "git_blob": "66f255cefae16331094ccbf953ff66ea4de072c5"
+      },
+      "before_format": {
+        "bytes": 2741,
+        "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+        "git_blob": "455df9eedc14b77ac3779899087cd8391b153b37"
+      },
+      "after_format": {
+        "bytes": 2741,
+        "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+        "git_blob": "455df9eedc14b77ac3779899087cd8391b153b37"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "original": {
+        "bytes": 1842,
+        "sha256": "512d78fe87ed95351fd86dc247adcce4d5f43a021d8c355b9041415eb4a10e94",
+        "git_blob": "7cbeed5649dcecde7db0fc75244c94a73bfaf460"
+      },
+      "before_format": {
+        "bytes": 2185,
+        "sha256": "d25eb3ecc0afc35d6a2d71cfbb99bb6f599f82792c683155e438c6711dc0177e",
+        "git_blob": "03e8745faf36bd272feb56a99228e6f5058b0938"
+      },
+      "after_format": {
+        "bytes": 2185,
+        "sha256": "d25eb3ecc0afc35d6a2d71cfbb99bb6f599f82792c683155e438c6711dc0177e",
+        "git_blob": "03e8745faf36bd272feb56a99228e6f5058b0938"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+      "original": {
+        "bytes": 15568,
+        "sha256": "69cff2a8d859891d0036f789e60ae0146c4dfce1b90cea3a5b058c262c9ee19b",
+        "git_blob": "d957db7b7e9c66ca8695be20cfbf2f70b5f9e1c5"
+      },
+      "before_format": {
+        "bytes": 16118,
+        "sha256": "6886b27eb44cecc0d22077dcabf815c104b3e63416afa94843511d5a048e0a72",
+        "git_blob": "9d9c40fd2a845172741c5d0045682e58749e7af5"
+      },
+      "after_format": {
+        "bytes": 16118,
+        "sha256": "6886b27eb44cecc0d22077dcabf815c104b3e63416afa94843511d5a048e0a72",
+        "git_blob": "9d9c40fd2a845172741c5d0045682e58749e7af5"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+      "original": {
+        "bytes": 8413,
+        "sha256": "e814875ac4a39e1e5512236a584fc0fc7afd885f728fd974b7b5291ccd903647",
+        "git_blob": "8e2ef0d2877d27ac3d0ea58ae4b7c1860d4b58b6"
+      },
+      "before_format": {
+        "bytes": 8461,
+        "sha256": "a8dbce5b0495a682108fd9728a158843d1606ea1538b02cfd34b751345f03128",
+        "git_blob": "dd6122c0cc3bbe832dc3bb3cbb5cfadac99739ee"
+      },
+      "after_format": {
+        "bytes": 8461,
+        "sha256": "a8dbce5b0495a682108fd9728a158843d1606ea1538b02cfd34b751345f03128",
+        "git_blob": "dd6122c0cc3bbe832dc3bb3cbb5cfadac99739ee"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "original": {
+        "bytes": 9889,
+        "sha256": "77ce9abb0be260edfd41392ed07ac23579d2bde4d2386891eaef17a73ff96020",
+        "git_blob": "933225b5cbeeec5f771812c833bcfd148561ff25"
+      },
+      "before_format": {
+        "bytes": 9917,
+        "sha256": "9a35695d3080e30f65a0aa53c42db4f22afe06164b32a7a67fbd5ca0b728ae9a",
+        "git_blob": "4643e38efe56d9815cf45ece14afff2d57d9dc0f"
+      },
+      "after_format": {
+        "bytes": 9917,
+        "sha256": "9a35695d3080e30f65a0aa53c42db4f22afe06164b32a7a67fbd5ca0b728ae9a",
+        "git_blob": "4643e38efe56d9815cf45ece14afff2d57d9dc0f"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "original": {
+        "bytes": 7672,
+        "sha256": "298f3df3ee8fca50d7a9e708ef73b6aa84c9165107f1b1a3ace2e24e6bfcbad8",
+        "git_blob": "3e3b667bddf02275ef17b6d37787ee3508f970a8"
+      },
+      "before_format": {
+        "bytes": 8346,
+        "sha256": "a2bf94c1e26ce96e61fb33dc359a95e6ddfb6237299666955791dfb6bcae4e6f",
+        "git_blob": "0db16e687c9c04862fecd15b21321ea94dd929e5"
+      },
+      "after_format": {
+        "bytes": 8346,
+        "sha256": "a2bf94c1e26ce96e61fb33dc359a95e6ddfb6237299666955791dfb6bcae4e6f",
+        "git_blob": "0db16e687c9c04862fecd15b21321ea94dd929e5"
+      },
+      "format_changed": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "original": {
+        "bytes": 25556,
+        "sha256": "61bbae237b735525d0f043932abe6596633080b50b39bbff169afd2c0bbd5abe",
+        "git_blob": "f712e158c3dd8f4002617bc1c187c2506710e661"
+      },
+      "before_format": {
+        "bytes": 25978,
+        "sha256": "5d12ba277e4605ec802b729b80edc1961711b377ba2ff94869dd935f0358f4a6",
+        "git_blob": "a4a84e5cea553dfdd78e86683cff5a3395d1051d"
+      },
+      "after_format": {
+        "bytes": 25978,
+        "sha256": "5d12ba277e4605ec802b729b80edc1961711b377ba2ff94869dd935f0358f4a6",
+        "git_blob": "a4a84e5cea553dfdd78e86683cff5a3395d1051d"
+      },
+      "format_changed": false
+    }
+  ],
+  "patch": {
+    "bytes": 28606,
+    "sha256": "eee2445bbf541b26785f8731fb582a7a114ec399c4e31ae66bdc42c4a2eba2c6",
+    "git_blob": "c6b7b6c0df1201de765f174d60b005bac1182046"
+  },
+  "locks_after": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 417315,
+      "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1761877,
+      "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+      "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+    }
+  },
+  "source_after_format": {
+    "head": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+    "tree": "9352a943e5dd48798d1c6aa16cc0c0adcf340050",
+    "status": ""
+  },
+  "evidence_files": [
+    {
+      "path": "prepare-receipt.json",
+      "bytes": 18349,
+      "sha256": "fd9a8ddfb1ce48f5860c3a3684bc957d8d4c0b69aa23eecb06c174e3595296dd",
+      "git_blob": "a8204a96a3bedad905bb430799f452824d03cf2d"
+    },
+    {
+      "path": "execution-receipt.json",
+      "bytes": 5924,
+      "sha256": "2d78f02a62572ed64aa63d2e918975911e4f50d94f003f1b5e456c139e982ba4",
+      "git_blob": "8d3e28ec328f4e1f76bdebf83747127925416b2c"
+    },
+    {
+      "path": "hepta-helper-receipt.json",
+      "bytes": 11373,
+      "sha256": "1a61b357ec015c66a3fc259635ba414726ff6e95939166a908bb32456ae97009",
+      "git_blob": "3c87eba565d5317fecf0ec841ec3302573131441"
+    },
+    {
+      "path": "helper-qualification/manifest.json",
+      "bytes": 1912,
+      "sha256": "d5ce3861596735948c97e82f5a1e36996a97db98ba8d23ae652294c8bcd1f62f",
+      "git_blob": "e0ff156d1d5fe662404fd0c99f41e85f18ab381b"
+    },
+    {
+      "path": "helper-qualification/env.json",
+      "bytes": 285,
+      "sha256": "d02dd284d341c1a9baaba0e80dfabac75c13318f7b86e217bd0eacbbbe09b30c",
+      "git_blob": "ae00649129d5c948fc9e91e028bcb0c0e7f6a253"
+    },
+    {
+      "path": "helper-qualification/codex-hepta-infer-worker-host.jsonl",
+      "bytes": 1087392,
+      "sha256": "1ea8e685f89f5e3fa9fa2f887d5b823b9fb5b3b67c45cac1b1902ea8ec48218f",
+      "git_blob": "ee62432971e7224e93e6beec46039e1d47c2087f"
+    },
+    {
+      "path": "helper-qualification/codex-hepta-infer-worker-host.stderr.log",
+      "bytes": 21026,
+      "sha256": "e8722f638016c3a5a738bb3d9bd578dff7167046789e9e01c750ef281ca7bbdd",
+      "git_blob": "72049bae6cb910f53807105f0430ac272f4446d1"
+    },
+    {
+      "path": "logs/bazel-lock-update.log",
+      "bytes": 3706,
+      "sha256": "62b4aa51927f81741e35169ad2788196f860dd2afd4be5cdde121a6852578ca3",
+      "git_blob": "e68033eb596f11e69f7d8712312218102781df43"
+    },
+    {
+      "path": "logs/bazel-version.log",
+      "bytes": 12,
+      "sha256": "975f11fdb2255b8f73742a67a3e471115f829095af0931945a505f8401740e21",
+      "git_blob": "21c7e63f0e02b4c976eb8b5d1f995c4d7c530e88"
+    },
+    {
+      "path": "logs/candidate-local-commit.log",
+      "bytes": 130,
+      "sha256": "5c8d897cb3a70b3d13481f6801cdd5750fefcbc640f3d68468d4f89714c3d62c",
+      "git_blob": "3a8fa04c9e139e135b24a1044b98e9ddda125936"
+    },
+    {
+      "path": "logs/candidate-stage.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "logs/cargo-metadata.log",
+      "bytes": 957824,
+      "sha256": "32fa1451fbef4c15747e9fadfe339376bac31f09b85a1775d8a4d45817b88697",
+      "git_blob": "cb6a6b982e6ed5afb26820d9e64c7808b27b214a"
+    },
+    {
+      "path": "logs/cargo-version.log",
+      "bytes": 36,
+      "sha256": "b6ef6807dd96d18b833474ad68e7a23a29e562a29c67afa71a59fb9a73df0068",
+      "git_blob": "fb70db83bf0766d865826728657e48541633faf4"
+    },
+    {
+      "path": "logs/changed-inputs.log",
+      "bytes": 451,
+      "sha256": "55fc0e07399f3b901b9502332ca41d9c50228768854e57fbfc055f61e51768af",
+      "git_blob": "36384cb3442b8ac7005a8489d7d709d463778726"
+    },
+    {
+      "path": "logs/core-abort-tests.log",
+      "bytes": 57135,
+      "sha256": "7afea54b19692914e5163abf9eff7914995b6a706d58faf326228996c8065341",
+      "git_blob": "8e4c5d821758fe940eeaa1858b57aff160c8f70b"
+    },
+    {
+      "path": "logs/download-bazel.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "logs/download-cargo-nextest.tar.gz.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "logs/exec-bwrap-tests.log",
+      "bytes": 44547,
+      "sha256": "03f2eac1a7c41ae7c32114a49d1badda11086a584a1c68f22f4c52a5c214e545",
+      "git_blob": "a48eedb3e7594e3faba7425339e50a2b9b6890df"
+    },
+    {
+      "path": "logs/head-before.log",
+      "bytes": 41,
+      "sha256": "244e914808b7a253eef2f585a7b488f49f3e5c83ee6f26410cecbac4bfafdb0a",
+      "git_blob": "9851955268afe80ce420607b0542a9e5d25e9e2f"
+    },
+    {
+      "path": "logs/helper-preparation.log",
+      "bytes": 192,
+      "sha256": "ad0acbb3c7707ecdd53d157cde3a43fbbb44f104bc461ae1904006baf52862e6",
+      "git_blob": "ebb7a26df46e0c74deda745f7d7dd1f47c8a6b18"
+    },
+    {
+      "path": "logs/helper-verification-after.log",
+      "bytes": 1148,
+      "sha256": "1538cf3d040f1ed14a886ee7b8895b908307d8d9bbd8c750a5aa97f94b284942",
+      "git_blob": "0c4574383bfc0ac447b1f67b9970001747f59c90"
+    },
+    {
+      "path": "logs/helper-verification-before.log",
+      "bytes": 1148,
+      "sha256": "1538cf3d040f1ed14a886ee7b8895b908307d8d9bbd8c750a5aa97f94b284942",
+      "git_blob": "0c4574383bfc0ac447b1f67b9970001747f59c90"
+    },
+    {
+      "path": "logs/hepta-targeted-tests.log",
+      "bytes": 40306,
+      "sha256": "5366bdbdf3c7880086e7984d47ac67eb6d296af8f5177df8a0897a00bcc2003f",
+      "git_blob": "59ee4b119279b16312f02490dd7509783b7274c7"
+    },
+    {
+      "path": "logs/hepta-with-helper-tests.log",
+      "bytes": 31039,
+      "sha256": "edf37ca87a2076a92c63edc1f1adc2a900a10b3fdd4b79a33083fb74eb00847f",
+      "git_blob": "081ac22a1ea14ca3190715c511bbe9cfab09c2ff"
+    },
+    {
+      "path": "logs/just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "logs/nextest-version.log",
+      "bytes": 171,
+      "sha256": "0525f6ec293e727519a57ddc6b879d5d5eafc896911f2ea5fccadf24033a78f7",
+      "git_blob": "8d07d2af34ce6d00777df5c0b2003c52ac388506"
+    },
+    {
+      "path": "logs/rustc-version.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "git_blob": "4b0852244672d9611e81367e960345736b255b8c"
+    },
+    {
+      "path": "logs/status-before.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ],
+  "delivery": {
+    "path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/delivery.json.gz",
+    "bytes": 223785,
+    "sha256": "700167102dd487e4071ae30bf542a8db0d65705486f4020c0a054a39a69e3dbe",
+    "git_blob": "6acc425570135d727b2e9513301bffe3ac7b57de"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "command": [
+    "sudo",
+    "-n",
+    "env",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/var/lib/hepta-authority-os3-ssd-20261023",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/var/lib/hepta-authority-private-os3-ssd-20261023",
+    "HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN=/data/hepta-sealed-bootstrap-peer-01.fka9xyji/authority_host_peer_qualification",
+    "HEPTA_SERVICE_WRITER_PROOF=1",
+    "HEPTA_SERVICE_CHECKPOINT=1",
+    "HEPTA_SERVICE_CONSUMERS=1",
+    "HEPTA_SERVICE_EXPECT_EXPIRED_CONSUMER=1",
+    "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+    "--exact",
+    "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit": 0,
+  "seconds": 5.709746835986152,
+  "artifacts": {
+    "source": {
+      "head": "2ff4a7ed65fa6cec5df4384a1023ec65c015281e",
+      "tree": "806cbf8ace4b12fcad18c76a62208169f2476c20",
+      "status": "M codex-rs/hepta-agentd/ROOT_AUTHORITY_CLIENT.md\n M codex-rs/hepta-agentd/src/authority_host_service_consumers_root.rs\n M codex-rs/hepta-agentd/src/lib.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs\n?? codex-rs/hepta-agentd/src/authority_host_bootstrap_seal_tests.rs",
+      "index_flags": [
+        "H"
+      ],
+      "files": 9353,
+      "live_source_sha256": "e0e4e6aa08fc24bbd76414aaf6d78877a4de801a5e70751239ef732181f4c941"
+    },
+    "test_binary": "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+    "test_sha256": "bd6bb6c7ca96b804d75dade8b8508ee6f7fe2213cf442e298670a42fb69895ff",
+    "client_binary": "/data/hepta-sealed-bootstrap-peer-01.fka9xyji/authority_host_peer_qualification",
+    "client_sha256": "998380d1c02358817a81dc91c84449e3371dcc44dcc3358a0a0284cecbfdd244",
+    "cli_binary": "/data/hepta-root-service-196-target.e3i3hcbg/debug/hepta-authority-host",
+    "cli_sha256": "d67d678a48282e05033fc0c775f067be76b6bf5cf7eed30d97d21bc052d036d5",
+    "prewarmed_complete_bytes_before_authority_clock": true,
+    "production_ready": false
+  },
+  "production_loader_qualified": false,
+  "stdin_fixture_copies_actual_sealed_bytes_only": true,
+  "clock_horizon_ms": 1000,
+  "feed_max_age_ms": 500
+}

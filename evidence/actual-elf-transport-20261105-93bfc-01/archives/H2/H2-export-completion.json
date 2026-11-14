@@ -1,0 +1,491 @@
+{
+  "actual_parts_concatenation_verified": true,
+  "all_archive_members_independently_decompressed_and_hashed": true,
+  "all_parts_actually_reopened_and_hashed": true,
+  "archive_bytes": 256132128,
+  "archive_index_sha256": "dab6061f0fa17e1403bf084314ca6c52b8bf4ece6b9b3d7ed5feb09143aa6e5f",
+  "archive_path": "/home/qian-qi/work/hepta-h2-actual-elf-export-20261105-93bfc-01/H2-actual-retained-elfs.tar.xz",
+  "archive_sha256": "f75c5d36596b84261ebc10705cd73de8abbe68eb87897413fcdb7e0cc92631a7",
+  "binary_rebuilt": false,
+  "capture_gaps_filled": false,
+  "capture_limits": "actual retained H2 images, with all observed aliases; no reconstructed binaries, no second-daemon complete binding or post-timeout inference",
+  "completed_utc": "2026-11-05T21:17:59Z",
+  "consumer_contract": "Require an authoritative successful export job, this COMPLETE marker, and archive/index/part SHA verification; filenames alone are not completion.",
+  "elapsed_seconds": 220.5065328569617,
+  "exporter_sha256": "37538f62fd81398262ccde1b9cfa0d1cb0163b115e108b80220ab7af8f929365",
+  "native_reexecution": false,
+  "original_run_outcome": {
+    "configuration_unchanged": true,
+    "coordinator_elapsed_seconds": 1133.3816417860799,
+    "failed_case": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+    "failed_case_seconds": 60.007,
+    "failure_raw_sha256": "9afd59f1c6d4043ec240fb2a888c8e08630d8e0adf0671883dd0c17be4864a8a",
+    "passed_selected": 70,
+    "source_before_after_equal": true,
+    "status": "FAILED",
+    "terminal_unix_ms": 1793911402315,
+    "timed_out_selected": 1,
+    "unexecuted": [
+      "selected-tests-guard",
+      "original-six-effect-controls",
+      "provider-effect-existing-and-pq",
+      "final-use-profile-controls",
+      "full-evidence-library",
+      "full-evidence-ignored-list",
+      "fix",
+      "format"
+    ]
+  },
+  "partial_artifacts": 1,
+  "partial_bytes_represented": 314572800,
+  "partial_executable_credit": false,
+  "partial_prefixes_independently_verified_in_archive": true,
+  "partial_representation": "Verified exact range of an included complete first-daemon image; no complete second-daemon binding.",
+  "parts": [
+    {
+      "bytes": 4194304,
+      "index": 0,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0000",
+      "offset": 0,
+      "sha256": "4f55d0846008d262a1d9a45cc1b25acca203a6eafa19f373f4bc27e8e13b17d5"
+    },
+    {
+      "bytes": 4194304,
+      "index": 1,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0001",
+      "offset": 4194304,
+      "sha256": "447096c5fdcf1127261ec313d0600036b08513aab585d556502d08a7520004c5"
+    },
+    {
+      "bytes": 4194304,
+      "index": 2,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0002",
+      "offset": 8388608,
+      "sha256": "d21f7b08e03670c5eabf66c6a471cc6171404769db1d813270ec240badcdfed1"
+    },
+    {
+      "bytes": 4194304,
+      "index": 3,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0003",
+      "offset": 12582912,
+      "sha256": "1699ae7f91ae6cc98022d5db26e43dd6fd20f087bb77129e360e63a167706795"
+    },
+    {
+      "bytes": 4194304,
+      "index": 4,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0004",
+      "offset": 16777216,
+      "sha256": "9c1acdcd937d5e57f2bb54dc539f0ebb2ade553ac9c1b546ae19d4e2276a61c5"
+    },
+    {
+      "bytes": 4194304,
+      "index": 5,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0005",
+      "offset": 20971520,
+      "sha256": "fa00436f18af6592b383106f6aa4fbece71b6187279d294eda4ed033832c64cb"
+    },
+    {
+      "bytes": 4194304,
+      "index": 6,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0006",
+      "offset": 25165824,
+      "sha256": "3746a2b69dd016554aa80ead6580eeae99f34d2e90ad43e0c7cc96dd8605320e"
+    },
+    {
+      "bytes": 4194304,
+      "index": 7,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0007",
+      "offset": 29360128,
+      "sha256": "966906cb6bc580f3a50f9ce0643e8bd6c451f9e65bed6b0e8dbe55679bfb7874"
+    },
+    {
+      "bytes": 4194304,
+      "index": 8,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0008",
+      "offset": 33554432,
+      "sha256": "234f23dab15c422c730fd6668847b7dd60ac191879aaf60b3635a6c951feab11"
+    },
+    {
+      "bytes": 4194304,
+      "index": 9,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0009",
+      "offset": 37748736,
+      "sha256": "505be0c7e59e29920a7aa4ac9cb7f577c20fc5feb6787429cb3da475f5cec22d"
+    },
+    {
+      "bytes": 4194304,
+      "index": 10,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0010",
+      "offset": 41943040,
+      "sha256": "e9fbc360a21d2f5c0f9f50af659382fdad84e3b2990a4e1a568a2443aadef51b"
+    },
+    {
+      "bytes": 4194304,
+      "index": 11,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0011",
+      "offset": 46137344,
+      "sha256": "9bafa673c5faafee98181510d8248b8f4eda7588e458d8b552696366e1439165"
+    },
+    {
+      "bytes": 4194304,
+      "index": 12,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0012",
+      "offset": 50331648,
+      "sha256": "dfa788b855416d0e237f48324e25332fea9baa7ef55f67cd2cf402e068edd45f"
+    },
+    {
+      "bytes": 4194304,
+      "index": 13,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0013",
+      "offset": 54525952,
+      "sha256": "511124ca5c7663d85897927166b548b7cd528dac951066d9487e025e82373e5e"
+    },
+    {
+      "bytes": 4194304,
+      "index": 14,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0014",
+      "offset": 58720256,
+      "sha256": "1ab8bd0abb54a92ac8efbafb68618f771ab92294250c6bf00f5487bf4cf28519"
+    },
+    {
+      "bytes": 4194304,
+      "index": 15,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0015",
+      "offset": 62914560,
+      "sha256": "a6bdecd6aa888b708ee098e25a141598748a6999b0d6281faa0cac35d74e701b"
+    },
+    {
+      "bytes": 4194304,
+      "index": 16,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0016",
+      "offset": 67108864,
+      "sha256": "7ad6ae05259fbf671f816c6d2bd4e2a5a4d2fd68b0c223254ebd1ff2109cc1cd"
+    },
+    {
+      "bytes": 4194304,
+      "index": 17,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0017",
+      "offset": 71303168,
+      "sha256": "444f401b651ebd68eef153584af9021ea8c7c38e640a1add800bfb7fce0bf834"
+    },
+    {
+      "bytes": 4194304,
+      "index": 18,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0018",
+      "offset": 75497472,
+      "sha256": "f7484a3e0b58156fe5b474b8a3a9a64b30a1eaeb797984b2149628063213d2e2"
+    },
+    {
+      "bytes": 4194304,
+      "index": 19,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0019",
+      "offset": 79691776,
+      "sha256": "f72a302bf6c12663665aa08cd1523c2cf4251125ae344f4390fc74e46a4bd143"
+    },
+    {
+      "bytes": 4194304,
+      "index": 20,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0020",
+      "offset": 83886080,
+      "sha256": "f6324be9e88c9dba1f9b680b0687a80de73ebb0b5aee93b0ca09031dbf5802e2"
+    },
+    {
+      "bytes": 4194304,
+      "index": 21,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0021",
+      "offset": 88080384,
+      "sha256": "003f18d6915b572d72cd066ee952691dadde989dc3a2e9a41d61a4fe02a34236"
+    },
+    {
+      "bytes": 4194304,
+      "index": 22,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0022",
+      "offset": 92274688,
+      "sha256": "91adb2b88aa4ad81ff51ce66da67b93277d868f7c796b5c94e62a1fd1a83394e"
+    },
+    {
+      "bytes": 4194304,
+      "index": 23,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0023",
+      "offset": 96468992,
+      "sha256": "3a589fdae1ec4c46bf4d9b3d01cf86c537d2266e57c15c49e604e6db063edf76"
+    },
+    {
+      "bytes": 4194304,
+      "index": 24,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0024",
+      "offset": 100663296,
+      "sha256": "371a4027004660690ca967f71d03f4b05d03fe304cc3f97808170199f38130e5"
+    },
+    {
+      "bytes": 4194304,
+      "index": 25,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0025",
+      "offset": 104857600,
+      "sha256": "b0d6423657de7fca8658524e4104cf8a488563a2a6bc0b8e79bd03e569fb34d3"
+    },
+    {
+      "bytes": 4194304,
+      "index": 26,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0026",
+      "offset": 109051904,
+      "sha256": "9bd8ac8b61797b1041e64aeb52a208194bb4913a0306510b3d81560fb525438f"
+    },
+    {
+      "bytes": 4194304,
+      "index": 27,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0027",
+      "offset": 113246208,
+      "sha256": "a328ab718248dfd249a1772ff83bcc8049b2f2d0f05cc15b0354adea0b47f2b2"
+    },
+    {
+      "bytes": 4194304,
+      "index": 28,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0028",
+      "offset": 117440512,
+      "sha256": "fcd7fa158d4b7808299f31ceb909e7e4027753d0e3dba8c145aeef98427d2d5b"
+    },
+    {
+      "bytes": 4194304,
+      "index": 29,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0029",
+      "offset": 121634816,
+      "sha256": "15addb3d577e7e1329cbf3fae4567a1cda53b55e127d5a444137347168707124"
+    },
+    {
+      "bytes": 4194304,
+      "index": 30,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0030",
+      "offset": 125829120,
+      "sha256": "a19b0e1743469e5bdfab9d9e5611d95fba1206941d9444064a7e400b42823485"
+    },
+    {
+      "bytes": 4194304,
+      "index": 31,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0031",
+      "offset": 130023424,
+      "sha256": "91da84a7de83faef0d583df53b51de94718a532e7844654cc66778c9cd058362"
+    },
+    {
+      "bytes": 4194304,
+      "index": 32,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0032",
+      "offset": 134217728,
+      "sha256": "d3e6e84e722d1ada77e6778d7eb860ee95ffe9f0c4efcd5ab4a99231bd9482ce"
+    },
+    {
+      "bytes": 4194304,
+      "index": 33,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0033",
+      "offset": 138412032,
+      "sha256": "dd74c209d781ae15482b14eaf01b9b99c2113b1ccdfab818edeab5aafef6f354"
+    },
+    {
+      "bytes": 4194304,
+      "index": 34,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0034",
+      "offset": 142606336,
+      "sha256": "ed569f11d76887a0e2174f242b97d7e5c61c84afe32b20ac8396a827b9a655fa"
+    },
+    {
+      "bytes": 4194304,
+      "index": 35,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0035",
+      "offset": 146800640,
+      "sha256": "19de5550520a299c5a3734ed98332e449206d7ab014ad54459e83fb60a389034"
+    },
+    {
+      "bytes": 4194304,
+      "index": 36,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0036",
+      "offset": 150994944,
+      "sha256": "7389f7b5548d24f76c157b3f75f45f845770fc79c3431fd90e4fc7e5a83ac853"
+    },
+    {
+      "bytes": 4194304,
+      "index": 37,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0037",
+      "offset": 155189248,
+      "sha256": "fb5e7925b49e1016b78cb0657b4cdd70b809563410132a07ed3d974fecc00a24"
+    },
+    {
+      "bytes": 4194304,
+      "index": 38,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0038",
+      "offset": 159383552,
+      "sha256": "ad2c0bfa9103a2eb85835397bb3307e80e9b0334494e89eff0443db7d48d0e33"
+    },
+    {
+      "bytes": 4194304,
+      "index": 39,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0039",
+      "offset": 163577856,
+      "sha256": "f9b206be2316c395d882778c15e79532b0cc1cf76b763f332135c73e98219382"
+    },
+    {
+      "bytes": 4194304,
+      "index": 40,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0040",
+      "offset": 167772160,
+      "sha256": "0812a4bb653e4989ade5293e5f7512734d43269f3fd0d97363a8a10aaaa94a75"
+    },
+    {
+      "bytes": 4194304,
+      "index": 41,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0041",
+      "offset": 171966464,
+      "sha256": "f9fb380568b80e9a99749701ddd854406cc64729d71c50af53bb93485b1ca410"
+    },
+    {
+      "bytes": 4194304,
+      "index": 42,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0042",
+      "offset": 176160768,
+      "sha256": "70a3d42e2659a1ecf23dc96af031c0d8cf31e9b9f4733ffa574a0c6ad8ce5304"
+    },
+    {
+      "bytes": 4194304,
+      "index": 43,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0043",
+      "offset": 180355072,
+      "sha256": "c8a4276ca234606626c8ba24bec6382ca371e928d8541622891dff7ee80d18ed"
+    },
+    {
+      "bytes": 4194304,
+      "index": 44,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0044",
+      "offset": 184549376,
+      "sha256": "5f116e3d9ef680d7eed55611cf37157ab9adb14703f19ae5ac43208badeee25c"
+    },
+    {
+      "bytes": 4194304,
+      "index": 45,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0045",
+      "offset": 188743680,
+      "sha256": "1def921536f4677d036a546fd424fdbc64f5d217628644f255d460ccbe596ec3"
+    },
+    {
+      "bytes": 4194304,
+      "index": 46,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0046",
+      "offset": 192937984,
+      "sha256": "43687216de363ed784ad6ef14b5b929418ca18041540663528ed2459b5fef5c2"
+    },
+    {
+      "bytes": 4194304,
+      "index": 47,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0047",
+      "offset": 197132288,
+      "sha256": "68b8c269ef0b28f0563e80407416961b80c1571c47dd8e40706c64df42389017"
+    },
+    {
+      "bytes": 4194304,
+      "index": 48,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0048",
+      "offset": 201326592,
+      "sha256": "3dfa3ff0d6b1e67de2e2bb58f1dc448eebf08318e162e00d0c58b25c8d96e726"
+    },
+    {
+      "bytes": 4194304,
+      "index": 49,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0049",
+      "offset": 205520896,
+      "sha256": "4a7941ae4473ce7ad1f874f65b929e4c6c2f45382fe9f84aad6ec39541fe64d7"
+    },
+    {
+      "bytes": 4194304,
+      "index": 50,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0050",
+      "offset": 209715200,
+      "sha256": "ea9f18fe3fd3d2c104a89a8945760b1089b38a6764f2e376027187100e14ca14"
+    },
+    {
+      "bytes": 4194304,
+      "index": 51,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0051",
+      "offset": 213909504,
+      "sha256": "9583913fd9fc5b9184d95b4100fe1ee049d63df2ea312b5729dcc419d5fc1708"
+    },
+    {
+      "bytes": 4194304,
+      "index": 52,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0052",
+      "offset": 218103808,
+      "sha256": "1ea9928fe7256684521a716f51b575250e9f290d654f5cd273e2499338581e4c"
+    },
+    {
+      "bytes": 4194304,
+      "index": 53,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0053",
+      "offset": 222298112,
+      "sha256": "8714191ef342a6ad79f0e5e4319d69794b1add199aaf88e9a978cce7bbb8f7f8"
+    },
+    {
+      "bytes": 4194304,
+      "index": 54,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0054",
+      "offset": 226492416,
+      "sha256": "872bd0f6ad8682b252bf9ef8e556a7c6baf782b73265dd9323eee275c2888511"
+    },
+    {
+      "bytes": 4194304,
+      "index": 55,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0055",
+      "offset": 230686720,
+      "sha256": "bd0e8a1dbdabf57cd0ef02258dcf400c9c67c16096605c85d0529526ba54efda"
+    },
+    {
+      "bytes": 4194304,
+      "index": 56,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0056",
+      "offset": 234881024,
+      "sha256": "1160887694e2bb30eb826181e6c41bd44a1d959a3e5cbe8e811b0d197fbfbd5b"
+    },
+    {
+      "bytes": 4194304,
+      "index": 57,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0057",
+      "offset": 239075328,
+      "sha256": "7f0ed6d5dabfddacaee660febcc320140785dac9f67cd5f2a74055c23a02828b"
+    },
+    {
+      "bytes": 4194304,
+      "index": 58,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0058",
+      "offset": 243269632,
+      "sha256": "b7e972b6552dee677c77bd4fcf1136a28f2cdb67f3ac9afd538a59b0752052fc"
+    },
+    {
+      "bytes": 4194304,
+      "index": 59,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0059",
+      "offset": 247463936,
+      "sha256": "ea26c66478ddc1cbe724059fffc283a2583ee3a9e33ab30dba09a71c7e1974da"
+    },
+    {
+      "bytes": 4194304,
+      "index": 60,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0060",
+      "offset": 251658240,
+      "sha256": "62840cfab39db52296c6fc8bb449e25ef233139921feea930b4e9d18de248059"
+    },
+    {
+      "bytes": 279584,
+      "index": 61,
+      "name": "H2-actual-retained-elfs.tar.xz.part-0061",
+      "offset": 255852544,
+      "sha256": "08048dc88aed3bf717d1678a10b63f3272a99f17c2db7438d07943237878a509"
+    }
+  ],
+  "phase": "H2",
+  "plan_sha256": "2a18729275fe2051b3f691fce56542e2d1291193e983330fe82601caf22349b3",
+  "release_proof_sha256": "df0fc5340514bfe339a9e6178922930db59087f0128dd62c9971afb741890c60",
+  "schema": "hepta-actual-retained-elf-export-completion-v1",
+  "selected_sources_actually_read_twice": true,
+  "source_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "source_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "status": "COMPLETE",
+  "total_actual_elf_bytes": 1512251368,
+  "unique_actual_elfs": 8,
+  "unselected_aliases_reopened": false
+}

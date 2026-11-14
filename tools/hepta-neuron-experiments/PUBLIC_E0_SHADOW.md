@@ -1,0 +1,116 @@
+# E0 public-pretrained CPU → existing Q24 projection: shadow experiment
+
+**Status: research-only; E0 acceptance remains BLOCKED.** This is a physically executed
+partial numerical route, not a trained/selected Hepta Cell. It does not bypass or
+modify Neuron V1's input maximum of 512 dimensions.
+
+## What is reused (exact Git identities)
+
+- Existing full **ModernBERT MLM** loader / HF mean Encoder:
+  [research/shared-stem-hf-ci-conformance](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/be511bd63aaae8813c415a116d50f01fe54baba5)
+  commit `be511bd63aaae8813c415a116d50f01fe54baba5`, tree
+  `e2ae2b013e16f7aa3a0babe2869104b28a913132`.
+- Existing **versioned low-rank Q24 projector** and Python/native parity Head:
+  [audit/stem-cell-p0-freeze](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/d6f35c362289c90427bfbdffd4505d2e535c1b1b)
+  commit `d6f35c362289c90427bfbdffd4505d2e535c1b1b`, tree
+  `eff00c335408b3931e4316c2b0d4334d7620aee4`.
+- Public immutable upstream **ModernBERT-base** revision
+  `8949b909ec900327062f0ebf497f51aef5e6f0c8`, raw safetensors
+  SHA-256 `340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9`,
+  whole clean snapshot digest
+  `43138a5545ce4e7996d91735f2330519a8913304d3abf257f6cfdfbe0541283d`.
+
+The hosted research branch has already executed the real pretrained CPU Encoder, but
+not the Q24 cross-branch stitch. **Its historical receipt is not claimed as a pass
+for this new executable/commit.** New records use schema
+`hepta.e0.public-pretrained-q24-shadow.v2`; historical v1 records are not relabeled
+as evidence of the new source binding or timing semantics.
+
+## Physical read-only path
+
+`public_e0_shadow.py` checks the two Git commit/tree identities with replacement
+objects disabled and keeps the existing tracked-status check. Project Python
+comes from regular blobs in those fixed trees, with a 1 MiB per-file, 128-file
+per-source and 8 MiB combined bound. Each blob's size, Git object identity and
+SHA-256 are checked. A private temporary snapshot supplies `__file__` paths;
+the project import loader compiles the same verified in-memory bytes, without
+reading the original worktree or its Python bytecode. Controlled project names
+already present in `sys.modules` are refused. Only this scope's loader and newly
+imported project modules are removed on exit.
+
+This binding covers the HF source's flat Python namespace and the two projection
+modules actually used here, `stem_projection` and `native_bridge`. The fixed HF
+tree contains neither of those two names. Auxiliary files accessed through
+`__file__`, the interpreter, external packages and concurrent in-process mutation
+are not a complete authenticated runtime. Torch/Transformers retain only the
+existing version checks; this is a fresh-process opt-in research command.
+
+The command downloads only the named checkpoint files at the immutable HF
+revision, copies them to a clean local snapshot, checks all weight/snapshot
+digests **before loading**, loads the real complete MLM model with the registered
+Transformers 4.57.1 / Torch 2.10.0 CPU-eager profile and calculates three actual
+mean-feature forwards. The frozen public test inputs are two distinct texts and
+a repetition of the first.
+
+It then calls **the existing** `LowRankProjectionQ24` numeric implementation on
+the resulting 768-dimensional float32 features, producing a 256-dimensional Q24
+vector; verifies tie-safe input/shape bounds, repeated-input parity and the
+survival of a perturbation to original coordinate 767, so **silent slicing is
+not permitted**. Its 2-rank weights are constructed deterministically in the
+script as an explicit **synthetic, untrained diagnostic control**. A fixed
+synthetic Q24 affine readout runs through the **existing**
+`native_bridge.native_logits` mechanism to demonstrate arithmetic parity, but
+is not a genuine trained Cell Head or a native Rust Worker call.
+
+Actual source model bytes are rechecked after the computation. Create-only
+`shadow.json` includes the actually imported project Python blob/hash inventory,
+source and model SHA, and numeric vector hashes. The recorded forward-plus-
+projection interval ends after Q24 projection, before the diagnostic readout.
+Process-lifetime (not request-level) peak RSS is expressed in KiB, including
+conversion from Darwin's byte units. These observations still carry **false**
+for every production/learning acceptance field. Failures are recorded in
+`FAILED.json` where the output directory has been reserved. Test fixtures in
+`public_e0_shadow_checks.py` are clearly separate from the real pretrained
+execution; no test counts as model performance evidence.
+
+Run the opt-in exact-source hosted workflow
+[hepta-e0-public-projection-shadow.yml](../../.github/workflows/hepta-e0-public-projection-shadow.yml)
+to produce a new artifact and inspect the **actual current SHA's** job conclusion
+before any claim. Its access token is read-only and not persisted; it grants no
+producer/consumer authority.
+
+## Failure diagnostics
+
+Masked mean pooling guarantees neither an amplitude bound nor compatibility
+with the projector's per-coordinate `[-8,8]` input contract. A rejection keeps
+the original exception, failure exit and false acceptance fields.
+
+If projection rejects a captured feature, the new failure record adds only a
+bounded numeric diagnostic: the current input index, completed input count,
+shape, feature-byte digest, finite extrema, nonfinite count and first index,
+and the count and first coordinate outside the existing Q24 input limit.
+It retains neither full feature vectors nor input text. Other failure stages
+have no feature diagnostic. Synthetic encoder doubles test this recorder and
+the unchanged Q24 rejection; they are not pretrained execution evidence.
+
+These optional diagnostics apply to the new attempt only. Earlier failure
+archives without coordinates or extrema remain unchanged and cannot be
+retrospectively populated from a later run. No normalization, clipping, input
+selection, model pin or Q24 threshold is changed.
+
+## Still blocking E0
+
+1. The diagnostic projector is **not** a data-trained, independently selected,
+   source/normalizer-compatible production projection. A task split and measured
+   representation loss versus unprojected 768-D features are required.
+2. The Q24 readout is **not** a selected trained Head; the native trusted
+   `NeuronFeatureDriver` path and verified CAS model-load/final-use evidence
+   remain missing. Calling the Python arithmetic helper does not invoke a Worker.
+3. No actual `InferenceControlModelPort -> NeuronRuntime` production caller,
+   durable Q24 Tick/checkpoint/AnchorWitnessStore CAS, or crash/revocation recovery
+   is established by this study.
+4. No independent task outcome, future-time NDU utility or budget-matched
+   E1/E2 comparison was performed. Complete CPU/GPU FLOPs, true request p95/p99,
+   real throughput, thermal power and complete process-tree RSS are unknown.
+
+No automated Cell Split, product activation, selection, promotion or release.

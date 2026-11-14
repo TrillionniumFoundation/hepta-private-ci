@@ -1,0 +1,373 @@
+name: Hepta Cell framework native validation
+
+on:
+  push:
+    branches:
+      - codex/cell-framework-20261105
+      - codex/neuron-convergence-20261106-734df8
+      - codex/neuron-generation-bridge-20261106-734df8
+      - codex/neuron-normal-entry-20261106-734df8
+      - codex/neuron-v13-runtime-20261106-734df8
+      - fix/codex-v13-same-model-next-task-20261106
+      - research/cell-rsi-p0p2-20261108-858e
+      - engineering/training-result-bridge-858e
+      - engineering/cell-integrated-20261108-08b6
+      - engineering/cell-integrated-20261109-08b6
+      - engineering/cell-common-20261109-e1c98
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-framework-native-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  TESTED_SHA: ${{ github.sha }}
+  BASE_SHA: ${{ github.event.before }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  NEXTEST_TEST_THREADS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  python-runtime:
+    name: Cell configuration and actor recovery
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts:.
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.16"
+      - name: Bind source and install explicit CPU test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-runtime-records"
+          mkdir -p "$records"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$records/source-identity.txt"
+          python --version > "$records/python-version.txt"
+          python -m pip install --disable-pip-version-check \
+            --report "$records/torch-install.json" \
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+          python -m pip install --disable-pip-version-check \
+            --report "$records/numeric-install.json" 'numpy==1.26.4' 'Pillow==12.0.0'
+          python -m pip check > "$records/dependency-check.txt"
+          python -m pip freeze --all > "$records/installed-versions.txt"
+      - name: Check complete candidate and successor bindings
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 23 \
+            --output "$RUNNER_TEMP/cell-runtime-records/joint-config-tests.json" \
+            -- python -B -m unittest discover -s scripts \
+            -p test_hepta_cell_joint_config.py -v
+      - name: Check neural state and cold process recovery
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 6 \
+            --output "$RUNNER_TEMP/cell-runtime-records/state-codec-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_state_codec
+      - name: Check bounded trainer supervision and result recovery
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 22 \
+            --output "$RUNNER_TEMP/cell-runtime-records/training-job-result-tests.json" \
+            -- python -B -m unittest -v ndu_real_runtime.test_subprocess_supervisor \
+            ndu_real_runtime.test_training_job_result
+      - name: Check complete source archive integrity controls
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 13 \
+            --output "$RUNNER_TEMP/cell-runtime-records/source-archive-tests.json" \
+            -- python -B -m unittest -v test_hepta_source_archive
+      - name: Check training-only diagnosis and consumed-fit accounting
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 14 \
+            --output "$RUNNER_TEMP/cell-runtime-records/pred1-diagnostic-tests.json" \
+            -- python -B -m unittest -v hepta_pred1.test_diagnose_training
+      - name: Check fixed-graph memory decision verification controls
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 20 \
+            --output "$RUNNER_TEMP/cell-runtime-records/mdv-control-tests.json" \
+            -- python -B -m unittest -v cell_repo_mdv.test_memory \
+            cell_repo_mdv.test_runner cell_repo_mdv.test_compare
+      - name: Check distinct source and successor model inputs
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 5 \
+            --output "$RUNNER_TEMP/cell-runtime-records/model-task-input-tests.json" \
+            -- python3 -B -m unittest discover -s scripts/research \
+            -p test_smollm_task_inputs.py -v
+      - name: Check the integrated semantic and temporal Cell routes
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 300 --minimum-tests 49 \
+            --output "$RUNNER_TEMP/cell-runtime-records/stem-route-tests.json" \
+            -- python -B -m unittest -v test_hepta_cells_bundle \
+            test_hepta_cells_composition test_hepta_cells_lifecycle \
+            test_hepta_cells_semantic test_hepta_cells_temporal \
+            test_hepta_cells_temporal_component
+      - name: Check bounded V8 transport recovery and checksum failures
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+        run: |
+          python scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 15 \
+            --output "$RUNNER_TEMP/cell-runtime-records/v8-transport-tests.json" \
+            -- python -B -m unittest -v scripts/codex_package/test_v8.py \
+            scripts/test_hepta_ci_v8.py
+      - name: Retain final source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-runtime-records"
+          mkdir -p "$records"
+          git rev-parse HEAD > "$records/source-after.txt"
+          git status --porcelain > "$records/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Retain recovery and dependency evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-runtime-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-runtime-records
+          if-no-files-found: error
+          retention-days: 14
+
+  native:
+    name: Cell framework (${{ matrix.owner }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - owner: mechanisms
+            helper_packages: --package codex-hepta-infer-worker-host
+            packages: >-
+              -p codex-hepta-neuron -p codex-hepta-learning-artifacts
+              -p codex-hepta-ndu -p codex-hepta-plasticity
+              -p codex-hepta-automation -p codex-hepta-runtime
+              -p codex-hepta-control-plane
+              -p codex-hepta-context-compiler -p codex-utils-pty
+              -p codex-hepta-intelligence
+              -p codex-hepta-intelligence-eval
+              -p codex-hepta-infer-core
+          - owner: agentd-composition
+            helper_packages: ""
+            packages: >-
+              -p codex-hepta-agentd -p codex-core
+              -p codex-app-server
+              -p codex-app-server-client
+              -p codex-hepta-contracts
+              -p codex-mcp
+              -p codex-model-provider-info -p codex-exec-server
+              -p codex-hepta-agent-protocol -p codex-hepta-memory
+              -p codex-hepta-infer-worker-host -p codex-shell-escalation
+              -p codex-linux-sandbox -p codex-hepta-memory-extension
+              -p codex-hepta-supervisor
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/cell-framework-records"
+          git show --no-patch --format=fuller > "$RUNNER_TEMP/cell-framework-records/source-identity.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/cell-framework-records/source-tree.txt"
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - name: Enable the repository's Linux namespace test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Match .github/actions/setup-ci on this disposable hosted runner.
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if [[ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for existing owner tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve repository-verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record pinned toolchain and locked dependency resolution
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustup show active-toolchain
+          rustc --version --verbose
+          cargo --version
+          cargo metadata --locked --format-version=1 > "$RUNNER_TEMP/cell-framework-records/cargo-metadata.json"
+          test -z "$(git status --porcelain)"
+      - name: Verify the helper and JUnit evidence gates
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/evidence-gate-tests.json" \
+            -- python3 -m unittest discover -s scripts -p 'test_hepta_ci_junit.py'
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-gate-tests.json" \
+            -- python3 -m unittest discover -s scripts -p 'test_hepta_cell_test_helpers.py'
+      - name: Verify joint configuration integrity gates
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 180 --minimum-tests 23 \
+            --output "$RUNNER_TEMP/cell-framework-records/joint-config-tests.json" \
+            -- python3 -B -m unittest discover -s scripts \
+            -p test_hepta_cell_joint_config.py -v
+      - name: Verify the bounded V13 process protocol
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 120 --minimum-tests 9 \
+            --output "$RUNNER_TEMP/cell-framework-records/v13-protocol-tests.json" \
+            -- python3 -B -m unittest discover -s qualification/neuron-v13-generation \
+            -p test_proposal_worker.py -v
+      - name: Strict lint of the changed owners and dependencies
+        env:
+          PACKAGES: ${{ matrix.packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/clippy.json" \
+            -- just clippy --locked "${packages[@]}" -- -D warnings
+      - name: Strict lint of the explicit V13 runtime example
+        if: matrix.owner == 'agentd-composition'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/v13-example-clippy.json" \
+            -- just clippy --locked -p codex-hepta-agentd \
+            --example neuron_v13_acceptance -- -D warnings
+      - name: Build real same-source test helpers from Cargo metadata
+        if: matrix.owner == 'agentd-composition'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 2700 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-build.json" \
+            -- python3 scripts/hepta_cell_test_helpers.py \
+            --output-dir "$RUNNER_TEMP/cell-framework-records/helpers" \
+            --github-env "$GITHUB_ENV"
+      - name: Build the real generation helper for Neuron mechanisms
+        if: matrix.owner == 'mechanisms'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-build.json" \
+            -- python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/cell-framework-records/helpers" \
+            --github-env "$GITHUB_ENV"
+      - name: Run scoped suites through the repository runner
+        env:
+          PACKAGES: ${{ matrix.packages }}
+          HELPER_PACKAGES: ${{ matrix.helper_packages }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          read -r -a packages <<< "$PACKAGES"
+          read -r -a helper_packages <<< "$HELPER_PACKAGES"
+          records="$RUNNER_TEMP/cell-framework-records"
+          junit="codex-rs/target/nextest/local/junit.xml"
+          if [[ -f "$junit" ]]; then
+            mv "$junit" "$records/scoped-prior-junit-excluded.xml"
+          fi
+          set +e
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
+            --output "$records/scoped-tests.json" \
+            -- just test --locked "${packages[@]}"
+          result=$?
+          python3 scripts/hepta_cell_test_helpers.py --output-dir "$records/helpers" \
+            --verify-only "${helper_packages[@]}" > "$records/helpers-after-scoped.json"
+          helper_result=$?
+          python3 scripts/hepta_ci_junit.py --execution "$records/scoped-tests.json" \
+            --junit "$junit" --output "$records/junit-scoped.xml"
+          junit_result=$?
+          set -e
+          if [[ "$result" -ne 0 ]]; then exit "$result"; fi
+          if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
+          exit "$junit_result"
+      - name: Retain scoped evidence before the complete workspace
+        if: always() && matrix.owner == 'agentd-composition'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          # Preserve completed scoped results even if the runner stops during
+          # the longer workspace phase. The final artifact remains separate.
+          name: cell-framework-scoped-${{ matrix.owner }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cell-framework-records
+            !${{ runner.temp }}/cell-framework-records/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14
+      - name: Run the complete default workspace after the Core suite
+        if: matrix.owner == 'agentd-composition'
+        shell: bash
+        run: |
+          set -euo pipefail
+          records="$RUNNER_TEMP/cell-framework-records"
+          junit="codex-rs/target/nextest/local/junit.xml"
+          if [[ -f "$junit" ]]; then
+            mv "$junit" "$records/workspace-prior-junit-excluded.xml"
+          fi
+          set +e
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 4200 --minimum-tests 1 \
+            --output "$records/workspace-tests.json" \
+            -- just test --locked
+          result=$?
+          python3 scripts/hepta_cell_test_helpers.py --output-dir "$records/helpers" \
+            --verify-only > "$records/helpers-after-workspace.json"
+          helper_result=$?
+          python3 scripts/hepta_ci_junit.py --execution "$records/workspace-tests.json" \
+            --junit "$junit" --output "$records/junit-workspace.xml"
+          junit_result=$?
+          set -e
+          if [[ "$result" -ne 0 ]]; then exit "$result"; fi
+          if [[ "$helper_result" -ne 0 ]]; then exit "$helper_result"; fi
+          exit "$junit_result"
+      - name: Retain final source state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/cell-framework-records/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/cell-framework-records/source-status-after.txt"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Retain real outputs even when qualification fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-framework-${{ matrix.owner }}-${{ github.sha }}-${{ github.run_attempt }}
+          # Retain source-bound logs, manifests and reports. Executable copies
+          # stay on the runner; their exact bytes/modes/hashes are in manifests.
+          path: |
+            ${{ runner.temp }}/cell-framework-records
+            !${{ runner.temp }}/cell-framework-records/helpers/bin/**
+          if-no-files-found: error
+          retention-days: 14

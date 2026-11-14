@@ -1,0 +1,69 @@
+{
+  "schema": "hcsn-colab-blocked-attempt-v1",
+  "recorded_utc": "2026-11-08T10:56:11Z",
+  "key": "hcsn-math-closure-cpu-20261108-v1",
+  "account_alias": "sunfo",
+  "host": "rog",
+  "status": "blocked",
+  "blocking_error_code": "FIXED_RUNTIME_NOT_FOUND",
+  "runtime_endpoint": "m-s-usc1a2-1phanox787epo",
+  "runtime_submit_attempts": 1,
+  "kernel_submit_attempts_observed": 0,
+  "cloud_job_submitted": false,
+  "qualification_executed": false,
+  "error_budget_executed": false,
+  "qualification_credit": false,
+  "cleanup_attempted": true,
+  "cleanup_status": "cleanup_unconfirmed",
+  "cleanup_error_code": "RELEASE_REQUIRES_FIXED_JOBS_STATE_DIRECTORY",
+  "release_dispatch_observation": "Installed helper rejected before its provider unassign call; runtime deletion is not confirmed.",
+  "source_archive_inspected_sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+  "source_archive_inspection_is_execution_evidence": false,
+  "operations": [
+    {
+      "name": "create",
+      "host": "rog",
+      "native_job_id": "1a1bab344cf-12894-1ca8",
+      "state": "succeeded",
+      "exit_code": 0,
+      "stdout_file": "create.stdout.json",
+      "native_status_file": "create.process-status.json",
+      "output_complete": true
+    },
+    {
+      "name": "bind",
+      "host": "rog",
+      "native_job_id": "1a1babf94fd-12894-1cea",
+      "state": "failed",
+      "exit_code": 2,
+      "stdout_file": "bind.stdout.json",
+      "native_status_file": "bind.process-status.json",
+      "output_complete": true
+    },
+    {
+      "name": "reconcile",
+      "host": "rog",
+      "native_job_id": "1a1bac4beda-12894-1d11",
+      "state": "failed",
+      "exit_code": 2,
+      "stdout_file": "reconcile.stdout.json",
+      "native_status_file": "reconcile.process-status.json",
+      "output_complete": true
+    },
+    {
+      "name": "release",
+      "host": "rog",
+      "native_job_id": "1a1bac86490-12894-1d37",
+      "state": "failed",
+      "exit_code": 2,
+      "stdout_file": "release.stdout.json",
+      "native_status_file": "release.process-status.json",
+      "output_complete": true
+    }
+  ],
+  "retention": "stdout files preserve exact original bytes; process status/read files preserve original native tool JSON payloads.",
+  "constraints": "No repeated create or bind, no run submit, no account override, no management-ledger edits, no old runtime adoption.",
+  "remaining_action": "Cleanup requires a supported management path for a task-owned runtime whose bind failed; no workaround was applied.",
+  "physical_energy_joules": null,
+  "provider_charges": null
+}

@@ -1,0 +1,364 @@
+{
+  "adoption_authorized": false,
+  "backend": "ai395_native",
+  "complete_denominator_retained": true,
+  "content_pretraining_jobs": 8,
+  "controller": {
+    "discount_per_second": 1.0,
+    "horizon": 3,
+    "latency_weight": 0.01,
+    "max_forecasts": 128,
+    "max_sequences": 84,
+    "particles": 2,
+    "risk": 0.25
+  },
+  "controller_fit_jobs": 48,
+  "cost_envelopes": {
+    "budget_overrun_seconds": 0.0,
+    "campaign_observer_cpu_seconds": 423.400482,
+    "campaign_wall_seconds": 451.43282959703356,
+    "nested_envelopes_are_additive": false,
+    "sum_job_cpu_seconds": 423.10724799999997,
+    "sum_job_wall_seconds": 450.9644429651089,
+    "training_outer_cpu_seconds": 423.58831,
+    "training_outer_wall_seconds": 451.6697678689379,
+    "worker_wall_seconds": 453.31133699789643
+  },
+  "cost_stage_inventory": [
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "provider_charges": null,
+      "stage": "preparation",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "collector_self_cpu_seconds": 0.511164,
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "note": "Collector self CPU excludes child processes; full collection CPU remains unknown. Collection is not included in the training envelope.",
+      "provider_charges": null,
+      "stage": "collection",
+      "status": "collector_report_wall_only",
+      "wall_seconds": 34.734491037903354
+    },
+    {
+      "cpu_seconds": 423.58831,
+      "energy_joules": null,
+      "note": "Includes the B process and training descendants; child-job sums and internal stage meters overlap this envelope.",
+      "provider_charges": null,
+      "stage": "training",
+      "status": "outer_training_child_envelope_measured",
+      "wall_seconds": 451.6697678689379
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "provider_charges": null,
+      "stage": "search",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "provider_charges": null,
+      "stage": "controller",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "note": "No D causal experiment ran; B training does not establish D organization-stage costs. Unknown is not zero.",
+      "provider_charges": null,
+      "stage": "messages",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "note": "No D causal experiment ran; B training does not establish D organization-stage costs. Unknown is not zero.",
+      "provider_charges": null,
+      "stage": "reencoding",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "note": "No D causal experiment ran; B training does not establish D organization-stage costs. Unknown is not zero.",
+      "provider_charges": null,
+      "stage": "graph_compile",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "note": "Deployment tune/pilot evaluation is a separate original job and is not included here.",
+      "provider_charges": null,
+      "stage": "evaluation",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "note": "No D causal experiment ran; B training does not establish D organization-stage costs. Unknown is not zero.",
+      "provider_charges": null,
+      "stage": "migration",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "note": "No D causal experiment ran; B training does not establish D organization-stage costs. Unknown is not zero.",
+      "provider_charges": null,
+      "stage": "recovery",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    },
+    {
+      "cpu_seconds": null,
+      "energy_joules": null,
+      "provider_charges": null,
+      "stage": "io",
+      "status": "not_separately_measured_in_this_training_projection",
+      "wall_seconds": null
+    }
+  ],
+  "deployment_evaluated_by_this_job": false,
+  "engineering_tests": {
+    "observed_test_count": 79,
+    "skipped_tests": 0,
+    "status": "PASS",
+    "stderr_sha256": "28ac606014f3ac60183ce5f0538c367114c2c52ee9125de3d9195f8ac25d1a54",
+    "system_cpu_seconds": 0.133544,
+    "user_cpu_seconds": 1.053056,
+    "wall_seconds": 1.3079268210567534
+  },
+  "evidence_class": "development_training_smoke",
+  "failed_or_unstarted_jobs_dropped": false,
+  "fit_jobs_by_regime": {
+    "frozen": 8,
+    "joint": 40
+  },
+  "full_budget_complete": false,
+  "independent_inference_unit": "two independent training seed groups; 56 jobs are not 56 statistically independent replicates",
+  "independent_seed_groups_complete": 2,
+  "independent_seed_groups_planned": 2,
+  "initialization_audit_count": 2,
+  "initialization_audits_artifact": {
+    "bytes": 626,
+    "format": "JSON Lines, one original projected record per line",
+    "path": "B_INITIALIZATION_AUDITS.jsonl",
+    "rows": 2,
+    "sha256": "5243a45f0a2030ed7cd50c7978f74b4a45a3e2feb4490893e5a0f76ad7bdf019"
+  },
+  "initialization_scope": "seeded constructor before pretraining or loading content; memory-specific pretrained and actual prefit states may differ",
+  "jobs_artifact": {
+    "bytes": 31063,
+    "format": "JSON Lines, one original projected record per line",
+    "path": "B_TRAINING_JOBS.jsonl",
+    "rows": 56,
+    "sha256": "77e6ab6bb0771d6e787c63467ef0f4993cebe6ef7ace95036008dbce2296c4dc"
+  },
+  "models_verified": 56,
+  "native_terminal_status": {
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "timed_out": false
+  },
+  "native_transport": {
+    "backend": "ai395_native",
+    "build_receipt_sha256": "2a76fdaede3fc4124aa5a4f170e91341521d2a60b2b64d939d94cefd035eda48",
+    "colab": {
+      "allocation_performed": false,
+      "code_limit_bytes": 262144,
+      "guard_modified": false,
+      "manager_bound_profile_seconds": 600,
+      "profile_modified": false
+    },
+    "cpu_quota_percent": 100,
+    "energy_joules": null,
+    "kaggle": {
+      "error_code": "NOTEBOOK_LIST_SCOPE",
+      "native_status_job": "1a1ba7c3535-12894-1b07",
+      "native_submit_job": "1a1ba7a7c12-12894-1af8",
+      "remote_effect_unknown": false,
+      "remote_submission_state": "NOT_SENT",
+      "replayed": false,
+      "submission_state": "REJECTED"
+    },
+    "memory_max_bytes": 4294967296,
+    "native_job_sha256": "e68aac2b964ab3dd5bd4c20614cde53da1b5f87f8e89e68c6526ce5fde7c86a9",
+    "native_timeout_seconds": 1200,
+    "original_job_sha256": "634d001d56e5f765a4204afc7a39a09c5f6d9b45189904d55b9d4e94453c871e",
+    "pillow_path": "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps",
+    "planned_jobs": 56,
+    "provider_charges": null,
+    "python": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "remote_root": "/home/qq/cell-causal-cf0-b-train-20261108-v1",
+    "request_id": "cell-causal-cf0-b-train-20261108-v1",
+    "schema": "cell-causal-native-fallback-v1",
+    "scientific_qualification": false,
+    "source_manifest_sha256": "56c19c98ca0d5a83bbfa14f2f89f2cde297a7efd272e4e8aef7d232350c20e46",
+    "source_payload_sha256": "a433002a8199c330e1f85d6ccb2144133f3afd1a952dafdb01b8edc127f47e7b",
+    "training_code_or_data_changed": false,
+    "transport_changes": [
+      {
+        "new": "working = Path('/home/qq/cell-causal-cf0-b-train-20261108-v1/artifacts')",
+        "old": "working = Path(\"/kaggle/working\")"
+      },
+      {
+        "new": "root = Path('/home/qq/cell-causal-cf0-b-train-20261108-v1/execution')",
+        "old": "root = Path(\"/tmp\") / REQUEST_ID"
+      },
+      {
+        "new": "\"pillow_path\": '/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0/python-deps'",
+        "old": "\"pillow_path\": str(source / \"scripts\")"
+      },
+      {
+        "new": "env = dict(os.environ, PYTHONPATH=os.pathsep.join([str(source / \"scripts\"), os.environ.get(\"PYTHONPATH\", \"\")]))",
+        "old": "env = dict(os.environ, PYTHONPATH=str(source / \"scripts\"))"
+      }
+    ]
+  },
+  "native_verification_receipt": {
+    "bytes": 7135,
+    "path": "cloud/native-v1/returned/NATIVE_RETURN_RESULT.json",
+    "sha256": "c789f2b597d1817d0cd18e11bd02a996ef9a40b9eddffb4a0742e2be958d7ccc"
+  },
+  "observation_policy": "matched_episodes",
+  "observed_at": "2026-11-08T10:12:09.271809+00:00",
+  "original_archive": {
+    "bytes": 4707631,
+    "files_verified": 583,
+    "omitted_files": [],
+    "sha256": "dff6710ce9f2a9698bc619fb545c76a51d0a1b7baa02777f870a0593269c0b36"
+  },
+  "original_archive_members": [
+    {
+      "bytes": 7799,
+      "path": "b/CAUSAL_B_PLAN.json",
+      "sha256": "0bab46bc7c61af38f46f5ea2cfa792be979ec5344bca66d170c228ece8e7de61"
+    },
+    {
+      "bytes": 400,
+      "path": "b/CAUSAL_B_RESULT.json",
+      "sha256": "753e93a88d464a7e9da38de72e4f30fe07e1e540cdeb3a34edd290d3d70ccd3e"
+    },
+    {
+      "bytes": 172934,
+      "path": "b/fit-results.json",
+      "sha256": "3e9c36ec8d8bc84a4d0e80cac4a786a6da56a69747ab5c27a39b72d8ef121406"
+    },
+    {
+      "bytes": 254542,
+      "path": "b/fit-plan.json",
+      "sha256": "2905b28967c1c35e79a178b759f64c2d89d1355be0ce80e2d653042d4dd39b59"
+    },
+    {
+      "bytes": 35873,
+      "path": "b/model-index.json",
+      "sha256": "3beab80e5257dcf19d0e1439a948a884798f8856533b0c4021fb7f4de2dc4313"
+    },
+    {
+      "bytes": 132531,
+      "path": "b/training-events.jsonl",
+      "sha256": "380aed27c4b11331ff13e9205f14b831093d4b416ec12323e42c9d19640cf670"
+    },
+    {
+      "bytes": 3438,
+      "path": "run-receipt.json",
+      "sha256": "8403e73a41bbb8cdfd3a718b3216146a2fca964f1403b7564ee51a528ea51d87"
+    },
+    {
+      "bytes": 149,
+      "path": "causal-and-runtime-tests.stdout.log",
+      "sha256": "5e851c632b343e51512804ae09bd0937b4ff1afa767204c349b3c9fb1163228e"
+    },
+    {
+      "bytes": 13827,
+      "path": "causal-and-runtime-tests.stderr.log",
+      "sha256": "28ac606014f3ac60183ce5f0538c367114c2c52ee9125de3d9195f8ac25d1a54"
+    },
+    {
+      "bytes": 10229,
+      "path": "b-real-v2-training.stdout.log",
+      "sha256": "1569d2faba60fff6185e875c775f29c1e9781c989923dc58b582fd44a17a1bf1"
+    },
+    {
+      "bytes": 0,
+      "path": "b-real-v2-training.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_full_projection": {
+    "bytes": 72979,
+    "path": "B_TRAINING_PROJECTION.full.json",
+    "role": "Original derived projection retained in the complete evidence artifact; original training receipts remain separately pinned.",
+    "sha256": "6d3e7fd739bb813d6992240bd0dc322c5e8c2503943d794c04858903a7143b31"
+  },
+  "original_job_id": "1a1ba880fd8-12894-1b64",
+  "paired_training_audit_count": 28,
+  "paired_training_audits_artifact": {
+    "bytes": 17570,
+    "format": "JSON Lines, one original projected record per line",
+    "path": "B_TRAINING_PAIRS.jsonl",
+    "rows": 28,
+    "sha256": "ea2e87341bec0c922b513272f461f3bffe95ad2ae1e2ff0cde8e94727f9b46fe"
+  },
+  "paired_training_audits_passed": 28,
+  "planned_jobs": 56,
+  "prospective_budgets": {
+    "cpu_quota_percent": 100,
+    "fit_overhead_seconds": 15,
+    "fit_seconds": 45,
+    "memory_max_bytes": 4294967296,
+    "native_seconds": 1200,
+    "threads": 1,
+    "training_phase_seconds": 900,
+    "training_step_seconds": 960,
+    "worker_seconds": 1100
+  },
+  "request_id": "cell-causal-cf0-b-train-20261108-v1",
+  "routes_proven": [],
+  "schema": "hepta.cell-causal.training-projection.v2",
+  "scientific_admission": "HOLD",
+  "source_manifest_sha256": "56c19c98ca0d5a83bbfa14f2f89f2cde297a7efd272e4e8aef7d232350c20e46",
+  "source_payload_sha256": "a433002a8199c330e1f85d6ccb2144133f3afd1a952dafdb01b8edc127f47e7b",
+  "status": "completed",
+  "status_counts": {
+    "completed": 56
+  },
+  "train_data": {
+    "complete_chains": 20,
+    "raw_bytes": 2116544,
+    "raw_sha256": "6d33792df24a44865b95e0b867f18b9faa5753ab9a86f5cd88a861fdfbf03b14",
+    "rows": 50,
+    "source_groups": 2
+  },
+  "training_episodes_are_independent_fits": false,
+  "training_only": true,
+  "training_seeds": [
+    104729,
+    130363
+  ],
+  "unknown_cost_is_zero": false,
+  "unknown_or_separate_costs": [
+    "provider charges",
+    "energy",
+    "full upstream collection CPU",
+    "preparation and failed provider preflight overhead",
+    "transfer and storage",
+    "separate deployment evaluation",
+    "per-stage organization costs and D graph search/compilation/migration/recovery"
+  ]
+}

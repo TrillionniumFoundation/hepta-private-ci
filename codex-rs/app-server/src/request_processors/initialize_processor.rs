@@ -78,6 +78,11 @@ impl InitializeRequestProcessor {
         let opt_out_notification_methods = capabilities
             .opt_out_notification_methods
             .unwrap_or_default();
+        let process_indeterminate_enabled = experimental_api_enabled
+            && capabilities.process_indeterminate
+            && !opt_out_notification_methods.iter().any(|method| {
+                matches!(method.as_str(), "process/exited" | "process/indeterminate")
+            });
         let ClientInfo {
             name,
             title: _title,
@@ -97,6 +102,7 @@ impl InitializeRequestProcessor {
         if session
             .initialize(InitializedConnectionSessionState {
                 experimental_api_enabled,
+                process_indeterminate_enabled,
                 opted_out_notification_methods: opt_out_notification_methods.into_iter().collect(),
                 app_server_client_name: name.clone(),
                 client_version: version,
@@ -144,6 +150,7 @@ impl InitializeRequestProcessor {
             codex_home,
             platform_family: std::env::consts::FAMILY.to_string(),
             platform_os: std::env::consts::OS.to_string(),
+            process_indeterminate: process_indeterminate_enabled,
         };
 
         self.outgoing

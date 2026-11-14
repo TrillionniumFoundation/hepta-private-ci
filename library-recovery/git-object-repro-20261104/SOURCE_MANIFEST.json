@@ -1,0 +1,61 @@
+{
+  "schema": "original-frozen-source-archive-manifest-v1",
+  "created_utc": "2026-11-04 02:02:29 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private": false,
+  "base_archive_commit": "0ecd9d788bcfef9d52894bbd7d4e895348fd40ee",
+  "branch": "archive/library-small-source-20261103-gpt6",
+  "draft_pr": 4713,
+  "candidate": {
+    "git_blob_sha": "4eccd59fa5ddbc1f2fb29c25e6ac68096bf8393f",
+    "sha256": "edf46036fde23390464f87d9e12aa07114988173a0d2fed03b097e63dc3ed98a",
+    "bytes": 2321,
+    "candidate_group": "original-5456",
+    "candidate_types": [
+      "source"
+    ],
+    "archive_path": "library-recovery/git-object-repro-20261104/objects/4eccd59fa5ddbc1f2fb29c25e6ac68096bf8393f.py",
+    "existing_remote_blob_reused": true
+  },
+  "original": {
+    "library_file_id": "libfile_2807a47bf7508191b319c2cf4fe46262",
+    "library_version": 1,
+    "filename": "hepta_git_replace_local_repro.py",
+    "created_at": "2026-10-22T19:05:45Z",
+    "bytes": 2321
+  },
+  "attribution": {
+    "placement": "Historical Git-source custody regression research in hepta-private-ci; isolated archival path.",
+    "same_day_context": {
+      "library_file_id": "libfile_fbfcfe5cf79c8191aca16dee87acb0c5",
+      "filename": "hepta-p0-p6-blocker-ledger-20261022.json",
+      "bytes": 4440,
+      "created_at": "2026-10-22T19:10:08Z",
+      "claims_requalified": false
+    },
+    "source_relationship": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "commit": "90dd67e39b1b8b4c462716144536524e104c04de",
+      "path": "scripts/run_hepta_local_closeout.py",
+      "git_blob_sha": "3ef726c507485577e41d263bf84b50cf8f8ce088",
+      "observed_relationship": "committed_regular_file compares the ls-tree HEAD object through cat-file with worktree bytes; the archived reproducer tests that same operation sequence with and without replacement objects."
+    },
+    "unique_historical_owner_proven": false,
+    "current_archive_choice_is_historical_owner_proof": false
+  },
+  "preserved_original_bytes": true,
+  "source_executed": false,
+  "patch_applied": false,
+  "native_tests_run_for_this_archive": 0,
+  "production_code_changed": false,
+  "scientific_gate_changed": false,
+  "formal_count_before_archive": {
+    "verified": 5888,
+    "total": 6116
+  },
+  "formal_count_increment_allowed_only_after_immutable_path_readback": true,
+  "additional48_unchanged": true,
+  "all_original_archives_and_histories_complete": false,
+  "clearance_allowed": false,
+  "library_originals_deleted": 0
+}

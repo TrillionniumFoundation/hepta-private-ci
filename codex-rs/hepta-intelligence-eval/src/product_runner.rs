@@ -27,7 +27,9 @@ use crate::FencedHoldoutError;
 use crate::FinalHoldoutCasStoreV1;
 use crate::FinalHoldoutJournalReceiptV1;
 use crate::HeldOutTarget;
+use crate::HoldoutUseDispositionV1;
 use crate::IndependentEvaluationBundleV1;
+use crate::IndependentEvaluationDispositionV1;
 use crate::LongitudinalTimeEvidenceV1;
 use crate::MetricContractV1;
 use crate::MetricGateV1;
@@ -191,12 +193,26 @@ pub struct TemporalComparisonInputsV1 {
 pub trait FinalHoldoutProviderV1 {
     fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1>;
 
-    /// This method is invoked only after the authoritative fenced owner has
-    /// durably consumed the frozen final-holdout plan.
+    /// Compatibility entry for existing in-process providers. A public receipt
+    /// is data, not permission to release a production holdout. Production
+    /// providers implement the original-owner entry below and retain this
+    /// refusing default.
     fn release_after_consumption(
         &mut self,
-        receipt: &FinalHoldoutJournalReceiptV1,
-    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1>;
+        _receipt: &FinalHoldoutJournalReceiptV1,
+    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+        Err(ProductProviderErrorV1::Rejected)
+    }
+
+    /// The runner lends the actual owner only for its freshly recorded use.
+    /// Implementations release their separately admitted data inside the
+    /// borrowed observation; this does not grant a role or data-custody right.
+    fn release_after_original_consumption(
+        &mut self,
+        consumed: OriginalFinalHoldoutConsumptionV1<'_>,
+    ) -> Result<TemporalComparisonInputsV1, ProductProviderErrorV1> {
+        consumed.with_current_consumption(|_, _, receipt| self.release_after_consumption(receipt))
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -239,6 +255,8 @@ pub struct ProductTemporalEvaluationReceiptV1 {
     pub execution_digest: Digest32,
     pub authority: AuthorityPosture,
     receipt_seal: Digest32,
+    // Only authenticated execution recovery sets this provenance pin.
+    execution_evaluator: Option<AuthenticatedPrincipalV1>,
 }
 
 impl ProductTemporalEvaluationReceiptV1 {
@@ -373,6 +391,8 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         product_plan.validate_integrity()?;
         if candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest
             || baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest
+            || candidate_plan.plan_digest != candidate_plan.canonical_digest()?
+            || baseline_plan.plan_digest != baseline_plan.canonical_digest()?
             || candidate_plan.objective_digest != product_plan.frozen_plan.objective_digest
             || baseline_plan.objective_digest != product_plan.frozen_plan.objective_digest
         {
@@ -384,7 +404,22 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         }
 
         let holdout = self.holdout.consume(&product_plan.frozen_plan)?;
-        let mut inputs = provider.release_after_consumption(&holdout)?;
+        // Replaying the durable consumption is not permission to release the
+        // holdout again, including after an indeterminate provider response.
+        match holdout.disposition {
+            HoldoutUseDispositionV1::Recorded => {}
+            HoldoutUseDispositionV1::IdempotentReplay => {
+                return Err(ProductEvaluationError::Binding(
+                    "final holdout already consumed",
+                ));
+            }
+        }
+        let mut inputs = holdout_release::release_original_holdout(
+            &mut self.holdout,
+            &product_plan.frozen_plan,
+            &holdout,
+            provider,
+        )?;
         validate_released_inputs(&product_plan.frozen_plan, &inputs)?;
         validate_comparable_observations(
             &inputs.candidate_observations,
@@ -439,6 +474,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             execution_digest,
             authority: AuthorityPosture::DENY_ALL,
             receipt_seal: Digest32::ZERO,
+            execution_evaluator: None,
         };
         receipt.receipt_seal = product_evaluation_seal(&receipt)?;
         Ok(receipt)
@@ -449,6 +485,13 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
         temporal: &ProductTemporalEvaluationReceiptV1,
         context: &ProductQualificationContextV1,
     ) -> Result<IndependentEvaluationBundleV1, ProductEvaluationError> {
+        if temporal
+            .execution_evaluator
+            .as_ref()
+            .is_some_and(|evaluator| evaluator != &context.evaluator)
+        {
+            return Err(ProductEvaluationError::Binding("execution evaluator"));
+        }
         temporal.validate_integrity()?;
         let frozen = &temporal.product_plan.frozen_plan;
         Ok(IndependentEvaluationBundleV1 {
@@ -548,7 +591,7 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
 }
 
 fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification.v3".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification.v4".to_vec();
     for digest in [
         receipt.temporal_execution_digest,
         receipt.objective_digest,
@@ -560,6 +603,23 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    // The evaluator evidence digest is opaque here. Bind the complete public
+    // decision as well, so changing its disposition or lineage cannot preserve
+    // a terminal receipt that downstream consumers treat as qualified.
+    let decision = &receipt.decision.decision;
+    for id in [
+        &decision.evaluation_id,
+        &decision.candidate_id,
+        &decision.baseline_id,
+    ] {
+        push_id(&mut bytes, id);
+    }
+    bytes.push(match decision.disposition {
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection => 0,
+        IndependentEvaluationDispositionV1::Ineligible => 1,
+        IndependentEvaluationDispositionV1::InsufficientEvidence => 2,
+    });
+    push_ids(&mut bytes, &decision.failed_metrics);
     push_id(&mut bytes, &receipt.candidate_id);
     push_principal(&mut bytes, &receipt.evaluator);
     push_principal(&mut bytes, &receipt.generator);
@@ -574,7 +634,7 @@ fn product_qualification_evidence_digest(receipt: &ProductQualificationReceiptV1
 }
 
 fn product_qualification_seal(receipt: &ProductQualificationReceiptV1) -> Digest32 {
-    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v1".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.product-qualification-receipt.v2".to_vec();
     bytes.extend_from_slice(product_qualification_evidence_digest(receipt).as_array());
     bytes.extend_from_slice(receipt.evidence_digest.as_array());
     Digest32::of_bytes(&bytes)
@@ -908,7 +968,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     bytes.extend_from_slice(value.as_str().as_bytes());
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProductEvaluationError {
     Binding(&'static str),
     Integrity(&'static str),
@@ -961,3 +1021,12 @@ impl From<ProductEvidenceSinkErrorV1> for ProductEvaluationError {
 #[cfg(test)]
 #[path = "product_runner_tests.rs"]
 mod tests;
+
+#[path = "product_execution.rs"]
+pub(crate) mod execution;
+#[path = "product_execution_codec.rs"]
+mod execution_codec;
+
+#[path = "product_holdout_release.rs"]
+mod holdout_release;
+pub use holdout_release::OriginalFinalHoldoutConsumptionV1;

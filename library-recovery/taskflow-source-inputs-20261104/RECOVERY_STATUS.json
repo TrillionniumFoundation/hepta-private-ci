@@ -1,0 +1,219 @@
+{
+  "schema": "taskflow-source-recovery-continuation-v1",
+  "generated_utc": "2026-11-04 00:53:19 UTC",
+  "execution_environment_available": false,
+  "previous_extraction_audit_reconstructed": true,
+  "original_audit_file_unavailable_after_environment_loss": true,
+  "original_parent_identity": {
+    "git_blob_sha": "ddc59a20916b6db5b0f64a661286d8f70fa95892",
+    "sha256": "de123fa6aee0d198eea17e3489c1c87171c103a6d406b5c5c288d2f07afe85b8",
+    "bytes": 825213,
+    "candidate_group": "original-5456"
+  },
+  "original_container_source_counts": {
+    "commits": 9,
+    "entries": 20,
+    "already_formal_source_versions": 3,
+    "new_versions_outside_frozen": 17
+  },
+  "current_recovered_sources": 2,
+  "remaining_source_versions": 15,
+  "probes": [
+    {
+      "git_blob_sha": "c315b346fed3ae73328821dc2efb67838916fe3f",
+      "original_path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "json_pointer": "/commits/1/entries/0/content",
+      "previously_recorded_bytes": 54737,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/c315b346fed3ae73328821dc2efb67838916fe3f",
+      "current_byte_recovery": true,
+      "probe_result": "complete text bytes returned",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "91c3baa7792a9a00258ff55fb10c3bf8738b5538",
+      "original_path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+      "json_pointer": "/commits/1/entries/1/content",
+      "previously_recorded_bytes": 34086,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/91c3baa7792a9a00258ff55fb10c3bf8738b5538",
+      "current_byte_recovery": true,
+      "probe_result": "complete text bytes returned",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "aaa37b1b45535a876417b336c4a5ae246ced9b7a",
+      "original_path": "codex-rs/app-server-client/src/lib.rs",
+      "json_pointer": "/commits/2/entries/0/content",
+      "previously_recorded_bytes": 82872,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/aaa37b1b45535a876417b336c4a5ae246ced9b7a",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "bae95149cb1ba000fbed9910b28a553cfd3b2e2d",
+      "original_path": "codex-rs/app-server-client/src/remote.rs",
+      "json_pointer": "/commits/2/entries/1/content",
+      "previously_recorded_bytes": 59837,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/bae95149cb1ba000fbed9910b28a553cfd3b2e2d",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "5163ca87bcafeb8c4b518fc237eaa5a0b9054306",
+      "original_path": "codex-rs/hepta-infer-worker-host/src/lib.rs",
+      "json_pointer": "/commits/2/entries/3/content",
+      "previously_recorded_bytes": 8098,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/5163ca87bcafeb8c4b518fc237eaa5a0b9054306",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "471f67dc62af83b4c1f0343ddbe418574bd5b12b",
+      "original_path": ".github/workflows/hepta-architecture-convergence.yml",
+      "json_pointer": "/commits/3/entries/0/content",
+      "previously_recorded_bytes": 20652,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/471f67dc62af83b4c1f0343ddbe418574bd5b12b",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "1b425a6ae9385b3f784958a2f72b09da3ce20dc9",
+      "original_path": "scripts/test_hepta_ci_exec.py",
+      "json_pointer": "/commits/3/entries/1/content",
+      "previously_recorded_bytes": 19414,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1b425a6ae9385b3f784958a2f72b09da3ce20dc9",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "b5a3382b51db65a59dc00857ae78caeaa9b221dd",
+      "original_path": "scripts/test_hepta_ci_exec_output.py",
+      "json_pointer": "/commits/3/entries/2/content",
+      "previously_recorded_bytes": 11659,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/b5a3382b51db65a59dc00857ae78caeaa9b221dd",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "1f4d92f6c4d9076f8f0d64a9dc1a6cbdb3cecaa1",
+      "original_path": "codex-rs/app-server-client/src/remote.rs",
+      "json_pointer": "/commits/4/entries/0/content",
+      "previously_recorded_bytes": 59848,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/1f4d92f6c4d9076f8f0d64a9dc1a6cbdb3cecaa1",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "baec57a372173e9a2655e38de532072160a55f66",
+      "original_path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "json_pointer": "/commits/5/entries/0/content",
+      "previously_recorded_bytes": 64261,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/baec57a372173e9a2655e38de532072160a55f66",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "72a529c10b7d182ee296e3a33c955ec8e91240e1",
+      "original_path": "codex-rs/app-server-client/src/remote.rs",
+      "json_pointer": "/commits/6/entries/0/content",
+      "previously_recorded_bytes": 60121,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/72a529c10b7d182ee296e3a33c955ec8e91240e1",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "32fd2e4b31f71731e0c59649e2d47b01d3c23bcc",
+      "original_path": "codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs",
+      "json_pointer": "/commits/6/entries/1/content",
+      "previously_recorded_bytes": 12385,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/32fd2e4b31f71731e0c59649e2d47b01d3c23bcc",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "53708562d4f7e0f7066668ee097614c178bb7e7a",
+      "original_path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "json_pointer": "/commits/6/entries/2/content",
+      "previously_recorded_bytes": 64419,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/53708562d4f7e0f7066668ee097614c178bb7e7a",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "ebeef7c1564d639b8cf26992f31b311e9e843cf8",
+      "original_path": "codex-rs/app-server-client/src/remote_shutdown_lifetime_tests.rs",
+      "json_pointer": "/commits/7/entries/0/content",
+      "previously_recorded_bytes": 12822,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/ebeef7c1564d639b8cf26992f31b311e9e843cf8",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "17f8db9142b0a6a688402707e07eed0fe5534b89",
+      "original_path": ".github/workflows/hepta-architecture-convergence.yml",
+      "json_pointer": "/commits/8/entries/0/content",
+      "previously_recorded_bytes": 20686,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/17f8db9142b0a6a688402707e07eed0fe5534b89",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "66ebd93e4e881d5b65746163a776af559fa99216",
+      "original_path": "scripts/test_hepta_ci_exec.py",
+      "json_pointer": "/commits/8/entries/1/content",
+      "previously_recorded_bytes": 19448,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/66ebd93e4e881d5b65746163a776af559fa99216",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    },
+    {
+      "git_blob_sha": "02988ded4506d037e466b86cb3d34e6f73ec351a",
+      "original_path": "scripts/test_hepta_ci_exec_output.py",
+      "json_pointer": "/commits/8/entries/2/content",
+      "previously_recorded_bytes": 11666,
+      "probe_repo": "TrillionniumFoundation/hepta-private-ci",
+      "probe_api": "GET /repos/TrillionniumFoundation/hepta-private-ci/git/blobs/02988ded4506d037e466b86cb3d34e6f73ec351a",
+      "current_byte_recovery": false,
+      "probe_result": "404 NOT_FOUND in this repository at this observation",
+      "remote_history_absence_proven": false
+    }
+  ],
+  "declared_local_commit_probe": {
+    "repo": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "55114323c9baf583cc7d195f6029a4ac60475f58",
+    "result": "404 NOT_FOUND; not a proven published commit"
+  },
+  "original_zip_text_read_result": "Library returned no readable text in the requested full-text mode. Original ZIP not downloaded or decompressed in this environment.",
+  "signed_download_url_published": false,
+  "originals_deleted": 0,
+  "counts_not_inferred_from_container_members": true
+}

@@ -21,6 +21,9 @@ use crate::SparseSignalReceipt;
 use crate::SparseTick;
 use crate::sparse_tick;
 
+#[path = "journal_chain.rs"]
+mod chain;
+
 const MAGIC: &[u8; 8] = b"HPTNSJ01";
 const HEADER: usize = 136;
 const SUCCESSOR_MAGIC: &[u8; 8] = b"HPTNSJ02";
@@ -271,6 +274,28 @@ impl SparseJournal {
         seed: Option<SparseCheckpoint>,
         data_offset: usize,
     ) -> Result<Self, JournalError> {
+        let (journal, repair_to) = Self::read_recovery_frames(
+            file,
+            config,
+            scope,
+            max_records,
+            policy,
+            seed,
+            data_offset,
+        )?;
+        repair_recovered_file(&journal.file, repair_to)?;
+        Ok(journal)
+    }
+
+    fn read_recovery_frames(
+        file: LockedFile,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        policy: RecoveryPolicy,
+        seed: Option<SparseCheckpoint>,
+        data_offset: usize,
+    ) -> Result<(Self, Option<u64>), JournalError> {
         let frame_len = 304 + 16 * config.width;
         let length = file.metadata()?.len();
         if length < data_offset as u64
@@ -335,21 +360,9 @@ impl SparseJournal {
             }
         }
 
-        if !available.is_multiple_of(frame_len) {
-            journal
-                .file
-                .set_len((data_offset + complete * frame_len) as u64)
-                .map_err(|_| JournalError::Indeterminate)?;
-            journal
-                .file
-                .sync_all()
-                .map_err(|_| JournalError::Indeterminate)?;
-        }
-        journal
-            .file
-            .sync_data()
-            .map_err(|_| JournalError::Indeterminate)?;
-        Ok(journal)
+        let repair_to = (!available.is_multiple_of(frame_len))
+            .then_some((data_offset + complete * frame_len) as u64);
+        Ok((journal, repair_to))
     }
 
     /// Start the next bounded segment from the exact current checkpoint.
@@ -458,6 +471,25 @@ impl SparseJournal {
         }
     }
 
+    /// Reject a mismatched submitted owner scope/objective before any external
+    /// model invocation. This repeats the commit-time check; it does not grant
+    /// authority or substitute for the final commit's own verification.
+    pub(crate) fn verify_owner_context(
+        &self,
+        scope_digest: Digest32,
+        objective_digest: Digest32,
+    ) -> Result<(), JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        if self.scope.scope_digest != scope_digest
+            || self.scope.objective_digest != objective_digest
+        {
+            return Err(JournalError::ContextMismatch);
+        }
+        Ok(())
+    }
+
     /// Return the current durable checkpoint frontier. This is an observation,
     /// not an external acknowledgement; hosts still retain JournalAnchor in an
     /// independent rollback domain before treating the frontier as acknowledged.
@@ -510,6 +542,15 @@ impl SparseJournal {
             checkpoint_digest: receipt.checkpoint_after,
         })
     }
+}
+
+fn repair_recovered_file(file: &LockedFile, repair_to: Option<u64>) -> Result<(), JournalError> {
+    if let Some(length) = repair_to {
+        file.set_len(length)
+            .map_err(|_| JournalError::Indeterminate)?;
+        file.sync_all().map_err(|_| JournalError::Indeterminate)?;
+    }
+    file.sync_data().map_err(|_| JournalError::Indeterminate)
 }
 
 fn validate_limit(max_records: usize) -> Result<(), JournalError> {

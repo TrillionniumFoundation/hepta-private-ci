@@ -242,6 +242,34 @@ impl LearningEvidenceVerifierV1 {
         self.authority_epoch
     }
 
+    /// Check an owner's supplied key metadata against this immutable host trust.
+    /// This read-only enrollment check neither signs nor authenticates a payload;
+    /// callers must still verify every returned evidence object with `verify`.
+    pub fn require_signer_binding(
+        &self,
+        expected_role: LearningEvidenceRoleV1,
+        supplied: &TrustedLearningSignerV1,
+        now: u64,
+    ) -> Result<(), SignedEvidenceError> {
+        let enrolled = self
+            .signers
+            .get(&supplied.principal.principal_id)
+            .ok_or(SignedEvidenceError::UnknownSigner)?;
+        let mut canonical = supplied.clone();
+        canonical.roles.sort();
+        if enrolled != &canonical {
+            return Err(SignedEvidenceError::InvalidTrust);
+        }
+        enrolled.principal.validate(now)?;
+        if enrolled.revoked_at.is_some_and(|at| now >= at) {
+            return Err(SignedEvidenceError::Revoked);
+        }
+        if !enrolled.roles.contains(&expected_role) {
+            return Err(SignedEvidenceError::RoleMismatch);
+        }
+        Ok(())
+    }
+
     pub fn verify(
         &self,
         expected_role: LearningEvidenceRoleV1,

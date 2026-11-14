@@ -1,0 +1,139 @@
+{
+  "schema_version": 4,
+  "kind": "independent-static-review",
+  "project": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Final fixed Root-side initial publication and CLI deployment independent static review",
+  "qualification": {
+    "native": false,
+    "full_guard": false,
+    "ordinary_acceptance": 0,
+    "independent_C_acceptance": 0,
+    "os_restart_acceptance": 0
+  },
+  "reviewed_cli": {
+    "manager": "746deee25e13ecad8704880a19825cf599a9e07a",
+    "files": "73a91c5eb1471f0b77d28719e9d21bea849656e2",
+    "data": "539f0ebbf050264eac9810f6b9da88426f61772a",
+    "inputs": "df0b8a51f7131d1197cc62f043646117b87f3a26",
+    "bin": "80ebebbd3fe71cc861d7b05a094afdc3e79c14f8",
+    "session": "a9598621c901ce26a8f852baa01048a27a8e0de9",
+    "artifact": "6484251bc22a5d1c88de6155c06b6925ca2b619d",
+    "tests": "36ddaab51472203070197908e2b16597bd4e8797",
+    "existing_root_parent_fixture": "2eef5db20d764fd9000a99cfad009a2fb4df9ae8",
+    "followup_manifest": "d40704595464688c323a997a3872fe0ccb229eca"
+  },
+  "reviewed_initial": {
+    "profile": "b1ad0e6fb54fd3c98a9a78019e8c2b006523cb24",
+    "context": "2503bc0051b70aa46d6df617bb1155ef7d79b4ec",
+    "inputs": "ef6db0e392f17e6e6dff2d300e5f0b9e5712c3aa",
+    "enrollment": "77cff79f6558a5ff93bc37c725b5c03f52ee4564",
+    "transport": "21cf4b47c3eb973bece17a3c2ec5daeb406140ec",
+    "core": "af4c436ad16a3f51c78fa715699bc47f96bd7fcf",
+    "parent_component_test": "182ea8db1a38b1f224b6f7204563df0b2e21913f",
+    "child_component_test": "7bface6bcf670545ea1f70068b573f36cd2bea58",
+    "fixture_component_test": "0b8120546575e58a9b54bb8b91bd4d293476db76",
+    "original_root_handoff_signature": "25002c1d962552ec0d99f7bf8d121266a20440c1"
+  },
+  "cli_verified": [
+    "Only fixed original locations, trust, floors and original file descriptors are captured before service start.",
+    "The target observer configuration and independently signed selection arrive through a fixed Root-owned late material file after the original service is ACTIVE.",
+    "The trigger binds the exact Root PID, boot ID, process start ticks, per-process attempt, descriptor digest and canonical material digest.",
+    "Only the original non-Clone enrollment capability can register; it is consumed once and postcondition failures do not turn into a new Reserve attempt.",
+    "The CLI wraps service execution with an RAII stop flag, then joins the worker; failure and unwind do not leave the read-only waiter running.",
+    "Artifact paths are locators from the authenticated original CURRENT and selection; opened file descriptors are then supplied to the original complete enrollment checks."
+  ],
+  "cli_findings": [
+    {
+      "id": "root_mode_special_bits",
+      "location": "files::MetadataFile::open_metadata",
+      "observed": "mode & 0o777 accepts special permission bits despite the exact Root0600 contract",
+      "requested": "Use the full 0o7777 mask.",
+      "status": "resolved in independently read 73a91c5eb1471f0b77d28719e9d21bea849656e2"
+    },
+    {
+      "id": "metadata_final_path_check",
+      "location": "files::MetadataFile::require_metadata_unchanged",
+      "observed": "Original path and parent are checked before reading the held FD, but not after the final read.",
+      "requested": "Recheck original path stamp and parent identity after the FD bytes and FD stamp are checked.",
+      "status": "resolved in independently read 73a91c5eb1471f0b77d28719e9d21bea849656e2"
+    },
+    {
+      "id": "live_session_registration_ack",
+      "location": "bin::serve-session deployment worker and join handling",
+      "observed": "The previous bin emitted the original registration ACK only after the entire Root service returned. An external host could not wait for actual enrollment before late-connect and would race the bounded first exchange.",
+      "requested": "Emit and flush the original binding only after wait_and_register and all postchecks complete, while the Root service is still running; keep join as result propagation without a second ACK.",
+      "status": "resolved in independently read 80ebebbd3fe71cc861d7b05a094afdc3e79c14f8"
+    }
+  ],
+  "initial_verified": [
+    "The initial purpose uses the original Root writer, authority lease, pinned process and revocation context without adding a Learning profile dependency.",
+    "Reserve stores only the original deployment profile; physical CURRENT preparation waits for the exact consumer-side preflight and original unwritten target checks.",
+    "Prepare calls the original prepare_initial and verifies the returned original preparation.",
+    "Publish requires the exact original preparation, current original grant window, original consumed FinalUse observation and actual target genesis before and after the effect.",
+    "Published Observe reads the actual progressed target journal; it does not incorrectly require the target to remain at genesis forever.",
+    "Recover exposes only readback of the original operation, not a new Prepare, Publish or nonce."
+  ],
+  "initial_findings": [
+    {
+      "id": "persistent_source_failure_fence",
+      "locations": [
+        "enrollment Recover after loading the existing InitialRecord",
+        "require_genesis",
+        "require_observation of original target or original retained FinalUse"
+      ],
+      "observed": "Some actual source failures only drop the fresh local reader or observer and leave the retained Root record unfenced.",
+      "requested": "Persist a CAS fence to the already opened original record on actual owner-source validation failures. Keep malformed peer data, mismatched expected values and transport ACK loss out of this source-fence path.",
+      "status": "resolved in independently read final Root source postimages listed here"
+    },
+    {
+      "id": "post_effect_current_readback_fence",
+      "locations": [
+        "Prepare returned original intent/head checks",
+        "final original CURRENT readback and head equality"
+      ],
+      "observed": "The intermediate revision left two actual post-effect readback errors or mismatches outside the persisted source fence.",
+      "requested": "Fence actual readback errors and mismatches while preserving the separate semantics of a mutation acknowledgement uncertainty.",
+      "status": "resolved in independently read final Root source postimages listed here"
+    }
+  ],
+  "additional_actual_ownership_check": {
+    "source": "cc92df568f1438eebe4eee8f3660b3439ef5bd22",
+    "readback": "00746463d49ea655658ff7ba88210cb00c278cf3",
+    "journal": "b6831a444ade3d27bae1b89bcabf284dfb9eafa5",
+    "conclusion": "Prepared TaskSource retains the original source journal, witness, identity, fence and data, but no Cell, GenV2, FinalUse consumer or RootSession. Its retained source capability is an in-memory original capability, not an OS-restart token."
+  },
+  "supersedes_review_blob": "4d13d59d0ef27238687609b286059ccb7cdaf7c0",
+  "additional_cli_findings": [],
+  "cli_incremental_verified": [
+    "DirectoryPin now retains an actual O_DIRECTORY|O_NOFOLLOW descriptor as well as the original path, identity and canonical-location checks.",
+    "MetadataFile checks all 07777 mode bits against 0600; its final file read is followed by original path-stamp and parent checks.",
+    "OriginalFile reuses the same retained parent capability and checks it on both sides of its path/descriptor comparison.",
+    "The existing actual UID0 broker fixture invokes the production with_original_deployment constructor, waits for the actual child readiness signal, writes the canonical late material and trigger, then invokes production wait_and_register and the original one-shot register.",
+    "The replay negative reads the actual previous Publish trigger in later same-PID/boot/start sessions, confirms the attempt is older, applies the same production trigger guard, and checks profile/CURRENT/claim bytes stay equal.",
+    "The unchanged CLI bin still arms its RAII stop flag around the original serve call and joins the worker after stop, including error and unwind paths.",
+    "The worker emits exactly one original registration binding ACK immediately after actual wait_and_register succeeds, and flushes it while the service continues.",
+    "The main thread still stops before joining and propagates the actual result; it no longer delays or repeats the registration ACK.",
+    "The manager now directly retains the Arc returned by the original RootAuthorityDirectory::open, fixing the reported type mismatch without reconstructing a directory capability."
+  ],
+  "test_scope_notes": [
+    "These are static observations of actual source. No test, formatter, full caller guard or native pass is claimed.",
+    "The previous-trigger negative exercises the production trigger guard on real saved bytes; it is not a full malformed-trigger protocol execution through wait_and_register.",
+    "The existing fixture uses explicitly synthetic learning/role inputs and does not establish ordinary A/B/C completion, independent production labels or operating-system restart.",
+    "Same-PID Root service reopen uses a new attempt and is distinguished from OS process restart."
+  ],
+  "conclusion": "No remaining static blocker was found in the fixed Root-side initial publication and CLI deployment source listed here. Only the final integrated exact-source native run, actual UID0 parent execution and complete unmodified caller guards can establish test acceptance.",
+  "initial_incremental_verified": [
+    "Recover retains the already opened original Root record and CAS-fences it on actual material, complete profile or CURRENT validation failure.",
+    "Actual target genesis/observations and original persisted FinalUse failure are fenced; malformed peer input is not treated as a historical source failure.",
+    "The Root transport independently brackets the exact host-store CAS with persisted readback fences.",
+    "The core mutator remains Host-only and exact expected-state CAS; a CAS acknowledgement error alone is not relabeled as source corruption.",
+    "The controlled ACK-loss hook is cfg(test), has no wire/config selector, and occurs only after the real CAS and all original postconditions.",
+    "The final main/enrollment postimages change only fence_record to the unique fence_initial_record helper name; the inspected source-fence behavior is unchanged.",
+    "The real original handoff signature requires &File; the final fixture now borrows &sealed without altering the production function.",
+    "The component parent asserts one original nonce claim through published readback, rejected ReserveExisting, legitimate Recover, same-process session retirement, actual journal corruption and byte restoration.",
+    "The component child distinguishes the normal publication run from the controlled post-CAS ACK-loss run using an actually observed per-run flag; neither is counted as ordinary completion or OS restart."
+  ],
+  "root_parent_exact": "neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery",
+  "root_child_helper_not_parent": "neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child",
+  "cross_agent_review": "runtime_access independently reviewed the client, prepared-feature path and closed CurrentStore::RootInitial; this report does not claim that work as this agent's own source inspection."
+}

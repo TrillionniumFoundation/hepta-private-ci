@@ -1,0 +1,2173 @@
+{
+  "schema": "original-package-source-guides-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "parent_commit": "44f0dc5eb40d16ba90f16683ea161845dc1e3f44",
+  "branch": "archive/library-small-source-20261103-gpt6",
+  "candidate_count": 25,
+  "candidate_bytes": 224786,
+  "frozen_candidate_union_size": 6116,
+  "original_candidate_sets_unchanged": true,
+  "preserved_source_executed": false,
+  "historical_claims_requalified": false,
+  "scientific_or_runtime_acceptance": false,
+  "original_archive_and_history_completeness_proven": false,
+  "all_library_source_synced": false,
+  "eligible_to_clear_library": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "candidates": [
+    {
+      "git_blob_sha": "08ce65760710f6b61a1efb16889249d368e151d8",
+      "sha256": "9fb9e04cc2b889e838404d352920bc09c5a76a36536a2d1b44006472afdd0f8a",
+      "bytes": 3866,
+      "relative_path": "objects/08ce65760710f6b61a1efb16889249d368e151d8.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/proc-macro2-1.0.106/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/proc-macro2-1.0.106/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/proc-macro2-1.0.106/src/probe/proc_macro_span.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0a8137b89bbfa24f0758a08f193dc824d943d919",
+            "sha256": "53853f0c70170c9695294b8867821664d9b8f1c901957b003003a3c26987abbe",
+            "bytes": 1217,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0a8137b89bbfa24f0758a08f193dc824d943d919.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/proc-macro2-1.0.106/src/parse.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0ae2c52ed58e34857f0ba985aa260308e5c87e5b",
+            "sha256": "328c5880557525807be3d44ac0d10402e3632c90e4cadd4a9f53f1da96b0c3bf",
+            "bytes": 28682,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0ae2c52ed58e34857f0ba985aa260308e5c87e5b.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/proc-macro2-1.0.106/Cargo.lock",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "166f064a30a4a51653f0b3ec3b0bfb77514756da",
+            "sha256": "f7227d3003000147f176e9654b59a7f0cae6ff0936b806883a5dae9bd4e96f2e",
+            "bytes": 6478,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/166f064a30a4a51653f0b3ec3b0bfb77514756da.lock",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "20368ac04b1c13df4420b74de3039a71f26c5f44",
+      "sha256": "21305a2d248c7375059fa0e63402dd702bc18d1801fddd63df9b5f8ba39efe51",
+      "bytes": 1744,
+      "relative_path": "objects/20368ac04b1c13df4420b74de3039a71f26c5f44.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/zmij-1.0.19/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/zmij-1.0.19/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/zmij-1.0.19/src/traits.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "071d9288a989fbe9d53c1c0cbc56caa1444ccdca",
+            "sha256": "d289ade8d66f03096349f1cf2d4e68fad792e7b089bc956410cf700d9aad67e1",
+            "bytes": 1939,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/071d9288a989fbe9d53c1c0cbc56caa1444ccdca.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/zmij-1.0.19/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3bcfa5b146bedf90a8a117cc136f5e056f9a5064",
+            "sha256": "69f08c4f84b63b5fc3d772fa7c0d23094fb9d0f2a90c0c1037275863a510c628",
+            "bytes": 44689,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/3bcfa5b146bedf90a8a117cc136f5e056f9a5064.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/zmij-1.0.19/Cargo.lock",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "557f25ed39a0d1f0af7e60db8e700359d6b7998e",
+            "sha256": "25584c87076d00dcf3e855ab05536cc3c61bdbc8eb838582f7129fb05634389e",
+            "bytes": 15057,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/557f25ed39a0d1f0af7e60db8e700359d6b7998e.lock",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "26e15783a1c6b5eee12cc6292ff321c54c551954",
+      "sha256": "f5270cafba66223a7b51ffc0d286075a17bb7cd88762fc80d333d3102629f4d8",
+      "bytes": 1733,
+      "relative_path": "objects/26e15783a1c6b5eee12cc6292ff321c54c551954.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/CONTRIBUTING.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/CONTRIBUTING.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/CONTRIBUTING.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/Cargo.lock",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "000f0c2fb19d428ec685acb671e3b4c8c2012f6d",
+            "sha256": "b1b5befb0af7be8d3dd606123c3ef9314ee8236f1c23fa88212747f33f1df1a7",
+            "bytes": 11960,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/000f0c2fb19d428ec685acb671e3b4c8c2012f6d.lock",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/tests/lexical/parse.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "03ec1a9a63db12ed6016a4f75f16bac15b9346c8",
+            "sha256": "a11f09bb003a3a024548008cf78bf76526ed71b00077d1989f45eb8cebc93b9c",
+            "bytes": 17147,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/03ec1a9a63db12ed6016a4f75f16bac15b9346c8.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/tests/ui/missing_value.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0ba14e22c2987c5ef93945e4d616559b917b5afd",
+            "sha256": "bca25d67127fb88e7c191c7b03af5a4ce8a9abb630f3d2e6a6c1e77e213dc9a4",
+            "bytes": 59,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0ba14e22c2987c5ef93945e4d616559b917b5afd.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": {
+        "kind": "public third-party project conduct/maintainer contact",
+        "upstream_repository": "serde-rs/json",
+        "git_blob_sha": "26e15783a1c6b5eee12cc6292ff321c54c551954",
+        "whole_upstream_document_byte_equal": true,
+        "private_user_account_data": false,
+        "original_public_contact_preserved_without_rewriting": true
+      },
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "2e4668ef62528cef691a8a662756227a83a02c5b",
+      "sha256": "2fd3a0c6c9abd2c042fb319221f9ef2c95728a6e3725b0f067e4d315c5dbfe5a",
+      "bytes": 12338,
+      "relative_path": "objects/2e4668ef62528cef691a8a662756227a83a02c5b.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/tests/trie/trie.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0cca9ecce648a8d10fb4436521bc92c9e52164b5",
+            "sha256": "f7b9edc1e8a98e3be42b653bba27bb4eb5fc48a559d6d8d1c6a4db4b5425b0d5",
+            "bytes": 30787,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0cca9ecce648a8d10fb4436521bc92c9e52164b5.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2df5244f86981d53dfb21b6401529272e72f086d",
+            "sha256": "3254e755eaf22e9e7f347439df7e3fc882e582a874cd5832e7f49478dd973799",
+            "bytes": 12871,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2df5244f86981d53dfb21b6401529272e72f086d.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/Cargo.toml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3bdaced039927522dd415705b98d6d3efd27516b",
+            "sha256": "ed14e5fd17333842d830900782e2b4e38aaf3967f540b7635a45c09451fffa01",
+            "bytes": 2047,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/3bdaced039927522dd415705b98d6d3efd27516b.toml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "42e4a96e5c4ab3a33cab491207a7d7e22ee922e8",
+      "sha256": "46d3b1dce1874b2f5dae6bc40d0133bc4e377eb682fffb6cee2a8a605ee93f6f",
+      "bytes": 12773,
+      "relative_path": "objects/42e4a96e5c4ab3a33cab491207a7d7e22ee922e8.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/src/tables.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1027d988628b1b2208cdf1473eecd1840d10478e",
+            "sha256": "88cc4f427e7335cda9549cf07e3068a78c53f54804ae3057f184295872eb40a4",
+            "bytes": 65932,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/1027d988628b1b2208cdf1473eecd1840d10478e.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/Cargo.toml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "37cbdde5f25510d8a29300ae387b7fae33f733fc",
+            "sha256": "c0e96a9c7ee62f5f9ab12de69e0ad44826ad753911d47638f605c936f7ea2c1c",
+            "bytes": 2072,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/37cbdde5f25510d8a29300ae387b7fae33f733fc.toml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/tests/trie/mod.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3e31c5cc5789c862ff89ef3c7a508d04f13ef328",
+            "sha256": "d4acbb716bcbaf80660039797f45e138ed8bbd66749fa3b19b1a971574679cc9",
+            "bytes": 179,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/3e31c5cc5789c862ff89ef3c7a508d04f13ef328.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "46653cffe29aff540cf8c79cb631f32727d4e7d2",
+      "sha256": "9dc47127789cc349f5b13ae70b064449e4a17f4ee3020e6e11194f67692e9f2a",
+      "bytes": 3942,
+      "relative_path": "objects/46653cffe29aff540cf8c79cb631f32727d4e7d2.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/yansi-1.0.1/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/yansi-1.0.1/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/yansi-1.0.1/src/global.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "19f5dd56e4a8de614f2b3d7f2fb715a22a76fc3b",
+            "sha256": "bdd5b85f149660bb99ced27d4df3b41a9c3150c260e6a232a9a86c3fe3dcca78",
+            "bytes": 3168,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/19f5dd56e4a8de614f2b3d7f2fb715a22a76fc3b.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/yansi-1.0.1/src/attr_quirk.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "255e54e144b33aaebb94a08960e1b101dde65c76",
+            "sha256": "b314f91d4beca906dd41789d65e1f627ffc512844fc8494affa27d06ca75e980",
+            "bytes": 6769,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/255e54e144b33aaebb94a08960e1b101dde65c76.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/yansi-1.0.1/src/hyperlink.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2b0e127ebd37de0c22b3d80229ff1c1f4ac57d81",
+            "sha256": "4dbbdc4a84a3b599fe177904b3a523a1abf2d14dbd6aff71b5f50713bf40e604",
+            "bytes": 4158,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2b0e127ebd37de0c22b3d80229ff1c1f4ac57d81.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "568fa4d3739b75b3f86b00f2d7fa80ec86f341be",
+      "sha256": "e9eb0ceb34ff12f11acaab161d374f585543bbe6a9e827b34ace5c1b41844821",
+      "bytes": 3890,
+      "relative_path": "objects/568fa4d3739b75b3f86b00f2d7fa80ec86f341be.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/ryu-1.0.23/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/ryu-1.0.23/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/ryu-1.0.23/src/parse.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "00f7983699262eb52aee7c8d60c42ba669aa120c",
+            "sha256": "7f8aa7e007caf5dcb03abdc4238157724bb742d0823a3b8a01646fa1f1129154",
+            "bytes": 479,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/00f7983699262eb52aee7c8d60c42ba669aa120c.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/ryu-1.0.23/src/s2d.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "04832292a1e1e73433139a775ee62be280616592",
+            "sha256": "5637c35a1dc0979f69ef434d8e1c8a9da40e54820cbd12081c795da5aff04fb4",
+            "bytes": 7837,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/04832292a1e1e73433139a775ee62be280616592.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/ryu-1.0.23/tests/d2s_intrinsics_test.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0ac80c90b650e0e2c4cdd7b48d13f25368b23045",
+            "sha256": "15d11b70810bf04f33f8b185bf7f010a436a4edb47fa4648b1a036568c2c5d15",
+            "bytes": 2643,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0ac80c90b650e0e2c4cdd7b48d13f25368b23045.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "62585db9caf0bbaa4054429e3c9e8bb00bc33938",
+      "sha256": "9d6af721967088b8263c0544c0c3c459206998252dd5632a3bdf87cb27ec92be",
+      "bytes": 9203,
+      "relative_path": "objects/62585db9caf0bbaa4054429e3c9e8bb00bc33938.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/quote-1.0.47/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/quote-1.0.45/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/quote-1.0.47/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/quote-1.0.47/tests/ui/does-not-have-iter-interpolated-dup.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0a39f4150704fb168d33408460d00a0a7c8418a1",
+            "sha256": "ad13eea21d4cdd2ab6c082f633392e1ff20fb0d1af5f2177041e0bf7f30da695",
+            "bytes": 209,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0a39f4150704fb168d33408460d00a0a7c8418a1.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/quote-1.0.47/rust-toolchain.toml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "20fe888c30ab44fa877a58de0304f4b5e2a5a5cf",
+            "sha256": "6bbb61302978c736b2da03e4fb40e3beab908f85d533ab46fd541e637b5f3e0f",
+            "bytes": 38,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/20fe888c30ab44fa877a58de0304f4b5e2a5a5cf.toml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/quote-1.0.47/tests/compiletest.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "23a6a065ec960a031726c8c26222b0405d4f5851",
+            "sha256": "4e381aa8ca3eabb7ac14d1e0c3700b3223e47640547a6988cfa13ad68255f60f",
+            "bytes": 214,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/23a6a065ec960a031726c8c26222b0405d4f5851.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "6447f5e54af12f410e9526224e530a283b90fd9c",
+      "sha256": "e4c66260ab73e5ef5e023aef26a5f1562c43c8c1a2a2a39e3bed4be809c79321",
+      "bytes": 732,
+      "relative_path": "objects/6447f5e54af12f410e9526224e530a283b90fd9c.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/diff-0.1.13/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/diff-0.1.13/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/diff-0.1.13/examples/simple.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "07cbc2056912f288b2110ee2958073d89a14b730",
+            "sha256": "b56bfd5a90d9ece110a0e2ac7eece6cec7e8ca92d2af8394d40f33176577e48f",
+            "bytes": 367,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/07cbc2056912f288b2110ee2958073d89a14b730.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/diff-0.1.13/tests/data/gitignores.lines.diff",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "109f2ac3b4bfa058f2d546de89259aeeeffc9c67",
+            "sha256": "3019cd72dde8587c176b65514612cd6cc71d74385f428abf3648e608a7495eb0",
+            "bytes": 387079,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/109f2ac3b4bfa058f2d546de89259aeeeffc9c67.diff",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/diff-0.1.13/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1ab3b1e55f48cbcae844f9304ee0736abba124e7",
+            "sha256": "23ad78ffade95bffbea6a29c4abd15ee43b3a0078df97bb3931d09bbff208837",
+            "bytes": 4984,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/1ab3b1e55f48cbcae844f9304ee0736abba124e7.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "6b198775fb432a96eccc4137a8774cdfb3b6df09",
+      "sha256": "5108073f635aa3508ec8769ca0d9a65a62a7ce7aa491f130b2a8684c2779ace0",
+      "bytes": 2282,
+      "relative_path": "objects/6b198775fb432a96eccc4137a8774cdfb3b6df09.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/src/gen/op.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "15120a1310e0cfb0eeff1bb358b68c3712f22501",
+            "sha256": "b91eadcee885bc0ab929b64492f7b04641cde71ddf8e9aa455d324f1723c61de",
+            "bytes": 46006,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/15120a1310e0cfb0eeff1bb358b68c3712f22501.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/src/tuple.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1685647c7aee139083c4218240be7fd4123dc231",
+            "sha256": "b2a3d3906a446e5ce96a9da6da511c256475084cc78205c97c11caf7634db57f",
+            "bytes": 4195,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/1685647c7aee139083c4218240be7fd4123dc231.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/src/uint.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1a577031f02c73e33e9f0956114da0cadf941959",
+            "sha256": "525f229da5bd7cbef775b478821b5422497ed3eea319b712fee137a6ad84dd40",
+            "bytes": 70825,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/1a577031f02c73e33e9f0956114da0cadf941959.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "7ac4b2dc3d8284ecb0985c7e2dfe4350c4386bd5",
+      "sha256": "4a050aa3ee831ad3d27ab15d9b612bb32712f86517fa2e6be0b1cac37137ebe5",
+      "bytes": 10342,
+      "relative_path": "objects/7ac4b2dc3d8284ecb0985c7e2dfe4350c4386bd5.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/syn-2.0.119/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/syn-2.0.119/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/syn-2.0.119/Cargo.toml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "02741c0177b986e0be4c03381f492d4336ade1e4",
+            "sha256": "da8b83ac2c66a7b404dc55d88ae42592f70714823251f51b620ae349b246a18f",
+            "bytes": 5007,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/02741c0177b986e0be4c03381f492d4336ade1e4.toml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/syn-2.0.119/src/expr.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0388e70560ec4810eb14aeee9b7716352a6598dd",
+            "sha256": "eb2b886403cfe0b3c27122a9013e882fe7194b16ec87202c239f2b3619c36d31",
+            "bytes": 141993,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0388e70560ec4810eb14aeee9b7716352a6598dd.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/syn-2.0.119/src/print.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "07409932677bbaef44da8ea6a377cac0dfd7c710",
+            "sha256": "22910bf0521ab868ebd7c62601c55912d12cfb400c65723e08e5cfa3a2d111c0",
+            "bytes": 390,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/07409932677bbaef44da8ea6a377cac0dfd7c710.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "8637d2ab1db3de20b5a6fd7341f2797166b79a20",
+      "sha256": "ac2a0a360812436bd5798f5fe2affe7d6ed9eb7f15d6e4d73931e95b437560f2",
+      "bytes": 2669,
+      "relative_path": "objects/8637d2ab1db3de20b5a6fd7341f2797166b79a20.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/version_check-0.9.5/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/version_check-0.9.5/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/version_check-0.9.5/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/version_check-0.9.5/src/version.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2bc18aae2b28cb3d86248cf59a0418ee266a3d98",
+            "sha256": "dba18a25983ec6e37b952f4cdc5219c9e5abba2c3a76cef87465e1fba6f8ac89",
+            "bytes": 10435,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2bc18aae2b28cb3d86248cf59a0418ee266a3d98.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/version_check-0.9.5/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2bc38ce1b89a25e9eaaabb61f576855f8d9e62c9",
+            "sha256": "01bb86088ba281d511ae002aa939bb30b747f47ace5ea13a46de554a3117806e",
+            "bytes": 20771,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2bc38ce1b89a25e9eaaabb61f576855f8d9e62c9.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/version_check-0.9.5/Cargo.toml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "338862410848f5c6d2f87a0610d0b2d1ee6b4e93",
+            "sha256": "399ea74400a173c02eabe91cb9487d0cf351117857a5d2ebc6231f0efde67681",
+            "bytes": 1049,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/338862410848f5c6d2f87a0610d0b2d1ee6b4e93.toml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "904c5746848a8366d846575ed728a94477410aa5",
+      "sha256": "22151e87826e294499ac916de480f860b94a87c43f1b134f051649623d8ddc43",
+      "bytes": 95528,
+      "relative_path": "objects/904c5746848a8366d846575ed728a94477410aa5.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/libc-0.2.191/CHANGELOG.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/libc-0.2.191/CHANGELOG.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/libc-0.2.191/src/new/apple/xnu/machine/_mcontext.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "004b94707e33ad4492c910a47f51ed441f7e1270",
+            "sha256": "166b0a450b730e2a943ca08a0c70061effb77ff9eff6f41c7b0c51b2d4215db9",
+            "bytes": 319,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/004b94707e33ad4492c910a47f51ed441f7e1270.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/libc-0.2.191/src/unix/bsd/freebsdlike/dragonfly/mod.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "004c5808c5546b7de7641fa9de98eb0d4c18d89f",
+            "sha256": "b7b86ee3e40435a1ba5374ee84d4c1aa73f047083924ec5ce6471fd9103089f7",
+            "bytes": 47677,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/004c5808c5546b7de7641fa9de98eb0d4c18d89f.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/libc-0.2.191/src/unix/bsd/mod.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0051b032d94fd95d67c333bef6db5af53a5debb6",
+            "sha256": "42ddfea507a42c84b5e6b1663f8122d0f5b74bc3fe0ed65c06d217e04edc5645",
+            "bytes": 31134,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0051b032d94fd95d67c333bef6db5af53a5debb6.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "908cfe6dbb8d5cd81d79efc4099e3d17dbfa6840",
+      "sha256": "a0226a558788e7552b098e9781cce07e0fc87055d04a16c6c68866ad2e2c9c19",
+      "bytes": 2283,
+      "relative_path": "objects/908cfe6dbb8d5cd81d79efc4099e3d17dbfa6840.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/src/gen/op.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "15120a1310e0cfb0eeff1bb358b68c3712f22501",
+            "sha256": "b91eadcee885bc0ab929b64492f7b04641cde71ddf8e9aa455d324f1723c61de",
+            "bytes": 46006,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/15120a1310e0cfb0eeff1bb358b68c3712f22501.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/src/tuple.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1685647c7aee139083c4218240be7fd4123dc231",
+            "sha256": "b2a3d3906a446e5ce96a9da6da511c256475084cc78205c97c11caf7634db57f",
+            "bytes": 4195,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/1685647c7aee139083c4218240be7fd4123dc231.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/src/uint.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1a577031f02c73e33e9f0956114da0cadf941959",
+            "sha256": "525f229da5bd7cbef775b478821b5422497ed3eea319b712fee137a6ad84dd40",
+            "bytes": 70825,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/1a577031f02c73e33e9f0956114da0cadf941959.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "9ae472ea6699740f96c42e7ca9bb86d359fdeaab",
+      "sha256": "84d8f027ce3c19ae9cf91e68207b0bc737b71aa25706ba575bef7d4cba6fc937",
+      "bytes": 10340,
+      "relative_path": "objects/9ae472ea6699740f96c42e7ca9bb86d359fdeaab.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/syn-2.0.117/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/syn-2.0.117/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/syn-2.0.117/src/print.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "07409932677bbaef44da8ea6a377cac0dfd7c710",
+            "sha256": "22910bf0521ab868ebd7c62601c55912d12cfb400c65723e08e5cfa3a2d111c0",
+            "bytes": 390,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/07409932677bbaef44da8ea6a377cac0dfd7c710.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/syn-2.0.117/src/pat.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0f18552af0c49a886bd011e35d38e3b73d13cf22",
+            "sha256": "861e3d8f86da16acf7440f9c0ed477a7c80bb0109b93aff0e3cd941198595b3e",
+            "bytes": 32105,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0f18552af0c49a886bd011e35d38e3b73d13cf22.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/syn-2.0.117/src/expr.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0f92701dca3a91a5df74fbb1d93979598d8a731c",
+            "sha256": "9ab5bf8bd9d45647f6f23fbe3641b90f837226eec124dd0973b7332ae41b7f52",
+            "bytes": 141943,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0f92701dca3a91a5df74fbb1d93979598d8a731c.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "9f68559cd2341953814d0d646b6380f6e6a25a83",
+      "sha256": "edf9f16c57466b06d201b8646182b7332324c7aba28f832dde7f57d03249637d",
+      "bytes": 4854,
+      "relative_path": "objects/9f68559cd2341953814d0d646b6380f6e6a25a83.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/digest-0.10.7/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/digest-0.10.7/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/digest-0.10.7/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/digest-0.10.7/src/dev/mac.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0d4a37dfce91eac5f3598e72e57f8af7cc172e1b",
+            "sha256": "e8837d3b99dc8b6ddb398e7fad5731c2ed36931f851ed625d3ae59fb31244165",
+            "bytes": 6011,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0d4a37dfce91eac5f3598e72e57f8af7cc172e1b.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/digest-0.10.7/src/mac.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1c31359ea39ade9674311a6218d2a42652872b96",
+            "sha256": "6303caa2c5b76513346c082dd600e007354179ad440fc83dad3d7f4240281803",
+            "bytes": 8359,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/1c31359ea39ade9674311a6218d2a42652872b96.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/digest-0.10.7/src/dev/fixed.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "24f380112d8b79a419afbcd3e2e2cdddab6a31f7",
+            "sha256": "1cbabc651645c1e781d31825791132b4e3741f426e99d7e40988e2a5ee49bddd",
+            "bytes": 2021,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/24f380112d8b79a419afbcd3e2e2cdddab6a31f7.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "ab8ca4ee5d36ba168135371714af85b17d978063",
+      "sha256": "8eebdcf2f9a5034693589a9982adf06c2aac5c9f078c07a44400d293ed5b4a8e",
+      "bytes": 3864,
+      "relative_path": "objects/ab8ca4ee5d36ba168135371714af85b17d978063.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/proc-macro2-1.0.107/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/proc-macro2-1.0.107/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/proc-macro2-1.0.107/src/probe/proc_macro_span.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0a8137b89bbfa24f0758a08f193dc824d943d919",
+            "sha256": "53853f0c70170c9695294b8867821664d9b8f1c901957b003003a3c26987abbe",
+            "bytes": 1217,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0a8137b89bbfa24f0758a08f193dc824d943d919.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/proc-macro2-1.0.107/src/probe/proc_macro_span_location.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "18ab278debfbc546aa21a9fdaa361b120821601f",
+            "sha256": "e022386204b6e042b3c55a6c809923849a2f915199bcbf3be72d0b7c8ffa7f83",
+            "bytes": 408,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/18ab278debfbc546aa21a9fdaa361b120821601f.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/proc-macro2-1.0.107/tests/test.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "198933086b90c877d95fc3d3c2555821a21803f8",
+            "sha256": "7d58c3a754241ffdec84e4e9ac799852071db71d77359de164ca7ba6217020e9",
+            "bytes": 32289,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/198933086b90c877d95fc3d3c2555821a21803f8.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "be70b7b06d8c03059ae7d56988a465830bc57a2a",
+      "sha256": "f223b99630bae262eb2b88bb95d0f496db8f1ff4e94e43dbfc8d95d3a6c98d8f",
+      "bytes": 14217,
+      "relative_path": "objects/be70b7b06d8c03059ae7d56988a465830bc57a2a.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/Cargo.lock",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "000f0c2fb19d428ec685acb671e3b4c8c2012f6d",
+            "sha256": "b1b5befb0af7be8d3dd606123c3ef9314ee8236f1c23fa88212747f33f1df1a7",
+            "bytes": 11960,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/000f0c2fb19d428ec685acb671e3b4c8c2012f6d.lock",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/tests/lexical/parse.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "03ec1a9a63db12ed6016a4f75f16bac15b9346c8",
+            "sha256": "a11f09bb003a3a024548008cf78bf76526ed71b00077d1989f45eb8cebc93b9c",
+            "bytes": 17147,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/03ec1a9a63db12ed6016a4f75f16bac15b9346c8.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/tests/ui/missing_value.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0ba14e22c2987c5ef93945e4d616559b917b5afd",
+            "sha256": "bca25d67127fb88e7c191c7b03af5a4ce8a9abb630f3d2e6a6c1e77e213dc9a4",
+            "bytes": 59,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0ba14e22c2987c5ef93945e4d616559b917b5afd.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "bf83d766272a07980127af4413582d212be10da2",
+      "sha256": "d40eb47c3c6e3780359df6fe40d40a35725c843df0e3b845e10ecf2a15048664",
+      "bytes": 4366,
+      "relative_path": "objects/bf83d766272a07980127af4413582d212be10da2.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_derive-1.0.228/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde-1.0.228/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_derive-1.0.228/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/src/private/mod.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "20bfa4eb886af71985fafbc5c5d0f8b8b425d382",
+            "sha256": "52cc5b33364b13724ea4c2989f3ccd8ba02a2ef903761499e15264835ff76388",
+            "bytes": 574,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/20bfa4eb886af71985fafbc5c5d0f8b8b425d382.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/src/core/de/ignored_any.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2360a1742362b1e0b31e0fd1f00e5246161851eb",
+            "sha256": "6480f2b2a83dc4764d01b2eec7309729eef2492eede2e5ee98d23a60b05198eb",
+            "bytes": 6154,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2360a1742362b1e0b31e0fd1f00e5246161851eb.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/src/core/de/mod.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2518ae68274a9888dd1c18e05d62a6191d3c86b0",
+            "sha256": "5ec8602d593915e0cf480b0ce67b02f6ab066dac34725237d2c7b4a6ef12a845",
+            "bytes": 83879,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2518ae68274a9888dd1c18e05d62a6191d3c86b0.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "c5392026b5d1e7247187804003f09a72894e90ea",
+      "sha256": "1305bd79675db0194915d9bc91bd0b3cf9487bc1126e05bf46b48ab43edce44b",
+      "bytes": 2299,
+      "relative_path": "objects/c5392026b5d1e7247187804003f09a72894e90ea.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/itoa-1.0.18/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/itoa-1.0.17/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/itoa-1.0.18/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/itoa-1.0.18/.github/workflows/ci.yml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "6b7c03d4052033e67411720d6f97faf3dfa00324",
+            "sha256": "89c4f60223daf03217ea7c1e8879135b11d2554bd1e57dd9eff5c02f1adc7909",
+            "bytes": 3333,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/6b7c03d4052033e67411720d6f97faf3dfa00324.yml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/itoa-1.0.18/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "74cd9b4abab9aa160b740ca2d90402859e51387f",
+            "sha256": "e962338e1886873aa7c3399ec89aa5378ccbfed712b9690f043628079390a34f",
+            "bytes": 16904,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/74cd9b4abab9aa160b740ca2d90402859e51387f.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/itoa-1.0.18/.github/FUNDING.yml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "750707701cdae985156601cc906195021ba6a6e5",
+            "sha256": "b017158736b3c9751a2d21edfce7fe61c8954e2fced8da8dd3013c2f3e295bd9",
+            "bytes": 16,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/750707701cdae985156601cc906195021ba6a6e5.yml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "cf54f405509f0a9dd89dbdb7e4eba69cf3f93d2c",
+      "sha256": "9e86d03b400dc818f44df68b76dafd1d89e42a51221bcb0de4259a6529ab6d84",
+      "bytes": 1777,
+      "relative_path": "objects/cf54f405509f0a9dd89dbdb7e4eba69cf3f93d2c.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/generic-array-0.14.7/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/generic-array-0.14.7/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/generic-array-0.14.7/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/generic-array-0.14.7/src/sequence.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0119d3db67e82e21c80caf9197a0aff5cb985478",
+            "sha256": "26679cfec035bae7298f067f37e8d42a1eda8fe241e9cf2c2977ba4bddddab1d",
+            "bytes": 11550,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0119d3db67e82e21c80caf9197a0aff5cb985478.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/generic-array-0.14.7/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "14a2797f8745d62d1e829e0d58497cc4e4b8aa8d",
+            "sha256": "20b64b4359b0e82a3523fd536ad06de25e174cead734cffd3fa5f7c48f659247",
+            "bytes": 18875,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/14a2797f8745d62d1e829e0d58497cc4e4b8aa8d.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/generic-array-0.14.7/src/functional.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2ddcc5c4c499555fe522e376f64e9394983817cd",
+            "sha256": "7dd6ddd5db3000054cbbd76959f745c7de73c8493cbfb745be80509b306e4a83",
+            "bytes": 3448,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2ddcc5c4c499555fe522e376f64e9394983817cd.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "d174b6eda69c5da25708c685a3f968002312cddb",
+      "sha256": "cd565d563a2c70d197bb6fee1678e122214e22af7bdb046b80f52c1d953cd72f",
+      "bytes": 1436,
+      "relative_path": "objects/d174b6eda69c5da25708c685a3f968002312cddb.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/cfg-if-1.0.4/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/cfg-if-1.0.4/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/cfg-if-1.0.4/.github/workflows/publish.yaml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "248e3ccdd9ad6e5487331f3bb39e3db7eb4d9af7",
+            "sha256": "1417805078704eecbaeea8611c5a44df575bfe1908d6969d909224a6e5e26ca8",
+            "bytes": 620,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/248e3ccdd9ad6e5487331f3bb39e3db7eb4d9af7.yaml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/cfg-if-1.0.4/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2c7414eb81c1ea4b803b84e87ad890e6cade886a",
+            "sha256": "c09723e0890d15810374009e96b20bf0eb2f65f383006516f34db36240835c85",
+            "bytes": 6368,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2c7414eb81c1ea4b803b84e87ad890e6cade886a.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/cfg-if-1.0.4/.github/dependabot.yml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "36e4ff06363a3224304913175080b881f861f60e",
+            "sha256": "828e3ecefdc555a5210a5bdffd5621ef3625ceb35c7fc91a0b4faef6f9921b75",
+            "bytes": 284,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/36e4ff06363a3224304913175080b881f861f60e.yml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "da59955fcac2e5b41c3ff77a2fb0a720177d5eea",
+      "sha256": "d16553c2dc0028d196c2ceb82e1685932061daacd3e0240339d9e393695c1e71",
+      "bytes": 1727,
+      "relative_path": "objects/da59955fcac2e5b41c3ff77a2fb0a720177d5eea.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/cfg-if-1.0.5/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/cfg-if-1.0.5/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/cfg-if-1.0.5/src/lib.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2c3a7ab8600b4ddc44c6abb5c4defc6c2a411d79",
+            "sha256": "2fe40504f7a897ac6b742a85bdf8c4b5b2c6de87cdd72d0cf49fa50585ac9955",
+            "bytes": 6626,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2c3a7ab8600b4ddc44c6abb5c4defc6c2a411d79.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/cfg-if-1.0.5/.github/dependabot.yml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "36e4ff06363a3224304913175080b881f861f60e",
+            "sha256": "828e3ecefdc555a5210a5bdffd5621ef3625ceb35c7fc91a0b4faef6f9921b75",
+            "bytes": 284,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/36e4ff06363a3224304913175080b881f861f60e.yml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/cfg-if-1.0.5/.github/workflows/main.yaml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3a45d976e6b5afea0e52e70d6f99ffee3b5c0b5c",
+            "sha256": "1db40c2a6c2addb69e8ee48f4e8edc5faaa205145945d061b1c30917d14037dc",
+            "bytes": 1186,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/3a45d976e6b5afea0e52e70d6f99ffee3b5c0b5c.yaml",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "e19dc62c3b1bd74cfee628a02241cadbd6390cdb",
+      "sha256": "10cb8c14d9d29f29a031329747b352fc149a689b449ee5a8abb43712695aed72",
+      "bytes": 14043,
+      "relative_path": "objects/e19dc62c3b1bd74cfee628a02241cadbd6390cdb.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/README.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/README.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/tests/lexical/parse.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "03ec1a9a63db12ed6016a4f75f16bac15b9346c8",
+            "sha256": "a11f09bb003a3a024548008cf78bf76526ed71b00077d1989f45eb8cebc93b9c",
+            "bytes": 17147,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/03ec1a9a63db12ed6016a4f75f16bac15b9346c8.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/src/ser.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "053f95a29080e58316d7d52011f97fe02424387f",
+            "sha256": "f2b8cc0b97e30c49dbc58698fa22c14a7d56ea616cdb57b067835a59af49a75f",
+            "bytes": 63877,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/053f95a29080e58316d7d52011f97fe02424387f.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/tests/ui/missing_value.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "0ba14e22c2987c5ef93945e4d616559b917b5afd",
+            "sha256": "bca25d67127fb88e7c191c7b03af5a4ce8a9abb630f3d2e6a6c1e77e213dc9a4",
+            "bytes": 59,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/0ba14e22c2987c5ef93945e4d616559b917b5afd.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    },
+    {
+      "git_blob_sha": "e6e7d9fb6d6e10d5ae6ba139af2c518c01d0e75f",
+      "sha256": "00b72e63d4f3393e28f9a219c8cb8c122013d82f0d10d6d551e239b13c5ba9e4",
+      "bytes": 2538,
+      "relative_path": "objects/e6e7d9fb6d6e10d5ae6ba139af2c518c01d0e75f.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/crates-io.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde_derive-1.0.228/crates-io.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde-1.0.228/crates-io.md",
+          "archive_chain": []
+        },
+        {
+          "file": "RR_SNN_V2_Research_Package.zip",
+          "member": "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_derive-1.0.228/crates-io.md",
+          "archive_chain": []
+        }
+      ],
+      "selected_original_occurrence": {
+        "file": "RR_SNN_V2_Research_Package.zip",
+        "member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/crates-io.md",
+        "archive_chain": []
+      },
+      "original_package_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+      "original_package_bytes": 74626316,
+      "role": "third-party source companion README/contribution/changelog from the original RR_SNN vendor tree",
+      "attribution_basis": "The exact original RR_SNN V2 package contains this document beside the named vendored Rust crate. Its actual source peers are already preserved in the existing private-ci RR_SNN archival context. This repository is public; crate authorship and original license/contact text are third-party provenance, not current commit identity.",
+      "same_original_package_source_peers": [
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/src/private/mod.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "20bfa4eb886af71985fafbc5c5d0f8b8b425d382",
+            "sha256": "52cc5b33364b13724ea4c2989f3ccd8ba02a2ef903761499e15264835ff76388",
+            "bytes": 574,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/20bfa4eb886af71985fafbc5c5d0f8b8b425d382.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/src/core/de/ignored_any.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2360a1742362b1e0b31e0fd1f00e5246161851eb",
+            "sha256": "6480f2b2a83dc4764d01b2eec7309729eef2492eede2e5ee98d23a60b05198eb",
+            "bytes": 6154,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2360a1742362b1e0b31e0fd1f00e5246161851eb.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        },
+        {
+          "original_member": "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/src/core/de/mod.rs",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "2518ae68274a9888dd1c18e05d62a6191d3c86b0",
+            "sha256": "5ec8602d593915e0cf480b0ce67b02f6ab066dac34725237d2c7b4a6ef12a845",
+            "bytes": 83879,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+            "path": "library-recovery/rrsnn-v2-source-20261103/objects/2518ae68274a9888dd1c18e05d62a6191d3c86b0.rs",
+            "ref": "refs/heads/archive/library-rrsnn-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "specific target repository blob lookup only, not an exhaustive refs/history absence proof",
+      "public_contact_review": null,
+      "preserved_source_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false
+    }
+  ],
+  "notices": [
+    {
+      "git_blob_sha": "16fe87b06e802f094b3fbb0894b137bca2b16ef1",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847,
+      "relative_path": "notices/16fe87b06e802f094b3fbb0894b137bca2b16ef1.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/cfg-if-1.0.5/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/version_check-0.9.5/LICENSE-APACHE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/cfg-if-1.0.4/LICENSE-APACHE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "39e0ed6602151f235148e6c08413aa7eda5b9038",
+      "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+      "bytes": 1057,
+      "relative_path": "notices/39e0ed6602151f235148e6c08413aa7eda5b9038.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/cfg-if-1.0.5/LICENSE-MIT",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/cfg-if-1.0.4/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "78173fa2e753d614bb0aa5ad125ddbbe70b282c4",
+      "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5",
+      "bytes": 10849,
+      "relative_path": "notices/78173fa2e753d614bb0aa5ad125ddbbe70b282c4.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/digest-0.10.7/LICENSE-APACHE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "8dcb85b30273aab0c3d6e47e151680a061c47cf7",
+      "sha256": "9e0dfd2dd4173a530e238cb6adb37aa78c34c6bc7444e0e10c1ab5d8881f63ba",
+      "bytes": 1057,
+      "relative_path": "notices/8dcb85b30273aab0c3d6e47e151680a061c47cf7.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/digest-0.10.7/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "6d318946df8ed9fcef27388dd128508dc340648b",
+      "sha256": "c09aae9d3c77b531f56351a9947bc7446511d6b025b3255312d3e3442a9a7583",
+      "bytes": 1107,
+      "relative_path": "notices/6d318946df8ed9fcef27388dd128508dc340648b.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/generic-array-0.14.7/LICENSE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d",
+      "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+      "bytes": 9723,
+      "relative_path": "notices/1b5ec8b78e237b5c3b3d812a7c0a6589d0f7161d.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/itoa-1.0.18/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/libc-0.2.191/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/proc-macro2-1.0.107/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/quote-1.0.47/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/ryu-1.0.23/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/syn-2.0.119/LICENSE-APACHE",
+        "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/LICENSE-APACHE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/proc-macro2-1.0.106/LICENSE-APACHE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/LICENSE-APACHE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/syn-2.0.117/LICENSE-APACHE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/LICENSE-APACHE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "31aa79387f27e730e33d871925e152e35e428031",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+      "bytes": 1023,
+      "relative_path": "notices/31aa79387f27e730e33d871925e152e35e428031.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/itoa-1.0.18/LICENSE-MIT",
+        "rrsnn_v2/hepta/rust_bridge/vendor/proc-macro2-1.0.107/LICENSE-MIT",
+        "rrsnn_v2/hepta/rust_bridge/vendor/quote-1.0.47/LICENSE-MIT",
+        "rrsnn_v2/hepta/rust_bridge/vendor/serde-1.0.228/LICENSE-MIT",
+        "rrsnn_v2/hepta/rust_bridge/vendor/serde_json-1.0.145/LICENSE-MIT",
+        "rrsnn_v2/hepta/rust_bridge/vendor/syn-2.0.119/LICENSE-MIT",
+        "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/LICENSE-MIT",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/proc-macro2-1.0.106/LICENSE-MIT",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/serde_json-1.0.149/LICENSE-MIT",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/syn-2.0.117/LICENSE-MIT",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/LICENSE-MIT",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/zmij-1.0.19/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "f4095b2fa2d9b6b96341d85c5e8d4943edf7a079",
+      "sha256": "123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e",
+      "bytes": 1066,
+      "relative_path": "notices/f4095b2fa2d9b6b96341d85c5e8d4943edf7a079.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/libc-0.2.191/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "36b7cd93cdfbac762f5be4c6ce276df2ea6305c2",
+      "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566",
+      "bytes": 1338,
+      "relative_path": "notices/36b7cd93cdfbac762f5be4c6ce276df2ea6305c2.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/ryu-1.0.23/LICENSE-BOOST"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "364b7731ca3f552248fbe13284741350d0ce9d4f",
+      "sha256": "db11fec9946737df39ca3898d9cd8c10ec6f6c3a884a6802b0ad0b81b4e8f23a",
+      "bytes": 17,
+      "relative_path": "notices/364b7731ca3f552248fbe13284741350d0ce9d4f.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/LICENSE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/LICENSE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "4bf355c3e02b7d32d990a3b7d2acfdf012e9c2ef",
+      "sha256": "516b24e051bf5630880ebbd55c40a25ce9552ebaf8970a53e8976eb70e522406",
+      "bytes": 10835,
+      "relative_path": "notices/4bf355c3e02b7d32d990a3b7d2acfdf012e9c2ef.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/LICENSE-APACHE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/LICENSE-APACHE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "e567a4d2802f702583a903a791cf75f494d2ed81",
+      "sha256": "a825bd853ab71619a4923d7b4311221427848070ff44d990da39b0b274c1683f",
+      "bytes": 1083,
+      "relative_path": "notices/e567a4d2802f702583a903a791cf75f494d2ed81.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/typenum-1.20.1/LICENSE-MIT",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/typenum-1.20.0/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "11f2842a303a7935740f7a1d09139b0b9c28c3b6",
+      "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1",
+      "bytes": 1995,
+      "relative_path": "notices/11f2842a303a7935740f7a1d09139b0b9c28c3b6.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/unicode-ident-1.0.27/LICENSE-UNICODE",
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/unicode-ident-1.0.22/LICENSE-UNICODE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "dfc0e73b19f687984b394c8f3d0865705623b6ba",
+      "sha256": "b7e650f3fce5c53249d1cdc608b54df156a97edd636cf9d23498d0cfe7aec63e",
+      "bytes": 1085,
+      "relative_path": "notices/dfc0e73b19f687984b394c8f3d0865705623b6ba.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/rust_bridge/vendor/version_check-0.9.5/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "8dada3edaf50dbc082c9a125058f25def75e625a",
+      "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1",
+      "bytes": 11357,
+      "relative_path": "notices/8dada3edaf50dbc082c9a125058f25def75e625a.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/diff-0.1.13/LICENSE-APACHE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "410eb94159eab944e772fdb8b0a2606e35f63b89",
+      "sha256": "c5de694d2f7a6084593c7280222149b683f084103f9627be3a22ed5eee4ce86c",
+      "bytes": 1072,
+      "relative_path": "notices/410eb94159eab944e772fdb8b0a2606e35f63b89.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/diff-0.1.13/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "a0f49a6d94553a5a9a0ead9e807a6a0302c55b44",
+      "sha256": "a8410ec5312922e0edae227ae056c7ea78093092503717ae377a2be4f0d295f1",
+      "bytes": 10834,
+      "relative_path": "notices/a0f49a6d94553a5a9a0ead9e807a6a0302c55b44.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/yansi-1.0.1/LICENSE-APACHE"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    },
+    {
+      "git_blob_sha": "b551a84c8f531370f1c8a0eaf1b495a3532d4661",
+      "sha256": "ce1f970284c4ab06e90671a984086692dc44da3e2b8ee86444d79b6f77bcf9e7",
+      "bytes": 1080,
+      "relative_path": "notices/b551a84c8f531370f1c8a0eaf1b495a3532d4661.txt",
+      "original_members": [
+        "rrsnn_v2/hepta/upstream_snapshot/codex-rs/vendor/yansi-1.0.1/LICENSE-MIT"
+      ],
+      "counts_as_frozen_source_candidate": false,
+      "reuse_existing_blob": true
+    }
+  ]
+}

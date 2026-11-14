@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="179" failures="0" errors="0" uuid="9dfc6649-2adc-45c9-9f3a-cbe57e6f94aa" timestamp="2026-11-08T00:09:57.102-05:00" time="8.486">
+    <testsuite name="codex-hepta-neuron" tests="179" disabled="0" errors="0" failures="0">
+        <testcase name="cell::tests::a_request_valid_receipt_must_still_match_the_entire_frozen_runtime_tuple" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.103-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell::tests::actual_over_budget_inference_is_recorded_and_abstains" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.103-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::batch_dispatch_rechecks_queue_age_and_rejects_clock_rollback_after_admission" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.105-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell::tests::batch_error_retains_each_admission_and_does_not_repeat_dispatch" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.106-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::batch_routing_digest_cannot_relabel_a_receipt_for_another_cell" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.108-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::competing_prepared_writers_and_frontier_reset_are_fenced" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.108-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::complete_native_path_commits_policy_and_state_only_at_owner_boundary" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.111-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell::tests::complete_mask_is_checked_and_masked_maximum_cannot_win" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.111-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::deadlines_and_changed_bundle_reject_before_backend_dispatch" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.114-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::entry_replays_before_encoding_and_new_snapshot_cannot_reidentify_an_operation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.114-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::incomplete_microbatch_cannot_publish_any_state" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.116-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell::tests::inference_control_rejects_receipts_from_a_different_source_or_request" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.116-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::shared_inference_ids_are_partitioned_but_do_not_change_with_owner_revision" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.119-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::shared_microbatch_matches_reordered_outputs_to_isolated_requests" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.119-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::uncertain_commit_reconciles_exact_persisted_decision_without_new_inference" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.122-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell::tests::state_and_exact_operation_identity_are_partitioned_by_run" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.121-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell::tests::updates_are_next_generation_bounded_candidates_and_do_not_mutate_live_state" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.124-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_generation_control::tests::actor_loss_closes_the_owner_without_reissuing_an_uncertain_operation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.124-05:00" time="0.005">
+        </testcase>
+        <testcase name="cell_generation_control::tests::independent_worker_does_not_block_durable_cancellation_or_exact_readback" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.126-05:00" time="0.009">
+        </testcase>
+        <testcase name="cell_generation_control::tests::invalid_scope_and_invalid_worker_proposals_never_become_terminal_records" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.130-05:00" time="0.009">
+        </testcase>
+        <testcase name="cell_generation_control::tests::known_no_contact_observations_abort_without_forging_the_admission_clock" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.135-05:00" time="0.009">
+        </testcase>
+        <testcase name="cell_generation_control::tests::shutdown_timeout_retains_the_real_file_lock_until_the_worker_exits" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.144-05:00" time="0.056">
+        </testcase>
+        <testcase name="cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.139-05:00" time="0.068">
+        </testcase>
+        <testcase name="cell_generation_control::tests::terminal_control_reopen_reads_original_bytes_without_running_another_worker" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.200-05:00" time="0.008">
+        </testcase>
+        <testcase name="cell_generation_current::tests::preparing_identity_cannot_import_a_nonempty_history" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.209-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_generation_current::tests::retired_guarded_journal_rejects_ordinary_open_and_live_recovery_without_changing_bytes" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.212-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_generation_control::tests::unknown_worker_keeps_the_single_pending_slot_across_reopen" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.207-05:00" time="0.009">
+        </testcase>
+        <testcase name="cell_generation_current::tests::staged_genesis_is_synced_but_cannot_admit_resume_or_expose_active_snapshot" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.215-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::acknowledged_delivery_rejects_changed_bytes_ack_and_cost_after_reopen" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.215-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.218-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::cancellation_and_drain_retain_unknown_work_then_settle_without_output" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.222-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::bounded_journal_reserves_cancellation_drain_settlement_and_delivery_ack" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.220-05:00" time="0.007">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::deadline_and_failed_receipts_preserve_cost_without_fabricating_state" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.225-05:00" time="0.005">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::full_committed_prefix_still_allows_cancelled_and_expired_cost_settlement" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.226-05:00" time="0.006">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::incomplete_resumable_learning_closure_cannot_reopen_or_reinitialize" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.230-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::independent_process_second_writer_cannot_acquire_the_owner_journal" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.232-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::learning_evolution_scope_and_predecessor_drift_never_reinitialize" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.234-05:00" time="0.005">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.237-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::observation::first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.239-05:00" time="0.008">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::observation::uncertain_owner_never_mints_an_observation_before_witness_recovery" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.247-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::observation::pending_cancel_reopen_stop_and_ack_gate_complete_task_cost" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.240-05:00" time="0.013">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::precontact_clock_floor_is_durable_and_observation_does_not_allow_redispatch" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.250-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::reopen_with_lower_capacity_rejects_before_repairing_reserved_pending_history" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.253-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::state_prefix_outbox_cost_and_replay_survive_owner_reopen" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.254-05:00" time="0.005">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::torn_unwitnessed_commit_tail_restores_exact_pending_admission" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.259-05:00" time="0.005">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::unobserved_pending_work_never_becomes_fresh_admission_after_reopen" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.264-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.268-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_inference::tests::any_backend_error_retains_admission_and_duplicate_prepared_work_cannot_execute" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.271-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_inference::tests::crossing_deadline_after_decision_also_forces_abstention_at_commit" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.274-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_inference::tests::late_recovery_preserves_usage_and_settles_pending_as_abstention" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.276-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_inference::tests::missing_and_unsuccessful_readbacks_never_release_the_pending_request" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.278-05:00" time="0.005">
+        </testcase>
+        <testcase name="cell_inference::tests::native_stage_clocks_cannot_move_before_admission_or_decision" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.283-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_inference::tests::output_lost_before_commit_is_recovered_by_reading_the_original_request_only" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.285-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_inference::tests::receipt_capacity_is_checked_before_spending_compute" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.288-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.290-05:00" time="0.284">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.574-05:00" time="0.291">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.865-05:00" time="1.007">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::invalid_clock_at_native_entry_does_not_create_a_terminal_proposal" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:58.872-05:00" time="0.218">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::observed_process::expired_observed_request_records_deadline_without_launching_child" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:59.091-05:00" time="0.149">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::observed_process::shortened_observed_request_budget_is_rejected_before_launch" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:59.239-05:00" time="0.149">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::rejected_input_finishes_without_process_traffic_and_keeps_measured_validation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:59.388-05:00" time="0.147">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::response_parser_binds_exact_digest_checksum_lengths_and_tail" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:59.536-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:59.539-05:00" time="3.524">
+        </testcase>
+        <testcase name="cell_joint_observed::tests::clock_regression_and_expired_or_changed_request_deadline_are_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.063-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_joint_observed::tests::deadline_and_obligation_changes_alter_the_bound_owner_identity" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.066-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_joint_observed::tests::host_clock_derives_remaining_and_auto_fraction_from_one_contract" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.068-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_journal::tests::acknowledged_rollback_is_rejected_before_any_tail_repair" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.071-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_journal::tests::admission_reserves_room_for_its_eventual_atomic_state_commit" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.074-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_journal::tests::batch_admission_sync_crossing_deadline_never_dispatches_and_reopens_pending" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.076-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_journal::tests::batch_dispatch_filters_expired_members_and_counts_durable_admission_queue_time" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.080-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_journal::tests::incomplete_unacknowledged_tail_is_trimmed_after_witness_validation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.083-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_journal::tests::journal_lock_excludes_a_second_owner_before_it_reads_or_repairs" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.086-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_journal::tests::lost_witness_ack_fences_new_work_until_original_log_is_read_back" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.088-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_journal::tests::mismatched_admission_cannot_write_unreplayable_history" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.091-05:00" time="0.021">
+        </testcase>
+        <testcase name="cell_journal::tests::pending_dispatch_survives_reopen_and_recovery_only_reads_original_model_result" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.112-05:00" time="0.003">
+        </testcase>
+        <testcase name="cell_journal::tests::persisted_frontier_fence_resets_state_and_rejects_prepared_writer" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.115-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_journal::tests::shared_file_recovers_independent_checkpoints_and_exact_policy_receipts" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.118-05:00" time="0.004">
+        </testcase>
+        <testcase name="cell_journal::tests::uncertain_admission_never_dispatches_and_recovery_does_not_assume_no_contact" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.121-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_task_cost::tests::capacity_keeps_replay_available_without_permitting_new_work" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.123-05:00" time="0.012">
+        </testcase>
+        <testcase name="cell_task_cost::tests::deserialize_does_not_bypass_identity_or_duplicate_validation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.136-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_task_cost::tests::envelope_rejects_unaccounted_overhead_missing_nested_and_duplicate_members" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.137-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_task_cost::tests::failed_cancelled_rejected_and_unknown_work_remains_charged" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.138-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_task_cost::tests::inclusive_observation_cannot_fill_unknown_exclusive_energy" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.140-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_task_cost::tests::missing_stage_and_unknown_measurement_are_not_measured_zero" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.141-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_task_cost::tests::overflow_refuses_new_charge_without_clamping_or_partial_append" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.143-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_task_cost::tests::overlapping_envelopes_never_double_charge_parallel_exclusive_work" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.144-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_task_cost::tests::replay_after_serialized_reopen_is_free_but_conflicting_reuse_is_atomic" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.145-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_task_cost::tests::task_source_and_zero_identity_refusals_preserve_state" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.147-05:00" time="0.001">
+        </testcase>
+        <testcase name="cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.148-05:00" time="0.521">
+        </testcase>
+        <testcase name="cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.669-05:00" time="0.308">
+        </testcase>
+        <testcase name="cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:03.978-05:00" time="0.319">
+        </testcase>
+        <testcase name="cell_v13_process::tests::expired_precontact_deadline_and_stalled_clock_wall_limit_are_distinct" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.296-05:00" time="0.293">
+        </testcase>
+        <testcase name="deletion::tests::deletion_rebuild_is_fresh_generation_and_never_reuses_state" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.590-05:00" time="0.003">
+        </testcase>
+        <testcase name="deletion::tests::deletion_rebuild_rejects_skipped_generation_and_missing_deletion" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.592-05:00" time="0.002">
+        </testcase>
+        <testcase name="inference_control::tests::corrupted_or_indeterminate_control_receipt_fails_closed" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.594-05:00" time="0.002">
+        </testcase>
+        <testcase name="inference_control::tests::inference_control_receipt_maps_to_exact_local_runtime_evidence" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.597-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::anchored_reopen_preserves_the_exact_receipt_and_all_bytes" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.598-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.601-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::empty_replacement_is_not_initialized_when_history_was_acknowledged" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.603-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.604-05:00" time="0.031">
+        </testcase>
+        <testcase name="journal::anchor_tests::fully_rehashed_alternate_history_cannot_satisfy_the_trusted_anchor" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.636-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::lost_complete_acknowledged_frame_is_rejected_without_repair" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.638-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::malformed_anchor_rejects_before_file_mutation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.639-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::matching_anchor_does_not_hide_corruption_in_a_later_full_frame" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.641-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::anchor_tests::wrong_anchor_does_not_truncate_an_unacknowledged_tail" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.643-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::segment_tests::missing_acknowledged_successor_frame_is_rejected_without_repair" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.645-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::segment_tests::plasticity_anchor_queries_preserve_global_sequence_across_rollover" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.647-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::segment_tests::successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.649-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::segment_tests::successor_segment_preserves_state_and_allows_exact_retry" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.651-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::changed_retry_and_stale_compare_and_swap_do_not_mutate_file" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.653-05:00" time="0.001">
+        </testcase>
+        <testcase name="journal::tests::child_process_commit_and_exit" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.655-05:00" time="0.001">
+        </testcase>
+        <testcase name="journal::tests::committed_checkpoint_and_receipt_survive_reopen" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.656-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::complete_corruption_is_rejected_without_truncation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.657-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::complete_unacknowledged_frame_is_reconciled_on_reopen" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.659-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::equal_retry_after_later_commit_does_not_append" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.661-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.663-05:00" time="0.031">
+        </testcase>
+        <testcase name="journal::tests::failed_recovery_releases_acquired_lock_before_journal_exists" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.694-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::incomplete_header_and_excess_file_size_are_not_repaired" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.696-05:00" time="0.001">
+        </testcase>
+        <testcase name="journal::tests::independent_writer_is_fenced_and_lock_releases_on_drop" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.697-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::invalid_tick_and_record_cap_do_not_append" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.699-05:00" time="0.003">
+        </testcase>
+        <testcase name="journal::tests::owner_drop_releases_lock_with_a_transient_duplicate_alive" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.702-05:00" time="0.002">
+        </testcase>
+        <testcase name="journal::tests::process_exit_without_destructors_releases_lock_and_keeps_committed_frame" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.704-05:00" time="0.003">
+        </testcase>
+        <testcase name="journal::tests::valid_frame_checksum_cannot_hide_invalid_checkpoint_chain" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.707-05:00" time="0.001">
+        </testcase>
+        <testcase name="journal::tests::write_error_requires_reopen_and_reconciliation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.708-05:00" time="0.001">
+        </testcase>
+        <testcase name="journal::tests::wrong_generation_and_scope_do_not_reinitialize_journal" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.710-05:00" time="0.002">
+        </testcase>
+        <testcase name="plasticity::tests::explicit_group_mapping_applies_positive_and_negative_modulation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.712-05:00" time="0.001">
+        </testcase>
+        <testcase name="plasticity::tests::global_l1_trust_region_projects_without_changing_inputs" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.713-05:00" time="0.001">
+        </testcase>
+        <testcase name="plasticity::tests::implicit_broadcast_and_overweight_rows_are_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.715-05:00" time="0.001">
+        </testcase>
+        <testcase name="plasticity::tests::zero_modulator_produces_zero_candidate_delta" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.716-05:00" time="0.001">
+        </testcase>
+        <testcase name="population_v2::tests::distinct_temporal_and_activation_dimensions_use_population_then_global_competition" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.717-05:00" time="0.001">
+        </testcase>
+        <testcase name="population_v2::tests::every_activation_requires_a_registered_temporal_projection" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.719-05:00" time="0.001">
+        </testcase>
+        <testcase name="population_v2::tests::population_partition_must_be_complete_and_non_overlapping" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.720-05:00" time="0.002">
+        </testcase>
+        <testcase name="population_v2::tests::population_profile_is_deterministic_and_supports_recurrent_successors" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.722-05:00" time="0.001">
+        </testcase>
+        <testcase name="protocol::tests::canonical_runtime_config_roundtrip_rejects_unknown_fields" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.723-05:00" time="0.002">
+        </testcase>
+        <testcase name="protocol::tests::canonical_signal_roundtrip_rejects_unknown_fields" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.725-05:00" time="0.001">
+        </testcase>
+        <testcase name="protocol::tests::canonical_tick_input_roundtrip_rejects_unknown_fields" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.726-05:00" time="0.002">
+        </testcase>
+        <testcase name="protocol::tests::canonical_tick_receipt_projects_only_registered_resource_fields" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.728-05:00" time="0.001">
+        </testcase>
+        <testcase name="protocol::tests::checkpoint_is_derived_from_committed_state_and_roundtrips" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.729-05:00" time="0.001">
+        </testcase>
+        <testcase name="protocol::tests::checkpoint_publication_rejects_forged_owner_summary" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.731-05:00" time="0.001">
+        </testcase>
+        <testcase name="qualification::tests::config_ablations_remove_only_the_named_mechanism" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.732-05:00" time="0.001">
+        </testcase>
+        <testcase name="qualification::tests::eligibility_and_modulator_ablations_are_explicit_and_deterministic" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.734-05:00" time="0.001">
+        </testcase>
+        <testcase name="qualification::tests::resource_summary_rejects_mixed_host_profiles" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.735-05:00" time="0.001">
+        </testcase>
+        <testcase name="qualification::tests::supplied_resource_samples_have_deterministic_percentiles_without_claiming_authority" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.736-05:00" time="0.002">
+        </testcase>
+        <testcase name="runtime::tests::canonical_runtime_commits_model_bound_calibrated_signal_and_recovers" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.738-05:00" time="0.002">
+        </testcase>
+        <testcase name="runtime::tests::collapse_or_ood_forces_abstention_without_granting_authority" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.740-05:00" time="0.002">
+        </testcase>
+        <testcase name="runtime::tests::deletion_rebuild_starts_fresh_successor_generation_without_old_state" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.741-05:00" time="0.002">
+        </testcase>
+        <testcase name="runtime::tests::expired_calibration_advances_state_but_forces_fail_closed_abstention" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.743-05:00" time="0.002">
+        </testcase>
+        <testcase name="runtime::tests::model_identity_drift_rejects_before_checkpoint_mutation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.745-05:00" time="0.001">
+        </testcase>
+        <testcase name="runtime::tests::runtime_rollover_and_chain_recovery_preserve_latest_witness" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.746-05:00" time="0.002">
+        </testcase>
+        <testcase name="runtime::tests::witness_failure_after_commit_reconciles_without_reinvoking_model" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.748-05:00" time="0.002">
+        </testcase>
+        <testcase name="sparse::body_scope_tests::reopened_checkpoint_retains_body_scope_and_rejects_before_write" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.750-05:00" time="0.002">
+        </testcase>
+        <testcase name="sparse::body_scope_tests::successor_rejects_body_scope_drift" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.752-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::changed_config_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.753-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::changed_scope_or_objective_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.754-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::clock_regression_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.756-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::damaged_checkpoint_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.757-05:00" time="0.003">
+        </testcase>
+        <testcase name="sparse::tests::duplicate_edges_and_row_norm_overflow_are_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.760-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::edge_order_does_not_change_config_or_output" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.761-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::invalid_dimensions_and_extreme_top_k_fail_without_overflow" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.763-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::invalid_inhibition_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.764-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::lateral_inhibition_changes_winner" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.766-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::long_replay_remains_bounded_and_immutable" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.767-05:00" time="0.088">
+        </testcase>
+        <testcase name="sparse::tests::missing_digest_invalid_width_and_unbounded_input_are_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.855-05:00" time="0.003">
+        </testcase>
+        <testcase name="sparse::tests::replay_or_skipped_sequence_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.858-05:00" time="0.003">
+        </testcase>
+        <testcase name="sparse::tests::saturation_and_eligibility_l1_projection_are_counted" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.861-05:00" time="0.002">
+        </testcase>
+        <testcase name="sparse::tests::signed_multiply_rounds_half_to_even" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.863-05:00" time="0.002">
+        </testcase>
+        <testcase name="sparse::tests::silent_input_has_zero_activation_with_nonnegative_thresholds" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.865-05:00" time="0.002">
+        </testcase>
+        <testcase name="sparse::tests::supplied_numeric_values_are_bound_not_just_caller_digest" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.866-05:00" time="0.002">
+        </testcase>
+        <testcase name="sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.868-05:00" time="0.002">
+        </testcase>
+        <testcase name="sparse::tests::ticks_advance_sequence_without_changing_artifact_generation" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.870-05:00" time="0.001">
+        </testcase>
+        <testcase name="sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.871-05:00" time="0.002">
+        </testcase>
+        <testcase name="tests::generation_must_advance" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.873-05:00" time="0.001">
+        </testcase>
+        <testcase name="tests::model_drift_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.875-05:00" time="0.001">
+        </testcase>
+        <testcase name="tests::step_is_deterministic_and_authority_free" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.876-05:00" time="0.002">
+        </testcase>
+        <testcase name="tests::width_drift_is_rejected" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.877-05:00" time="0.002">
+        </testcase>
+        <testcase name="witness::tests::witness_capacity_and_independent_writer_are_bounded" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.879-05:00" time="0.001">
+        </testcase>
+        <testcase name="witness::tests::witness_history_survives_reopen_and_fences_stale_cas" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.881-05:00" time="0.001">
+        </testcase>
+        <testcase name="witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history" classname="codex-hepta-neuron" timestamp="2026-11-08T00:10:04.882-05:00" time="0.002">
+        </testcase>
+        <testcase name="cell_generation_journal::tests::task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement" classname="codex-hepta-neuron" timestamp="2026-11-08T00:09:57.258-05:00" time="8.331">
+        </testcase>
+    </testsuite>
+</testsuites>

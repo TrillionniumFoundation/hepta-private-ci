@@ -1,0 +1,117 @@
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+   Compiling rmcp v3.1.3
+   Compiling aws-sdk-sts v1.119.0
+   Compiling aws-sdk-ssooidc v1.116.0
+   Compiling aws-sdk-sso v1.114.0
+   Compiling aws-sdk-signin v1.27.0
+   Compiling codex-utils-plugins v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/utils/plugins)
+   Compiling codex-plugin v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/plugin)
+   Compiling aws-config v1.12.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/third_party/aws-config-1.12.0)
+   Compiling sentry v0.46.2
+   Compiling codex-models-manager v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/models-manager)
+   Compiling codex-feedback v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/feedback)
+   Compiling codex-aws-auth v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/aws-auth)
+   Compiling codex-response-debug-context v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/model-provider)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/code-mode-protocol)
+   Compiling codex-code-mode v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/exec-server/tests/support)
+   Compiling codex-tools v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/codex-mcp)
+   Compiling codex-context-fragments v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/context-fragments)
+   Compiling codex-rollout v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/extension-api)
+   Compiling codex-app-server-protocol v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/app-server-protocol)
+   Compiling codex-skills v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/skills)
+   Compiling codex-analytics v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/analytics)
+   Compiling codex-hooks v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hooks)
+   Compiling codex-core-plugins v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/core-plugins)
+   Compiling codex-apply-patch v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/shell-escalation)
+   Compiling codex-thread-store v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/thread-store)
+   Compiling codex-utils-audio v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/utils/audio)
+   Compiling codex-skills-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/skills)
+   Compiling codex-prompts v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/memories/read)
+   Compiling codex-core v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/core)
+   Compiling codex-hepta-operations v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-operations)
+   Compiling codex-backend-client v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/backend-client)
+   Compiling codex-hepta-memory v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-memory)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-authbus v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-authbus)
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/linux-sandbox)
+   Compiling codex-hepta-evidence v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-evidence)
+   Compiling codex-memories-write v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/memories/write)
+   Compiling codex-connectors-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/connectors)
+   Compiling codex-utils-cli v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/utils/cli)
+   Compiling codex-chatgpt v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/chatgpt)
+   Compiling codex-mcp-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/mcp)
+   Compiling codex-external-agent-migration v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/external-agent-migration)
+   Compiling codex-app-server-transport v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/app-server-transport)
+   Compiling codex-hepta-governance v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/hepta-governance)
+   Compiling codex-arg0 v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/arg0)
+   Compiling codex-hepta-memory-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/hepta-memory)
+   Compiling codex-git-attribution v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/git-attribution)
+   Compiling codex-cloud-config v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/cloud-config)
+   Compiling codex-history-notes-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/history-notes)
+   Compiling codex-web-search-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/web-search)
+   Compiling codex-memories-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/memories)
+   Compiling codex-queue-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/queue)
+   Compiling codex-image-generation-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/image-generation)
+   Compiling codex-agent-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/agent)
+   Compiling codex-goal-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/goal)
+   Compiling codex-guardian-v2 v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/guardian-v2)
+   Compiling codex-home v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/codex-home)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/ext/hepta-prompt)
+   Compiling codex-app-server v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/app-server)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-automation v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-automation)
+   Compiling codex-hepta-agent-protocol v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-agent-protocol)
+   Compiling codex-app-server-client v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/app-server-client)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-supervisor v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-supervisor)
+   Compiling codex-hepta-intelligence v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-intelligence)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-bellman-operator)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-cognitive-store)
+   Compiling codex-hepta-agentd v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-agentd)
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-infer-worker-host)
+    Finished `dev-small` profile [unoptimized] target(s) in 5m 40s

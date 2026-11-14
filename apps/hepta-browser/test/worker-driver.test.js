@@ -15,6 +15,7 @@ import {
   WorkerFrameDecoder,
   buildWorkerFrame,
   encodeWorkerFrame,
+  workerPayloadDigest,
 } from "../src/worker-protocol.js";
 
 const D1 = "1".repeat(64);
@@ -23,7 +24,10 @@ function digest(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function fakeLauncher({ holdDispatchResponse = null } = {}) {
+function fakeLauncher({
+  holdDispatchResponse = null,
+  corruptReconcileIdentity = false,
+} = {}) {
   return {
     posture: {
       inheritedPrivateChannel: true,
@@ -41,6 +45,7 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
       child.stderr = new PassThrough();
       child.kill = () => true;
       const decoder = new WorkerFrameDecoder();
+      const operations = new Map();
       let sequence = 1;
       child.stdin.on("data", (chunk) => {
         for (const request of decoder.push(chunk)) {
@@ -57,15 +62,38 @@ function fakeLauncher({ holdDispatchResponse = null } = {}) {
               };
               break;
             case "dispatch":
-              observation = { terminalObserved: false };
+              operations.set(
+                request.payload.operationId,
+                workerPayloadDigest(request.payload),
+              );
+              observation = {
+                terminalObserved: false,
+                operationId: request.payload.operationId,
+                operationPayloadDigest: workerPayloadDigest(request.payload),
+                observedPageGeneration: 1,
+                observedDocumentDigest: D1,
+              };
               break;
-            case "reconcile":
+            case "reconcile": {
+              const expected = operations.get(request.payload.operationId);
+              if (expected !== workerPayloadDigest(request.payload)) {
+                throw new Error(
+                  "fake worker reconciliation payload drifted from dispatch",
+                );
+              }
               observation = {
                 terminalObserved: true,
                 status: "succeeded",
                 outcomeDigest: D1,
+                operationId: corruptReconcileIdentity
+                  ? "operation.corrupt"
+                  : request.payload.operationId,
+                operationPayloadDigest: workerPayloadDigest(request.payload),
+                observedPageGeneration: 1,
+                observedDocumentDigest: D1,
               };
               break;
+            }
             case "stop":
               observation = { stopped: true };
               break;
@@ -117,6 +145,18 @@ async function preparedDriver({ launcher = fakeLauncher() } = {}) {
   return { driver, started };
 }
 
+function operationPayload(operationId = "operation.1") {
+  return {
+    profileId: "profile.1",
+    processId: "servo.pid.4242",
+    profileGeneration: 1,
+    operationId,
+    pageGeneration: 1,
+    documentDigest: D1,
+    destinationOrigin: "https://example.com",
+  };
+}
+
 test("artifact-bound subprocess driver uses only the private framed channel", async () => {
   const { driver, started } = await preparedDriver();
   assert.equal(started.processId, "servo.pid.4242");
@@ -127,20 +167,11 @@ test("artifact-bound subprocess driver uses only the private framed channel", as
     observationBudget: 1024,
   });
   assert.equal(observed.origin, "https://example.com");
-  const dispatched = await driver.dispatch({
-    profileId: "profile.1",
-    processId: started.processId,
-    profileGeneration: 1,
-    operationId: "operation.1",
-  });
+  const operation = operationPayload();
+  operation.processId = started.processId;
+  const dispatched = await driver.dispatch(operation);
   assert.equal(dispatched.terminalObserved, false);
-  const terminal = await driver.reconcile({
-    profileId: "profile.1",
-    processId: started.processId,
-    profileGeneration: 1,
-    generation: 1,
-    operationId: "operation.1",
-  });
+  const terminal = await driver.reconcile(operation);
   assert.equal(terminal.status, "succeeded");
   const stopped = await driver.stop({
     profileId: "profile.1",
@@ -158,10 +189,8 @@ test("dispatch returns at local pipe write without waiting for worker execution 
   const timeout = Symbol("timeout");
   const dispatched = await Promise.race([
     driver.dispatch({
-      profileId: "profile.1",
+      ...operationPayload("operation.boundary"),
       processId: started.processId,
-      profileGeneration: 1,
-      operationId: "operation.boundary",
     }),
     new Promise((resolve) => setTimeout(() => resolve(timeout), 100)),
   ]);
@@ -175,14 +204,26 @@ test("dispatch returns at local pipe write without waiting for worker execution 
   held.release();
   await new Promise((resolve) => setImmediate(resolve));
   const terminal = await driver.reconcile({
-    profileId: "profile.1",
+    ...operationPayload("operation.boundary"),
     processId: started.processId,
-    profileGeneration: 1,
-    generation: 1,
-    operationId: "operation.boundary",
   });
   assert.equal(terminal.terminalObserved, true);
   assert.equal(terminal.status, "succeeded");
+});
+
+test("subprocess driver rejects a terminal receipt for another operation", async () => {
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({ corruptReconcileIdentity: true }),
+  });
+  const operation = {
+    ...operationPayload("operation.bound"),
+    processId: started.processId,
+  };
+  await driver.dispatch(operation);
+  await assert.rejects(
+    driver.reconcile(operation),
+    /crossed operation identity/,
+  );
 });
 
 test("subprocess driver fails closed on worker artifact digest drift", async () => {
@@ -205,7 +246,9 @@ test(
   "Linux bubblewrap launcher exposes only the explicit runtime closure",
   { skip: process.platform !== "linux" },
   () => {
-    const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
+    const launcher = new LinuxBubblewrapLauncher({
+      bwrapPath: "/usr/bin/bwrap",
+    });
     const argv = launcher.argv({
       workerPath: "/opt/hepta/servo-worker",
       profileDir: "/var/lib/hepta/browser/profile-1",
@@ -216,7 +259,9 @@ test(
     assert.deepEqual(argv.slice(4, 6), ["--tmpfs", "/"]);
     for (let index = 0; index < argv.length - 2; index += 1) {
       assert.equal(
-        argv[index] === "--ro-bind" && argv[index + 1] === "/" && argv[index + 2] === "/",
+        argv[index] === "--ro-bind" &&
+          argv[index + 1] === "/" &&
+          argv[index + 2] === "/",
         false,
       );
     }
@@ -227,12 +272,34 @@ test(
       }
     }
     assert.equal(mountedSources.includes("/usr"), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/usr/bin")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/usr/local")), false);
-    assert.equal(mountedSources.some((path) => path === "/home" || path.startsWith("/home/")), false);
-    assert.equal(mountedSources.some((path) => path === "/root" || path.startsWith("/root/")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/var/lib")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/var/run")), false);
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/usr/bin")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/usr/local")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some(
+        (path) => path === "/home" || path.startsWith("/home/"),
+      ),
+      false,
+    );
+    assert.equal(
+      mountedSources.some(
+        (path) => path === "/root" || path.startsWith("/root/"),
+      ),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/var/lib")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/var/run")),
+      false,
+    );
     assert.equal(mountedSources.includes("/usr/lib"), true);
     assert.equal(mountedSources.includes("/var/cache/fontconfig"), true);
     assert.equal(argv.at(-1), "/hepta-worker");

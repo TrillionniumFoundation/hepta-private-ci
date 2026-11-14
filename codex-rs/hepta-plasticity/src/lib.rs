@@ -8,6 +8,7 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_split;
 mod durable_registry;
 mod generator_v3;
 mod legacy;
@@ -20,6 +21,25 @@ mod topology_registry;
 mod topology_v2;
 mod types;
 
+pub use cell_split::CellSplitBudgetV1;
+pub use cell_split::CellSplitCanaryV1;
+pub use cell_split::CellSplitCandidateKindV1;
+pub use cell_split::CellSplitCandidateV1;
+pub use cell_split::CellSplitGuardrailsV1;
+pub use cell_split::CellSplitHoldoutV1;
+pub use cell_split::CellSplitOperationV1;
+pub use cell_split::CellSplitPlanStatusV1;
+pub use cell_split::CellSplitPlannerErrorV1;
+pub use cell_split::CellSplitPlannerRequestV1;
+pub use cell_split::CellSplitProposalSignalV1;
+pub use cell_split::CellSplitQuarantineV1;
+pub use cell_split::CellSplitRiskV1;
+pub use cell_split::CellSplitRollbackV1;
+pub use cell_split::CellSplitV1;
+pub use cell_split::build_cell_split_plan_v1;
+pub use cell_split::cell_split_generator_signing_payload_v1;
+pub use cell_split::plan_cell_split_v1;
+pub use cell_split::verify_cell_split_v1;
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;

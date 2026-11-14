@@ -18,6 +18,18 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
+#[cfg(unix)]
+use std::sync::Mutex;
+
+#[cfg(target_os = "linux")]
+#[path = "final_use_root_observer.rs"]
+mod root_observer;
+#[cfg(target_os = "linux")]
+pub use root_observer::RootFinalUseObserverV1;
+
+#[cfg(windows)]
+#[path = "final_use_store_windows.rs"]
+mod windows;
 
 const STATE_SCHEMA_V1: u32 = 1;
 const STATE_SCHEMA_V2: u32 = 2;
@@ -77,10 +89,50 @@ pub(super) struct Store {
     root: File,
     signer_id: String,
     trust: StoreTrust,
+    #[cfg(unix)]
+    claims: Mutex<Option<ClaimJournal>>,
     _lock: File,
 }
 
+#[cfg(unix)]
+struct ClaimJournal {
+    file: File,
+    durable_length: u64,
+}
+
+#[cfg(unix)]
+impl ClaimJournal {
+    fn revalidate(&self, root: &File) -> Result<(), FinalUseError> {
+        use std::os::unix::fs::MetadataExt;
+        let retained = self
+            .file
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        let named = open_private(root, "authority.claims", Access::Read)?
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if retained.dev() != named.dev()
+            || retained.ino() != named.ino()
+            || retained.len() != self.durable_length
+            || named.len() != self.durable_length
+        {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(())
+    }
+}
+
 impl Store {
+    /// Permanently fence a replaced or resized live journal.
+    #[cfg(unix)]
+    pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
+        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let journal = claims.take().ok_or(FinalUseError::Unavailable)?;
+        journal.revalidate(&self.root)?;
+        *claims = Some(journal);
+        Ok(())
+    }
+
     pub(super) fn open(
         root: &Path,
         signer_id: &str,
@@ -141,6 +193,8 @@ impl Store {
             root,
             signer_id: signer_id.to_owned(),
             trust,
+            #[cfg(unix)]
+            claims: Mutex::new(None),
             _lock: lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
@@ -266,6 +320,8 @@ impl Store {
     /// Persist a revocation/epoch transition. This path is not the per-claim
     /// hot path, so it may compact the claim journal to the current epoch.
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
+        #[cfg(unix)]
+        self.revalidate_owner()?;
         self.persist_snapshot(&state.head)?;
         self.replace_claims(state.head.authority_epoch, &state.used_nonces)
     }
@@ -280,13 +336,41 @@ impl Store {
         if authority_epoch == 0 || nonce == [0; 32] {
             return Err(FinalUseError::InvalidTrust);
         }
+        #[cfg(unix)]
+        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        let mut journal = claims.take().ok_or(FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        journal.revalidate(&self.root)?;
+        #[cfg(unix)]
+        let file = &mut journal.file;
+        #[cfg(not(unix))]
         let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
+        #[cfg(unix)]
+        if file
+            .seek(SeekFrom::End(0))
+            .map_err(|_| FinalUseError::Unavailable)?
+            != journal.durable_length
+        {
+            return Err(FinalUseError::Unavailable);
+        }
+        #[cfg(not(unix))]
         file.seek(SeekFrom::End(0))
             .map_err(|_| FinalUseError::Unavailable)?;
         file.write_all(&authority_epoch.to_be_bytes())
             .and_then(|()| file.write_all(&nonce))
             .and_then(|()| file.sync_all())
-            .map_err(|_| FinalUseError::Unavailable)
+            .map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        {
+            journal.durable_length = journal
+                .durable_length
+                .checked_add(CLAIM_FRAME_BYTES as u64)
+                .ok_or(FinalUseError::Unavailable)?;
+            journal.revalidate(&self.root)?;
+            *claims = Some(journal);
+        }
+        Ok(())
     }
 
     fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
@@ -314,28 +398,31 @@ impl Store {
             .checked_mul(CLAIM_FRAME_BYTES)
             .and_then(|value| value.checked_add(CLAIM_FRAME_BYTES))
             .ok_or(FinalUseError::InvalidTrust)?;
-        let bytes = read_bounded(&self.root, "authority.claims", maximum)?;
-        if bytes.len() % CLAIM_FRAME_BYTES != 0 {
-            return Err(FinalUseError::InvalidTrust);
-        }
-        let mut claims = BTreeSet::new();
-        for frame in bytes.chunks_exact(CLAIM_FRAME_BYTES) {
-            let mut epoch_bytes = [0u8; 8];
-            epoch_bytes.copy_from_slice(&frame[..8]);
-            let epoch = u64::from_be_bytes(epoch_bytes);
-            if epoch == 0 || epoch > authority_epoch {
+        #[cfg(unix)]
+        let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
+        #[cfg(unix)]
+        let bytes = {
+            let mut bytes = Vec::new();
+            Read::by_ref(&mut file)
+                .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
+                .read_to_end(&mut bytes)
+                .map_err(|_| FinalUseError::Unavailable)?;
+            if bytes.len() > maximum {
                 return Err(FinalUseError::InvalidTrust);
             }
-            if epoch == authority_epoch {
-                let mut nonce = [0u8; 32];
-                nonce.copy_from_slice(&frame[8..]);
-                if nonce == [0; 32] || !claims.insert(nonce) {
-                    return Err(FinalUseError::InvalidTrust);
-                }
-            }
-        }
-        if claims.len() > MAX_CLAIMS {
-            return Err(FinalUseError::InvalidTrust);
+            bytes
+        };
+        #[cfg(not(unix))]
+        let bytes = read_bounded(&self.root, "authority.claims", maximum)?;
+        let claims = decode_claims(&bytes, authority_epoch)?;
+        #[cfg(unix)]
+        {
+            let journal = ClaimJournal {
+                file,
+                durable_length: bytes.len() as u64,
+            };
+            journal.revalidate(&self.root)?;
+            *self.claims.lock().map_err(|_| FinalUseError::Unavailable)? = Some(journal);
         }
         Ok(claims)
     }
@@ -345,8 +432,14 @@ impl Store {
         authority_epoch: u64,
         claims: &BTreeSet<[u8; 32]>,
     ) -> Result<(), FinalUseError> {
-        if authority_epoch == 0 || claims.len() > MAX_CLAIMS {
+        if authority_epoch == 0 || claims.len() > MAX_CLAIMS || claims.contains(&[0; 32]) {
             return Err(FinalUseError::InvalidTrust);
+        }
+        #[cfg(unix)]
+        let mut current = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        if let Some(journal) = current.take() {
+            journal.revalidate(&self.root)?;
         }
         let mut file = open_private(&self.root, "authority.claims.next", Access::Create)?;
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
@@ -360,8 +453,46 @@ impl Store {
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
         replace_claims(&self.root)?;
-        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
+        self.root
+            .sync_all()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        #[cfg(unix)]
+        {
+            let journal = ClaimJournal {
+                file,
+                durable_length: (claims.len() * CLAIM_FRAME_BYTES) as u64,
+            };
+            journal.revalidate(&self.root)?;
+            *current = Some(journal);
+        }
+        Ok(())
     }
+}
+
+fn decode_claims(bytes: &[u8], authority_epoch: u64) -> Result<BTreeSet<[u8; 32]>, FinalUseError> {
+    if !bytes.len().is_multiple_of(CLAIM_FRAME_BYTES) {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    let mut claims = BTreeSet::new();
+    for frame in bytes.chunks_exact(CLAIM_FRAME_BYTES) {
+        let mut epoch_bytes = [0u8; 8];
+        epoch_bytes.copy_from_slice(&frame[..8]);
+        let epoch = u64::from_be_bytes(epoch_bytes);
+        if epoch == 0 || epoch > authority_epoch {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        if epoch == authority_epoch {
+            let mut nonce = [0u8; 32];
+            nonce.copy_from_slice(&frame[8..]);
+            if nonce == [0; 32] || !claims.insert(nonce) {
+                return Err(FinalUseError::InvalidTrust);
+            }
+        }
+    }
+    if claims.len() > MAX_CLAIMS {
+        return Err(FinalUseError::InvalidTrust);
+    }
+    Ok(claims)
 }
 
 fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {
@@ -438,11 +569,19 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
+    windows::prepare_directory(root)
+}
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
+    windows::open_private(directory, name, access)
+}
+#[cfg(all(not(unix), not(windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
@@ -473,15 +612,27 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
+    windows::entry_exists(directory, name)
+}
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), FinalUseError> {
+    windows::replace_state(directory)
+}
+#[cfg(windows)]
+fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+    windows::replace_claims(directory)
+}
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }

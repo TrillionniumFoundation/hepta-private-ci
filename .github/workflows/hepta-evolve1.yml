@@ -1,0 +1,135 @@
+name: Hepta EVOLVE-1 CPU contracts
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-evolve1.yml
+      - scripts/ndu_real_runtime/**
+      - scripts/hepta_ci_exec.py
+      - scripts/pyproject.toml
+      - scripts/uv.lock
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/hepta-evolve1.yml
+      - scripts/ndu_real_runtime/**
+      - scripts/hepta_ci_exec.py
+      - scripts/pyproject.toml
+      - scripts/uv.lock
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-evolve1-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || '' }}
+  HEPTA_CI_LANE: source-head
+  PYTHONDONTWRITEBYTECODE: "1"
+  UV_PYTHON_DOWNLOADS: never
+
+jobs:
+  contracts:
+    name: EVOLVE-1 inherited and transfer regressions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind source and keep execution outputs outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p "$RUNNER_TEMP/evolve1-ci"
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/evolve1-uv-env" >> "$GITHUB_ENV"
+          echo "UV_CACHE_DIR=$RUNNER_TEMP/evolve1-uv-cache" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
+
+      - name: Verify runtime matching the frozen synthetic pilot
+        id: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv --version
+          uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 \
+            python - <<'PY' > "$RUNNER_TEMP/evolve1-ci/runtime.json"
+          import json
+          import os
+          import platform
+          import numpy
+          assert platform.python_version() == "3.12.14"
+          assert numpy.__version__ == "2.3.5"
+          print(json.dumps({"source_sha": os.environ["SOURCE_SHA"],
+                            "python": platform.python_version(),
+                            "numpy": numpy.__version__,
+                            "scope": "protocol_regressions_only",
+                            "scientific_efficacy_qualified": False,
+                            "production_adoption_qualified": False}, sort_keys=True))
+          PY
+          cat "$RUNNER_TEMP/evolve1-ci/runtime.json"
+
+      - name: Run all three suites with separate non-skipped test minima
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          while read -r minimum module; do
+            python scripts/hepta_ci_exec.py --timeout-seconds 120 \
+              --minimum-tests "$minimum" \
+              --output "$RUNNER_TEMP/evolve1-ci/${module##*.}.json" \
+              -- uv run --frozen --project scripts --python 3.12.14 --with numpy==2.3.5 \
+              python -m unittest -v "$module" || status=1
+          done <<'CASES'
+          25 scripts.ndu_real_runtime.test_causal_ace
+          13 scripts.ndu_real_runtime.test_evolve1
+          3 scripts.ndu_real_runtime.test_evolve1_pilot
+          CASES
+          exit "$status"
+
+      - name: Check formatting and fatal Python errors using the repository lock
+        if: always() && steps.runtime.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            scripts/ndu_real_runtime/evolve1.py
+            scripts/ndu_real_runtime/test_evolve1.py
+            scripts/ndu_real_runtime/evolve1_reference.py
+            scripts/ndu_real_runtime/evolve1_pilot.py
+            scripts/ndu_real_runtime/test_evolve1_pilot.py
+          )
+          uv run --frozen --project scripts --python 3.12.14 \
+            ruff format --check "${files[@]}"
+          uv run --frozen --project scripts --python 3.12.14 \
+            ruff check --select E9,F63,F7,F82 "${files[@]}"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+
+      - name: Retain exact-source execution records and original logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: evolve1-ci-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evolve1-ci/*
+          if-no-files-found: error
+          retention-days: 30

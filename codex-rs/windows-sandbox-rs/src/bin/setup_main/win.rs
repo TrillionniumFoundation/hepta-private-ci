@@ -186,7 +186,9 @@ struct ReadAclSubjects<'a> {
     rx_psids: &'a [*mut c_void],
 }
 
-fn apply_read_acls(
+/// # Safety
+/// All SIDs referenced by subjects must remain valid and allocated for the call.
+unsafe fn apply_read_acls(
     read_roots: &[PathBuf],
     subjects: &ReadAclSubjects<'_>,
     log: &mut dyn Write,
@@ -203,27 +205,33 @@ fn apply_read_acls(
             )?;
             continue;
         }
-        let builtin_has = read_mask_allows_or_log(
-            root,
-            subjects.rx_psids,
-            /*label*/ None,
-            access_mask,
-            access_label,
-            refresh_errors,
-            log,
-        )?;
+        // SAFETY: the caller retains the native SID allocations in subjects.
+        let builtin_has = unsafe {
+            read_mask_allows_or_log(
+                root,
+                subjects.rx_psids,
+                /*label*/ None,
+                access_mask,
+                access_label,
+                refresh_errors,
+                log,
+            )
+        }?;
         if builtin_has {
             continue;
         }
-        let sandbox_has = read_mask_allows_or_log(
-            root,
-            &[subjects.sandbox_group_psid],
-            Some("sandbox_group"),
-            access_mask,
-            access_label,
-            refresh_errors,
-            log,
-        )?;
+        // SAFETY: the caller retains the sandbox group's native SID as well.
+        let sandbox_has = unsafe {
+            read_mask_allows_or_log(
+                root,
+                &[subjects.sandbox_group_psid],
+                Some("sandbox_group"),
+                access_mask,
+                access_label,
+                refresh_errors,
+                log,
+            )
+        }?;
         if sandbox_has {
             continue;
         }
@@ -259,7 +267,9 @@ fn apply_read_acls(
     Ok(())
 }
 
-fn read_mask_allows_or_log(
+/// # Safety
+/// Every SID in psids must remain valid, readable and unchanged for the call.
+unsafe fn read_mask_allows_or_log(
     root: &Path,
     psids: &[*mut c_void],
     label: Option<&str>,
@@ -268,7 +278,10 @@ fn read_mask_allows_or_log(
     refresh_errors: &mut Vec<String>,
     log: &mut dyn Write,
 ) -> Result<bool> {
-    match path_mask_allows(root, psids, read_mask, /*require_all_bits*/ true) {
+    // SAFETY: apply_read_acls forwards its caller's retained native SID allocations.
+    match unsafe {
+        path_mask_allows(root, psids, read_mask, /*require_all_bits*/ true)
+    } {
         Ok(has) => Ok(has),
         Err(e) => {
             let label_suffix = label
@@ -552,15 +565,19 @@ fn run_read_acl_only(payload: &Payload, log: &mut dyn Write) -> Result<()> {
             sandbox_group_psid,
             rx_psids: &rx_psids,
         };
-        apply_read_acls(
-            &payload.read_roots,
-            &subjects,
-            log,
-            &mut refresh_errors,
-            FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
-            "read",
-            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
-        )?;
+        // SAFETY: successful native SID conversions above own all four allocations.
+        // They remain unchanged here and are released only after this query returns.
+        unsafe {
+            apply_read_acls(
+                &payload.read_roots,
+                &subjects,
+                log,
+                &mut refresh_errors,
+                FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+                "read",
+                OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
+            )
+        }?;
         unsafe {
             if !users_psid.is_null() {
                 LocalFree(users_psid as HLOCAL);
@@ -841,11 +858,15 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
     }
 
     if refresh_only {
-        setup_runtime_bin::ensure_codex_app_runtime_paths_readable(
-            sandbox_group_psid,
-            &mut refresh_errors,
-            log,
-        )?;
+        // SAFETY: sid_bytes_to_psid successfully allocated this SID above; it is
+        // unchanged and is freed at the end of run_setup_full, after this call.
+        unsafe {
+            setup_runtime_bin::ensure_codex_app_runtime_paths_readable(
+                sandbox_group_psid,
+                &mut refresh_errors,
+                log,
+            )
+        }?;
     }
 
     let mut grant_tasks: Vec<(PathBuf, String)> = Vec::new();
@@ -869,26 +890,29 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
             convert_string_sid_to_sid(&root_cap_sid_str)
                 .ok_or_else(|| anyhow::anyhow!("convert write root capability SID failed"))?
         };
-        let need_grant =
-            match path_write_aces_need_refresh(root, &[sandbox_group_psid, root_cap_psid]) {
-                Ok(needs_refresh) => needs_refresh,
-                Err(e) => {
-                    refresh_errors.push(format!(
-                        "write ACE check failed on {}: {}",
+        // SAFETY: both pointers come from successful native SID conversions.
+        // The capability SID is freed below; the group SID survives this setup run.
+        let need_grant = match unsafe {
+            path_write_aces_need_refresh(root, &[sandbox_group_psid, root_cap_psid])
+        } {
+            Ok(needs_refresh) => needs_refresh,
+            Err(e) => {
+                refresh_errors.push(format!(
+                    "write ACE check failed on {}: {}",
+                    root.display(),
+                    e
+                ));
+                log_line(
+                    log,
+                    &format!(
+                        "write ACE check failed on {}: {}; continuing",
                         root.display(),
                         e
-                    ));
-                    log_line(
-                        log,
-                        &format!(
-                            "write ACE check failed on {}: {}; continuing",
-                            root.display(),
-                            e
-                        ),
-                    )?;
-                    true
-                }
-            };
+                    ),
+                )?;
+                true
+            }
+        };
         unsafe {
             LocalFree(root_cap_psid as HLOCAL);
         }
@@ -1120,12 +1144,14 @@ mod tests {
         let stale_write_mask = WRITE_ROOT_ALLOW_MASK | FILE_DELETE_CHILD;
         let seeded = unsafe { ensure_allow_mask_aces(&workspace, &[psid], stale_write_mask) }
             .expect("seed stale write ACE");
-        let needs_refresh_before =
-            path_write_aces_need_refresh(&workspace, &[psid]).expect("check stale write ACE");
+        // SAFETY: the converted SID remains allocated until LocalFree below.
+        let needs_refresh_before = unsafe { path_write_aces_need_refresh(&workspace, &[psid]) }
+            .expect("check stale write ACE");
         let replaced = unsafe { ensure_allow_write_aces(&workspace, &[psid]) }
             .expect("replace stale write ACE");
-        let needs_refresh_after =
-            path_write_aces_need_refresh(&workspace, &[psid]).expect("check refreshed write ACE");
+        // SAFETY: the same native SID is still live after the ACL update.
+        let needs_refresh_after = unsafe { path_write_aces_need_refresh(&workspace, &[psid]) }
+            .expect("check refreshed write ACE");
         unsafe {
             LocalFree(psid as HLOCAL);
         }
@@ -1157,14 +1183,16 @@ mod tests {
 
         let seeded = unsafe { ensure_allow_write_aces(&workspace, &[workspace_psid]) }
             .expect("seed workspace SID");
+        // SAFETY: both successful conversions remain live until LocalFree below.
         let needs_refresh_before =
-            path_write_aces_need_refresh(&workspace, &[workspace_psid, other_psid])
+            unsafe { path_write_aces_need_refresh(&workspace, &[workspace_psid, other_psid]) }
                 .expect("check both SIDs");
         let refreshed =
             unsafe { ensure_allow_write_aces(&workspace, &[workspace_psid, other_psid]) }
                 .expect("refresh both SIDs");
+        // SAFETY: neither native SID is freed or modified by the ACL update.
         let needs_refresh_after =
-            path_write_aces_need_refresh(&workspace, &[workspace_psid, other_psid])
+            unsafe { path_write_aces_need_refresh(&workspace, &[workspace_psid, other_psid]) }
                 .expect("recheck both SIDs");
         unsafe {
             LocalFree(workspace_psid as HLOCAL);
@@ -1196,14 +1224,18 @@ mod tests {
             ensure_allow_mask_aces(&parent, &[psid], WRITE_ROOT_ALLOW_MASK | FILE_DELETE_CHILD)
         }
         .expect("seed inherited stale write ACE");
-        let has_inherited_delete_child = path_mask_allows(
-            &workspace,
-            &[psid],
-            FILE_DELETE_CHILD,
-            /*require_all_bits*/ false,
-        )
+        // SAFETY: the successfully converted native SID stays live through both queries.
+        let has_inherited_delete_child = unsafe {
+            path_mask_allows(
+                &workspace,
+                &[psid],
+                FILE_DELETE_CHILD,
+                /*require_all_bits*/ false,
+            )
+        }
         .expect("check inherited stale write ACE");
-        let needs_refresh = path_write_aces_need_refresh(&workspace, &[psid])
+        // SAFETY: psid is still owned here and is freed only after the queries below.
+        let needs_refresh = unsafe { path_write_aces_need_refresh(&workspace, &[psid]) }
             .expect("check inherited stale write ACE");
         let first_refresh = unsafe { ensure_allow_write_aces(&workspace, &[psid]) }
             .expect("first inherited write ACE refresh");

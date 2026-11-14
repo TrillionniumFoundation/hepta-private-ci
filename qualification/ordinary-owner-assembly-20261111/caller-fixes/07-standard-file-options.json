@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "kind": "two_actual_std_openoptions_fixture_receiver_annotations",
+  "base": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "scope": "Only two existing private fixture helpers; preserve all original file flags, order, checked/open expressions, create_new branch, fixture role and cfg ancestry. No checker, ignore, caller set, registry, production capability, model cost or test assertion changes.",
+  "integration_policy": "Apply unique exact operations to the parent current source, preserving unrelated native formatting. Full postimages reference fixed715 only.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+      "preimage": "01f4dd6507c0fddaceb489be4e9cf2f0ef3c830c",
+      "preimage_sha256": "696337daaac68d5898b3439bfd80eec3ca1e1321cee35190a250ae1036fc2a17",
+      "bytes": 11796,
+      "sha256": "d266fb64b9b06090b30dbfdc24de7131e2bdba38997dab95d4b52879ac65d3e4",
+      "operations": [
+        {
+          "old": "pub(super) fn file(path: &Path) -> File {\n    checked(\n        OpenOptions::new()\n            .create(true)\n            .truncate(false)\n            .read(true)\n            .write(true)\n            .open(path),\n    )\n}",
+          "new": "pub(super) fn file(path: &Path) -> File {\n    let mut options: std::fs::OpenOptions = OpenOptions::new();\n    options.create(true);\n    options.truncate(false);\n    options.read(true);\n    options.write(true);\n    checked(options.open(path))\n}",
+          "expected_count": 1
+        }
+      ],
+      "postimage": "eea8405cdc985a12735b0a2903af12462f530078"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "preimage": "5533c2a59c0fb70b5ce7435f1a96d9e496b5b875",
+      "preimage_sha256": "42675d790d00256a42d1d5b0bb4c36b2e8e6557d85988b63b7953c9fbb9d46a5",
+      "bytes": 12817,
+      "sha256": "a832541b757a2ec0f5af380f475fc51b49c2d7a8e091a1c9e4d1087e7c496a9f",
+      "operations": [
+        {
+          "old": "        let open = |name: &str| {\n            checked(\n                OpenOptions::new()\n                    .create(true)\n                    .truncate(false)\n                    .read(true)\n                    .write(true)\n                    .open(self.directory.path().join(name)),\n            )\n        };",
+          "new": "        let open = |name: &str| {\n            let mut options: std::fs::OpenOptions = OpenOptions::new();\n            options.create(true);\n            options.truncate(false);\n            options.read(true);\n            options.write(true);\n            checked(options.open(self.directory.path().join(name)))\n        };",
+          "expected_count": 1
+        }
+      ],
+      "postimage": "43aaea6389d54933131fcc82a1ce8cd49626c0ee"
+    }
+  ],
+  "partial_diagnostic": {
+    "files": [
+      {
+        "name": "OPENOPTIONS_RESULT.json",
+        "bytes": 1522,
+        "sha256": "f3ac81e8eccda42a448b345173fd118feb9ac02cf6698929133bf3056b89cc88",
+        "git_blob": "e8dcae293a3de56515745a0546b6cb64063cf903"
+      },
+      {
+        "name": "openoptions-diagnose.py",
+        "bytes": 2076,
+        "sha256": "c1feac24efc1bd9a633cf6cd87574ff858d9378e79c713c383ce5a4145dac599",
+        "git_blob": "03aa85726023f23edc423c1d24d2655e9d6d0191"
+      },
+      {
+        "name": "openoptions-input.json",
+        "bytes": 51511,
+        "sha256": "d75c39b8428cd40e8a1356402d9a7482e6a50c88581c79b4c233f9c382412c70",
+        "git_blob": "1971badcd25ba3e099f06de0fa9f80e55da1581d"
+      }
+    ],
+    "command": "python3 openoptions-diagnose.py",
+    "original_checkers": [
+      "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    ],
+    "kind": "actual .create callsite receiver resolution only",
+    "no_fabricated_authority_fields": true,
+    "full_source_index": false,
+    "official_verify": false,
+    "actual_exit_code": 0
+  },
+  "validation": {
+    "postimages_read_back_equal": true,
+    "unique_exact_replacements": true,
+    "all_four_original_flags_preserved_in_order": true,
+    "native_executed": false,
+    "qa_executed": false,
+    "caller_registry_changed": false,
+    "checker_changed": false,
+    "ref_updated": false,
+    "qualification_pass": false
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.original-root17-failure.v1",
+  "source": "2d3a240d48aaa733775b134877c43981db50b702",
+  "tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16",
+  "status": "root-component-diagnostic-failed",
+  "actual_uid": 0,
+  "executed": 17,
+  "passed": 15,
+  "failed": 2,
+  "skipped": 0,
+  "retries": 0,
+  "started_at": "2026-11-12T00:37:21.049554+00:00",
+  "finished_at": "2026-11-12T00:37:48.701833+00:00",
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "source_clean_before_after": true,
+  "original_evidence": [
+    {
+      "name": "root.counts.json",
+      "blob": "567ce64cba4a66a7e4f8c9d9d2875f8dbe94c3c8",
+      "bytes": 98,
+      "sha256": "3aa7c5c63701c9c42c2ead17ac64a706c7646b96c6133cdc3c46a58fbeb39261"
+    },
+    {
+      "name": "root.junit.summary.json",
+      "blob": "7e8cf64c954594aa0114664d40065b2676e0b551",
+      "bytes": 3331,
+      "sha256": "76e5b4540ca558eff2691958eef8bff29e7be0c74c3a84629a3c4a652acdfdd3"
+    },
+    {
+      "name": "root.execution.json",
+      "blob": "4f0f4a97b2456961707f461e235f4690b56f005d",
+      "bytes": 3969,
+      "sha256": "983a946ba22600cb0f99e6ad33bf30ca437a8169ee9af70eb92ab9a8306ac437"
+    },
+    {
+      "name": "root.junit.xml",
+      "blob": "db50c213e12d5a759544f352eea77b36bcd96afa",
+      "bytes": 8689,
+      "sha256": "4402806b645d9c993b96a7b3a98792347a569f1380e01a537bfad5ffe798d527"
+    },
+    {
+      "name": "root.uid.json",
+      "blob": "907d96148cfedd1fa31a4ac12c42acb50c6091d9",
+      "bytes": 47,
+      "sha256": "72bf627069d1c40dac41be7bf526a4cc52ef10284e37f1d7b853966375aeeed2"
+    },
+    {
+      "name": "final-source-identity.json",
+      "blob": "e2f5756553674a4aecff4dfe45a9617b33d17963",
+      "bytes": 127,
+      "sha256": "ae870eab60a1fc7e60a51830322c71b2952b77c254b40153e52e424e41138aeb"
+    },
+    {
+      "name": "root.execution.json.8d3347250b034dbbbb938ca14b0d78af.log",
+      "blob": "8c91ef3b6a19542023cacb29048b694bdae875f5",
+      "bytes": 46464,
+      "sha256": "53769db3eb4751aef5c2a787103a24de715c096f6a571305196427eb3361137f"
+    }
+  ],
+  "diagnosis": {
+    "first_child_error": "Permission denied (os error 13)",
+    "subsequent_root_error": "owner process exited",
+    "subsequent_parent_error": "Resource temporarily unavailable (os error 11)",
+    "source_cause": "Both fixtures put canonicalized ordinary identity paths behind a Root-only mode0700 ancestor.",
+    "fix_status": "new candidate only; requires its own native execution"
+  },
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "independent_ordinary_consumer": false,
+  "cold_process_restart": false,
+  "full_qualification": false
+}

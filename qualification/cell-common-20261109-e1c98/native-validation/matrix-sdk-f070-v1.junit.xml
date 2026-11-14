@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="30" failures="0" errors="0" uuid="2cdf8679-6005-4bf6-add3-c698169e6a45" timestamp="2026-11-09T20:16:39.884+08:00" time="6.071">
+    <testsuite name="codex-hepta-matrix-sdk" tests="21" disabled="0" errors="0" failures="0">
+        <testcase name="gap_fill::tests::duplicate_or_null_scope_fields_are_rejected_in_both_raw_page_vectors" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.884+08:00" time="0.003">
+        </testcase>
+        <testcase name="gap_fill::tests::chunk_and_state_identity_scope_failures_leave_accepted_evidence_unchanged" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.884+08:00" time="0.003">
+        </testcase>
+        <testcase name="gap_fill::tests::empty_page_continues_and_exact_target_preserves_page_and_event_order" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.887+08:00" time="0.003">
+        </testcase>
+        <testcase name="gap_fill::tests::invalid_plan_cannot_start_or_manufacture_zero_length_completion" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.890+08:00" time="0.002">
+        </testcase>
+        <testcase name="gap_fill::tests::exact_total_event_limit_can_reach_target_without_truncation" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.887+08:00" time="0.014">
+        </testcase>
+        <testcase name="gap_fill::tests::request_scope_drift_and_discontinuous_or_cyclic_pages_are_atomic_rejections" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.902+08:00" time="0.002">
+        </testcase>
+        <testcase name="gap_fill::tests::sdk_bundled_thread_events_are_retained_only_within_raw_byte_bounds" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.904+08:00" time="0.494">
+        </testcase>
+        <testcase name="gap_fill::tests::transcript_binds_scope_limits_order_raw_bytes_state_and_terminal_evidence" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.397+08:00" time="0.005">
+        </testcase>
+        <testcase name="gap_fill::tests::visibility_and_page_limit_are_terminal_incomplete_observations" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.403+08:00" time="0.003">
+        </testcase>
+        <testcase name="sdk::tests::bounded_sync_keeps_ciphertext_needed_for_sdk_decryption" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.406+08:00" time="0.003">
+        </testcase>
+        <testcase name="sdk::tests::logical_stream_revision_uses_matrix_replace_content" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.409+08:00" time="0.003">
+        </testcase>
+        <testcase name="sdk::tests::missing_hepta_checkpoint_never_reuses_the_sdk_cursor" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.412+08:00" time="0.002">
+        </testcase>
+        <testcase name="sdk::tests::send_status_classification_bounds_permanent_and_transient_errors" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.414+08:00" time="0.002">
+        </testcase>
+        <testcase name="gap_fill::tests::page_and_accumulated_count_and_byte_limits_include_ancillary_state" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:39.892+08:00" time="0.558">
+        </testcase>
+        <testcase name="sync::tests::membership_and_tombstone_state_fence_without_enrolling_replacements" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.450+08:00" time="0.069">
+        </testcase>
+        <testcase name="sync::tests::message_policy_and_repeated_page_keep_exact_ingress_counts" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.519+08:00" time="0.027">
+        </testcase>
+        <testcase name="sync::tests::nested_redaction_and_missing_target_never_reenter_ingress" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.546+08:00" time="0.025">
+        </testcase>
+        <testcase name="sync::tests::redaction_room_version_and_decision_payload_identity_are_enforced" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.571+08:00" time="0.024">
+        </testcase>
+        <testcase name="sync::tests::unchanged_observation_requires_full_normalization_and_current_durable_checkpoint" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.595+08:00" time="0.027">
+        </testcase>
+        <testcase name="sync::tests::v1_redaction_commits_before_replay_and_survives_reopen" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.622+08:00" time="0.029">
+        </testcase>
+        <testcase name="sync::tests::incomplete_or_conflicting_response_leaves_all_rooms_and_cursor_unchanged" classname="codex-hepta-matrix-sdk" timestamp="2026-11-09T20:16:40.417+08:00" time="1.005">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-matrix-sdk::durable_transport" tests="8" disabled="0" errors="0" failures="0">
+        <testcase name="duplicate_sync_event_is_exactly_idempotent" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.652+08:00" time="0.023">
+        </testcase>
+        <testcase name="exact_room_sender_and_mention_gate_precedes_persistence" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.674+08:00" time="0.021">
+        </testcase>
+        <testcase name="expired_crash_lease_reuses_the_stable_transaction_after_reopen" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.695+08:00" time="0.029">
+        </testcase>
+        <testcase name="malformed_remote_event_is_nonfatal_and_does_not_block_the_next_event" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.725+08:00" time="0.021">
+        </testcase>
+        <testcase name="post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.746+08:00" time="0.026">
+        </testcase>
+        <testcase name="retry_preserves_stable_transaction_and_shutdown_is_bounded" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.772+08:00" time="0.030">
+        </testcase>
+        <testcase name="sdk_store_paths_are_private_and_per_agent" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.802+08:00" time="0.003">
+        </testcase>
+        <testcase name="transient_failures_use_bounded_backoff_and_then_become_terminal" classname="codex-hepta-matrix-sdk::durable_transport" timestamp="2026-11-09T20:16:40.805+08:00" time="0.027">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-matrix-sdk::store_version_migration" tests="1" disabled="0" errors="0" failures="0">
+        <testcase name="encrypted_state_identity_session_and_queues_survive_restart" classname="codex-hepta-matrix-sdk::store_version_migration" timestamp="2026-11-09T20:16:40.832+08:00" time="5.123">
+        </testcase>
+    </testsuite>
+</testsuites>

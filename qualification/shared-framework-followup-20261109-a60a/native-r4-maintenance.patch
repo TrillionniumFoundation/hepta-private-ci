@@ -1,0 +1,1602 @@
+diff --git a/codex-rs/hepta-agentd/src/cell_q24_backend.rs b/codex-rs/hepta-agentd/src/cell_q24_backend.rs
+index c7b59ee3..db36f40c 100644
+--- a/codex-rs/hepta-agentd/src/cell_q24_backend.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_backend.rs
+@@ -49,11 +49,13 @@ pub fn load_cell_q24_backend_v1(
+             {
+                 return Err(CellGenerationErrorV2::InvalidBinding);
+             }
+-            Ok(Arc::new(LoadedCellQ24ModelV1::open_files(files)?.into_worker(
+-                bundle,
+-                config.manifest.clone(),
+-                clock,
+-            )?))
++            Ok(Arc::new(
++                LoadedCellQ24ModelV1::open_files(files)?.into_worker(
++                    bundle,
++                    config.manifest.clone(),
++                    clock,
++                )?,
++            ))
+         }
+         CellQ24BackendFilesV1::Temporal(files) => {
+             if config.manifest.profile != CellTemporalQ24GenerationWorkerV1::PROFILE {
+@@ -63,7 +65,11 @@ pub fn load_cell_q24_backend_v1(
+             if config.initial.state != model.initial_state() {
+                 return Err(CellGenerationErrorV2::InvalidBinding);
+             }
+-            Ok(Arc::new(model.into_worker(bundle, config.manifest.clone(), clock)?))
++            Ok(Arc::new(model.into_worker(
++                bundle,
++                config.manifest.clone(),
++                clock,
++            )?))
+         }
+     }
+ }
+diff --git a/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs b/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs
+index 79ab55c5..c3c977eb 100644
+--- a/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs
++++ b/codex-rs/hepta-agentd/src/cell_temporal_q24_tests.rs
+@@ -202,10 +202,7 @@ fn temporal_q24_owner_restores_and_continues_recurrence_then_stop_preserves_stat
+     let proposal = worker.execute(&config.manifest, &second, &AtomicBool::new(false))?;
+     assert_eq!(proposal.output_delta, output(3 * codec::Q / 2));
+     let receipt = owner.commit(proposal, /*now_micros*/ 11)?;
+-    assert_eq!(
+-        owner.admit(second.clone(), /*now_micros*/ 11)?,
+-        Some(receipt)
+-    );
++    assert_eq!(owner.admit(second, /*now_micros*/ 11)?, Some(receipt));
+     let chunk = owner.pending_output()?.unwrap().clone();
+     owner.acknowledge(
+         chunk,
+diff --git a/codex-rs/hepta-agentd/src/circuit_cell_causal.rs b/codex-rs/hepta-agentd/src/circuit_cell_causal.rs
+index c4c314ed..e96d0ec5 100644
+--- a/codex-rs/hepta-agentd/src/circuit_cell_causal.rs
++++ b/codex-rs/hepta-agentd/src/circuit_cell_causal.rs
+@@ -78,24 +78,38 @@ where
+         let mut records = Vec::with_capacity(dispatches.len());
+         for dispatch in dispatches {
+             let activation = &run.activations()[&dispatch.activation_id];
+-            let input = inputs.get(&dispatch.activation_id)
++            let input = inputs
++                .get(&dispatch.activation_id)
+                 .ok_or(CircuitCreditErrorV1::Binding("missing causal input"))?;
+             let binding = self.registry().bind_input(&dispatch, input)?;
+             let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, input)?;
+             if input.scope.agent_id.as_str() != circuit.owner_agent_id().as_str()
+-                || activation.execution_request_digest()
++                || activation
++                    .execution_request_digest()
+                     .is_none_or(|digest| digest.as_str() != request_digest.to_string())
+             {
+-                return Err(CircuitCreditErrorV1::Binding("original causal computation claim"));
++                return Err(CircuitCreditErrorV1::Binding(
++                    "original causal computation claim",
++                ));
+             }
+-            let decision = self.state_owner().lookup(&input.scope, &input.operation_id, request_digest)?
+-                .ok_or(CircuitCreditErrorV1::Binding("missing committed causal decision"))?;
++            let decision = self
++                .state_owner()
++                .lookup(&input.scope, &input.operation_id, request_digest)?
++                .ok_or(CircuitCreditErrorV1::Binding(
++                    "missing committed causal decision",
++                ))?;
+             let execution = finish(binding, &dispatch, input, decision)?;
+             if trace.completions().get(&dispatch.activation_id) != Some(&execution.completion) {
+-                return Err(CircuitCreditErrorV1::Binding("causal Cell/Circuit completion mismatch"));
++                return Err(CircuitCreditErrorV1::Binding(
++                    "causal Cell/Circuit completion mismatch",
++                ));
+             }
+-            let circuit_times = *trace.computation_times().get(&dispatch.activation_id)
+-                .ok_or(CircuitCreditErrorV1::Binding("missing original causal clock samples"))?;
++            let circuit_times = *trace
++                .computation_times()
++                .get(&dispatch.activation_id)
++                .ok_or(CircuitCreditErrorV1::Binding(
++                    "missing original causal clock samples",
++                ))?;
+             let decision = execution.decision;
+             records.push(CircuitCellCausalRecordV1 {
+                 circuit_run_id: run.run_id().to_string(),
+diff --git a/codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs b/codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs
+index 2af74e14..c5011894 100644
+--- a/codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs
+@@ -1,6 +1,6 @@
+-use std::collections::BTreeMap;
+ use codex_hepta_types::Digest32;
+ use pretty_assertions::assert_eq;
++use std::collections::BTreeMap;
+ 
+ use super::*;
+ use crate::CircuitCellCausalRecordV1;
+@@ -17,14 +17,27 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
+     let reads = model.reads.clone();
+     let mut runtime = AgentdCircuitCellOwnerV1::new(
+         checked(CircuitCellRegistryV1::new(definition, bindings.clone())),
+-        native_owner(&bindings), model, Encoder,
++        native_owner(&bindings),
++        model,
++        Encoder,
+     );
+     let executed = checked(runtime.execute(admission, request.clone(), time));
+     // A Cell commit alone is not a consumed Circuit completion.
+-    assert!(runtime.committed_causal_records(&store, "run-1", &inputs).await.is_err());
+-    apply(&store, "complete", /*now_ms*/ 400, CircuitEventV2::Complete {
+-        completion: executed.completion.clone(),
+-    }).await;
++    assert!(
++        runtime
++            .committed_causal_records(&store, "run-1", &inputs)
++            .await
++            .is_err()
++    );
++    apply(
++        &store,
++        "complete",
++        /*now_ms*/ 400,
++        CircuitEventV2::Complete {
++            completion: executed.completion.clone(),
++        },
++    )
++    .await;
+     let trace = checked(store.bounded_circuit_committed_trace("run-1").await).expect("trace");
+     let activation = &trace.run().activations()[&dispatch.activation_id];
+     let expected = vec![CircuitCellCausalRecordV1 {
+@@ -35,7 +48,8 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
+         circuit_input_digest: activation.input_digest.clone(),
+         circuit_ready_at_ms: activation.ready_at_ms,
+         circuit_times: CircuitComputationTimesV2 {
+-            claimed_at_ms: Some(13), completed_at_ms: Some(400),
++            claimed_at_ms: Some(13),
++            completed_at_ms: Some(400),
+         },
+         scope: request.scope.clone(),
+         generation: bindings[0].cell.runtime.generation.get(),
+@@ -52,14 +66,35 @@ async fn causal_readback_joins_original_clocks_and_survives_circuit_reopen_witho
+         computation_outcome: executed.completion.outcome,
+     }];
+     let before = checked(runtime.state_owner().snapshot(&request.scope));
+-    assert_eq!(checked(runtime.committed_causal_records(&store, "run-1", &inputs).await), expected);
++    assert_eq!(
++        checked(
++            runtime
++                .committed_causal_records(&store, "run-1", &inputs)
++                .await
++        ),
++        expected
++    );
+     store.close().await;
+     let layout = checked(HeptaFleetRoot::parse(directory.path().join("fleet")))
+-        .layout().agent(&fence().owner_agent_id);
++        .layout()
++        .agent(&fence().owner_agent_id);
+     let reopened = checked(AutomationStore::open(&layout).await);
+-    assert_eq!(checked(runtime.committed_causal_records(&reopened, "run-1", &inputs).await), expected);
+-    assert_eq!(checked(runtime.state_owner().snapshot(&request.scope)), before);
+-    assert_eq!((calls.load(Ordering::SeqCst), reads.load(Ordering::SeqCst)), (1, 0));
++    assert_eq!(
++        checked(
++            runtime
++                .committed_causal_records(&reopened, "run-1", &inputs)
++                .await
++        ),
++        expected
++    );
++    assert_eq!(
++        checked(runtime.state_owner().snapshot(&request.scope)),
++        before
++    );
++    assert_eq!(
++        (calls.load(Ordering::SeqCst), reads.load(Ordering::SeqCst)),
++        (1, 0)
++    );
+     reopened.close().await;
+ }
+ 
+@@ -71,16 +106,42 @@ async fn causal_readback_refuses_substituted_inputs_and_absent_cell_owner_histor
+     let inputs = BTreeMap::from([(dispatch.activation_id, request.clone())]);
+     let admission = claim(&store, &dispatch, &bindings[0].cell, &request, 13).await;
+     let mut runtime = AgentdCircuitCellOwnerV1::new(
+-        checked(CircuitCellRegistryV1::new(definition.clone(), bindings.clone())),
+-        native_owner(&bindings), Model::new(/*latency*/ 20, /*lose_response*/ false), Encoder,
++        checked(CircuitCellRegistryV1::new(
++            definition.clone(),
++            bindings.clone(),
++        )),
++        native_owner(&bindings),
++        Model::new(/*latency*/ 20, /*lose_response*/ false),
++        Encoder,
+     );
+     let executed = checked(runtime.execute(admission, request, time));
+-    apply(&store, "complete", /*now_ms*/ 22, CircuitEventV2::Complete {
+-        completion: executed.completion,
+-    }).await;
+-    assert!(runtime.committed_causal_records(&store, "run-1", &BTreeMap::new()).await.is_err());
+-    enum Substitution { Observation, Candidates, Source, Clock }
+-    for change in [Substitution::Observation, Substitution::Candidates, Substitution::Source, Substitution::Clock] {
++    apply(
++        &store,
++        "complete",
++        /*now_ms*/ 22,
++        CircuitEventV2::Complete {
++            completion: executed.completion,
++        },
++    )
++    .await;
++    assert!(
++        runtime
++            .committed_causal_records(&store, "run-1", &BTreeMap::new())
++            .await
++            .is_err()
++    );
++    enum Substitution {
++        Observation,
++        Candidates,
++        Source,
++        Clock,
++    }
++    for change in [
++        Substitution::Observation,
++        Substitution::Candidates,
++        Substitution::Source,
++        Substitution::Clock,
++    ] {
+         let mut substituted = inputs.clone();
+         let input = substituted.get_mut(&dispatch.activation_id).expect("input");
+         match change {
+@@ -89,12 +150,24 @@ async fn causal_readback_refuses_substituted_inputs_and_absent_cell_owner_histor
+             Substitution::Source => input.source_frontier = d("different-source"),
+             Substitution::Clock => input.monotonic_micros += 1,
+         }
+-        assert!(runtime.committed_causal_records(&store, "run-1", &substituted).await.is_err());
++        assert!(
++            runtime
++                .committed_causal_records(&store, "run-1", &substituted)
++                .await
++                .is_err()
++        );
+     }
+     let empty = AgentdCircuitCellOwnerV1::new(
+         checked(CircuitCellRegistryV1::new(definition, bindings.clone())),
+-        native_owner(&bindings), Model::new(/*latency*/ 20, /*lose_response*/ false), Encoder,
++        native_owner(&bindings),
++        Model::new(/*latency*/ 20, /*lose_response*/ false),
++        Encoder,
++    );
++    assert!(
++        empty
++            .committed_causal_records(&store, "run-1", &inputs)
++            .await
++            .is_err()
+     );
+-    assert!(empty.committed_causal_records(&store, "run-1", &inputs).await.is_err());
+     store.close().await;
+ }
+diff --git a/codex-rs/hepta-agentd/src/circuit_cell_tests.rs b/codex-rs/hepta-agentd/src/circuit_cell_tests.rs
+index 199cd1f7..a2256001 100644
+--- a/codex-rs/hepta-agentd/src/circuit_cell_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_cell_tests.rs
+@@ -25,10 +25,10 @@ use support::id;
+ use support::input;
+ use support::scope;
+ 
+-#[path = "circuit_cell_clock_tests.rs"]
+-mod clock_tests;
+ #[path = "circuit_cell_causal_tests.rs"]
+ mod causal_tests;
++#[path = "circuit_cell_clock_tests.rs"]
++mod clock_tests;
+ #[path = "circuit_credit_tests.rs"]
+ mod credit_tests;
+ #[path = "circuit_cell_ports_tests.rs"]
+diff --git a/codex-rs/hepta-agentd/src/circuit_learning_delivery.rs b/codex-rs/hepta-agentd/src/circuit_learning_delivery.rs
+index 46b6707d..f501bbf5 100644
+--- a/codex-rs/hepta-agentd/src/circuit_learning_delivery.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_delivery.rs
+@@ -52,7 +52,10 @@ pub(crate) async fn retire_acknowledged_delivery(
+     if row.request_digest.as_ref() != Some(&request_digest) {
+         return Err(Error::WrongScope);
+     }
+-    let head = row.acknowledged_head.as_ref().ok_or(Error::CommitUncertain)?;
++    let head = row
++        .acknowledged_head
++        .as_ref()
++        .ok_or(Error::CommitUncertain)?;
+     // The original owner re-reads and compares intent, request and ACK inside
+     // its transaction. A stale caller observation never authorizes cleanup.
+     store
+diff --git a/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry.rs b/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry.rs
+index fbf8f2ea..602de687 100644
+--- a/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry.rs
+@@ -15,7 +15,9 @@ pub struct CircuitLearningDeliveryRegistryV1 {
+ impl CircuitLearningDeliveryRegistryV1 {
+     pub fn new(requests: Vec<LearningIterationRequestV1>) -> Result<Self, AgentdError> {
+         if !(1..=MAX_REGISTERED_CIRCUIT_LEARNING).contains(&requests.len()) {
+-            return Err(AgentdError::Invalid("Circuit learning registry capacity".into()));
++            return Err(AgentdError::Invalid(
++                "Circuit learning registry capacity".into(),
++            ));
+         }
+         for (index, request) in requests.iter().enumerate() {
+             if request.agent_id != requests[0].agent_id
+@@ -24,7 +26,9 @@ impl CircuitLearningDeliveryRegistryV1 {
+                         || previous.operation_id == request.operation_id
+                 })
+             {
+-                return Err(AgentdError::Invalid("Circuit learning registry identity conflict".into()));
++                return Err(AgentdError::Invalid(
++                    "Circuit learning registry identity conflict".into(),
++                ));
+             }
+         }
+         Ok(Self { requests })
+diff --git a/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry_tests.rs b/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry_tests.rs
+index 1bfbf028..c14f6167 100644
+--- a/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_delivery_registry_tests.rs
+@@ -1,8 +1,8 @@
+ //! Real SQLite intents and serial actor readback; task material is fixture
+ //! data, not production ownership or learned successor-benefit evidence.
+ 
+-use std::collections::BTreeMap;
+ use pretty_assertions::assert_eq;
++use std::collections::BTreeMap;
+ 
+ use super::*;
+ 
+@@ -13,31 +13,48 @@ struct RegisteredReadbackPorts {
+ }
+ 
+ impl LearningIterationOwnerPortsV1 for RegisteredReadbackPorts {
+-    fn restore<'a>(&'a self, request: &'a LearningIterationRequestV1)
+-        -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>> {
++    fn restore<'a>(
++        &'a self,
++        request: &'a LearningIterationRequestV1,
++    ) -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>> {
+         Box::pin(async move {
+             ok(self.restored.lock()).push(request.operation_id.to_string());
+             let snapshot = self.snapshots.get(request.operation_id.as_str()).cloned();
+-            if snapshot.as_ref().is_some_and(|snapshot| snapshot.request != *request) {
++            if snapshot
++                .as_ref()
++                .is_some_and(|snapshot| snapshot.request != *request)
++            {
+                 return Err(LearningIterationRuntimeErrorV1::WrongScope);
+             }
+             Ok(snapshot)
+         })
+     }
+-    fn checkpoint<'a>(&'a self, expected: Digest32, snapshot: &'a LearningIterationSnapshotV1)
+-        -> LearningIterationOwnerFutureV1<'a, Digest32> {
++    fn checkpoint<'a>(
++        &'a self,
++        expected: Digest32,
++        snapshot: &'a LearningIterationSnapshotV1,
++    ) -> LearningIterationOwnerFutureV1<'a, Digest32> {
+         self.original.checkpoint(expected, snapshot)
+     }
+-    fn execute_stage<'a>(&'a self, snapshot: &'a LearningIterationSnapshotV1, stage: LearningIterationStageV1)
+-        -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
++    fn execute_stage<'a>(
++        &'a self,
++        snapshot: &'a LearningIterationSnapshotV1,
++        stage: LearningIterationStageV1,
++    ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
+         self.original.execute_stage(snapshot, stage)
+     }
+-    fn prepare_proposal<'a>(&'a self, snapshot: &'a LearningIterationSnapshotV1)
+-        -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
++    fn prepare_proposal<'a>(
++        &'a self,
++        snapshot: &'a LearningIterationSnapshotV1,
++    ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
+         self.original.prepare_proposal(snapshot)
+     }
+-    fn receipt_attestation<'a>(&'a self, snapshot: &'a LearningIterationSnapshotV1, receipt: &'a LearningIterationReceiptV1, now: u64)
+-        -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
++    fn receipt_attestation<'a>(
++        &'a self,
++        snapshot: &'a LearningIterationSnapshotV1,
++        receipt: &'a LearningIterationReceiptV1,
++        now: u64,
++    ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
+         self.original.receipt_attestation(snapshot, receipt, now)
+     }
+ }
+@@ -48,16 +65,28 @@ fn explicit_registry_rejects_aliases_foreign_agents_and_capacity() {
+     let request = iteration_request(&daemon);
+     assert!(crate::CircuitLearningDeliveryRegistryV1::new(vec![]).is_err());
+     assert!(crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(); 65]).is_err());
+-    assert!(crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), request.clone()]).is_err());
++    assert!(
++        crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), request.clone()])
++            .is_err()
++    );
+     let mut other = request.clone();
+     other.operation_id = id("registry:other-operation");
+-    assert!(crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), other.clone()]).is_err());
++    assert!(
++        crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), other.clone()])
++            .is_err()
++    );
+     other.source_run_id = id("registry:other-source");
+     other.operation_id = request.operation_id.clone();
+-    assert!(crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), other.clone()]).is_err());
++    assert!(
++        crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), other.clone()])
++            .is_err()
++    );
+     other.operation_id = id("registry:other-operation");
+     other.agent_id = id("registry:foreign-agent");
+-    assert!(crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), other.clone()]).is_err());
++    assert!(
++        crate::CircuitLearningDeliveryRegistryV1::new(vec![request.clone(), other.clone()])
++            .is_err()
++    );
+     other.agent_id = request.agent_id.clone();
+     assert!(crate::CircuitLearningDeliveryRegistryV1::new(vec![request, other]).is_ok());
+ }
+@@ -73,22 +102,51 @@ async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_
+     let original = CurrentEvidencePorts::new();
+     let mut snapshots = BTreeMap::new();
+     for request in [&second, &third] {
+-        let snapshot = completed_snapshot(request.clone(), &original.inner, Decision::EvaluatedNoUpdate).await;
++        let snapshot = completed_snapshot(
++            request.clone(),
++            &original.inner,
++            Decision::EvaluatedNoUpdate,
++        )
++        .await;
+         snapshots.insert(request.operation_id.to_string(), snapshot);
+     }
+     ok(original.inner.executed.lock()).clear();
+-    let initial = ok(LearningIterationCoordinatorV1::new(pending.clone(), original.inner.owners()));
+-    let row = ok(store.circuit_learning_delivery(pending.source_run_id.as_str()).await).unwrap();
+-    let request_digest = ok(Sha256Digest::parse(initial.snapshot().head_digest.to_string()));
+-    assert!(ok(store.claim_circuit_learning(&row.intent, &request_digest).await));
+-    let claimed = ok(store.circuit_learning_delivery(pending.source_run_id.as_str()).await);
+-    let ports = Arc::new(RegisteredReadbackPorts { original: original.clone(), snapshots, restored: Mutex::default() });
++    let initial = ok(LearningIterationCoordinatorV1::new(
++        pending.clone(),
++        original.inner.owners(),
++    ));
++    let row = ok(store
++        .circuit_learning_delivery(pending.source_run_id.as_str())
++        .await)
++    .unwrap();
++    let request_digest = ok(Sha256Digest::parse(
++        initial.snapshot().head_digest.to_string(),
++    ));
++    assert!(ok(store
++        .claim_circuit_learning(&row.intent, &request_digest)
++        .await));
++    let claimed = ok(store
++        .circuit_learning_delivery(pending.source_run_id.as_str())
++        .await);
++    let ports = Arc::new(RegisteredReadbackPorts {
++        original: original.clone(),
++        snapshots,
++        restored: Mutex::default(),
++    });
+     let (state, cognitive) = admitted_state(&daemon).await;
+     let (handle, bootstrap) = ok(learning_iteration_channel_v1(
+-        daemon.identity.agent_id.clone(), /*spawn_generation*/ 1,
+-        original.inner.owners(), ports.clone(), original.inner.verifier.clone(), /*capacity*/ 1,
++        daemon.identity.agent_id.clone(),
++        /*spawn_generation*/ 1,
++        original.inner.owners(),
++        ports.clone(),
++        original.inner.verifier.clone(),
++        /*capacity*/ 1,
+     ));
+-    let registry = ok(crate::CircuitLearningDeliveryRegistryV1::new(vec![pending.clone(), second.clone(), third.clone()]));
++    let registry = ok(crate::CircuitLearningDeliveryRegistryV1::new(vec![
++        pending.clone(),
++        second.clone(),
++        third.clone(),
++    ]));
+     let mut bootstrap = ok(bootstrap.with_circuit_learning_registry(registry));
+     let delivery = bootstrap.take_circuit_delivery().unwrap();
+     drop(handle);
+@@ -98,16 +156,39 @@ async fn serial_registry_keeps_missing_claim_pending_and_acknowledges_following_
+     let second_ack = await_ack(&store, &second).await;
+     let third_ack = await_ack(&store, &third).await;
+     for (request, ack) in [(&second, second_ack), (&third, third_ack)] {
+-        assert_eq!(ack.acknowledged_head, Some(ok(Sha256Digest::parse(ports.snapshots[request.operation_id.as_str()].head_digest.to_string()))));
++        assert_eq!(
++            ack.acknowledged_head,
++            Some(ok(Sha256Digest::parse(
++                ports.snapshots[request.operation_id.as_str()]
++                    .head_digest
++                    .to_string()
++            )))
++        );
+     }
+-    assert_eq!(ok(store.circuit_learning_delivery(pending.source_run_id.as_str()).await), claimed);
+-    assert_eq!(&ok(ports.restored.lock())[..3], &[pending.operation_id.to_string(), second.operation_id.to_string(), third.operation_id.to_string()]);
++    assert_eq!(
++        ok(store
++            .circuit_learning_delivery(pending.source_run_id.as_str())
++            .await),
++        claimed
++    );
++    assert_eq!(
++        &ok(ports.restored.lock())[..3],
++        &[
++            pending.operation_id.to_string(),
++            second.operation_id.to_string(),
++            third.operation_id.to_string()
++        ]
++    );
+     assert!(ok(original.inner.executed.lock()).is_empty());
+     assert!(ok(original.inner.checkpoint_calls.lock()).is_empty());
+     assert!(!delivery.is_finished());
+     cancellation.cancel();
+-    ok(ok(tokio::time::timeout(Duration::from_secs(5), delivery).await.unwrap()));
+-    ok(ok(tokio::time::timeout(Duration::from_secs(5), actor).await.unwrap()));
++    ok(ok(tokio::time::timeout(Duration::from_secs(5), delivery)
++        .await
++        .unwrap()));
++    ok(ok(tokio::time::timeout(Duration::from_secs(5), actor)
++        .await
++        .unwrap()));
+     cognitive.close().await;
+     store.close().await;
+ }
+diff --git a/codex-rs/hepta-agentd/src/circuit_learning_retirement_recovery_tests.rs b/codex-rs/hepta-agentd/src/circuit_learning_retirement_recovery_tests.rs
+index 188f204d..918f24dd 100644
+--- a/codex-rs/hepta-agentd/src/circuit_learning_retirement_recovery_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_learning_retirement_recovery_tests.rs
+@@ -15,29 +15,47 @@ struct UnavailableLearningPorts {
+ impl UnavailableLearningPorts {
+     fn unavailable<T>(&self) -> LearningIterationOwnerFutureV1<'_, T> {
+         self.calls.fetch_add(1, Ordering::SeqCst);
+-        Box::pin(async { Err(LearningIterationRuntimeErrorV1::OwnerUnavailable("offline fixture")) })
++        Box::pin(async {
++            Err(LearningIterationRuntimeErrorV1::OwnerUnavailable(
++                "offline fixture",
++            ))
++        })
+     }
+ }
+ 
+ impl LearningIterationOwnerPortsV1 for UnavailableLearningPorts {
+-    fn restore<'a>(&'a self, _request: &'a LearningIterationRequestV1)
+-        -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>> {
++    fn restore<'a>(
++        &'a self,
++        _request: &'a LearningIterationRequestV1,
++    ) -> LearningIterationOwnerFutureV1<'a, Option<LearningIterationSnapshotV1>> {
+         self.unavailable()
+     }
+-    fn checkpoint<'a>(&'a self, _expected: Digest32, _snapshot: &'a LearningIterationSnapshotV1)
+-        -> LearningIterationOwnerFutureV1<'a, Digest32> {
++    fn checkpoint<'a>(
++        &'a self,
++        _expected: Digest32,
++        _snapshot: &'a LearningIterationSnapshotV1,
++    ) -> LearningIterationOwnerFutureV1<'a, Digest32> {
+         self.unavailable()
+     }
+-    fn execute_stage<'a>(&'a self, _snapshot: &'a LearningIterationSnapshotV1, _stage: LearningIterationStageV1)
+-        -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
++    fn execute_stage<'a>(
++        &'a self,
++        _snapshot: &'a LearningIterationSnapshotV1,
++        _stage: LearningIterationStageV1,
++    ) -> LearningIterationOwnerFutureV1<'a, LearningIterationReceiptV1> {
+         self.unavailable()
+     }
+-    fn prepare_proposal<'a>(&'a self, _snapshot: &'a LearningIterationSnapshotV1)
+-        -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
++    fn prepare_proposal<'a>(
++        &'a self,
++        _snapshot: &'a LearningIterationSnapshotV1,
++    ) -> LearningIterationOwnerFutureV1<'a, PreparedLearningIterationProposalV1> {
+         self.unavailable()
+     }
+-    fn receipt_attestation<'a>(&'a self, _snapshot: &'a LearningIterationSnapshotV1, _receipt: &'a LearningIterationReceiptV1, _now: u64)
+-        -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
++    fn receipt_attestation<'a>(
++        &'a self,
++        _snapshot: &'a LearningIterationSnapshotV1,
++        _receipt: &'a LearningIterationReceiptV1,
++        _now: u64,
++    ) -> LearningIterationOwnerFutureV1<'a, SignedLearningEvidenceV1> {
+         self.unavailable()
+     }
+ }
+@@ -45,34 +63,76 @@ impl LearningIterationOwnerPortsV1 for UnavailableLearningPorts {
+ async fn acknowledged_before_retirement(
+     daemon: &AgentdFixture,
+     original: &CurrentEvidencePorts,
+-) -> (AutomationStore, LearningIterationRequestV1, CircuitLearningDeliveryV1) {
++) -> (
++    AutomationStore,
++    LearningIterationRequestV1,
++    CircuitLearningDeliveryV1,
++) {
+     let (store, request) = completed_circuit_named(daemon, "ack-crash-window").await;
+-    let snapshot = completed_snapshot(request.clone(), &original.inner, Decision::EvaluatedNoUpdate).await;
+-    let initial = ok(LearningIterationCoordinatorV1::new(request.clone(), original.inner.owners()));
+-    let request_digest = ok(Sha256Digest::parse(initial.snapshot().head_digest.to_string()));
+-    let intent = ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await).unwrap().intent;
+-    assert!(ok(store.claim_circuit_learning(&intent, &request_digest).await));
+-    ok(store.acknowledge_circuit_learning(
+-        &intent, &request_digest, &ok(Sha256Digest::parse(snapshot.head_digest.to_string())),
+-    ).await);
+-    let acknowledged = ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await).unwrap();
++    let snapshot = completed_snapshot(
++        request.clone(),
++        &original.inner,
++        Decision::EvaluatedNoUpdate,
++    )
++    .await;
++    let initial = ok(LearningIterationCoordinatorV1::new(
++        request.clone(),
++        original.inner.owners(),
++    ));
++    let request_digest = ok(Sha256Digest::parse(
++        initial.snapshot().head_digest.to_string(),
++    ));
++    let intent = ok(store
++        .circuit_learning_delivery(request.source_run_id.as_str())
++        .await)
++    .unwrap()
++    .intent;
++    assert!(ok(store
++        .claim_circuit_learning(&intent, &request_digest)
++        .await));
++    ok(store
++        .acknowledge_circuit_learning(
++            &intent,
++            &request_digest,
++            &ok(Sha256Digest::parse(snapshot.head_digest.to_string())),
++        )
++        .await);
++    let acknowledged = ok(store
++        .circuit_learning_delivery(request.source_run_id.as_str())
++        .await)
++    .unwrap();
+     // Drop the only database owner before reopening the crash-boundary bytes.
+     store.close().await;
+     drop(store);
+     let reopened = ok(AutomationStore::open(&daemon.identity.layout).await);
+-    assert_eq!(ok(reopened.circuit_learning_delivery(request.source_run_id.as_str()).await), Some(acknowledged.clone()));
++    assert_eq!(
++        ok(reopened
++            .circuit_learning_delivery(request.source_run_id.as_str())
++            .await),
++        Some(acknowledged.clone())
++    );
+     (reopened, request, acknowledged)
+ }
+ 
+ async fn inspect(store: &AutomationStore) -> SqlitePool {
+-    ok(SqlitePoolOptions::new().max_connections(1).connect_with(
+-        SqliteConnectOptions::new().filename(store.path()).read_only(true),
+-    ).await)
++    ok(SqlitePoolOptions::new()
++        .max_connections(1)
++        .connect_with(
++            SqliteConnectOptions::new()
++                .filename(store.path())
++                .read_only(true),
++        )
++        .await)
+ }
+ 
+ async fn retired(pool: &SqlitePool, request: &LearningIterationRequestV1) -> i64 {
+-    ok(sqlx::query_scalar("SELECT retired FROM circuit_learning_outbox_v1 WHERE owner_agent_id = ? AND run_id = ?")
+-        .bind(request.agent_id.as_str()).bind(request.source_run_id.as_str()).fetch_one(pool).await)
++    ok(sqlx::query_scalar(
++        "SELECT retired FROM circuit_learning_outbox_v1 WHERE owner_agent_id = ? AND run_id = ?",
++    )
++    .bind(request.agent_id.as_str())
++    .bind(request.source_run_id.as_str())
++    .fetch_one(pool)
++    .await)
+ }
+ 
+ #[tokio::test]
+@@ -82,11 +142,17 @@ async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_
+     let (store, request, acknowledged) = acknowledged_before_retirement(&daemon, &original).await;
+     let inspection = inspect(&store).await;
+     assert_eq!(retired(&inspection, &request).await, 0);
+-    let ports = Arc::new(UnavailableLearningPorts { calls: AtomicUsize::new(0) });
++    let ports = Arc::new(UnavailableLearningPorts {
++        calls: AtomicUsize::new(0),
++    });
+     let (state, cognitive) = admitted_state(&daemon).await;
+     let (handle, bootstrap) = ok(learning_iteration_channel_v1(
+-        daemon.identity.agent_id.clone(), /*spawn_generation*/ 1,
+-        original.inner.owners(), ports.clone(), original.inner.verifier.clone(), /*capacity*/ 1,
++        daemon.identity.agent_id.clone(),
++        /*spawn_generation*/ 1,
++        original.inner.owners(),
++        ports.clone(),
++        original.inner.verifier.clone(),
++        /*capacity*/ 1,
+     ));
+     let mut bootstrap = ok(bootstrap.with_circuit_learning_delivery(request.clone()));
+     let delivery = bootstrap.take_circuit_delivery().unwrap();
+@@ -98,13 +164,24 @@ async fn cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_
+         while retired(&inspection, &request).await == 0 {
+             tokio::task::yield_now().await;
+         }
+-    }).await.expect("exact historical ACK retired without an owner call");
+-    assert_eq!(ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await), Some(acknowledged));
++    })
++    .await
++    .expect("exact historical ACK retired without an owner call");
++    assert_eq!(
++        ok(store
++            .circuit_learning_delivery(request.source_run_id.as_str())
++            .await),
++        Some(acknowledged)
++    );
+     assert_eq!(ports.calls.load(Ordering::SeqCst), 0);
+     assert!(!delivery.is_finished());
+     cancellation.cancel();
+-    ok(ok(tokio::time::timeout(Duration::from_secs(5), delivery).await.unwrap()));
+-    ok(ok(tokio::time::timeout(Duration::from_secs(5), actor).await.unwrap()));
++    ok(ok(tokio::time::timeout(Duration::from_secs(5), delivery)
++        .await
++        .unwrap()));
++    ok(ok(tokio::time::timeout(Duration::from_secs(5), actor)
++        .await
++        .unwrap()));
+     inspection.close().await;
+     cognitive.close().await;
+     store.close().await;
+@@ -124,22 +201,45 @@ async fn ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutati
+     changed[3].envelope.objective_digest = digest("other-objective");
+     changed[4].budget.maximum_training_steps += 1;
+     for changed in changed {
+-        assert!(matches!(crate::circuit_learning_delivery::retire_acknowledged_delivery(
+-            &store, &changed, &owners, &acknowledged,
+-        ).await, Err(LearningIterationRuntimeErrorV1::WrongScope)));
++        assert!(matches!(
++            crate::circuit_learning_delivery::retire_acknowledged_delivery(
++                &store,
++                &changed,
++                &owners,
++                &acknowledged,
++            )
++            .await,
++            Err(LearningIterationRuntimeErrorV1::WrongScope)
++        ));
+     }
+     let mut changed_owners = owners.clone();
+     changed_owners.trainer = id("other-trainer");
+-    assert!(matches!(crate::circuit_learning_delivery::retire_acknowledged_delivery(
+-        &store, &request, &changed_owners, &acknowledged,
+-    ).await, Err(LearningIterationRuntimeErrorV1::WrongScope)));
++    assert!(matches!(
++        crate::circuit_learning_delivery::retire_acknowledged_delivery(
++            &store,
++            &request,
++            &changed_owners,
++            &acknowledged,
++        )
++        .await,
++        Err(LearningIterationRuntimeErrorV1::WrongScope)
++    ));
+     let mut stale = acknowledged.clone();
+     stale.acknowledged_head = Some(ok(Sha256Digest::parse(digest("other-head").to_string())));
+-    assert!(matches!(crate::circuit_learning_delivery::retire_acknowledged_delivery(
+-        &store, &request, &owners, &stale,
+-    ).await, Err(LearningIterationRuntimeErrorV1::CommitUncertain)));
++    assert!(matches!(
++        crate::circuit_learning_delivery::retire_acknowledged_delivery(
++            &store, &request, &owners, &stale,
++        )
++        .await,
++        Err(LearningIterationRuntimeErrorV1::CommitUncertain)
++    ));
+     assert_eq!(retired(&inspection, &request).await, 0);
+-    assert_eq!(ok(store.circuit_learning_delivery(request.source_run_id.as_str()).await), Some(acknowledged));
++    assert_eq!(
++        ok(store
++            .circuit_learning_delivery(request.source_run_id.as_str())
++            .await),
++        Some(acknowledged)
++    );
+     inspection.close().await;
+     store.close().await;
+ }
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs b/codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs
+index d13c0acd..63aeb61d 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs
+@@ -80,9 +80,8 @@ impl CircuitLearningDeliveryRuntimeV1 {
+     ) -> Result<(), AgentdError> {
+         if self.requests.iter().any(|request| {
+             store.owner_agent_id().as_str() != request.agent_id.as_str()
+-            || state.identity().agent_id.as_str() != request.agent_id.as_str()
+-        })
+-            || state.identity().spawn_generation != self.spawn_generation
++                || state.identity().agent_id.as_str() != request.agent_id.as_str()
++        }) || state.identity().spawn_generation != self.spawn_generation
+         {
+             return Err(AgentdError::GenerationFenced(
+                 "Circuit learning delivery owner differs".into(),
+@@ -102,84 +101,89 @@ impl CircuitLearningDeliveryRuntimeV1 {
+                 continue;
+             }
+             for (index, request) in self.requests.iter().enumerate() {
+-            if completed[index] {
+-                continue;
+-            }
+-            let row = tokio::select! {
+-                _ = cancellation.cancelled() => return Ok(()),
+-                row = store.circuit_learning_delivery(request.source_run_id.as_str()) => row,
+-            }
+-            .map_err(|error| {
+-                AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
+-            })?;
+-            let Some(row) = row else {
+-                continue;
+-            };
+-            // A crash between the original ACK and retirement must not require
+-            // renewed stage signatures merely to release this local slot.
+-            // Exact historical ACK cleanup publishes no learning snapshot.
+-            if row.acknowledged_head.is_some() {
+-                let retirement = crate::circuit_learning_delivery::retire_acknowledged_delivery(
+-                    &store, request, &self.owners, &row,
+-                );
+-                let result = tokio::select! {
++                if completed[index] {
++                    continue;
++                }
++                let row = tokio::select! {
+                     _ = cancellation.cancelled() => return Ok(()),
+-                    result = retirement => result,
+-                };
+-                match result {
+-                    Ok(()) => completed[index] = true,
+-                    Err(LearningIterationRuntimeErrorV1::CommitUncertain) => {}
+-                    Err(error) => return Err(AgentdError::Protocol(format!(
+-                        "Circuit learning ACK retirement refused: {error}"
+-                    ))),
++                    row = store.circuit_learning_delivery(request.source_run_id.as_str()) => row,
+                 }
+-                continue;
+-            }
+-            let claimed = row.request_digest.is_some();
+-            if !claimed && !state.automation_admission_ready()? {
+-                continue;
+-            }
+-            let delivery = async {
+-                if claimed {
+-                    crate::reconcile_circuit_learning_v1(
+-                        &store,
+-                        Some(&self.handle),
+-                        request.clone(),
+-                        self.owners.clone(),
+-                    )
+-                    .await
+-                } else {
+-                    crate::deliver_circuit_learning_v1(
++                .map_err(|error| {
++                    AgentdError::Protocol(format!("Circuit learning outbox: {error:?}"))
++                })?;
++                let Some(row) = row else {
++                    continue;
++                };
++                // A crash between the original ACK and retirement must not require
++                // renewed stage signatures merely to release this local slot.
++                // Exact historical ACK cleanup publishes no learning snapshot.
++                if row.acknowledged_head.is_some() {
++                    let retirement = crate::circuit_learning_delivery::retire_acknowledged_delivery(
+                         &store,
+-                        Some(&self.handle),
+-                        request.clone(),
+-                        self.owners.clone(),
+-                    )
+-                    .await
++                        request,
++                        &self.owners,
++                        &row,
++                    );
++                    let result = tokio::select! {
++                        _ = cancellation.cancelled() => return Ok(()),
++                        result = retirement => result,
++                    };
++                    match result {
++                        Ok(()) => completed[index] = true,
++                        Err(LearningIterationRuntimeErrorV1::CommitUncertain) => {}
++                        Err(error) => {
++                            return Err(AgentdError::Protocol(format!(
++                                "Circuit learning ACK retirement refused: {error}"
++                            )));
++                        }
++                    }
++                    continue;
+                 }
+-            };
+-            let result = tokio::select! {
+-                _ = cancellation.cancelled() => return Ok(()),
+-                result = delivery => result,
+-            };
+-            match result {
+-                Ok(_) => {
+-                    completed[index] = true;
++                let claimed = row.request_digest.is_some();
++                if !claimed && !state.automation_admission_ready()? {
++                    continue;
+                 }
+-                Err(
+-                    LearningIterationRuntimeErrorV1::CommitUncertain
+-                    | LearningIterationRuntimeErrorV1::Unavailable
+-                    | LearningIterationRuntimeErrorV1::QueueFull,
+-                ) => {}
+-                Err(error) => {
+-                    // Missing mandatory owners, invalid evidence or expired
+-                    // new work is a refused configured service, not a retry.
+-                    return Err(AgentdError::Protocol(format!(
+-                        "Circuit learning delivery refused: {error}"
+-                    )));
++                let delivery = async {
++                    if claimed {
++                        crate::reconcile_circuit_learning_v1(
++                            &store,
++                            Some(&self.handle),
++                            request.clone(),
++                            self.owners.clone(),
++                        )
++                        .await
++                    } else {
++                        crate::deliver_circuit_learning_v1(
++                            &store,
++                            Some(&self.handle),
++                            request.clone(),
++                            self.owners.clone(),
++                        )
++                        .await
++                    }
++                };
++                let result = tokio::select! {
++                    _ = cancellation.cancelled() => return Ok(()),
++                    result = delivery => result,
++                };
++                match result {
++                    Ok(_) => {
++                        completed[index] = true;
++                    }
++                    Err(
++                        LearningIterationRuntimeErrorV1::CommitUncertain
++                        | LearningIterationRuntimeErrorV1::Unavailable
++                        | LearningIterationRuntimeErrorV1::QueueFull,
++                    ) => {}
++                    Err(error) => {
++                        // Missing mandatory owners, invalid evidence or expired
++                        // new work is a refused configured service, not a retry.
++                        return Err(AgentdError::Protocol(format!(
++                            "Circuit learning delivery refused: {error}"
++                        )));
++                    }
+                 }
+             }
+-            }
+             if completed.iter().all(|completed| *completed) {
+                 cancellation.cancelled().await;
+                 return Ok(());
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs b/codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs
+index 9e82ac7b..c52bbf49 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs
+@@ -625,9 +625,16 @@ async fn actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readb
+         None
+     );
+     // A durable claim made before a later owner loss is still readback-only.
+-    let initial = ok(LearningIterationCoordinatorV1::new(request.clone(), ports.owners()));
+-    let request_digest = ok(Sha256Digest::parse(initial.snapshot().head_digest.to_string()));
+-    assert!(ok(store.claim_circuit_learning(&intent, &request_digest).await));
++    let initial = ok(LearningIterationCoordinatorV1::new(
++        request.clone(),
++        ports.owners(),
++    ));
++    let request_digest = ok(Sha256Digest::parse(
++        initial.snapshot().head_digest.to_string(),
++    ));
++    assert!(ok(store
++        .claim_circuit_learning(&intent, &request_digest)
++        .await));
+     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
+     assert!(claimed[0].request_digest.is_some());
+     assert_eq!(claimed[0].acknowledged_head, None);
+diff --git a/codex-rs/hepta-agentd/src/lib.rs b/codex-rs/hepta-agentd/src/lib.rs
+index fd202681..20bb02bf 100644
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -281,8 +281,8 @@ mod cell_composed_q24;
+ mod cell_q24_backend;
+ mod cell_temporal_q24;
+ mod circuit_cell;
+-mod circuit_cell_causal;
+ mod circuit_cell_binding;
++mod circuit_cell_causal;
+ mod circuit_cell_dispatch;
+ mod circuit_cell_output;
+ mod circuit_cell_ports;
+@@ -491,13 +491,13 @@ pub use circuit_cell::AgentdCircuitCellOwnerV1;
+ pub use circuit_cell::CircuitCellErrorV1;
+ pub use circuit_cell::CircuitCellExecutionV1;
+ pub use circuit_cell::CircuitCellTimeV1;
+-pub use circuit_cell_causal::CircuitCellCausalRecordV1;
+ pub use circuit_cell_binding::CircuitCellBindingV1;
+ pub use circuit_cell_binding::CircuitCellRegistryV1;
+ pub use circuit_cell_binding::CircuitCellRouteV1;
+ pub use circuit_cell_binding::circuit_cell_operation_id_v1;
+ pub use circuit_cell_binding::circuit_cell_route_policy_digest_v1;
+ pub use circuit_cell_binding::circuit_cell_scope_digest_v1;
++pub use circuit_cell_causal::CircuitCellCausalRecordV1;
+ pub use circuit_cell_output::circuit_cell_output_schema_v1;
+ pub use circuit_cell_ports::CircuitCellActionPortV1;
+ pub use circuit_cell_ports::CircuitCellPortsV2;
+@@ -701,8 +701,8 @@ pub use lane_b_runtime::RunReceipt;
+ pub use lane_b_runtime::RunRecovery;
+ pub use lane_b_runtime::RunSnapshot;
+ pub use lane_b_runtime::RuntimeComposition;
+-pub use learning_iteration::LearningIterationHandleV1;
+ pub use learning_iteration::CircuitLearningDeliveryRegistryV1;
++pub use learning_iteration::LearningIterationHandleV1;
+ pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
+ pub use learning_iteration::LearningIterationRuntimeErrorV1;
+ pub use learning_iteration::learning_iteration_channel_scoped_v2;
+diff --git a/codex-rs/hepta-agentd/src/runtime.rs b/codex-rs/hepta-agentd/src/runtime.rs
+index 373bdb19..5e6971b0 100644
+--- a/codex-rs/hepta-agentd/src/runtime.rs
++++ b/codex-rs/hepta-agentd/src/runtime.rs
+@@ -156,7 +156,13 @@ pub async fn run_with_shutdown(
+         EVENT_CAPACITY,
+     )?);
+     if let Some(delivery) = &circuit_learning_delivery {
+-        state.attach_circuit_learning_sources(delivery.requests.iter().map(|request| request.source_run_id.clone()).collect())?;
++        state.attach_circuit_learning_sources(
++            delivery
++                .requests
++                .iter()
++                .map(|request| request.source_run_id.clone())
++                .collect(),
++        )?;
+     }
+     let circuit_task = if let Some((bootstrap, invocation)) = circuit_task {
+         state
+diff --git a/codex-rs/hepta-agentd/src/state_circuit_task.rs b/codex-rs/hepta-agentd/src/state_circuit_task.rs
+index 7c3facdf..453f78e8 100644
+--- a/codex-rs/hepta-agentd/src/state_circuit_task.rs
++++ b/codex-rs/hepta-agentd/src/state_circuit_task.rs
+@@ -63,9 +63,14 @@ impl AgentdState {
+     ) -> Result<(), AgentdError> {
+         if sources.is_empty()
+             || sources.len() > crate::learning_iteration::MAX_REGISTERED_CIRCUIT_LEARNING
+-            || sources.iter().enumerate().any(|(index, source)| sources[..index].contains(source))
++            || sources
++                .iter()
++                .enumerate()
++                .any(|(index, source)| sources[..index].contains(source))
+         {
+-            return Err(AgentdError::Invalid("Circuit learning source registry differs".into()));
++            return Err(AgentdError::Invalid(
++                "Circuit learning source registry differs".into(),
++            ));
+         }
+         self.circuit_learning_source
+             .set(sources)
+@@ -78,7 +83,10 @@ impl AgentdState {
+     }
+ 
+     pub(crate) fn circuit_learning_sources(&self) -> &[StableId] {
+-        self.circuit_learning_source.get().map(Vec::as_slice).unwrap_or_default()
++        self.circuit_learning_source
++            .get()
++            .map(Vec::as_slice)
++            .unwrap_or_default()
+     }
+ 
+     pub(crate) fn circuit_task_enabled(&self) -> bool {
+diff --git a/codex-rs/hepta-automation/src/action_check.rs b/codex-rs/hepta-automation/src/action_check.rs
+index f29b1ab5..3b060c70 100644
+--- a/codex-rs/hepta-automation/src/action_check.rs
++++ b/codex-rs/hepta-automation/src/action_check.rs
+@@ -105,7 +105,10 @@ impl ActionCheckPlanV1 {
+             || original_binding.provider_intent.validate().is_err()
+             || original_binding.destination_id.is_empty()
+             || original_binding.destination_id.len() > 128
+-            || original_binding.destination_id.chars().any(char::is_whitespace)
++            || original_binding
++                .destination_id
++                .chars()
++                .any(char::is_whitespace)
+             || self.generation == 0
+             || self.cost_unit.is_empty()
+             || self.cost_unit.len() > 64
+@@ -135,7 +138,12 @@ impl ActionCheckPlanV1 {
+         // Validate each present clock before serializing it into the receipt.
+         let source_clock = match &self.timing {
+             ActionCheckTimeV1::Unknown => None,
+-            ActionCheckTimeV1::Known { clock_id, occurred_at_ms, available_at_ms, .. } => {
++            ActionCheckTimeV1::Known {
++                clock_id,
++                occurred_at_ms,
++                available_at_ms,
++                ..
++            } => {
+                 if occurred_at_ms > available_at_ms {
+                     return Err(ActionSkillError::Observation);
+                 }
+@@ -146,9 +154,11 @@ impl ActionCheckPlanV1 {
+             ActionCheckClockV1::Unknown => None,
+             ActionCheckClockV1::Known { clock_id, .. } => Some(clock_id),
+         };
+-        if source_clock.into_iter().chain(current_clock).any(|id| {
+-            id.is_empty() || id.len() > 128 || id.chars().any(char::is_whitespace)
+-        }) {
++        if source_clock
++            .into_iter()
++            .chain(current_clock)
++            .any(|id| id.is_empty() || id.len() > 128 || id.chars().any(char::is_whitespace))
++        {
+             return Err(ActionSkillError::Observation);
+         }
+         let fresh = match (&self.timing, current) {
+@@ -160,7 +170,10 @@ impl ActionCheckPlanV1 {
+                     available_at_ms,
+                     max_age_ms,
+                 },
+-                ActionCheckClockV1::Known { clock_id: current_clock, at_ms },
++                ActionCheckClockV1::Known {
++                    clock_id: current_clock,
++                    at_ms,
++                },
+             ) => {
+                 if clock_id != current_clock {
+                     false
+@@ -180,16 +193,18 @@ impl ActionCheckPlanV1 {
+         let benefit = true_positive
+             * u128::from(estimate.remediation_success_ppm)
+             * u128::from(estimate.error_loss);
+-        let costs = true_positive
+-            * PROBABILITY_SCALE
+-            * u128::from(estimate.true_positive_response_cost)
+-            + (PROBABILITY_SCALE - risk)
+-                * u128::from(estimate.false_positive_ppm)
+-                * PROBABILITY_SCALE
+-                * u128::from(estimate.false_positive_response_cost)
+-            + PROBABILITY_SCALE.pow(3) * u128::from(estimate.check_cost);
++        let costs =
++            true_positive * PROBABILITY_SCALE * u128::from(estimate.true_positive_response_cost)
++                + (PROBABILITY_SCALE - risk)
++                    * u128::from(estimate.false_positive_ppm)
++                    * PROBABILITY_SCALE
++                    * u128::from(estimate.false_positive_response_cost)
++                + PROBABILITY_SCALE.pow(3) * u128::from(estimate.check_cost);
+         Ok(ActionCheckAssessmentV1 {
+-            assessment_digest: evidence_digest(b"hepta.action-check.assessment.v1\0", &(self, current))?,
++            assessment_digest: evidence_digest(
++                b"hepta.action-check.assessment.v1\0",
++                &(self, current),
++            )?,
+             recommendation: if !fresh {
+                 ActionCheckRecommendationV1::Unknown
+             } else if benefit > costs {
+diff --git a/codex-rs/hepta-automation/src/action_check_tests.rs b/codex-rs/hepta-automation/src/action_check_tests.rs
+index 65320d83..97ec1937 100644
+--- a/codex-rs/hepta-automation/src/action_check_tests.rs
++++ b/codex-rs/hepta-automation/src/action_check_tests.rs
+@@ -42,11 +42,16 @@ fn plan() -> ActionCheckPlanV1 {
+ }
+ 
+ fn now() -> ActionCheckClockV1 {
+-    ActionCheckClockV1::Known { clock_id: "same-host-clock".to_string(), at_ms: 30 }
++    ActionCheckClockV1::Known {
++        clock_id: "same-host-clock".to_string(),
++        at_ms: 30,
++    }
+ }
+ 
+ fn recommendation(plan: &ActionCheckPlanV1) -> ActionCheckRecommendationV1 {
+-    plan.assess(&plan.binding, &now()).expect("assessment").recommendation
++    plan.assess(&plan.binding, &now())
++        .expect("assessment")
++        .recommendation
+ }
+ 
+ #[test]
+@@ -94,13 +99,20 @@ fn exact_boundary_and_maximum_costs_do_not_round_or_overflow() {
+ #[test]
+ fn missing_and_stale_time_stay_unknown_and_future_receipts_are_rejected() {
+     let mut plan = plan();
+-    let later = ActionCheckClockV1::Known { clock_id: "same-host-clock".to_string(), at_ms: 31 };
++    let later = ActionCheckClockV1::Known {
++        clock_id: "same-host-clock".to_string(),
++        at_ms: 31,
++    };
+     assert_eq!(
+-        plan.assess(&plan.binding, &later).expect("stale").recommendation,
++        plan.assess(&plan.binding, &later)
++            .expect("stale")
++            .recommendation,
+         ActionCheckRecommendationV1::Unknown
+     );
+     assert_eq!(
+-        plan.assess(&plan.binding, &ActionCheckClockV1::Unknown).expect("unknown").recommendation,
++        plan.assess(&plan.binding, &ActionCheckClockV1::Unknown)
++            .expect("unknown")
++            .recommendation,
+         ActionCheckRecommendationV1::Unknown
+     );
+     plan.timing = ActionCheckTimeV1::Unknown;
+@@ -112,10 +124,16 @@ fn missing_and_stale_time_stay_unknown_and_future_receipts_are_rejected() {
+         max_age_ms: 19,
+     };
+     assert_eq!(recommendation(&plan), ActionCheckRecommendationV1::Unknown);
+-    if let ActionCheckTimeV1::Known { available_at_ms, .. } = &mut plan.timing {
++    if let ActionCheckTimeV1::Known {
++        available_at_ms, ..
++    } = &mut plan.timing
++    {
+         *available_at_ms = 32;
+     }
+-    assert_eq!(plan.assess(&plan.binding, &now()), Err(ActionSkillError::Observation));
++    assert_eq!(
++        plan.assess(&plan.binding, &now()),
++        Err(ActionSkillError::Observation)
++    );
+ }
+ 
+ #[test]
+@@ -123,28 +141,57 @@ fn plan_identity_changes_with_pins_and_original_attempt_is_required() {
+     let mut plan = plan();
+     let original = plan.assess(&plan.binding, &now()).expect("original");
+     plan.generation += 1;
+-    assert_ne!(plan.assess(&plan.binding, &now()).expect("new").assessment_digest, original.assessment_digest);
++    assert_ne!(
++        plan.assess(&plan.binding, &now())
++            .expect("new")
++            .assessment_digest,
++        original.assessment_digest
++    );
+     let mut other = plan.binding.clone();
+     other.effect_intent_digest = Sha256Digest::for_bytes(b"other-attempt");
+-    assert_eq!(plan.assess(&other, &now()), Err(ActionSkillError::Invocation));
++    assert_eq!(
++        plan.assess(&other, &now()),
++        Err(ActionSkillError::Invocation)
++    );
+     plan.estimate.error_ppm = 1_000_001;
+-    assert_eq!(plan.assess(&plan.binding, &now()), Err(ActionSkillError::Invocation));
++    assert_eq!(
++        plan.assess(&plan.binding, &now()),
++        Err(ActionSkillError::Invocation)
++    );
+ }
+ 
+ #[test]
+ fn unknown_clock_does_not_bypass_present_evidence_bounds() {
+     let mut plan = plan();
+     plan.timing = ActionCheckTimeV1::Unknown;
+-    let oversized = ActionCheckClockV1::Known { clock_id: "x".repeat(129), at_ms: 30 };
+-    assert_eq!(plan.assess(&plan.binding, &oversized), Err(ActionSkillError::Observation));
++    let oversized = ActionCheckClockV1::Known {
++        clock_id: "x".repeat(129),
++        at_ms: 30,
++    };
++    assert_eq!(
++        plan.assess(&plan.binding, &oversized),
++        Err(ActionSkillError::Observation)
++    );
+     plan.timing = ActionCheckTimeV1::Known {
+-        clock_id: "x".repeat(129), occurred_at_ms: 10, available_at_ms: 20, max_age_ms: 20,
++        clock_id: "x".repeat(129),
++        occurred_at_ms: 10,
++        available_at_ms: 20,
++        max_age_ms: 20,
+     };
+-    assert_eq!(plan.assess(&plan.binding, &ActionCheckClockV1::Unknown), Err(ActionSkillError::Observation));
++    assert_eq!(
++        plan.assess(&plan.binding, &ActionCheckClockV1::Unknown),
++        Err(ActionSkillError::Observation)
++    );
+     plan.timing = ActionCheckTimeV1::Known {
+-        clock_id: "same-host-clock".to_string(), occurred_at_ms: 21, available_at_ms: 20, max_age_ms: 20,
++        clock_id: "same-host-clock".to_string(),
++        occurred_at_ms: 21,
++        available_at_ms: 20,
++        max_age_ms: 20,
+     };
+-    assert_eq!(plan.assess(&plan.binding, &ActionCheckClockV1::Unknown), Err(ActionSkillError::Observation));
++    assert_eq!(
++        plan.assess(&plan.binding, &ActionCheckClockV1::Unknown),
++        Err(ActionSkillError::Observation)
++    );
+ }
+ 
+ #[test]
+diff --git a/codex-rs/hepta-automation/src/action_skill_driver.rs b/codex-rs/hepta-automation/src/action_skill_driver.rs
+index 5ec42716..ab6103e0 100644
+--- a/codex-rs/hepta-automation/src/action_skill_driver.rs
++++ b/codex-rs/hepta-automation/src/action_skill_driver.rs
+@@ -157,9 +157,7 @@ impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDri
+     ) -> Result<crate::ActionCheckReadbackV1, ActionSkillError> {
+         let binding = self.bind_pending(pending, original_wire_payload)?;
+         let assessment = plan.assess(&binding, current)?;
+-        let observation = self
+-            .observe_pending(pending, original_wire_payload)
+-            .await?;
++        let observation = self.observe_pending(pending, original_wire_payload).await?;
+         Ok(crate::ActionCheckReadbackV1 {
+             observation,
+             assessment,
+diff --git a/codex-rs/hepta-automation/src/action_skill_tests.rs b/codex-rs/hepta-automation/src/action_skill_tests.rs
+index 061327a2..37981c0c 100644
+--- a/codex-rs/hepta-automation/src/action_skill_tests.rs
++++ b/codex-rs/hepta-automation/src/action_skill_tests.rs
+@@ -319,10 +319,14 @@ async fn cancellation_and_rejection_do_not_erase_observed_effects() {
+             },
+         };
+         assert_eq!(
+-            driver.observe_check_plan(&pending, &wire, &plan, &ActionCheckClockV1::Unknown).await,
++            driver
++                .observe_check_plan(&pending, &wire, &plan, &ActionCheckClockV1::Unknown)
++                .await,
+             Ok(ActionCheckReadbackV1 {
+                 observation: feedback,
+-                assessment: plan.assess(&plan.binding, &ActionCheckClockV1::Unknown).expect("assessment"),
++                assessment: plan
++                    .assess(&plan.binding, &ActionCheckClockV1::Unknown)
++                    .expect("assessment"),
+             })
+         );
+         // Readback never dispatches, even when its estimate favors checking.
+diff --git a/codex-rs/hepta-automation/src/circuit_journal.rs b/codex-rs/hepta-automation/src/circuit_journal.rs
+index 1f453648..b026ad99 100644
+--- a/codex-rs/hepta-automation/src/circuit_journal.rs
++++ b/codex-rs/hepta-automation/src/circuit_journal.rs
+@@ -276,7 +276,10 @@ pub(crate) async fn load(
+                 ..
+             } = &payload
+             {
+-                computation_times.entry(*activation_id).or_default().claimed_at_ms = Some(*now_ms);
++                computation_times
++                    .entry(*activation_id)
++                    .or_default()
++                    .claimed_at_ms = Some(*now_ms);
+             }
+             if let CircuitLedgerEventV2::Applied {
+                 event:
+@@ -284,10 +287,15 @@ pub(crate) async fn load(
+                 now_ms,
+                 ..
+             }
+-            | CircuitLedgerEventV2::RecoverySettled { completion, now_ms, .. } = &payload
++            | CircuitLedgerEventV2::RecoverySettled {
++                completion, now_ms, ..
++            } = &payload
+             {
+                 completions.insert(completion.activation_id, completion.clone());
+-                computation_times.entry(completion.activation_id).or_default().completed_at_ms = Some(*now_ms);
++                computation_times
++                    .entry(completion.activation_id)
++                    .or_default()
++                    .completed_at_ms = Some(*now_ms);
+             }
+             if expected_seq > u64::from(definition.limits.max_events)
+                 && matches!(&payload, CircuitLedgerEventV2::Claimed { .. })
+diff --git a/codex-rs/hepta-automation/src/circuit_learning_outbox_tests.rs b/codex-rs/hepta-automation/src/circuit_learning_outbox_tests.rs
+index b2a7dde2..367795be 100644
+--- a/codex-rs/hepta-automation/src/circuit_learning_outbox_tests.rs
++++ b/codex-rs/hepta-automation/src/circuit_learning_outbox_tests.rs
+@@ -175,26 +175,57 @@ async fn full_queue_preserves_existing_operation_and_corrupt_history_is_rejected
+     let request = digest("retained-request");
+     let head = digest("retained-head");
+     assert!(matches!(
+-        store.retire_acknowledged_circuit_learning(&intent, &request, &head).await,
++        store
++            .retire_acknowledged_circuit_learning(&intent, &request, &head)
++            .await,
+         Err(Error::Conflict)
+     ));
+-    assert!(store.claim_circuit_learning(&intent, &request).await.unwrap());
++    assert!(
++        store
++            .claim_circuit_learning(&intent, &request)
++            .await
++            .unwrap()
++    );
+     assert!(matches!(
+-        store.retire_acknowledged_circuit_learning(&intent, &request, &head).await,
++        store
++            .retire_acknowledged_circuit_learning(&intent, &request, &head)
++            .await,
+         Err(Error::Conflict)
+     ));
+-    store.acknowledge_circuit_learning(&intent, &request, &head).await.unwrap();
+-    assert!(matches!(
+-        store.enqueue_circuit_learning(&overflow, digest("objective")).await,
+-        Err(Error::Capacity)
+-    ), "ACK alone must not retire an identity");
+-    store.retire_acknowledged_circuit_learning(&intent, &request, &head).await.unwrap();
+-    store.enqueue_circuit_learning(&overflow, digest("objective")).await.unwrap();
++    store
++        .acknowledge_circuit_learning(&intent, &request, &head)
++        .await
++        .unwrap();
++    assert!(
++        matches!(
++            store
++                .enqueue_circuit_learning(&overflow, digest("objective"))
++                .await,
++            Err(Error::Capacity)
++        ),
++        "ACK alone must not retire an identity"
++    );
++    store
++        .retire_acknowledged_circuit_learning(&intent, &request, &head)
++        .await
++        .unwrap();
++    store
++        .enqueue_circuit_learning(&overflow, digest("objective"))
++        .await
++        .unwrap();
+     assert_eq!(
+-        store.enqueue_circuit_learning(&original, digest("objective")).await.unwrap(),
++        store
++            .enqueue_circuit_learning(&original, digest("objective"))
++            .await
++            .unwrap(),
+         intent
+     );
+-    assert!(!store.claim_circuit_learning(&intent, &request).await.unwrap());
++    assert!(
++        !store
++            .claim_circuit_learning(&intent, &request)
++            .await
++            .unwrap()
++    );
+     assert_eq!(
+         store
+             .pending_circuit_learning(/*limit*/ 64)
+@@ -216,33 +247,91 @@ async fn full_queue_preserves_existing_operation_and_corrupt_history_is_rejected
+ async fn retired_ack_remains_exact_and_readable_after_reopen() {
+     let (_root, store) = store().await;
+     let trace = terminal(&store, "retired-run").await;
+-    let intent = store.enqueue_circuit_learning(&trace, digest("objective")).await.unwrap();
++    let intent = store
++        .enqueue_circuit_learning(&trace, digest("objective"))
++        .await
++        .unwrap();
+     let request = digest("request");
+     let head = digest("head");
+-    assert!(store.claim_circuit_learning(&intent, &request).await.unwrap());
+-    store.acknowledge_circuit_learning(&intent, &request, &head).await.unwrap();
+-    let original = store.circuit_learning_delivery("retired-run").await.unwrap().unwrap();
+-    store.retire_acknowledged_circuit_learning(&intent, &request, &head).await.unwrap();
++    assert!(
++        store
++            .claim_circuit_learning(&intent, &request)
++            .await
++            .unwrap()
++    );
++    store
++        .acknowledge_circuit_learning(&intent, &request, &head)
++        .await
++        .unwrap();
++    let original = store
++        .circuit_learning_delivery("retired-run")
++        .await
++        .unwrap()
++        .unwrap();
++    store
++        .retire_acknowledged_circuit_learning(&intent, &request, &head)
++        .await
++        .unwrap();
+     let path = store.path().parent().unwrap().to_path_buf();
+     let owner = store.owner_agent_id().clone();
+     store.close().await;
+     drop(store);
+     let reopened = AutomationStore::open_root(path, owner).await.unwrap();
+-    assert_eq!(reopened.circuit_learning_delivery("retired-run").await.unwrap(), Some(original));
+-    assert_eq!(reopened.enqueue_circuit_learning(&trace, digest("objective")).await.unwrap(), intent);
+-    assert!(!reopened.claim_circuit_learning(&intent, &request).await.unwrap());
+-    reopened.retire_acknowledged_circuit_learning(&intent, &request, &head).await.unwrap();
++    assert_eq!(
++        reopened
++            .circuit_learning_delivery("retired-run")
++            .await
++            .unwrap(),
++        Some(original)
++    );
++    assert_eq!(
++        reopened
++            .enqueue_circuit_learning(&trace, digest("objective"))
++            .await
++            .unwrap(),
++        intent
++    );
++    assert!(
++        !reopened
++            .claim_circuit_learning(&intent, &request)
++            .await
++            .unwrap()
++    );
++    reopened
++        .retire_acknowledged_circuit_learning(&intent, &request, &head)
++        .await
++        .unwrap();
+     assert!(matches!(
+-        reopened.retire_acknowledged_circuit_learning(&intent, &digest("other-request"), &head).await,
++        reopened
++            .retire_acknowledged_circuit_learning(&intent, &digest("other-request"), &head)
++            .await,
+         Err(Error::Conflict)
+     ));
+     assert!(matches!(
+-        reopened.retire_acknowledged_circuit_learning(&intent, &request, &digest("other-head")).await,
++        reopened
++            .retire_acknowledged_circuit_learning(&intent, &request, &digest("other-head"))
++            .await,
+         Err(Error::Conflict)
+     ));
+-    assert!(reopened.acknowledge_circuit_learning(&intent, &request, &digest("other-head")).await.is_err());
+-    assert!(reopened.claim_circuit_learning(&intent, &digest("other-request")).await.is_err());
+-    assert!(reopened.pending_circuit_learning(/*limit*/ 64).await.unwrap().is_empty());
++    assert!(
++        reopened
++            .acknowledge_circuit_learning(&intent, &request, &digest("other-head"))
++            .await
++            .is_err()
++    );
++    assert!(
++        reopened
++            .claim_circuit_learning(&intent, &digest("other-request"))
++            .await
++            .is_err()
++    );
++    assert!(
++        reopened
++            .pending_circuit_learning(/*limit*/ 64)
++            .await
++            .unwrap()
++            .is_empty()
++    );
+     reopened.close().await;
+ }
+ 
+diff --git a/codex-rs/hepta-automation/src/lib.rs b/codex-rs/hepta-automation/src/lib.rs
+index 60dbd7fc..0cd89294 100644
+--- a/codex-rs/hepta-automation/src/lib.rs
++++ b/codex-rs/hepta-automation/src/lib.rs
+@@ -117,8 +117,8 @@ pub use circuit_state::CircuitCommandReceiptV2;
+ pub use circuit_state::CircuitCommandStatusV2;
+ pub use circuit_state::CircuitCommandV2;
+ pub use circuit_state::CircuitCommittedTraceV2;
+-pub use circuit_state::CircuitComputationTimesV2;
+ pub use circuit_state::CircuitCompletionV2;
++pub use circuit_state::CircuitComputationTimesV2;
+ pub use circuit_state::CircuitDispatchV2;
+ pub use circuit_state::CircuitEventV2;
+ pub use circuit_state::CircuitRunV2;
+diff --git a/codex-rs/hepta-neuron/src/cell_generation_state.rs b/codex-rs/hepta-neuron/src/cell_generation_state.rs
+index 872d3b46..62c88397 100644
+--- a/codex-rs/hepta-neuron/src/cell_generation_state.rs
++++ b/codex-rs/hepta-neuron/src/cell_generation_state.rs
+@@ -301,8 +301,8 @@ impl GenerationState {
+         // This profile has an explicit control-only STOP. It cannot create a
+         // numerical-use receipt or smuggle state/output into the stop event.
+         // Other profiles retain their original final-forward semantics.
+-        let temporal_stop = manifest.profile == "cell-diagonal-q24-temporal-v1"
+-            && request.input == b"HQ24STOP";
++        let temporal_stop =
++            manifest.profile == "cell-diagonal-q24-temporal-v1" && request.input == b"HQ24STOP";
+         if temporal_stop
+             && (proposal.disposition == CellGenerationDispositionV2::Advanced
+                 || proposal.successor_state != self.snapshot.state

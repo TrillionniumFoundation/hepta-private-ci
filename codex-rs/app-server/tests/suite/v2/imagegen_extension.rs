@@ -48,6 +48,15 @@ enum ImagegenTestMode {
     CodeModeOnly,
 }
 
+enum ImageEditOutcome {
+    Completed {
+        request: serde_json::Value,
+        image: ImageGenerationItem,
+    },
+    #[cfg(windows)]
+    SandboxUnavailable,
+}
+
 // macOS and Windows Bazel CI can spend tens of seconds starting app-server
 // subprocesses or processing test RPCs under load.
 #[cfg(any(target_os = "macos", windows))]
@@ -577,13 +586,13 @@ async fn image_generation_usage_limit_preserves_correlated_failure_metadata() ->
 }
 
 #[tokio::test]
-async fn standalone_image_edit_uses_attached_model_visible_image() -> Result<()> {
+async fn standalone_image_edit_requires_authorized_attached_image_access() -> Result<()> {
     skip_if_remote!(
         Ok(()),
         "remote executors use different imagegen storage approaches, so host-local image paths are unavailable"
     );
 
-    let (edit_request, _) = run_image_edit_test(|codex_home| {
+    let outcome = run_image_edit_test(|codex_home| {
         let image_path = codex_home.join("attached.png");
         std::fs::write(&image_path, TINY_PNG_BYTES)?;
         Ok((
@@ -604,8 +613,17 @@ async fn standalone_image_edit_uses_attached_model_visible_image() -> Result<()>
         ))
     })
     .await?;
-    assert_eq!(edit_request["prompt"], "add a red hat");
-    assert_eq!(edit_request["images"][0]["image_url"], TINY_PNG_DATA_URL);
+    match outcome {
+        ImageEditOutcome::Completed {
+            request: edit_request,
+            ..
+        } => {
+            assert_eq!(edit_request["prompt"], "add a red hat");
+            assert_eq!(edit_request["images"][0]["image_url"], TINY_PNG_DATA_URL);
+        }
+        #[cfg(windows)]
+        ImageEditOutcome::SandboxUnavailable => {}
+    }
 
     Ok(())
 }
@@ -613,7 +631,7 @@ async fn standalone_image_edit_uses_attached_model_visible_image() -> Result<()>
 #[tokio::test]
 async fn transparent_image_edit_preserves_metadata_and_recent_pathless_image() -> Result<()> {
     let image_url = TINY_PNG_DATA_URL;
-    let (edit_request, completed_image) = run_image_edit_test(|_| {
+    let outcome = run_image_edit_test(|_| {
         Ok((
             json!({
                 "prompt": "add a red hat",
@@ -632,6 +650,13 @@ async fn transparent_image_edit_preserves_metadata_and_recent_pathless_image() -
         ))
     })
     .await?;
+    let (edit_request, completed_image) = match outcome {
+        ImageEditOutcome::Completed { request, image } => (request, image),
+        #[cfg(windows)]
+        ImageEditOutcome::SandboxUnavailable => {
+            anyhow::bail!("a pathless image edit must retain its successful route");
+        }
+    };
     assert_eq!(edit_request["prompt"], "add a red hat");
     assert_eq!(edit_request["images"][0]["image_url"], image_url);
     assert_eq!(completed_image.transparent_background, Some(true));
@@ -779,13 +804,18 @@ async fn start_image_generation_turn(
 
 async fn run_image_edit_test(
     input: impl FnOnce(&Path) -> Result<(serde_json::Value, Vec<V2UserInput>)>,
-) -> Result<(serde_json::Value, ImageGenerationItem)> {
+) -> Result<ImageEditOutcome> {
     let call_id = "image-edit-1";
     let server = responses::start_mock_server().await;
-    mount_image_edit_response(&server).await;
 
     let codex_home = TempDir::new()?;
     let (arguments, input) = input(codex_home.path())?;
+    let expects_sandbox_refusal = cfg!(windows)
+        && arguments["referenced_image_paths"]
+            .as_array()
+            .is_some_and(|paths| !paths.is_empty());
+    let expected_edit_calls = if expects_sandbox_refusal { 0 } else { 1 };
+    mount_image_edit_response(&server, expected_edit_calls).await;
     let response_mock = responses::mount_sse_sequence(
         &server,
         vec![
@@ -828,6 +858,76 @@ async fn run_image_edit_test(
         input,
     )
     .await?;
+    #[cfg(windows)]
+    if expects_sandbox_refusal {
+        let completed = timeout(DEFAULT_READ_TIMEOUT, async {
+            loop {
+                match mcp.read_next_message().await? {
+                    codex_app_server_protocol::JSONRPCMessage::Request(request) => {
+                        anyhow::bail!("unexpected image-edit approval request: {request:?}");
+                    }
+                    codex_app_server_protocol::JSONRPCMessage::Notification(notification)
+                        if matches!(
+                            notification.method.as_str(),
+                            "item/started" | "item/completed"
+                        ) =>
+                    {
+                        let params = notification.params.expect("item notification params");
+                        assert_ne!(
+                            params["item"]["type"]
+                                .as_str()
+                                .expect("item notification type"),
+                            "imageGeneration",
+                            "unauthorized referenced-image read must precede backend execution"
+                        );
+                    }
+                    codex_app_server_protocol::JSONRPCMessage::Notification(notification)
+                        if notification.method == "turn/completed" =>
+                    {
+                        return Ok::<
+                            codex_app_server_protocol::TurnCompletedNotification,
+                            anyhow::Error,
+                        >(serde_json::from_value(
+                            notification.params.expect("turn/completed params"),
+                        )?);
+                    }
+                    _ => {}
+                }
+            }
+        })
+        .await??;
+        assert_eq!(completed.turn.id, turn_id);
+        assert_eq!(
+            completed.turn.status,
+            codex_app_server_protocol::TurnStatus::Completed
+        );
+        let model_requests = response_mock.requests();
+        assert_eq!(model_requests.len(), 2);
+        let output = model_requests[1]
+            .function_call_output_text(call_id)
+            .context("image edit refusal should be visible to the model")?;
+        assert!(output.contains("unable to read referenced image at"));
+        assert!(output.contains(
+            &codex_windows_sandbox::LegacyWindowsSandboxIsolationUnavailable.to_string()
+        ));
+        let requests = server
+            .received_requests()
+            .await
+            .context("failed to fetch received requests")?;
+        assert_eq!(
+            requests
+                .iter()
+                .filter(|request| request.url.path() == "/api/codex/images/edits")
+                .count(),
+            0
+        );
+        let referenced_path = arguments["referenced_image_paths"][0]
+            .as_str()
+            .context("referenced image path")?;
+        assert_eq!(std::fs::read(referenced_path)?, TINY_PNG_BYTES);
+        return Ok(ImageEditOutcome::SandboxUnavailable);
+    }
+
     let completed = timeout(
         DEFAULT_READ_TIMEOUT,
         wait_for_image_generation_completed(&mut mcp),
@@ -861,10 +961,10 @@ async fn run_image_edit_test(
         "chatgpt_cca"
     );
     assert_image_turn_id_header(image_request, &turn_id)?;
-    Ok((
-        image_request.body_json::<serde_json::Value>()?,
-        completed_image,
-    ))
+    Ok(ImageEditOutcome::Completed {
+        request: image_request.body_json::<serde_json::Value>()?,
+        image: completed_image,
+    })
 }
 
 fn assert_image_turn_id_header(request: &wiremock::Request, expected_turn_id: &str) -> Result<()> {
@@ -932,7 +1032,7 @@ async fn mount_image_response_with_background(server: &MockServer, background: &
         .await;
 }
 
-async fn mount_image_edit_response(server: &MockServer) {
+async fn mount_image_edit_response(server: &MockServer, expected_calls: u64) {
     Mock::given(method("POST"))
         .and(path("/api/codex/images/edits"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -940,7 +1040,7 @@ async fn mount_image_edit_response(server: &MockServer) {
             "background": "transparent",
             "data": [{"b64_json": RESULT}],
         })))
-        .expect(1)
+        .expect(expected_calls)
         .mount(server)
         .await;
 }

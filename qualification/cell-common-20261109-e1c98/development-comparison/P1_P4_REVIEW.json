@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.common-candidate.research-review.v1",
+  "review_scope": "P1-P4 implementation and original evidence; no confirmation rerun",
+  "references": {
+    "M6_source": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "M6_evidence": "9eed06417cbe6fdfd08ab769f4e015b8f174db5c",
+    "stem_cell_source": "4cc753af511bf7c406608caa9da0795d7691bd23",
+    "framework_source": "38c95265e8e549ff60fd88e1db5d3bf31b4264e7",
+    "learning_execution_source": "d81cb97c5b01aea0df03d84d40336b25576337de",
+    "learning_evidence": "7ee86741ea3da28de9528ae173cd5f76caa77bda"
+  },
+  "P1": {
+    "status": "HOLD",
+    "prior_pred_confirmation": {"independent_training_seeds": 16, "fits": 114, "gain": 0.01093896, "required_gain": 0.02, "one_sided_p": 0.08126831, "alpha": 0.05, "reexecuted_by_this_stage": false},
+    "prior_MDV": {"exposed_tasks": 2, "failure_families": 1, "independent_confirmation_tasks": 0, "ranking_changed": false, "selected_document_changed": false, "terminal_baselines_executed": false},
+    "change": "Run candidate, exact parent/no-update, exact-plus-BM25, and declared fixed document through complete recipes on isolated Git clones with preparation and terminal attempt records.",
+    "boundaries": ["development only", "fixed expert is not claimed tuned", "no new independent data custody", "unknown memory/energy/financial cost", "no learned semantic encoder or model-quality claim", "no native production adoption"]
+  },
+  "P2": {
+    "status": "HOLD",
+    "stem_route_observation": "The three delayed-cue seeds score 100% for GRU, diagonal SSM and exact rule; these are fixtures with no selected scientific winner.",
+    "required_separate_comparisons": ["monolith/fixed experts/shared differentiated cells", "fixed/greedy/MPC/trained router/NDU", "GRU/CfC/SSM/attention/HCSN"],
+    "fairness_obligations": ["same data exposure", "sufficient baseline training/tuning", "search and training budgets", "inference cost", "resource envelope", "task-family and time-domain reporting"]
+  },
+  "P3": {
+    "status": "HOLD",
+    "original_result": "qualification/cell-organization-20261108/RESULTS.json",
+    "task_pairs": 99,
+    "task_executions": 198,
+    "operations": ["split", "merge", "rewire"],
+    "per_operation": {"fixed_score": "33/33", "dynamic_score": "33/33", "training_steps": 0, "decision": "NoUpdate", "resident_byte_seconds": null},
+    "unproved": ["beneficial topology search", "total migration/drain/cold-start/cache/retraining/failure/rollback cost", "advantage over fixed graph with strong scheduler"]
+  },
+  "P4": {
+    "status": "HOLD",
+    "original_result": "qualification/evolve-1-20261108/CURRENT.json",
+    "original_execution_source": "b83de1a192a4c35c12563d8856ffded238469a21",
+    "lineages": 3,
+    "runs": 12,
+    "attempts": 72,
+    "qualified": 0,
+    "unresolved": 12,
+    "native_adoption_attempted": false,
+    "native_successor_consumption_verified": false,
+    "required_controls": ["old improver", "new improver", "frozen improver", "same-history control without inherited improver update"],
+    "interpretation": "Unresolved runs are neither twelve proved algorithm failures nor twelve qualified improvements. Independent successor advantage and full cost remain open."
+  },
+  "existing_gate_boundary": {
+    "path": "scripts/hepta_cell_research_gate.py",
+    "decision_rule": "descriptive all_fit_means only",
+    "substantive_evidence_ready": false,
+    "must_not_upgrade_with_caller_booleans": true
+  },
+  "implemented_commits": ["9cc3ce2759", "7aa717490a"],
+  "engineering_tests": {"passed": 20, "wall_seconds": 1.6727243499990436, "source_head": "7aa717490a563fe33268326ddc504091468ebe29", "source_bytes_unchanged": true, "independent_scientific_tasks": 0}
+}

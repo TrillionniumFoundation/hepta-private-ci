@@ -1,0 +1,3167 @@
+{
+  "schema": "source-context-archive-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "parent_commit": "28c433b74685eea407097763e6f748463ab7e5e1",
+  "branch": "archive/library-small-source-20261103-gpt6",
+  "candidate_count": 40,
+  "candidate_bytes": 873752,
+  "frozen_candidate_union_size": 6116,
+  "original_candidate_sets_unchanged": true,
+  "preserved_source_executed": false,
+  "reproduction_commands_executed": false,
+  "scientific_or_runtime_acceptance": false,
+  "historical_result_claims_requalified": false,
+  "original_archive_and_history_completeness_proven": false,
+  "all_library_source_synced": false,
+  "eligible_to_clear_library": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ],
+  "candidates": [
+    {
+      "git_blob_sha": "012a448a0619582d8c6161ad41d9fb48438a98d1",
+      "sha256": "b8a3d172f06b01316e28979f8ebd8717bfa6de5d836ea969c3ab5390c1a9e32c",
+      "bytes": 6950,
+      "relative_path": "objects/012a448a0619582d8c6161ad41d9fb48438a98d1.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_Independent_Research_20261031.zip",
+          "member": "README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Research_Followup_20261031.zip",
+          "member": "README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "README(3).md",
+          "member": "README(3).md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0–P5 独立研究验证工具包（2026-10-31 UTC）",
+      "selected_original_occurrence": {
+        "file": "README(3).md",
+        "member": "README(3).md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "README(3).md",
+        "sha256": "b8a3d172f06b01316e28979f8ebd8717bfa6de5d836ea969c3ab5390c1a9e32c",
+        "bytes": 6950
+      }
+    },
+    {
+      "git_blob_sha": "05f515bd1f0bd2135d95890684f2cb785ec7fc50",
+      "sha256": "544b0821d7e302b93eff99c5d288b670e58450c47894c5af0b7c1686100fc852",
+      "bytes": 54870,
+      "relative_path": "objects/05f515bd1f0bd2135d95890684f2cb785ec7fc50.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-cell-meta-router-source-manifest.json",
+          "member": "hepta-cell-meta-router-source-manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_trial.py",
+          "reference": {
+            "git_blob_sha": "64fa3c1467679078c7a3d6121ce0405516c4e24c",
+            "sha256": "db65ab2651ff008115a9df8f67e79725c10aeb9957af21f83a20192566edfa58",
+            "bytes": 19027,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_audit.py",
+          "reference": {
+            "git_blob_sha": "6205eb0be9b1b341cb8316a9d916e2c9fcee81e1",
+            "sha256": "203a1f226194fc199973d8fea1b7b22ce2ca2a8c71c6a6e67bbb928bff30934b",
+            "bytes": 10373,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_trial_tests.py",
+          "reference": {
+            "git_blob_sha": "3a39a7fe1b1d72fb0910734a50216229b8c91fdf",
+            "sha256": "e537224d0753ff8e9df262519cb56c7f81c9a74b8295fc3c842e7c3cc8744600",
+            "bytes": 10862,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta-cell-meta-router-source-manifest.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_trial.py",
+          "git_blob_sha": "64fa3c1467679078c7a3d6121ce0405516c4e24c",
+          "sha256": "db65ab2651ff008115a9df8f67e79725c10aeb9957af21f83a20192566edfa58",
+          "bytes": 19027
+        },
+        {
+          "pointer": "/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_audit.py",
+          "git_blob_sha": "6205eb0be9b1b341cb8316a9d916e2c9fcee81e1",
+          "sha256": "203a1f226194fc199973d8fea1b7b22ce2ca2a8c71c6a6e67bbb928bff30934b",
+          "bytes": 10373
+        },
+        {
+          "pointer": "/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_trial_tests.py",
+          "git_blob_sha": "3a39a7fe1b1d72fb0910734a50216229b8c91fdf",
+          "sha256": "e537224d0753ff8e9df262519cb56c7f81c9a74b8295fc3c842e7c3cc8744600",
+          "bytes": 10862
+        },
+        {
+          "pointer": "/3/content",
+          "original_path": "qualification/cell_meta_execution_af/PHYSICAL_ROUTER_TRIAL.md",
+          "git_blob_sha": "f379c48cf2f77af3af8789f010b04f8d0231e2a0",
+          "sha256": "eb1c9a235dc4dd9bf1ab52562558f58f64d7af96ed048265febd2971c6182d1b",
+          "bytes": 6623
+        },
+        {
+          "pointer": "/4/content",
+          "original_path": ".github/workflows/hepta-cell-meta-physical-router.yml",
+          "git_blob_sha": "0fa5d0cedbf63c3b085dd2f107aa39e2307860e5",
+          "sha256": "25d2016331b866d10957323f3126d37f55c76cdc596b30e5349522875c94eda7",
+          "bytes": 5242
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "0ab8f632c7a4aa66a3606a79868c3e263fee7b68",
+      "sha256": "f7282880f64da8f3a578e0d3973d933f002e7aeac858d2678b7c08a2fe77b4b8",
+      "bytes": 4231,
+      "relative_path": "objects/0ab8f632c7a4aa66a3606a79868c3e263fee7b68.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/experiments/hcsn_distributional_v2/P2_INITIAL_CHECKPOINT_CAUSAL_GATE.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/experiments/hcsn_distributional_v2/P2_INITIAL_CHECKPOINT_CAUSAL_GATE.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261030.zip",
+          "member": "experiments/hcsn_distributional_v2/P2_INITIAL_CHECKPOINT_CAUSAL_GATE.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+          "member": "hcsn_research_20261031/experiments/hcsn_distributional_v2/P2_INITIAL_CHECKPOINT_CAUSAL_GATE.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P2_checkpoint_causality_local_evidence.zip",
+          "member": "hcsn_p2_timezero/experiments/hcsn_distributional_v2/P2_INITIAL_CHECKPOINT_CAUSAL_GATE.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_p2_timezero/experiments/hcsn_distributional_v2/renewal_event_oracle.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3600c52b6bde619072577f86672bc549c7888e98",
+            "sha256": "5d1715f4848046e876ccb68881b5d15db77c14b9b5d444536d5748aa954f5f24",
+            "bytes": 9968,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/3600c52b6bde619072577f86672bc549c7888e98.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_p2_timezero/experiments/hcsn_distributional_v2/test_renewal_initial_checkpoint_gate.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1b248ea4315b7bc5ed9c0059355659ee315ab4cc",
+            "sha256": "3277346094c0938f72b0a3ee96b44aac36999e4eed439752a3f2fc1787f9bf22",
+            "bytes": 2652,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/1b248ea4315b7bc5ed9c0059355659ee315ab4cc.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P2 initial checkpoint causal-state admission (research only)",
+      "selected_original_occurrence": {
+        "file": "HCSN_P2_checkpoint_causality_local_evidence.zip",
+        "member": "hcsn_p2_timezero/experiments/hcsn_distributional_v2/P2_INITIAL_CHECKPOINT_CAUSAL_GATE.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P2_checkpoint_causality_local_evidence.zip",
+        "sha256": "7aa189e10299ccf9471de1e5666ab9ebdca512dbc0dc630ac3275026bf15770c",
+        "bytes": 12464
+      }
+    },
+    {
+      "git_blob_sha": "0ee8f6977df3635319b86823b69509679461aa81",
+      "sha256": "1e69475d5ba2d94da5d747e77d5985bb4de64e3beec6aa77d6c0da8fc4a42666",
+      "bytes": 3519,
+      "relative_path": "objects/0ee8f6977df3635319b86823b69509679461aa81.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/docs/research/HCSN_P0_QVI_SUBSET_CERTIFICATE_20261031.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/docs/research/HCSN_P0_QVI_SUBSET_CERTIFICATE_20261031.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+          "member": "hcsn_research_20261031/docs/research/HCSN_P0_QVI_SUBSET_CERTIFICATE_20261031.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_research_20261031/RUN_ALL.sh",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "abe1782f5b556c104d39b38fc24b95fbddce63d7",
+            "sha256": "310926c50d176638bac4b470f0cef3a4841b2298d8ac5895df77f6ba2d2bed0d",
+            "bytes": 120,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/abe1782f5b556c104d39b38fc24b95fbddce63d7.sh",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_research_20261031/experiments/hcsn_distributional_v2/renewal_event_oracle.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3600c52b6bde619072577f86672bc549c7888e98",
+            "sha256": "5d1715f4848046e876ccb68881b5d15db77c14b9b5d444536d5748aa954f5f24",
+            "bytes": 9968,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/3600c52b6bde619072577f86672bc549c7888e98.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_research_20261031/experiments/hcsn_distributional_v2/test_renewal_initial_checkpoint_gate.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1b248ea4315b7bc5ed9c0059355659ee315ab4cc",
+            "sha256": "3277346094c0938f72b0a3ee96b44aac36999e4eed439752a3f2fc1787f9bf22",
+            "bytes": 2652,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/1b248ea4315b7bc5ed9c0059355659ee315ab4cc.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0 — Global-QVI Subset and He–Xiong Curvature Rejection",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+        "member": "hcsn_research_20261031/docs/research/HCSN_P0_QVI_SUBSET_CERTIFICATE_20261031.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P5_Offline_Research_20261031.zip",
+        "sha256": "83e5cdf6cf62d0f4494359b25e210978c8a623cfc3e863cc0878f83f9f0c371e",
+        "bytes": 156121
+      }
+    },
+    {
+      "git_blob_sha": "0f11b479adaa3aa32e7ca382969beda19fc3e0fa",
+      "sha256": "b0498dba5b257afc674f870343db0f55e2366ab7c31f65fb460ee5b8fec1f9a3",
+      "bytes": 3864,
+      "relative_path": "objects/0f11b479adaa3aa32e7ca382969beda19fc3e0fa.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "DELIVERY_20261031_PLUS.md",
+          "member": "DELIVERY_20261031_PLUS.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/DELIVERY_20261031_PLUS.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/DELIVERY_20261031_PLUS.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0–P5 研究交付（2026-10-31，增量）",
+      "selected_original_occurrence": {
+        "file": "DELIVERY_20261031_PLUS.md",
+        "member": "DELIVERY_20261031_PLUS.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "DELIVERY_20261031_PLUS.md",
+        "sha256": "b0498dba5b257afc674f870343db0f55e2366ab7c31f65fb460ee5b8fec1f9a3",
+        "bytes": 3864
+      }
+    },
+    {
+      "git_blob_sha": "25a87f5fbf301d3cc9eb570c9950c7a10bbd733e",
+      "sha256": "5a810daf4093a16a86e3054f7c1fe51d1b316067fb042a1ff264df61126140cc",
+      "bytes": 3920,
+      "relative_path": "objects/25a87f5fbf301d3cc9eb570c9950c7a10bbd733e.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+          "member": "hcsn_p0_p5_research_v4/P0_RATIONAL_CERTIFICATE_PROOF.md",
+          "archive_chain": []
+        },
+        {
+          "file": "P0_RATIONAL_CERTIFICATE_PROOF.md",
+          "member": "P0_RATIONAL_CERTIFICATE_PROOF.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The standalone document names all four rational_fpt_certificate.py/qvi_rational_certificate.py/run_v4_audit.py/tests/test_v4_certified.py interfaces. Those exact original HCSN Research V4 source peers are byte-verified at private-ci commit594c0c10b41f1b80faad51fcb3386b126d418acc. This is current source-companion context, not a claim that this standalone file came from that ZIP or a formal mathematical qualification.",
+      "verified_context_peers": [
+        {
+          "relation": "named interface in a separately preserved original research package, not identical document/package provenance",
+          "reference": {
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/4720b25b5993be5052e49be6b06e9ee2063ccd89.py"
+          },
+          "git_blob_sha": "4720b25b5993be5052e49be6b06e9ee2063ccd89",
+          "original_occurrences": [
+            {
+              "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+              "member": "hcsn_p0_p5_research_v4/qvi_rational_certificate.py",
+              "archive_chain": []
+            }
+          ]
+        },
+        {
+          "relation": "named interface in a separately preserved original research package, not identical document/package provenance",
+          "reference": {
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/607f333288b7282eb75a753a1a9a2707cd1cb48b.py"
+          },
+          "git_blob_sha": "607f333288b7282eb75a753a1a9a2707cd1cb48b",
+          "original_occurrences": [
+            {
+              "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+              "member": "hcsn_p0_p5_research_v4/rational_fpt_certificate.py",
+              "archive_chain": []
+            }
+          ]
+        },
+        {
+          "relation": "named interface in a separately preserved original research package, not identical document/package provenance",
+          "reference": {
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/97826112a86460a66eb2885467042514b5476f7c.py"
+          },
+          "git_blob_sha": "97826112a86460a66eb2885467042514b5476f7c",
+          "original_occurrences": [
+            {
+              "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+              "member": "hcsn_p0_p5_research_v4/run_v4_audit.py",
+              "archive_chain": []
+            }
+          ]
+        },
+        {
+          "relation": "named interface in a separately preserved original research package, not identical document/package provenance",
+          "reference": {
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/78c0b292bac12393016971950c087a2638ae8ff9.py"
+          },
+          "git_blob_sha": "78c0b292bac12393016971950c087a2638ae8ff9",
+          "original_occurrences": [
+            {
+              "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+              "member": "hcsn_p0_p5_research_v4/tests/test_v4_certified.py",
+              "archive_chain": []
+            }
+          ]
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# P0 有理数首达区间证书：证明范围与可重放算法",
+      "selected_original_occurrence": {
+        "file": "P0_RATIONAL_CERTIFICATE_PROOF.md",
+        "member": "P0_RATIONAL_CERTIFICATE_PROOF.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "P0_RATIONAL_CERTIFICATE_PROOF.md",
+        "sha256": "5a810daf4093a16a86e3054f7c1fe51d1b316067fb042a1ff264df61126140cc",
+        "bytes": 3920
+      }
+    },
+    {
+      "git_blob_sha": "2842cb3a5f1cbfc6fe66e6d0bb4ad7f7514d7400",
+      "sha256": "32602d8c86b91cd7ebdf2da837d212043559af3afb95d65aae344eb39c200d10",
+      "bytes": 4569,
+      "relative_path": "objects/2842cb3a5f1cbfc6fe66e6d0bb4ad7f7514d7400.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/docs/research/HCSN_P0_P2_REGENERATIVE_QVI_AND_DETERMINISTIC_REFRACTORY_20261031.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/docs/research/HCSN_P0_P2_REGENERATIVE_QVI_AND_DETERMINISTIC_REFRACTORY_20261031.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "HCSN_P0_P5_20261031_PLUS/RUN_ALL.sh",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "abe1782f5b556c104d39b38fc24b95fbddce63d7",
+            "sha256": "310926c50d176638bac4b470f0cef3a4841b2298d8ac5895df77f6ba2d2bed0d",
+            "bytes": 120,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/abe1782f5b556c104d39b38fc24b95fbddce63d7.sh",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "HCSN_P0_P5_20261031_PLUS/build_delivery.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "b2c9ddb23513b463ed4277f541d55cb663a3c142",
+            "sha256": "5f6e017ee2f3bf9173bde68a3d71159ba29462c10597031135d1e7bf3104e4be",
+            "bytes": 4082,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/b2c9ddb23513b463ed4277f541d55cb663a3c142.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "HCSN_P0_P5_20261031_PLUS/experiments/hcsn_distributional_v2/deterministic_refractory_reference.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "e6f3b899350d65639af9bb81dd75226e6408223b",
+            "sha256": "3a7d7d93d9ea7753ef04abd662b90dfbdfe607f36cc3aac8f00d91bb179c0d37",
+            "bytes": 9274,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/e6f3b899350d65639af9bb81dd75226e6408223b.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0/P2 独立再生 QVI 与确定不应期参考",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P5_20261031_PLUS.zip",
+        "member": "HCSN_P0_P5_20261031_PLUS/docs/research/HCSN_P0_P2_REGENERATIVE_QVI_AND_DETERMINISTIC_REFRACTORY_20261031.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P5_20261031_PLUS.zip",
+        "sha256": "c37bca40407268d5367d803108ceef868eb92dc1405a19094cf85e59c282e871",
+        "bytes": 184328
+      }
+    },
+    {
+      "git_blob_sha": "29a114c88b8c7564a899003f5e54f8af907f5ed1",
+      "sha256": "6d37f46a0da2a3a23841638fca0e7a8cfbeebd0adc5626d9e53352bbc3dfb057",
+      "bytes": 42620,
+      "relative_path": "objects/29a114c88b8c7564a899003f5e54f8af907f5ed1.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "v31_complete_source_transfer.json",
+          "member": "v31_complete_source_transfer.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v31_original_cost_utility.py",
+          "reference": {
+            "git_blob_sha": "925b97a848780549b2737a7a168fcc56c9cbe1ab",
+            "sha256": "cf5da18536cd2eba31206cde6e1e36ec320085552e00ef8d83b3148b1ed3ce38",
+            "bytes": 15271,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v31_original_cost_utility.py",
+          "reference": {
+            "git_blob_sha": "8f79d0882b3ad0acbd754be7bda86e0021ce6e38",
+            "sha256": "996d35e055479fbc5fe0955f2c2d4e73cf7408db0e52d1bfcb92ff7004269a86",
+            "bytes": 12865,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/4/content",
+          "original_path": ".github/workflows/hepta-stem-v31-cost-utility-join.yml",
+          "reference": {
+            "git_blob_sha": "9315394bf6782a012604bbb92a863a602ef80065",
+            "sha256": "b71fde6d9cbb239d00833abb439914cb011f15dfb6d0f57ad82008a500c7bdd5",
+            "bytes": 5593,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "v31_complete_source_transfer.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v31_original_cost_utility.py",
+          "git_blob_sha": "925b97a848780549b2737a7a168fcc56c9cbe1ab",
+          "sha256": "cf5da18536cd2eba31206cde6e1e36ec320085552e00ef8d83b3148b1ed3ce38",
+          "bytes": 15271
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v31_original_cost_utility.py",
+          "git_blob_sha": "8f79d0882b3ad0acbd754be7bda86e0021ce6e38",
+          "sha256": "996d35e055479fbc5fe0955f2c2d4e73cf7408db0e52d1bfcb92ff7004269a86",
+          "bytes": 12865
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/stem-cell-v1/STEM_V31_ORIGINAL_COST_UTILITY_NO_GO_20261017.md",
+          "git_blob_sha": "a8a422c84b7e255305941784da3e3611ae06bdb6",
+          "sha256": "01feeb2bfaf19028c4505f90018d17fbd34259b808b8d75d8fae932f2869542f",
+          "bytes": 5045
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": "qualification/stem-cell-v1/STEM_V31_ORIGINAL_SAME_SOURCE_NO_GO_20261017.json",
+          "git_blob_sha": "ab787272b53b977b4c2619621cc7329f5a73f36c",
+          "sha256": "dbd2292b80498bb8812d9370f99f6224ad6cd538b11ded217913263a9bf3707b",
+          "bytes": 2142
+        },
+        {
+          "pointer": "/files/4/content",
+          "original_path": ".github/workflows/hepta-stem-v31-cost-utility-join.yml",
+          "git_blob_sha": "9315394bf6782a012604bbb92a863a602ef80065",
+          "sha256": "b71fde6d9cbb239d00833abb439914cb011f15dfb6d0f57ad82008a500c7bdd5",
+          "bytes": 5593
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "3560da228d92d0c535e9c08dd12801e5fc0236ea",
+      "sha256": "9f09d9299ae3eb58419d5690ec285c26fe73c2d2293a4b92977da4fb78a250d3",
+      "bytes": 14496,
+      "relative_path": "objects/3560da228d92d0c535e9c08dd12801e5fc0236ea.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_stem_cell_experiments_v5.zip",
+          "member": "qualification/stem-cell-v1/README.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "qualification/stem-cell-v1/test_matrix.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "d049e36a53f8786eeeba8fbae1ababaa3f9abc06",
+            "sha256": "bce19059e052c1a577e2052c64d0cced80cf44ebed65d9764e0e4da576783869",
+            "bytes": 5594,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/d049e36a53f8786eeeba8fbae1ababaa3f9abc06.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# Stem Encoder × Cell Head qualification (shadow-only)",
+      "selected_original_occurrence": {
+        "file": "hepta_stem_cell_experiments_v5.zip",
+        "member": "qualification/stem-cell-v1/README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hepta_stem_cell_experiments_v5.zip",
+        "sha256": "3a77904978ad261b0f3d0206a1dd85d3d18db2d107902cb282720265e616777f",
+        "bytes": 39115
+      }
+    },
+    {
+      "git_blob_sha": "3eff778dfe8dbc4b4a4cc010702dbc3dd36f2a59",
+      "sha256": "308d89a2f78a4ec6f1f489b46b0e8e30448531957b981935aaa89d121e9bc82c",
+      "bytes": 5454,
+      "relative_path": "objects/3eff778dfe8dbc4b4a4cc010702dbc3dd36f2a59.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/experiments/hcsn_fourmodal_admission_v1/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/experiments/hcsn_fourmodal_admission_v1/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261030.zip",
+          "member": "experiments/hcsn_fourmodal_admission_v1/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+          "member": "hcsn_research_20261031/experiments/hcsn_fourmodal_admission_v1/README.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "RUN_ALL.sh",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "abe1782f5b556c104d39b38fc24b95fbddce63d7",
+            "sha256": "310926c50d176638bac4b470f0cef3a4841b2298d8ac5895df77f6ba2d2bed0d",
+            "bytes": 120,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/abe1782f5b556c104d39b38fc24b95fbddce63d7.sh",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "experiments/hcsn_distributional_v2/renewal_event_oracle.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3600c52b6bde619072577f86672bc549c7888e98",
+            "sha256": "5d1715f4848046e876ccb68881b5d15db77c14b9b5d444536d5748aa954f5f24",
+            "bytes": 9968,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/3600c52b6bde619072577f86672bc549c7888e98.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "experiments/hcsn_distributional_v2/test_renewal_initial_checkpoint_gate.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1b248ea4315b7bc5ed9c0059355659ee315ab4cc",
+            "sha256": "3277346094c0938f72b0a3ee96b44aac36999e4eed439752a3f2fc1787f9bf22",
+            "bytes": 2652,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/1b248ea4315b7bc5ed9c0059355659ee315ab4cc.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P3 four-modal source admission (research-only)",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P5_Offline_Research_20261030.zip",
+        "member": "experiments/hcsn_fourmodal_admission_v1/README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P5_Offline_Research_20261030.zip",
+        "sha256": "d4a3f7ac984629583e96e2271806a3651db7f092012b439900ab00895fa297dc",
+        "bytes": 107001
+      }
+    },
+    {
+      "git_blob_sha": "407abd4805f23a540ba363d5e61d1724c08a752e",
+      "sha256": "d09f62f73e8c17c38c7881f5d325ff99d2392913f1d150ef4625d35e8d1cd13d",
+      "bytes": 48286,
+      "relative_path": "objects/407abd4805f23a540ba363d5e61d1724c08a752e.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_github_pooled_pr_payload(1).json",
+          "member": "hepta_github_pooled_pr_payload(1).json",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta_github_pooled_pr_payload.json",
+          "member": "hepta_github_pooled_pr_payload.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "neuron_shared_encoder/token_reader_cost_v1.py",
+          "reference": {
+            "git_blob_sha": "c728be0efaf06a9243f1f732003c1b1535f38921",
+            "sha256": "98674983dc6ba9924e164c4c917fa16606e9a298fd6dba8b4d796936ffc633d1",
+            "bytes": 10690,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "tests/test_token_reader_cost_v1.py",
+          "reference": {
+            "git_blob_sha": "5916a725412a371366c039d7affb3435b02629d6",
+            "sha256": "d5a0f01192b799b2862c7ba895494c376335b8f95b691c2f05739af82a9853de",
+            "bytes": 4830,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/2/content",
+          "original_path": "neuron_shared_encoder/token_reader_offline.py",
+          "reference": {
+            "git_blob_sha": "7d5ff5b2dec1982ba848adced9e3e927d7be4397",
+            "sha256": "6da6289c4aac4cd09a36ab279e89be2e5be8e4bacea158b2b6a76fd4abd08e09",
+            "bytes": 15202,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta_github_pooled_pr_payload(1).json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "neuron_shared_encoder/token_reader_cost_v1.py",
+          "git_blob_sha": "c728be0efaf06a9243f1f732003c1b1535f38921",
+          "sha256": "98674983dc6ba9924e164c4c917fa16606e9a298fd6dba8b4d796936ffc633d1",
+          "bytes": 10690
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "tests/test_token_reader_cost_v1.py",
+          "git_blob_sha": "5916a725412a371366c039d7affb3435b02629d6",
+          "sha256": "d5a0f01192b799b2862c7ba895494c376335b8f95b691c2f05739af82a9853de",
+          "bytes": 4830
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "neuron_shared_encoder/token_reader_offline.py",
+          "git_blob_sha": "7d5ff5b2dec1982ba848adced9e3e927d7be4397",
+          "sha256": "6da6289c4aac4cd09a36ab279e89be2e5be8e4bacea158b2b6a76fd4abd08e09",
+          "bytes": 15202
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": "tests/test_token_reader_offline.py",
+          "git_blob_sha": "52086ca9648b782f888dbb5689d95ef165b4e63f",
+          "sha256": "ec7eb22383e97142c027f88100320ace60eb2bbd7a3a66109cbe650ab4d78cb9",
+          "bytes": 10132
+        },
+        {
+          "pointer": "/files/4/content",
+          "original_path": "TOKEN_READER_COST_V1.md",
+          "git_blob_sha": "46a7c336549c0fe510289905c1a12252c83fa7f7",
+          "sha256": "d73f193c4598bd389b4b4d8570906021448e5dc296aabd34c5ae05cccfda6d91",
+          "bytes": 5693
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "52a9dca21abdb7a8a27df3f2d11e12b17c3de995",
+      "sha256": "6c2a76f16d633b25c678b80463414d972c05013f30d0781babafb18b36fb4140",
+      "bytes": 7982,
+      "relative_path": "objects/52a9dca21abdb7a8a27df3f2d11e12b17c3de995.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "README(1).md",
+          "member": "README(1).md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": true,
+      "repository_blob_probe_status": 200,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# NEU-1: local model bakeoff — source-only research harness",
+      "selected_original_occurrence": {
+        "file": "README(1).md",
+        "member": "README(1).md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "README(1).md",
+        "sha256": "6c2a76f16d633b25c678b80463414d972c05013f30d0781babafb18b36fb4140",
+        "bytes": 7982
+      }
+    },
+    {
+      "git_blob_sha": "55f77c496eb414023f8bb78a55d9b0527af9eef4",
+      "sha256": "6f97055afa5dddfaab86d111ba840b16ebec2d69ae853ae2d0308bbd29000291",
+      "bytes": 2942,
+      "relative_path": "objects/55f77c496eb414023f8bb78a55d9b0527af9eef4.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+          "member": "hcsn_p0_p5_research_v4/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+          "member": "hcsn_p0_p5_research_v4/README_V4.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_p0_p5_research_v4/historical_patches/p0_hx_first_passage_envelope.patch",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "be743e1b68c8b009f4d1ea77fa74c198a91e58d1",
+            "sha256": "88210b7dda958ace6e44f7fe7f0cc296e47f3aa6a5802055c9ab36cdbef2d5d8",
+            "bytes": 5724,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/be743e1b68c8b009f4d1ea77fa74c198a91e58d1.patch",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_p0_p5_research_v4/backbone_budget.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "24069c476f08f832a8f4ae734a0eccc71bf9182d",
+            "sha256": "c2f1d618ad1ecd5ffa30a48d18cba80f6c11851ab279440399795eac7144382e",
+            "bytes": 4965,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/24069c476f08f832a8f4ae734a0eccc71bf9182d.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_p0_p5_research_v4/backbone_promotion_gate.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "293c3beb04fbacc8356c2af26c5c070e8eeb7ba3",
+            "sha256": "5cbe8cee875c50e6c5e686b8c28a25f03e59c8d7d62bbed040503416fe087da9",
+            "bytes": 5443,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/293c3beb04fbacc8356c2af26c5c070e8eeb7ba3.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN Research V4 — independent mathematical enclosures + causal experiments",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P5_Research_V4_20261031.zip",
+        "member": "hcsn_p0_p5_research_v4/README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P5_Research_V4_20261031.zip",
+        "sha256": "9dff7e42649b42c1185912018cd73f9553879984b5cb8bccf15201e73d510808",
+        "bytes": 409669
+      }
+    },
+    {
+      "git_blob_sha": "5e4adb3c678bee38031222b70bf79fbf9eedf591",
+      "sha256": "5375fb4faf36296fa15447e22f424130ab19920926f0c21de5437964bffb42db",
+      "bytes": 27757,
+      "relative_path": "objects/5e4adb3c678bee38031222b70bf79fbf9eedf591.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_v33_m1_share.json",
+          "member": "hepta_v33_m1_share.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v33_fold_disjoint_training.py",
+          "reference": {
+            "git_blob_sha": "1d40e98f2607d1049331444cbb5b869102cae641",
+            "sha256": "6f213838564288d9ab2d362ac4a12a1c52c0502203e0030030dd2a889d3d50f6",
+            "bytes": 11530,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/v33_independent_numpy_review.py",
+          "reference": {
+            "git_blob_sha": "310051fcaecc26bb333334e5d5a277f42e15974d",
+            "sha256": "a63f07a554e73da0fb115fff95a772911238e82109f7c1c1cb9a92165a1cbd76",
+            "bytes": 15231,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta_v33_m1_share.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v33_fold_disjoint_training.py",
+          "git_blob_sha": "1d40e98f2607d1049331444cbb5b869102cae641",
+          "sha256": "6f213838564288d9ab2d362ac4a12a1c52c0502203e0030030dd2a889d3d50f6",
+          "bytes": 11530
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/v33_independent_numpy_review.py",
+          "git_blob_sha": "310051fcaecc26bb333334e5d5a277f42e15974d",
+          "sha256": "a63f07a554e73da0fb115fff95a772911238e82109f7c1c1cb9a92165a1cbd76",
+          "bytes": 15231
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "610221952aed387843e451d4c2f0500c2f3fbd7d",
+      "sha256": "daf1e0ebd5513b6f433617c37630bc3bb53b6caea4442a52782d6334756df605",
+      "bytes": 5008,
+      "relative_path": "objects/610221952aed387843e451d4c2f0500c2f3fbd7d.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261030.zip",
+          "member": "README.zh-CN.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261030_REPORT.md",
+          "member": "HCSN_P0_P5_Offline_Research_20261030_REPORT.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0–P5 本地研究冲刺交付",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P5_Offline_Research_20261030_REPORT.md",
+        "member": "HCSN_P0_P5_Offline_Research_20261030_REPORT.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P5_Offline_Research_20261030_REPORT.md",
+        "sha256": "daf1e0ebd5513b6f433617c37630bc3bb53b6caea4442a52782d6334756df605",
+        "bytes": 5008
+      }
+    },
+    {
+      "git_blob_sha": "718576168ee69801aaa4f2f5a66c457fd4f0a46d",
+      "sha256": "1ed0ab6062020e03a832fd7ae3adda867ce69d342662c4270a93908b9d9f65e8",
+      "bytes": 12338,
+      "relative_path": "objects/718576168ee69801aaa4f2f5a66c457fd4f0a46d.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_p15_README.md",
+          "member": "hepta_p15_README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta_p15_README_export.md",
+          "member": "hepta_p15_README_export.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The standalone document specifies qualification/stem-replacement-p0 and physical_forward.py/preflight.py/review_bytes.py interfaces. Original sources at those paths in the preserved equal-size P1.5 package are byte-verified at private-ci594c0c10b41f1b80faad51fcb3386b126d418acc; the package README variant is also retained. This is current source-companion context, not proof of identical standalone/package document identity or historical PR existence.",
+      "verified_context_peers": [
+        {
+          "relation": "named interface in a separately preserved original research package, not identical document/package provenance",
+          "reference": {
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/8acb9ed705399f44fe73ece70ce5759080c481fc.py"
+          },
+          "git_blob_sha": "8acb9ed705399f44fe73ece70ce5759080c481fc",
+          "original_occurrences": [
+            {
+              "file": "hepta_equal_size_p15_20261017.zip",
+              "member": "qualification/stem-replacement-p0/physical_forward.py",
+              "archive_chain": []
+            }
+          ]
+        },
+        {
+          "relation": "named interface in a separately preserved original research package, not identical document/package provenance",
+          "reference": {
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/ff910134b5b89a9aa587eec96b8f3bc87250d8b7.py"
+          },
+          "git_blob_sha": "ff910134b5b89a9aa587eec96b8f3bc87250d8b7",
+          "original_occurrences": [
+            {
+              "file": "hepta_equal_size_p15_20261017.zip",
+              "member": "qualification/stem-replacement-p0/preflight.py",
+              "archive_chain": []
+            },
+            {
+              "file": "hepta_stem_p1_source.zip",
+              "member": "qualification/stem-replacement-p0/preflight.py",
+              "archive_chain": []
+            }
+          ]
+        },
+        {
+          "relation": "named interface in a separately preserved original research package, not identical document/package provenance",
+          "reference": {
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/d921dc71dfcaf7ad1e780130c560059eef8f693e.py"
+          },
+          "git_blob_sha": "d921dc71dfcaf7ad1e780130c560059eef8f693e",
+          "original_occurrences": [
+            {
+              "file": "hepta_equal_size_p15_20261017.zip",
+              "member": "qualification/stem-replacement-p0/review_bytes.py",
+              "archive_chain": []
+            },
+            {
+              "file": "hepta_stem_p1_source.zip",
+              "member": "qualification/stem-replacement-p0/review_bytes.py",
+              "archive_chain": []
+            }
+          ]
+        }
+      ],
+      "reuse_existing_blob": true,
+      "repository_blob_probe_status": 200,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# Hepta DecisionCell equal-size Encoder replacement — P0 source gate",
+      "selected_original_occurrence": {
+        "file": "hepta_p15_README.md",
+        "member": "hepta_p15_README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hepta_p15_README.md",
+        "sha256": "1ed0ab6062020e03a832fd7ae3adda867ce69d342662c4270a93908b9d9f65e8",
+        "bytes": 12338
+      }
+    },
+    {
+      "git_blob_sha": "80d0baf8f726fd40dda5ca58d909be5833d983c8",
+      "sha256": "4214a283a83162a32b77075ce0d5eb9168ad96ddb05015476776b3660781934a",
+      "bytes": 37897,
+      "relative_path": "objects/80d0baf8f726fd40dda5ca58d909be5833d983c8.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_v30_clock_fix_part1.json",
+          "member": "hepta_v30_clock_fix_part1.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v30_live_text_vision.py",
+          "reference": {
+            "git_blob_sha": "43580323544390ab267090b8eec84f407feb7914",
+            "sha256": "7a44b35ea8c94a8a6bb35726fcec6da594d731d1d8540b92c94051b1e75a341b",
+            "bytes": 16461,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_live_text_vision.py",
+          "reference": {
+            "git_blob_sha": "1d11277481451986ff843d98297f0a3d1118ede5",
+            "sha256": "664334ce212f4a183d7d75262679cb1402629b17cbeb2facfd5f97cecb54bfa5",
+            "bytes": 8324,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/2/content",
+          "original_path": "qualification/stem-cell-v1/v30_independent_feature_cost_review.py",
+          "reference": {
+            "git_blob_sha": "29d1bf768f7f9e5bae182071d3cf7f96a5ffe18d",
+            "sha256": "1b8ad0709807fa3bf7c0d3d9cb9e91107a56189e2048300b0c125389de9bb0ab",
+            "bytes": 11871,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta_v30_clock_fix_part1.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v30_live_text_vision.py",
+          "git_blob_sha": "43580323544390ab267090b8eec84f407feb7914",
+          "sha256": "7a44b35ea8c94a8a6bb35726fcec6da594d731d1d8540b92c94051b1e75a341b",
+          "bytes": 16461
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_live_text_vision.py",
+          "git_blob_sha": "1d11277481451986ff843d98297f0a3d1118ede5",
+          "sha256": "664334ce212f4a183d7d75262679cb1402629b17cbeb2facfd5f97cecb54bfa5",
+          "bytes": 8324
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/stem-cell-v1/v30_independent_feature_cost_review.py",
+          "git_blob_sha": "29d1bf768f7f9e5bae182071d3cf7f96a5ffe18d",
+          "sha256": "1b8ad0709807fa3bf7c0d3d9cb9e91107a56189e2048300b0c125389de9bb0ab",
+          "bytes": 11871
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "810dd0a5619e9f667287a537a5d8ae0fbdfcc374",
+      "sha256": "7f245a926c172f7940c2d74edf57457c6000746b6c86025b9ea0fb051e1e37b5",
+      "bytes": 46083,
+      "relative_path": "objects/810dd0a5619e9f667287a537a5d8ae0fbdfcc374.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_v29_git_payload_export.json",
+          "member": "hepta_v29_git_payload_export.json",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta_v29_source_submission.json",
+          "member": "hepta_v29_source_submission.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v28_physical_lazy_vision.py",
+          "reference": {
+            "git_blob_sha": "349c455830b57929890b8c88a4ab4ec9b5ede488",
+            "sha256": "59fd5e844df89d7afcb18f39bdee6100bb745ed88fa6aee05ab9d1d698ed48f5",
+            "bytes": 16659,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/v29_route_only.py",
+          "reference": {
+            "git_blob_sha": "6b91d5b25d39f573aaaa54fdad5a9baba78da3ae",
+            "sha256": "9e8547686080d7b88abdc0f9c511f57c233fa566ce5ddcaa2fd9bf673c67f383",
+            "bytes": 4609,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/2/content",
+          "original_path": "qualification/stem-cell-v1/v29_physical_lazy_vision.py",
+          "reference": {
+            "git_blob_sha": "61426513689a1545d9668812e360268e284fc69b",
+            "sha256": "3e47490b7afb8640a3fe8c32ce9f970a65891770d01581940addfa021823e369",
+            "bytes": 1793,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta_v29_git_payload_export.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v28_physical_lazy_vision.py",
+          "git_blob_sha": "349c455830b57929890b8c88a4ab4ec9b5ede488",
+          "sha256": "59fd5e844df89d7afcb18f39bdee6100bb745ed88fa6aee05ab9d1d698ed48f5",
+          "bytes": 16659
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/v29_route_only.py",
+          "git_blob_sha": "6b91d5b25d39f573aaaa54fdad5a9baba78da3ae",
+          "sha256": "9e8547686080d7b88abdc0f9c511f57c233fa566ce5ddcaa2fd9bf673c67f383",
+          "bytes": 4609
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/stem-cell-v1/v29_physical_lazy_vision.py",
+          "git_blob_sha": "61426513689a1545d9668812e360268e284fc69b",
+          "sha256": "3e47490b7afb8640a3fe8c32ce9f970a65891770d01581940addfa021823e369",
+          "bytes": 1793
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": "qualification/stem-cell-v1/test_v29_route_only.py",
+          "git_blob_sha": "2d2f95291dbcc9ca18481bed015701fbfd662cfe",
+          "sha256": "f730b2a906524208a9d9340e050595e15c5d6420cc810dc1c44d87d0af548eee",
+          "bytes": 7731
+        },
+        {
+          "pointer": "/files/4/content",
+          "original_path": "qualification/stem-cell-v1/STEM_V29_MINIMAL_ROUTE_20261017.md",
+          "git_blob_sha": "6bc1b516901c61994cef6d6ed71509d48a50b0fe",
+          "sha256": "8d0b137330c76a133067331ad7757af7b8f1d3ff7a6cd4fe0eda641b4783e036",
+          "bytes": 3836
+        },
+        {
+          "pointer": "/files/5/content",
+          "original_path": ".github/workflows/hepta-stem-v29-model-route-only.yml",
+          "git_blob_sha": "7ec736ce9e3ca0ddc5f7f23bf3697abb14e9a4db",
+          "sha256": "944fb54796c0da2f12ccf06081516c516820fd6f96a97518c1ecf171e84f61e3",
+          "bytes": 9798
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "8478b5348131cc075cbd1e63e9984afba7bf000a",
+      "sha256": "c6701b44df66f80c975bd628762ca423c5142daed09d443bcd1bb99d185e3793",
+      "bytes": 56839,
+      "relative_path": "objects/8478b5348131cc075cbd1e63e9984afba7bf000a.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-meta-top1-source-manifest.json",
+          "member": "hepta-meta-top1-source-manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_top1.py",
+          "reference": {
+            "git_blob_sha": "835aede5dc39546f28754a9e0b58a81f0f4f63cf",
+            "sha256": "6c67f0035e65a0c05961ebd046ea0680af49155e9af7aacb6db0ff712ea09988",
+            "bytes": 9262,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_top1_review.py",
+          "reference": {
+            "git_blob_sha": "4d53844cd1675422351a29c25b486b662821ac88",
+            "sha256": "65893842360f25dea466280ddbaeb6fee65442608f8828f200fc1503c67c128f",
+            "bytes": 10587,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_top1_tests.py",
+          "reference": {
+            "git_blob_sha": "6a5345a979c3295544ad679efa6ae1f477ca597c",
+            "sha256": "cc1ccd833916b126ba0b7d846e4a4b2f637b46990902b95ff0878c17e35a230a",
+            "bytes": 14122,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta-meta-top1-source-manifest.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_top1.py",
+          "git_blob_sha": "835aede5dc39546f28754a9e0b58a81f0f4f63cf",
+          "sha256": "6c67f0035e65a0c05961ebd046ea0680af49155e9af7aacb6db0ff712ea09988",
+          "bytes": 9262
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_top1_review.py",
+          "git_blob_sha": "4d53844cd1675422351a29c25b486b662821ac88",
+          "sha256": "65893842360f25dea466280ddbaeb6fee65442608f8828f200fc1503c67c128f",
+          "bytes": 10587
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_top1_tests.py",
+          "git_blob_sha": "6a5345a979c3295544ad679efa6ae1f477ca597c",
+          "sha256": "cc1ccd833916b126ba0b7d846e4a4b2f637b46990902b95ff0878c17e35a230a",
+          "bytes": 14122
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": "qualification/cell_meta_execution_af/TOP1_SPARSE_ROUTER_REALITY.md",
+          "git_blob_sha": "b5dcec393bd8ba69a091e32d8fe746c764bc373a",
+          "sha256": "99148bfe9a627eab1f4d52f8e60d283c2add4605c23f03ed969861821d1d6e74",
+          "bytes": 5891
+        },
+        {
+          "pointer": "/files/4/content",
+          "original_path": ".github/workflows/hepta-cell-meta-granite-real.yml",
+          "git_blob_sha": "0559f62e043097c49f57156ba90da371d7ac8d2e",
+          "sha256": "6cdb35fbb84050e03ae7ee38659119b47485d7942ab6a8d6f2cf8a96657d0b13",
+          "bytes": 13711
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "8bab527bdc9fd566625ddbf15da1f188166981ce",
+      "sha256": "50ea7407e76543c4e09051e0baac2339011c7c48145133b4c14a13a6bf8fae69",
+      "bytes": 6758,
+      "relative_path": "objects/8bab527bdc9fd566625ddbf15da1f188166981ce.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_Independent_Research_V2_20261031.zip",
+          "member": "hcsn_p0_p5_research_v2/README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "README(5).md",
+          "member": "README(5).md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0–P5 第二轮独立研发验证包 — 2026-10-31",
+      "selected_original_occurrence": {
+        "file": "README(5).md",
+        "member": "README(5).md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "README(5).md",
+        "sha256": "50ea7407e76543c4e09051e0baac2339011c7c48145133b4c14a13a6bf8fae69",
+        "bytes": 6758
+      }
+    },
+    {
+      "git_blob_sha": "8e2b714ca7794b8c7710364688a50ce2685aaa0d",
+      "sha256": "6908abc24f01abc6827ae4aafe42737b5d05f8b56dbf2c97777f28f76ae4b142",
+      "bytes": 40539,
+      "relative_path": "objects/8e2b714ca7794b8c7710364688a50ce2685aaa0d.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-meta-true-frozen-upload-manifest.json",
+          "member": "hepta-meta-true-frozen-upload-manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_frozen_baseline.py",
+          "reference": {
+            "git_blob_sha": "aa1935a2c7477ab918a231e3d5ded86b7198ee36",
+            "sha256": "475718ff3218b432e554a1e3363ec5046cbcb860c30fd10a378c8270ca362ce7",
+            "bytes": 7701,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_frozen_review.py",
+          "reference": {
+            "git_blob_sha": "39ccf7f2bae0b3758eac62ee5ea97c5d8ff8fe7a",
+            "sha256": "4c273729900c8b70b783d7519d52c2179e3b96ea63966b10e196e7b7259565fa",
+            "bytes": 9147,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_frozen_tests.py",
+          "reference": {
+            "git_blob_sha": "b010d53f81a1ae7f548bd2457020e7f717cde853",
+            "sha256": "adb995713bada24a174d85843b58a5a081223eabc36e470e197429f8258a7ce6",
+            "bytes": 8800,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta-meta-true-frozen-upload-manifest.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_frozen_baseline.py",
+          "git_blob_sha": "aa1935a2c7477ab918a231e3d5ded86b7198ee36",
+          "sha256": "475718ff3218b432e554a1e3363ec5046cbcb860c30fd10a378c8270ca362ce7",
+          "bytes": 7701
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_frozen_review.py",
+          "git_blob_sha": "39ccf7f2bae0b3758eac62ee5ea97c5d8ff8fe7a",
+          "sha256": "4c273729900c8b70b783d7519d52c2179e3b96ea63966b10e196e7b7259565fa",
+          "bytes": 9147
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_frozen_tests.py",
+          "git_blob_sha": "b010d53f81a1ae7f548bd2457020e7f717cde853",
+          "sha256": "adb995713bada24a174d85843b58a5a081223eabc36e470e197429f8258a7ce6",
+          "bytes": 8800
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": "qualification/cell_meta_execution_af/FROZEN_NOCHANGE_SHADOW.md",
+          "git_blob_sha": "48ee2b887dc172f95df23a44f22fdc70933c17aa",
+          "sha256": "5c14ded1322e568fd0055473ca1cfc526412cdc7d126ece5a2f0f932cb45572d",
+          "bytes": 5663
+        },
+        {
+          "pointer": "/files/4/content",
+          "original_path": ".github/workflows/hepta-cell-meta-frozen-nochange.yml",
+          "git_blob_sha": "6410ca5f301b464e5e0724f967f8e0ebeff888cd",
+          "sha256": "0ac526dc5c54cb2ae64c6a6229909380236716bcac4882fa3a45eee2768c141b",
+          "bytes": 7056
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "96193add2ede302be4405d29206a9efc76165cda",
+      "sha256": "f59bd06e7f9d2b4646d01a16f86a01480cb46b0d5df929a2d58bc979336e19a1",
+      "bytes": 4987,
+      "relative_path": "objects/96193add2ede302be4405d29206a9efc76165cda.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md",
+          "member": "HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/docs/research/HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0–P2 数学梯度、通道斜率与不规则时间再生：本地增量",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md",
+        "member": "HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P2_BP_DUALFLOW_INCREMENT_20261031.md",
+        "sha256": "f59bd06e7f9d2b4646d01a16f86a01480cb46b0d5df929a2d58bc979336e19a1",
+        "bytes": 4987
+      }
+    },
+    {
+      "git_blob_sha": "98d4324ac69ed8e15eece416d987ac658327bb8b",
+      "sha256": "b8529a87587f3e40cd873180ebe6ac6e8fd598196f166d8614de1d96eefbe59f",
+      "bytes": 58325,
+      "relative_path": "objects/98d4324ac69ed8e15eece416d987ac658327bb8b.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-observed-work-source-manifest.json",
+          "member": "hepta-observed-work-source-manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_cost_frontier.py",
+          "reference": {
+            "git_blob_sha": "bc3bf97e9864e87bba7aec00bc9e5262b60ac980",
+            "sha256": "0d8aba22498db582079bce352391d0ac653f5f0b7b47d92cdb64d3fb49f20ed8",
+            "bytes": 13699,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_cost_frontier_tests.py",
+          "reference": {
+            "git_blob_sha": "9919d62f8bccb6f2d345694a40722c64cfeb8cf0",
+            "sha256": "d9ec928c220a128e12e85a78228b81c05163126b441304deb1d4f1e2d5695529",
+            "bytes": 10299,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/2/content",
+          "original_path": "qualification/cell_meta_execution_af/OBSERVED_WORK_COST_FRONTIER.md",
+          "reference": {
+            "git_blob_sha": "8171d82a4f5a4c0d3517f381ddf6421e84227378",
+            "sha256": "602b4b15ce022b00ebe12f5e6f1e70869b837b3d851f61dc6750cb8a2b14eed7",
+            "bytes": 5304,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta-observed-work-source-manifest.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_cost_frontier.py",
+          "git_blob_sha": "bc3bf97e9864e87bba7aec00bc9e5262b60ac980",
+          "sha256": "0d8aba22498db582079bce352391d0ac653f5f0b7b47d92cdb64d3fb49f20ed8",
+          "bytes": 13699
+        },
+        {
+          "pointer": "/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_cost_frontier_tests.py",
+          "git_blob_sha": "9919d62f8bccb6f2d345694a40722c64cfeb8cf0",
+          "sha256": "d9ec928c220a128e12e85a78228b81c05163126b441304deb1d4f1e2d5695529",
+          "bytes": 10299
+        },
+        {
+          "pointer": "/2/content",
+          "original_path": "qualification/cell_meta_execution_af/OBSERVED_WORK_COST_FRONTIER.md",
+          "git_blob_sha": "8171d82a4f5a4c0d3517f381ddf6421e84227378",
+          "sha256": "602b4b15ce022b00ebe12f5e6f1e70869b837b3d851f61dc6750cb8a2b14eed7",
+          "bytes": 5304
+        },
+        {
+          "pointer": "/3/content",
+          "original_path": ".github/workflows/hepta-cell-meta-granite-real.yml",
+          "git_blob_sha": "bcb287b6fad44c44be55a6f03debb8e5c4f2e04d",
+          "sha256": "f566e35188b91314cb5cda40fa2cdcc085f92d231570a44476b4489d2177c9b7",
+          "bytes": 26490
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "a39073ce0f86debc965d03336522af99790c9942",
+      "sha256": "5e62276ecb086960005a92f2d09479881eb43ce02791cde6e2bdba48a59e0c19",
+      "bytes": 5007,
+      "relative_path": "objects/a39073ce0f86debc965d03336522af99790c9942.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-p0-p6-local-closeout-v4.zip",
+          "member": "README.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": ".github/workflows/hepta-p6-codex-native-parity.yml",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "b2f7a818bca06dc95c1965180bbd5df9d8f9688e",
+            "sha256": "7afdc15de51ba22ae8eb016ab171c79a10d1227debc47854790886300ff048ec",
+            "bytes": 2425,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "e57234c37c05fa5943e2ba91a3a396f896294db9",
+            "path": "library-recovery/small-source-20261103/objects/b2f7a818bca06dc95c1965180bbd5df9d8f9688e.yml",
+            "ref": "refs/heads/archive/library-small-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# Hepta P0–P6 local closure aid — 2026-10-22",
+      "selected_original_occurrence": {
+        "file": "hepta-p0-p6-local-closeout-v4.zip",
+        "member": "README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hepta-p0-p6-local-closeout-v4.zip",
+        "sha256": "e75ecabd4fc500b06793ce83b74f3a6adc434512634fab3e50161582854464a5",
+        "bytes": 20544
+      }
+    },
+    {
+      "git_blob_sha": "aaa6cbac7f8310aaf8db50a5b3f8b5bc85b0d2a8",
+      "sha256": "01f31bed2e98a3c669d0694b4af75aa83e6308af99cd89226b22a35c0be16544",
+      "bytes": 4348,
+      "relative_path": "objects/aaa6cbac7f8310aaf8db50a5b3f8b5bc85b0d2a8.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "REAL_E2_EVIDENCE_20261014.md",
+          "member": "REAL_E2_EVIDENCE_20261014.md",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta-e2-real-head-capacity-20261014.zip",
+          "member": "evidence/REAL_E2_EVIDENCE_20261014.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# Hepta E2：真实冻结 mmBERT-small Feature 的五档 Head 容量实验",
+      "selected_original_occurrence": {
+        "file": "REAL_E2_EVIDENCE_20261014.md",
+        "member": "REAL_E2_EVIDENCE_20261014.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "REAL_E2_EVIDENCE_20261014.md",
+        "sha256": "01f31bed2e98a3c669d0694b4af75aa83e6308af99cd89226b22a35c0be16544",
+        "bytes": 4348
+      }
+    },
+    {
+      "git_blob_sha": "abcbb8702110ed8a13eba98caaee33768c85fa17",
+      "sha256": "e624083e03549640faed0ba98470b1d8c0daf1c85a75ac845cc4e7ebdf01b4a8",
+      "bytes": 88965,
+      "relative_path": "objects/abcbb8702110ed8a13eba98caaee33768c85fa17.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-hard-top1-github-upload-manifest.json",
+          "member": "hepta-hard-top1-github-upload-manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/3/content",
+          "original_path": "qualification/cell_meta_execution_af/HARD_TRAINED_TOP1_ROUTER.md",
+          "reference": {
+            "git_blob_sha": "639a6b822263e3b194e1765460c5286a3a6de6b3",
+            "sha256": "4d1cfe6cf4ac6145d28d0291061814fadbef0b1868a1b4e7cd6e33c2f95588a4",
+            "bytes": 7398,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/5/content",
+          "original_path": ".github/workflows/hepta-cell-meta-granite-real.yml",
+          "reference": {
+            "git_blob_sha": "459427df7445f6bd3916c1a33b83d02a596a7460",
+            "sha256": "ac40cd1843b730e76d97ceec303c020d2b281cb8aae19f2d961e2322653bef91",
+            "bytes": 17536,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta-hard-top1-github-upload-manifest.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_hard_train.py",
+          "git_blob_sha": "a290920e0302e97f85e9c85252ea386412737ee1",
+          "sha256": "122e93702a1c8f262593fedf7102fee65f1d543b0ec15ec52e452b6f228fb91b",
+          "bytes": 16636
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_hard_review.py",
+          "git_blob_sha": "a146863331fc8e67e28cb13e95eed2270e405b5c",
+          "sha256": "63a0c80a063956c6e4cef0dbbbc35040338f2acbe89e8cc136da51dd45f42611",
+          "bytes": 20160
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_hard_tests.py",
+          "git_blob_sha": "c41f6156d4118043a5b2a8797743d1acc6363694",
+          "sha256": "75ff10ac235986c9be1fd975d4da486096d1fd8820af5f61e19f67f4014e57da",
+          "bytes": 13681
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": "qualification/cell_meta_execution_af/HARD_TRAINED_TOP1_ROUTER.md",
+          "git_blob_sha": "639a6b822263e3b194e1765460c5286a3a6de6b3",
+          "sha256": "4d1cfe6cf4ac6145d28d0291061814fadbef0b1868a1b4e7cd6e33c2f95588a4",
+          "bytes": 7398
+        },
+        {
+          "pointer": "/files/4/content",
+          "original_path": "qualification/cell_meta_execution_af/HARD_TOP1_TOY_NEGATIVE_EVIDENCE.json",
+          "git_blob_sha": "1e09b04769e21ffe1e709ef9568f49481b5fbc32",
+          "sha256": "ac22e8f29ec72799a268e7eecf2d76e385c7e5d559a9a155546796de34765ccd",
+          "bytes": 8297
+        },
+        {
+          "pointer": "/files/5/content",
+          "original_path": ".github/workflows/hepta-cell-meta-granite-real.yml",
+          "git_blob_sha": "459427df7445f6bd3916c1a33b83d02a596a7460",
+          "sha256": "ac40cd1843b730e76d97ceec303c020d2b281cb8aae19f2d961e2322653bef91",
+          "bytes": 17536
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "b32ecebbf4fad79e0356955cd08d70ce173103c4",
+      "sha256": "add730715a25d93709832abbb5c11192d04f6678cdebf02d697ed9c275a830ca",
+      "bytes": 5860,
+      "relative_path": "objects/b32ecebbf4fad79e0356955cd08d70ce173103c4.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_hcsn_hx_p0_reference_20261030.zip",
+          "member": "experiments/hcsn_hx_unified_v3/README.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HX analytic / scalar stopping / regenerative QVI: separated P0 reference",
+      "selected_original_occurrence": {
+        "file": "hepta_hcsn_hx_p0_reference_20261030.zip",
+        "member": "experiments/hcsn_hx_unified_v3/README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hepta_hcsn_hx_p0_reference_20261030.zip",
+        "sha256": "75f16d5f3d41da97905657363508ce196d27131268a76392ee0e5744820a8b1f",
+        "bytes": 18804
+      }
+    },
+    {
+      "git_blob_sha": "b6da3552eeaaa485f8a0dedaf8c6229d197be3b2",
+      "sha256": "32c38fd3428fa4c2052a915fdc36ff6e96cdbadb8c0adc219748ea2267c439ce",
+      "bytes": 2832,
+      "relative_path": "objects/b6da3552eeaaa485f8a0dedaf8c6229d197be3b2.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/overlay_integration_test/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/patch_verify/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/repo_overlay/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/overlay_integration_test/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/patch_verify/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/repo_overlay/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261030.zip",
+          "member": "repo_overlay/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+          "member": "hcsn_research_20261031/overlay_integration_test/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+          "member": "hcsn_research_20261031/patch_verify/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+          "member": "hcsn_research_20261031/repo_overlay/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "RUN_ALL.sh",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "abe1782f5b556c104d39b38fc24b95fbddce63d7",
+            "sha256": "310926c50d176638bac4b470f0cef3a4841b2298d8ac5895df77f6ba2d2bed0d",
+            "bytes": 120,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/abe1782f5b556c104d39b38fc24b95fbddce63d7.sh",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "experiments/hcsn_distributional_v2/renewal_event_oracle.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3600c52b6bde619072577f86672bc549c7888e98",
+            "sha256": "5d1715f4848046e876ccb68881b5d15db77c14b9b5d444536d5748aa954f5f24",
+            "bytes": 9968,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/3600c52b6bde619072577f86672bc549c7888e98.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "experiments/hcsn_distributional_v2/test_renewal_initial_checkpoint_gate.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1b248ea4315b7bc5ed9c0059355659ee315ab4cc",
+            "sha256": "3277346094c0938f72b0a3ee96b44aac36999e4eed439752a3f2fc1787f9bf22",
+            "bytes": 2652,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/1b248ea4315b7bc5ed9c0059355659ee315ab4cc.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0–P5 offline research delivery (2026-10-30 local / 2026-10-31 UTC)",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P5_Offline_Research_20261030.zip",
+        "member": "repo_overlay/docs/research/HCSN_LOCAL_WAVE_20261030.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P5_Offline_Research_20261030.zip",
+        "sha256": "d4a3f7ac984629583e96e2271806a3651db7f092012b439900ab00895fa297dc",
+        "bytes": 107001
+      }
+    },
+    {
+      "git_blob_sha": "b856da3a1381f9982a06b743489c6f721a1d859c",
+      "sha256": "df396b332640cfadf538339a99f71a8d3d68e0fa99b3065792b49bde18f81f07",
+      "bytes": 42631,
+      "relative_path": "objects/b856da3a1381f9982a06b743489c6f721a1d859c.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_stem_v30_manifest.json",
+          "member": "hepta_stem_v30_manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v30_live_text_vision.py",
+          "reference": {
+            "git_blob_sha": "8bae27cac10f17236abadf0534d52da2e9f99057",
+            "sha256": "612f78120e4e86be959286b7ba1bcc8d2f52d8e27ea25c10c10fcdab54b187de",
+            "bytes": 15354,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "e57234c37c05fa5943e2ba91a3a396f896294db9",
+            "path": "library-recovery/small-source-20261103/objects/8bae27cac10f17236abadf0534d52da2e9f99057.py",
+            "ref": "refs/heads/archive/library-small-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_live_text_vision.py",
+          "reference": {
+            "git_blob_sha": "e618d580cce94f305359f5d9402e1e3f74f4e7e0",
+            "sha256": "cf7efa2e91649dddbe181068d81fea13dca8a88278cfe562784c501fb24fd23f",
+            "bytes": 7913,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "e57234c37c05fa5943e2ba91a3a396f896294db9",
+            "path": "library-recovery/small-source-20261103/objects/e618d580cce94f305359f5d9402e1e3f74f4e7e0.py",
+            "ref": "refs/heads/archive/library-small-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta_stem_v30_manifest.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v30_live_text_vision.py",
+          "git_blob_sha": "8bae27cac10f17236abadf0534d52da2e9f99057",
+          "sha256": "612f78120e4e86be959286b7ba1bcc8d2f52d8e27ea25c10c10fcdab54b187de",
+          "bytes": 15354
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_live_text_vision.py",
+          "git_blob_sha": "e618d580cce94f305359f5d9402e1e3f74f4e7e0",
+          "sha256": "cf7efa2e91649dddbe181068d81fea13dca8a88278cfe562784c501fb24fd23f",
+          "bytes": 7913
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/stem-cell-v1/STEM_V30_LIVE_TEXT_COST_20261017.md",
+          "git_blob_sha": "42b72ec968f1fbcdd406956a2e6795e8ada5153d",
+          "sha256": "7f4e6f04c162e472261c0dae1a60aba98b664c7bcef69668b47437752c92c1a8",
+          "bytes": 6163
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": ".github/workflows/hepta-stem-v30-live-text-vision.yml",
+          "git_blob_sha": "3ebe4dd96ecc50416c16c5e639647714097fc19e",
+          "sha256": "f188dc2ebf1cd748d6e53d219501fcbd1cd25938b358e702a40a7ec78e600824",
+          "bytes": 11477
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "c19c38edd754e593b9079558fde41170045a5740",
+      "sha256": "b64810dc4985eab3e69be766699738b6b4da512b64d0ed2c1da844977ad8b4ac",
+      "bytes": 3047,
+      "relative_path": "objects/c19c38edd754e593b9079558fde41170045a5740.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hcsn_regen_grid_p0_followup.zip",
+          "member": "experiments/hcsn_hx_unified_v3/REGENERATIVE_GRID_GATE.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN scalar regenerative QVI: independent finite-grid P0 gate",
+      "selected_original_occurrence": {
+        "file": "hcsn_regen_grid_p0_followup.zip",
+        "member": "experiments/hcsn_hx_unified_v3/REGENERATIVE_GRID_GATE.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hcsn_regen_grid_p0_followup.zip",
+        "sha256": "09126aadb8298b961b84edac90dfd589c25357cd9432ff10f825e9efacde334f",
+        "bytes": 10081
+      }
+    },
+    {
+      "git_blob_sha": "c605b713a5f7222ecb57e345aff853aaef88a0ca",
+      "sha256": "ef49b46ff244b439735866d871fdc93d02d8af982bf928d5a7ba356de3674cfa",
+      "bytes": 3480,
+      "relative_path": "objects/c605b713a5f7222ecb57e345aff853aaef88a0ca.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hcsn_regen_grid_p0_followup_v2.zip",
+          "member": "experiments/hcsn_hx_unified_v3/REGENERATIVE_GRID_GATE.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN scalar regenerative QVI: independent finite-grid P0 gate",
+      "selected_original_occurrence": {
+        "file": "hcsn_regen_grid_p0_followup_v2.zip",
+        "member": "experiments/hcsn_hx_unified_v3/REGENERATIVE_GRID_GATE.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hcsn_regen_grid_p0_followup_v2.zip",
+        "sha256": "39a1a332c957af21166b82168154fdf6b9cc7f98e0eaa98a692b8113e7efb6f7",
+        "bytes": 11865
+      }
+    },
+    {
+      "git_blob_sha": "c6c73ec3369c5e9574728cefb2a085ea6683cca6",
+      "sha256": "0afd8984eae6a6fafce8090b0f0983da6d673309cdf2ebd65ab8963422398632",
+      "bytes": 42636,
+      "relative_path": "objects/c6c73ec3369c5e9574728cefb2a085ea6683cca6.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_stem_v30_manifest_verified.json",
+          "member": "hepta_stem_v30_manifest_verified.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v30_live_text_vision.py",
+          "reference": {
+            "git_blob_sha": "8bae27cac10f17236abadf0534d52da2e9f99057",
+            "sha256": "612f78120e4e86be959286b7ba1bcc8d2f52d8e27ea25c10c10fcdab54b187de",
+            "bytes": 15354,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "e57234c37c05fa5943e2ba91a3a396f896294db9",
+            "path": "library-recovery/small-source-20261103/objects/8bae27cac10f17236abadf0534d52da2e9f99057.py",
+            "ref": "refs/heads/archive/library-small-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_live_text_vision.py",
+          "reference": {
+            "git_blob_sha": "e618d580cce94f305359f5d9402e1e3f74f4e7e0",
+            "sha256": "cf7efa2e91649dddbe181068d81fea13dca8a88278cfe562784c501fb24fd23f",
+            "bytes": 7913,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "e57234c37c05fa5943e2ba91a3a396f896294db9",
+            "path": "library-recovery/small-source-20261103/objects/e618d580cce94f305359f5d9402e1e3f74f4e7e0.py",
+            "ref": "refs/heads/archive/library-small-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/3/content",
+          "original_path": ".github/workflows/hepta-stem-v30-live-text-vision.yml",
+          "reference": {
+            "git_blob_sha": "c0620cdc2cf3ae06f122b36de9472fd231547a66",
+            "sha256": "ef4f32c52370f4013a79e5c0999fdd98ff52861ee7810c11f0cdcee2ec530b40",
+            "bytes": 11482,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "e57234c37c05fa5943e2ba91a3a396f896294db9",
+            "path": "library-recovery/small-source-20261103/objects/c0620cdc2cf3ae06f122b36de9472fd231547a66.yml",
+            "ref": "refs/heads/archive/library-small-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta_stem_v30_manifest_verified.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/v30_live_text_vision.py",
+          "git_blob_sha": "8bae27cac10f17236abadf0534d52da2e9f99057",
+          "sha256": "612f78120e4e86be959286b7ba1bcc8d2f52d8e27ea25c10c10fcdab54b187de",
+          "bytes": 15354
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_live_text_vision.py",
+          "git_blob_sha": "e618d580cce94f305359f5d9402e1e3f74f4e7e0",
+          "sha256": "cf7efa2e91649dddbe181068d81fea13dca8a88278cfe562784c501fb24fd23f",
+          "bytes": 7913
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/stem-cell-v1/STEM_V30_LIVE_TEXT_COST_20261017.md",
+          "git_blob_sha": "42b72ec968f1fbcdd406956a2e6795e8ada5153d",
+          "sha256": "7f4e6f04c162e472261c0dae1a60aba98b664c7bcef69668b47437752c92c1a8",
+          "bytes": 6163
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": ".github/workflows/hepta-stem-v30-live-text-vision.yml",
+          "git_blob_sha": "c0620cdc2cf3ae06f122b36de9472fd231547a66",
+          "sha256": "ef4f32c52370f4013a79e5c0999fdd98ff52861ee7810c11f0cdcee2ec530b40",
+          "bytes": 11482
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "cb91b0116d3d8ca756428b53fc5d0ce6988b9462",
+      "sha256": "1ac6e1af02e2691f11043b59a3a861b0514cb44cce74acbdb7020d09d1f80df3",
+      "bytes": 76692,
+      "relative_path": "objects/cb91b0116d3d8ca756428b53fc5d0ce6988b9462.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-os-meter-github-upload-v1.json",
+          "member": "hepta-os-meter-github-upload-v1.json",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta-os-meter-pr-source-manifest.json",
+          "member": "hepta-os-meter-pr-source-manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_os_meter.py",
+          "reference": {
+            "git_blob_sha": "67501ee71c25a42b91aaa5404b36484f0b0729ce",
+            "sha256": "0ef75ca02e1444ca9549b923b5836f300c801cbd8ff17758c5632585cbaf4e22",
+            "bytes": 23942,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_os_meter_tests.py",
+          "reference": {
+            "git_blob_sha": "5bd910dbf11f63fad923b5efcee141896e56e8ab",
+            "sha256": "7e4ac0b0725a13a0d9bea7b7c65e3006e4df181235f4e8c3bdbe90edcae3f8e6",
+            "bytes": 15503,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/2/content",
+          "original_path": "qualification/cell_meta_execution_af/ISOLATED_OS_RESOURCE_REPLAY.md",
+          "reference": {
+            "git_blob_sha": "e4ae23f2f77010ef45662f64d030ae353a588d6e",
+            "sha256": "4dafceda21d655318bd2e5a50a55f50a9f4656164c725ad84287d8e0c44639c6",
+            "bytes": 5167,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta-os-meter-github-upload-v1.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_os_meter.py",
+          "git_blob_sha": "67501ee71c25a42b91aaa5404b36484f0b0729ce",
+          "sha256": "0ef75ca02e1444ca9549b923b5836f300c801cbd8ff17758c5632585cbaf4e22",
+          "bytes": 23942
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_os_meter_tests.py",
+          "git_blob_sha": "5bd910dbf11f63fad923b5efcee141896e56e8ab",
+          "sha256": "7e4ac0b0725a13a0d9bea7b7c65e3006e4df181235f4e8c3bdbe90edcae3f8e6",
+          "bytes": 15503
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": "qualification/cell_meta_execution_af/ISOLATED_OS_RESOURCE_REPLAY.md",
+          "git_blob_sha": "e4ae23f2f77010ef45662f64d030ae353a588d6e",
+          "sha256": "4dafceda21d655318bd2e5a50a55f50a9f4656164c725ad84287d8e0c44639c6",
+          "bytes": 5167
+        },
+        {
+          "pointer": "/files/3/content",
+          "original_path": ".github/workflows/hepta-cell-meta-granite-real.yml",
+          "git_blob_sha": "c92c71957dcf6201908175904a86390f83134808",
+          "sha256": "7883c697ede9039441a745d833d7969208d1ff2fcb713a4bb820db586779b24c",
+          "bytes": 28600
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "cfcf553e7d969e1bb90aab12ea32d194d2b82377",
+      "sha256": "b5331ef8c7b14e8d1474d6cc8f6b12fc14cc8efbe20abced275d31bc97661912",
+      "bytes": 647,
+      "relative_path": "objects/cfcf553e7d969e1bb90aab12ea32d194d2b82377.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hcsn_coupled_qvi_p0_20261030.zip",
+          "member": "README.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN two-cell coupled regenerative QVI (research-only)",
+      "selected_original_occurrence": {
+        "file": "hcsn_coupled_qvi_p0_20261030.zip",
+        "member": "README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hcsn_coupled_qvi_p0_20261030.zip",
+        "sha256": "bdb406b3f5d499569fe14ac890df00131ed55202829e52cc8c0541784825caa6",
+        "bytes": 14806
+      }
+    },
+    {
+      "git_blob_sha": "d0e469f5077070f9623279290e8e25eb581145e3",
+      "sha256": "7b9d01d1742477001d2c07ba1b6bf144dba62f6514e740d0d1115313023b66bf",
+      "bytes": 7332,
+      "relative_path": "objects/d0e469f5077070f9623279290e8e25eb581145e3.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "STEM_V19_REPLAY_EQUIVALENCE_20261016.md",
+          "member": "STEM_V19_REPLAY_EQUIVALENCE_20261016.md",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta_v18_v19_qualified_research_20261016.zip",
+          "member": "qualification/stem-cell-v1/STEM_V19_REPLAY_EQUIVALENCE_20261016.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The standalone document names the specific qualification/stem-cell-v1/v19_replay_equivalence_gate.py producer and its source-pinned historical numerical replay contract. The exact original producer blob d56d5d7c1f9f19d17f336d3f10054d83fdbbac63 has been read back and fingerprint-checked from private-ci. The original PR link was not available in the independent check; current archival context does not establish that historical PR or prove the original replay claims.",
+      "verified_context_peers": [
+        {
+          "relation": "specific implementation interface named by standalone document; not same-package proof",
+          "reference": {
+            "git_blob_sha": "d56d5d7c1f9f19d17f336d3f10054d83fdbbac63",
+            "sha256": "2d74e8cd1372755966c86db828d85098aa38e18a34be488547e1b270d9f3cd44",
+            "bytes": 8498,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "fresh exact Git blob readback",
+            "immutable_commit_path_not_established_by_this_read": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# V19 — Original V18 bytes versus independent numeric replay",
+      "selected_original_occurrence": {
+        "file": "STEM_V19_REPLAY_EQUIVALENCE_20261016.md",
+        "member": "STEM_V19_REPLAY_EQUIVALENCE_20261016.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "STEM_V19_REPLAY_EQUIVALENCE_20261016.md",
+        "sha256": "7b9d01d1742477001d2c07ba1b6bf144dba62f6514e740d0d1115313023b66bf",
+        "bytes": 7332
+      }
+    },
+    {
+      "git_blob_sha": "d29d7a9fb5ba2b00797ad1c372c8e51ed473ba26",
+      "sha256": "e38115af7cb49fc488ac3db969ff8c43a49f96c0aed3f98f71176cc5b665d490",
+      "bytes": 48139,
+      "relative_path": "objects/d29d7a9fb5ba2b00797ad1c372c8e51ed473ba26.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta-fivearm-granite-github-manifest(1).json",
+          "member": "hepta-fivearm-granite-github-manifest(1).json",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta-fivearm-granite-github-manifest.json",
+          "member": "hepta-fivearm-granite-github-manifest.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/0/content",
+          "original_path": ".github/workflows/hepta-cell-meta-granite-real.yml",
+          "reference": {
+            "git_blob_sha": "9a5724d96b138e0789fdecce6762178b1fa184bf",
+            "sha256": "f66d20961900be29628809752ee39826e43fa1aa9aed5b4e70e336d11ebcd878",
+            "bytes": 22632,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_fivearm_review.py",
+          "reference": {
+            "git_blob_sha": "737e3e251610f2a32a097accb6cfa2b03115690b",
+            "sha256": "69b2537e589a93c4d92a5cfe6670a56a8b5a7f5857f7aa964a15156e500ccaf9",
+            "bytes": 9621,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_fivearm_tests.py",
+          "reference": {
+            "git_blob_sha": "bce0d9d99699b461f6f721b0d9cc69da2ad567cf",
+            "sha256": "c3d9a4da5c3a519c2636079a74af71495a4dec2e6da623971ef5e9491cd1069d",
+            "bytes": 8668,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta-fivearm-granite-github-manifest(1).json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/0/content",
+          "original_path": ".github/workflows/hepta-cell-meta-granite-real.yml",
+          "git_blob_sha": "9a5724d96b138e0789fdecce6762178b1fa184bf",
+          "sha256": "f66d20961900be29628809752ee39826e43fa1aa9aed5b4e70e336d11ebcd878",
+          "bytes": 22632
+        },
+        {
+          "pointer": "/1/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_fivearm_review.py",
+          "git_blob_sha": "737e3e251610f2a32a097accb6cfa2b03115690b",
+          "sha256": "69b2537e589a93c4d92a5cfe6670a56a8b5a7f5857f7aa964a15156e500ccaf9",
+          "bytes": 9621
+        },
+        {
+          "pointer": "/2/content",
+          "original_path": "qualification/cell_meta_execution_af/physical_router_fivearm_tests.py",
+          "git_blob_sha": "bce0d9d99699b461f6f721b0d9cc69da2ad567cf",
+          "sha256": "c3d9a4da5c3a519c2636079a74af71495a4dec2e6da623971ef5e9491cd1069d",
+          "bytes": 8668
+        },
+        {
+          "pointer": "/3/content",
+          "original_path": "qualification/cell_meta_execution_af/FIVE_ARM_GRANITE_HANDOFF.md",
+          "git_blob_sha": "7687b13667d744d04b0249e5f6920e78aa0d2ba0",
+          "sha256": "98ffd4ac4c5824b3fac7fb37dd13420702b960e0724d447fa710c9cf07c3dd52",
+          "bytes": 5002
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "dc0d5b054b81414662d5671de214ba323cf4fe20",
+      "sha256": "d2e1b9fea1a6337b09ce447e5119c37de161be64f356eefce2a081a27c4dd066",
+      "bytes": 3091,
+      "relative_path": "objects/dc0d5b054b81414662d5671de214ba323cf4fe20.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "README.md",
+          "member": "README.md",
+          "archive_chain": []
+        },
+        {
+          "file": "hepta_p0_v18_original_hf_cache_blob_fix_20261016.zip",
+          "member": "README.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# P0 V18 pinned Hugging Face cache LFS blob resolver — 2026-10-16",
+      "selected_original_occurrence": {
+        "file": "README.md",
+        "member": "README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "README.md",
+        "sha256": "d2e1b9fea1a6337b09ce447e5119c37de161be64f356eefce2a081a27c4dd066",
+        "bytes": 3091
+      }
+    },
+    {
+      "git_blob_sha": "e102b95b6de399684f0138ac747d721ace9d2035",
+      "sha256": "a44b65a1fdd912eb314fbe372a6c2d2e6bf836863f26079f8ebe608b2c023fe0",
+      "bytes": 33827,
+      "relative_path": "objects/e102b95b6de399684f0138ac747d721ace9d2035.json",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-json-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_v30_clock_fix_part2.json",
+          "member": "hepta_v30_clock_fix_part2.json",
+          "archive_chain": []
+        }
+      ],
+      "role": "original JSON source transport container; inert source and companion text payloads",
+      "attribution_basis": "The complete original JSON transports actual source/test/workflow text. Exact embedded source payload fingerprints match previously byte-verified private-ci source peers listed in the manifest; several containers also explicitly name the repository. This supports current inactive source-container preservation. Claimed parent/branch/commit fields remain untrusted historical metadata and are not independently established by these matches.",
+      "verified_context_peers": [
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_independent_feature_cost_review.py",
+          "reference": {
+            "git_blob_sha": "629b3254dd624bc6ad6feffc5dcca44ae08013d3",
+            "sha256": "4c426c31dc02408e4b86726e07d0aad5788860f74bb30e2aef668cebd860aaab",
+            "bytes": 8895,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        },
+        {
+          "relation": "byte-identical embedded source payload already verified independently",
+          "json_pointer": "/files/2/content",
+          "original_path": ".github/workflows/hepta-stem-v30-live-text-vision.yml",
+          "reference": {
+            "git_blob_sha": "3f6045167fd9d092f2a8e6ee656df4caec923fea",
+            "sha256": "72bcaee15d11fa4fdef1ab6577450ef9f030e47b0177bad22757221de9a17538",
+            "bytes": 14937,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "method": "Git object readback",
+            "immutable_commit_path_not_established_by_this_context_record": true
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_container_name": "hepta_v30_clock_fix_part2.json",
+      "json_duplicate_keys_rejected": true,
+      "embedded_payloads": [
+        {
+          "pointer": "/files/0/content",
+          "original_path": "qualification/stem-cell-v1/test_v30_independent_feature_cost_review.py",
+          "git_blob_sha": "629b3254dd624bc6ad6feffc5dcca44ae08013d3",
+          "sha256": "4c426c31dc02408e4b86726e07d0aad5788860f74bb30e2aef668cebd860aaab",
+          "bytes": 8895
+        },
+        {
+          "pointer": "/files/1/content",
+          "original_path": "qualification/stem-cell-v1/STEM_V30_LIVE_TEXT_COST_20261017.md",
+          "git_blob_sha": "68b91ef2dccceaae85511ee5ec1f330709f54487",
+          "sha256": "50b190562732ad4e26b16e12d0c8351b0578500538c6349fbd375b4f83f59c0a",
+          "bytes": 8725
+        },
+        {
+          "pointer": "/files/2/content",
+          "original_path": ".github/workflows/hepta-stem-v30-live-text-vision.yml",
+          "git_blob_sha": "3f6045167fd9d092f2a8e6ee656df4caec923fea",
+          "sha256": "72bcaee15d11fa4fdef1ab6577450ef9f030e47b0177bad22757221de9a17538",
+          "bytes": 14937
+        }
+      ],
+      "embedded_payloads_independently_counted_in_this_increment": 0,
+      "historical_transport_parent_or_branch_identity_revalidated": false
+    },
+    {
+      "git_blob_sha": "e7aebef2805f5d1a28e5c59f92a21ed1aab75747",
+      "sha256": "3eb5b01b3695617b4ad855258328b8d64fc61c7ca352a18b191954590ffbf381",
+      "bytes": 3623,
+      "relative_path": "objects/e7aebef2805f5d1a28e5c59f92a21ed1aab75747.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "HCSN_P0_P5_20261031_CONTINUE.zip",
+          "member": "HCSN_P0_P5_20261031_CONTINUE/README.zh-CN.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_20261031_PLUS.zip",
+          "member": "HCSN_P0_P5_20261031_PLUS/README.zh-CN.md",
+          "archive_chain": []
+        },
+        {
+          "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+          "member": "hcsn_research_20261031/README.zh-CN.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_research_20261031/RUN_ALL.sh",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "abe1782f5b556c104d39b38fc24b95fbddce63d7",
+            "sha256": "310926c50d176638bac4b470f0cef3a4841b2298d8ac5895df77f6ba2d2bed0d",
+            "bytes": 120,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/abe1782f5b556c104d39b38fc24b95fbddce63d7.sh",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_research_20261031/experiments/hcsn_distributional_v2/renewal_event_oracle.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "3600c52b6bde619072577f86672bc549c7888e98",
+            "sha256": "5d1715f4848046e876ccb68881b5d15db77c14b9b5d444536d5748aa954f5f24",
+            "bytes": 9968,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/3600c52b6bde619072577f86672bc549c7888e98.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "hcsn_research_20261031/experiments/hcsn_distributional_v2/test_renewal_initial_checkpoint_gate.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "1b248ea4315b7bc5ed9c0059355659ee315ab4cc",
+            "sha256": "3277346094c0938f72b0a3ee96b44aac36999e4eed439752a3f2fc1787f9bf22",
+            "bytes": 2652,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/1b248ea4315b7bc5ed9c0059355659ee315ab4cc.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# HCSN P0–P5 离线研究交付（2026-10-31）",
+      "selected_original_occurrence": {
+        "file": "HCSN_P0_P5_Offline_Research_20261031.zip",
+        "member": "hcsn_research_20261031/README.zh-CN.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "HCSN_P0_P5_Offline_Research_20261031.zip",
+        "sha256": "83e5cdf6cf62d0f4494359b25e210978c8a623cfc3e863cc0878f83f9f0c371e",
+        "bytes": 156121
+      }
+    },
+    {
+      "git_blob_sha": "ec82364f55ba132753187422959467e282184e60",
+      "sha256": "ffa583dbfe84bf2868885a6c902c8d4882b0f913aff58fd5e16039a22d4ad1da",
+      "bytes": 1361,
+      "relative_path": "objects/ec82364f55ba132753187422959467e282184e60.md",
+      "candidate_group": "original-5456",
+      "candidate_types": [
+        "embedded-code-review"
+      ],
+      "original_occurrences": [
+        {
+          "file": "hepta_mgp_local_evidence_20261022.zip",
+          "member": "README.md",
+          "archive_chain": []
+        }
+      ],
+      "role": "historical source-companion documentation with reproduction or interface contracts",
+      "attribution_basis": "The original document names this project or its implementation and reproduction interfaces; source peers from the same original package are listed where available. Placement is an inactive preservation context, not unique historical ownership.",
+      "verified_context_peers": [
+        {
+          "relation": "same original package source",
+          "original_member": "recompute.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "ce2bbafbef5d1834665f5623b95abd4aa0189b37",
+            "sha256": "ef12b1e73c2ab981305b1ef2d9acc7afb79e817ae03b8754eb60bef62df788bf",
+            "bytes": 5286,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "e57234c37c05fa5943e2ba91a3a396f896294db9",
+            "path": "library-recovery/small-source-20261103/objects/ce2bbafbef5d1834665f5623b95abd4aa0189b37.py",
+            "ref": "refs/heads/archive/library-small-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "decoded_risk.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "c9aa0d71a941b22f6b0cb722233881bd0922bf3b",
+            "sha256": "9781bb6648c20068c04ec661a1b10e8d289206942753aa5ab4adc69caffdc2a2",
+            "bytes": 10584,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/c9aa0d71a941b22f6b0cb722233881bd0922bf3b.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        },
+        {
+          "relation": "same original package source",
+          "original_member": "test_decoded_risk.py",
+          "original_archive_chain": [],
+          "reference": {
+            "git_blob_sha": "f8bc749c9b83dcc0f904e88b4af1518624cf1bd9",
+            "sha256": "50cdd3afd5248ea57a1f1d30e56d781c0ea272cc6f093d4630e22cdf05aa210b",
+            "bytes": 6609,
+            "repo": "TrillionniumFoundation/hepta-private-ci",
+            "commit": "594c0c10b41f1b80faad51fcb3386b126d418acc",
+            "path": "library-recovery/priority-source-20261103/objects/f8bc749c9b83dcc0f904e88b4af1518624cf1bd9.py",
+            "ref": "refs/heads/archive/library-priority-source-20261103-gpt6"
+          }
+        }
+      ],
+      "reuse_existing_blob": false,
+      "repository_blob_probe_status": 404,
+      "probe_scope": "Specific repository exact blob only, not all refs/history absence.",
+      "preserved_source_executed": false,
+      "commands_executed": false,
+      "historical_claims_requalified": false,
+      "scientific_or_runtime_acceptance": false,
+      "original_document_title": "# Hepta NDU-MGP local research diagnostic",
+      "selected_original_occurrence": {
+        "file": "hepta_mgp_local_evidence_20261022.zip",
+        "member": "README.md",
+        "archive_chain": []
+      },
+      "original_package": {
+        "name": "hepta_mgp_local_evidence_20261022.zip",
+        "sha256": "cabc005945a83c04567f988252066ed4c607e898b663c3127e895cf26f85eeaf",
+        "bytes": 17220
+      }
+    }
+  ],
+  "notices": []
+}

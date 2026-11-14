@@ -35,13 +35,9 @@ impl SqliteConfig {
         guard: &ExistingSqliteRecoveryGuard,
         target: &std::path::Path,
     ) -> Result<(), SqliteRecoveryError> {
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         {
             use super::RetainedOptionalObject;
-            use std::fs::OpenOptions;
-            use std::io::Write;
-            use std::os::unix::fs::FileExt;
-            use std::os::unix::fs::OpenOptionsExt;
 
             const MAX_DATABASE_BYTES: u64 = 128 * 1024 * 1024;
             const MAX_SIDECAR_BYTES: u64 = 128 * 1024 * 1024;
@@ -71,9 +67,7 @@ impl SqliteConfig {
                 let size = usize::try_from(size).map_err(|_| SqliteRecoveryError::Unavailable)?;
                 let mut bytes = vec![0; size];
                 if !bytes.is_empty() {
-                    object
-                        .descriptor
-                        .read_exact_at(&mut bytes, 0)
+                    super::descriptor_io::read_exact_at(&object.descriptor, &mut bytes)
                         .map_err(super::indeterminate)?;
                 }
                 Ok(bytes)
@@ -120,32 +114,19 @@ impl SqliteConfig {
             let target_wal = super::sqlite_sidecar_path(target, "-wal");
             let target_journal = super::sqlite_sidecar_path(target, "-journal");
             let mut created = Vec::new();
-            let write_private =
-                |path: &std::path::Path, bytes: &[u8]| -> Result<(), SqliteRecoveryError> {
-                    let mut file = OpenOptions::new()
-                        .write(true)
-                        .create_new(true)
-                        .mode(0o600)
-                        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-                        .open(path)
-                        .map_err(super::indeterminate)?;
-                    file.write_all(bytes).map_err(super::indeterminate)?;
-                    file.sync_all().map_err(super::indeterminate)
-                };
 
             let result = (|| {
-                write_private(target, &database)?;
+                super::descriptor_io::write_private_new(target, &database)?;
                 created.push(target.to_path_buf());
                 if let Some(bytes) = wal.as_deref() {
-                    write_private(&target_wal, bytes)?;
+                    super::descriptor_io::write_private_new(&target_wal, bytes)?;
                     created.push(target_wal.clone());
                 }
                 if let Some(bytes) = journal.as_deref() {
-                    write_private(&target_journal, bytes)?;
+                    super::descriptor_io::write_private_new(&target_journal, bytes)?;
                     created.push(target_journal.clone());
                 }
-                let directory = std::fs::File::open(self.home()).map_err(super::indeterminate)?;
-                directory.sync_all().map_err(super::indeterminate)?;
+                super::descriptor_io::sync_directory(self.home())?;
                 Ok(())
             })();
             if result.is_err() {
@@ -155,7 +136,7 @@ impl SqliteConfig {
             }
             result
         }
-        #[cfg(not(unix))]
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = (guard, target);
             Err(SqliteRecoveryError::Unavailable)
@@ -163,7 +144,7 @@ impl SqliteConfig {
     }
 
     #[cfg_attr(
-        unix,
+        any(unix, windows),
         expect(
             clippy::disallowed_methods,
             reason = "this is codex-state's retained-descriptor cold-image connection shim"
@@ -173,10 +154,9 @@ impl SqliteConfig {
         &self,
         guard: &ExistingSqliteRecoveryGuard,
     ) -> Result<SqlitePool, SqliteRecoveryError> {
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         {
             use super::RetainedOptionalObject;
-            use std::os::unix::fs::FileExt;
             use std::sync::Arc;
 
             guard.revalidate_for(self)?;
@@ -199,11 +179,7 @@ impl SqliteConfig {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
             let mut bytes = vec![0; size as usize];
-            guard
-                .inner
-                .database
-                .descriptor
-                .read_exact_at(&mut bytes, 0)
+            super::descriptor_io::read_exact_at(&guard.inner.database.descriptor, &mut bytes)
                 .map_err(super::indeterminate)?;
             guard.revalidate_for(self)?;
             if &bytes[..16] != b"SQLite format 3\0"
@@ -273,7 +249,7 @@ impl SqliteConfig {
             }
             Ok(pool)
         }
-        #[cfg(not(unix))]
+        #[cfg(not(any(unix, windows)))]
         {
             let _ = guard;
             Err(SqliteRecoveryError::Unavailable)

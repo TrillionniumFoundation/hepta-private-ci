@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.scoped-qualification-publication.v1",
+  "files": [
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-finish-01-format.log",
+      "published": "root-final-use-frontier-finish-01-format.log.gz",
+      "raw_bytes": 73,
+      "raw_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "published_sha256": "8d5f1e8612b40722f1cb465624938d6c618418fc8231e9a978d3a58aaf8aa415",
+      "compressed": true
+    },
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-finish-01-result.json",
+      "published": "root-final-use-frontier-finish-01-result.json",
+      "raw_bytes": 665,
+      "raw_sha256": "872fc1d33db8ab9748edfacc6bdc84ded1dcffe41bd36dc38aa0e97932795428",
+      "published_sha256": "872fc1d33db8ab9748edfacc6bdc84ded1dcffe41bd36dc38aa0e97932795428",
+      "compressed": false
+    },
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-finish-01-scoped-fix.log",
+      "published": "root-final-use-frontier-finish-01-scoped-fix.log.gz",
+      "raw_bytes": 69186,
+      "raw_sha256": "c65eb9e2f7f4671b27d6388d4b07882ce8e09f049a313600fb1de962a2c86b8b",
+      "published_sha256": "af2514dd8c595a598b3ba5b79f55794b9fe50a9b43f8c7693d0a885a32374391",
+      "compressed": true
+    },
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-qualification-01-actual-root-tests.log",
+      "published": "root-final-use-frontier-qualification-01-actual-root-tests.log.gz",
+      "raw_bytes": 1162,
+      "raw_sha256": "a45baa09de48a21af55a52d7870e5ee6b2007a82165163ceeda27b5ecd08ab77",
+      "published_sha256": "82b0e17ba1c3c4973b05502ae3a330ef09d77dccb6da648fcfb87238af997afa",
+      "compressed": true
+    },
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-qualification-01-compile-original-test-binaries.log",
+      "published": "root-final-use-frontier-qualification-01-compile-original-test-binaries.log.gz",
+      "raw_bytes": 71568,
+      "raw_sha256": "11e117b5ba9cc4091b1924d91d31f76b15f8ef224ed9fbb7398b14472e867ccb",
+      "published_sha256": "dbdc9b0a00c15f86b47b44f4dce0c3aa7d5a2fe1b75beb60959df6f506d03a15",
+      "compressed": true
+    },
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-qualification-01-result.json",
+      "published": "root-final-use-frontier-qualification-01-result.json",
+      "raw_bytes": 2993,
+      "raw_sha256": "8dc3ce56629613c3a0d063d3d8671cc2e2b3081c644cbee7f01188564f74195e",
+      "published_sha256": "8dc3ce56629613c3a0d063d3d8671cc2e2b3081c644cbee7f01188564f74195e",
+      "compressed": false
+    },
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-qualification-01-source-after.json",
+      "published": "root-final-use-frontier-qualification-01-source-after.json.gz",
+      "raw_bytes": 2353811,
+      "raw_sha256": "247dcecb907299427a5617626691c52a810eebf640626b01efaa386d0e925147",
+      "published_sha256": "594ef953a509f41ffc031e1fe3aca87471a66f5343bde6f3f9ee6b1ab501e140",
+      "compressed": true
+    },
+    {
+      "original": "work/consumer-frontier-publication-originals/root-final-use-frontier-qualification-01-source-before.json",
+      "published": "root-final-use-frontier-qualification-01-source-before.json.gz",
+      "raw_bytes": 2353811,
+      "raw_sha256": "247dcecb907299427a5617626691c52a810eebf640626b01efaa386d0e925147",
+      "published_sha256": "594ef953a509f41ffc031e1fe3aca87471a66f5343bde6f3f9ee6b1ab501e140",
+      "compressed": true
+    }
+  ],
+  "full_composed_qualification": false,
+  "production_authority": false,
+  "source_leaf": "b80704b973d2cd3012a6631b0450330bb33c1ffd",
+  "root_import": "e7b7e63d9",
+  "rust_toolchain": "1.96.0",
+  "actual_root_data_tests_passed": 5,
+  "test_seconds": 0.699,
+  "runner_seconds": 0.967,
+  "original_test_binary_compile_seconds": 1582.284,
+  "scoped_fix_seconds": 480.62,
+  "format_seconds": 0.516,
+  "final_diff_bytes": 0,
+  "source_inputs_unchanged": true,
+  "tests_repeated_after_finish": false,
+  "wire_or_production_authority_qualified": false
+}

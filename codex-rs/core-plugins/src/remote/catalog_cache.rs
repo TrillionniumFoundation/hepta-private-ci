@@ -138,7 +138,15 @@ pub(crate) fn write_cached_directory_plugins(
     }) else {
         return;
     };
-    let _ = codex_utils_path::write_atomically(&cache_path, &contents);
+    if let Err(err) = codex_utils_path::write_atomically(&cache_path, &contents) {
+        warn!(
+            stage = "remote_plugin_catalog_cache_write",
+            raw_os_error = ?err.raw_os_error(),
+            error_kind = ?err.kind(),
+            cache_file = ?cache_path.file_name(),
+            "failed to write remote plugin catalog disk cache"
+        );
+    }
 }
 
 pub(crate) fn remove_cached_directory_plugins(

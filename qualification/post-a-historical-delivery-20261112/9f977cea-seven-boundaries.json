@@ -1,0 +1,106 @@
+{
+  "before": {
+    "head": "9f977cea80495052d64aec7151ba3483e9d7ff87",
+    "tree": "912e838d3570f8b5895f62e3b79aec96434d750b",
+    "status": ""
+  },
+  "scope": "seven new boundaries over full actual product source index",
+  "native": "unrun",
+  "rows": [
+    {
+      "id": "q24_historical_delivery_capture",
+      "result": {
+        "id": "q24_historical_delivery_capture",
+        "symbol": "RegisteredHistoricalLearningSourceV1::capture_original_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": []
+      }
+    },
+    {
+      "id": "q24_historical_delivery_current",
+      "result": {
+        "id": "q24_historical_delivery_current",
+        "symbol": "RegisteredHistoricalLearningSourceV1::require_current_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_same_prepared",
+      "result": {
+        "id": "q24_historical_delivery_same_prepared",
+        "symbol": "RegisteredHistoricalLearningSourceV1::require_prepared_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_install",
+      "result": {
+        "id": "q24_historical_delivery_install",
+        "symbol": "LearningIterationRuntimeBootstrapV1::with_original_historical_source",
+        "callPattern": null,
+        "receiverType": "LearningIterationRuntimeBootstrapV1",
+        "receiverMethods": [],
+        "productCallers": []
+      }
+    },
+    {
+      "id": "q24_historical_delivery_dataset_receipt",
+      "result": {
+        "id": "q24_historical_delivery_dataset_receipt",
+        "symbol": "CellQ24TrainingBatchV1::require_original_historical_dataset_receipt",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingBatchV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_prepared",
+      "result": {
+        "id": "q24_historical_delivery_prepared",
+        "symbol": "CellQ24PreparedLearningV1::require_original_historical_source",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      }
+    },
+    {
+      "id": "q24_historical_delivery_async_claim",
+      "result": {
+        "id": "q24_historical_delivery_async_claim",
+        "symbol": "LearningOwnerJournalV1::commit_original_historical_delivery",
+        "callPattern": null,
+        "receiverType": "LearningOwnerJournalV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      }
+    }
+  ],
+  "after": {
+    "head": "9f977cea80495052d64aec7151ba3483e9d7ff87",
+    "tree": "912e838d3570f8b5895f62e3b79aec96434d750b",
+    "status": ""
+  },
+  "seconds": 67.69114887499927,
+  "passed": true
+}

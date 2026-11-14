@@ -340,42 +340,48 @@ fn duplicate_or_null_scope_fields_are_rejected_in_both_raw_page_vectors() {
 }
 
 #[test]
-fn sdk_bundled_metadata_is_dropped_instead_of_retained_outside_raw_bounds() {
-    let mut baseline = GapFillAccumulator::new(plan()).expect("plan");
-    append(
-        &mut baseline,
-        page(
-            "s-source",
-            Some("t-target"),
-            vec![event("$visible")],
-            vec![],
-        ),
-    )
-    .expect("baseline page");
-    let mut enriched = page(
-        "s-source",
-        Some("t-target"),
-        vec![event("$visible")],
-        vec![],
-    );
-    let mut large = event("$bundled");
-    large["content"]["body"] = json!("x".repeat(MAX_BYTES + 1));
-    let bundled = page("unused", /*end*/ None, vec![large], vec![])
-        .chunk
-        .pop()
-        .expect("bundle");
-    assert!(bundled.raw().json().get().len() > MAX_BYTES);
-    enriched.chunk[0].bundled_latest_thread_event = Some(Box::new(bundled));
+fn sdk_bundled_thread_events_are_retained_only_within_raw_byte_bounds() {
+    let mut raw = event("$visible");
+    raw["unsigned"] = json!({
+        "m.relations": {
+            "m.thread": {
+                "latest_event": event("$bundled"),
+                "count": 1,
+                "current_user_participated": false,
+            },
+        },
+    });
+    let bounded = page("s-source", Some("t-target"), vec![raw.clone()], vec![]);
+    assert!(bounded.chunk[0].bundled_latest_thread_event().is_some());
+    let expected_bytes = bounded.chunk[0].raw().json().get().len();
     let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
     assert_eq!(
-        append(&mut accumulator, enriched),
+        append(&mut accumulator, bounded),
         Ok(GapFillStatus::ReachedTarget)
     );
-    assert_eq!(snapshot(&accumulator), snapshot(&baseline));
     assert_eq!(
-        accumulator.pages[0].chunk[0].json().get().len(),
-        accumulator.observation.event_bytes
+        serde_json::from_str::<Value>(accumulator.pages[0].chunk[0].json().get())
+            .expect("retained raw event"),
+        raw
     );
+    assert_eq!(accumulator.observation.event_bytes, expected_bytes);
+
+    // SDK 0.19 derives the bundled event from the raw unsigned relations.
+    // Its complete serialized size must be checked before retaining the page.
+    raw["unsigned"]["m.relations"]["m.thread"]["latest_event"]["content"]["body"] =
+        json!("x".repeat(MAX_BYTES + 1));
+    let oversized = page("s-source", Some("t-target"), vec![raw], vec![]);
+    let bundled = oversized.chunk[0]
+        .bundled_latest_thread_event()
+        .expect("bundled thread event");
+    assert!(bundled.raw().json().get().len() > MAX_BYTES);
+    let mut accumulator = GapFillAccumulator::new(plan()).expect("plan");
+    let before = snapshot(&accumulator);
+    assert_eq!(
+        append(&mut accumulator, oversized),
+        Err(GapFillError::Bounds)
+    );
+    assert_eq!(snapshot(&accumulator), before);
 }
 
 #[test]

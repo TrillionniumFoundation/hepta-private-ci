@@ -1,0 +1,30 @@
+{
+  "name": "v8-sandbox-unified-before",
+  "cwd": "/data/hepta-cur-decoding-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-v8-poc",
+    "-p",
+    "codex-code-mode-runtime",
+    "--lib",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(sandbox_feature_matches_linked_v8)"
+  ],
+  "baseSha": "12a4c2e3487476b54fc28e4fa3109604c498f566",
+  "workingDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "startedAt": "2026-10-23T19:51:02.816964+00:00",
+  "finishedAt": "2026-10-23T20:02:30.757522+00:00",
+  "elapsedSeconds": 687.9405676219612,
+  "exitCode": 100,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-unified-before.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-cur-decoding-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

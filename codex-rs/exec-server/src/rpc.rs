@@ -35,6 +35,9 @@ use crate::connection::JsonRpcTransport;
 use crate::rpc_server_requests::RpcServerRequestSender;
 
 pub(crate) const SESSION_ALREADY_ATTACHED_ERROR_CODE: i64 = -32010;
+// A fixed, method-specific failure for fs/readFileAuthorized. Clients must not
+// reproduce arbitrary server messages when translating this code.
+pub(crate) const AUTHORIZED_READ_BOUND_EXCEEDED_ERROR_CODE: i64 = -32012;
 const MAX_IN_FLIGHT_REGULAR_CALLS: usize = 1024;
 const RESERVED_CLEANUP_CALLS: usize = 1;
 const RESERVED_OUTBOUND_CONTROL_MESSAGES: usize = 16;

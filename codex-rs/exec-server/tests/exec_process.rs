@@ -1,7 +1,7 @@
 mod common;
 
 use std::collections::HashMap;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
@@ -382,6 +382,16 @@ async fn shell_snapshot_v2_capture_failure_falls_back_and_retries(
         "zsh" => ("/bin/zsh", ".zshrc"),
         name => anyhow::bail!("unsupported test shell {name}"),
     };
+    // Keep the real login-shell command and snapshot retry path, while only
+    // sourcing the fixture's profile. Host /etc/profile is unrelated to retries.
+    let shell_path = if shell_name == "bash" {
+        let wrapper = home.path().join("snapshot-bash");
+        std::fs::write(&wrapper, "#!/bin/sh\nexec /bin/bash --noprofile \"$@\"\n")?;
+        std::fs::set_permissions(&wrapper, std::fs::Permissions::from_mode(0o700))?;
+        wrapper.to_string_lossy().into_owned()
+    } else {
+        shell_path.to_string()
+    };
     std::fs::write(
         home.path().join(profile_name),
         "printf x >> \"$HOME/captures\"\nexit 7\n",
@@ -712,7 +722,9 @@ async fn remote_process_preserves_empty_workspace_roots() -> Result<()> {
         return Ok(());
     }
 
-    let context = create_process_context(/*use_remote*/ true).await?;
+    let mut context = create_process_context(/*use_remote*/ true)
+        .await
+        .context("empty workspace roots: create remote process context")?;
     let tmp = TempDir::new()?;
     let file = tmp.path().join("excluded.txt");
     std::fs::write(&file, b"excluded")?;
@@ -747,9 +759,18 @@ async fn remote_process_preserves_empty_workspace_roots() -> Result<()> {
             managed_network: None,
             network_proxy: None,
         })
-        .await?;
-    let (stdout, _stderr, exit_code, closed) =
-        collect_process_output_from_events(session.process).await?;
+        .await
+        .context("empty workspace roots: start remote process")?;
+    let (stdout, _stderr, exit_code, closed) = collect_process_output_from_events(session.process)
+        .await
+        .with_context(|| {
+            let server_status = context
+                ._server
+                .as_mut()
+                .map(ExecServerHarness::child_status)
+                .unwrap_or_else(|| "no remote server".to_string());
+            format!("empty workspace roots: collect process events; exec-server {server_status}")
+        })?;
 
     assert!(!stdout.contains("excluded"), "unexpected stdout: {stdout}");
     assert_ne!(exit_code, Some(0));
@@ -812,8 +833,29 @@ async fn collect_process_output_from_events(
     let mut stdout = String::new();
     let mut stderr = String::new();
     let mut exit_code = None;
+    let mut events_seen = 0_usize;
     loop {
-        match timeout(Duration::from_secs(2), events.recv()).await?? {
+        let event = timeout(Duration::from_secs(2), events.recv())
+            .await
+            .with_context(|| {
+                let phase = if exit_code.is_some() {
+                    "waiting for Closed after Exited"
+                } else if events_seen == 0 {
+                    "waiting for first event"
+                } else {
+                    "waiting for output or Exited"
+                };
+                let process_id = session.process_id();
+                let stdout_len = stdout.len();
+                let stderr_len = stderr.len();
+                let stderr_prefix: String = stderr.chars().take(/*n*/ 2048).collect();
+                format!(
+                    "process {process_id}: {phase}; events_seen={events_seen}; exit_code={exit_code:?}; stdout_len={stdout_len}; stderr_len={stderr_len}; stderr_prefix={stderr_prefix:?}"
+                )
+            })?
+            .context("process event subscription closed or lagged")?;
+        events_seen += 1;
+        match event {
             ExecProcessEvent::Output(chunk) => match chunk.stream {
                 ExecOutputStream::Stdout | ExecOutputStream::Pty => {
                     stdout.push_str(&String::from_utf8_lossy(&chunk.chunk.into_inner()));
@@ -1168,10 +1210,10 @@ async fn assert_exec_process_write_then_read_without_tty(use_remote: bool) -> Re
     Ok(())
 }
 
-async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
+async fn assert_remote_windows_sandbox_rejects_unqualified_legacy_policy() -> Result<()> {
     let context = create_process_context(/*use_remote*/ true).await?;
     let workspace = TempDir::new()?;
-    let blocked_file = workspace.path().join("blocked.txt");
+    let unexpected_child = workspace.path().join("unexpected-child.txt");
     let cwd = PathUri::from_host_native_path(workspace.path())?;
     let mut sandbox = FileSystemSandboxContext::from_legacy_sandbox_policy(
         SandboxPolicy::new_read_only_policy(),
@@ -1179,27 +1221,23 @@ async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
     )?;
     sandbox.windows_sandbox_level = WindowsSandboxLevel::RestrictedToken;
 
-    let session = match context
+    let error = match context
         .backend
         .start(ExecParams {
-            process_id: ProcessId::from("proc-windows-sandbox-stdin"),
+            process_id: ProcessId::from("proc-windows-unqualified-legacy-sandbox"),
             argv: vec![
                 r"C:\Windows\System32\cmd.exe".to_string(),
                 "/D".to_string(),
-                "/V:ON".to_string(),
                 "/S".to_string(),
                 "/C".to_string(),
-                format!(
-                    "set /P line= & echo blocked > \"{}\" & echo from-stdin:!line!",
-                    blocked_file.display()
-                ),
+                format!("echo launched > \"{}\"", unexpected_child.display()),
             ],
             cwd,
             shell_snapshot: None,
             env_policy: /*env_policy*/ None,
             env: Default::default(),
             tty: false,
-            pipe_stdin: true,
+            pipe_stdin: false,
             arg0: None,
             sandbox: Some(sandbox),
             enforce_managed_network: false,
@@ -1208,23 +1246,18 @@ async fn assert_remote_windows_sandbox_process_write() -> Result<()> {
         })
         .await
     {
-        Ok(session) => session,
-        Err(err) => return Err(err.into()),
+        Ok(_) => {
+            anyhow::bail!("unqualified legacy Windows sandbox unexpectedly admitted a process")
+        }
+        Err(error) => error,
     };
-
-    let write_response = session.process.write(b"hello\n".to_vec()).await?;
-    assert_eq!(write_response.status, WriteStatus::Accepted);
-    let StartedExecProcess { process, .. } = session;
-    let wake_rx = process.subscribe_wake();
-    let (output, exit_code, closed) = collect_process_output_from_reads(process, wake_rx).await?;
-
     assert!(
-        output.contains("from-stdin:hello"),
-        "unexpected output: {output:?}"
+        error
+            .to_string()
+            .contains("legacy Windows sandbox isolation is unavailable"),
+        "unexpected rejection: {error}"
     );
-    assert_eq!(exit_code, Some(0));
-    assert!(closed);
-    assert!(!blocked_file.exists());
+    assert!(!unexpected_child.exists());
     Ok(())
 }
 
@@ -1627,8 +1660,8 @@ async fn exec_process_write_then_read_without_tty(use_remote: bool) -> Result<()
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[cfg_attr(not(windows), ignore = "Windows-only exec-server sandbox process test")]
 #[serial_test::serial(remote_exec_server)]
-async fn remote_windows_sandbox_process_accepts_process_write() -> Result<()> {
-    assert_remote_windows_sandbox_process_write().await
+async fn remote_windows_sandbox_rejects_unqualified_legacy_policy() -> Result<()> {
+    assert_remote_windows_sandbox_rejects_unqualified_legacy_policy().await
 }
 
 #[test_case(false ; "local")]

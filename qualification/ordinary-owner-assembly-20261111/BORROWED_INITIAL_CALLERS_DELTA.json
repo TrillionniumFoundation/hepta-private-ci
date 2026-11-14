@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "base_callers_blob": "54470dc74b5c536f089f92753e1492d269b51d46",
+  "changes": [
+    {
+      "kind": "protected_file_replace",
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+      "old_section": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_session_material.rs\"\nrequired = [\"registered learning requires the consuming original session serve scope\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_function_order = [{ function = \"fn serve_retained(\", sequence = [\"self.learning.is_some()\", \"return Err(io::Error::other(\", \"self.root_admin.is_none()\", \"listeners::serve_lanes(\"] }]\n\n",
+      "new_section": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/authority_host_session_material.rs\"\nrequired = [\"registered learning requires the consuming original session serve scope\", \"registered Initial publication requires the consuming original session serve scope\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_function_order = [{ function = \"fn serve_retained(\", sequence = [\"self.learning.is_some()\", \"return Err(io::Error::other(\", \"self.initial_publication.is_some()\", \"return Err(io::Error::other(\", \"self.root_admin.is_none()\", \"listeners::serve_lanes(\"] }]\n\n"
+    }
+  ],
+  "retained_boundary": "[[boundary]]\nid = \"root_same_retained_service_serve\"\nsymbol = \"PreparedHostAuthoritySession::serve_retained\"\ndefinition_path = \"codex-rs/hepta-agentd/src/authority_host_session_material.rs\"\ndefinition_markers = [\"pub fn serve_retained(&self)\", \"serve_lanes(\", \"&self.service\", \"&self.owner_pidfd\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/native_g2_entry/root.rs\", \"codex-rs/hepta-agentd/src/native_g2_entry/recovery.rs\"]\ncaller_markers = []\ncall_pattern = \"(?:\\\\.\\\\s*|[A-Za-z_][A-Za-z0-9_]*\\\\s*::\\\\s*)serve_retained\\\\s*\\\\(\"\n\n",
+  "explanation": "Add a function-local required denial before all borrowed serving. Existing learning denial, original caller set and every prior constraint remain exact; no source checker change."
+}

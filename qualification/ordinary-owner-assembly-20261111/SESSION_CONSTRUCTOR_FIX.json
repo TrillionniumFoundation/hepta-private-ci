@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_base": "89b3b44747bedbc80732f73eda2405b7a397b926",
+  "source_tree": "1eba30f512a0fcd0463417c5f14537493cd8b104",
+  "reason": "Add the newly required empty initial-publication slot to all three original material-backed PreparedHostAuthoritySession constructors. No capability is created by these initializers.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+      "base_blob": "4b4ba487ade47b4d27166da9a4ae39bc00a03a14",
+      "base_sha256": "bf910fcb09aa4b9ef5f099930aa69c6673fa5bca254fe2bbe9ef06b2ebda77e9",
+      "new_blob": "c7e4a7366c60352a095bcd44f19314a6790dd455",
+      "new_sha256": "4717a4175e30a2a0e35ef27f8136d99ba3245ff1f9fab188356448c7400daee0",
+      "bytes": 7554,
+      "additions": 3,
+      "deletions": 0,
+      "operations": [
+        {
+          "function": "recover_with_physical_material",
+          "old_start_line": 113,
+          "old_text": "    pub fn recover_with_physical_material(\n        config_file: &Path,\n        registration_file: &Path,\n        owner_pidfd: OwnedFd,\n    ) -> io::Result<Self> {\n        let config = read_root_json(config_file)?;\n        let registration = read_root_json(registration_file)?;\n        let service = open_registered_writer(&config, &registration, &owner_pidfd)?\n            .recover_material_from_registered(&config, &registration, &owner_pidfd)?;\n        Ok(Self {\n            config,\n            registration,\n            owner_pidfd,\n            service,\n            fresh_filesystem: false,\n            root_admin: None,\n            learning: None,\n            publication: None,\n        })\n    }",
+          "new_text": "    pub fn recover_with_physical_material(\n        config_file: &Path,\n        registration_file: &Path,\n        owner_pidfd: OwnedFd,\n    ) -> io::Result<Self> {\n        let config = read_root_json(config_file)?;\n        let registration = read_root_json(registration_file)?;\n        let service = open_registered_writer(&config, &registration, &owner_pidfd)?\n            .recover_material_from_registered(&config, &registration, &owner_pidfd)?;\n        Ok(Self {\n            config,\n            registration,\n            owner_pidfd,\n            service,\n            fresh_filesystem: false,\n            root_admin: None,\n            learning: None,\n            publication: None,\n            initial_publication: None,\n        })\n    }"
+        },
+        {
+          "function": "prepare_fresh_with_physical_material",
+          "old_start_line": 138,
+          "old_text": "    pub async fn prepare_fresh_with_physical_material(\n        config_file: &Path,\n        registration_file: &Path,\n        owner_pidfd: OwnedFd,\n    ) -> io::Result<Self> {\n        let config = read_root_json(config_file)?;\n        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;\n        let service = open_registered_writer(&config, &registration, &owner_pidfd)?;\n        let fresh =\n            crate::FreshHostCognitiveState::prepare(&registration.registered_identity).await?;\n        let service = service.initialize_fresh_heads_with_material(\n            &config,\n            &registration,\n            &owner_pidfd,\n            fresh,\n        )?;\n        Ok(Self {\n            config,\n            registration,\n            owner_pidfd,\n            service,\n            fresh_filesystem: true,\n            root_admin: None,\n            learning: None,\n            publication: None,\n        })\n    }",
+          "new_text": "    pub async fn prepare_fresh_with_physical_material(\n        config_file: &Path,\n        registration_file: &Path,\n        owner_pidfd: OwnedFd,\n    ) -> io::Result<Self> {\n        let config = read_root_json(config_file)?;\n        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;\n        let service = open_registered_writer(&config, &registration, &owner_pidfd)?;\n        let fresh =\n            crate::FreshHostCognitiveState::prepare(&registration.registered_identity).await?;\n        let service = service.initialize_fresh_heads_with_material(\n            &config,\n            &registration,\n            &owner_pidfd,\n            fresh,\n        )?;\n        Ok(Self {\n            config,\n            registration,\n            owner_pidfd,\n            service,\n            fresh_filesystem: true,\n            root_admin: None,\n            learning: None,\n            publication: None,\n            initial_publication: None,\n        })\n    }"
+        },
+        {
+          "function": "open_with_physical_material",
+          "old_start_line": 169,
+          "old_text": "    pub fn open_with_physical_material(\n        config_file: &Path,\n        registration_file: &Path,\n        owner_pidfd: OwnedFd,\n    ) -> io::Result<Self> {\n        let config: HostAuthorityServiceConfig = read_root_json(config_file)?;\n        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;\n        let service = open_registered_service(&config, &registration, &owner_pidfd)?;\n        let service = service.require_existing_physical_material(RootMaterialProfile {\n            layout: registration.registered_identity.identity()?.layout,\n            root: config.state_dir.join(\"cognitive-material-v1\"),\n            deadline: std::time::Duration::from_millis(config.timeout_ms.min(5_000)),\n        })?;\n        Ok(Self {\n            config,\n            registration,\n            owner_pidfd,\n            service,\n            fresh_filesystem: false,\n            root_admin: None,\n            learning: None,\n            publication: None,\n        })\n    }",
+          "new_text": "    pub fn open_with_physical_material(\n        config_file: &Path,\n        registration_file: &Path,\n        owner_pidfd: OwnedFd,\n    ) -> io::Result<Self> {\n        let config: HostAuthorityServiceConfig = read_root_json(config_file)?;\n        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;\n        let service = open_registered_service(&config, &registration, &owner_pidfd)?;\n        let service = service.require_existing_physical_material(RootMaterialProfile {\n            layout: registration.registered_identity.identity()?.layout,\n            root: config.state_dir.join(\"cognitive-material-v1\"),\n            deadline: std::time::Duration::from_millis(config.timeout_ms.min(5_000)),\n        })?;\n        Ok(Self {\n            config,\n            registration,\n            owner_pidfd,\n            service,\n            fresh_filesystem: false,\n            root_admin: None,\n            learning: None,\n            publication: None,\n            initial_publication: None,\n        })\n    }"
+        }
+      ]
+    }
+  ],
+  "origin_checks": {
+    "session_struct_blob": "6cdf76ba4702b8107525b24bf0dddb4047704d4d",
+    "field": "initial_publication: Option<generation_initial::InitialRuntime>",
+    "original_enable_blob": "ee2236f77bcafd19db32460c381af07aaa97d667",
+    "creation": "The original enable_generation_initial method alone installs Some(InitialRuntime) after original Root context validation and sealed bootstrap capture."
+  },
+  "unchanged": [
+    "Existing fresh/recover/open-only distinctions",
+    "Original Root writer and process/lease validation",
+    "All existing fields and original physical-material operations",
+    "Original authority, keys, grants, consumer state, test assertions, CALLERS and checkers"
+  ],
+  "qualification": {
+    "native_executed": false,
+    "shared_test_source_modified": false
+  },
+  "native_failure": "Parent-owned fixed 89b3 native v8 reported missing initial_publication at original initializer locations 122,154,182."
+}

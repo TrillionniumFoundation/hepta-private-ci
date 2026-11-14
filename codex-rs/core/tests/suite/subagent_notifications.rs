@@ -763,6 +763,15 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
     let _ = wait_for_requests(&first_child_request).await?;
     let _ = wait_for_requests(&second_child_request).await?;
 
+    let child_id = ThreadId::from_string(&wait_for_spawned_thread_id(&test).await?)?;
+    let child_thread = test.thread_manager.get_thread(child_id).await?;
+    // The second response resumes the same turn after SubagentStop. Wait for
+    // that turn's finish owner before inspecting its final hook invocation.
+    wait_for_event(child_thread.as_ref(), |event| {
+        matches!(event, EventMsg::TurnComplete(_))
+    })
+    .await;
+
     let subagent_stop_inputs = wait_for_hook_log(
         test.codex_home_path(),
         "subagent_stop_hook_log.jsonl",

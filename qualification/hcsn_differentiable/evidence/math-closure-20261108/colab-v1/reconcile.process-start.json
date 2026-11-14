@@ -1,0 +1,36 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "sunfo",
+      "manage",
+      "reconcile",
+      "--key",
+      "hcsn-math-closure-cpu-20261108-v1"
+    ],
+    "created_unix_ms": 1794134818522,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/home/qian-qi/.local/bin/hepta-colab-account",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1bac4beda-12894-1d11",
+    "idempotency_key": "hcsn-math-closure-cpu-20261108-v1-reconcile-read-01",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1bac4beda-12894-1d11",
+    "request_digest": "be253ba5c39cb7818450cfa7f3e61801720b8d64457b1624d8f37926c7721888",
+    "request_fingerprint": 13701423024482072449,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1bac4beda-12894-1d11"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1bac4beda-12894-1d11"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

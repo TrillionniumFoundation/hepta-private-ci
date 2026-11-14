@@ -1,0 +1,74 @@
+{
+  "schema": "source-byte-verification-controls-v1",
+  "method": "Fresh complete Git blob text -> strict UTF-8 bytes -> recomputed Git SHA-1, SHA-256 and byte length; source code never evaluated.",
+  "hash_implementation": "Pure JavaScript SHA-1/SHA-256 in V8; five known-answer controls plus full prior additional43 ledger identity checked.",
+  "hash_implementation_sha256": "9bc486016d1d2991c6f39071f8e74e186cb8eea9bd15e2852439798f1139fd11",
+  "known_answer_controls": [
+    {
+      "name": "sha1-empty",
+      "actual": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "expected": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+    },
+    {
+      "name": "sha1-abc",
+      "actual": "a9993e364706816aba3e25717850c26c9cd0d89d",
+      "expected": "a9993e364706816aba3e25717850c26c9cd0d89d"
+    },
+    {
+      "name": "sha256-empty",
+      "actual": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sha256-abc",
+      "actual": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+      "expected": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    },
+    {
+      "name": "sha256-million-a",
+      "actual": "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0",
+      "expected": "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"
+    }
+  ],
+  "prior_ledger": {
+    "repo": "TrillionniumFoundation/Hepta",
+    "commit": "8932273cb2ead06f8fa497f52665dbd7c26cc396",
+    "path": "library-recovery/source-verification-20261103/additional/source43/ADDITIONAL_VERIFIED_SOURCES.json",
+    "git_blob_sha": "c1dd577d745e03bb9f9462bf4755fedb7fac87a4",
+    "sha256": "20e8f3ac9058827927ef3294df6c45d0a5bf70dbd4a2208bbec7aa9a8df7b72d",
+    "bytes": 189868
+  },
+  "frozen_union_check": {
+    "candidate_count": 6116,
+    "unique_git_blobs": 6116,
+    "all_five_chunks_sha256_size_gitblob_verified": true,
+    "new_sources_disjoint": true
+  },
+  "source_fingerprints": [
+    {
+      "git_blob_sha": "c315b346fed3ae73328821dc2efb67838916fe3f",
+      "sha256": "185d72c479c60b6429fa552a1c928152c01a5d28a4fd648e9584a0745a9d874e",
+      "bytes": 54737
+    },
+    {
+      "git_blob_sha": "91c3baa7792a9a00258ff55fb10c3bf8738b5538",
+      "sha256": "ee1d6bf6f4d6b3b05f9470fa963796174b5b437dfb42e08ab79dca6e4f700565",
+      "bytes": 34086
+    }
+  ],
+  "privacy_pattern_scan": [
+    {
+      "sha": "c315b346fed3ae73328821dc2efb67838916fe3f",
+      "flags": [],
+      "lines": 1383
+    },
+    {
+      "sha": "91c3baa7792a9a00258ff55fb10c3bf8738b5538",
+      "flags": [],
+      "lines": 984
+    }
+  ],
+  "privacy_scope": "Five explicit credential/private-key/Gmail patterns were absent; this is a bounded scan, not an exhaustive privacy proof.",
+  "native_tests_executed": false,
+  "original_parent_extraction_rerun": false
+}

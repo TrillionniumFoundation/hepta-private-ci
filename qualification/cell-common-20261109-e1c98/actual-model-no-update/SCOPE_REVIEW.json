@@ -1,0 +1,182 @@
+{
+  "actual_training_object": {
+    "actual_optimizer_steps": 10,
+    "actual_recipe": {
+      "initialization_seed": 7,
+      "kind": "lora",
+      "learning_rate": "0.002"
+    },
+    "all_other_recipes_executed": false,
+    "alpha": 8,
+    "artifact_archive_path": "model/training/worker/artifact.safetensors",
+    "artifact_bytes": 933544,
+    "artifact_sha256": "9ed906784ad969209386762f514ba2d209899c7180076d52306c268b7587e64d",
+    "candidate": {
+      "adapter": "6d3ad4295d628df7e5d0927f9044f46dd4375511b2788eeb1606a2cb6d48aa34",
+      "contract": "fa676279f85d221afbd8ff426adce107dc2831c4205f7523adb5857b9d13cc3c",
+      "directory": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/model/training/worker",
+      "file_sha256": "9ed906784ad969209386762f514ba2d209899c7180076d52306c268b7587e64d",
+      "generation": 2,
+      "operation_id": "learning-common-e1c98-model-no-update-002-train",
+      "schema": "hepta-smollm-parent-material-v1"
+    },
+    "dtype": "F32",
+    "evidence": [
+      "training-execution-plan.json",
+      "training-actual-receipt.json",
+      "train-result.json",
+      "RAW_FILES.json"
+    ],
+    "factor_types": [
+      "A",
+      "B"
+    ],
+    "header_tensors": 120,
+    "inherited_parent": {
+      "adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+      "contract": "fa676279f85d221afbd8ff426adce107dc2831c4205f7523adb5857b9d13cc3c",
+      "directory": "/home/qq/chain-learning-d9fb-20261108/generation-1/worker",
+      "file_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+      "generation": 1,
+      "operation_id": "chain-learning-d9fb-20261108-train-1",
+      "schema": "hepta-smollm-parent-material-v1"
+    },
+    "layers": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29
+    ],
+    "module_targets": [
+      "q_proj",
+      "v_proj"
+    ],
+    "modules": 60,
+    "object": "private Cell LoRA adapter",
+    "optimizer": "AdamW over only requires_grad parameters",
+    "rank": 4,
+    "recorded_train_requests": 1,
+    "source_entry": "llm_inherited_runtime.child -> llm_runtime_pilot.insert_lora(candidate) -> llm_runtime_pilot.train(candidate)",
+    "trainable_parameters": 230400
+  },
+  "base_freeze_evidence": {
+    "actual_training_receipt_outcome": "success",
+    "all_67_external_material_pins_match": true,
+    "backbone_index_root": "c320c094769446c21d7e4a33795d7f9310b5e4c8ca5a6fecca40207b1f735b7c",
+    "base_file_bytes": 269060552,
+    "base_file_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "disk_hash_alone_is_not_in_memory_evidence": true,
+    "guard_symbols": [
+      "RUNTIME_TRAINABLE_SET",
+      "RUNTIME_BACKBONE_FROZEN",
+      "INHERITED_BACKBONE_MUTATION"
+    ],
+    "in_memory_post_training_guard": "descriptor index root of every backbone tensor must equal original contract backbone.index_root",
+    "method": "successful execution of pinned fail-closed source guards plus external file hashes",
+    "optimizer_parameter_selection": "[p for p in model.parameters() if p.requires_grad]",
+    "requires_grad_guard": "all trainable names contain lora_; trainable count equals 230400",
+    "scope_source_manifest": "scope-sources/MANIFEST.json"
+  },
+  "interpretation_only_not_an_authority_grant": true,
+  "native_component_scope": {
+    "Cell_may_change": [
+      "cell_adapter",
+      "heads",
+      "calibration",
+      "composition"
+    ],
+    "actual_parameter_mask_owner_admission_executed": false,
+    "binding": "1082284f9636576fa69fb2beb4b6299f31ca25b1c8062ee8db152c5489532fca",
+    "evidence": [
+      "native-before-training.json",
+      "native-result.json"
+    ],
+    "exact_native_sources": [
+      {
+        "commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+        "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+        "sha256": "beb29d100c7591c7196a44204de69bba27c1c1e373933c7e4328ad48356c6dd2"
+      },
+      {
+        "commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+        "sha256": "f267b931857ab2c2f2aa47658592297ec672d0741f1fe3bef7d98f942a9d151b"
+      }
+    ],
+    "external_owner": null,
+    "flow": "ResearchFlow::RetainedOnly",
+    "frozen_fields": [
+      "initial request and owner set",
+      "Cell or Organ label",
+      "update_rule"
+    ],
+    "observed_component_validation": "PASS",
+    "original_parameter_v3_qualified": false,
+    "profile": "Cell scoped V2",
+    "tensor_name_mask_field_present": false,
+    "update_rule": "8a3bc0bc16e2cee85db9af67154f82316d587731486256678142e1dab9bc866f",
+    "validated_on_training_and_checkpoint_restore": [
+      "preserved CellBundleComponentsV1 fields",
+      "training_lineage.update_rule"
+    ]
+  },
+  "qualification": {
+    "Cell_component_scope": "PASS_RESEARCH_COMPONENT",
+    "independent_scientific_benefit": "HOLD",
+    "interpretation": "The two worker patch targets do not establish a mask on the separate trainer. Native Cell V2 validates bundle components, so this evidence neither proves two-tensor training admission nor makes the observed 120-factor training a violation of a nonexistent Cell V2 tensor mask.",
+    "ordinary_daemon_p0": "INCOMPLETE",
+    "organization_graph_mutation_or_search_executed": false,
+    "parameter_v3": "NOT_QUALIFIED",
+    "production_activation": false,
+    "two_tensor_training_scope": "NOT_QUALIFIED"
+  },
+  "schema": "hepta.common.actual-model-scope-review.v1",
+  "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "worker_direct_weight_edit_scope": {
+    "allowed_patch_targets": [
+      "model.layers.29.self_attn.v_proj.A",
+      "model.layers.29.self_attn.v_proj.B"
+    ],
+    "backend_training": false,
+    "config_field": "frozen.json#/model_config/allowed_patch_targets",
+    "direct_patch_invocation_in_this_model_attempt": false,
+    "evidence": [
+      "frozen.json",
+      "scope-sources/smollm2.py.gz",
+      "scope-sources/providers.py.gz"
+    ],
+    "export_construction_kind": "DirectWeightEdit",
+    "export_required_gradient_steps": 0,
+    "export_required_optimizer_calls": 0,
+    "interface": "SmolLM2Provider temporary_patch, measure_patch, export_cell through TorchProvider",
+    "not_a_two_tensor_training_mask": true,
+    "separate_from_inherited_LoRA_training": true
+  }
+}

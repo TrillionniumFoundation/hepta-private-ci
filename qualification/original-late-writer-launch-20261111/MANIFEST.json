@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "original_late_writer_launch_source_draft",
+  "base_commit": "2125da36a0e49a19b725c28bb150900f20caac7b",
+  "base_tree": "b1aed9bcf92573ac2618ddd6931b05f09659c41a",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "git_blob": "2a802e52f81c6cbda3b36b93a7855a8dc4e96f9f",
+      "bytes": 7056,
+      "sha256": "93b954f8d93bc163ce56f3ef6c8bbca3130067ad789c158232d2340213064a64",
+      "lines": 188
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs",
+      "git_blob": "638269b5c827d8d864b1f40b7ab4b7d964a0a178",
+      "bytes": 5633,
+      "sha256": "7f1a507beed752d0ad7aaaf42bd810c0528b0cdbb12b1fd174a014d14fc57eb5",
+      "lines": 136
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "git_blob": "2a9e7c938e71918173c1ac06c0f04fcaa415c970",
+      "bytes": 26070,
+      "sha256": "40f3c0b611876baf03bb995d9715d16607db3393aa1e9b557eacd0c9d9985340",
+      "lines": 622
+    }
+  ],
+  "supporting_files": [
+    {
+      "path": "CALLERS.reference.toml",
+      "git_blob": "cd5af499e4589d65fe1ed05bc458743f48837a12",
+      "bytes": 610794,
+      "sha256": "a02d522f328f9306cbffdafb0d15c96e4ca2a48d6994c5e47d5b99eddc373562"
+    },
+    {
+      "path": "CALLERS.delta.json",
+      "git_blob": "0dc77804ae7fc3d38ef3a9751cdf093444f25ce7",
+      "bytes": 15371,
+      "sha256": "175b0f11cfd36a2b008a10ea756984ed0b0196db6c6ede9473499712e2b36de2"
+    },
+    {
+      "path": "SOURCE_OPS.json",
+      "git_blob": "dc65d13c26cae8195f8e66479ea679f8a1b7a347",
+      "bytes": 640,
+      "sha256": "bb960c590dbfd177fc97b5c19c596da1ae358697af40c857feeffcc4afc75018"
+    },
+    {
+      "path": "README.md",
+      "git_blob": "c584c8e97e286615ce8c11fbf4d13e423fd220f6",
+      "bytes": 3514,
+      "sha256": "e6d065da6aea6753d869271b60655a91b3a5d2c3b42ee8f113f7ff6702291962"
+    }
+  ],
+  "integration": {
+    "create_new_paths": [
+      "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs"
+    ],
+    "shared_launcher_apply": "SOURCE_OPS.json",
+    "callers_apply": "CALLERS.delta.json",
+    "full_postimages_reference_only": true
+  },
+  "validation": {
+    "native_executed": false,
+    "root_tests_executed": false,
+    "fmt_executed": false,
+    "typed_full_scan_executed": false,
+    "unprivileged_negative_test_methods": 2,
+    "positive_component_executed": false,
+    "ordinary_chain_count": 0
+  },
+  "unchanged_authority": {
+    "new_key": false,
+    "new_grant": false,
+    "new_writer_issuer": false,
+    "new_supervisor_authorization": false,
+    "retained_A_cross_incarnation_transfer": false
+  },
+  "static_review": {
+    "reviewer": "/root/hepta_audit",
+    "scope": "Exact final production 2a802e52f81c6cbda3b36b93a7855a8dc4e96f9f, tests 638269b5c827d8d864b1f40b7ab4b7d964a0a178, launcher declaration and exact caller delta",
+    "conclusion": "No remaining confirmed static blocker identified; this is not executed validation.",
+    "correction": "Method documentation no longer suggests that a still-live process may become its own retired predecessor."
+  },
+  "stopped_fixture": "No same-process false retirement or manual Ready state was added. Original Supervisor and checkpoint-retirement predicates remain intact.",
+  "supersedes_draft_manifest": "93f2075af67d2bac9210744a4b4d61df64d04823",
+  "independent_value": "An actual non-Root recipient of already authorized Starting can construct the original closed production Launch from real inherited runtime inputs and the original three-right writer purpose. No lifecycle transition or retained-A custody transfer is added."
+}

@@ -1,0 +1,128 @@
+{
+  "schema": "hepta.root-publication-fixture.path-access-independent-review.v1",
+  "status": "static-review-no-blocker-found; not-native-tested",
+  "patch_manifest": "ec3cca60b0a80584f8ee9cd15d14a8baa0c82332",
+  "exact_delta": "40548b3ccce1069d2f971b99c33818723662e504",
+  "superseded_0750_manifest": "22da0b5d49efdbf73485a9242a4ba37f8750ce5b",
+  "baseline": {
+    "commit": "2d3a240d48aaa733775b134877c43981db50b702",
+    "tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "480426e7638af68de8a2cda666e72f0a597c41cc",
+        "bytes": 30230,
+        "sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225"
+      },
+      "postimage": {
+        "git_blob": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+        "bytes": 30620,
+        "sha256": "3327b2ed4daa904799a1746c9b1c7d30f3853fe47e610d89735f2ce277b4f9d1"
+      },
+      "exact_replay": true,
+      "guard_and_timeout_tokens_equal": true,
+      "exact_operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "c3030b6519c73bb1cfb4a8ec66069ef3b5db5801",
+        "bytes": 15383,
+        "sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8"
+      },
+      "postimage": {
+        "git_blob": "29b40417626ada0a4df3f07c3bbc4a3f54b54854",
+        "bytes": 15607,
+        "sha256": "38364ee24b4ec033d7473032373bbd1f84ef8620a87c1368a7cf44e7ca40d384"
+      },
+      "exact_replay": true,
+      "guard_and_timeout_tokens_equal": true,
+      "exact_operations": 2
+    }
+  ],
+  "exact_forward_reverse_replay": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "operations": 3,
+      "forward_byte_equal": true,
+      "reverse_byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "operations": 2,
+      "forward_byte_equal": true,
+      "reverse_byte_equal": true
+    }
+  ],
+  "independent_token_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage_sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225",
+      "intermediate_sha256": "96fdf12e7db771961586bff6e90b55c65a50f9f9894c719d38376181bfdaa2ec",
+      "exact_operations": 3,
+      "replay_equal": true,
+      "guard_and_timeout_tokens_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage_sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8",
+      "intermediate_sha256": "38364ee24b4ec033d7473032373bbd1f84ef8620a87c1368a7cf44e7ca40d384",
+      "exact_operations": 2,
+      "replay_equal": true,
+      "guard_and_timeout_tokens_equal": true
+    }
+  ],
+  "review": [
+    "The existing Root-owned/dedicated-gid /run runtime directory creation block is moved earlier without changing its mode02710 or owner/group. Only workspace and fleet root paths move from the Root-private parent into this runtime directory.",
+    "After the original FleetRegistry::initialize, exactly the two ordinary directories are set to UID0/GID60001/mode0710. This admits path search without granting directory listing or modification at these two roots.",
+    "The actual HostAuthorityRegisteredIdentity.fleet_root uses the same fleet_path passed to HeptaFleetRoot::parse and Registry initialization. The original WorkspaceBinding, real Registry Starting transition and FreshHostCognitiveState::prepare remain.",
+    "The child modifications only attach phase-specific anyhow Context to the two original identity() results; comparison, propagation and all authority operations remain.",
+    "All bytes outside the five exact operations are unchanged. The controlled final revision from the intermediate draft is exactly two 0750-to-0710 replacements.",
+    "Original Root authority/current/witness directory blocks, issuer and trust inputs, FinalUse grants and claims, child denial assertions, negative cases, stage ordering and test deadlines remain."
+  ],
+  "permissions_contract": {
+    "identity": {
+      "source": "codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "blob": "24c49866fdd994f8bc2c1b9fdc40342149525bca",
+      "facts": "identity() rejects zero spawn generation and non-canonical fleet/workspace paths, then derives the same agent layout. It does not require UID60001 ownership or read/list access to these two directory roots."
+    },
+    "registry": {
+      "source": "codex-rs/hepta-fleet/src/registry.rs",
+      "blob": "cadd646638f8393652b03d70be57b89c55e7da29",
+      "facts": "initialize() creates and validates upper fleet directories. register() creates mode0700 staging and mode0700 home/run/logs/releases/cognitive/matrix/automation directories, then renames staging to the actual agent_root. Agent metadata/lifecycle/release files are beneath this private agent_root; ordinary OpenOptions defaults on those files do not make them accessible through the private ancestor."
+    },
+    "layout": {
+      "source": "codex-rs/hepta-paths/src/fleet.rs",
+      "blob": "30d3a88e199578ace3e2fb0387e86d0c467e3806",
+      "facts": "Agent layout places writer.lock and generation cursor beneath agent_root/run and the cognitive store beneath agent_root/cognitive."
+    },
+    "fresh": {
+      "source": "codex-rs/hepta-agentd/src/authority_host_fresh.rs",
+      "blob": "b1046a8df09092a9d9aeea38f9ead6d1a2b3eaf4",
+      "facts": "validate_fresh_custody opens the actual agent_root and cognitive_root through RootAuthorityDirectory and matches the exact Registry Starting record, workspace, resources and layout. prepare() also opens run_root as Root-private and requires the actual writer lock to be Root-owned regular single-link mode0600."
+    },
+    "root_directory": {
+      "source": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "blob": "d087d646e0162a64caabe83a4120db820346a0a9",
+      "facts": "RootAuthorityDirectory checks every ancestor is a physical UID0 directory without group/other write; the target private directory must have mode bits0700. UID0/GID60001/mode0710 ordinary ancestors satisfy this unchanged check, while the original agent/run/cognitive private targets remain required."
+    },
+    "scope": "No recursive chown/chmod occurs. The fixture's default-mode private record files remain behind the original mode0700 agent subtree, and separate Root authority/keys/current/witness protection is unchanged. This is a five-lane component path repair, not a complete non-Root Agentd filesystem deployment or grant."
+  },
+  "validation": {
+    "git_reads_only": true,
+    "complete_preimages_and_postimages_read": true,
+    "forward_and_reverse_byte_replay": true,
+    "assertion_and_timeout_token_sequence_equal": true,
+    "h_calls": false,
+    "cargo_or_native_run": false,
+    "source_or_ref_mutation": false,
+    "ordinary_acceptance": false
+  },
+  "limits": [
+    "The current failed original attempts remain failed; this source change requires a new fixed-source native run.",
+    "This review does not claim that all later handoff, publication or recovery stages will pass.",
+    "No cold-restart, independent consumer, ordinary training adoption or full learning-loop acceptance is inferred."
+  ]
+}

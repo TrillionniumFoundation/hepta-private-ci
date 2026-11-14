@@ -39,11 +39,12 @@ pub(crate) async fn accept_initialized_exec_server(
 
     let initialize = read_exec_server_json(&mut websocket).await?;
     assert_eq!(initialize["method"], "initialize");
+    assert_eq!(initialize["params"]["processExitObservation"], true);
     websocket
         .send(Message::Text(
             json!({
                 "id": initialize["id"],
-                "result": {"sessionId": "test-session"},
+                "result": {"sessionId": "test-session", "processExitObservation": true},
             })
             .to_string()
             .into(),

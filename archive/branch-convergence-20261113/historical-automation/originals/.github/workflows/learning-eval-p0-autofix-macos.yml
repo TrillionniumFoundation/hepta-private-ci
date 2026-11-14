@@ -1,0 +1,115 @@
+name: learning.eval production closure autofix macOS
+
+on:
+  push:
+    branches:
+      - fix/learning-eval-production-closure-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: learning-eval-production-autofix-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  patch-and-verify-macos:
+    runs-on: macos-15
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: clippy,rustfmt
+
+      - name: Apply complete learning.eval closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply-learning-eval-p0.py
+          python3 scripts/apply-learning-eval-p1-p2.py
+          python3 scripts/apply-learning-eval-closure-fixes.py
+
+      - name: Format touched Rust crates
+        run: >-
+          cargo fmt --manifest-path codex-rs/Cargo.toml
+          --package codex-hepta-intelligence-eval
+          --package codex-hepta-intelligence
+          --package codex-hepta-agentd
+
+      - name: Verify generated state and closed world
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-learning-eval-status.py verify
+          python3 scripts/hepta-lane-e-closure.py self-test
+          python3 scripts/hepta-lane-e-closure.py verify
+          bash scripts/hepta-learning-eval-private-api.sh
+
+      - name: Compile and test migrated boundary
+        working-directory: codex-rs
+        run: |
+          cargo check --locked -p codex-hepta-intelligence-eval -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
+          just test --locked -p codex-hepta-intelligence-eval
+          just test --locked -p codex-hepta-intelligence plasticity_product --test-threads=1
+          just test --locked -p codex-hepta-agentd intelligence_evaluation --test-threads=1
+
+      - name: Run injected durability and capacity tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          cd codex-rs
+          just test --locked -p codex-hepta-intelligence-eval qualification_sink_file --test-threads=1
+          just test --locked -p codex-hepta-intelligence-eval attempt_journal --test-threads=1
+          HEPTA_LEARNING_EVAL_CAPACITY_REPORT=../.hepta-evidence/learning-eval/capacity.json \
+            just test --locked -p codex-hepta-intelligence-eval \
+            checkpoint_compacts_fence_history_and_emits_capacity_measurement \
+            --test-threads=1
+          test -s ../.hepta-evidence/learning-eval/capacity.json
+
+      - name: Strict lint migrated boundary
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked
+          -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
+          -p codex-hepta-agentd
+          --all-targets -- -D warnings
+
+      - name: Commit verified implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            .github/workflows/hepta-lane-e-gap-closure.yml \
+            codex-rs/hepta-intelligence-eval \
+            codex-rs/hepta-agentd/src/intelligence_evaluation.rs \
+            codex-rs/hepta-intelligence/src/plasticity_product.rs \
+            docs/modules/learning.eval \
+            qualification/fixtures/learning-eval-private-api \
+            qualification/module-execution-dossiers/detail/learning.eval.md \
+            scripts/hepta-lane-e-closure.py \
+            scripts/hepta-learning-eval-evidence.py \
+            scripts/hepta-learning-eval-private-api.sh \
+            scripts/hepta-learning-eval-status.py
+          if git diff --cached --quiet; then
+            echo "verified implementation already committed"
+            exit 0
+          fi
+          git config user.name hepta-learning-eval-ci
+          git config user.email hepta-learning-eval-ci@users.noreply.github.com
+          git commit -m "learning.eval: close production durability and evidence gaps"
+          git push origin HEAD:fix/learning-eval-production-closure-20260927

@@ -1,0 +1,28 @@
+test_actual_root_session_and_grant_surround_initial_effects (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_actual_root_session_and_grant_surround_initial_effects) ... ok
+test_capture_selects_actual_current_and_releases_external_owners (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_capture_selects_actual_current_and_releases_external_owners) ... ok
+test_file_custody_and_alias_rejection_precede_owner_initialization (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_file_custody_and_alias_rejection_precede_owner_initialization) ... ok
+test_main_calls_the_actual_assembly_before_running (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_main_calls_the_actual_assembly_before_running) ... ok
+test_profile_rejects_competing_authority_inputs_and_unreadable_time (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_profile_rejects_competing_authority_inputs_and_unreadable_time) ... ok
+test_sealed_data_cannot_replace_actual_model_or_root_target (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_sealed_data_cannot_replace_actual_model_or_root_target) ... ERROR
+test_writer_uses_the_original_checkpoint_without_a_fake_target (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_writer_uses_the_original_checkpoint_without_a_fake_target) ... ok
+
+======================================================================
+ERROR: test_sealed_data_cannot_replace_actual_model_or_root_target (test_ordinary_initial_q24_source_closure.OrdinaryInitialQ24SourceTests.test_sealed_data_cannot_replace_actual_model_or_root_target)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_ordinary_initial_q24_source_closure.py", line 60, in test_sealed_data_cannot_replace_actual_model_or_root_target
+    self.reject_removal("production_initial_q24_deployment.rs", "fn read(", marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_initial_artifact_readview_source_closure.py", line 74, in reject_removal
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 715, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 687, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+initial_artifact_source_proof.VerificationFailure: codex-rs/hepta-agentd/src/production_initial_q24_deployment.rs:fn read(: required code order missing: ['file.metadata()?.len()', 'size == 0 || size > 1_048_576', 'validate_sealed(&file, size)?', 'file.rewind()?', 'take(size + 1).read_to_end(&mut bytes)?', 'validate_sealed(&file, size)?', 'bytes.len() as u64 != size', 'serde_json::from_slice(&bytes)?', 'data.clock != super::clock::DOMAIN', 'crate::neuron_generation_process_identity_digest_v1(identity)?', 'OriginalRootInitialLaunchDataV1::from_original_deployment_value(data.initial)?', 'OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(', 'initial.mode != RootGenerationInitialModeV1::Reserve', 'source.fence.owner_agent_id != identity.agent_id', 'identity.spawn_generation.checked_add(1) != Some(source.fence.generation)', 'super::clock::require_source_deadline(&source.source)?', 'LoadedCellQ24ModelV1::open_files(', 'files.read(&paths.base)?', 'files.read(&paths.encoder)?', 'files.read(&paths.heads)?', 'components: model.components().clone()', 'bundle.digest().map_err(invalid)?', 'crate::circuit_feature_initial_root::require_feature(']
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.329s
+
+FAILED (errors=1)

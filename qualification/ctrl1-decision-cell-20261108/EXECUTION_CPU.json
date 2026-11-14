@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.ctrl1.campaign-invocation.v1",
+  "status": "COMPLETED",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "ndu_ctrl1.sensitivity_run",
+    "--output",
+    "/workspace/scratch/839e1cbe28dd/hepta-private-ci/qualification/ctrl1-decision-cell-20261108/cpu_allowance"
+  ],
+  "runtime": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "system": "Linux",
+    "machine": "x86_64"
+  },
+  "started_utc": "2026-11-08T11:43:59.727592+00:00",
+  "sources_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+  "core_code_commit": "472c825a87220574acc5338afe59558e1ad2038f",
+  "ordering": "after primary completed; no policy replay running concurrently",
+  "returncode": 0,
+  "finished_utc": "2026-11-08T11:47:18.693886+00:00",
+  "elapsed_wall_seconds": 198.96417746398947,
+  "log_sha256": "420cf11ca2256422440daadb418edc6ba528dd862dd169f6f794f2bc583a5208",
+  "source_unchanged": true
+}

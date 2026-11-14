@@ -219,6 +219,7 @@ impl InProcessClientStartArgs {
     /// Builds initialize params from caller-provided metadata.
     pub fn initialize_params(&self) -> InitializeParams {
         let capabilities = InitializeCapabilities {
+            process_indeterminate: true,
             experimental_api: self.experimental_api,
             request_attestation: false,
             extensions: None,
@@ -846,13 +847,13 @@ mod tests {
         channel_capacity: usize,
     ) -> TestClient {
         let codex_home = TempDir::new().expect("temp dir");
-        let config = Arc::new(build_test_config_for_codex_home(codex_home.path()).await);
-        let state_db = init_state_db(config.as_ref())
+        let mut config = build_test_config_for_codex_home(codex_home.path()).await;
+        let state_db = init_state_db(&mut config)
             .await
             .expect("state db should initialize for in-process test");
         let client = InProcessAppServerClient::start(InProcessClientStartArgs {
             arg0_paths: Arg0DispatchPaths::default(),
-            config,
+            config: Arc::new(config),
             cli_overrides: Vec::new(),
             loader_overrides: LoaderOverrides::default(),
             strict_config: false,

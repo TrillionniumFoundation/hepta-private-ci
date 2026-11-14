@@ -1,0 +1,40 @@
+{
+  "actual_uid_zero_driver_line_present": true,
+  "archive": "final-bbab-v1-evidence.tar.gz",
+  "executed_driver": "drivers/run_final_round2.py",
+  "executed_driver_sha256": "9369d3a9835a44442d6b4871826b97929cc77ea33b35d0301b2ab5b82a239424",
+  "execution_and_log_hashes": {
+    "ordinary": {
+      "execution_sha256": "a3feb6ab3ca8567fa7e66ab08cd2fb3a5bd3474f604bee1e79025eaa1636f310",
+      "log_sha256": "042398eb14764c47a96ad22be09452d52206075214ff5514453012d87bff9892",
+      "terminal_summary": {
+        "summary_lines": [
+          "     Summary [  62.751s] 510 tests run: 510 passed, 1068 skipped"
+        ]
+      }
+    },
+    "root": {
+      "execution_sha256": "c7b6dc685dcbf9bddce28493b440d33d518f7b6e52ec6f7cd1ba7670deafcb4e",
+      "log_sha256": "f540c29bcca344eb64119abe65c4487bf13bde6dec2216969b3ee08a91d9f61b",
+      "terminal_summary": {
+        "summary_lines": [
+          "     Summary [   0.225s] 6 tests run: 6 passed, 902 skipped"
+        ]
+      }
+    }
+  },
+  "inventory_rows_verified": 55,
+  "schema": "hepta.learn.archive-integrity-review.v1",
+  "sha256": "63651d42e94ef28dc9e4e11ea6eb508f10b30d7022c9c279426568ff0d8137e6",
+  "source_after": {
+    "head": "bbab98d805f5c44c1a70a91f0dfd98821adddecc",
+    "status": "",
+    "tree": "e11487778d16d8eb30900e2c5dcc62e39372cf41"
+  },
+  "source_before": {
+    "head": "bbab98d805f5c44c1a70a91f0dfd98821adddecc",
+    "status": "",
+    "tree": "e11487778d16d8eb30900e2c5dcc62e39372cf41"
+  },
+  "status": "PASS_INTEGRITY_REVIEW"
+}

@@ -1,0 +1,61 @@
+--- a/codex-rs/hepta-memory/LANE_C_SQLITE.md
++++ b/codex-rs/hepta-memory/LANE_C_SQLITE.md
+@@ -121,8 +121,8 @@
+ or any other changed cut. The witness is an exact equality fence, not an
+ ordering proof, signature, or proof that the latest witness was retained.
+ Hosts must authenticate and preserve it independently if rollback protection is
+-required. Descriptor-bound writable `open_with_recovery` is now a distinct
+-source-implemented admission path. It acquires an exclusive store fence, copies
++required. On Unix, descriptor-bound writable `open_with_recovery` is a distinct
++source-implemented private-copy admission path. It acquires an exclusive store fence, copies
+ retained database/WAL/journal descriptors into a fresh private generation,
+ requires an independently authenticated exact-current-cut anchor and externally
+ verified production authority/fence, runs schema/integrity checks, checkpoints
+@@ -130,6 +130,34 @@
+ `CognitiveStore::open` remains weaker because it has no independent currentness
+ proof and must never be used as a recovery fallback after admission failure.
+ 
++The source support boundaries are platform- and API-specific; this table is not
++native execution or recovery qualification evidence:
++
++| API | Unix source behavior | Windows source behavior |
++| --- | --- | --- |
++| `CognitiveStore::open` | Ordinary path-based open, bootstrap/migration and integrity checks; no independent current-cut admission | Ordinary path-based open and integrity checks; no descriptor-bound recovery guarantee |
++| `CognitiveStore::open_read_only_recovery` | Bounded retained-descriptor cold image, no sidecars, exact current-cut admission; no writer conversion | Descriptor binding returns `Indeterminate`; no recovered image |
++| `CognitiveStore::open_with_recovery` | Retained-descriptor private-copy recovery with the authority, fencing and activation checks above | Descriptor binding returns `Indeterminate`; no recovered writer |
++| `SqliteConfig::open_immutable_recovery_pool` / `open_identity_bound_durable_evidence_pool` | After identity revalidation, return `Unavailable`; general descriptor-backed VFS pools remain unimplemented | No valid recovery guard can be established; descriptor binding/revalidation returns `Indeterminate` |
++
++The Windows branches of the lower-level cold-image and recovery-copy helpers
++also return `Unavailable`. The existing Windows path/reparse-point checks and
++directory barriers do not supply the missing retained-handle backend. Windows
++recovery remains unimplemented: it requires qualified parent/database/sidecar
++identity retention, private ownership/ACL and link validation, bounded copying,
++and safe activation/durability semantics before any positive admission claim.
++These are implementation prerequisites, not completed work or permission to
++weaken `Indeterminate` checks.
++
++Ordinary reopening of an unchanged seeded store and observing the same anchor
++is a persistence control, not recovery admission or a fallback for a rejected
++image. Separately, `hepta-operations::DurableOperationStore::open` opens its own
++path-based SQLite store and performs expired-lease recovery. That lease/effect
++reconciliation is not Memory's descriptor-bound current-cut recovery. Unknown
++effects remain `Indeterminate` and require independent terminal reconciliation;
++a Memory recovery implementation does not by itself qualify Operations backup
++restoration or authorize redispatch.
++
+ Whole-scope `lane_c_snapshot` remains bounded to 16,384 immutable revisions,
+ 65,536 citations, and 65,536 source rows; exceeding those pilot bounds returns
+ `Unavailable`. For larger scopes, `lane_c_snapshot_page` keyset-pages at most
+@@ -146,8 +174,10 @@
+ `lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
+ proof-bound paging, committed deletions, scope and verification/time filters,
+ context binding, and restoration of an older valid SQLite backup.
+-`cognitive_store_recovery_tests.rs` exercises descriptor-bound writable
+-recovery, exclusive fencing, stale/current anchors and hostile file identities.
++`cognitive_store_recovery_tests.rs` covers descriptor-bound writable recovery,
++exclusive fencing, stale/current anchors and hostile file identities. Positive
++writable recovery requires the Unix backend; Windows retains the unsupported,
++fail-closed boundary described above.
+ Run with `just test -p codex-hepta-memory`; exact-candidate CI also records the
+ durable performance profiles described in the module guide.
+ 

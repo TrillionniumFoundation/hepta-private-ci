@@ -28,6 +28,10 @@ codex_rust_crate(
         "@platforms//os:macos": 1,
         "//conditions:default": 0,
     }),
+    unit_test_extra_binaries = [
+        "//codex-rs/cli:codex",
+        "//codex-rs/code-mode-host:codex-code-mode-host",
+    ],
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

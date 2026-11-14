@@ -20,6 +20,26 @@ class TypedAuthorityCallTests(unittest.TestCase):
             )
         )
 
+    def test_arc_clone_preserves_the_original_authority_receiver(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Arc<Gate>) { let renamed = Arc::clone(original); renamed.enter(); }"
+            )
+        )
+
+    def test_unknown_shared_clone_cannot_hide_possible_authority(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn f(known: &Gate) { let opaque = Arc::clone(&unknown); opaque.enter(); }"
+            )
+
+    def test_shared_clone_of_explicit_other_type_is_not_authority(self):
+        self.assertFalse(
+            self.match(
+                "fn f(known: &Gate, other: &Arc<Other>) { let alias = std::sync::Arc::clone(other); alias.enter(); }"
+            )
+        )
+
     def test_constructor_binding_never_depends_on_receiver_name(self):
         self.assertTrue(
             self.match("fn f() { let surprise = Gate::open(); surprise.enter(); }")

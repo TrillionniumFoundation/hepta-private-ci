@@ -1,0 +1,536 @@
+{
+  "schema_version": 1,
+  "title": "Ordinary retained-A to new-Starting successor reachability",
+  "source": {
+    "commit": "19894714403a97fcd58ca8c592e75761de95687c",
+    "tree": "8c64ab5145f279cafec363130d2a917075800e56",
+    "parent": "2125da36a0e49a19b725c28bb150900f20caac7b",
+    "git_commit_api_verified": true,
+    "source_files": [
+      {
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "git_blob": "bc38be8d1b3a9e85a42bb92c5279db40b9e0e404",
+        "bytes": 50847,
+        "sha256": "dedcbf2fd90878245f5b9a81d025673105ed6c8f34d1d46d9b54bfa35fa9c651",
+        "lines": 1200
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/control.rs",
+        "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60",
+        "bytes": 8152,
+        "sha256": "77614635783d80778f597439f68400d594b0a1667bfe0f451b232fb8e66a4cef",
+        "lines": 237
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/tick.rs",
+        "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+        "bytes": 13368,
+        "sha256": "41a6deb682fa12fd2c8220dd69df00ae08e3c1cf4823d1bcd673bb0bf4864975",
+        "lines": 327
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+        "git_blob": "81bad8ba5840b72d1bd5fc8ab1e1172bb034b379",
+        "bytes": 15411,
+        "sha256": "ab8a30f222ba25f8848adc73045ae4f915e3c0e6f323866e0819f53f5991bf8f",
+        "lines": 362
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_publisher.rs",
+        "git_blob": "05cc0eb3422a208b58b8c86589cb82f451949f22",
+        "bytes": 8899,
+        "sha256": "87297590f1c4c46a1a40b55ecbea2211e3d7f92e32a80177b3a5d0f83ee5c35f",
+        "lines": 220
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+        "git_blob": "8aafbdb35ef4205b3da3d831014b6cba9e54af2f",
+        "bytes": 9203,
+        "sha256": "fc26a5ca641b3ec6659ad41ca5efa827772790867fa584852bea22b575089b41",
+        "lines": 234
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs",
+        "git_blob": "0cc4ac326828635bd0511331530957e8db8f3ba1",
+        "bytes": 1066,
+        "sha256": "bc1aa840d5fb84a753bd30c0eee689713c6664b0f62c32e60c73948b58526985",
+        "lines": 24
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+        "git_blob": "14a44ad294fd1138317c908cf973b6076925554e",
+        "bytes": 1445,
+        "sha256": "0508a0cb553ef6e4ad879f75b09eb7ce1bdbb4cab958a4df5aba65e939e20600",
+        "lines": 30
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+        "git_blob": "c8ffd1ca9f5158c0476274f35673ae7cc3418c37",
+        "bytes": 5044,
+        "sha256": "692c06f4a769782086eb19b9007445b98e8a45a83c4b887ea087bfd418ea42b8",
+        "lines": 99
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs",
+        "git_blob": "bcf77f36122c4f8b35173f49bbf29496a4c074d9",
+        "bytes": 1391,
+        "sha256": "2be68cb721df630913aa2e1fd9798ddb5a2ba52bbc7a0a3a5c3ed20a2fccc877",
+        "lines": 37
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_q24_successor_session.rs",
+        "git_blob": "942991414cbe42361e46b6c27407b828ff652f15",
+        "bytes": 3090,
+        "sha256": "66b5f5d6d8b07a1bad6b411345f59120511dd9ec5f7a72008c54328f9c7e8134",
+        "lines": 80
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+        "git_blob": "178cdbbdb2427a4bd330dd08e98e7d709a074c5e",
+        "bytes": 12602,
+        "sha256": "ea02bda266a052dbcf48b078763df2872fae92ba1ec47c2437f64bd08e9c135b",
+        "lines": 329
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+        "git_blob": "f606fa6e6e83a43674a8d811848897a8f8216ece",
+        "bytes": 21971,
+        "sha256": "7777844fa995681a3e27f04755724a6fe61aa17d1c9ae6a7bb1a3049780b7114",
+        "lines": 552
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_binding.rs",
+        "git_blob": "cc8241c10d4edec4171f468d372b362aea0ca1c1",
+        "bytes": 10926,
+        "sha256": "0d574498420f9cb2c812707a9b685e3410385507b4af09cb96d166bc435aa43b",
+        "lines": 272
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs",
+        "git_blob": "657f6fe7a1c0ac107cca4a69830de454b04a3932",
+        "bytes": 4743,
+        "sha256": "8b4e01592a92df406321e37069c0858968eb36cfe55398a05eaed5dc635f9443",
+        "lines": 125
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+        "git_blob": "34cd3e862f85b3d453dcbe457a8ce4523e2e07ac",
+        "bytes": 26061,
+        "sha256": "c1d1e507e0b609980abca78d55dc8b2ed6fcea19cac971817b2f6014a81ca395",
+        "lines": 622
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config.rs",
+        "git_blob": "6074dfea3af6c7f6862313f08c334bdf6cd60e99",
+        "bytes": 38990,
+        "sha256": "c36dcc8501a1fa57691bbf2c4537e699e419e049f2937e3b58ecfbc5d42f957a",
+        "lines": 1002
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+        "git_blob": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+        "bytes": 5089,
+        "sha256": "53868d4fd06628467a384e21f10445f804b98f90f1db0f9f70f5a82dc0ce4eb8",
+        "lines": 126
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+        "git_blob": "69c23bafd6c3a5515bbf4250864c7dee58866127",
+        "bytes": 7771,
+        "sha256": "f7e8e3bc775a37d8e4be1c7d36e324bbb603a065b69b6ff5a46ac2a09191a2bf",
+        "lines": 202
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs",
+        "git_blob": "c2afc2f93070dddfd1145b3a2ab8f219742e3b69",
+        "bytes": 15074,
+        "sha256": "d0144589b31e21e7bdf5424ba234e5f91606e58348bee2703aab92f64acd8f9f",
+        "lines": 373
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs",
+        "git_blob": "9c6cd4beb9a0d3169dcbac9e1364917eec3cf84b",
+        "bytes": 4589,
+        "sha256": "e9b639b4c463b71d240263b09a623fc47a145d4ce13c3412bf999755b93cf6e3",
+        "lines": 126
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_preparation.rs",
+        "git_blob": "7388e80da7f99c20e2189a05379190fbae987111",
+        "bytes": 8045,
+        "sha256": "141e444ac5c2e0574a0838158fdd0d581e92784e95d1b44198f509fb98b22995",
+        "lines": 204
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+        "git_blob": "cc92df568f1438eebe4eee8f3660b3439ef5bd22",
+        "bytes": 15923,
+        "sha256": "46267e23a4e60456d3bf666f5b6e68ab50fee4cacc24e3f912b2063bd95b81f9",
+        "lines": 431
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+        "git_blob": "00746463d49ea655658ff7ba88210cb00c278cf3",
+        "bytes": 1849,
+        "sha256": "e0d49fdceddddd5c621130ee4df527b0c582090d006196756c1c13b4cf10cf26",
+        "lines": 58
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_source_codec.rs",
+        "git_blob": "59b25f0c4e38b192e8357e86ad06564ac3da7342",
+        "bytes": 19107,
+        "sha256": "6fae0f458f10269dd44ac14128d314d851603d4abad2c6c3f8b7ef45a99a3904",
+        "lines": 543
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+        "git_blob": "6003d3506f6780c0b17559ba75aa3b38275a1d84",
+        "bytes": 9719,
+        "sha256": "37d442f445df3cf9ae5829dbc9d70d656d2f33a16d8cb69364dfcde22457b699",
+        "lines": 253
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs",
+        "git_blob": "9f0828d960f07d2bd7ff4edad13f70cd12a53987",
+        "bytes": 18198,
+        "sha256": "641341bffe726a29c56afa54d99f7ed2c90d0368ec8b32842a6ff9a4e6464650",
+        "lines": 444
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_retained_source.rs",
+        "git_blob": "a54c691e84e93b7c6e4b3c85a332bcff4c549688",
+        "bytes": 1714,
+        "sha256": "1bbb240c6cd9a7f23708d5f7a16ac22e1d059d1e16d5359837238d9d2b51a1d5",
+        "lines": 43
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+        "git_blob": "659036744c75d269509e134c924d6eb6fa84630f",
+        "bytes": 4054,
+        "sha256": "e805f96728bcf46e8380b421c3406426707f83986e110ab6b2859040014001a5",
+        "lines": 108
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+        "git_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+        "bytes": 16197,
+        "sha256": "4ddfe5b8a630433726fd530060608c52f6906cf25b6479a646449a1b1bac495e",
+        "lines": 459
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/native_g2_entry/recovery_registration.rs",
+        "git_blob": "758ea03c772891b607a52cd25ecfd215557de0a9",
+        "bytes": 2880,
+        "sha256": "ae37c38e5a3aec8409508602342e1b6e148df25cd0d3e2d4921979bfb0c29644",
+        "lines": 70
+      }
+    ]
+  },
+  "scope": {
+    "method": "read-only exact-source audit",
+    "native_executed": false,
+    "tests_executed": false,
+    "root_operations_executed": false,
+    "services_stopped": false,
+    "ref_changed": false,
+    "source_edited": false,
+    "fake_retirement": false,
+    "positive_two_phase_fixture_added": false,
+    "new_root_test_parents": 0
+  },
+  "conclusion": {
+    "ordinary_production_route": "not currently constructible through the examined original lifecycle",
+    "conditional_pending_capability": "implemented conditional entry; supplier join remains absent",
+    "first_join": "retained in-process original A capability must coexist with a legitimately new Starting Launch",
+    "contradiction": "actual old-process retirement required by Supervisor and Root adoption ends the address space holding the retained A capability",
+    "not_only_missing_deployment_keys": true,
+    "low_level_recovery_exists": true,
+    "not_a_claim_all_historical_reading_is_impossible": true
+  },
+  "findings": [
+    {
+      "id": "PENDING_PRECONDITIONS",
+      "refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_q24_successor.rs",
+          "line": 8,
+          "pattern": "pub async fn prepare_original_q24_successor(",
+          "git_blob": "0cc4ac326828635bd0511331530957e8db8f3ba1",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/production_q24_successor.rs#L8"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+          "line": 9,
+          "pattern": "pub(crate) async fn with_original_pending_successor(",
+          "git_blob": "14a44ad294fd1138317c908cf973b6076925554e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/config_q24_successor.rs#L9"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+          "line": 39,
+          "pattern": "pub(crate) async fn prepare_original_successor_context(",
+          "git_blob": "c8ffd1ca9f5158c0476274f35673ae7cc3418c37",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/learning_iteration_successor.rs#L39"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/learning_iteration_retained_source.rs",
+          "line": 7,
+          "pattern": "pub(crate) fn with_retained_q24_source(",
+          "git_blob": "a54c691e84e93b7c6e4b3c85a332bcff4c549688",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/learning_iteration_retained_source.rs#L7"
+        }
+      ],
+      "kind": "actual source predicates"
+    },
+    {
+      "id": "OPAQUE_RETAINED_SOURCE",
+      "refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+          "line": 24,
+          "pattern": "pub struct OriginalCellQ24RetainedLearningSourceV1",
+          "git_blob": "178cdbbdb2427a4bd330dd08e98e7d709a074c5e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs#L24"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+          "line": 50,
+          "pattern": "pub async fn retained_learning_source(",
+          "git_blob": "178cdbbdb2427a4bd330dd08e98e7d709a074c5e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs#L50"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs",
+          "line": 50,
+          "pattern": "pub async fn receive_q24_learning_with_retained_capability(",
+          "git_blob": "657f6fe7a1c0ac107cca4a69830de454b04a3932",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/production_q24_retained_learning.rs#L50"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_binding.rs",
+          "line": 91,
+          "pattern": "bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());",
+          "git_blob": "cc8241c10d4edec4171f468d372b362aea0ca1c1",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/cell_q24_task_ledger_binding.rs#L91"
+        }
+      ],
+      "kind": "missing new-incarnation read-only custody transition"
+    },
+    {
+      "id": "SUPERVISOR_REAL_EXIT",
+      "refs": [
+        {
+          "path": "codex-rs/hepta-supervisor/src/control.rs",
+          "line": 118,
+          "pattern": "pub(crate) fn restart_slot(",
+          "git_blob": "97faf9d3ee33b31808aedfa47bf650fd17938e60",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-supervisor/src/control.rs#L118"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick.rs",
+          "line": 156,
+          "pattern": "if let ProcessState::Exited(exit) = observation.state",
+          "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-supervisor/src/tick.rs#L156"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick.rs",
+          "line": 269,
+          "pattern": "fn finalize_exit(",
+          "git_blob": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-supervisor/src/tick.rs#L269"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+          "line": 101,
+          "pattern": "pub(crate) fn start_release_slot(",
+          "git_blob": "81bad8ba5840b72d1bd5fc8ab1e1172bb034b379",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-supervisor/src/recovery.rs#L101"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "line": 227,
+          "pattern": "if record.lifecycle.lifecycle != AgentLifecycle::Starting",
+          "git_blob": "6074dfea3af6c7f6862313f08c334bdf6cd60e99",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/config.rs#L227"
+        }
+      ],
+      "kind": "original lifecycle boundary preserved"
+    },
+    {
+      "id": "ROOT_REAL_RETIREMENT",
+      "refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_publisher.rs",
+          "line": 32,
+          "pattern": "pub fn observe(",
+          "git_blob": "05cc0eb3422a208b58b8c86589cb82f451949f22",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/authority_host_checkpoint_publisher.rs#L32"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+          "line": 190,
+          "pattern": "pub(super) fn validate_adoption(",
+          "git_blob": "8aafbdb35ef4205b3da3d831014b6cba9e54af2f",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs#L190"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs",
+          "line": 47,
+          "pattern": "pub(crate) fn observe(",
+          "git_blob": "9c6cd4beb9a0d3169dcbac9e1364917eec3cf84b",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs#L47"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/native_g2_entry/recovery_registration.rs",
+          "line": 56,
+          "pattern": "registration.peer_pid = boot.pids[2];",
+          "git_blob": "758ea03c772891b607a52cd25ecfd215557de0a9",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/native_g2_entry/recovery_registration.rs#L56"
+        }
+      ],
+      "kind": "independent original kernel and protected-checkpoint boundary preserved"
+    },
+    {
+      "id": "RECOVERY_PRESENT_BUT_NOT_AUTHORIZATION",
+      "refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+          "line": 195,
+          "pattern": "pub fn recover(",
+          "git_blob": "cc92df568f1438eebe4eee8f3660b3439ef5bd22",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/circuit_task_source.rs#L195"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+          "line": 16,
+          "pattern": "pub struct CircuitTaskSourceReadbackV1",
+          "git_blob": "00746463d49ea655658ff7ba88210cb00c278cf3",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/circuit_task_source_readback.rs#L16"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs",
+          "line": 150,
+          "pattern": "pub fn capture(",
+          "git_blob": "9f0828d960f07d2bd7ff4edad13f70cd12a53987",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs#L150"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+          "line": 62,
+          "pattern": "pub fn recover(",
+          "git_blob": "6003d3506f6780c0b17559ba75aa3b38275a1d84",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs#L62"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+          "line": 118,
+          "pattern": "pub fn recover_with_physical_material(",
+          "git_blob": "69c23bafd6c3a5515bbf4250864c7dee58866127",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/authority_host_session_material.rs#L118"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+          "line": 13,
+          "pattern": "pub fn from_root_writer_handoff(",
+          "git_blob": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/config_root_late_writer.rs#L13"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+          "line": 347,
+          "pattern": "impl Drop for AgentdRootAuthoritySession",
+          "git_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/root_authority_session.rs#L347"
+        }
+      ],
+      "kind": "existing lower-level APIs retained"
+    },
+    {
+      "id": "NO_RUNNING_STAGE_TRANSITION",
+      "refs": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+          "line": 14,
+          "pattern": "pub(crate) async fn with_root_q24_learning_owners(",
+          "git_blob": "659036744c75d269509e134c924d6eb6fa84630f",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/config_root_learning.rs#L14"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_q24_successor.rs",
+          "line": 9,
+          "pattern": "pub(crate) async fn with_original_pending_successor(",
+          "git_blob": "14a44ad294fd1138317c908cf973b6076925554e",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/config_q24_successor.rs#L9"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_q24_retained_learning.rs",
+          "line": 50,
+          "pattern": "pub async fn receive_q24_learning_with_retained_capability(",
+          "git_blob": "657f6fe7a1c0ac107cca4a69830de454b04a3932",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/19894714403a97fcd58ca8c592e75761de95687c/codex-rs/hepta-agentd/src/production_q24_retained_learning.rs#L50"
+        }
+      ],
+      "kind": "unimplemented product transition; no private-field workaround"
+    }
+  ],
+  "design_only_options": [
+    {
+      "id": "historical_source_to_new_incarnation",
+      "implemented": false,
+      "preserve": [
+        "original A operation, identity, signatures and source data",
+        "original witness and withdrawal evidence",
+        "real predecessor retirement",
+        "exact actual new Starting identity and original Root authorization",
+        "read-only owner custody"
+      ],
+      "forbid": [
+        "deserialize old in-memory capability",
+        "re-sign old evidence",
+        "revive retired task writer",
+        "claim CURRENT/nonce readback is new execution authority"
+      ]
+    },
+    {
+      "id": "continuing_running_incarnation_transition",
+      "implemented": false,
+      "requires": [
+        "explicit running worker phase transition",
+        "late Dataset-derived original Root learning/Model enrollment",
+        "actual source/drain/in-flight ordering",
+        "original one-shot and cancellation fences"
+      ],
+      "does_not_claim_new_Starting": true
+    }
+  ],
+  "still_external_after_code": [
+    "actual authorized old/new identities and Root deployment",
+    "original source/Ledger/Cell evidence and witness custody",
+    "current Artifact/Selection/withdrawal and true FinalUse authorities",
+    "actual process lifecycle observations and new role-specific inputs"
+  ],
+  "ordinary_acceptance": {
+    "complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "independent_consumer": 0,
+    "physical_daemon_root_cold_restart": 0
+  },
+  "related_artifacts": {
+    "earlier_cold_audit_manifest": "cc07067d834de6f36387c57cdb01a794b95b1c78",
+    "earlier_cold_audit_source": "2125da36a0e49a19b725c28bb150900f20caac7b",
+    "conditional_successor_manifest": "f5cacf02e1008315062d55e91926e76d24c4eba9",
+    "successor_docs_correction_manifest": "28c8b5a092793b980682410b78b1d940fb6014fd",
+    "sibling_lifecycle_audit": "d4a5cc19ba56d96d98f3a85e682a46557a4b571d",
+    "separate_late_writer_manifest": "5befaba241b2f9f908cbd6b758986e7060268fc0",
+    "separate_late_writer_static_review": "bb15f4a56f076ddfe14aaa2ce3d596ccb32d1595",
+    "late_writer_is_outside_fixed198_source": true
+  },
+  "investigation_limits": [
+    "No whole-repository test or checker was run for this report.",
+    "No service stop, process retirement, Root reopen or cold restart was executed.",
+    "Source assertions are tied to fetched file bytes; subsequent integrated commits require their own qualification.",
+    "The proposed positive fixture was stopped rather than substituting a fake Driver exit, fabricated Ready state or manual Registry transition."
+  ]
+}

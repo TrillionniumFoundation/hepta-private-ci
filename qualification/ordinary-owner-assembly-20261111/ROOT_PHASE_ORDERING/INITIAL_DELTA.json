@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.initial_component_ordering.exact_ops.v2",
+  "source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+  "supersedes_ops": "8f5aa09c78bc0f29f6871cfd994d76ceffb39535",
+  "revision": "Removes only the optional implementation-mirroring latch unit test; all actual component/helper semantics remain unchanged.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "base_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+      "base_bytes": 19872,
+      "base_sha256": "539c7677c4bfeb2e97d7257692d3565ff0b7c2a00ace34e6461b0f7b43ae8cf0",
+      "post_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+      "post_bytes": 20232,
+      "post_sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18",
+      "operations": [
+        {
+          "old_text": "    serial: tokio::sync::Semaphore,\n}",
+          "new_text": "    serial: tokio::sync::Semaphore,\n    #[cfg(test)]\n    refresh_failed: AtomicBool,\n}",
+          "reason": "Keep refresh failure history only in test builds."
+        },
+        {
+          "old_text": "            serial: tokio::sync::Semaphore::new(1),\n        });",
+          "new_text": "            serial: tokio::sync::Semaphore::new(1),\n            #[cfg(test)]\n            refresh_failed: AtomicBool::new(false),\n        });",
+          "reason": "Initialize the test-only latch once; no clearing or production field."
+        },
+        {
+          "old_text": "            eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=refresh-serial error={_error:?}\");\n        })?;\n    let started",
+          "new_text": "            eprintln!(\"ROOT_SESSION_DIAGNOSTIC phase=refresh-serial error={_error:?}\");\n        })?;\n    // The test witness drops before this same serial permit on every failure.\n    #[cfg(test)]\n    let mut refresh_completion = tests::RefreshCompletion::new(&live.refresh_failed);\n    let started",
+          "reason": "Declare the test witness after the original permit so failure is recorded before permit release."
+        },
+        {
+          "old_text": "            \"ROOT_SESSION_DIAGNOSTIC phase=refresh-final-current started_ns={started} ended_ns={ended} error={_error:?}\"\n        );\n    })?;\n    Ok(())",
+          "new_text": "            \"ROOT_SESSION_DIAGNOSTIC phase=refresh-final-current started_ns={started} ended_ns={ended} error={_error:?}\"\n        );\n    })?;\n    #[cfg(test)]\n    refresh_completion.complete();\n    Ok(())",
+          "reason": "Only the existing successful final current check completes this attempt."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "base_blob": "33f272ae2035be46d6767b8eba6164fc2b7a5df8",
+      "base_bytes": 15262,
+      "base_sha256": "463197ba874c401b172a4c6c60cb4c3168ca70b512c737ea651f2530200b67ad",
+      "post_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+      "post_bytes": 20216,
+      "post_sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871",
+      "operations": [
+        {
+          "old_text": "#[path = \"root_authority_file_custody_tests.rs\"]\nmod file_custody;\n",
+          "new_text": "#[path = \"root_authority_file_custody_tests.rs\"]\nmod file_custody;\n\n\n// A prior failed/cancelled refresh must not be misclassified as an intentional\n// component shutdown merely because its worker has not returned yet.\npub(super) struct RefreshCompletion<'a> {\n    failed: &'a AtomicBool,\n    complete: bool,\n}\nimpl<'a> RefreshCompletion<'a> {\n    pub(super) fn new(failed: &'a AtomicBool) -> Self {\n        Self {\n            failed,\n            complete: false,\n        }\n    }\n\n    pub(super) fn complete(&mut self) {\n        self.complete = true;\n    }\n}\nimpl Drop for RefreshCompletion<'_> {\n    fn drop(&mut self) {\n        if !self.complete {\n            self.failed.store(true, Ordering::Release);\n        }\n    }\n}\n\n/// End the original observation feed only when its whole original read and\n/// consumer barrier have finished. Actual inputs/session Drop performs the\n/// fencing and abort; this helper never refreshes or pre-aborts the worker.\npub(crate) async fn drop_original_production_after_idle(\n    inputs: crate::AgentdRootProductionInputs,\n    timeout: Duration,\n    before_drop: impl FnOnce() -> std::io::Result<()>,\n) -> std::io::Result<()> {\n    let live = Arc::clone(&inputs.session.live);\n    let worker = inputs.session.worker.abort_handle();\n    tokio::time::timeout(timeout, async move {\n        let _serial = live\n            .serial\n            .acquire()\n            .await\n            .map_err(std::io::Error::other)?;\n        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {\n            return Err(std::io::Error::other(\n                \"original Root observation worker failed or finished before deliberate Drop\",\n            ));\n        }\n        live.current().map_err(std::io::Error::other)?;\n        before_drop()?;\n        // The permit prevents any new refresh from starting during this check\n        // and the actual Drop. A retained task can now test that original Drop.\n        if live.refresh_failed.load(Ordering::Acquire) || worker.is_finished() {\n            return Err(std::io::Error::other(\n                \"original Root observation worker failed or finished before deliberate Drop\",\n            ));\n        }\n        drop(inputs);\n        while !worker.is_finished() {\n            tokio::task::yield_now().await;\n        }\n        Ok(())\n    })\n    .await\n    .map_err(|_| {\n        std::io::Error::new(\n            std::io::ErrorKind::TimedOut,\n            \"original Root observation worker did not finish within deliberate Drop budget\",\n        )\n    })?\n}\n\n\n#[cfg(test)]\nimpl AgentdRootAuthoritySession {\n    /// Wait only for the original feed and consumer barrier to observe one\n    /// same-epoch revocation. This never refreshes, updates or grants authority.\n    pub(crate) async fn component_wait_for_original_revocations(\n        &self,\n        consumers: [&FinalUseAuthority; 2],\n        expected: &FinalUseRevocations,\n        timeout: Duration,\n    ) -> std::io::Result<()> {\n        tokio::time::timeout(timeout, async {\n            loop {\n                let serial = self\n                    .live\n                    .serial\n                    .acquire()\n                    .await\n                    .map_err(std::io::Error::other)?;\n                if self.live.refresh_failed.load(Ordering::Acquire) || self.worker.is_finished() {\n                    return Err(std::io::Error::other(\n                        \"original Root observation worker failed or finished\",\n                    ));\n                }\n                let device = consumers[0]\n                    .revocation_head()\n                    .map_err(std::io::Error::other)?;\n                let notes = consumers[1]\n                    .revocation_head()\n                    .map_err(std::io::Error::other)?;\n                let actual = self.revocations().map_err(std::io::Error::other)?;\n                if device != actual || notes != actual {\n                    return Err(std::io::Error::other(\n                        \"original Root consumer barrier did not complete one exact head\",\n                    ));\n                }\n                if &actual == expected {\n                    return Ok(());\n                }\n                if actual.authority_epoch != expected.authority_epoch\n                    || actual.revision >= expected.revision\n                    || !expected\n                        .revoked_grant_ids\n                        .is_superset(&actual.revoked_grant_ids)\n                {\n                    return Err(std::io::Error::other(\n                        \"original Root revocation head cannot advance to the expected head\",\n                    ));\n                }\n                drop(serial);\n                tokio::time::sleep(Duration::from_millis(10)).await;\n            }\n        })\n        .await\n        .map_err(|_| {\n            std::io::Error::new(\n                std::io::ErrorKind::TimedOut,\n                \"original Root revocation feed did not reach the expected head\",\n            )\n        })?\n    }\n}\n",
+          "reason": "Append test-only sticky witness, actual idle+Drop helper and peer-authored bounded original revocation barrier reader; preserve the original 17 Root scenarios without a mirror test."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "base_blob": "c6ffe2f2404ce7f5ef66fe8212ade93f0ac7399b",
+      "base_bytes": 10567,
+      "base_sha256": "be4b4f1d765e7c6659978a82f0f1b20ce8a1297caf09249d6661d0ec97eeb33e",
+      "post_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+      "post_bytes": 13042,
+      "post_sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5",
+      "operations": [
+        {
+          "old_text": "                assert_eq!(socket.send(b\"DONE\")?, 4);\n                drop(production);\n                continue;\n",
+          "new_text": "                assert_eq!(socket.send(b\"DONE\")?, 4);\n                control(&socket, b\"STOP\")\n                    .with_context(|| format!(\"initial child {phase:?}: awaiting parent STOP\"))?;\n                // These original refusal paths may already have fenced their\n                // purpose. Do not demand fresh authority to close them.\n                drop(production);\n                assert_eq!(socket.send(b\"CLOSED\")?, 6);\n                control(&socket, b\"PHASE_COMPLETE\")\n                    .with_context(|| format!(\"initial child {phase:?}: awaiting original server completion\"))?;\n                continue;\n",
+          "reason": "Preserve negative raw Drop after all original refusal assertions, then wait for actual Root service outcome before advancing."
+        },
+        {
+          "old_text": "                    // This actual session drop fences the shared live verifier;\n                    // retaining the task/Current Arc cannot extend its authority.\n                    drop(production);\n                    assert!(task.require_bundle(&bundle).is_err());\n",
+          "new_text": "                    assert_eq!(socket.send(b\"RETIRE_READY\")?, 12);\n                    control(&socket, b\"RETIRE\")\n                        .with_context(|| format!(\"initial child {phase:?}: awaiting parent RETIRE\"))?;\n                    // Validate the retained task under the original serial\n                    // permit, then let actual inputs/session Drop fence it.\n                    crate::root_authority_session::tests::drop_original_production_after_idle(\n                        production,\n                        TIMEOUT,\n                        || {\n                            task.require_bundle(&bundle).map_err(io::Error::other)?;\n                            Ok(())\n                        },\n                    ).await.with_context(|| format!(\"initial child {phase:?}: retiring original idle session\"))?;\n                    assert!(task.require_bundle(&bundle).is_err());\n",
+          "reason": "RetiredSession keeps actual Drop causality: same live task succeeds inside original idle permit, actual production Drop, unchanged negative require_bundle."
+        },
+        {
+          "old_text": "                    assert_eq!(socket.send(b\"DONE\")?, 4);\n                    continue;\n",
+          "new_text": "                    assert_eq!(socket.send(b\"DONE\")?, 4);\n                    control(&socket, b\"STOP\")\n                        .with_context(|| format!(\"initial child {phase:?}: awaiting parent STOP\"))?;\n                    // The retained task was dropped before STABLE. No original\n                    // purpose client or target file is held while waiting.\n                    assert_eq!(socket.send(b\"CLOSED\")?, 6);\n                    control(&socket, b\"PHASE_COMPLETE\")\n                        .with_context(|| format!(\"initial child {phase:?}: awaiting original server completion\"))?;\n                    continue;\n",
+          "reason": "After actual retirement and dropped task, wait for all Root service threads; retain existing early-continue branch."
+        },
+        {
+          "old_text": "            assert_eq!(socket.send(b\"DONE\")?, 4);\n            drop(production);\n",
+          "new_text": "            assert_eq!(socket.send(b\"DONE\")?, 4);\n            control(&socket, b\"STOP\")\n                .with_context(|| format!(\"initial child {phase:?}: awaiting parent STOP\"))?;\n            if phase == Phase::Publish && plan.lose_ack {\n                // The original controlled ACK-loss lane must remain an error.\n                drop(production);\n            } else {\n                crate::root_authority_session::tests::drop_original_production_after_idle(\n                    production,\n                    TIMEOUT,\n                    || Ok(()),\n                ).await.with_context(|| format!(\"initial child {phase:?}: closing original idle session\"))?;\n            }\n            assert_eq!(socket.send(b\"CLOSED\")?, 6);\n            control(&socket, b\"PHASE_COMPLETE\")\n                .with_context(|| format!(\"initial child {phase:?}: awaiting original server completion\"))?;\n",
+          "reason": "Successful Publish/Recover drain original refresh before actual Drop; controlled ACK loss retains raw Drop and error expectation."
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "base_blob": "adb691cc4a90f5039e7960c1e39b39e2cb79d337",
+      "base_bytes": 23511,
+      "base_sha256": "005c8f5355c1917d065a5c5b929a7f7961448613d9c1405b11392ba7bef136ef",
+      "post_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+      "post_bytes": 24228,
+      "post_sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd",
+      "operations": [
+        {
+          "old_text": "                control(&self.offer, b\"STABLE\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting STABLE\"))?;\n",
+          "new_text": "                if phase == Phase::RetiredSession {\n                    control(&self.offer, b\"RETIRE_READY\")\n                        .with_context(|| format!(\"initial parent {phase:?}: awaiting RETIRE_READY\"))?;\n                    assert_eq!(self.offer.send(b\"RETIRE\")?, 6);\n                }\n                control(&self.offer, b\"STABLE\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting STABLE\"))?;\n",
+          "reason": "Retirement is coordinated before actual Drop, without replacing the retained-task negative assertion."
+        },
+        {
+          "old_text": "                control(&self.offer, b\"DONE\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting DONE\"))?;\n                Ok(())\n",
+          "new_text": "                control(&self.offer, b\"DONE\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting DONE\"))?;\n                assert_eq!(self.offer.send(b\"STOP\")?, 4);\n                control(&self.offer, b\"CLOSED\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting CLOSED\"))?;\n                Ok(())\n",
+          "reason": "Complete original STABLE/CHECKED/DONE proof before authorizing closure and require exact closed acknowledgement."
+        },
+        {
+          "old_text": "                served.with_context(|| format!(\"initial parent {phase:?}: original Root serving\"))?;\n            }\n            Ok(())\n",
+          "new_text": "                served.with_context(|| format!(\"initial parent {phase:?}: original Root serving\"))?;\n            }\n            // CLOSED alone is insufficient: all original service threads and\n            // the original success/refusal result above must also be complete.\n            assert_eq!(self.offer.send(b\"PHASE_COMPLETE\")?, 14);\n            Ok(())\n",
+          "reason": "Advance only after control thread and unchanged actual Root serve outcome both succeeded as expected."
+        }
+      ]
+    }
+  ],
+  "callers": {
+    "base_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "operations": [],
+    "reason": "Existing test modules and cfg(test)-only session witness. Original two session protected rows and original final_use_revocation_update external callset remain byte-identical."
+  }
+}

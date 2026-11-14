@@ -23,6 +23,7 @@ Rows without either option retain the original exact-symbol behavior.
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import os
 import re
@@ -37,11 +38,10 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "CALLERS.toml"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from hepta_typed_callers import (
-    UnresolvedTypedReceiver,
-    authority_fields,
-    has_authority_call,
-)
+typed_callers = importlib.import_module("hepta_typed_callers")
+UnresolvedTypedReceiver = typed_callers.UnresolvedTypedReceiver
+authority_fields = typed_callers.authority_fields
+has_authority_call = typed_callers.has_authority_call
 
 RAW_STRING_START = re.compile(r'r(#{0,255})"')
 
@@ -332,6 +332,23 @@ def _strip_cfg_test_items(code: str) -> str:
     alternatives such as `cfg(any(test, unix))` and `cfg(not(test))` are retained.
     """
 
+    # A separately included helper may carry its own Rust inner cfg. Only
+    # leading file attributes can gate this complete file: an inner cfg inside
+    # a nested module must never hide surrounding production calls.
+    preamble = 0
+    while True:
+        preamble = _skip_space(code, preamble)
+        if not code.startswith("#![", preamble):
+            break
+        end = _matching_delimiter(code, preamble + 2, "[", "]")
+        if end is None:
+            raise VerificationFailure("unbalanced Rust file attribute in caller scan")
+        attribute = code[preamble : end + 1]
+        cfg = re.fullmatch(r"#!\[\s*cfg\s*\((.*)\)\s*\]", attribute, re.DOTALL)
+        if cfg is not None and _cfg_without_test(cfg.group(1)) is False:
+            return "".join("\n" if char == "\n" else " " for char in code)
+        preamble = end + 1
+
     output = list(code)
     index = 0
     while index < len(code):
@@ -483,6 +500,8 @@ def _verify_boundary(
     boundary: Boundary,
     source_index: dict[str, str],
     ignored_fragments: tuple[str, ...],
+    *,
+    fields_by_receiver_type: dict[str, typed_callers.AuthorityFields] | None = None,
 ) -> dict[str, Any]:
     definition = root / boundary.definition_path
     if not definition.is_file():
@@ -499,11 +518,17 @@ def _verify_boundary(
     else:
         call_pattern = re.compile(boundary.call_pattern)
     try:
-        fields = (
-            authority_fields(source_index, boundary.receiver_type)
-            if boundary.receiver_type
-            else {}
-        )
+        if not boundary.receiver_type:
+            fields = {}
+        elif fields_by_receiver_type is None:
+            # Preserve the uncached four-argument path for independent checks.
+            fields = authority_fields(source_index, boundary.receiver_type)
+        else:
+            if boundary.receiver_type not in fields_by_receiver_type:
+                fields_by_receiver_type[boundary.receiver_type] = authority_fields(
+                    source_index, boundary.receiver_type
+                )
+            fields = fields_by_receiver_type[boundary.receiver_type]
     except UnresolvedTypedReceiver as error:
         raise VerificationFailure(f"{boundary.identifier}: {error}") from error
     observed: set[str] = set()
@@ -558,6 +583,132 @@ def _verify_boundary(
     }
 
 
+def _verify_required_order(
+    row: dict[str, Any],
+    code: str,
+    relative: str,
+    *,
+    literal_positions: dict[str, int] | None = None,
+) -> None:
+    sequences = row.get("required_order", [])
+    if not isinstance(sequences, list) or any(
+        not isinstance(sequence, list)
+        or len(sequence) < 2
+        or any(not isinstance(marker, str) or not marker for marker in sequence)
+        for sequence in sequences
+    ):
+        raise VerificationFailure(
+            f"{relative}: required_order must contain marker sequences"
+        )
+    for sequence in sequences:
+        offset = 0
+        for marker in sequence:
+            found = (
+                literal_positions[marker]
+                if literal_positions is not None and marker in literal_positions
+                else code.find(marker, offset)
+            )
+            if found < offset:
+                raise VerificationFailure(
+                    f"{relative}: required code order missing: {sequence!r}"
+                )
+            offset = found + len(marker)
+
+
+def _verify_function_order(
+    row: dict[str, Any], code: str, relative: str, source: str
+) -> None:
+    """Require call order inside one actual function, never across definitions."""
+    rows = row.get("required_function_order", [])
+    if not isinstance(rows, list):
+        raise VerificationFailure(f"{relative}: required_function_order must be a list")
+    for item in rows:
+        if not isinstance(item, dict):
+            raise VerificationFailure(f"{relative}: function order must be a table")
+        function = item.get("function")
+        sequence = item.get("sequence")
+        if not isinstance(function, str) or not re.fullmatch(
+            r"fn [A-Za-z_]\w*(?:<(?:[A-Za-z_]\w*(?:: [A-Za-z_]\w*)?|'[A-Za-z]\w*)"
+            r"(?:, (?:[A-Za-z_]\w*(?:: [A-Za-z_]\w*)?|'[A-Za-z]\w*))*>)?\(",
+            function,
+        ):
+            raise VerificationFailure(f"{relative}: exact function marker required")
+        if code.count(function) != 1:
+            raise VerificationFailure(
+                f"{relative}: unique code function required: {function}"
+            )
+        start = code.index(function)
+        end = _rust_item_end(code, start)
+        if end is None or code[end] != "}":
+            raise VerificationFailure(f"{relative}: function body required: {function}")
+        body = code[start : end + 1]
+        cursor = len(function)
+        while nested := re.search(r"\bfn\s+(?:r#)?\w+", body[cursor:]):
+            nested_start = cursor + nested.start()
+            nested_end = _rust_item_end(body, nested_start)
+            if nested_end is None:
+                raise VerificationFailure(
+                    f"{relative}: unresolved nested function: {function}"
+                )
+            body = (
+                body[:nested_start]
+                + "".join(
+                    "\n" if char == "\n" else " "
+                    for char in body[nested_start : nested_end + 1]
+                )
+                + body[nested_end + 1 :]
+            )
+            cursor = nested_end + 1
+        for marker in _string_tuple(item, "top_level") if "top_level" in item else ():
+            matches = list(re.finditer(re.escape(marker), body))
+            if len(matches) != 1:
+                raise VerificationFailure(
+                    f"{relative}: unique top-level code marker required: {marker}"
+                )
+            prefix = body[: matches[0].start()]
+            if prefix.count("{") - prefix.count("}") != 1:
+                raise VerificationFailure(
+                    f"{relative}: top-level function code required: {marker}"
+                )
+        # Locate only exact literal calls whose real code syntax survives the
+        # authoritative comment/literal/test/nested-function masks at that span.
+        # Other strings must never supply ordinary code guards.
+        literal_positions: dict[str, int] = {}
+        literal_calls = (
+            _string_tuple(item, "literal_calls") if "literal_calls" in item else ()
+        )
+        if len(set(literal_calls)) != len(literal_calls):
+            raise VerificationFailure(f"{relative}: duplicate literal call marker")
+        for marker in literal_calls:
+            masked = _strip_rust_non_code(marker)
+            if (
+                re.fullmatch(
+                    r'(?:\.[A-Za-z_]\w*|[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*)\("(?:[^"\\]|\\.)*"\)',
+                    marker,
+                )
+                is None
+                or not masked.strip()
+                or masked == marker
+            ):
+                raise VerificationFailure(f"{relative}: exact literal call required")
+            matches = [
+                match.start()
+                for match in re.finditer(re.escape(marker), source[start : end + 1])
+                if body[match.start() : match.end()] == masked
+            ]
+            if len(matches) != 1:
+                raise VerificationFailure(
+                    f"{relative}: unique actual literal call required"
+                )
+            literal_positions[marker] = matches[0]
+        _verify_required_order(
+            {"required_order": [sequence]},
+            body,
+            relative + ":" + function,
+            literal_positions=literal_positions,
+        )
+
+
 def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
     rows = data.get("protected_file")
     if not isinstance(rows, list) or not rows:
@@ -577,6 +728,8 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                     f"{relative}: required marker missing: {marker!r}"
                 )
         code = _strip_cfg_test_items(_strip_rust_non_code(text))
+        _verify_required_order(row, code, relative)
+        _verify_function_order(row, code, relative, text)
         for marker in _string_tuple(row, "forbidden"):
             pattern = re.escape(marker)
             if marker and (marker[0].isalnum() or marker[0] == "_"):
@@ -606,8 +759,17 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
         source_index[source_path.relative_to(root).as_posix()] = _strip_cfg_test_items(
             code
         )
+    # This index is immutable for this verify call. Never retain derived fields
+    # across invocations: source-closure tests edit the same paths between checks.
+    fields_by_receiver_type: dict[str, typed_callers.AuthorityFields] = {}
     results = [
-        _verify_boundary(root, boundary, source_index, ignored)
+        _verify_boundary(
+            root,
+            boundary,
+            source_index,
+            ignored,
+            fields_by_receiver_type=fields_by_receiver_type,
+        )
         for boundary in boundaries
     ]
     protected = _verify_protected_files(root, data)
@@ -620,6 +782,140 @@ def verify(root: Path = ROOT, manifest_path: Path | None = None) -> dict[str, An
         "rustFilesScanned": len(files),
         "authorityGranted": False,
     }
+
+
+def _self_test_typed_field_cache() -> None:
+    """Compare real cached/uncached scans and invalidate on fresh source reads."""
+    from unittest.mock import patch
+
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        source = root / "src"
+        source.mkdir()
+        definition = source / "owner.rs"
+        holder = source / "holder.rs"
+        caller = source / "caller.rs"
+        definition.write_text(
+            "pub struct ActualAuthority;\npub struct Unrelated;\n"
+            "impl ActualAuthority {\n"
+            "    pub fn run(&self) {}\n"
+            "    pub fn inspect(&self) {}\n"
+            "}\n",
+            encoding="utf-8",
+        )
+        manifest = (
+            "schema_version = 2\n"
+            'plan_id = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"\n'
+            'source_roots = ["src"]\n'
+            'ignored_path_fragments = ["/tests/", "/examples/", "_tests.rs"]\n'
+            "[authority]\nproduction = false\n"
+            "[privileged_inventory]\n"
+            'required_boundary_ids = ["actual_run", "actual_inspect"]\n'
+        )
+        for method in ("run", "inspect"):
+            manifest += (
+                "[[boundary]]\n"
+                f'id = "actual_{method}"\n'
+                f'symbol = "ActualAuthority::{method}"\n'
+                'definition_path = "src/owner.rs"\n'
+                'definition_markers = ["pub struct ActualAuthority;"]\n'
+                'product_callers = ["src/caller.rs"]\n'
+                'caller_markers = ["fn check("]\n'
+                'receiver_type = "ActualAuthority"\n'
+                f'receiver_methods = ["{method}"]\n'
+            )
+        manifest += (
+            '[[protected_file]]\npath = "src/owner.rs"\n'
+            'required = ["pub struct ActualAuthority;"]\nforbidden = ["unsafe"]\n'
+        )
+        (root / "CALLERS.toml").write_text(manifest, encoding="utf-8")
+
+        def uncached_boundaries() -> list[dict[str, Any]]:
+            data = _load_manifest(root / "CALLERS.toml")
+            ignored = _string_tuple(data, "ignored_path_fragments")
+            source_index = {
+                path.relative_to(root).as_posix(): _strip_cfg_test_items(
+                    _strip_rust_non_code(path.read_text(encoding="utf-8"))
+                )
+                for path in _source_files(root, _string_tuple(data, "source_roots"))
+            }
+            return [
+                _verify_boundary(root, boundary, source_index, ignored)
+                for boundary in _boundary_rows(data)
+            ]
+
+        # The same root and receiver type acquire a different alias and field
+        # owner on the second verify. A cache outside verify would be stale.
+        versions = (
+            (
+                "use crate::owner::ActualAuthority as CurrentAlias;\n"
+                "pub struct Holder { held: CurrentAlias }\n",
+                "Holder",
+            ),
+            (
+                "use crate::owner::Unrelated as CurrentAlias;\n"
+                "use crate::owner::ActualAuthority as NextAlias;\n"
+                "pub struct Holder { held: CurrentAlias }\n"
+                "pub struct NewHolder { held: NextAlias }\n",
+                "NewHolder",
+            ),
+        )
+        for declaration, receiver in versions:
+            holder.write_text(declaration, encoding="utf-8")
+            caller.write_text(
+                f"fn check(owner: &{receiver}) {{\n"
+                "    owner.held.run();\n    owner.held.inspect();\n}\n",
+                encoding="utf-8",
+            )
+            with patch.object(
+                sys.modules[__name__], "authority_fields", wraps=authority_fields
+            ) as cached_fields:
+                receipt = verify(root)
+            if cached_fields.call_count != 1:
+                raise VerificationFailure("typed fields must be built once per verify")
+            with patch.object(
+                sys.modules[__name__], "authority_fields", wraps=authority_fields
+            ) as uncached_fields:
+                original = uncached_boundaries()
+            if uncached_fields.call_count != 2 or receipt["boundaries"] != original:
+                raise VerificationFailure("cached and uncached caller reports differ")
+
+        caller.write_text(
+            "fn opaque(owner: &NewHolder) -> &ActualAuthority { &owner.held }\n"
+            "fn check(owner: &NewHolder) {\n"
+            "    let unknown = opaque(owner);\n"
+            "    unknown.run();\n    owner.held.inspect();\n}\n",
+            encoding="utf-8",
+        )
+        expected = (
+            "actual_run: src/caller.rs: "
+            "unresolved possible ActualAuthority::run receiver"
+        )
+        for scan in (lambda: verify(root), uncached_boundaries):
+            try:
+                scan()
+            except VerificationFailure as error:
+                if str(error) != expected:
+                    raise VerificationFailure(
+                        "cached and uncached unresolved diagnostics differ"
+                    ) from error
+            else:
+                raise VerificationFailure("typed cache accepted an unresolved receiver")
+
+        holder.write_text(
+            versions[1][0] + "pub struct Broken { held: ActualAuthority,\n",
+            encoding="utf-8",
+        )
+        for scan in (lambda: verify(root), uncached_boundaries):
+            try:
+                scan()
+            except VerificationFailure as error:
+                if str(error) != "actual_run: unbalanced Rust authority context":
+                    raise VerificationFailure(
+                        "cached and uncached field-error attribution differs"
+                    ) from error
+            else:
+                raise VerificationFailure("typed cache accepted unbalanced fields")
 
 
 def main() -> int:
@@ -675,6 +971,7 @@ def main() -> int:
                 pass
             else:
                 raise VerificationFailure("protected code boundary self-test failed")
+        _self_test_typed_field_cache()
         print(
             json.dumps({"status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"}, sort_keys=True)
         )

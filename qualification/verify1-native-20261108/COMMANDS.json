@@ -1,0 +1,149 @@
+{
+  "agentd-tests-v2": {
+    "argv": [
+      "/home/qian-qi/.cargo/bin/just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--test",
+      "kernel_evidence_product",
+      "--test",
+      "verify1_kernel_evidence_product",
+      "--test-threads",
+      "2"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration/codex-rs",
+    "exit_code": 0,
+    "label": "agentd-tests-v2",
+    "status": "PASSED",
+    "stderr_bytes": 18178,
+    "stderr_sha256": "795090da3662ea588f761064179d208218ce1f366b996e7251133e54d2696c89",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_ns": 64889484198
+  },
+  "cross-language-v2": {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-evidence/cross-language-driver-v2.py"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration/codex-rs",
+    "exit_code": 0,
+    "label": "cross-language-v2",
+    "status": "PASSED",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 1565,
+    "stdout_sha256": "66297618fe8db42a06b0dbe535f5d886ca3f509afef66e5840aed69505705b4b",
+    "wall_ns": 1274472284
+  },
+  "evidence-tests-v4": {
+    "argv": [
+      "/home/qian-qi/.cargo/bin/just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-evidence",
+      "--test-threads",
+      "2"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration/codex-rs",
+    "exit_code": 0,
+    "label": "evidence-tests-v4",
+    "status": "PASSED",
+    "stderr_bytes": 27803,
+    "stderr_sha256": "ec505900235c58d6f2d5b173c70a30d0e380bfc6c880076e3983a4c16accd203",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_ns": 22238012843
+  },
+  "fixture-cli-build-v2": {
+    "argv": [
+      "/home/qian-qi/.cargo/bin/cargo",
+      "build",
+      "--locked",
+      "-p",
+      "codex-hepta-evidence",
+      "--example",
+      "verify1_fixture_check"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration/codex-rs",
+    "exit_code": 0,
+    "label": "fixture-cli-build-v2",
+    "status": "PASSED",
+    "stderr_bytes": 60,
+    "stderr_sha256": "fd1c818bb03cb99407ea95568357940d318a7da993c58797b111b143801c3ddf",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_ns": 561075414
+  },
+  "git-diff-check-v2": {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration",
+    "exit_code": 0,
+    "label": "git-diff-check-v2",
+    "status": "PASSED",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_ns": 4305809
+  },
+  "just-fix-agentd-v2": {
+    "argv": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration/codex-rs",
+    "exit_code": 0,
+    "label": "just-fix-agentd-v2",
+    "status": "PASSED",
+    "stderr_bytes": 3093,
+    "stderr_sha256": "925539ed57a7065be512c8366273128f8962e645d3ea86cb17690425fc2c3b85",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_ns": 60604647671
+  },
+  "just-fix-evidence-v2": {
+    "argv": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-hepta-evidence"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration/codex-rs",
+    "exit_code": 0,
+    "label": "just-fix-evidence-v2",
+    "status": "PASSED",
+    "stderr_bytes": 253,
+    "stderr_sha256": "41cf8033ccaf9d04717f23bbd795e0cd1441921d63437428bbe027ba3bad49c7",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_ns": 5050126903
+  },
+  "just-fmt-v2": {
+    "argv": [
+      "/home/qian-qi/.cargo/bin/just",
+      "fmt"
+    ],
+    "cwd": "/home/qian-qi/work/verification-cell-verify1-20261108-771b/native-integration/codex-rs",
+    "exit_code": 0,
+    "label": "just-fmt-v2",
+    "status": "PASSED",
+    "stderr_bytes": 0,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "wall_ns": 333568545
+  }
+}

@@ -10,6 +10,7 @@
 mod causal_v2;
 mod checkpoint;
 mod dataset_receipt_v3;
+mod dataset_records;
 mod durable;
 mod durable_codec;
 mod durable_lock;
@@ -58,7 +59,17 @@ pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
 pub use durable::LedgerAnchor;
+#[cfg(unix)]
+pub use durable::LedgerReadOnlyCutV1;
+#[cfg(unix)]
+pub use durable::LedgerReadOnlyObservationV1;
 pub use durable::LedgerRecovery;
+#[cfg(unix)]
+pub use durable::ReadOnlyLedgerViewV1;
+#[cfg(unix)]
+pub use durable::decode_readonly_ledger_data_v1;
+#[cfg(unix)]
+pub use durable::encode_readonly_ledger_data_v1;
 pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
@@ -124,6 +135,10 @@ pub use retrieval_assignment::retrieval_assignment_event;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
 pub use run_start::DurableRunStartJournal;
+#[cfg(unix)]
+pub use run_start::OriginalRunStartPrefixV1;
+#[cfg(unix)]
+pub use run_start::ReadOnlyRunStartViewV1;
 pub use run_start::RunStartAdmissionBindingV1;
 pub use run_start::RunStartAnchor;
 pub use run_start::RunStartAppendDisposition;
@@ -132,10 +147,17 @@ pub use run_start::RunStartAuthenticationV1;
 pub use run_start::RunStartConflictRecordV1;
 pub use run_start::RunStartJournal;
 pub use run_start::RunStartObjectiveDispositionV1;
+pub use run_start::RunStartPublication;
+#[cfg(unix)]
+pub use run_start::RunStartReadOnlyFrameV1;
+#[cfg(unix)]
+pub use run_start::RunStartReadOnlyPublicationV1;
 pub use run_start::RunStartRecordV1;
 pub use run_start::RunStartRecovery;
 pub use run_start::RunStartSnapshotV1;
 pub use run_start::RunStartStoreError;
+#[cfg(unix)]
+pub use run_start::observe_original_run_start_prefix_v1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;

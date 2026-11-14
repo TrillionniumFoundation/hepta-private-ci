@@ -1,0 +1,233 @@
+{
+  "schema": "hepta.root-publication-cli.line-ops.v1",
+  "base": "05acfd02b53d2165ef91ddd0d000070af59031de",
+  "all_reconstructions_exact": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_session.rs",
+      "before": {
+        "git_blob": "b812ab27679ffe323c80bc04a85da29b182ebb4c",
+        "sha256": "41b93c7fa45e3706fb6171e56db532cc7b752504ef279acd694257f794afcc4c",
+        "bytes": 8874
+      },
+      "after": {
+        "git_blob": "a9598621c901ce26a8f852baa01048a27a8e0de9",
+        "sha256": "60f043fac0dea5c654e289f450dd7514c8fc81291124599c16298c272d0facd8",
+        "bytes": 9144
+      },
+      "additions": 7,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 19,
+          "old": "pub(super) use runtime::BoundPublication;\npub(super) use runtime::serve_optional;\n\nconst PREPARED: u8 = 0;\nconst ACTIVE: u8 = 1;\nconst CONSUMED: u8 = 2;\n",
+          "new": "pub(super) use runtime::BoundPublication;\npub(super) use runtime::serve_optional;\n\n#[path = \"authority_host_publication_deployment.rs\"]\nmod deployment;\npub use deployment::RootGenerationPublicationDeploymentSessionV1;\npub use deployment::RootGenerationPublicationDeploymentV1;\n\nconst PREPARED: u8 = 0;\nconst ACTIVE: u8 = 1;\nconst CONSUMED: u8 = 2;\n"
+        },
+        {
+          "old_start_line": 54,
+          "old": "    sender: mpsc::SyncSender<Submission>,\n    phase: Arc<AtomicU8>,\n    root_pid: u32,\n    boot_id: String,\n    process_start_ticks: u64,\n    lifetime: Duration,\n",
+          "new": "    sender: mpsc::SyncSender<Submission>,\n    phase: Arc<AtomicU8>,\n    root_pid: u32,\n    consumer_uid: u32,\n    boot_id: String,\n    process_start_ticks: u64,\n    lifetime: Duration,\n"
+        },
+        {
+          "old_start_line": 199,
+          "old": "                sender,\n                phase,\n                root_pid: bundle.root.pid,\n                boot_id: bundle.root.boot_id,\n                process_start_ticks: bundle.root.process_start_ticks,\n                lifetime: Duration::from_millis(self.config.lifetime_ms),\n",
+          "new": "                sender,\n                phase,\n                root_pid: bundle.root.pid,\n                consumer_uid: self.config.peer_uid,\n                boot_id: bundle.root.boot_id,\n                process_start_ticks: bundle.root.process_start_ticks,\n                lifetime: Duration::from_millis(self.config.lifetime_ms),\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "before": {
+        "git_blob": "1d9c15195509fd6a36f649e638742b252dadb202",
+        "sha256": "82fa7ebef50c1c708c06bb3f39058ce40040ca0ee3bd83bafb224e1a6b43dab4",
+        "bytes": 18111
+      },
+      "after": {
+        "git_blob": "da5fb8b017bc4adfad7f4248a131d0f852e924e3",
+        "sha256": "fd6a6200c8b3c36aa09f7d8326fceb19721b41443d7b3f90c1541b540d4a20b8",
+        "bytes": 18260
+      },
+      "additions": 2,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 24,
+          "old": "#[path = \"authority_host_generation_publication_session.rs\"]\nmod generation_publication;\npub use generation_publication::RootGenerationPublicationEnrollmentCapabilityV1;\npub use generation_publication::RootGenerationPublicationRegistrationV1;\n\n/// One Root session's immutable registration, retained actual process handle\n",
+          "new": "#[path = \"authority_host_generation_publication_session.rs\"]\nmod generation_publication;\npub use generation_publication::RootGenerationPublicationEnrollmentCapabilityV1;\npub use generation_publication::RootGenerationPublicationDeploymentV1;\npub use generation_publication::RootGenerationPublicationDeploymentSessionV1;\npub use generation_publication::RootGenerationPublicationRegistrationV1;\n\n/// One Root session's immutable registration, retained actual process handle\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "before": {
+        "git_blob": "464863b530fb7405f88ffba3570adbd8ffa409da",
+        "sha256": "475cd48637a41aee096718df99a8604e2646f783ad71f994f153c4858f56583e",
+        "bytes": 19027
+      },
+      "after": {
+        "git_blob": "2c6bd8d6b124ca6edecdaeb6ca6369606bfd785d",
+        "sha256": "66967f48cd81dc9c7f628067a59f388fe2cb77ff5327f5fd745bd1983e616f38",
+        "bytes": 19146
+      },
+      "additions": 2,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 42,
+          "old": "mod session;\npub use session::PreparedHostAuthoritySession;\npub use session::RootGenerationPublicationEnrollmentCapabilityV1;\npub use session::RootGenerationPublicationRegistrationV1;\npub use session::RootNotesPolicyPredecessor;\n\n",
+          "new": "mod session;\npub use session::PreparedHostAuthoritySession;\npub use session::RootGenerationPublicationEnrollmentCapabilityV1;\npub use session::RootGenerationPublicationDeploymentV1;\npub use session::RootGenerationPublicationDeploymentSessionV1;\npub use session::RootGenerationPublicationRegistrationV1;\npub use session::RootNotesPolicyPredecessor;\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "before": {
+        "git_blob": "50989a7e9a4298b821ed0738897356fd0cf4bda5",
+        "sha256": "a30926fccfa61bd8c0631eded731c65dfb79657a4444435e802a860032bbeddb",
+        "bytes": 61313
+      },
+      "after": {
+        "git_blob": "eb7ec3f71604e4b7c3ffe956ced3ebefb2fb7b8c",
+        "sha256": "205decc3ded7c0b6bccf4638ad9d3b86adfd2803e208b30b66279328c9fd0fc8",
+        "bytes": 61518
+      },
+      "additions": 4,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 1332,
+          "old": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationPublicationEnrollmentCapabilityV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationPublicationRegistrationV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootArtifactPublicationInputsV1;\n",
+          "new": "#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationPublicationEnrollmentCapabilityV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationPublicationDeploymentV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationPublicationDeploymentSessionV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_runtime::RootGenerationPublicationRegistrationV1;\n#[cfg(target_os = \"linux\")]\npub use authority_host_service::RootArtifactPublicationInputsV1;\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "before": {
+        "git_blob": "6d08167ba7372def38f5e3a1b6db69d604566586",
+        "sha256": "c648d53d31f4dd3dbdc28840db5f774bc403130e7df7917e5ba412de042d3106",
+        "bytes": 6308
+      },
+      "after": {
+        "git_blob": "0c4441f0fe2c85addcffc3270a97944edd067684",
+        "sha256": "1e2b9905a5c8b9e70887b652d5137d9d42e4ecdf5e17cbf84dc47a4da103c604",
+        "bytes": 6367
+      },
+      "additions": 3,
+      "deletions": 0,
+      "operations": [
+        {
+          "old_start_line": 6,
+          "old": "\nuse super::*;\n\n#[derive(Clone, Debug, Eq, PartialEq)]\nstruct DirectoryPin {\n    relative: &'static str,\n",
+          "new": "\nuse super::*;\n\n#[path = \"owner_selection_files.rs\"]\nmod selection_files;\n\n#[derive(Clone, Debug, Eq, PartialEq)]\nstruct DirectoryPin {\n    relative: &'static str,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "before": {
+        "git_blob": "0848e5d2f2f621211713b0e7c7807ee68a250803",
+        "sha256": "dddd3d75ea950c17b6bfc06ae23f9fa929d1761dbed03be865d47305125bd203",
+        "bytes": 15600
+      },
+      "after": {
+        "git_blob": "3b4703b9cd720ce5e4fb3a578b7542c2835034d1",
+        "sha256": "4b384c4bb4486aa633d6ac56c5461a5e0c7bc936b5e5b9eeec158a1a657f6820",
+        "bytes": 19061
+      },
+      "additions": 69,
+      "deletions": 9,
+      "operations": [
+        {
+          "old_start_line": 149,
+          "old": "            .remove(std::ffi::OsStr::new(\"--q24-model-reservation\"))\n            .map(PathBuf::from);\n        let model_handoff = options.remove(std::ffi::OsStr::new(\"--root-q24-model-handoff-fd\"));\n        let notes_profile = options\n            .remove(std::ffi::OsStr::new(\"--notes-launch-profile\"))\n            .map(PathBuf::from);\n",
+          "new": "            .remove(std::ffi::OsStr::new(\"--q24-model-reservation\"))\n            .map(PathBuf::from);\n        let model_handoff = options.remove(std::ffi::OsStr::new(\"--root-q24-model-handoff-fd\"));\n        let publication_deployment = options\n            .remove(std::ffi::OsStr::new(\"--generation-publication-deployment\"))\n            .map(PathBuf::from);\n        let publication_handoff = options.remove(std::ffi::OsStr::new(\"--root-generation-publication-handoff-fd\"));\n        let notes_profile = options\n            .remove(std::ffi::OsStr::new(\"--notes-launch-profile\"))\n            .map(PathBuf::from);\n"
+        },
+        {
+          "old_start_line": 177,
+          "old": "            .as_deref()\n            .map(|fd| inherited_descriptor(fd, &mut claimed))\n            .transpose()?;\n        if model_reservation.is_some() != model_handoff.is_some()\n            || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())\n        {\n",
+          "new": "            .as_deref()\n            .map(|fd| inherited_descriptor(fd, &mut claimed))\n            .transpose()?;\n        let publication_handoff = publication_handoff\n            .as_deref()\n            .map(|fd| inherited_descriptor(fd, &mut claimed))\n            .transpose()?;\n        if publication_deployment.is_some() != publication_handoff.is_some()\n            || publication_deployment.is_some() && (learning_profile.is_none() || root_fd.is_none())\n        {\n            return Err(\"publication serving requires its explicit Root deployment, separate purpose handoff, original learning and Root pidfd\".into());\n        }\n        if model_reservation.is_some() != model_handoff.is_some()\n            || model_handoff.is_some() && (learning_profile.is_none() || root_fd.is_none())\n        {\n"
+        },
+        {
+          "old_start_line": 256,
+          "old": "            Some(reservation) => prepared.with_registered_q24_model_factory(&reservation)?,\n            None => prepared,\n        };\n        let model_offer = model_handoff\n            .as_ref()\n            .map(|_| prepared.take_q24_model_factory_offer())\n",
+          "new": "            Some(reservation) => prepared.with_registered_q24_model_factory(&reservation)?,\n            None => prepared,\n        };\n        let (deployment, publication_offer) = match (publication_deployment, publication_handoff) {\n            (Some(path), Some(handoff)) => {\n                let (capability, offer) = prepared.enable_generation_publication()?;\n                let capability: codex_hepta_agentd::RootGenerationPublicationEnrollmentCapabilityV1 = capability;\n                (Some(capability.with_original_deployment(&path)?), Some((handoff, offer)))\n            }\n            (None, None) => (None, None),\n            _ => return Err(\"publication deployment and inherited offer must be paired\".into()),\n        };\n        let deployment_ready = deployment.as_ref()\n            .map(|deployment| serde_json::to_string(deployment.session()))\n            .transpose()?;\n        let model_offer = model_handoff\n            .as_ref()\n            .map(|_| prepared.take_q24_model_factory_offer())\n"
+        },
+        {
+          "old_start_line": 287,
+          "old": "                )\n                .map_err(std::io::Error::other)?;\n            }\n            Ok(())\n        };\n        match (native_profile, text) {\n            (Some(profile), None) => {\n                prepared.launch_native_with_ready(&config, &registration, &profile, ready)?\n            }\n            (None, Some((file, pidfd))) => {\n                prepared.serve_with_text_and_ready(file, pidfd, ready)?\n            }\n            (None, None) => prepared.serve_with_ready(ready)?,\n            (Some(_), Some(_)) => return Err(\"exclusive native/text UI options\".into()),\n        }\n    } else {\n        return Err(\"unknown authority command\".into());\n    }\n",
+          "new": "                )\n                .map_err(std::io::Error::other)?;\n            }\n            if let (Some((handoff, offer)), Some(root)) = (publication_offer, root_fd.as_ref()) {\n                codex_hepta_agentd::send_root_generation_publication_handoff(\n                    std::os::unix::net::UnixDatagram::from(handoff), offer, root,\n                    std::time::Duration::from_secs(30),\n                ).map_err(std::io::Error::other)?;\n            }\n            if let Some(session) = deployment_ready {\n                println!(\"{{\\\"publication_deployment_session\\\":{session}}}\");\n            }\n            Ok(())\n        };\n        let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);\n        std::thread::scope(|scope| -> std::io::Result<()> {\n            // A failed ready callback or unwind also stops the read-only waiter\n            // before scope joins it. No second service/writer is opened.\n            let stop = PublicationDeploymentStop(&stopping);\n            let stop_ref = &stopping;\n            let worker = deployment.map(|deployment| scope.spawn(move || {\n                let deployment: codex_hepta_agentd::RootGenerationPublicationDeploymentV1 = deployment;\n                deployment.wait_and_register(stop_ref)\n            }));\n            let served = match (native_profile, text) {\n                (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),\n                (None, Some((file, pidfd))) => prepared.serve_with_text_and_ready(file, pidfd, ready),\n                (None, None) => prepared.serve_with_ready(ready),\n                (Some(_), Some(_)) => Err(std::io::Error::other(\"exclusive native/text UI options\")),\n            };\n            drop(stop);\n            let registered = match worker {\n                Some(worker) => Some(worker.join().map_err(|_| std::io::Error::other(\"Root deployment worker panicked\"))?),\n                None => None,\n            };\n            served?;\n            if let Some(registered) = registered {\n                let registered = registered?;\n                println!(\"{{\\\"publication_registered_binding\\\":\\\"{}\\\"}}\", registered.binding());\n            }\n            Ok(())\n        })?;\n    } else {\n        return Err(\"unknown authority command\".into());\n    }\n"
+        },
+        {
+          "old_start_line": 306,
+          "old": "}\n\n#[cfg(target_os = \"linux\")]\nfn inherited_descriptor(\n    value: &std::ffi::OsStr,\n    claimed: &mut std::collections::BTreeSet<i32>,\n",
+          "new": "}\n\n#[cfg(target_os = \"linux\")]\nstruct PublicationDeploymentStop<'a>(&'a std::sync::atomic::AtomicBool);\n\n#[cfg(target_os = \"linux\")]\nimpl Drop for PublicationDeploymentStop<'_> {\n    fn drop(&mut self) { self.0.store(/*val*/ true, std::sync::atomic::Ordering::Release); }\n}\n\n#[cfg(target_os = \"linux\")]\nfn inherited_descriptor(\n    value: &std::ffi::OsStr,\n    claimed: &mut std::collections::BTreeSet<i32>,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_artifacts_tests.rs",
+      "before": {
+        "git_blob": "0fe00b065819e31b4a807994889fa26264357734",
+        "sha256": "522797f8131ae4fc1eb44271872210363a059de21404ebe10e2bca934b8ccd73",
+        "bytes": 12157
+      },
+      "after": {
+        "git_blob": "013868a9020c77ae9a889c41f91ad44e3fb8dbc1",
+        "sha256": "be6f27a1bf36036fafa07c3b052fe463c8392e33c8d4bdda7578ddf3e6c083fd",
+        "bytes": 12260
+      },
+      "additions": 5,
+      "deletions": 5,
+      "operations": [
+        {
+          "old_start_line": 27,
+          "old": "    retained_current: SignedCurrentArtifactHeadV1,\n    selected: SignedArtifactSelectionV1,\n    verifier: ArtifactSelectionVerifierV1,\n}\n\n#[derive(Clone, Copy)]\n",
+          "new": "    retained_current: SignedCurrentArtifactHeadV1,\n    selected: SignedArtifactSelectionV1,\n    verifier: ArtifactSelectionVerifierV1,\n    pub(super) selector_trust: ArtifactSelectionTrustV1,\n}\n\n#[derive(Clone, Copy)]\n"
+        },
+        {
+          "old_start_line": 97,
+          "old": "        })?;\n        let (candidate, retained_current) = publish_candidate(&mut owner, manifest, &key, \"selected-candidate\", times)?;\n        let current = owner.current_registry_view(times.observed)?;\n        let verifier = ArtifactSelectionVerifierV1::new(\n            ArtifactSelectionTrustV1 {\n                registry_id: trust.registry_id.clone(),\n                withdrawal_scope_digest: scope,\n                minimum_authority_epoch: 1,\n",
+          "new": "        })?;\n        let (candidate, retained_current) = publish_candidate(&mut owner, manifest, &key, \"selected-candidate\", times)?;\n        let current = owner.current_registry_view(times.observed)?;\n        let selector_trust = ArtifactSelectionTrustV1 {\n                registry_id: trust.registry_id.clone(),\n                withdrawal_scope_digest: scope,\n                minimum_authority_epoch: 1,\n"
+        },
+        {
+          "old_start_line": 111,
+          "old": "                    expires_at: times.expires,\n                    revoked_at: None,\n                }],\n            },\n            &trust,\n        )?;\n        let mut selected = SignedArtifactSelectionV1 {\n            selection_id: id(\"test-generation-selection\")?,\n            artifact_id: candidate.artifact_id,\n",
+          "new": "                    expires_at: times.expires,\n                    revoked_at: None,\n                }],\n            };\n        let verifier = ArtifactSelectionVerifierV1::new(selector_trust.clone(), &trust)?;\n        let mut selected = SignedArtifactSelectionV1 {\n            selection_id: id(\"test-generation-selection\")?,\n            artifact_id: candidate.artifact_id,\n"
+        },
+        {
+          "old_start_line": 146,
+          "old": "            retained_current,\n            selected,\n            verifier,\n        })\n    }\n\n",
+          "new": "            retained_current,\n            selected,\n            verifier,\n            selector_trust,\n        })\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "before": {
+        "git_blob": "8fa0cd2da93152c314117775d18aa9b977685a94",
+        "sha256": "464f458aa10f1780629351eca4d21aa1e9f9f1ec0774eef201e8cf34b43d2813",
+        "bytes": 24892
+      },
+      "after": {
+        "git_blob": "2eef5db20d764fd9000a99cfad009a2fb4df9ae8",
+        "sha256": "57a0cec28e6e0b166b497c930d4596d4d8be540ffc8b9e83d3865fe44395301d",
+        "bytes": 26268
+      },
+      "additions": 26,
+      "deletions": 1,
+      "operations": [
+        {
+          "old_start_line": 275,
+          "old": "        // Publish starts with the genuinely vacant original checkpoint. This\n        // must not require a late decision before the learning service serves.\n        let (capability, publication) = prepared.enable_generation_publication()?;\n        let inputs = RootGenerationPublicationEnrollmentV1 {\n            mode: match phase { Phase::Publish => RootGenerationPublicationModeV1::Reserve,\n                Phase::Recover | Phase::RetiredSession | Phase::Revoked => RootGenerationPublicationModeV1::Recover },\n",
+          "new": "        // Publish starts with the genuinely vacant original checkpoint. This\n        // must not require a late decision before the learning service serves.\n        let (capability, publication) = prepared.enable_generation_publication()?;\n        assert!(prepared.enable_generation_publication().is_err());\n        let inputs = RootGenerationPublicationEnrollmentV1 {\n            mode: match phase { Phase::Publish => RootGenerationPublicationModeV1::Reserve,\n                Phase::Recover | Phase::RetiredSession | Phase::Revoked => RootGenerationPublicationModeV1::Recover },\n"
+        },
+        {
+          "old_start_line": 290,
+          "old": "            artifacts: self.artifacts.inputs(now_ms()?)?, consumer: RootPublicationFinalUseConsumerV1::Device,\n            consumer_state_root: self.local.clone(), issuer_keys: vec![FinalUseIssuerTrustKey::from(bootstrap.issuer_key)],\n        };\n        let root_pin = support::pidfd(std::process::id())?;\n        let send = self.offer.try_clone()?;\n        let snapshot = std::thread::scope(|scope| {\n            let registration = scope.spawn(|| -> anyhow::Result<_> {\n                control(&self.offer, b\"LEARNING_AND_ORIGINAL_INPUTS_READY\")?;\n                let registered = capability.register(inputs)?;\n                anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero(), \"actual Root acknowledgement\");\n                send_data(&self.offer, &self.intent)?;\n                if matches!(phase, Phase::Publish) {\n",
+          "new": "            artifacts: self.artifacts.inputs(now_ms()?)?, consumer: RootPublicationFinalUseConsumerV1::Device,\n            consumer_state_root: self.local.clone(), issuer_keys: vec![FinalUseIssuerTrustKey::from(bootstrap.issuer_key)],\n        };\n        let deployment_directory = self._protected.path().join(format!(\"deployment-{phase:?}\"));\n        let (deployment, late_material) = capability.component_original_deployment(\n            &deployment_directory,\n            &[self.current_path.clone(), self.previous_journal.clone(), self.previous_witness.clone(),\n                self.target_journal.clone(), self.target_witness.clone()],\n            &self.artifacts.selector_trust, inputs,\n        )?;\n        if !matches!(phase, Phase::Publish) {\n            let before = (\n                std::fs::read(&self.profile_file)?,\n                support::protected_files(&self.current_path)?,\n                std::fs::read(self.local.join(\"device/authority.claims\"))?,\n            );\n            deployment.component_reject_previous_trigger(\n                &self._protected.path().join(\"deployment-Publish/trigger.json\"),\n            )?;\n            assert_eq!((\n                std::fs::read(&self.profile_file)?,\n                support::protected_files(&self.current_path)?,\n                std::fs::read(self.local.join(\"device/authority.claims\"))?,\n            ), before);\n        }\n        let root_pin = support::pidfd(std::process::id())?;\n        let send = self.offer.try_clone()?;\n        let snapshot = std::thread::scope(|scope| {\n            let registration = scope.spawn(|| -> anyhow::Result<_> {\n                control(&self.offer, b\"LEARNING_AND_ORIGINAL_INPUTS_READY\")?;\n                deployment.component_trigger_original(&late_material)?;\n                let stopping = std::sync::atomic::AtomicBool::new(/*val*/ false);\n                let registered = deployment.wait_and_register(&stopping)?;\n                anyhow::ensure!(!registered.binding().parse::<Digest32>()?.is_zero(), \"actual Root acknowledgement\");\n                send_data(&self.offer, &self.intent)?;\n                if matches!(phase, Phase::Publish) {\n"
+        }
+      ]
+    }
+  ]
+}

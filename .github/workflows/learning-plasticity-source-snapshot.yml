@@ -1,0 +1,47 @@
+name: learning.plasticity source snapshot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    env:
+      SELECTED_SHA: ${{ github.sha }}
+    steps:
+      - name: Check out exact selected commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.SELECTED_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind clean source and create hashed Git archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SELECTED_SHA"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=all)"
+          output="${RUNNER_TEMP}/learning-plasticity-source"
+          test ! -e "$output"
+          mkdir "$output"
+          git --no-replace-objects rev-parse HEAD > "$output/SOURCE_SHA"
+          git --no-replace-objects rev-parse 'HEAD^{tree}' > "$output/SOURCE_TREE"
+          git --no-replace-objects archive --format=tar "$SELECTED_SHA" |
+            gzip -n > "$output/hepta-private-ci-source.tar.gz"
+          (
+            cd "$output"
+            sha256sum hepta-private-ci-source.tar.gz > SOURCE_ARCHIVE_SHA256
+          )
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SELECTED_SHA"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=all)"
+      - name: Upload source archive and separate identity files
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-plasticity-source-${{ github.sha }}
+          path: ${{ runner.temp }}/learning-plasticity-source/
+          retention-days: 3
+          if-no-files-found: error

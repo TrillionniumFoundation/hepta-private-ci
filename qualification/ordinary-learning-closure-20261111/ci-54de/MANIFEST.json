@@ -1,0 +1,196 @@
+{
+  "schema": "hepta.ci54de.lossless-archive.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+  "source_tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+  "commit_identities": [
+    {
+      "sha": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+      "parents": [
+        "5dcec722472eab39064416d50bf4c4bb7b96b361"
+      ],
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/54de04371be6d625e1ecda49931c7d3585d0a2d0"
+    },
+    {
+      "sha": "0c82cb2464b64af49d2c614a855b3a2ad219e0a1",
+      "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+      "parents": [
+        "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+        "54de04371be6d625e1ecda49931c7d3585d0a2d0"
+      ],
+      "api_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0c82cb2464b64af49d2c614a855b3a2ad219e0a1"
+    }
+  ],
+  "identity_method": "Primary Git commit tree identities; no truncated comparison file list used.",
+  "scope": "Eight original old54de CI logs only. New130e logs and independent native campaign results are not included.",
+  "classification_provenance": "Job outcomes and actual checkout attribution are retained from root's primary-log review. This packaging step independently verifies exact bytes and Git commit identities.",
+  "full_caller_gate_pass_claimed": false,
+  "ordinary_learning_loop_pass_claimed": false,
+  "native_test_counts_added": 0,
+  "fence_note": "Fence actual_checkout is null. Its workflow_uses value is metadata and does not imply a performed checkout. Inventory initialization failed and blob scan was not executed.",
+  "log_count": 8,
+  "total_original_log_bytes": 2968041,
+  "logs": [
+    {
+      "job_id": 130598346990,
+      "name": "daemon",
+      "blob": "3ac8f702dc1f448f1e634aadcc9a8e58deea5260",
+      "bytes": 1642534,
+      "sha256": "68738993f3f0ade8b76bba59f63cb6820da2d3d2de23ff4c4a0a5595c10f461f",
+      "actual_checkout": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "outcome": "apt DNS failure before native tests",
+      "path": "logs/130598346990-daemon.log",
+      "verified_git_blob_sha": "3ac8f702dc1f448f1e634aadcc9a8e58deea5260",
+      "utf8_bom": true,
+      "crlf_count": 0,
+      "lf_count": 9363,
+      "bare_cr_count": 0
+    },
+    {
+      "job_id": 130598347111,
+      "name": "windows-private",
+      "blob": "ac8d0f6b03c4a9d77111194f2f902fd7f20c02f7",
+      "bytes": 211843,
+      "sha256": "34a12d01c97568f8a3777301379dd4ff566e9b973dd2446ccf5e081ca5b30911",
+      "actual_checkout": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "outcome": "cancelled; incomplete",
+      "path": "logs/130598347111-windows-private.log",
+      "verified_git_blob_sha": "ac8d0f6b03c4a9d77111194f2f902fd7f20c02f7",
+      "utf8_bom": true,
+      "crlf_count": 2864,
+      "lf_count": 2864,
+      "bare_cr_count": 0
+    },
+    {
+      "job_id": 130598347864,
+      "name": "shared",
+      "blob": "518ac350d4f1a6f3b5e1700999b8e2ff85c61629",
+      "bytes": 48179,
+      "sha256": "b71e15d32647f3bd0c8906a7796fda0b252455411e1509e81ea0561347a5ad60",
+      "actual_checkout": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+      "outcome": "apt DNS failure before native tests",
+      "path": "logs/130598347864-shared.log",
+      "verified_git_blob_sha": "518ac350d4f1a6f3b5e1700999b8e2ff85c61629",
+      "utf8_bom": true,
+      "crlf_count": 0,
+      "lf_count": 493,
+      "bare_cr_count": 0
+    },
+    {
+      "job_id": 130598349739,
+      "name": "fence",
+      "blob": "9c9b6c40a481abb2da6f2cb8c8116fdca0025b1a",
+      "bytes": 3859,
+      "sha256": "4174819e29aad70432718d21eab2f16d9bd4d8a42e300f15da50a999d367d15c",
+      "actual_checkout": null,
+      "workflow_uses": "0c82cb2464b64af49d2c614a855b3a2ad219e0a1",
+      "outcome": "initialization failure: local_control_inventory_unavailable; blob scan not executed",
+      "run_id": 43042685478,
+      "expected_bom": true,
+      "expected_crlf_count": 0,
+      "expected_lf_count": 50,
+      "path": "logs/130598349739-fence.log",
+      "verified_git_blob_sha": "9c9b6c40a481abb2da6f2cb8c8116fdca0025b1a",
+      "utf8_bom": true,
+      "crlf_count": 0,
+      "lf_count": 50,
+      "bare_cr_count": 0
+    },
+    {
+      "job_id": 130600072115,
+      "name": "repo-checks",
+      "blob": "c6ecb9634f9ce0144b724a909a44643764f055d5",
+      "bytes": 51028,
+      "sha256": "262f7df1b922d6d6240cb4e751df924560960d3295f864a618284b2d5f6ab146",
+      "actual_checkout": "0c82cb2464b64af49d2c614a855b3a2ad219e0a1",
+      "outcome": "cancelled; complete full verify not observed",
+      "run_id": 43042685478,
+      "path": "logs/130600072115-repo-checks.log",
+      "verified_git_blob_sha": "c6ecb9634f9ce0144b724a909a44643764f055d5",
+      "utf8_bom": true,
+      "crlf_count": 0,
+      "lf_count": 588,
+      "bare_cr_count": 0
+    },
+    {
+      "job_id": 130600072396,
+      "name": "sdk",
+      "blob": "8412725fbef8a4d780e76603af280ed518f94949",
+      "bytes": 23762,
+      "sha256": "60673f128af9b5553a113c2ce7f37db6387cbb95b1517142f091e4d9fea827b4",
+      "actual_checkout": "0c82cb2464b64af49d2c614a855b3a2ad219e0a1",
+      "outcome": "apt DNS failure before SDK tests",
+      "path": "logs/130600072396-sdk.log",
+      "verified_git_blob_sha": "8412725fbef8a4d780e76603af280ed518f94949",
+      "utf8_bom": true,
+      "crlf_count": 0,
+      "lf_count": 259,
+      "bare_cr_count": 0
+    },
+    {
+      "job_id": 130600072849,
+      "name": "windows-clippy",
+      "blob": "04a39e7db2f90d99f9d7f16fb304b75e0b8d2584",
+      "bytes": 541199,
+      "sha256": "681c298a93c8ad74ae58476449485006ad8e69615f4bff33f4103b417a1ac246",
+      "actual_checkout": "0c82cb2464b64af49d2c614a855b3a2ad219e0a1",
+      "outcome": "success",
+      "path": "logs/130600072849-windows-clippy.log",
+      "verified_git_blob_sha": "04a39e7db2f90d99f9d7f16fb304b75e0b8d2584",
+      "utf8_bom": true,
+      "crlf_count": 5790,
+      "lf_count": 5791,
+      "bare_cr_count": 0
+    },
+    {
+      "job_id": 130600072917,
+      "name": "windows-release",
+      "blob": "dfa30198c1f757b9cbac1a5a01c7abbfe313fb22",
+      "bytes": 445637,
+      "sha256": "9f5bf9d4d723f8304fae093a1ceb6e5f699e04e461de0b72c47c3ac3346b32d6",
+      "actual_checkout": "0c82cb2464b64af49d2c614a855b3a2ad219e0a1",
+      "outcome": "success",
+      "path": "logs/130600072917-windows-release.log",
+      "verified_git_blob_sha": "dfa30198c1f757b9cbac1a5a01c7abbfe313fb22",
+      "utf8_bom": true,
+      "crlf_count": 4369,
+      "lf_count": 4370,
+      "bare_cr_count": 0
+    }
+  ],
+  "archive": {
+    "filename": "ci-54de.tar.xz",
+    "bytes": 247320,
+    "sha256": "345221374f44d835d3c38170c4512bff0a2ada9c731eb8a651c263d4bae6d635",
+    "git_blob_sha": "ccdc4ae7373ac9388c3d8f35e47fb8d8975e321d",
+    "format": "tar.xz",
+    "tar_bytes": 2979840,
+    "tar_sha256": "dee7079ebbd232652c101c94dd03649c87e88b196ca019bc56eaf79e7babb4fb",
+    "tar_format": "PAX_FORMAT",
+    "member_order": "path lexicographic",
+    "member_metadata": {
+      "mode": "0644",
+      "uid": 0,
+      "gid": 0,
+      "mtime": 0,
+      "uname": "",
+      "gname": ""
+    },
+    "compression": {
+      "format": "XZ",
+      "preset": 6,
+      "check": "CRC64"
+    }
+  },
+  "verification": {
+    "all_input_sizes_sha256_and_git_blobs_match": true,
+    "all_utf8_bom_and_crlf_lf_counts_preserved": true,
+    "full_decompressed_tar_bytes_equal": true,
+    "exact_member_list_and_types_verified": true,
+    "each_member_bytes_sha256_and_git_blob_equal_original": true,
+    "new_tests_executed": false,
+    "remote_runtime_commands_executed": false,
+    "repository_refs_modified": false
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "component_model_not_ordinary_daemon_binding": true,
+  "config": {
+    "evaluation_profile": "c6586b333d03aa5168e030083ade7659ff7e4c84c255b08c0784c768968e02f2",
+    "frozen_sha256": "be8cae248750cc7e1fcab83e371d09c154354b0c87bfaf24144a88acf3d0f5e0",
+    "next_task_sha256": "bae2909d9687659d1c5f55865ab93c9f9bc4699c24fa90798c45d258fd38486d",
+    "path": "model-config.json",
+    "profile": "distinct-source-next-v2",
+    "sha256": "5538ff90dd712a270a59635f3e97b0fa155d5f9c46fc98a1ca7e736c238b4080",
+    "source_task_sha256": "0e6247037b2885c4f09298b41ce7b4b5af7159b6cbd670155a978031664f7d9e"
+  },
+  "data": {
+    "all_prior_tasks_and_outcomes_exposed": true,
+    "evaluation_rows_per_version": 4,
+    "independent_evaluation": false,
+    "source_prompt_from_exposed_training_row": true,
+    "training": {
+      "path": "/home/qq/chain-learning-d9fb-20261108/training-input-2.json",
+      "sha256": "37941edc1981a90fa95039fdbb9e01fff0017708c0bd88f21dc4d432f5e06c21"
+    },
+    "training_rows": 4
+  },
+  "external_material_after_snapshot": "MATERIALS_AFTER.json",
+  "model": {
+    "base_file_bytes": 269060552,
+    "base_file_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "base_material_locator": "/home/qq/hepta-smollm2-weight-research-20261103/pinned-base",
+    "candidate": {
+      "adapter": "6d3ad4295d628df7e5d0927f9044f46dd4375511b2788eeb1606a2cb6d48aa34",
+      "contract": "fa676279f85d221afbd8ff426adce107dc2831c4205f7523adb5857b9d13cc3c",
+      "directory": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/model/training/worker",
+      "file_sha256": "9ed906784ad969209386762f514ba2d209899c7180076d52306c268b7587e64d",
+      "generation": 2,
+      "operation_id": "learning-common-e1c98-model-no-update-002-train",
+      "schema": "hepta-smollm-parent-material-v1"
+    },
+    "manifest_sha256": "6e6a76d478f28906566c1cc8db9ef767922b7a215c9f795da8d845e965c59f0c",
+    "parent": {
+      "adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+      "contract": "fa676279f85d221afbd8ff426adce107dc2831c4205f7523adb5857b9d13cc3c",
+      "directory": "/home/qq/chain-learning-d9fb-20261108/generation-1/worker",
+      "file_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+      "generation": 1,
+      "operation_id": "chain-learning-d9fb-20261108-train-1",
+      "schema": "hepta-smollm-parent-material-v1"
+    },
+    "repository": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac"
+  },
+  "source": {
+    "archive": {
+      "bytes": 91972209,
+      "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/source.tar.gz",
+      "resolved": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/source.tar.gz",
+      "sha256": "36c55cbff0d7320d0df010e13d76a8a03a7669e6a54e01f81baf372b5ecacfc9"
+    },
+    "commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "driver_sha256": "31c290bd27b3bca543d9a8c696548f28610edd41905c4be77cf6a9fb91cfa81e",
+    "evidence_may_be_committed_after_maintenance": true,
+    "execution_before_after_clean": true,
+    "nextest_archive": {
+      "bytes": 90922965,
+      "path": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+      "resolved": "/home/qq/hepta-common-20261109-e1c98-model-no-update-002/preparation/native-nextest.tar.zst",
+      "sha256": "a439bbb5bdc4a8d36f1a34495033de2d94d65acf6fe0b665d4a654a3ab8f7244"
+    },
+    "tree": "068b6a7749e94d7335c826d6c43c19198e02cc24"
+  },
+  "state_protocol": {
+    "checkpoint_magic": "HEPLCP02",
+    "checkpoint_profile": 2,
+    "completed_learning_head": "69a6029fa1ab589ad5acd070f4f9add5f4c392ea931622e11c833d2837243a9c",
+    "initial_learning_head": "c561171d9f4e0a97e67440d92aecbab6fb522e9a58810e51cd502152022cd4c8",
+    "scope": "Cell",
+    "scope_binding": "1082284f9636576fa69fb2beb4b6299f31ca25b1c8062ee8db152c5489532fca",
+    "selected_adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+    "selected_artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+    "selected_generation": 1,
+    "update_rule": "8a3bc0bc16e2cee85db9af67154f82316d587731486256678142e1dab9bc866f"
+  }
+}

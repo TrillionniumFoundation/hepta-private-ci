@@ -30,6 +30,11 @@ test = false
 name = "hepta-agentd-browser"
 path = "src/bin/hepta-agentd-browser.rs"
 test = false
+[[bin]]
+name = "hepta-authority-host"
+path = "src/bin/hepta-authority-host.rs"
+test = false
+
 [[example]]
 name = "h4_persistent_writer"
 path = "examples/h4_persistent_writer.rs"
@@ -38,14 +43,21 @@ required-features = ["qualification-cognitive-write"]
 [lints]
 workspace = true
 
+[[bin]]
+name = "hepta-g2-native-owner"
+path = "src/bin/hepta-g2-native-owner.rs"
+test = false
+
 [dependencies]
 anyhow = { workspace = true }
+base64 = { workspace = true }
 codex-app-server = { workspace = true }
 codex-app-server-client = { workspace = true }
 codex-app-server-protocol = { workspace = true }
 codex-arg0 = { workspace = true }
 codex-config = { workspace = true }
 codex-features = { workspace = true }
+codex-history = { workspace = true }
 codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-automation = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
@@ -64,6 +76,8 @@ codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
 codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-fleet = { workspace = true }
+codex-hepta-supervisor = { workspace = true }
+codex-mcp = { workspace = true }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-neuron = { path = "../hepta-neuron" }
@@ -72,10 +86,12 @@ codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
 codex-hepta-memory = { workspace = true }
 codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-memory-extension = { workspace = true }
+codex-hepta-operations = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-model-provider = { workspace = true }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-protocol = { workspace = true }
+codex-rmcp-client = { workspace = true }
 codex-uds = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-cli = { workspace = true }
@@ -98,17 +114,22 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { workspace = true }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }
+
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
-codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
+pretty_assertions = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }

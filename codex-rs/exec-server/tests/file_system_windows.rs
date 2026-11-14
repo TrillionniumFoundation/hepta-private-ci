@@ -28,6 +28,7 @@ use tokio::time::timeout;
 use uuid::Uuid;
 
 use crate::support::FileSystemImplementation;
+use crate::support::assert_legacy_windows_sandbox_unavailable;
 use crate::support::create_file_system_context;
 use crate::support::is_unsupported_restricted_token_host;
 use crate::support::workspace_write_sandbox;
@@ -225,7 +226,7 @@ async fn file_system_operations_can_reject_junctions_in_any_path_component(
     if is_unsupported_restricted_token_host(&read_result) {
         return Ok(());
     }
-    assert_eq!(read_result?, b"unchanged");
+    assert_legacy_windows_sandbox_unavailable(&read_result);
     assert!(
         context
             .file_system
@@ -367,21 +368,22 @@ async fn file_system_remote_fs_helper_respects_windows_sandbox_write_policy() ->
     if is_unsupported_restricted_token_host(&read_result) {
         return Ok(());
     }
-    assert_eq!(read_result?, b"readable");
+    assert_legacy_windows_sandbox_unavailable(&read_result);
+    assert_eq!(std::fs::read(&readable_file)?, b"readable");
 
     let blocked_file = readonly_dir.join("blocked.txt");
-    let error = file_system
+    let write_result = file_system
         .write_file(
             &PathUri::from_host_native_path(&blocked_file)?,
             b"blocked".to_vec(),
             WriteFileOptions::default(),
             Some(&sandbox),
         )
-        .await
-        .expect_err("write outside the sandbox should fail");
+        .await;
+    assert_legacy_windows_sandbox_unavailable(&write_result);
     assert!(
         !blocked_file.exists(),
-        "sandboxed fs helper must not create blocked file after error: {error}"
+        "sandboxed fs helper must not create blocked file after refusal"
     );
 
     Ok(())

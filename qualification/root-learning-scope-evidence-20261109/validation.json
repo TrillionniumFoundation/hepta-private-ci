@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.root-learning-scope-evidence-qualification.v1",
+  "created_at_utc": "2026-11-09T13:26:23.296130+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_evidence_commit": "e2e20033daa67d9d9826d4942e4d6bdd15ba4ab5",
+  "cumulative_code_commit": "b8e8c6e82abc1479c573f61a5e17d28d581e6cad",
+  "cumulative_code_tree": "deca4dc9e355ba313c68528d9c88bd5104a71f36",
+  "code_files": 33,
+  "code_bytes": 636280,
+  "source_identity": {
+    "behavior_tested": "34f2b72cfc17988d70935393ffdd22b31b5334e00000bbb107ef3645fdba6bfd",
+    "maintained_and_compiled": "1901b15d75b0d0b7eec8c2b1a3d0abeea6e0f279661203d38b22b10c82d16f20",
+    "final_static_proof": "aad7b3e68c34257731c841cb9f0140c60657df0fb72552fefe743eb5eaaa1768"
+  },
+  "ordinary_tests": {
+    "agentd": 772,
+    "learning_artifacts": 109,
+    "total_passed": 881,
+    "scope": "pre-maintenance cumulative candidate"
+  },
+  "root_tests": {
+    "passed_parents": 6,
+    "count_nested_children_again": false,
+    "actual_consumer_uid": 60001
+  },
+  "source_regressions": {
+    "passed": 17,
+    "scope": "pre-maintenance; not rerun after fix/fmt"
+  },
+  "maintenance": {
+    "just_fix": 0,
+    "just_fmt": 0,
+    "bins_check": 0,
+    "rust_files_changed": 17,
+    "material_behavior_change_found_in_static_review": false
+  },
+  "final_caller_proof": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "rust_files": 6157,
+    "boundaries": 188,
+    "protected_entries": 170,
+    "distinct_protected_paths": 133,
+    "authority_granted": false
+  },
+  "report_reconciliation": {
+    "root_rerun": false,
+    "ordinary_rerun_count": 1,
+    "original_failed_receipts_preserved": true
+  },
+  "tests_after_maintenance": false,
+  "per_cut_native_acceptance_claimed": false,
+  "per_cut_github_ci_pass_claimed": false,
+  "published_source_readback": {
+    "exact_ref": "b8e8c6e82abc1479c573f61a5e17d28d581e6cad",
+    "files": 33,
+    "sha256_blob_sha_size_and_tree_path": "all matched"
+  },
+  "product": {
+    "disposition": "HOLD_UNASSEMBLED",
+    "stage_owner_product_callers": 0,
+    "evidence_client_product_callers": 0,
+    "generation": "Unpublished boundary preserved; no new generation runtime observation",
+    "merged_or_deployed_by_this_task": false
+  },
+  "archives": [
+    {
+      "file": "native-qualification-final-v3.tar.xz",
+      "bytes": 383072,
+      "sha256": "5b0be7d15d3a7cdc5182fc625cee8220c9cfeeafc30a3302d9d54a27b087b693",
+      "payloads": 68
+    },
+    {
+      "file": "source-and-review-evidence-v3.tar.xz",
+      "bytes": 948860,
+      "sha256": "5bda96a40b924cb34e8a2da4082f0861c586f81a5f77810f2d88caa550240b70",
+      "payloads": 89
+    }
+  ],
+  "read_archives_together": true
+}

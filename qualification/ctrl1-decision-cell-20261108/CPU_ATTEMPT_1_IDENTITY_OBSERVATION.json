@@ -1,0 +1,179 @@
+{
+  "schema": "hepta.ctrl1.cpu-identity-observation.v1",
+  "observed_utc": "2026-11-08T12:10:28.355182+00:00",
+  "status": "INTEGRITY_REJECTED",
+  "source_run": "cpu_allowance",
+  "scope": "Read-only comparison of existing retained checkpoint bytes and terminal receipt identities; no checkpoint reconstruction or edits",
+  "workers_inspected": 72,
+  "workers_with_inconsistent_final_identity": 4,
+  "parameter_hash_mismatches": 3,
+  "observations": [
+    {
+      "worker": "29d3a0540d92-41-4-actor_critic",
+      "mismatches": [
+        {
+          "field": "parameters_sha256",
+          "retained_checkpoint": "443b82b03c72bb6c42376f3ca6a9db3694c09062478012bbf7d7fb12ffa12d4e",
+          "terminal_receipt": "746bba7ae97a2bf25db93f1180a4ff8b75ee08977e7b17641feedd45adca2ea8"
+        },
+        {
+          "field": "completed_epochs",
+          "retained_checkpoint": 372,
+          "terminal_receipt": 396
+        },
+        {
+          "field": "retained_actor_updates",
+          "retained_checkpoint": 47616,
+          "terminal_receipt": 50688
+        },
+        {
+          "field": "actual_actor_updates",
+          "retained_checkpoint": null,
+          "terminal_receipt": 50752
+        }
+      ],
+      "originals": {
+        "CHECKPOINT.json": {
+          "bytes": 4222,
+          "sha256": "94e8ed88060ea6b9231ca3dff058cdabff08c18f3e12fc5ff1e77ebad64b2fc4",
+          "mtime_ns": 1794138333134882513,
+          "ctime_ns": 1794138335986164206
+        },
+        "RECEIPT.json": {
+          "bytes": 1945,
+          "sha256": "de47be2749f05c39cd1e1006bea10c2f8815473a4e37118952525c79103bbd5a",
+          "mtime_ns": 1794138333835047934,
+          "ctime_ns": 1794138333835047934
+        },
+        "WORKER.json": {
+          "bytes": 387,
+          "sha256": "7405dae48e25eb9fc76ca6c39aadae9cded26bd2b3437b4a1dd0cc3e2c664144",
+          "mtime_ns": 1794138333829757855,
+          "ctime_ns": 1794138333829757855
+        }
+      }
+    },
+    {
+      "worker": "6c4949f90c48-17-1-actor_critic",
+      "mismatches": [
+        {
+          "field": "parameters_sha256",
+          "retained_checkpoint": "440bd3d405a51a0a586c394103ce2196b5efc77eff09551bd9c8a96be85b44f9",
+          "terminal_receipt": "bd067e62b514bdce7369d8d7b52e69b7c690b04da01e08623e7439997a28d9d8"
+        },
+        {
+          "field": "completed_epochs",
+          "retained_checkpoint": 59,
+          "terminal_receipt": 85
+        },
+        {
+          "field": "retained_actor_updates",
+          "retained_checkpoint": 7552,
+          "terminal_receipt": 10880
+        },
+        {
+          "field": "actual_actor_updates",
+          "retained_checkpoint": null,
+          "terminal_receipt": 10918
+        }
+      ],
+      "originals": {
+        "CHECKPOINT.json": {
+          "bytes": 4219,
+          "sha256": "5d995363ed41f53bce67b1c45432a500a1ed2dd31784d901459b8cadd1d75cad",
+          "mtime_ns": 1794138338133849117,
+          "ctime_ns": 1794138339191955684
+        },
+        "RECEIPT.json": {
+          "bytes": 1933,
+          "sha256": "76d91a1f1c2668fad27e0b71e0a663971621086cda715014de2aff2448eb214a",
+          "mtime_ns": 1794138338726843903,
+          "ctime_ns": 1794138338726843903
+        },
+        "WORKER.json": {
+          "bytes": 384,
+          "sha256": "5c78cf5e038985eda2994f9b62ba68521cb4a950eeb4a4e6eecb865279168c85",
+          "mtime_ns": 1794138338721146434,
+          "ctime_ns": 1794138338721146434
+        }
+      }
+    },
+    {
+      "worker": "6c4949f90c48-41-4-actor_critic",
+      "mismatches": [
+        {
+          "field": "parameters_sha256",
+          "retained_checkpoint": "6d03f9b69fcd7905812e0b611b9e373593bedde99232023f88e919d9442b0c01",
+          "terminal_receipt": "2eeadeec610d70bfc07f026d9e035b4e0b91f66bb25a67775f051de8bb6e8a4e"
+        },
+        {
+          "field": "completed_epochs",
+          "retained_checkpoint": 323,
+          "terminal_receipt": 357
+        },
+        {
+          "field": "retained_actor_updates",
+          "retained_checkpoint": 41344,
+          "terminal_receipt": 45696
+        },
+        {
+          "field": "actual_actor_updates",
+          "retained_checkpoint": null,
+          "terminal_receipt": 45696
+        }
+      ],
+      "originals": {
+        "CHECKPOINT.json": {
+          "bytes": 4207,
+          "sha256": "cf25341d0411fe70d37331b48858193451ddaee1f9c12ec987a8d73e7b522ef9",
+          "mtime_ns": 1794138383128518492,
+          "ctime_ns": 1794138385918041717
+        },
+        "RECEIPT.json": {
+          "bytes": 1935,
+          "sha256": "d25bf50113473a62b8b16ee182298e47ad340b1ee6110349df6d8875f8e56ac3",
+          "mtime_ns": 1794138383859868790,
+          "ctime_ns": 1794138383859868790
+        },
+        "WORKER.json": {
+          "bytes": 386,
+          "sha256": "68596d1972e535b034c31016fed71ef56425bf623480cc9fffde65a0726bb15d",
+          "mtime_ns": 1794138383854802556,
+          "ctime_ns": 1794138383854802556
+        }
+      }
+    },
+    {
+      "worker": "6d077dda5bd1-23-1-actor_critic",
+      "mismatches": [
+        {
+          "field": "actual_actor_updates",
+          "retained_checkpoint": null,
+          "terminal_receipt": 8538
+        }
+      ],
+      "originals": {
+        "CHECKPOINT.json": {
+          "bytes": 4250,
+          "sha256": "280a56f97bf4b5d18a3cdbefd84217c6c718f71aa11f83f0f59cf106ddf1fb05",
+          "mtime_ns": 1794138406246189342,
+          "ctime_ns": 1794138409169755442
+        },
+        "RECEIPT.json": {
+          "bytes": 1924,
+          "sha256": "01c1e788ea3335f19a246dddf022f53c8ce422e870b2708331c0e63b8656013e",
+          "mtime_ns": 1794138406638725454,
+          "ctime_ns": 1794138406638725454
+        },
+        "WORKER.json": {
+          "bytes": 378,
+          "sha256": "b93ff6f9fb9dd8e8e4975f1b739b7234baf0014cda987ff7437a170ffd3ac269",
+          "mtime_ns": 1794138406632754858,
+          "ctime_ns": 1794138406632754858
+        }
+      }
+    }
+  ],
+  "cause": "Not established. Retained earlier checkpoint content does not establish who or what caused the mismatch. No execution failure is inferred from this observation alone.",
+  "disposition": "Original attempt remains rejected and separately archived. Same-plan/source full repeat is qualified only by its own complete replay. No extra independent training seeds."
+}

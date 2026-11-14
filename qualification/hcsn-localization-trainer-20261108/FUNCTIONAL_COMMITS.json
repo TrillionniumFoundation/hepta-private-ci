@@ -1,0 +1,60 @@
+{
+  "base": "5f7f55e015dde7fab0c174081fef090ff45501de",
+  "commits": [
+    {
+      "changed_lines_git": 275,
+      "changed_lines_patch_generator": 299,
+      "commit": "e9fd85ee03d27f56c6f7e02017e2ce1fe23e5d07",
+      "commit_output": "[detached HEAD e9fd85ee03] feat(hcsn): configure official adapters and audit real capacity\n 3 files changed, 244 insertions(+), 31 deletions(-)\n create mode 100644 proposals/localization-v2/capacity.py\n create mode 100644 proposals/localization-v2/test_capacity.py\n",
+      "numstat": "131\t0\tproposals/localization-v2/capacity.py\n48\t31\tproposals/localization-v2/models.py\n65\t0\tproposals/localization-v2/test_capacity.py\n",
+      "parent": "5f7f55e015dde7fab0c174081fef090ff45501de",
+      "patch_sha256": "e7df5ebdf7d18cc4497ced6829aca34f7c9d428e71de46d5c9e5eb26ffd0c469",
+      "stage": "01-configurable-adapters-capacity.patch",
+      "stat": " proposals/localization-v2/capacity.py      | 131 +++++++++++++++++++++++++++++\n proposals/localization-v2/models.py        |  79 ++++++++++-------\n proposals/localization-v2/test_capacity.py |  65 ++++++++++++++\n 3 files changed, 244 insertions(+), 31 deletions(-)\n",
+      "tree": "387e04b5329f1c6de3404435497054564f7920ab"
+    },
+    {
+      "changed_lines_git": 231,
+      "changed_lines_patch_generator": 231,
+      "commit": "d7097a487350cf6951df5d256c9041245e49a20c",
+      "commit_output": "[detached HEAD d7097a4873] feat(hcsn): build subject-separated ABC and D episodes\n 2 files changed, 231 insertions(+)\n create mode 100644 proposals/localization-v2/episodes.py\n create mode 100644 proposals/localization-v2/test_episodes.py\n",
+      "numstat": "164\t0\tproposals/localization-v2/episodes.py\n67\t0\tproposals/localization-v2/test_episodes.py\n",
+      "parent": "e9fd85ee03d27f56c6f7e02017e2ce1fe23e5d07",
+      "patch_sha256": "f8536979a3b935386f8b2e3601773f8d4c0b257e696f7a27e2710b8acfeddadd",
+      "stage": "02-subject-separated-episodes.patch",
+      "stat": " proposals/localization-v2/episodes.py      | 164 +++++++++++++++++++++++++++++\n proposals/localization-v2/test_episodes.py |  67 ++++++++++++\n 2 files changed, 231 insertions(+)\n",
+      "tree": "2a92f59ce7fdc48cd82fdafa2fdc14023c9db362"
+    },
+    {
+      "changed_lines_git": 272,
+      "changed_lines_patch_generator": 272,
+      "commit": "51216356da6bdec39a503b7781b762f63f9a3136",
+      "commit_output": "[detached HEAD 51216356da] feat(hcsn): run bounded development episode training\n 1 file changed, 272 insertions(+)\n create mode 100644 proposals/localization-v2/train_development.py\n",
+      "numstat": "272\t0\tproposals/localization-v2/train_development.py\n",
+      "parent": "d7097a487350cf6951df5d256c9041245e49a20c",
+      "patch_sha256": "1205153d59431b82a5aefef1026c36b229295a07483ee70fbc0bbe1f5273b0f5",
+      "stage": "03-development-episode-trainer.patch",
+      "stat": " proposals/localization-v2/train_development.py | 272 +++++++++++++++++++++++++\n 1 file changed, 272 insertions(+)\n",
+      "tree": "30cbe72f592361c4c3db827c20f7b902e7055f37"
+    },
+    {
+      "changed_lines_git": 253,
+      "changed_lines_patch_generator": 253,
+      "commit": "d7ff5b5aab5543c12666bd15084e27a46a6e2198",
+      "commit_output": "[detached HEAD d7ff5b5aab] feat(hcsn): audit retained updates and document HOLD evidence\n 4 files changed, 251 insertions(+), 2 deletions(-)\n create mode 100644 proposals/localization-v2/TRAINER.md\n create mode 100644 proposals/localization-v2/audit_training.py\n",
+      "numstat": "1\t1\tproposals/localization-v2/PROTOCOL.md\n130\t0\tproposals/localization-v2/TRAINER.md\n118\t0\tproposals/localization-v2/audit_training.py\n2\t1\tproposals/localization-v2/formal_protocol.json\n",
+      "parent": "51216356da6bdec39a503b7781b762f63f9a3136",
+      "patch_sha256": "0eb1925d2ce12bcfc3c2a032845aafa037edfca05fdf59071e453f23ed5fa968",
+      "stage": "04-retained-update-audit-and-guide.patch",
+      "stat": " proposals/localization-v2/PROTOCOL.md          |   2 +-\n proposals/localization-v2/TRAINER.md           | 130 +++++++++++++++++++++++++\n proposals/localization-v2/audit_training.py    | 118 ++++++++++++++++++++++\n proposals/localization-v2/formal_protocol.json |   3 +-\n 4 files changed, 251 insertions(+), 2 deletions(-)\n",
+      "tree": "a8b182ca45473ab0dbe68cf354d8327ed98b98db"
+    }
+  ],
+  "preparation_attempt_1": {
+    "git_lines": 275,
+    "job": "1a1bc3f9bd3-138b0-11f",
+    "reason": "guard compared generated diff line accounting to Git minimal diff; source hashes unchanged; continued exact staged content",
+    "reported_lines": 299
+  },
+  "schema": "hcsn-functional-commit-chain-v1"
+}

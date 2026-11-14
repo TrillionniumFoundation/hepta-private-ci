@@ -42,6 +42,10 @@ use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
+#[cfg(target_os = "linux")]
+#[path = "state_q24_completed_history_tests.rs"]
+mod completed_history;
+
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
@@ -476,7 +480,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
     };
     write_trust(false);
-    let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
+    let checkpoint_file = temp
+        .path()
+        .canonicalize()
+        .expect("canonical external checkpoint parent")
+        .join("run-start-replay-checkpoint.json");
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(

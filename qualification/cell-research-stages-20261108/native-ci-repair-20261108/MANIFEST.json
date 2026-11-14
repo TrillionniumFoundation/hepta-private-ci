@@ -1,0 +1,293 @@
+{
+  "schema": "hepta.native-ci-repair-evidence.v1",
+  "scope": "Engineering fixes and bounded native verification; no experiment admission.",
+  "source": {
+    "baseline": "f25124815a9832af9b00652a4741d794a744df06",
+    "memory_commit": "f3d65ab0fd161e0f1c3fae97b2d888a4bcc706c0",
+    "ci_tested_commit": "67b01f64e78d70bdcc28196bd75f9e5ab62cd852",
+    "integration_commit": "969a6670eb4df6ea654aac78ada489ff3cdab816",
+    "integration_tree": "624ba7ee43eac4e83b3c474cf339b7221a60af75",
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+        "sha256": "ffd2c8ddf39e17ec1760c6d3f61f2e8809d460f99063379892b14dc724552efc",
+        "bytes": 98887
+      },
+      {
+        "path": ".bazelrc",
+        "sha256": "fa25f7118c2b9f82ed0932c1d2a32c8e8d1d8b3eab392b997fb7855902485dff",
+        "bytes": 14107
+      },
+      {
+        "path": ".github/workflows/bazel.yml",
+        "sha256": "8bba9b0462fbf7abe47100b2b15d2e13b2ad991fae41a4be1e14bc49d29d53e1",
+        "bytes": 20888
+      },
+      {
+        "path": ".github/workflows/hepta-cell-framework-native.yml",
+        "sha256": "6bc613ecbf1eb8e57bb0bf55e8ab2f683c8b263d1a9a91345fc0c8163b1564fa",
+        "bytes": 11811
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/circuit_admission_tests.rs",
+        "sha256": "19800e2884e7d14e3f175dcb9843b36e946a2a29c34a3d9f8aa64d73dfcec36f",
+        "bytes": 17848
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+        "sha256": "3632fd7ce783a51244ab9de675b3dcffc604bcecee8bfb882e9bcc63a744d7b4",
+        "bytes": 18642
+      },
+      {
+        "path": "codex-rs/hepta-operator-acceptance/BUILD.bazel",
+        "sha256": "b54c7d8e03d31b3477608692907bc3e51a9c5bbb6edd8fef5f6de8cc19fcc2cb",
+        "bytes": 1518
+      }
+    ],
+    "scope": "independently tested component fixes; cross-platform CI pending"
+  },
+  "memory": {
+    "baseline": {
+      "head": "f25124815a9832af9b00652a4741d794a744df06",
+      "job_id": "1a1bc0d0b25-10b31-5e",
+      "exit_code": 100,
+      "nextest_attempts": 2,
+      "result": "same generation receipt mismatch on both attempts"
+    },
+    "patched": {
+      "head": "f25124815a9832af9b00652a4741d794a744df06",
+      "tree": "4d9d847ed3a333245a4c08612d9c13d8fd4acdfc",
+      "modified_file": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "test_sha256": "91d5ea52affee88aa62e7da2e9c18aa0cfcb74043526b4eb7bc96ffb0df97b1d",
+      "patch_sha256": "c5cf0f088d3bc18a4cf82eb7c31e5deb538a25c100589dffca6667447c7886f5",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--features",
+        "qualification-cognitive-write",
+        "--test",
+        "cognitive_product_e2e"
+      ],
+      "baseline_job_id": "1a1bc0d0b25-10b31-5e",
+      "source_scope": "f251 plus recorded patch",
+      "cost_scope": "this local verification command only",
+      "exit_code": 0,
+      "wall_seconds": 13.696763668966014,
+      "child_cpu_seconds": 22.196769,
+      "log_sha256": "792500ef87080c03c39a3ab693f1b1bd4f7b01b9e942b9319c0ca00f14099938"
+    },
+    "passed": 9,
+    "skipped": 4,
+    "failed": 0,
+    "format": {
+      "parent": "f25124815a9832af9b00652a4741d794a744df06",
+      "commit": "f3d65ab0fd161e0f1c3fae97b2d888a4bcc706c0",
+      "tree": "b686bc333c2da0f4d83a5f09b22c30abf18c6b15",
+      "tested_file_sha256": "91d5ea52affee88aa62e7da2e9c18aa0cfcb74043526b4eb7bc96ffb0df97b1d",
+      "formatted_file_sha256": "ffd2c8ddf39e17ec1760c6d3f61f2e8809d460f99063379892b14dc724552efc",
+      "tested_bytes_unchanged": false,
+      "tests_after_format": "not rerun; repository instruction",
+      "format_command": [
+        "just",
+        "fmt",
+        "--base",
+        "f25124815a9832af9b00652a4741d794a744df06"
+      ]
+    },
+    "format_change": "Removed one trailing blank line only; exact diff retained."
+  },
+  "automation_and_operator_acceptance": {
+    "tested_commit": "67b01f64e78d70bdcc28196bd75f9e5ab62cd852",
+    "job_id": "1a1bc12f78e-12b64-21",
+    "passed": 163,
+    "failed": 0,
+    "native_record": "ci-validation/native-tests.json",
+    "final_validation": {
+      "base_sha": "f25124815a9832af9b00652a4741d794a744df06",
+      "candidate_sha": "67b01f64e78d70bdcc28196bd75f9e5ab62cd852",
+      "candidate_tree": "9da7811b6a32c43d687040736111a247aca35ca6",
+      "status_porcelain": "",
+      "native_job_id": "1a1bc12f78e-12b64-21",
+      "format_job_id": "1a1bc181f5f-138b0-5",
+      "test_record": "/home/qian-qi/work/cell-s0s5-20261108-1628/ci-validation/native-tests.json",
+      "test_record_sha256": "d23d06ca401df2c780dc4a0ac5dc31a485b941f25d6aa1bd47583d809102ca6f",
+      "raw_log": "/home/qian-qi/work/cell-s0s5-20261108-1628/ci-validation/native-tests.json.ef15fd3063c246d8a4bdb81b147bc948.log",
+      "raw_log_sha256": "c2a4ca5b403396be5dfa3e1e63d79a73e2441b44f7a94de47004a5b53f50b83c",
+      "observed_passed": 163,
+      "observed_failed": 0,
+      "elapsed_seconds": 147.803387922002,
+      "runner_summary": [
+        "    Finished `test` profile [unoptimized] target(s) in 2m 25s",
+        " Nextest run ID 3bbb6aab-295b-478c-a5dd-0e067c453c0f with nextest profile: local",
+        "     Summary [   1.900s] 163 tests run: 163 passed, 0 skipped"
+      ],
+      "requested_cpu_quota_percent": 200,
+      "requested_memory_max_bytes": 8589934592,
+      "resource_caps_are_not_measured_usage": true,
+      "cargo_target_dir": "/home/qian-qi/work/cell-s0s5-20261108-1628/ci-target",
+      "formatter_path": "/home/qian-qi/work/cell-s0s5-20261108-1628/ci-tools/bin:/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/tools/bin:/home/qian-qi/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+      "dotslash_cache": "/home/qian-qi/work/cell-s0s5-20261108-1628/ci-tools/cache"
+    },
+    "format": "Official just fmt passed; six source-file hashes unchanged."
+  },
+  "upstream_failure_jobs": {
+    "linux_musl": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42489600519/job/128762202090",
+    "windows": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42489600519/job/128762202094"
+  },
+  "limits": [
+    "Native verification ran on ROG Linux; Windows and the exact CI RBE strategy still require GitHub CI.",
+    "The composition workflow upload change preserves scoped evidence; it does not establish the cause or success of the prior full-workspace failure.",
+    "The G14 helper is a fresh single-memory fixture and requires revision_facts_v1 storage witnesses.",
+    "Native command cost excludes broader development and shared setup; this is not complete equal-budget scientific evidence."
+  ],
+  "research_status": {
+    "S0": "HOLD",
+    "S1": "HOLD",
+    "S2": "HOLD",
+    "S3": "HOLD",
+    "S4": "HOLD",
+    "S5": "HOLD",
+    "authority_granted": false
+  },
+  "archive": {
+    "path": "raw-evidence.tar.gz",
+    "bytes": 32960,
+    "sha256": "3cf2aa9802db41f0e7dc21211a54d385f94231a2fde6f3d9d3fc38759716963b",
+    "members": [
+      {
+        "path": "memory-validation/PATCHED_RESULT.json",
+        "sha256": "8c1a3b75851ceea99e12113a33740760d5ad14fae2456b78204f81a53c06ca6a",
+        "bytes": 896
+      },
+      {
+        "path": "memory-validation/PATCHED_SOURCE.json",
+        "sha256": "be9fdcc68429480cbf405926edfb05e92f9dd5b88a9f6f2c82e134d2b96bb4af",
+        "bytes": 722
+      },
+      {
+        "path": "memory-validation/POST_FORMAT.json",
+        "sha256": "6104ab841ee2413092fc00639f8dcc35c0e7bcccf00f143dd70b6fcd32e78eeb",
+        "bytes": 563
+      },
+      {
+        "path": "memory-validation/baseline/SOURCE.json",
+        "sha256": "2f3fee34caec96a863a5a8bfbd7cdda00851521b5fbca6083bb9d910f0040a6b",
+        "bytes": 652
+      },
+      {
+        "path": "memory-validation/baseline/stderr.log",
+        "sha256": "bc781a61e19aedc32fbd190267174fe6df09335ca34332930160e98e79a048ee",
+        "bytes": 64403
+      },
+      {
+        "path": "memory-validation/baseline/stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "memory-validation/format-only.patch",
+        "sha256": "2ada47701667af9fff2e598fe2ea52b7482526fdf4cf6840ae2c1044e9db5c09",
+        "bytes": 85
+      },
+      {
+        "path": "memory-validation/g14-revision-facts.patch",
+        "sha256": "c5cf0f088d3bc18a4cf82eb7c31e5deb538a25c100589dffca6667447c7886f5",
+        "bytes": 3839
+      },
+      {
+        "path": "memory-validation/patched-tests.log",
+        "sha256": "792500ef87080c03c39a3ab693f1b1bd4f7b01b9e942b9319c0ca00f14099938",
+        "bytes": 18002
+      },
+      {
+        "path": "ci-validation/CANDIDATE_BEFORE_TEST.json",
+        "sha256": "019854bdf33c1782c4cb871cf200bfb9dd8619d6c175a3b8fafdd4dd0b20ce2c",
+        "bytes": 1053
+      },
+      {
+        "path": "ci-validation/DOTSLASH_INSTALL.json",
+        "sha256": "99ea09346b2b7fae35fab7f253e628398e0f0df84413b7c1bc7098e9bae6cd2a",
+        "bytes": 654
+      },
+      {
+        "path": "ci-validation/FINAL_VALIDATION.json",
+        "sha256": "58c64b906be98a1d494b4242ac013ea222e28c50d370cb2c5f8699154eb56f3c",
+        "bytes": 1529
+      },
+      {
+        "path": "ci-validation/FORMAT_RESULT.json",
+        "sha256": "dc1ede2891938eb7b56b3c71fb8a49d9629f2a424f7141a2f4c851e85261d222",
+        "bytes": 1872
+      },
+      {
+        "path": "ci-validation/WORKTREE_READY.json",
+        "sha256": "8fb86999dd16b07fd691b1aac561b1753ed464035e45133c6be05d34274323d0",
+        "bytes": 1560
+      },
+      {
+        "path": "ci-validation/all-ci-fixes.patch",
+        "sha256": "3ec31247a3fffc00c97671f30ffd4e26b885d2ce157f3d24f3f085c195c54f31",
+        "bytes": 5097
+      },
+      {
+        "path": "ci-validation/candidate-commands.jsonl",
+        "sha256": "d450d198e8c7048b74df7511822cbf44c79eb326ec4a06b63862f60eab5aafc4",
+        "bytes": 1523
+      },
+      {
+        "path": "ci-validation/fmt.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "ci-validation/fmt.stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "ci-validation/native-tests.json",
+        "sha256": "d23d06ca401df2c780dc4a0ac5dc31a485b941f25d6aa1bd47583d809102ca6f",
+        "bytes": 1508
+      },
+      {
+        "path": "ci-validation/native-tests.json.ef15fd3063c246d8a4bdb81b147bc948.log",
+        "sha256": "c2a4ca5b403396be5dfa3e1e63d79a73e2441b44f7a94de47004a5b53f50b83c",
+        "bytes": 54898
+      },
+      {
+        "path": "ci-validation/setup-commands.jsonl",
+        "sha256": "5e9b0de0e3b9a4c0a735feb326c44de0c710b81df80617492763550d296ab47b",
+        "bytes": 5563
+      },
+      {
+        "path": "INTEGRATION.json",
+        "sha256": "719568fbf7b4710fc0dda9c926834efa22677109b9c956ebd3bcbf23a8c0e242",
+        "bytes": 1660
+      },
+      {
+        "path": "ci-tested-commit.txt",
+        "sha256": "69d00c4261379b85a3cd987e5add3d4c4edbf45a97b5c630ffe813b34e71ec0e",
+        "bytes": 284
+      }
+    ]
+  },
+  "preparation_failures": [
+    {
+      "scope": "publication setup, not a scientific attempt",
+      "job_id": "1a1bc163332-12b64-36",
+      "state": "timed_out",
+      "exit_code": 124,
+      "note": "Native main fetch-based setup reached its 300-second timeout; no remote write was requested."
+    },
+    {
+      "scope": "evidence packaging, not a scientific attempt",
+      "job_id": "1a1bc1fbb56-138b0-41",
+      "state": "failed",
+      "exit_code": 1,
+      "note": "Gate correctly rejected a report destination inside the checkout. Resumed using unique external outputs, then retained the produced report."
+    }
+  ]
+}

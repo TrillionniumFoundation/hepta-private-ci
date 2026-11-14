@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.evolve1.execution-index.v1",
+  "campaigns": [
+    {
+      "id": "pilot-01",
+      "role": "development_pre_review",
+      "runs": 12,
+      "attempts": 72,
+      "file": "campaign-development-01.json",
+      "limitations": [
+        "pre-fix seed scheme and journal implementation",
+        "incomplete original execution source closure",
+        "not used as confirmation or pooled with final pilot"
+      ]
+    },
+    {
+      "id": "pilot-02-frozen",
+      "role": "final_engineering_pilot",
+      "runs": 12,
+      "attempts": 72,
+      "file": "campaign-final.json",
+      "source_code_commit": "b83de1a192a4c35c12563d8856ffded238469a21",
+      "source_hashes": {
+        "__init__.py": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4",
+        "_causal_checks.py": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d",
+        "causal_improver.py": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0",
+        "evolve1.py": "29b00f3f913787f12a7915f5a4d7728ccb2a149c7d17b4a39c25cd02daeed0f6",
+        "evolve1_pilot.py": "a66a436e82f702e3e0318e968056797077a0038817e1f18bd0ae787685f1087f",
+        "evolve1_reference.py": "dcbb79d0b40d87bb3f977a15dd00019b987487a6b558e337fe230b509aec2cee"
+      }
+    }
+  ],
+  "discovery_candidates_per_campaign": 24,
+  "unit_test_executions_are_separate_from_experimental_denominators": true,
+  "claims": "no real-task, production, or RSI qualification"
+}

@@ -1,0 +1,443 @@
+{
+  "schema": "hepta.cell-causal.analysis-summary-projection.v1",
+  "observed_utc": "2026-11-08T10:09:07.769688+00:00",
+  "status": "DESCRIPTIVE_ONLY_HOLD",
+  "input_bindings": {
+    "fit_results": {
+      "bytes": 172934,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/cloud-return/results/b/fit-results.json",
+      "sha256": "3e9c36ec8d8bc84a4d0e80cac4a786a6da56a69747ab5c27a39b72d8ef121406"
+    },
+    "paired_rows": {
+      "bytes": 3058914,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/study/paired-rows.jsonl",
+      "sha256": "7a553992aa057475887482021f00d9ab5f9cb837215ee29b909ee1c0dcfa1add"
+    },
+    "plan": {
+      "bytes": 20647,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/study/PILOT_PLAN.json",
+      "sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7"
+    },
+    "selected": {
+      "bytes": 18908,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/study/selected-sources.json",
+      "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+    },
+    "selection_lock": {
+      "bytes": 260903,
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/study/selection-lock.json",
+      "sha256": "19d508875481336823ec9075c631ee0ab70df5f525406181a131e6dda04ea3a5"
+    }
+  },
+  "analysis_source_bindings": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py",
+      "sha256": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+      "bytes": 14705
+    },
+    "scripts/ndu_real_materials/__init__.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/__init__.py",
+      "sha256": "1f0a2d2286ae48aa399b8759c8326e878b4de73bbec0fcc9c2617b58463187a9",
+      "bytes": 74
+    },
+    "scripts/ndu_real_materials/acquire.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/acquire.py",
+      "sha256": "0dac9af6017cef053b117d5c9f72c264fd01412c4bff1816694c502eb35c7d6d",
+      "bytes": 4685
+    },
+    "scripts/ndu_real_materials/common.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/common.py",
+      "sha256": "85a70ee45bfdea796f5ddf632aa7c6a93e60ccf3ca75e8925fd76e8b07cf2ce0",
+      "bytes": 3205
+    },
+    "scripts/ndu_real_materials/coverage.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/coverage.py",
+      "sha256": "f164e862dc5c9c48bcc5eab732e8e0dbbd0f375610b1c64ed201434394259796",
+      "bytes": 30312
+    },
+    "scripts/ndu_real_materials/evaluator.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/evaluator.py",
+      "sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+      "bytes": 9284
+    },
+    "scripts/ndu_real_materials/groups.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/groups.py",
+      "sha256": "60ed62f2df57cfbfc7441f5504ad39cfcebe4bb3114e2cedd55ca80dc213b3fa",
+      "bytes": 5043
+    },
+    "scripts/ndu_real_materials/isolate.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/isolate.py",
+      "sha256": "03e23e125465984d794b011eab2ecf82a84a8b0f6b91ec6ef670fcd421652354",
+      "bytes": 17264
+    },
+    "scripts/ndu_real_materials/isolation_probe.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/isolation_probe.py",
+      "sha256": "f2c7cc52ccffb8bba27082c0ffbb9b80d1b4d3488ce835b8c4c2c0c903b1acac",
+      "bytes": 11446
+    },
+    "scripts/ndu_real_materials/register.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_materials/register.py",
+      "sha256": "85383349aec4388756f9a96755611c94e78cf756fa2ae3ea5a061ca78c9228e0",
+      "bytes": 20627
+    },
+    "scripts/ndu_real_runtime/__init__.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/__init__.py",
+      "sha256": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4",
+      "bytes": 77
+    },
+    "scripts/ndu_real_runtime/_causal_checks.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/_causal_checks.py",
+      "sha256": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d",
+      "bytes": 1644
+    },
+    "scripts/ndu_real_runtime/actor.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/actor.py",
+      "sha256": "14a368da5cfb218c99ec4eb390aee2c2a386ebac45c362b3f483f8995fad999b",
+      "bytes": 17418
+    },
+    "scripts/ndu_real_runtime/causal_ace.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_ace.py",
+      "sha256": "09150a7722e76d116a5761927f9687ba53e7ec1fe7718bb364fd5a39dbad2c65",
+      "bytes": 8400
+    },
+    "scripts/ndu_real_runtime/causal_analysis.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_analysis.py",
+      "sha256": "2c29852eefe11d3e5294e43bb27974037455754650402ca2ed931fb195c09f3e",
+      "bytes": 9284
+    },
+    "scripts/ndu_real_runtime/causal_b.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_b.py",
+      "sha256": "6f270394edd7f474810fbbefcf3638cca43d03ddc2476ec81a17879e26dd8f6a",
+      "bytes": 14618
+    },
+    "scripts/ndu_real_runtime/causal_b_contract.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_b_contract.py",
+      "sha256": "953e946c9d0c020c5aa1ceb9e1d41e7030f91729260f01e81895b76cdc6d290c",
+      "bytes": 8128
+    },
+    "scripts/ndu_real_runtime/causal_composition.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_composition.py",
+      "sha256": "7735155426f12ff31fe31b453a7a29da9ca8e18b1e8593884dd0a0379895d90a",
+      "bytes": 15465
+    },
+    "scripts/ndu_real_runtime/causal_improver.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_improver.py",
+      "sha256": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0",
+      "bytes": 23492
+    },
+    "scripts/ndu_real_runtime/causal_protocol.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_protocol.py",
+      "sha256": "a450ca58bdb923cc7dd11ecf5ef08fbca55a975ad41e9475df8b0ce8327df8a2",
+      "bytes": 10162
+    },
+    "scripts/ndu_real_runtime/causal_topology.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/causal_topology.py",
+      "sha256": "43bfaa9357871dcf3c79ad823e6ec4922244ade43adec767eea275817d0ce092",
+      "bytes": 16563
+    },
+    "scripts/ndu_real_runtime/controllers.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/controllers.py",
+      "sha256": "0cd9c8da5122d6b7940e322382e9118607d54b14246ee3449feb05904728824b",
+      "bytes": 15234
+    },
+    "scripts/ndu_real_runtime/episode.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/episode.py",
+      "sha256": "77876e8b3321276d9e1efca13fad7dada14f338aec93412d4f421d19871af468",
+      "bytes": 29599
+    },
+    "scripts/ndu_real_runtime/finite_entropic_golden.json": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/finite_entropic_golden.json",
+      "sha256": "361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc",
+      "bytes": 2076
+    },
+    "scripts/ndu_real_runtime/fit_loop.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/fit_loop.py",
+      "sha256": "ffed1b606594e637812a01d004c394518d88e497b7ba9720c13466027f1bf8e5",
+      "bytes": 12969
+    },
+    "scripts/ndu_real_runtime/gradient_check.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/gradient_check.py",
+      "sha256": "0311796a3f37654fe53e8c1d8d6141b95381787d0f84b0699477889d60a6732e",
+      "bytes": 17363
+    },
+    "scripts/ndu_real_runtime/interval_costs.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/interval_costs.py",
+      "sha256": "47e5aeba99a3d7763d607f2a796937ceda4e429ab72b0e41909ce78a8ee3828c",
+      "bytes": 12219
+    },
+    "scripts/ndu_real_runtime/matrix.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/matrix.py",
+      "sha256": "c3f1792e73a0c92f953568a924f686e1865f97f728210982eee51b5dbfbe4d10",
+      "bytes": 25671
+    },
+    "scripts/ndu_real_runtime/meter_diagnostic.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/meter_diagnostic.py",
+      "sha256": "0d2c0a6a1e1df89b28351f22a759470078a30bc9df559f6c4b26859671a57670",
+      "bytes": 15246
+    },
+    "scripts/ndu_real_runtime/metering.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/metering.py",
+      "sha256": "268966957ddf16d9824e08041c63f09cb14f6f3e6e14a11aceaf104857089226",
+      "bytes": 8563
+    },
+    "scripts/ndu_real_runtime/native_worker.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/native_worker.py",
+      "sha256": "566e4cd00294998923a08675f90640bfae1ea63c5d540390bdd22e712dbada76",
+      "bytes": 3133
+    },
+    "scripts/ndu_real_runtime/neural.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/neural.py",
+      "sha256": "816cf398cb8fa76e13bec7f699a1bf56324788de99c400c9c0a96d2a9484b6f4",
+      "bytes": 10671
+    },
+    "scripts/ndu_real_runtime/objective.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/objective.py",
+      "sha256": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd",
+      "bytes": 3377
+    },
+    "scripts/ndu_real_runtime/ocr.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/ocr.py",
+      "sha256": "5cbcaca04a4843b51379bbcc3911ae4453c25b3f0585970ae4d9d414624a47f1",
+      "bytes": 10940
+    },
+    "scripts/ndu_real_runtime/pipeline.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/pipeline.py",
+      "sha256": "a22dc843b9c48b35a65f07e0d72a48b9ec7d6185e74657696b63f7609ef9ce6a",
+      "bytes": 15985
+    },
+    "scripts/ndu_real_runtime/recursive_objective.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/recursive_objective.py",
+      "sha256": "c811ddff6f4bb31aeae28a47b23265fb7b0255a8a1cc7250a5ff591e96f946f9",
+      "bytes": 7204
+    },
+    "scripts/ndu_real_runtime/score_worker.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/score_worker.py",
+      "sha256": "e40818170025960efd7a45fbc3dd8beba45cdaa872de0bd37038dcaeb626f887",
+      "bytes": 1106
+    },
+    "scripts/ndu_real_runtime/span_meter.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/span_meter.py",
+      "sha256": "3ef63104c27aeb2ee64478ad7461f579dd5f06be05aa4f4c9bcc709e8826a70b",
+      "bytes": 22961
+    },
+    "scripts/ndu_real_runtime/study.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/study.py",
+      "sha256": "3c475c7c36927819b646df001399c68fd30dc03541c355f1f20e55c8c2cbfdd0",
+      "bytes": 17478
+    },
+    "scripts/ndu_real_runtime/training.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/training.py",
+      "sha256": "3231186d09da00f2d78dbb3f25590085055ccd81cff578bfe934e52085469ffe",
+      "bytes": 36667
+    },
+    "scripts/ndu_real_runtime/training_grid.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/training_grid.py",
+      "sha256": "57ef934ed6950e5270471c3a79e33396038f0dca844b29222a4ff339875ea960",
+      "bytes": 13262
+    },
+    "scripts/ndu_real_runtime/trajectory.py": {
+      "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/source/scripts/ndu_real_runtime/trajectory.py",
+      "sha256": "700a66b30d24dbe39d75c2cd1293cd0ae2719526695a3fa71e725eb56670320e",
+      "bytes": 6000
+    }
+  },
+  "analysis_policy_binding": {
+    "path": "/home/qq/cell-causal-abcde-20261108-cf0/evaluation-b-v1/analysis-b-v1/ANALYSIS_POLICY.json",
+    "sha256": "b05b153725976e581e971cc5e10fcb2e71a8c78b8dbde8ce05e2f250afacc0e3",
+    "bytes": 2647
+  },
+  "analysis_policy": {
+    "schema": "hepta.causal-b.prospective-analysis-policy.v1",
+    "registered_utc": "2026-11-08T09:49:09.146115+00:00",
+    "design_policy_registered_utc": "2026-11-08T09:44:13.451599+00:00",
+    "registration_scope": "BudgetStop semantics were frozen in the evaluation design and original PILOT_PLAN before tune/pilot; this artifact binds their executable analysis adapter before analysis.",
+    "analysis_helper_sha256": "c65f3eef739d1994aefedd6ef114d867d94b5f529470dc03ec78d4d329bcf29a",
+    "analysis_helper_bytes": 36582,
+    "evaluation_design_sha256": "ce3a8a096fd1c2a629124658f90ca3527cf9cc1d25272681a38f2ceb07384f63",
+    "evaluation_plan_sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7",
+    "budget_stop_analysis_policy": {
+      "analysis_only_mapping": "Map BudgetStop to statistical Completed only when an actual evaluator/rubric-bound finite score and an observed finite nonnegative deployment_wall_seconds are both present; otherwise use Unresolved.",
+      "audit": "Retain original and statistical status counts and every BudgetStop adaptation separately.",
+      "energy_or_provider_unknown_blocks_mapping": false,
+      "full_improvement_budget_gate": false,
+      "meaning": "Resolved statistical observation only; no claim of original execution success or acceptable quality.",
+      "original_terminal_status": "Preserve BudgetStop and the original paired rows.",
+      "required_cost_scope": "Measured deployment wall cost used by the frozen utility; energy and provider prices need not be known for this mapping."
+    },
+    "utility_derivation": "For a resolved BudgetStop, verify existing finite analysis_utility against score minus latency_weight times deployment_wall_seconds; if the derived field is absent, compute it from those recorded inputs. No counterfactual score or time is generated.",
+    "full_improvement_budget_gate": false,
+    "confirmatory_use": false,
+    "adoption_authorized": false,
+    "original_rows_mutated": false,
+    "format_stage": "Final exact Ruff byte binding; the recorded AST is unchanged from the prospectively frozen adapter. The registered_utc and design policy registration time are preserved.",
+    "format_binding_completed_utc": "2026-11-08T09:56:01.302336+00:00",
+    "pre_format_policy": {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/ANALYSIS_POLICY.pre-format.json",
+      "sha256": "41b7692c747d321cf2bd50b745c4a01c1f9fbeecb82a8033ddc8e5b3585efb90",
+      "bytes": 2087
+    },
+    "format_receipt": {
+      "path": "/workspace/scratch/cf0b0141e32e/helper-format-v2/format-receipt.json",
+      "sha256": "e10eef605bf8fa6c4bafd1f5aa78afc53ab1b2259488105f7015705f446317ad",
+      "bytes": 1303
+    }
+  },
+  "analysis_helper_sha256": "c65f3eef739d1994aefedd6ef114d867d94b5f529470dc03ec78d4d329bcf29a",
+  "independent_fits": [
+    {
+      "fit_id": "pilot-fit-01",
+      "fit_run_id": "study-fit-104729",
+      "training_seed": 104729
+    },
+    {
+      "fit_id": "pilot-fit-02",
+      "fit_run_id": "study-fit-130363",
+      "training_seed": 130363
+    }
+  ],
+  "cases_by_split": {
+    "development": [
+      {
+        "case_id": "case-edbd15991b021fb1de6e9c1e",
+        "source_group_id": "merchant-1e4ef8758b5cbae31ea96ae7",
+        "split": "development",
+        "task_family": "continuation_not_worthwhile"
+      },
+      {
+        "case_id": "case-ecd3cce6c1e6beb2e618a498",
+        "source_group_id": "merchant-1e4ef8758b5cbae31ea96ae7",
+        "split": "development",
+        "task_family": "preparation_required"
+      },
+      {
+        "case_id": "case-b08a47f2597201f3559c121e",
+        "source_group_id": "merchant-1e4ef8758b5cbae31ea96ae7",
+        "split": "development",
+        "task_family": "selective_refinement"
+      },
+      {
+        "case_id": "case-00e81f886b0ffbe7fd24f238",
+        "source_group_id": "merchant-1e4ef8758b5cbae31ea96ae7",
+        "split": "development",
+        "task_family": "text_image_complementary"
+      },
+      {
+        "case_id": "case-d9f9a3370619b7b1ae38ae0d",
+        "source_group_id": "merchant-1e4ef8758b5cbae31ea96ae7",
+        "split": "development",
+        "task_family": "text_sufficient"
+      },
+      {
+        "case_id": "case-9604365ac1a51619ad68c7cf",
+        "source_group_id": "merchant-29033083587ed7b9e3842425",
+        "split": "development",
+        "task_family": "continuation_not_worthwhile"
+      },
+      {
+        "case_id": "case-65f8cec0ac52976242fe9308",
+        "source_group_id": "merchant-29033083587ed7b9e3842425",
+        "split": "development",
+        "task_family": "preparation_required"
+      },
+      {
+        "case_id": "case-be942f84cec7ce4a44151d39",
+        "source_group_id": "merchant-29033083587ed7b9e3842425",
+        "split": "development",
+        "task_family": "selective_refinement"
+      },
+      {
+        "case_id": "case-9c21138ce6416435bde1c8f6",
+        "source_group_id": "merchant-29033083587ed7b9e3842425",
+        "split": "development",
+        "task_family": "text_image_complementary"
+      },
+      {
+        "case_id": "case-5ce2663a41af4c42fd92e86f",
+        "source_group_id": "merchant-29033083587ed7b9e3842425",
+        "split": "development",
+        "task_family": "text_sufficient"
+      }
+    ],
+    "retention_validation": [
+      {
+        "case_id": "case-90d8e9e33583f409ee15b6cb",
+        "source_group_id": "merchant-8e19a10d6e734747ce3246eb",
+        "split": "retention_validation",
+        "task_family": "text_image_complementary"
+      },
+      {
+        "case_id": "case-7d1d04f874a2336a8d1d87ba",
+        "source_group_id": "merchant-2cb679f1d8580a2031d3b615",
+        "split": "retention_validation",
+        "task_family": "text_image_complementary"
+      }
+    ]
+  },
+  "gates": {
+    "training_complete": true,
+    "constructor_initialization_complete": true,
+    "selected_profile_roster_complete": true,
+    "all_search_trials_complete": true,
+    "planned_training_jobs": 56,
+    "observed_training_jobs": 56,
+    "training_status_counts": {
+      "completed": 56
+    },
+    "planned_profiles": 80,
+    "selected_profiles": 80,
+    "planned_search_trials": 80,
+    "recorded_search_trials": 80,
+    "unavailable_training_candidates": 0,
+    "same_prefit_checkpoint_required": false,
+    "initialization_scope": "seeded constructor before mode-specific content pretraining",
+    "full_improvement_budget_complete": false
+  },
+  "metric_definitions": {
+    "gross_score": "Recorded evaluator score only; a failed/default zero without evaluator/rubric pins stays unknown.",
+    "failure_adjusted_score": "Statistical Completed: recorded score; Failed: frozen -1.0; unresolved/not-started: unknown. A scored BudgetStop with observed deployment wall is statistical Completed under the frozen adapter; original status is retained. No latency penalty.",
+    "deployment_utility": "Existing analysis_utility verified as failure-adjusted score minus registered latency_weight times measured deployment seconds; a resolved BudgetStop missing that derived field uses the same formula on its recorded score and deployment wall. Failed originals may use recorded outer wall fallback."
+  },
+  "known_limits": [
+    "Training starts at equal seeded constructor bytes; memory-specific pretrained weights can differ.",
+    "Intervals are unadjusted descriptive crossed bootstrap intervals, not powered or multiplicity-adjusted evidence.",
+    "Deployment utility is not complete improvement efficiency: acquisition, training, search, energy/provider and other costs remain separate.",
+    "Byte consistency does not authenticate the provider, native owner, or independent evaluator.",
+    "This helper neither executes episodes nor grants model adoption.",
+    "A resolved BudgetStop is an observed statistical terminal, not original execution success or acceptable quality; unknown energy/provider costs keep the full improvement budget gate closed."
+  ],
+  "scientific_acceptance": "HOLD",
+  "confirmatory_use": false,
+  "adoption_authorized": false,
+  "provider_authenticity_verified": false,
+  "full_cost_adjusted": false,
+  "helper_wall_seconds_before_serialization": 3.4177862210199237,
+  "helper_cpu_seconds_before_serialization": 3.4101155860000003,
+  "outcomes": {
+    "terminal_status_counts": {
+      "Completed": 916,
+      "BudgetStop": 44
+    },
+    "original_terminal_status_counts": {
+      "Completed": 916,
+      "BudgetStop": 44
+    },
+    "analysis_terminal_status_counts": {
+      "Completed": 960
+    },
+    "budget_stop_count": 44,
+    "budget_stop_resolved_count": 44,
+    "budget_stop_unresolved_count": 0,
+    "failed_utility_outer_wall_fallback_rows": 0,
+    "rows_without_bound_raw_evaluator_score": 0
+  },
+  "source_report": {
+    "path": "B_ANALYSIS.json",
+    "sha256": "64886fec9deca29abe5b9cb52b383f8cee5dd073a76bf8d894580d9953bb3f70",
+    "bytes": 603081
+  },
+  "comparison_count": 396,
+  "contrasts_csv": {
+    "path": "B_CONTRASTS.csv",
+    "sha256": "069d620724f8aa12933b84f2f489320d948642c26fcc9e7da54b5e83e096e58e"
+  }
+}

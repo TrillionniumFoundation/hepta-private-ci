@@ -77,7 +77,6 @@ use crate::responses::output_value_to_text;
 use crate::responses::start_mock_server;
 use crate::streaming_sse::StreamingSseServer;
 use crate::test_environment;
-use crate::wait_for_event;
 use crate::wait_for_event_match;
 use crate::wait_for_event_with_timeout;
 use wiremock::Match;
@@ -331,6 +330,7 @@ pub struct TestCodexBuilder {
     cloud_config_bundle: Option<CloudConfigBundleLoader>,
     user_shell_override: Option<Shell>,
     exec_server_url: Option<String>,
+    resume_environments: Option<Vec<TurnEnvironmentSelection>>,
     extensions: Arc<ExtensionRegistry<Config>>,
     user_instructions_provider: Option<Arc<dyn UserInstructionsProvider>>,
     supports_openai_form_elicitation: bool,
@@ -338,6 +338,20 @@ pub struct TestCodexBuilder {
     code_mode_host_program: Option<PathBuf>,
     history_mode: Option<ThreadHistoryMode>,
     models_manager: Option<SharedModelsManager>,
+}
+
+// Only fresh default homes are created here; an explicitly supplied home is
+// preserved for caller-controlled fixtures, including deliberate bad inputs.
+fn new_private_codex_home() -> std::io::Result<TempDir> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        tempfile::Builder::new()
+            .permissions(std::fs::Permissions::from_mode(0o700))
+            .tempdir()
+    }
+    #[cfg(not(unix))]
+    tempfile::tempdir()
 }
 
 impl TestCodexBuilder {
@@ -431,6 +445,13 @@ impl TestCodexBuilder {
         self
     }
 
+    /// Reconstruct the original thread environment for a persisted rollout resume.
+    /// Core still verifies its exact binding against the recovery checkpoint.
+    pub fn with_resume_environments(mut self, environments: Vec<TurnEnvironmentSelection>) -> Self {
+        self.resume_environments = Some(environments);
+        self
+    }
+
     pub fn with_extensions(mut self, extensions: Arc<ExtensionRegistry<Config>>) -> Self {
         self.extensions = extensions;
         self
@@ -470,7 +491,7 @@ impl TestCodexBuilder {
     pub async fn build(&mut self, server: &wiremock::MockServer) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = TestEnv::local().await?;
@@ -496,7 +517,7 @@ impl TestCodexBuilder {
     ) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = test_env().await?;
@@ -513,7 +534,7 @@ impl TestCodexBuilder {
     ) -> anyhow::Result<TestCodex> {
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url = format!("{}/v1", server.uri());
         let test_env = test_env().await?;
@@ -531,7 +552,7 @@ impl TestCodexBuilder {
         let base_url = server.uri();
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let test_env = TestEnv::local().await?;
         Box::pin(self.build_with_home_and_base_url(
@@ -551,7 +572,7 @@ impl TestCodexBuilder {
         let base_url = format!("{}/v1", server.uri());
         let home = match self.home.clone() {
             Some(home) => home,
-            None => Arc::new(TempDir::new()?),
+            None => Arc::new(new_private_codex_home()?),
         };
         let base_url_clone = base_url.clone();
         self.config_mutators.push(Box::new(move |config| {
@@ -624,7 +645,7 @@ impl TestCodexBuilder {
         #[cfg(not(target_os = "linux"))]
         let codex_linux_sandbox_exe = None;
         let local_runtime_paths = codex_exec_server::ExecServerRuntimePaths::new(
-            std::env::current_exe()?,
+            crate::test_binary_helper_exe()?,
             codex_linux_sandbox_exe,
         )?;
         let environment_manager = Arc::new(if include_local_environment {
@@ -660,7 +681,7 @@ impl TestCodexBuilder {
 
     async fn build_from_config(
         &mut self,
-        config: Config,
+        mut config: Config,
         cwd: Arc<TempDir>,
         home: Arc<TempDir>,
         resume_from: Option<PathBuf>,
@@ -668,7 +689,7 @@ impl TestCodexBuilder {
         environment_manager: Arc<codex_exec_server::EnvironmentManager>,
     ) -> anyhow::Result<TestCodex> {
         let auth = self.auth.clone();
-        let state_db = codex_core::init_state_db(&config).await;
+        let state_db = codex_core::init_state_db(&mut config).await;
         let thread_store = thread_store_from_config(&config, state_db.clone());
         let installation_id = resolve_installation_id(&config.codex_home).await?;
         let user_instructions_provider =
@@ -727,6 +748,10 @@ impl TestCodexBuilder {
 
         let new_conversation = match (resume_from, user_shell_override) {
             (Some(path), Some(user_shell_override)) => {
+                anyhow::ensure!(
+                    self.resume_environments.is_none(),
+                    "explicit resume environments cannot be combined with a user shell override"
+                );
                 let auth_manager = codex_core::test_support::auth_manager_from_auth_with_home(
                     auth,
                     config.codex_home.to_path_buf(),
@@ -748,14 +773,27 @@ impl TestCodexBuilder {
                     auth,
                     config.codex_home.to_path_buf(),
                 );
-                Box::pin(thread_manager.resume_thread_from_rollout(
-                    config.clone(),
-                    path,
-                    auth_manager,
-                    /*parent_trace*/ None,
-                    client_mcp_extensions(),
-                ))
-                .await?
+                if let Some(environments) = self.resume_environments.take() {
+                    let history = codex_core::RolloutRecorder::get_rollout_history(&path).await?;
+                    Box::pin(thread_manager.resume_thread_with_history_and_environments(
+                        config.clone(),
+                        history,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                        Some(environments),
+                    ))
+                    .await?
+                } else {
+                    Box::pin(thread_manager.resume_thread_from_rollout(
+                        config.clone(),
+                        path,
+                        auth_manager,
+                        /*parent_trace*/ None,
+                        client_mcp_extensions(),
+                    ))
+                    .await?
+                }
             }
             (None, Some(user_shell_override)) => {
                 Box::pin(
@@ -810,13 +848,20 @@ impl TestCodexBuilder {
         home: &TempDir,
         cwd_override: AbsolutePathBuf,
     ) -> anyhow::Result<(Config, Arc<TempDir>)> {
-        let model_provider = ModelProviderInfo {
+        let mut model_provider = ModelProviderInfo {
             base_url: Some(base_url),
             // Most core tests use SSE-only mock servers, so keep websocket transport off unless
             // a test explicitly opts into websocket coverage.
             supports_websockets: false,
             ..built_in_model_providers(/*openai_base_url*/ None)["openai"].clone()
         };
+        // The default fixture models a metadata-capable backend. Tests for a
+        // custom endpoint's wire boundary must explicitly clear this permit
+        // in their config mutator, independently of the provider display name.
+        codex_model_provider_info::test_support::allow_internal_metadata_for_mock(
+            &mut model_provider,
+        )
+        .map_err(anyhow::Error::msg)?;
         let cwd = Arc::new(TempDir::new()?);
         for hook in self.pre_build_hooks.drain(..) {
             hook(home.path());
@@ -937,7 +982,18 @@ impl TestCodex {
             }]))
             .await?;
 
-        wait_for_event(&self.codex, |ev| matches!(ev, EventMsg::TurnComplete(_))).await;
+        tokio::time::timeout(Duration::from_secs(10), async {
+            let turn_id = wait_for_event_match(&self.codex, |event| match event {
+                EventMsg::TurnComplete(event) => Some(event.turn_id.clone()),
+                _ => None,
+            })
+            .await;
+            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
+                completion.await;
+            }
+        })
+        .await
+        .context("text turn completion and finish owner exceeded the original event budget")?;
         Ok(())
     }
 
@@ -968,10 +1024,13 @@ impl TestCodex {
         prompt: &str,
         service_tier: Option<&str>,
     ) -> Result<()> {
+        // A tier change must not also replace the permissions bound to a
+        // prewarmed WebSocket connection.
+        let settings = self.codex.thread_settings_snapshot().await;
         self.submit_turn_with_permission_profile_context(
             prompt,
-            AskForApproval::Never,
-            PermissionProfile::Disabled,
+            settings.approval_policy,
+            settings.permission_profile,
             Some(service_tier.map(str::to_string)),
             /*environments*/ None,
         )
@@ -1091,15 +1150,25 @@ impl TestCodex {
             _ => None,
         })
         .await;
-        wait_for_event_with_timeout(
-            &self.codex,
-            |event| match event {
-                EventMsg::TurnComplete(event) => event.turn_id == turn_id,
-                _ => false,
-            },
-            SUBMIT_TURN_COMPLETE_TIMEOUT,
-        )
-        .await;
+        tokio::time::timeout(SUBMIT_TURN_COMPLETE_TIMEOUT, async {
+            wait_for_event_with_timeout(
+                &self.codex,
+                |event| match event {
+                    EventMsg::TurnComplete(event) => event.turn_id == turn_id,
+                    _ => false,
+                },
+                SUBMIT_TURN_COMPLETE_TIMEOUT,
+            )
+            .await;
+            // TurnComplete precedes the finish owner's post-terminal work.
+            // Observe that exact owner before the fixture starts another turn;
+            // this grants no admission authority and shares the original budget.
+            if let Some(completion) = self.codex.pending_normal_turn_finish_completion(&turn_id) {
+                completion.await;
+            }
+        })
+        .await
+        .context("turn completion and its finish owner exceeded the original fixture budget")?;
         Ok(())
     }
 }
@@ -1351,6 +1420,7 @@ pub fn test_codex() -> TestCodexBuilder {
         cloud_config_bundle: None,
         user_shell_override: None,
         exec_server_url: None,
+        resume_environments: None,
         extensions: empty_extension_registry(),
         user_instructions_provider: None,
         supports_openai_form_elicitation: false,

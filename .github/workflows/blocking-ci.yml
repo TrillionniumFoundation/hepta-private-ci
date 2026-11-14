@@ -6,7 +6,7 @@ on:
     branches: [main]
 
 concurrency:
-  group: blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: blocking-ci::${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -15,7 +15,8 @@ permissions:
 jobs:
   scope:
     name: Select blocking CI scope
-    runs-on: ubuntu-24.04
+    # Stdlib Python/Git selection is portable; use the separate ARM runner pool.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     outputs:
       inference: ${{ steps.scope.outputs.inference }}
@@ -31,8 +32,18 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          fetch-depth: 0
+          fetch-depth: 1
           persist-credentials: false
+
+      - name: Prepare exact comparison trees
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_trees.py --base "$BASE_SHA" --head "$HEAD_SHA"
 
       - name: Select dependency impact
         id: scope
@@ -43,7 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies scripts.tests.test_hepta_ci_trees
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
@@ -52,6 +63,10 @@ jobs:
             args+=(--full)
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}"
+
+      - name: Test NEU-1 model-bakeoff evidence gates (no weights)
+        shell: bash
+        run: python3 -m unittest discover -v -s qualification/neuron-model-bakeoff -p 'test_*.py'
 
       - name: Regression-test scoped fan-in policy
         shell: bash
@@ -125,7 +140,13 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 75
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      NEXTEST_TEST_THREADS: "2"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -134,6 +155,55 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Reclaim unused hosted-runner disk for exhaustive Rust reverse-consumer tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${GITHUB_WORKSPACE:?checkout root required}"
+          # Reclaim only fixed SDK paths on the ephemeral hosted Linux runner.
+          # Preserve the checkout, Cargo/V8 artifacts, and exhaustive test selection.
+          printf '%s\n' 'Runner disk before native prerequisites:'
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-before.txt"
+          workspace_before_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR==2 {print $4}')"
+          minimum_free_kib=$((10 * 1024 * 1024))
+          if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" || "${RUNNER_OS:-}" != "Linux" ]]; then
+            echo "Not a GitHub-hosted Linux runner: no SDK directories removed"
+          else
+            for unused in \
+              /usr/local/lib/android \
+              /usr/share/dotnet \
+              /opt/ghc \
+              /usr/local/.ghcup \
+              /opt/hostedtoolcache/CodeQL \
+              /usr/local/share/powershell
+            do
+              if [[ -d "$unused" && ! -L "$unused" ]]; then
+                echo "Removing unused preinstalled non-Rust toolchain: $unused"
+                sudo du -sh "$unused"
+                sudo rm -rf -- "$unused"
+              fi
+            done
+            sudo apt-get clean
+          fi
+          printf '%s\n' 'Runner disk after reclaiming unused tools:'
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-reclaim.txt"
+          workspace_free_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR==2 {print $4}')"
+          free_kib="$(df -Pk "$RUNNER_TEMP" | awk 'NR==2 {print $4}')"
+          if ! [[ "$workspace_before_kib" =~ ^[0-9]+$ && "$workspace_free_kib" =~ ^[0-9]+$ && "$free_kib" =~ ^[0-9]+$ ]]; then
+            echo '::error::Cannot determine free disk space for exact-SHA native reverse-consumer tests'
+            exit 1
+          fi
+          printf 'source=%s\nfree_before_bytes=%s\nfree_after_bytes=%s\ntemp_free_after_bytes=%s\nminimum_required_bytes=%s\n' \
+            "$(git rev-parse HEAD)" "$((workspace_before_kib * 1024))" \
+            "$((workspace_free_kib * 1024))" "$((free_kib * 1024))" \
+            "$((minimum_free_kib * 1024))" > "$RUNNER_TEMP/hepta-scoped-disk.txt"
+          if (( workspace_free_kib < minimum_free_kib || free_kib < minimum_free_kib )); then
+            echo '::error::Less than 10 GiB free on the checkout or temporary filesystem for exact-SHA native reverse-consumer tests'
+            exit 1
+          fi
+          # Retain the original scoped-lane toolchain survival diagnostics.
+          rustc --version --verbose
+          cargo --version
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
@@ -153,16 +223,56 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Build exact-source subprocess helpers required by native reverse-consumer tests
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_CI_LANE: source-head
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/impact-helper-build.json" -- \
+            python3 scripts/hepta_cell_test_helpers.py \
+              --package codex-cli \
+              --package codex-code-mode-host \
+              --package codex-rmcp-client \
+              --package codex-hepta-infer-worker-host \
+              --output-dir "$RUNNER_TEMP/impact-test-helpers" \
+              --github-env "$GITHUB_ENV"
+
+      - name: Reverify source and immutable helper bytes before consumer tests
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-cli \
+            --package codex-code-mode-host \
+            --package codex-rmcp-client \
+            --package codex-hepta-infer-worker-host \
+            --output-dir "$RUNNER_TEMP/impact-test-helpers" --verify-only
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
         env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_DEV_DEBUG: "0"
+          CARGO_PROFILE_TEST_DEBUG: "0"
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
         run: >-
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 3600 --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Record scoped native disk usage after consumer tests
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-tests.txt"
+          if [[ -d codex-rs/target ]]; then
+            du -sh codex-rs/target | tee "$RUNNER_TEMP/scoped-disk-target.txt" || true
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
@@ -172,6 +282,11 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/scoped-disk-*.txt
+            ${{ runner.temp }}/hepta-scoped-disk.txt
+            ${{ runner.temp }}/impact-helper-build.json*
+            ${{ runner.temp }}/impact-test-helpers
+            !${{ runner.temp }}/impact-test-helpers/bin/**
           if-no-files-found: error
           retention-days: 14
 
@@ -179,11 +294,110 @@ jobs:
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
 
+  ledgerwriter-owner-replay:
+    name: LedgerWriter Bazel ${{ matrix.lane }} replay
+    # Retain the exact historical workflow-only replay and its original assertions.
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact tested commit and frozen LedgerWriter parent
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PARENT_SHA: d5eb0147c015dcc4ee5146a2d62208031a710d70
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git merge-base --is-ancestor "$PARENT_SHA" "$TESTED_SHA"
+          if [[ "$LANE" == "prospective-merge" ]]; then
+            git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
+          fi
+          test "$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")" = ".github/workflows/blocking-ci.yml"
+          printf 'LedgerWriter %s SHA: %s\n' "$LANE" "$TESTED_SHA"
+
+      - name: Prepare Bazel CI
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-ledgerwriter-${{ matrix.lane }}
+
+      - name: Check rusty_v8 MODULE.bazel checksums
+        shell: bash
+        run: |
+          python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+          just test-github-scripts
+
+      - name: Check MODULE.bazel.lock is up to date
+        shell: bash
+        run: ./scripts/check-module-bazel-lock.sh
+
+      - name: Run uncached signed LedgerWriter process fixture
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          mkdir -p "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-test-logs \
+            --print-failed-action-summary \
+            -- \
+            test \
+            --nocache_test_results \
+            --test_output=all \
+            --test_verbose_timeout_warnings \
+            --build_metadata=COMMIT_SHA="$TESTED_SHA" \
+            -- \
+            //codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test
+
+      - name: Upload Bazel execution logs
+        if: always() && !cancelled()
+        continue-on-error: true
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: bazel-execution-logs-ledgerwriter-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
+          if-no-files-found: ignore
+
+      - name: Save Bazel repository cache
+        if: always() && !cancelled() && steps.prepare_bazel.outputs.repository-cache-hit != 'true'
+        continue-on-error: true
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
     if: needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'
-    runs-on: ubuntu-24.04
+    # Prose/metadata checks are architecture-neutral; avoid saturated x64 pool.
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - name: Checkout exact candidate
@@ -207,7 +421,8 @@ jobs:
   required:
     timeout-minutes: 30
     name: CI required
-    if: ${{ always() }}
+    # Aggregate failed dependencies, but release the PR lease on cancellation.
+    if: ${{ !cancelled() }}
     needs:
       - scope
       - hepta-contract-gate
@@ -219,8 +434,10 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - ledgerwriter-owner-replay
       - lightweight
-    runs-on: ubuntu-24.04
+    # Needs/result fan-in uses Python only; leave native work on its target architecture.
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -231,6 +448,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          LEDGERWRITER_REPLAY_REQUESTED: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.sha == 'ac9ecb91f92e7a1928bf055c48ed0d36b68d23d5' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -240,7 +458,10 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
+          replay_requested = os.environ["LEDGERWRITER_REPLAY_REQUESTED"] == "true"
           allowed = []
+          if not replay_requested:
+              allowed.append("ledgerwriter-owner-replay")
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:

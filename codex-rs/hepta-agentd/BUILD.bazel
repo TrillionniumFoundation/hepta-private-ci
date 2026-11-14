@@ -2,6 +2,7 @@ load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
 load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+load(":v13_acceptance.bzl", "v13_acceptance_example")
 
 _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
@@ -11,11 +12,70 @@ _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
 
+_GENERATION_TEST_FIXTURE = [
+    "tests/support/neuron_generation.rs",
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
+    "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
+    "//qualification/neuron-v13-generation:proposal_worker.py",
+]
+
 codex_rust_crate(
     name = "hepta-agentd",
+    compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-document-observation-v1.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
+    ] + _GENERATION_TEST_FIXTURE,
+    # Match the Agentd Cargo default on both the library and product binaries.
+    crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
+    extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    integration_compile_data_extra = [
+        "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
+    ],
+    integration_test_extra_srcs = {
+        "tests/neuron_generation_process_e2e.rs": [
+            "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
+        ],
+    },
     integration_test_timeout = "long",
+    # Cargo unifies the qualification-only dev dependency for integration tests.
+    # Keep the complete existing test graph without changing product binaries.
+    integration_test_use_unit_test_dependencies = True,
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+    unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    unit_test_extra_srcs = ["tests/support/terminal_cell_owner.rs"],
+)
+
+v13_acceptance_example()
+
+# Explicit actual-Root process entry. The harness uses both default-feature
+# product binaries; its ignored native test requires the prepared protected
+# bind and is never replaced by the cognitive qualification binary.
+workspace_root_test(
+    name = "hepta-agentd-ordinary-q24-a-process-test",
+    timeout = "long",
+    args = [
+        "--ignored",
+        "--exact",
+        "neuron_generation_current::initial_root_tests::ordinary::ordinary_main_a_records_independent_outcome_and_retires_original_processes",
+    ],
+    runfile_env = {
+        ":codex-hepta-agentd": "CARGO_BIN_EXE_codex-hepta-agentd",
+        ":hepta-authority-host": "CARGO_BIN_EXE_hepta-authority-host",
+    },
+    tags = ["manual"],
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    test_bin = ":hepta-agentd-unit-tests-bin",
+    test_threads = 1,
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
 
 # Compile the local writer qualification separately from the default product
@@ -24,8 +84,20 @@ codex_rust_crate(
 rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
-    srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    srcs = glob(["src/**/*.rs"]) + ["tests/support/terminal_cell_owner.rs"],
+    compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-document-observation-v1.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
+    ] + _GENERATION_TEST_FIXTURE,
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
@@ -35,8 +107,20 @@ rust_library(
 
 rust_test(
     name = "hepta-agentd-cognitive-write-qualification-test-bin",
+    compile_data = [
+        "tests/fixtures/android-bound-text-v1.json",
+        "tests/fixtures/hos2_production_owner.json",
+        "tests/fixtures/notes-bootstrap-v2.json",
+        "tests/fixtures/notes-document-observation-v1.json",
+        "tests/fixtures/notes-objective-literal-v1.json",
+        "tests/fixtures/notes-target-v1.json",
+        "tests/fixtures/notes-model-v1.json",
+    ] + _GENERATION_TEST_FIXTURE,
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
@@ -68,7 +152,10 @@ rust_binary(
     name = "hepta-agentd-cognitive-product-qualification-bin",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/main.rs",
     edition = "2024",
@@ -88,7 +175,10 @@ rust_binary(
 rust_test(
     name = "hepta-agentd-cognitive-product-qualification-test-bin",
     srcs = ["tests/cognitive_product_e2e.rs"] + glob(["tests/support/**/*.rs"]),
-    crate_features = ["qualification-cognitive-write"],
+    crate_features = [
+        "production-cognitive-write",
+        "qualification-cognitive-write",
+    ],
     crate_name = "cognitive_product_e2e",
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),

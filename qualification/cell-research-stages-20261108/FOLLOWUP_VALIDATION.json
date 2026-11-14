@@ -1,0 +1,407 @@
+{
+  "schema": "hepta.cell-research-stage-ci-followup.v1",
+  "created_at_utc": "2026-11-08T12:31:50.514325+00:00",
+  "scope": "Implementation repair and validation record prepared before follow-up publication; historical and temporary source identities are retained.",
+  "parent_commit": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+  "parent_tree": "cf3cfd099e282bf5aee06543d9cf982d5e0e8dc7",
+  "native_candidate": {
+    "sha": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+    "tree": "9352a943e5dd48798d1c6aa16cc0c0adcf340050",
+    "parents": [
+      "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3"
+    ],
+    "paths": [
+      "codex-rs/core/tests/common/test_codex.rs",
+      "codex-rs/core/tests/suite/abort_tasks.rs",
+      "codex-rs/exec-server/Cargo.toml",
+      "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_tests.rs"
+    ],
+    "local_only": true
+  },
+  "native_candidate_scope": "The temporary clean commit contains the nine Rust/test-manifest inputs only. The five Python formatting changes and spelling dictionary are separately bound below; no full final-publication-head native run is claimed.",
+  "records": [
+    {
+      "path": "validation/ci-review-b86dcb2a.json",
+      "bytes": 30923,
+      "sha256": "521adb4212344e57ec4587f73342033ee7ac0b7045e513f97a90220e68ab4f1b",
+      "git_blob": "a8b4faacfac294504c21dea18ea08b3a78ab074a"
+    },
+    {
+      "path": "validation/python-format-b86dcb2a.json",
+      "bytes": 8457,
+      "sha256": "f262d80118b8f28620809dd8f15afcc66ea58a95c9007ef70bf70689d254e794",
+      "git_blob": "f0f53bc276ef21deb803e1f198116f355354590f"
+    },
+    {
+      "path": "validation/codespell-b86dcb2a.json",
+      "bytes": 6789,
+      "sha256": "72cc494e4aba0175a01c2f2d67d13acd1940da6d386f08d97a41a341e4b4af78",
+      "git_blob": "eab9ad595ff52d9678bfa7128491fc755f166532"
+    },
+    {
+      "path": "validation/rust-fixture-inputs.json",
+      "bytes": 5057,
+      "sha256": "d2f0bb640eae6dd3e53ca89d9f3bcaa1998ec423e5dc13656c6dcabde7d2ddb0",
+      "git_blob": "0cc4ba4ce92fc74d1eddbb3be412dc6a0c08ee44"
+    },
+    {
+      "path": "validation/rust-fixture-attempt-001.json",
+      "bytes": 5924,
+      "sha256": "2d78f02a62572ed64aa63d2e918975911e4f50d94f003f1b5e456c139e982ba4",
+      "git_blob": "8d3e28ec328f4e1f76bdebf83747127925416b2c"
+    },
+    {
+      "path": "validation/rust-fixture-attempt-002.json",
+      "bytes": 11373,
+      "sha256": "1a61b357ec015c66a3fc259635ba414726ff6e95939166a908bb32456ae97009",
+      "git_blob": "3c87eba565d5317fecf0ec841ec3302573131441"
+    },
+    {
+      "path": "validation/rust-fixture-helper-manifest.json",
+      "bytes": 1912,
+      "sha256": "d5ce3861596735948c97e82f5a1e36996a97db98ba8d23ae652294c8bcd1f62f",
+      "git_blob": "e0ff156d1d5fe662404fd0c99f41e85f18ab381b"
+    },
+    {
+      "path": "validation/rust-fixture-format.json",
+      "bytes": 34287,
+      "sha256": "9ea67697de6f7796c3ff3971461710af605e492efc84c0656b57c8b661cb7668",
+      "git_blob": "0904a7da647a143608123f364b364203cfddb457"
+    }
+  ],
+  "changed_source_files": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+      "before": {
+        "bytes": 15568,
+        "sha256": "69cff2a8d859891d0036f789e60ae0146c4dfce1b90cea3a5b058c262c9ee19b",
+        "git_blob": "d957db7b7e9c66ca8695be20cfbf2f70b5f9e1c5"
+      },
+      "after": {
+        "bytes": 16118,
+        "sha256": "6886b27eb44cecc0d22077dcabf815c104b3e63416afa94843511d5a048e0a72",
+        "git_blob": "9d9c40fd2a845172741c5d0045682e58749e7af5"
+      },
+      "scope": "windows-same-handle"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "before": {
+        "bytes": 25556,
+        "sha256": "61bbae237b735525d0f043932abe6596633080b50b39bbff169afd2c0bbd5abe",
+        "git_blob": "f712e158c3dd8f4002617bc1c187c2506710e661"
+      },
+      "after": {
+        "bytes": 25978,
+        "sha256": "5d12ba277e4605ec802b729b80edc1961711b377ba2ff94869dd935f0358f4a6",
+        "git_blob": "a4a84e5cea553dfdd78e86683cff5a3395d1051d"
+      },
+      "scope": "windows-same-handle"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "before": {
+        "bytes": 9889,
+        "sha256": "77ce9abb0be260edfd41392ed07ac23579d2bde4d2386891eaef17a73ff96020",
+        "git_blob": "933225b5cbeeec5f771812c833bcfd148561ff25"
+      },
+      "after": {
+        "bytes": 9917,
+        "sha256": "9a35695d3080e30f65a0aa53c42db4f22afe06164b32a7a67fbd5ca0b728ae9a",
+        "git_blob": "4643e38efe56d9815cf45ece14afff2d57d9dc0f"
+      },
+      "scope": "windows-same-handle"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+      "before": {
+        "bytes": 8413,
+        "sha256": "e814875ac4a39e1e5512236a584fc0fc7afd885f728fd974b7b5291ccd903647",
+        "git_blob": "8e2ef0d2877d27ac3d0ea58ae4b7c1860d4b58b6"
+      },
+      "after": {
+        "bytes": 8461,
+        "sha256": "a8dbce5b0495a682108fd9728a158843d1606ea1538b02cfd34b751345f03128",
+        "git_blob": "dd6122c0cc3bbe832dc3bb3cbb5cfadac99739ee"
+      },
+      "scope": "windows-same-handle"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "before": {
+        "bytes": 7672,
+        "sha256": "298f3df3ee8fca50d7a9e708ef73b6aa84c9165107f1b1a3ace2e24e6bfcbad8",
+        "git_blob": "3e3b667bddf02275ef17b6d37787ee3508f970a8"
+      },
+      "after": {
+        "bytes": 8346,
+        "sha256": "a2bf94c1e26ce96e61fb33dc359a95e6ddfb6237299666955791dfb6bcae4e6f",
+        "git_blob": "0db16e687c9c04862fecd15b21321ea94dd929e5"
+      },
+      "scope": "windows-same-handle"
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "before": {
+        "sha256": "e6a2e667c6bba42b71268720480d2d95c8952ffd62593041057416ad85fe83cc",
+        "git_blob": "8a34d9c73dc0a67a76c283ba4474ebf0d0f372c3"
+      },
+      "after": {
+        "bytes": 52412,
+        "sha256": "9eaa4d9f3ab772bd3ea02571bad0c4bba94e087857accd1bac5004c2eb89ac02",
+        "git_blob": "099ec8eb226394c2fc0543188e27d7c146a813c7"
+      },
+      "scope": "core-resume-v2"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "before": {
+        "sha256": "e95a4b608396f5cb8c34f83376d96693f025f78efb39972255e4aa063a600917",
+        "git_blob": "9b26fa2b628c6319f99ccad9452510c38415489c"
+      },
+      "after": {
+        "bytes": 15883,
+        "sha256": "5a7ab49eb5cbebc3ffc9ce59b87e3d1209151aaec96eb94eb40bf1233a576a2e",
+        "git_blob": "0ddb66609968a9860252579484df664eff39ace3"
+      },
+      "scope": "core-resume-v2"
+    },
+    {
+      "path": "codex-rs/exec-server/Cargo.toml",
+      "before": {
+        "bytes": 2783,
+        "sha256": "32e26b8877ba57de6e870c7cf300dab437a0bdd3699de59cd2ef8cacbfdc9512",
+        "git_blob": "66f255cefae16331094ccbf953ff66ea4de072c5"
+      },
+      "after": {
+        "bytes": 2741,
+        "sha256": "c45429a966e8d087144085598cac8c63e6e9b285fad97a5700294b409665ee14",
+        "git_blob": "455df9eedc14b77ac3779899087cd8391b153b37"
+      },
+      "scope": "bubblewrap-v2"
+    },
+    {
+      "path": "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "before": {
+        "bytes": 1842,
+        "sha256": "512d78fe87ed95351fd86dc247adcce4d5f43a021d8c355b9041415eb4a10e94",
+        "git_blob": "7cbeed5649dcecde7db0fc75244c94a73bfaf460"
+      },
+      "after": {
+        "bytes": 2185,
+        "sha256": "d25eb3ecc0afc35d6a2d71cfbb99bb6f599f82792c683155e438c6711dc0177e",
+        "git_blob": "03e8745faf36bd272feb56a99228e6f5058b0938"
+      },
+      "scope": "bubblewrap-v2"
+    },
+    {
+      "path": "scripts/hepta_cell_joint_config.py",
+      "before": {
+        "bytes": 15041,
+        "sha256": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12",
+        "git_blob": "7e939e1055d97b036209727b78daed582dce3c94"
+      },
+      "after": {
+        "bytes": 15201,
+        "sha256": "3abac6ed6d2b373e50f09e6212cd86040cea50b46833ca5e3f4f4a18b5c9cc47",
+        "git_blob": "da9b7b1b0c1c88bcdb5bbe83b54ce458991a551c"
+      },
+      "scope": "format-only; AST including type comments and comment tokens equal"
+    },
+    {
+      "path": "scripts/hepta_ci_chef.py",
+      "before": {
+        "bytes": 4057,
+        "sha256": "82e2dced3f853f0b9c205bac9ee8f61c02d02df5015e33baaf7ace6e96f5048e",
+        "git_blob": "ad0ab1846d782edf4bc2c8c11b666d53675565dc"
+      },
+      "after": {
+        "bytes": 4979,
+        "sha256": "31a1e1bf5b7ab15fc020279c9f01707372258cc416d08c71cd7c7011e1abc513",
+        "git_blob": "e6e74f4d19f829b7f126aa7348801afaacc770ed"
+      },
+      "scope": "format-only; AST including type comments and comment tokens equal"
+    },
+    {
+      "path": "scripts/test_hepta_cell_joint_config.py",
+      "before": {
+        "bytes": 12081,
+        "sha256": "cf2efcf3487fbe5b99790dfef3068369af557d99aaba5baf045b40b30a2134b5",
+        "git_blob": "399175074802eba0139720b7cab58e024bfde817"
+      },
+      "after": {
+        "bytes": 12330,
+        "sha256": "39dced58d8ff3bdd7ec768a1998e8533703c1d690f4799f1e14a1748839327f4",
+        "git_blob": "41dd9f5b0958c8105d17c0a27f2f1997ffc28fa7"
+      },
+      "scope": "format-only; AST including type comments and comment tokens equal"
+    },
+    {
+      "path": "scripts/test_hepta_ci_chef.py",
+      "before": {
+        "bytes": 4775,
+        "sha256": "77734693dc31e308b0195e6297fc9b0a39c6a52a3c929969efe02c807474aecf",
+        "git_blob": "15e4ead6703089e44eefe51c5417de7525a83885"
+      },
+      "after": {
+        "bytes": 5114,
+        "sha256": "9fe162aba9d253789b1ac463f0307f2ed75e62ce05a92c0eee236185f5e9b02d",
+        "git_blob": "70dc258fec9371bd230f6c148bc8852b47278d5e"
+      },
+      "scope": "format-only; AST including type comments and comment tokens equal"
+    },
+    {
+      "path": "scripts/test_hepta_module_status_facts.py",
+      "before": {
+        "bytes": 2892,
+        "sha256": "121c3d0f61d1a33e722d4526e7a6b5ba356afe499451b24b9e4ed366464f81c7",
+        "git_blob": "ee93d78f4c754090fb08a30ed338ea039286d72b"
+      },
+      "after": {
+        "bytes": 2938,
+        "sha256": "8a57ebd7d2a6a89da95936e099b10e0d9ce1d7dc3db753a096cec87d3ad1e68c",
+        "git_blob": "b1b542beb8d26973727a635a5505570ad16cb4a6"
+      },
+      "scope": "format-only; AST including type comments and comment tokens equal"
+    },
+    {
+      "path": ".codespellignore",
+      "before": {
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      "after": {
+        "bytes": 75,
+        "sha256": "289244e5151117c4bb6e67db899c94434b83eed5325b5c80457cadecb5bf3ecd",
+        "git_blob": "9e6e911207df68e9adeb40c6899d90f312d64a6a"
+      },
+      "scope": "Add exact existing crate name inout; no evidence or path exclusions changed"
+    }
+  ],
+  "native_observations": {
+    "platform": "x86_64-unknown-linux-gnu",
+    "first_hepta_attempt": {
+      "passed": 208,
+      "failed": 6,
+      "reported_skipped": 1,
+      "result": "failed",
+      "cause_of_six_failures": "Missing actual hepta-joint-propose helper metadata; preserved in attempt-001."
+    },
+    "core_abort_scope": {
+      "passed": 4,
+      "failed": 0,
+      "selection": "--test all abort_tasks::",
+      "reported_skipped": 1378,
+      "remaining_project_suite_qualification": false
+    },
+    "exec_bwrap_scope": {
+      "passed": 120,
+      "failed": 0,
+      "targets": [
+        "capability_discovery",
+        "file_system_unix"
+      ]
+    },
+    "hepta_followup": {
+      "passed": 214,
+      "failed": 0,
+      "reported_skipped": 1,
+      "helper": "Built and pinned from actual Cargo compiler-artifact metadata through the existing clean-source helper gate; verified before and after the original two-package test selection."
+    },
+    "raw_nextest_summary_lines": {
+      "hepta-targeted-tests": [
+        "    Starting 214 tests across 3 binaries (1 test skipped)",
+        "     Summary [   8.343s] 214 tests run: 208 passed, 6 failed, 1 skipped"
+      ],
+      "core-abort-tests": [
+        "    Starting 4 tests across 1 binary (1378 tests skipped)",
+        "     Summary [   0.453s] 4 tests run: 4 passed, 1378 skipped"
+      ],
+      "exec-bwrap-tests": [
+        "    Starting 120 tests across 2 binaries",
+        "     Summary [   1.261s] 120 tests run: 120 passed, 0 skipped"
+      ],
+      "hepta-with-helper-tests": [
+        "    Starting 214 tests across 3 binaries (1 test skipped)",
+        "     Summary [   8.433s] 214 tests run: 214 passed, 1 skipped"
+      ]
+    },
+    "skipped_test_attribution": {
+      "observed_runtime_fact": "The original stdout reports 1 skipped without a test name.",
+      "source_declaration": "codex-hepta-infer-core::durable_control::history_tests::bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve",
+      "declared_ignore_reason": "explicit bounded real-filesystem history measurement",
+      "source_path": "codex-rs/hepta-infer-core/src/durable_history_tests.rs",
+      "source_git_blob": "4a9a07a782a33f0bee3f8373ba9bc9d3c7d11dae",
+      "attribution_scope": "Unique explicit ignore declaration in the reviewed two-package source; consistent with the one skipped count. No named runtime skip receipt was recovered."
+    },
+    "bazel_lock_update_exit_code": 0,
+    "lock_files_unchanged": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 417315,
+        "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+        "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1761877,
+        "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+        "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+      }
+    },
+    "format_command": [
+      "just",
+      "fmt",
+      "--base",
+      "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3"
+    ],
+    "format_exit_code": 0,
+    "format_changed_source_bytes": false,
+    "tests_rerun_after_format": false,
+    "windows_execution": false,
+    "musl_rbe_execution": false
+  },
+  "repair_limits": [
+    "The five owning-handle test files cover 16 named cases from the historical Windows shard-3 failures. Native Linux execution does not qualify Windows lock semantics.",
+    "Cold resume fixtures reconstruct environments from persisted rollout bindings. Production recovery matching and original assertions remain in force.",
+    "The bubblewrap fixture uses the existing manifest-aware binary resolver; its original PATH fallback is retained only for CargoBinError::NotFound. Native Cargo passes do not establish the musl/Bazel execution result.",
+    "The first broad blocking CI failure remains recorded at exact b86; a new commit must receive its own CI result.",
+    "Remaining historical failures include other Windows lock/circuit cases, trust fixtures, memory/receipt checks, dependency advisories, and macOS paths. Unresolved causes remain unresolved.",
+    "Temporary native commit 692a26dd is a local validation identity, not a GitHub-published head. Final file byte bindings connect these results to the reviewed patch."
+  ],
+  "historical_b86_ci": {
+    "dedicated_gate_passed": 14,
+    "architecture_source_commands_passed": 31,
+    "blocking_jobs": {
+      "success": 20,
+      "failure": 13,
+      "skipped": 4
+    },
+    "blocking_workflow_conclusion": "failure"
+  },
+  "new_publication_head_ci_at_record_creation": "not yet observed",
+  "scientific_qualification": false,
+  "research_advancement": false,
+  "production_qualification": false,
+  "authority_granted": false,
+  "all_stage_admission": {
+    "S0": false,
+    "S1": false,
+    "S2": false,
+    "S3": false,
+    "S4": false,
+    "S5": false
+  },
+  "total_campaign_cost": null,
+  "cost_scope": "Individual command elapsed times are recorded. Complete campaign resource accounting, independent training, matched budgets and evaluator authentication are not established.",
+  "initial_validation_record": {
+    "path": "VALIDATION.json",
+    "bytes": 1433,
+    "sha256": "f2078dd55670e91dfb1337ee619a327fff9034ae52b5e74412e07304d8ad0c6c",
+    "git_blob": "f01c756391a370055985b1531cc12fac98cc580a",
+    "scope": "Unmodified historical initial delivery record, including its original joint-config source bytes."
+  }
+}

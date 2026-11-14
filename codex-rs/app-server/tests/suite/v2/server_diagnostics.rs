@@ -84,6 +84,7 @@ async fn server_diagnostics_requires_experimental_capability() -> Result<()> {
                 version: "0.1.0".to_string(),
             },
             Some(InitializeCapabilities {
+                process_indeterminate: false,
                 experimental_api: false,
                 ..Default::default()
             }),

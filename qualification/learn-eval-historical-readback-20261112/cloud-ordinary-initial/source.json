@@ -1,0 +1,108 @@
+{
+  "source_commit": "a873e88e4e976a453e49197a48a72b04e470743e",
+  "source_tree": "d95c7a557913b0500ff4efb9fa68ddee7e7612b0",
+  "source_paths": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "blob": "36158a7871f6ceb64abaf96d44f09ee2fb1dec95",
+      "sha256": "5b6d169ed467da143fdd6bb6fa351a29267bc0f042395175942219647f93fe9b"
+    },
+    {
+      "path": "CALLERS.toml",
+      "blob": "77dd8f7385e81a0d1aedbc9ff77682952fa2adae",
+      "sha256": "82f5dde532c6c365e5e3648927310525eeb4bf0b92e7bb595a418de9db99992e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "blob": "14ea64a7a5bcf20297bcbe2628695f933f1f01d7",
+      "sha256": "a7ee8381fb468bf24768998f00616948191d14db0ffaae72ef5326535640cacd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_initial_q24.rs",
+      "blob": "1a9785e367dfceefede405929820ed9f77e02a62",
+      "sha256": "727475ba2585f73566b0dfcc847224217d4c62b40045bf4f72408d3254977b1f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "blob": "28491970ec1054f3a447028f5cb61d453e09ec6e",
+      "sha256": "61a3958efbac37a206a14d0dad042557149ad303cc58f964463cf4a2f4f5ee03"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24.rs",
+      "blob": "9f32ba741a04ad87830e7fd4e2400c656d3e7b7e",
+      "sha256": "e6ae098d06c5d1207df189ed1274b39eecbd76cfe167f93b557cd6bb399664ea"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_cli.rs",
+      "blob": "d3def83bd73450a854b28f64e75d02479a35c068",
+      "sha256": "4e31ddb9d4d21ba94a806261f2f0d90b873e503f64e4f75b97fc440d9cd4f6d2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_cli_tests.rs",
+      "blob": "c2e9a81712800fba933d9d422326e57a4dab0e30",
+      "sha256": "c115e908311507b944997be7280752ce57e8b20ebef4be4df162f36db28cd95c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_clock.rs",
+      "blob": "04c612ec1179c40afb7c2e2f275b8069c967dac9",
+      "sha256": "3308532f541ec5b5b2a9c3684e99b542253932fdbcf00278f52fd0075594f090"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_deployment.rs",
+      "blob": "48f4fb7bc3d45a951ab9b35a6aba765327ee7f35",
+      "sha256": "4a9830c9519991b7a00c1787a69468ffe1ecd46a4701f2be39cc1eef5d5d8f33"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_files.rs",
+      "blob": "95beb51c809e8db3399f174a1b24ea9121c818b1",
+      "sha256": "a12f3ade16f096c27da00019c4d9bd0b023cf953c22dd71705551f593350b210"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_files_tests.rs",
+      "blob": "214bd7e28f4fb80e086e3970b36659f49e51c73b",
+      "sha256": "e24be7a890c8861315a5d3dee8352249c6a6fd49e033513a3601155d6bddbc5a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_load.rs",
+      "blob": "1dde318b7485a43396d330fb4102eb2c9f7d181d",
+      "sha256": "2d66b505f16186b8b26d0185c3ed0fab93967bc4b380c0c7cfdfb914ccae9078"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_initial_q24_writer.rs",
+      "blob": "a9171be60cf49111267d2b0171a3a3aaa0b64889",
+      "sha256": "08002564e712d32d77da5538ab5b049c46691ff34e4d099e11610009b26048ab"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "blob": "56c68494a4c1bf50419d4864fffb16ec890f8592",
+      "sha256": "0dec4dc739558c95824dcaafb4a50cac738b248fc33d19b28cd4d8c121aa77ba"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "blob": "c389929cd5d4e632e583627892526dde8860b1fe",
+      "sha256": "f02748c487a9290fb0ae7ff99e731803a6e367921591a66d58c8f471d4c8c4dd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "blob": "637235ed4d92d799e11ddc9c16e818537699b444",
+      "sha256": "9b38ad6182a5d6c22a0356254e9b31f9dc6ba4cc8794ac464a94f430f17bf4de"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_initial_absolute_deadline_source_closure.py",
+      "blob": "50863ad5926e62e6bd8cc80195e410b86aadc2ef",
+      "sha256": "e13a32fb32fe70d477a2a50ef187f8cf61d768f6fef0ef7219f44c500a76a190"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_initial_artifact_readview_source_closure.py",
+      "blob": "9c3dc0a48dd8db0b5a90b90ac5447ff1fd46b0a1",
+      "sha256": "98f54ce9d2d7dca944c299d2e65770d8da7340f6ecfcc0535ea3586d9859015b"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_ordinary_initial_q24_source_closure.py",
+      "blob": "7767bd8edd252d8a908c8d3c01c598d939210b65",
+      "sha256": "571d76532cf3275f22244eee78fa055b8c188af70be17a349947860f924dbe53"
+    }
+  ],
+  "native": "not run; integrate actual capture companion before native validation",
+  "full_caller_scan": "not run"
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.gate-test-attempt.v1",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_cell_research_gate.py",
+    "-v"
+  ],
+  "workdir": "/workspace/scratch/304d47497d18/candidate",
+  "exit_code": 1,
+  "tests_ran": 13,
+  "passed": 11,
+  "failures": 1,
+  "errors": 1,
+  "unittest_seconds": 1.039,
+  "exec_chunk_id": "b45c28",
+  "executed_source_sha256": null,
+  "source_snapshot_scope": "Captured after first test run; not asserted as exact tested bytes",
+  "observed_snapshot_sha256": "14e82b1e621a9c40b3308d0615eb7be62e7ca32f25a0329c6b2c087d65ec8ded",
+  "findings": [
+    {
+      "test": "test_fixture_scope_and_pending_failed_attempts_cannot_disappear",
+      "outcome": "ValueError: attempt evidence kind contradicts its envelope",
+      "classification": "Test expected HOLD while implementation correctly hard-rejects contradictory evidence"
+    },
+    {
+      "test": "test_one_bad_fit_cannot_hide_in_pooled_successful_episodes",
+      "outcome": "AssertionError: numerical_screen_ready is False",
+      "classification": "Test expected inputs-evaluable readiness; actual field is descriptive threshold eligibility"
+    }
+  ]
+}

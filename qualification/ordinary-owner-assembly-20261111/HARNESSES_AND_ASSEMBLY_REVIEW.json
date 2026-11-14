@@ -1,0 +1,130 @@
+{
+  "kind": "independent_static_readme_and_full_harness_metadata_review",
+  "readme_git_blob": "650fee6fd5f7dc4c18052d7ad8a391fb6c1c7023",
+  "readme_sha256": "41ff7d62330f8a5c099170da7baec33a9de28af109caf591116485f47b4ad242",
+  "metadata_delta_git_blob": "1886d562fa6f09166478638d38bd82b34c04014d",
+  "manifest_git_blob": "84a7f4565e930cdd3a6c3f8e4998dee583cf4b89",
+  "source_reference": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "workflow_git_blob": "f5d21a533e68b515933476ba82b4e3175b92e4a5",
+  "static_checks": {
+    "all_current_metadata_git_blobs_bytes_and_sha256_match": true,
+    "request_stdin_byte_equal_current_script": true,
+    "request_argv_configuration_exactly_matches_template": true,
+    "current_script_and_all_embedded_root_programs_ast_parse": true,
+    "changed_existing_functions": [
+      "recorded"
+    ],
+    "unchanged_existing_functions": [
+      "save",
+      "progress",
+      "file_digest",
+      "remaining",
+      "raw",
+      "git",
+      "identity",
+      "clean",
+      "snapshot",
+      "tool_snapshot",
+      "workflow_contract",
+      "read_execution",
+      "root_environment",
+      "package_args",
+      "json_from_raw_log",
+      "binary_bindings",
+      "listed_root_parents",
+      "restore_record_ownership",
+      "test_suite"
+    ],
+    "new_functions": [
+      "read_root_execution_record"
+    ],
+    "unchanged_original_root_programs": [
+      "RUST_PREFLIGHT",
+      "ROOT_SETUP",
+      "ROOT_CACHE",
+      "ROOT_WRAPPER"
+    ],
+    "changed_existing_assignments": [],
+    "new_assignments": [
+      "ROOT_EXECUTION_READ"
+    ],
+    "original_finally_nodes_equal": true,
+    "original_finally_blocks": 2,
+    "original_top_level_finally_statement_count": 10,
+    "actual715_workflow_roster_and_packages_match_template": true,
+    "root_parents": 17,
+    "full_caller_timeout_seconds": 3600,
+    "historical_manifest_retained_exact_bytes": true,
+    "readme_only_expected_late_writer_addendum": true
+  },
+  "execution": {
+    "harness_executed": false,
+    "native_executed": false,
+    "root_executed": false,
+    "official_verifier_executed": false,
+    "ref_updated": false,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_c_accepted": false,
+    "physical_daemon_root_restart_accepted": false,
+    "qualification_pass": false
+  },
+  "conclusion": "No concrete blocker found in this static scope; final actual parameters and source must still be reviewed and qualified. This does not make the conditional successor ordinary-production reachable.",
+  "reviewer": "/root/chain_nextuse",
+  "reviewed_harness_objects": [
+    {
+      "name": "qualify.py",
+      "git_blob": "90994f511820596ecceeb2ecc5ca4ecdafa8c653",
+      "bytes": 50110,
+      "sha256": "8f8886e4c7a15fb319a2bb9e587e3c948bb6f4d671d03ec5f1db11620e4e9e0b"
+    },
+    {
+      "name": "CONFIG.template.json",
+      "git_blob": "c0a3507beaf7842be4db4580150cca05bd78b715",
+      "bytes": 5025,
+      "sha256": "ad8e20689ff5057ef66e0d032886ff86a261c6dbde49fb676954c68a68dec40d"
+    },
+    {
+      "name": "PROCESS_REQUEST.template.json",
+      "git_blob": "cf14721cfeec08eabe637c36d327c60fdae5de70",
+      "bytes": 56659,
+      "sha256": "1cac7f0cac045f6a7775ab2023d8c222aecd434ea2e54e8daa1b8bf0f4495aae"
+    },
+    {
+      "name": "REVIEW.json",
+      "git_blob": "a76b7157813e22b863963ad9dbe059938347590a",
+      "bytes": 2415,
+      "sha256": "b9af6214747d3c19ecbd3926a51a7d43e7dfb6b3bd8f4e8b5c398b552fa22536"
+    },
+    {
+      "name": "MANIFEST.json",
+      "git_blob": "84a7f4565e930cdd3a6c3f8e4998dee583cf4b89",
+      "bytes": 3766,
+      "sha256": "40bcf6589d2961c9a8dca1cd1c462c75739b4aba442ee9c40820a0b5237af85a"
+    },
+    {
+      "name": "INDEPENDENT_REVIEW.json",
+      "git_blob": "a72d23a6bafc91a9a5943f51950bc495f3e0c303",
+      "bytes": 6578,
+      "sha256": "c82d65410a54583b354e7c2bc49e4ae86ca50175a4ab73de9634bf5594fa8fc9"
+    }
+  ],
+  "static_probe": {
+    "git_blob": "5584b8e0e5a8bf0922f4af4b0c403fe955c047af",
+    "actual_exit_code": 0,
+    "operation": "AST parse, literal/byte/metadata comparison only; no import or execution of qualify.py or any embedded Root program"
+  },
+  "findings": [
+    "The README retains ordinary complete, positive adoption and ordinary NoUpdate/rollback acceptance counts at 0/0/0, and explicitly denies accepted independent ordinary C and actual daemon/Root OS restart recovery.",
+    "The successor is described as conditional internal assembly. The late writer row now explicitly states no ordinary repository product caller. The retained-A in-memory capability cannot be carried through the actual peer-retirement/new-incarnation gate, and no existing in-place transition is asserted.",
+    "Installed successor input remains NonLearning; source/Cell readback is not promoted to automatic new A experience, independently observed Outcome, or LearningReady.",
+    "The V1 B comparison contract retains the original selected parent, equal capacity and cumulative training budgets, positive authenticated quantities and complete measured costs. Missing history/costs, transport errors and incomplete evaluation are not reclassified as NoUpdate.",
+    "The exact new request stdin is the 50110-byte current90994f script, and its argv configuration equals the c0a template. Current metadata hashes and historical manifest bytes match their Git objects.",
+    "The read-only Root execution-record bridge requires the original terminal/source/command proof before evidence ownership transfer and checks the transferred bytes and original log. Unknown completion continues to prohibit follow-up Rust dispatch, collectors and mutating cleanup.",
+    "Only the existing recorded function changes; nineteen other original functions, four original Root program strings and all original finally AST bodies remain unchanged. The newly added reader and embedded program are syntactically valid.",
+    "The actual fixed715 workflow six-package set and seventeen parent names match the template. They describe component coverage and do not close the ordinary reachability, independent-consumer or process-restart gap."
+  ],
+  "required_source_patches": [],
+  "remaining_validation": "Root integrator must supply and independently preflight the final immutable HEAD/TREE and exact live configuration; this static review neither runs nor qualifies that source. Current in-flight Root17 results are not used."
+}

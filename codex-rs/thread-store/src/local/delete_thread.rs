@@ -267,6 +267,7 @@ fn delete_rollout_path(store: &LocalThreadStore, rollout_path: &Path) -> ThreadS
 
 #[cfg(test)]
 mod tests {
+    use crate::local::test_support::private_home;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::HistoryPosition;
     use codex_protocol::protocol::ThreadHistoryMode;
@@ -687,7 +688,7 @@ SELECT
 
     #[tokio::test]
     async fn delete_thread_removes_materialized_thread_history() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let state_db = codex_state::StateRuntime::init(
             config.sqlite.clone(),

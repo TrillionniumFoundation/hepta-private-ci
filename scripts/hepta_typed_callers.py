@@ -33,6 +33,10 @@ def _end(code: str, start: int, opening: str, closing: str) -> int:
 
 
 def _declared_aliases(code: str, target: str) -> set[str]:
+    # Both patterns require this exact literal. Disjoint source cannot declare
+    # an alias; avoid scanning unrelated modules with either regular expression.
+    if target not in code:
+        return set()
     aliases = set(re.findall(rf"\b{re.escape(target)}\s+as\s+(\w+)", code))
     aliases.update(
         re.findall(rf"\btype\s+(\w+)\s*=\s*(?:\w+::)*{re.escape(target)}\s*;", code)
@@ -45,7 +49,8 @@ def _normalize_aliases(
 ) -> str:
     aliases = aliases | _declared_aliases(code, target)
     for alias in aliases:
-        code = re.sub(rf"\b{re.escape(alias)}\b", target, code)
+        if alias in code:
+            code = re.sub(rf"\b{re.escape(alias)}\b", target, code)
     return code
 
 
@@ -148,6 +153,24 @@ def _bindings(
         if annotation:
             bindings[name] = _type(annotation, target)
             continue
+        # Standard shared-owner cloning preserves the wrapped receiver type.
+        # Treat an opaque clone argument as unresolved, never as an unrelated
+        # `Arc`/`Rc` constructor that could silently hide an authority call.
+        shared_clone = re.match(
+            r"\s*(?:std\s*::\s*(?:sync|rc)\s*::\s*)?(?:Arc|Rc)\s*::\s*clone\s*\(",
+            expression,
+        )
+        if shared_clone:
+            argument = re.fullmatch(
+                r"\s*&?\s*((?:self|[A-Za-z_]\w*)(?:\s*\.\s*\w+)*)\s*\)\s*",
+                expression[shared_clone.end() :],
+            )
+            bindings[name] = (
+                _receiver_type(argument.group(1), bindings, owner, fields)
+                if argument
+                else None
+            )
+            continue
         constructor = re.match(
             r"(?:[A-Za-z_]\w*::)*([A-Za-z_]\w*)\s*::\s*\w+\s*\(", expression
         )
@@ -168,6 +191,10 @@ def has_authority_call(
     code: str, target: str, method: str, fields: AuthorityFields
 ) -> bool:
     code = _normalize_aliases(code, target, fields.aliases)
+    # Check after alias normalization. Every qualified or receiver match below
+    # contains this literal method, so only impossible matches end here.
+    if method not in code:
+        return False
     # The field index is derived from type declarations, including declarations
     # in a parent module. A typed variable/impl must name either the authority
     # or an indexed field owner. Avoid parsing unrelated crates' homonyms.

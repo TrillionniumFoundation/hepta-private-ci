@@ -23,7 +23,7 @@ jobs:
     # signal without putting PR latency back on the critical path. When
     # Code-mode unit tests run on every Bazel target. When authenticated RBE
     # is available, the Windows-cross shards exercise the source-built V8 path.
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -39,6 +39,7 @@ jobs:
             target: x86_64-unknown-linux-gnu
           - os: ubuntu-24.04
             target: x86_64-unknown-linux-musl
+            bazel_platform: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
           # 2026-02-27 Bazel tests have been flaky on arm in CI.
           # Disable until we can investigate and stabilize them.
           # - os: ubuntu-24.04-arm
@@ -47,6 +48,9 @@ jobs:
           #   target: aarch64-unknown-linux-gnu
 
     runs-on: ${{ matrix.os }}
+    env:
+      # Apply the target ABI to the broad and both required native test calls.
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: ${{ matrix.bazel_platform || '' }}
 
     # Configure a human readable name for each job
     name: Bazel test on ${{ matrix.os }} for ${{ matrix.target }}
@@ -78,6 +82,16 @@ jobs:
         shell: bash
         run: ./scripts/check-module-bazel-lock.sh
 
+      - name: Install OpenSSH for the native operator-acceptance test action
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openssh-client
+          test -x /usr/bin/ssh-keygen
+          dpkg-query -W -f='${Package} ${Version}\n' openssh-client
+          sha256sum /usr/bin/ssh-keygen
+
       - name: bazel test //...
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -91,6 +105,17 @@ jobs:
             -//third_party/v8:all
             -//codex-rs/v8-poc:v8-poc-unit-tests
           )
+
+          if [[ "${RUNNER_OS}" == "Linux" ]]; then
+            # These targets run in required native steps below. OpenSSH and
+            # nested Linux user/network namespaces belong to the runner host;
+            # the generic RBE container does not provide those capabilities.
+            bazel_targets+=(
+              -//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+              -//codex-rs/linux-sandbox:linux-sandbox-all-test
+              -//codex-rs/cli:cli-sandbox_network_proxy-test
+            )
+          fi
 
           bazel_wrapper_args=(
             --print-failed-action-summary
@@ -108,6 +133,48 @@ jobs:
             "${bazel_test_args[@]}" \
             -- \
             "${bazel_targets[@]}"
+
+      - name: Run operator acceptance with native OpenSSH
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --strategy=TestRunner=linux-sandbox \
+            --test_tag_filters=-argument-comment-lint \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_job=native-openssh-test \
+            -- \
+            //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests
+
+      - name: Run Linux sandbox integration on the native kernel
+        if: ${{ !cancelled() && runner.os == 'Linux' }}
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          # Keep compilation remote while executing the unchanged tests inside
+          # the runner's Linux sandbox. Required failures remain blocking.
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            -- \
+            test \
+            --strategy=TestRunner=linux-sandbox \
+            --test_tag_filters=-argument-comment-lint \
+            --test_verbose_timeout_warnings \
+            --nocache_test_results \
+            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=TAG_job=native-linux-sandbox-tests \
+            -- \
+            //codex-rs/linux-sandbox:linux-sandbox-all-test \
+            //codex-rs/cli:cli-sandbox_network_proxy-test
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
@@ -136,7 +203,7 @@ jobs:
     # Split the native Windows Bazel test leg across separate Windows hosts.
     # Build actions and host-loaded proc macros use the same MSVC ABI as the
     # test binaries, avoiding cross-ABI native archive linkage.
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -247,7 +314,7 @@ jobs:
     timeout-minutes: 30
     # Preserve the existing required-check surface while the real work happens
     # in the sharded Windows jobs above.
-    if: always()
+    if: ${{ !cancelled() }}
     needs: test-windows-shard
     runs-on: ubuntu-24.04
     name: Bazel test on windows-latest for x86_64-pc-windows-msvc
@@ -341,7 +408,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   clippy:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -432,7 +499,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   verify-release-build:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:

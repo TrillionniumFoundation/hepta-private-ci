@@ -1,0 +1,61 @@
+{
+  "recordedAt": "2026-10-23T21:16:52.840686+00:00",
+  "commit": "f4044f8d77b1c1142f84525b1b1f243e2ddf95d6",
+  "tree": "7013ce55311519e42977e67d1ca9829bd5b7c4dc",
+  "testedSourceBase": "a47dcc783fdb6c7deae6bc23bb83354a0052f5e6",
+  "testedDiffSha256": "b26f3326a250ea926df8e06a28bc015851d75e0bc7884805b713f05afa050012",
+  "reconstructedTestedTree": "c1fbda76dbfe6d836fdd3979e892ddb5d7b44b7d",
+  "owningPrePostTrackedSourceUnchanged": true,
+  "sourceChange": "Only the missing-marker fixture uses a nonempty per-fixture unique absent project-root marker, configured through a normal User ConfigLayerEntry built after the final TOML value. No production discovery change.",
+  "originalRootCollectionAndAssertionTailByteIdentical": true,
+  "productionDefaultGitMarkerChanged": false,
+  "emptyMarkerListDisablingDiscoveryUsed": false,
+  "sameControlledAmbientMarkerBeforeAndAfter": "/data/hepta-skills-marker-b91ohir1/.git",
+  "environment": {
+    "TMPDIR": "/data/hepta-skills-marker-b91ohir1",
+    "RUNNER_TEMP": "/data/hepta-skills-marker-b91ohir1/reports"
+  },
+  "originalFull03MarkerTouched": false,
+  "priorImplementationFailurePreserved": "First fixture draft used missing-key TOML Value IndexMut and panicked. Original failed after receipt/log retained; corrected draft builds the table with map.insert.",
+  "receipts": {
+    "skills-no-marker-fixture-before": {
+      "exitCode": 100,
+      "elapsedSeconds": 1005.9203386160079,
+      "summary": "Summary [   0.144s] 1 test run: 0 passed, 1 failed, 174 skipped"
+    },
+    "skills-no-marker-fixture-after": {
+      "exitCode": 100,
+      "elapsedSeconds": 55.975784612004645,
+      "summary": "Summary [   0.032s] 1 test run: 0 passed, 1 failed, 174 skipped"
+    },
+    "skills-no-marker-fixture-after-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 21.090774873038754,
+      "summary": "Summary [   0.019s] 1 test run: 1 passed, 174 skipped"
+    },
+    "skills-no-marker-owning-after-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 4.8452330799773335,
+      "summary": "Summary [   2.654s] 175 tests run: 175 passed, 0 skipped"
+    },
+    "skills-no-marker-fixture-fix-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 477.14967974007595,
+      "summary": null
+    },
+    "skills-no-marker-fixture-fmt-02": {
+      "exitCode": 0,
+      "elapsedSeconds": 0.37755783391185105,
+      "summary": null
+    }
+  },
+  "noTestsAfterFixOrFmt": true,
+  "posttestDifferenceArtifact": "skills-no-marker-fixture-posttest-format.diff",
+  "posttestChangesWhitespaceOnly": true,
+  "finalCommitBytesRetested": false,
+  "toolchain": "1.95.0",
+  "linuxReadChainIncluded": "a47dcc783fdb6c7deae6bc23bb83354a0052f5e6",
+  "scope": "Original skills owning package on independent Linux host source with complete Linux authorized-read chain. Root integration review, final combined Rust1.96 suite, and native qualification remain separate.",
+  "nativeAsterinasQualified": false,
+  "finalUnifiedFullQualified": false
+}

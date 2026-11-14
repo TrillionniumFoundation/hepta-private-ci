@@ -14,6 +14,7 @@ use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
 
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectIntent;
@@ -56,7 +57,7 @@ const MAX_PROVIDER_HEADERS: usize = 64;
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
     Indeterminate,
     ProvenAbsent,
 }
@@ -69,7 +70,8 @@ pub(crate) struct AgentdAutomationEffectHost {
     final_use_scope_digest: Sha256Digest,
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
-    revocation_frontier: Arc<Mutex<(u64, u64)>>,
+    // Serialize refreshes; the existing durable authority owns the only head.
+    revocation_refresh: Arc<Mutex<()>>,
     adapter: HttpProviderEffectAdapter,
 }
 
@@ -180,10 +182,6 @@ impl AgentdAutomationEffectHost {
             ));
         }
         let initial_revocations = read_revocations_file(&config.final_use_revocations_file)?;
-        let frontier = (
-            initial_revocations.authority_epoch,
-            initial_revocations.revision,
-        );
 
         let authority_root = identity
             .layout
@@ -214,7 +212,7 @@ impl AgentdAutomationEffectHost {
             final_use_scope_digest,
             authority,
             revocations_file: config.final_use_revocations_file,
-            revocation_frontier: Arc::new(Mutex::new(frontier)),
+            revocation_refresh: Arc::new(Mutex::new(())),
             adapter,
         })
     }
@@ -259,13 +257,15 @@ impl AgentdAutomationEffectHost {
             .execute_authorized_taskflow_effect(
                 &self.authority,
                 &mut driver,
-                intent,
-                wire_payload,
-                &fence,
-                signed_grant,
-                &binding,
-                command_id,
-                now_ms,
+                AuthorizedEffectDispatchRequest {
+                    intent,
+                    wire_payload,
+                    fence: &fence,
+                    signed_grant,
+                    expected_binding: &binding,
+                    command_id,
+                    now_ms,
+                },
             )
             .await
             .map_err(|error| {
@@ -363,28 +363,31 @@ impl AgentdAutomationEffectHost {
     }
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
-        let head = read_revocations_file(&self.revocations_file)?;
-        let mut frontier = self.revocation_frontier.lock().map_err(|_| {
+        // A numeric (epoch, revision) cache cannot detect same-head content
+        // drift or a head advanced through another clone of the authority.
+        // Keep only refresh serialization here, never a second trust frontier.
+        let _refresh = self.revocation_refresh.lock().map_err(|_| {
             AgentdError::Protocol(
-                "automation effect revocation frontier lock is poisoned".to_string(),
+                "automation effect revocation refresh lock is poisoned".to_string(),
             )
         })?;
-        let observed = (head.authority_epoch, head.revision);
-        if observed == *frontier {
+        let head = read_revocations_file(&self.revocations_file)?;
+        let current = self.authority.revocation_head().map_err(|error| {
+            AgentdError::GenerationFenced(format!(
+                "automation effect revocation head unavailable: {error}"
+            ))
+        })?;
+        if head == current {
             return Ok(());
         }
-        if observed.0 < frontier.0 || (observed.0 == frontier.0 && observed.1 < frontier.1) {
-            return Err(AgentdError::GenerationFenced(
-                "automation effect revocation frontier rolled back".to_string(),
-            ));
-        }
+        // The authority atomically enforces revision monotonicity, complete
+        // revocation-set inclusion, entered-effect fencing and durable writes.
+        // A changed head with unchanged numbers reaches that check and rejects.
         self.authority.update_revocations(head).map_err(|error| {
             AgentdError::GenerationFenced(format!(
                 "automation effect revocation refresh rejected: {error}"
             ))
-        })?;
-        *frontier = observed;
-        Ok(())
+        })
     }
 
     fn validate_intent(
@@ -409,6 +412,11 @@ impl AgentdAutomationEffectHost {
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AgentdError::Invalid(
                 "automation effect wire payload digest mismatch".to_string(),
+            ));
+        }
+        if crate::automation_effect_payload::requires_action_skill_host(wire_payload) {
+            return Err(AgentdError::Invalid(
+                "action skill invocation requires a registered goal-checking host".to_string(),
             ));
         }
         Ok(())
@@ -673,6 +681,11 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
+    use anyhow::Context;
+    use codex_hepta_automation::ACTION_SKILL_SCHEMA_VERSION;
+    use codex_hepta_automation::ActionSkillBudgetV1;
+    use codex_hepta_automation::ActionSkillContractV1;
+    use codex_hepta_automation::ActionSkillRecoveryV1;
     use codex_hepta_automation::AuthorizedEffectIntent;
     use codex_hepta_automation::TaskFlowCommand;
     use codex_hepta_automation::TaskFlowDefinition;
@@ -692,6 +705,7 @@ mod tests {
     use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use pretty_assertions::assert_eq;
     use wiremock::Mock;
     use wiremock::MockServer;
     use wiremock::ResponseTemplate;
@@ -713,23 +727,35 @@ mod tests {
 
     impl Fixture {
         async fn new() -> Self {
-            let temp = tempfile::tempdir().expect("temp root");
-            let root = temp.path().canonicalize().expect("canonical temp root");
+            let temp = tempfile::tempdir().unwrap_or_else(|_| panic!("temp root"));
+            let root = temp
+                .path()
+                .canonicalize()
+                .unwrap_or_else(|_| panic!("canonical temp root"));
             let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-            let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+            let fleet_root =
+                HeptaFleetRoot::parse(fleet_path.clone()).unwrap_or_else(|_| panic!("fleet root"));
+            let registry = FleetRegistry::initialize(fleet_root.clone())
+                .unwrap_or_else(|_| panic!("fleet registry"));
             let workspace = root.join("workspace");
-            fs::create_dir(&workspace).expect("workspace");
-            let workspace = workspace.canonicalize().expect("canonical workspace");
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
+            fs::create_dir(&workspace).unwrap_or_else(|_| panic!("workspace"));
+            let workspace = workspace
+                .canonicalize()
+                .unwrap_or_else(|_| panic!("canonical workspace"));
+            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)
+                .unwrap_or_else(|_| panic!("agent id"));
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .unwrap_or_else(|_| panic!("workspace binding")),
                 resources.clone(),
             )
-            .expect("manifest");
-            let layout = registry.register(manifest).expect("register agent").layout;
+            .unwrap_or_else(|_| panic!("manifest"));
+            let layout = registry
+                .register(manifest)
+                .unwrap_or_else(|_| panic!("register agent"))
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -744,12 +770,90 @@ mod tests {
             };
             let store = AutomationStore::open(&layout)
                 .await
-                .expect("automation store");
+                .unwrap_or_else(|_| panic!("automation store"));
             Self {
                 _temp: temp,
                 identity,
                 store,
             }
+        }
+
+        fn open_effect_host(
+            &self,
+            server: &MockServer,
+            scope: &Sha256Digest,
+        ) -> (AgentdAutomationEffectHost, SigningKey, PathBuf) {
+            let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
+            let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
+            let unsigned_provider_config = HttpProviderEffectConfig {
+                dispatch_url: format!("{}/dispatch", server.uri()),
+                lookup_url_template: format!("{}/status/{{key}}", server.uri()),
+                headers: HeaderMap::new(),
+                timeout: Duration::from_secs(2),
+                contract_id: "agentd-product-effect-contract".to_string(),
+                attestation: None,
+            };
+            let contract_digest = unsigned_provider_config
+                .contract_sha256()
+                .unwrap_or_else(|_| panic!("contract digest"));
+            let statement = HttpProviderEffectContractAttestation::statement_for(
+                "agentd-product-effect-contract",
+                &contract_digest,
+                1,
+            );
+            let contract_signature = contract_signer.sign(&statement).to_bytes();
+            let revocations_file = self
+                .identity
+                .layout
+                .automation_root()
+                .join("effect-revocations.json");
+            fs::write(
+                &revocations_file,
+                serde_json::to_vec(&FinalUseRevocations {
+                    authority_epoch: 9,
+                    revision: 1,
+                    revoked_grant_ids: BTreeSet::new(),
+                })
+                .unwrap_or_else(|_| panic!("revocations json")),
+            )
+            .unwrap_or_else(|_| panic!("write revocations file"));
+            fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
+                .unwrap_or_else(|_| panic!("revocations file permissions"));
+
+            let host_file = self
+                .identity
+                .layout
+                .automation_root()
+                .join("effect-host.json");
+            let host_json = serde_json::json!({
+                "schema_version": 1,
+                "provider_scope": "provider/fixture-v1",
+                "destination_id": "provider:fixture",
+                "final_use_scope_sha256": scope.as_str(),
+                "dispatch_url": format!("{}/dispatch", server.uri()),
+                "lookup_url_template": format!("{}/status/{{key}}", server.uri()),
+                "headers": {},
+                "timeout_ms": 2000,
+                "contract_id": "agentd-product-effect-contract",
+                "contract_sha256": contract_digest.as_str(),
+                "contract_authority_epoch": 1,
+                "contract_signature_hex": hex(&contract_signature),
+                "contract_verifying_key_hex": hex(&contract_signer.verifying_key().to_bytes()),
+                "final_use_signer_id": "automation-security-owner",
+                "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
+                "final_use_revocations_file": revocations_file
+            });
+            fs::write(
+                &host_file,
+                serde_json::to_vec(&host_json).unwrap_or_else(|_| panic!("host json")),
+            )
+            .unwrap_or_else(|_| panic!("write host file"));
+            fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
+                .unwrap_or_else(|_| panic!("host file permissions"));
+
+            let host = AgentdAutomationEffectHost::open(&self.identity, &host_file)
+                .unwrap_or_else(|_| panic!("effect host"));
+            (host, final_use_signer, host_file)
         }
     }
 
@@ -770,7 +874,7 @@ mod tests {
             vec!["provider.deliver".to_string()],
             Sha256Digest::for_bytes(b"agentd-product-effect-policy"),
         )
-        .expect("definition")
+        .unwrap_or_else(|_| panic!("definition"))
     }
 
     fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
@@ -803,12 +907,12 @@ mod tests {
             1,
             "agentd-product-effect-fence",
         )
-        .expect("fence");
+        .unwrap_or_else(|_| panic!("fence"));
         fixture
             .store
             .register_taskflow_definition(&definition, &fence, now_ms)
             .await
-            .expect("register definition");
+            .unwrap_or_else(|_| panic!("register definition"));
         fixture
             .store
             .create_taskflow_run(
@@ -820,12 +924,12 @@ mod tests {
                 now_ms,
             )
             .await
-            .expect("create run");
+            .unwrap_or_else(|_| panic!("create run"));
         let claimed = fixture
             .store
             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
             .await
-            .expect("claim run");
+            .unwrap_or_else(|_| panic!("claim run"));
         fixture
             .store
             .apply_taskflow_command(
@@ -837,11 +941,11 @@ mod tests {
                     TaskFlowTransition::Start,
                     now_ms + 2,
                 )
-                .expect("start command"),
+                .unwrap_or_else(|_| panic!("start command")),
             )
             .await
-            .expect("start run");
-        let digest = intent.digest().expect("intent digest");
+            .unwrap_or_else(|_| panic!("start run"));
+        let digest = intent.digest().unwrap_or_else(|_| panic!("intent digest"));
         fixture
             .store
             .prepare_taskflow_step(
@@ -855,7 +959,7 @@ mod tests {
                 now_ms + 3,
             )
             .await
-            .expect("prepare step");
+            .unwrap_or_else(|_| panic!("prepare step"));
         fixture
             .store
             .claim_taskflow_step(
@@ -869,7 +973,7 @@ mod tests {
                 now_ms + 4,
             )
             .await
-            .expect("claim step");
+            .unwrap_or_else(|_| panic!("claim step"));
         fence
     }
 
@@ -878,7 +982,9 @@ mod tests {
         now_ms: u64,
         signing_key: &SigningKey,
     ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().expect("final-use binding");
+        let binding = intent
+            .final_use_binding()
+            .unwrap_or_else(|_| panic!("final-use binding"));
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
@@ -890,14 +996,18 @@ mod tests {
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|_| panic!("signing bytes")),
+            )
             .to_bytes()
             .to_vec();
         SignedFinalUseGrant { grant, signature }
     }
 
     fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
+        decode_hex_array::<32>(digest.as_str(), "digest").unwrap_or_else(|_| panic!("digest bytes"))
     }
 
     fn hex(bytes: &[u8]) -> String {
@@ -911,17 +1021,35 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_dispatches_exact_wire_payload_once() {
+    async fn host_dispatches_exact_wire_payload_once() -> anyhow::Result<()> {
+        check_plain_host_dispatch(WIRE).await
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn host_preserves_ordinary_opaque_and_non_skill_json_payloads() -> anyhow::Result<()> {
+        for wire in [
+            b"ordinary opaque provider bytes".as_slice(),
+            br#"{"contract_digest":"ordinary-business-field"}"#.as_slice(),
+            br#"{"destination_id":"business-destination","body":"ordinary"}"#.as_slice(),
+            br#"{"metadata":{"contract_digest":"nested","destination_id":"nested"}}"#.as_slice(),
+        ] {
+            check_plain_host_dispatch(wire).await?;
+        }
+        Ok(())
+    }
+
+    async fn check_plain_host_dispatch(wire: &[u8]) -> anyhow::Result<()> {
         let fixture = Fixture::new().await;
         let now_ms = u64::try_from(
             SystemTime::now()
                 .duration_since(UNIX_EPOCH)
-                .expect("wall clock")
+                .unwrap_or_else(|_| panic!("wall clock"))
                 .as_millis(),
         )
-        .expect("millis");
+        .unwrap_or_else(|_| panic!("millis"));
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
-        let intent = effect_intent(&scope);
+        let mut intent = effect_intent(&scope);
+        intent.payload_digest = Sha256Digest::for_bytes(wire);
         prepare_effect(&fixture, now_ms, &intent).await;
 
         let server = MockServer::start().await;
@@ -930,7 +1058,7 @@ mod tests {
             &intent.run_id,
             &intent.step_id,
         )
-        .expect("provider key");
+        .unwrap_or_else(|_| panic!("provider key"));
         let provider_operation = Sha256Digest::for_bytes(b"provider-operation");
         let ack = serde_json::json!({
             "effect_key": provider_key.as_str(),
@@ -944,110 +1072,170 @@ mod tests {
                 PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER,
                 provider_key.as_str(),
             ))
-            .and(body_bytes(WIRE.to_vec()))
+            .and(body_bytes(wire.to_vec()))
             .respond_with(ResponseTemplate::new(200).set_body_json(ack))
             .expect(1)
             .mount(&server)
             .await;
 
-        let contract_signer = SigningKey::from_bytes(&[23_u8; 32]);
-        let final_use_signer = SigningKey::from_bytes(&[29_u8; 32]);
-        let unsigned_provider_config = HttpProviderEffectConfig {
-            dispatch_url: format!("{}/dispatch", server.uri()),
-            lookup_url_template: format!("{}/status/{{key}}", server.uri()),
-            headers: HeaderMap::new(),
-            timeout: Duration::from_secs(2),
-            contract_id: "agentd-product-effect-contract".to_string(),
-            attestation: None,
-        };
-        let contract_digest = unsigned_provider_config
-            .contract_sha256()
-            .expect("contract digest");
-        let statement = HttpProviderEffectContractAttestation::statement_for(
-            "agentd-product-effect-contract",
-            &contract_digest,
-            1,
-        );
-        let contract_signature = contract_signer.sign(&statement).to_bytes();
-        let revocations_file = fixture
-            .identity
-            .layout
-            .automation_root()
-            .join("effect-revocations.json");
+        let (host, final_use_signer, _host_file) = fixture.open_effect_host(&server, &scope);
+        let revocations_file = host.revocations_file.clone();
+        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        let trusted_head = host.authority.revocation_head().context("trusted head")?;
+        let trusted_frontier = host.authority.frontier().context("trusted frontier")?;
+        let mut changed_same_revision = trusted_head.clone();
+        changed_same_revision
+            .revoked_grant_ids
+            .insert(grant.grant.grant_id.clone());
         fs::write(
             &revocations_file,
-            serde_json::to_vec(&FinalUseRevocations {
-                authority_epoch: 9,
-                revision: 1,
-                revoked_grant_ids: BTreeSet::new(),
-            })
-            .expect("revocations json"),
+            serde_json::to_vec(&changed_same_revision).context("changed head json")?,
         )
-        .expect("write revocations file");
-        fs::set_permissions(&revocations_file, fs::Permissions::from_mode(0o600))
-            .expect("revocations file permissions");
-
-        let host_file = fixture
-            .identity
-            .layout
-            .automation_root()
-            .join("effect-host.json");
-        let host_json = serde_json::json!({
-            "schema_version": 1,
-            "provider_scope": "provider/fixture-v1",
-            "destination_id": "provider:fixture",
-            "final_use_scope_sha256": scope.as_str(),
-            "dispatch_url": format!("{}/dispatch", server.uri()),
-            "lookup_url_template": format!("{}/status/{{key}}", server.uri()),
-            "headers": {},
-            "timeout_ms": 2000,
-            "contract_id": "agentd-product-effect-contract",
-            "contract_sha256": contract_digest.as_str(),
-            "contract_authority_epoch": 1,
-            "contract_signature_hex": hex(&contract_signature),
-            "contract_verifying_key_hex": hex(&contract_signer.verifying_key().to_bytes()),
-            "final_use_signer_id": "automation-security-owner",
-            "final_use_verifying_key_hex": hex(&final_use_signer.verifying_key().to_bytes()),
-            "final_use_revocations_file": revocations_file
-        });
+        .context("write conflicting same-revision head")?;
+        assert!(matches!(
+            host.execute(
+                &fixture.store,
+                &intent,
+                wire,
+                &grant,
+                "agentd-product-effect-dispatch",
+                now_ms + 5,
+            )
+            .await,
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        assert_eq!(
+            host.authority
+                .revocation_head()
+                .context("read current revocation head")?,
+            trusted_head
+        );
+        assert_eq!(
+            host.authority
+                .frontier()
+                .context("read current authority frontier")?,
+            trusted_frontier
+        );
+        assert_eq!(
+            host.authority
+                .capacity()
+                .context("read current authority capacity")?
+                .used_nonces,
+            0
+        );
+        assert!(
+            server
+                .received_requests()
+                .await
+                .context("recorded provider requests")?
+                .is_empty()
+        );
         fs::write(
-            &host_file,
-            serde_json::to_vec(&host_json).expect("host json"),
+            &revocations_file,
+            serde_json::to_vec(&trusted_head).context("restore head json")?,
         )
-        .expect("write host file");
-        fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
-            .expect("host file permissions");
-
-        let host =
-            AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
-        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        .context("restore exact trusted head")?;
         let receipt = host
             .execute(
                 &fixture.store,
                 &intent,
-                WIRE,
+                wire,
                 &grant,
                 "agentd-product-effect-dispatch",
                 now_ms + 5,
             )
             .await
-            .expect("effect dispatch");
+            .unwrap_or_else(|_| panic!("effect dispatch"));
         assert_eq!(
             receipt.observation,
             Some(TaskFlowStepObservation::Succeeded)
         );
 
+        // Another trusted handle may advance the existing durable owner.
+        // A host-local numeric cache must not accept the old on-disk feed.
+        let mut advanced_head = trusted_head.clone();
+        advanced_head.revision += 1;
+        advanced_head
+            .revoked_grant_ids
+            .insert(grant.grant.grant_id.clone());
+        host.authority
+            .update_revocations(advanced_head.clone())
+            .context("trusted authority advance")?;
+        let advanced_frontier = host
+            .authority
+            .frontier()
+            .context("read current authority frontier")?;
+        assert!(matches!(
+            host.clone().refresh_revocations(),
+            Err(AgentdError::GenerationFenced(_))
+        ));
+        assert_eq!(
+            host.authority
+                .frontier()
+                .context("read current authority frontier")?,
+            advanced_frontier
+        );
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&advanced_head).context("advanced head json")?,
+        )
+        .context("publish the exact advanced head")?;
+        host.clone()
+            .refresh_revocations()
+            .context("current cloned host")?;
+        // Removing a revocation fails with either the same or a newer revision.
+        // Neither refusal changes the durable head or refunds the used nonce.
+        for revision in [advanced_head.revision, advanced_head.revision + 1] {
+            let mut removed = advanced_head.clone();
+            removed.revision = revision;
+            removed.revoked_grant_ids.clear();
+            fs::write(
+                &revocations_file,
+                serde_json::to_vec(&removed).context("removed head json")?,
+            )
+            .context("write invalid revocation removal")?;
+            assert!(matches!(
+                host.refresh_revocations(),
+                Err(AgentdError::GenerationFenced(_))
+            ));
+            assert_eq!(
+                host.authority
+                    .revocation_head()
+                    .context("read current revocation head")?,
+                advanced_head
+            );
+            assert_eq!(
+                host.authority
+                    .frontier()
+                    .context("read current authority frontier")?,
+                advanced_frontier
+            );
+            assert_eq!(
+                host.authority
+                    .capacity()
+                    .context("read current authority capacity")?
+                    .used_nonces,
+                1
+            );
+        }
+        fs::write(
+            &revocations_file,
+            serde_json::to_vec(&advanced_head).context("restore advanced json")?,
+        )
+        .context("restore advanced head")?;
+        // A now-revoked grant does not erase the already completed effect. The
+        // identical terminal read below still returns its original receipt.
         let replay = host
             .execute(
                 &fixture.store,
                 &intent,
-                WIRE,
+                wire,
                 &grant,
                 "agentd-product-effect-dispatch",
                 now_ms + 6,
             )
             .await
-            .expect("settled replay");
+            .unwrap_or_else(|_| panic!("settled replay"));
         assert_eq!(replay.receipt_digest, receipt.receipt_digest);
         // A terminal read is not permission to substitute bytes or command
         // identity, even though the live lease has already been cleared.
@@ -1057,7 +1245,7 @@ mod tests {
             host.execute(
                 &fixture.store,
                 &substituted,
-                WIRE,
+                wire,
                 &grant,
                 "agentd-product-effect-dispatch",
                 now_ms + 7
@@ -1069,7 +1257,7 @@ mod tests {
             host.execute(
                 &fixture.store,
                 &intent,
-                WIRE,
+                wire,
                 &grant,
                 "different-command",
                 now_ms + 7
@@ -1090,5 +1278,236 @@ mod tests {
             .is_err()
         );
         server.verify().await;
+        Ok(())
+    }
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn plain_host_rejects_skill_envelopes_before_claim_or_provider_contact() {
+        let contract = ActionSkillContractV1 {
+            schema_version: ACTION_SKILL_SCHEMA_VERSION,
+            skill_id: "act1-host-rejection".to_string(),
+            version: 1,
+            destination_id: "provider:fixture".to_string(),
+            observer_id: "owner-goal-observer".to_string(),
+            initiation_digest: Sha256Digest::for_bytes(b"initiation"),
+            policy_digest: Sha256Digest::for_bytes(b"policy"),
+            termination_digest: Sha256Digest::for_bytes(b"termination"),
+            goal_digest: Sha256Digest::for_bytes(b"goal"),
+            budget: ActionSkillBudgetV1 {
+                max_wire_bytes: 16_384,
+                provider_timeout_ms: 2_000,
+                observer_timeout_ms: 1_000,
+            },
+            recovery: ActionSkillRecoveryV1::ReconcileOriginalIdentity,
+        };
+        let wire = contract
+            .encode_invocation(WIRE.to_vec())
+            .expect("typed invocation");
+        let value: serde_json::Value = serde_json::from_slice(&wire).expect("invocation JSON");
+        let mut variants = vec![("typed_v1", wire.clone())];
+        for (name, field, replacement) in [
+            ("future_version", "schema_version", serde_json::json!(2)),
+            (
+                "wrong_version_type",
+                "schema_version",
+                serde_json::json!("1"),
+            ),
+            (
+                "invalid_contract_digest",
+                "contract_digest",
+                serde_json::Value::Null,
+            ),
+            (
+                "invalid_destination_type",
+                "destination_id",
+                serde_json::json!(7),
+            ),
+            ("invalid_body_type", "body", serde_json::json!("opaque")),
+        ] {
+            let mut changed = value.clone();
+            changed[field] = replacement;
+            variants.push((
+                name,
+                serde_json::to_vec(&changed).expect("changed invocation"),
+            ));
+        }
+        for (name, field) in [
+            ("missing_version", "schema_version"),
+            ("missing_body", "body"),
+        ] {
+            let mut changed = value.clone();
+            changed.as_object_mut().expect("object").remove(field);
+            variants.push((
+                name,
+                serde_json::to_vec(&changed).expect("incomplete invocation"),
+            ));
+        }
+        let mut extra = value.clone();
+        extra["extra"] = serde_json::json!(true);
+        variants.push((
+            "unknown_field",
+            serde_json::to_vec(&extra).expect("extra field"),
+        ));
+        let encoded = String::from_utf8(wire).expect("JSON UTF-8");
+        variants.push((
+            "duplicate_field",
+            format!(r#"{{"body":[],{}"#, &encoded[1..]).into_bytes(),
+        ));
+        variants.push((
+            "truncated_after_skill_identity",
+            format!(
+                r#"{{"contract_digest":"{}","destination_id":"{}","body":["#,
+                contract.digest().expect("contract digest").as_str(),
+                contract.destination_id
+            )
+            .into_bytes(),
+        ));
+
+        for (name, wire) in variants {
+            let report_stage = |stage: &str| {
+                let _ = std::io::Write::write_fmt(
+                    &mut std::io::stderr().lock(),
+                    format_args!("[plain-host skill refusal] {name}: {stage}\n"),
+                );
+            };
+            report_stage("create fixture: begin");
+            let fixture = Fixture::new().await;
+            report_stage("create fixture: complete");
+            let now_ms = u64::try_from(
+                SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .expect("wall clock")
+                    .as_millis(),
+            )
+            .expect("millis");
+            let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
+            let mut intent = effect_intent(&scope);
+            intent.payload_digest = Sha256Digest::for_bytes(&wire);
+            report_stage("prepare effect: begin");
+            prepare_effect(&fixture, now_ms, &intent).await;
+            report_stage("prepare effect: complete");
+            report_stage("prepare mock and original run: begin");
+            let run_before = fixture
+                .store
+                .taskflow_run(&intent.run_id)
+                .await
+                .expect("run");
+            let server = MockServer::start().await;
+            let key = ProviderEffectKey::for_operation(
+                "provider/fixture-v1",
+                &intent.run_id,
+                &intent.step_id,
+            )
+            .expect("provider key");
+            Mock::given(method("POST")).and(path("/dispatch"))
+                .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                    "effect_key": key.as_str(),
+                    "payload_sha256": intent.payload_digest.as_str(),
+                    "provider_operation_id_sha256": Sha256Digest::for_bytes(b"unchecked-goal").as_str(),
+                    "status": "completed"
+                }))).expect(0).mount(&server).await;
+            report_stage("prepare mock and original run: complete");
+            report_stage("open host and read original authority: begin");
+            let (host, signer, host_file) = fixture.open_effect_host(&server, &scope);
+            let before_capacity = host.authority.capacity().expect("authority capacity");
+            let before_frontier = host.authority.frontier().expect("authority frontier");
+            let grant = signed_final_use(&intent, now_ms, &signer);
+            report_stage("open host and read original authority: complete");
+            report_stage("reject envelope: begin");
+            let result = host
+                .execute(
+                    &fixture.store,
+                    &intent,
+                    &wire,
+                    &grant,
+                    "agentd-product-effect-dispatch",
+                    now_ms + 5,
+                )
+                .await;
+            report_stage("reject envelope: complete");
+            report_stage("check retained authority and durable records: begin");
+            assert!(
+                matches!(result, Err(AgentdError::Invalid(ref reason))
+                    if reason == "action skill invocation requires a registered goal-checking host"),
+                "{name}: {result:?}"
+            );
+            assert_eq!(
+                host.authority.capacity().expect("capacity after rejection"),
+                before_capacity,
+                "{name}"
+            );
+            assert_eq!(
+                host.authority.frontier().expect("frontier after rejection"),
+                before_frontier,
+                "{name}"
+            );
+            assert_eq!(
+                fixture
+                    .store
+                    .taskflow_run(&intent.run_id)
+                    .await
+                    .expect("run after rejection"),
+                run_before,
+                "{name}"
+            );
+            assert_eq!(
+                fixture
+                    .store
+                    .authorized_taskflow_effect_attempt(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt
+                    )
+                    .await
+                    .expect("durable attempt"),
+                None,
+                "{name}"
+            );
+            assert_eq!(
+                fixture
+                    .store
+                    .read_authorized_taskflow_effect_receipt(
+                        &intent,
+                        "agentd-product-effect-dispatch"
+                    )
+                    .await
+                    .expect("terminal receipt"),
+                None,
+                "{name}"
+            );
+            assert_eq!(
+                server
+                    .received_requests()
+                    .await
+                    .expect("HTTP requests")
+                    .len(),
+                0,
+                "{name}"
+            );
+            report_stage("check retained authority and durable records: complete");
+            report_stage("verify no provider contact: begin");
+            server.verify().await;
+            report_stage("verify no provider contact: complete");
+            report_stage("drop and reopen original host: begin");
+            drop(host);
+            let reopened = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+                .expect("reopen original authority");
+            report_stage("drop and reopen original host: complete");
+            report_stage("check reopened authority: begin");
+            assert_eq!(
+                reopened.authority.capacity().expect("reopened capacity"),
+                before_capacity,
+                "{name}"
+            );
+            assert_eq!(
+                reopened.authority.frontier().expect("reopened frontier"),
+                before_frontier,
+                "{name}"
+            );
+            report_stage("check reopened authority: complete; leaving variant scope");
+        }
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr().lock(),
+            format_args!("[plain-host skill refusal] all variant scopes exited\n"),
+        );
     }
 }

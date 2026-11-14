@@ -1,0 +1,21 @@
+{
+  "schema": "pred1-experiment-v1",
+  "base_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "seeds": [101, 202, 303, 404, 505],
+  "selection_seeds": [11, 22, 33],
+  "train_episodes": 4096,
+  "dev_episodes": 512,
+  "confirm_episodes": 1024,
+  "history_length": 16,
+  "epochs": 30,
+  "batch_size": 128,
+  "target_parameters": 3000,
+  "learning_rate": 0.003,
+  "practical_utility_gain": 0.02,
+  "checkpoint_selection": "minimum development observed-label NLL",
+  "family_selection": "maximum development net utility among GRU, diagonal SSM, dual timescale using independent selection training seeds before evaluation training",
+  "primary_endpoint": "selected family minus single-step mean net utility including observed history, paired by independent training seed",
+  "utility": "P(success and T<=deadline and C<=remaining_budget) - 0.03 E[C+prefix_cost] - 0.005 E[T]",
+  "compute_comparison": "matched examples, optimizer opportunities, and approximately matched parameters; measured CPU is not forced equal",
+  "claim_scope": "controlled simulator; fixed preparation options of 0,2,5 ticks plus a terminal tool; all deterministic time/cost is included; no real tool or autoregressive rollout qualification"
+}

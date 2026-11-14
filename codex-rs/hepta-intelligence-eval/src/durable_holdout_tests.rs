@@ -171,6 +171,71 @@ fn consumption_survives_a_distinct_process() {
 }
 
 #[test]
+fn retired_owner_releases_lock_with_a_retained_open_description() {
+    let directory = Directory::new();
+    let mut store = directory.create();
+    store
+        .consume_single_host_trusted(store.anchor(), &plan("plan-1"))
+        .expect("record original holdout");
+    let anchor = store.anchor();
+    let inherited = store.file.try_clone().expect("retain open description");
+    drop(store);
+
+    let recovered =
+        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor);
+    drop(inherited);
+    let mut recovered = recovered.expect("retired owner released lock");
+    assert_eq!(recovered.anchor(), anchor);
+    assert_eq!(
+        recovered.consume_single_host_trusted(anchor, &plan("plan-2")),
+        Err(DurableHoldoutError::Semantic)
+    );
+    assert_eq!(
+        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor).err(),
+        Some(DurableHoldoutError::Busy),
+        "closing the old duplicate must not unlock the replacement owner"
+    );
+}
+
+#[test]
+fn failed_constructors_release_locks_with_retained_open_descriptions() {
+    enum Attempt {
+        Create,
+        Recover,
+    }
+    for attempt in [Attempt::Create, Attempt::Recover] {
+        let directory = Directory::new();
+        let store = directory.create();
+        let anchor = store.anchor();
+        drop(store);
+        let file = directory.file();
+        let inherited = file.try_clone().expect("retain open description");
+        let (rejected, expected) = match attempt {
+            Attempt::Create => (
+                DurableFinalHoldoutJournalV1::create(file, digest("binding")),
+                DurableHoldoutError::AlreadyInitialized,
+            ),
+            Attempt::Recover => (
+                DurableFinalHoldoutJournalV1::recover(file, digest("wrong-binding"), anchor),
+                DurableHoldoutError::Corrupt,
+            ),
+        };
+        assert_eq!(rejected.err(), Some(expected));
+        let recovered =
+            DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor);
+        drop(inherited);
+        let recovered = recovered.expect("failed constructor released lock");
+        assert_eq!(recovered.anchor(), anchor);
+        assert_eq!(
+            DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), anchor)
+                .err(),
+            Some(DurableHoldoutError::Busy),
+            "closing the old duplicate must not unlock the replacement owner"
+        );
+    }
+}
+
+#[test]
 fn independent_anchor_rejects_old_backup_and_partial_tail() {
     let directory = Directory::new();
     let mut store = directory.create();

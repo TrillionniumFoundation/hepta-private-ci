@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5433",
+    "number": 5433,
+    "state": "open",
+    "merged": false,
+    "mergeable": true,
+    "draft": true,
+    "body": "## 共同冻结候选 M6\n\n本 PR 发布真实合并后完成本地复验的单一源码候选，保持 draft。候选包含 S 与并行候选 H 的双亲合并及后续修复。不同提交上的历史通过数保留在各自原始证据中，不计入 M6 的受测分母。托管 CI 结果尚待读回；独立学习收益与生产采用均未成立。\n\n| 身份 | 精确值 |\n| --- | --- |\n| 发布／实际受测源码 M6 | `885dae0f3285267e9e9c49d8b43b0d009779f9e8` |\n| M6 tree | `293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb` |\n| 直接父提交 M5 | `953d548d25b1e050109b1b93e1ea474b2ac7c801` |\n| 固定比较基线 H | `81da60b349e32d89d0e4c4674a517a66af7e5eee` |\n| 共同合入 S | `693a013b254d07779f6f2b2a78d0ee31481f4ea9` |\n| 双亲合并 | `96d279e1c5f8ac06c40ae0d7562e665f4f2654fc`，父提交为 journal-lock 修复 K 与 H |\n| 完整归档 SHA256 | `dfc9484fc2dab61b37801e8197774a67365fb185fedc620a9b970e2f0e9d284e` |\n| 归档逐项完整性报告 SHA256 | `1719ad6f2ca599c23e1c229931a0e835ff12d35daae6c45f8f2d29fc124969ff` |\n\n完整归档 210,595,840 bytes，13,681 个 tracked 条目（13,680 普通文件、1 个符号链接）；逐项比较内容、Git mode 与链接目标。它是完整源码归档，不是离线运行镜像。原始证据将以 M6 的独立 evidence child 交付；该 child 不替代受测源码 M6。\n\n## 解决的问题与行为\n\n- 修复 inference journal owner 析构时未释放文件锁的问题，保留原生红→绿记录；没有推断原 CI 调度失败的完整成因。\n- 普通 ObjectiveStart 完成后写入有界、持久 learning outbox；按原 RunStart 与完整 Circuit history 补漏，通过具体 runtime adapter 提交或只读恢复，由经过认证的 completed NextUse 决定交付 ACK。256 个保留身份槽包含已 ACK 条目，容量满时显式失败。\n- 共同保留 S 的有界训练监督与 H 的观察策略、记忆模式和源码绑定。修复真实 fit_grid 每个 job 缺少 frozen source pins、较短预算未覆盖准入／启动／最终复验两处调用链，原始失败与修复分别留档。\n- 保留 H 的 Matrix 0.19.1 兼容依赖图，采用 S 已升级的真实 Smithy／loom 上游版本。Cargo 与 Bazel 锁文件一致；安全检查没有增加忽略项。\n- 接入固定图的真实仓库开发运行器：工具失败、修复、验证、受结果约束的一次私有记忆更新，以及后续进程读取。此次没有请求生产采用。\n- 保留完整 IME 状态提交修复；修复 Firefox 亚像素可视区域几何检查，仍验证原点、完整覆盖、物理像素边界、GL buffer、PNG 和语义证据。原 M4 失败与 M5／M6 通过分开记录。\n- 将此 source branch 纳入 Cell 原生 CI 的精确触发名单，纳入现有 13 项 MDV 控制，将训练监督／结果组合最低通过数纠正为实际 22。原 UI PR 工作流保留三个浏览器与 source-head／base-merge 两条独立 lane。\n- M6 最后一行修复处理 Rust 1.96 严格 Clippy 的 singleton Range 初始化，保持 `Vec<Range<usize>>` 语义，无 lint 豁免。\n\n相对 H 共 69 文件、8,707 行增加、251 行删除，其中包括已在 S 提交的资格记录；完整提交链保留每个开发阶段边界。\n\n## M6 实际本地验证\n\n| 范围 | 结果与分母 |\n| --- | --- |\n| infer-core lib | 41 pass，1 skipped |\n| 原有 history measurement 单独显式执行 | 1 pass，41 未选中 |\n| neuron perception source | 4 pass，197 未选中 |\n| automation 完整目标 | 163 pass，2 原有忽略的 ACT child 入口 |\n| agentd learning／circuit／objective 选定范围 | 68 pass，713 未选中 |\n| Matrix／network-proxy／execpolicy／AWS 合并范围 | 289 pass，2 skipped；AWS 5 项已在其中 |\n| 原 SDK 0.18 真实加密 fixture consumer | 1 pass，2 未选中 |\n| UI 原生 Rust | 33／33 |\n| Python（真实 Torch） | 91／91，零跳过，7 个进程 exit 0 |\n| JS | 16／16 |\n| Firefox default | 2／2；20／20 captures，46／46 checks |\n| Firefox fixtures（含完整 sidebar） | 3／3；26／26 captures，146／146 checks |\n| 格式／静态／锁文件 | fmt-check、4 包 scoped fix 后源码不变、4 包 strict Clippy、UI Rust 1.95 strict Clippy、Cargo locked offline、Bazel lock error gate 均 exit 0 |\n| 依赖规则 | cargo deny all-features 按原配置通过；原有 ignore 未改变，无新增豁免 |\n\n原生非 UI 选定测试合计 567 项通过，各分母如上；不能把未选中或原有跳过项说成通过。所有结果绑定 M6，实际命令、运行配置、源码前后状态、完整 stdout／stderr、失败和恢复记录保留。\n\nFirefox 两套是本地实际完成的浏览器范围。Chromium／WebKit 未在本地执行；原三引擎完整检查器仍为 false。托管 CI 必须按实际 checkout／head／tree 另行核实，不能由工作流存在推定成功。运行使用已声明的暖缓存；构建产物和测试输出均重新生成。\n\n真实旧 Matrix fixture 为原 SDK 0.18.0 生成的加密数据库／WAL／SHM，使用虚构测试数据。M6 从原始归档复制后校验全部字节，再经生产恢复路径验证旧会话、设备、游标、outbox、去重和 Olm／Megolm。没有复用已经迁移的旧轮次副本。\n\n## 成本与科学结论\n\n已知外层测量：M6 原生测试／lint 374.610666 秒，依赖检查 6.221059 秒，UI worker 251.981393 秒，Python 91 项 21.420149 秒；固定图开发链 worker 与独立封包两个不重叠区间共 10.012589 秒。内部 build／test／train 等阶段是嵌套值，不再次加总。不同主机有并发，不能将这些数相加冒充总历时。全链路 RPC／传输、峰值内存、能耗和金额仍有未测范围；历史失败／恢复成本另存。\n\n固定图开发链由 M6 驱动，但两个真实任务主体是已暴露的历史 R／S 开发材料：2 个任务、2 次尝试、1 个故障家族、1 次私有更新、后继任务 0 次更新；独立确认任务 0。后继进程读取了真实 checkpoint，强 BM25 的排名及所选文档没有改变，完整基线终局臂尚未运行。结论仍为 HOLD、learning_gain_established=false、production_not_adopted，formal adoption receipt 为 null。\n\nPRED-1 原 HOLD 保持。原确认集和已经使用的新确认集继续封存。新确认 16 seeds、6 arms、114 fits；主要效用增量 +0.01093896，低于 0.02 门槛，单侧精确检验 p=0.08126831，高于 0.05。seed 202 的训练／开发诊断未分离数据、初始化和 batch 的影响，不能声称已找到因果解释。没有继续用确认集调参。\n\nMEM-1、PRED-1、VERIFY-1、NDU、HCSN 下一轮均为 DRAFT_FOR_REVIEW、confirmation_admitted=false。真实任务清单与保管、标签／编码、训练接口、预算、功效和停止规则尚有冻结前置条件。Cell 分裂合并与改进器演化尚未启动。\n\n## 生产接入边界\n\n此次完成普通任务结果到持久交付／恢复的工程接缝。完整生产 CLI 的具体 Invocation／Input／InferenceReadback providers、合法 owner 组合与 broker 注册 protected frontier、真实 Generator／Evaluator／Selector／Observer 信任材料及 NextUse、自动 outbox worker 仍未闭合。持久 claim 后缺少 backend snapshot 的崩溃窗口保持 UNRESOLVED，不自动重放。不能据此宣布普通任务已完成生产学习与采用闭环。\n\n\n## 已发布证据索引\n\n证据 draft PR：[5435](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5435)。证据提交 9eed06417cbe6fdfd08ab769f4e015b8f174db5c（tree 5eb3d186db9e08144280e54fb2867788bc6fcd1e）的直接父提交为 M6；本 PR 的源码 head 仍是 M6。\n\n- [完整资格报告](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9eed06417cbe6fdfd08ab769f4e015b8f174db5c/qualification/cell-integrated-20261109-08b6/observations/README.zh-CN.md)\n- [机器结论与范围](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9eed06417cbe6fdfd08ab769f4e015b8f174db5c/qualification/cell-integrated-20261109-08b6/observations/QUALIFICATION.json)\n- [原始证据清单](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/9eed06417cbe6fdfd08ab769f4e015b8f174db5c/qualification/cell-integrated-20261109-08b6/observations/MANIFEST.json)\n\n证据包含历史失败、恢复与未知项。托管 CI 以报告中的实际观测时间和 checkout 身份为准；工程通过不改变学习 HOLD 或生产未采用。\n",
+    "title": "Cell: freeze integrated runtime and durable learning handoff",
+    "base": "engineering/cell-integrated-20261109-08b6-base-H",
+    "base_sha": "81da60b349e32d89d0e4c4674a517a66af7e5eee",
+    "head": "engineering/cell-integrated-20261109-08b6",
+    "head_sha": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "head_repo_id": 1320694176,
+    "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "merge_commit_sha": "1fd5f73489497b16fd4a44b4bc0bd40173de7343",
+    "user": {
+      "login": "ProfHepta",
+      "name": "ProfHepta",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "id": 102159240
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-09T05:10:34Z",
+    "updated_at": "2026-11-09T06:06:09Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 35,
+    "changed_files": 69,
+    "additions": 8707,
+    "deletions": 251,
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5433",
+    "display_title": "Cell: freeze integrated runtime and durable learning handoff"
+  },
+  "isError": false
+}

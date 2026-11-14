@@ -1,0 +1,115 @@
+{
+  "changes": [
+    {
+      "after_bytes": 8390,
+      "after_git_blob": "e1938112669ea6fe8373b6ed358931aced1dfee1",
+      "after_sha256": "afeb9ad8436631d6284f810d4dbc14ccce346988bb3c80bde267dd1643d176bf",
+      "before_git_blob": "ae0b152c62d28f338ca89fcd5322ef7ca12d9dbc",
+      "ops": [
+        {
+          "end": 146,
+          "new": "        if error.get_ref().is_some_and(<dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static>::is::<crate::root_generation_initial_client::RootGenerationInitialUncertain>)),\n",
+          "old": "        if error.get_ref().is_some_and(<(dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static)>::is::<crate::root_generation_initial_client::RootGenerationInitialUncertain>)),\n",
+          "start": 145
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs"
+    },
+    {
+      "after_bytes": 13125,
+      "after_git_blob": "c70be8c1b145f82e0ab089cf1bc04ded9a4fbce6",
+      "after_sha256": "e54c6f674f1d1ba94e8ba1ce3bb410352debf8f7437d7aeedbeff0c5aa7c68fd",
+      "before_git_blob": "14c31b49013eeb151fc04d2d13000af4d7bb3bb3",
+      "ops": [
+        {
+          "end": 206,
+          "new": "        if error.get_ref().is_some_and(<dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static>::is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>)),\n",
+          "old": "        if error.get_ref().is_some_and(<(dyn std::error::Error + std::marker::Send + std::marker::Sync + 'static)>::is::<crate::root_generation_current_client::RootGenerationPublicationUncertain>)),\n",
+          "start": 205
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs"
+    },
+    {
+      "after_bytes": 6978,
+      "after_git_blob": "9495b04e684c8162caa67e80e5e2840df4e1a837",
+      "after_sha256": "a26016d6067c6f02b9270cb9c875f0ad8191a638067f92b96c7b91fafcbef998",
+      "before_git_blob": "2a802e52f81c6cbda3b36b93a7855a8dc4e96f9f",
+      "ops": [
+        {
+          "end": 41,
+          "new": "            AgentdError::Invalid(\n                \"original late writer requires a complete production launch\".into(),\n            )\n",
+          "old": "            AgentdError::Invalid(\"original late writer requires a complete production launch\".into())\n",
+          "start": 40
+        },
+        {
+          "end": 48,
+          "new": "        let (bootstrap, root_pidfd, writer) =\n            crate::receive_root_production_writer_handoff(handoff, remaining(bootstrap_deadline)?)?;\n",
+          "old": "        let (bootstrap, root_pidfd, writer) = crate::receive_root_production_writer_handoff(\n            handoff,\n            remaining(bootstrap_deadline)?,\n        )?;\n",
+          "start": 44
+        },
+        {
+          "end": 54,
+          "new": "                crate::receive_root_learning_handoff(handoff, remaining(bootstrap_deadline)?)\n",
+          "old": "                crate::receive_root_learning_handoff(\n                    handoff,\n                    remaining(bootstrap_deadline)?,\n                )\n",
+          "start": 50
+        },
+        {
+          "end": 96,
+          "new": "        let mut config =\n            AgentdConfig::from_root_writer_handoff(&root, writer, std::env::current_dir()?)?\n                .with_root_bound_sockets(control, app_server)?;\n",
+          "old": "        let mut config = AgentdConfig::from_root_writer_handoff(\n            &root,\n            writer,\n            std::env::current_dir()?,\n        )?\n        .with_root_bound_sockets(control, app_server)?;\n",
+          "start": 90
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs"
+    },
+    {
+      "after_bytes": 5915,
+      "after_git_blob": "b9965d0e9a4f2ce5df7dec4494868fb56b91727f",
+      "after_sha256": "851e6c073b7a7e3b529fb478074a42d1fc2e0ccf87e28909ee17c1fc4d819254",
+      "before_git_blob": "638269b5c827d8d864b1f40b7ab4b7d964a0a178",
+      "ops": [
+        {
+          "end": 8,
+          "new": "use codex_hepta_contracts::AgentId;\n",
+          "old": "",
+          "start": 8
+        },
+        {
+          "end": 10,
+          "new": "",
+          "old": "use codex_hepta_contracts::AgentId;\n",
+          "start": 9
+        },
+        {
+          "end": 47,
+          "new": "        let deadline = clock.tv_sec as u64 * 1_000_000_000 + clock.tv_nsec as u64 + 10_000_000_000;\n",
+          "old": "        let deadline =\n            clock.tv_sec as u64 * 1_000_000_000 + clock.tv_nsec as u64 + 10_000_000_000;\n",
+          "start": 45
+        },
+        {
+          "end": 54,
+          "new": "            (\n                \"--root-production-handoff-fd\",\n                self.descriptors[0].as_raw_fd().to_string(),\n            ),\n",
+          "old": "            (\"--root-production-handoff-fd\", self.descriptors[0].as_raw_fd().to_string()),\n",
+          "start": 53
+        },
+        {
+          "end": 61,
+          "new": "            (\n                \"--root-production-control-fd\",\n                self.descriptors[1].as_raw_fd().to_string(),\n            ),\n            (\n                \"--root-production-app-server-fd\",\n                self.descriptors[2].as_raw_fd().to_string(),\n            ),\n            (\n                \"--android-runtime-server\",\n                \"original-component-server\".to_string(),\n            ),\n            (\n                \"--android-runtime-environment\",\n                \"original-component-environment\".to_string(),\n            ),\n            (\n                \"--android-original-payload-fd\",\n                self.descriptors[3].as_raw_fd().to_string(),\n            ),\n",
+          "old": "            (\"--root-production-control-fd\", self.descriptors[1].as_raw_fd().to_string()),\n            (\"--root-production-app-server-fd\", self.descriptors[2].as_raw_fd().to_string()),\n            (\"--android-runtime-server\", \"original-component-server\".to_string()),\n            (\"--android-runtime-environment\", \"original-component-environment\".to_string()),\n            (\"--android-original-payload-fd\", self.descriptors[3].as_raw_fd().to_string()),\n",
+          "start": 56
+        },
+        {
+          "end": 106,
+          "new": "        let result =\n            AgentdProductionLaunch::receive_original_late_writer(arguments, &expected).await;\n",
+          "old": "        let result = AgentdProductionLaunch::receive_original_late_writer(arguments, &expected).await;\n",
+          "start": 105
+        }
+      ],
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs"
+    }
+  ],
+  "mechanism": "Exact native maintenance postimages; compilation state recorded separately; no behavior qualification",
+  "source_sha": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "source_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd"
+}

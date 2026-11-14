@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.source-custody-volumes.v1",
+  "source_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "original_directory": "library-recovery/model-forward-and-diverse60-20261103",
+  "member_count": 4,
+  "member_bytes": 21069,
+  "source_executed": false,
+  "scientific_or_runtime_qualification": false,
+  "members": [
+    {
+      "path": "library-recovery/model-forward-and-diverse60-20261103/REPRODUCIBILITY.md",
+      "member": "REPRODUCIBILITY.md",
+      "mode": "100644",
+      "bytes": 2874,
+      "sha256": "4b9851ffca9d65389e6da8d8559930704b1bd7f7795ec201792def2ebb167e7d",
+      "oid": "6f623c505362403fed1e4cdeaa78fa82a51a5b92",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/model-forward-and-diverse60-20261103/source/audit_hepta_diverse60.py",
+      "member": "source/audit_hepta_diverse60.py",
+      "mode": "100644",
+      "bytes": 11497,
+      "sha256": "25fd4363c31e2183dcb5c8d169629cdd27da64238d0741c594c1922584d0d1d5",
+      "oid": "fa9d46643ff8d507ee465306f04363629bad40e6",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/model-forward-and-diverse60-20261103/source/encoder_meter.py",
+      "member": "source/encoder_meter.py",
+      "mode": "100644",
+      "bytes": 4174,
+      "sha256": "806b5b1b369b80f9a62faef627b17764810d6fa2f095654b3463abff645bd78e",
+      "oid": "db9f74fd6b3a8b3ae83e634d4a089a060fc0ff98",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/model-forward-and-diverse60-20261103/test_encoder_meter_smoke.py",
+      "member": "test_encoder_meter_smoke.py",
+      "mode": "100644",
+      "bytes": 2524,
+      "sha256": "a278e41748b53d9781a62c6a26b542fdeae65823d1ae2f61ea4896ea54bbee93",
+      "oid": "de235b6cf4f66e0fe0753c89dc151cd222f800be",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    }
+  ],
+  "volumes": [
+    {
+      "path": "source-custody-001.tar.gz",
+      "bytes": 7161,
+      "sha256": "4451da19a3e82d69764f942bb75bab4d8495e321a91b3471c7658fe38bc03159",
+      "tar_bytes": 30720,
+      "tar_sha256": "9aa0857840e8b95fbe217e5ed5e4f172ac79f042931e36e03008039eb7d6641f",
+      "member_count": 4,
+      "member_bytes": 21069
+    }
+  ]
+}

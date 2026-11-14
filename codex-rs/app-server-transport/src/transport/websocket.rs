@@ -39,6 +39,7 @@ use tokio::sync::mpsc;
 use tokio::task::JoinHandle;
 use tokio_tungstenite::tungstenite::Message as TungsteniteWebSocketMessage;
 use tokio_util::sync::CancellationToken;
+use tokio_util::task::AbortOnDropHandle;
 use tracing::error;
 use tracing::info;
 use tracing::warn;
@@ -183,6 +184,7 @@ pub(crate) async fn run_websocket_connection<M, SinkError, StreamError>(
         mpsc::channel::<QueuedOutgoingMessage>(WEBSOCKET_OUTBOUND_CHANNEL_CAPACITY);
     let writer_tx_for_reader = writer_tx.clone();
     let disconnect_token = CancellationToken::new();
+    let _disconnect_on_drop = disconnect_token.clone().drop_guard();
     if transport_event_tx
         .send(TransportEvent::ConnectionOpened {
             connection_id,
@@ -197,20 +199,20 @@ pub(crate) async fn run_websocket_connection<M, SinkError, StreamError>(
     }
 
     let (writer_control_tx, writer_control_rx) = mpsc::channel::<M>(CHANNEL_CAPACITY);
-    let mut outbound_task = tokio::spawn(run_websocket_outbound_loop(
+    let mut outbound_task = AbortOnDropHandle::new(tokio::spawn(run_websocket_outbound_loop(
         websocket_writer,
         writer_rx,
         writer_control_rx,
         disconnect_token.clone(),
-    ));
-    let mut inbound_task = tokio::spawn(run_websocket_inbound_loop(
+    )));
+    let mut inbound_task = AbortOnDropHandle::new(tokio::spawn(run_websocket_inbound_loop(
         websocket_reader,
         transport_event_tx.clone(),
         writer_tx_for_reader,
         writer_control_tx,
         connection_id,
         disconnect_token.clone(),
-    ));
+    )));
 
     tokio::select! {
         _ = &mut outbound_task => {

@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.vendor.repository-formatting.v1",
+  "package_directory": "codex-rs/third_party/i18n-config-0.4.8",
+  "formatting_input_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2",
+  "kind": "repository Rust formatting",
+  "source_files": [
+    {
+      "path": "src/lib.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "09d68d08f2f888797692546f55786ea8e0c2ac09",
+        "sha256": "60f6bf0687e5e277aa7c79f3903ef93aa85c1bcc52a87f4d7ceb217597ddd7d3",
+        "bytes": 14747
+      },
+      "after": {
+        "oid": "b88a8213e7454f393eb1739b766fc36d7e7d518e",
+        "sha256": "71ebfc1fa810ab942933a862c622b5fe2c2326d225bd65ba252a60f464aed69c",
+        "bytes": 14763
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/parser_tests.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "e4e03018f94895d55471808a189ee542f95985e1",
+        "sha256": "2e0128c055bad68e3139e4960366c1693b06eef4cb9f69d0b9088071c6bff7a9",
+        "bytes": 3217
+      },
+      "after": {
+        "oid": "6beec6513f772c914f8af706cbe5f691aab729f4",
+        "sha256": "651c32b0078725aa81d8724636cfe2be391de8bf605f082ce750db47d6e3ed20",
+        "bytes": 3287
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    }
+  ],
+  "source_file_count": 2,
+  "original_control_records": [
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+      "mode": "100644",
+      "oid": "b1fe9112984cef5162442aa648b05cf6a905fc56",
+      "size": 1568,
+      "sha256": "9d91bb5ffcdef3fe9e76b3ba1b014acc87381f9a0d91e7a0aa2b75df44e2e477"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/HEPTA.md",
+      "mode": "100644",
+      "oid": "d7f03ea77286aca33c57e1b4b01bda801554f297",
+      "size": 1893,
+      "sha256": "ef3fc481738faaa2eedf71a2a7e9fe53cb804b157961ecdfc603d71ec9531e85"
+    },
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/README.md",
+      "mode": "100644",
+      "oid": "a77ab24b7edc6bf7f0667682ff94fda4002448b4",
+      "size": 796,
+      "sha256": "bdadc28dd4a62f5b8c7c4c759c7b3cf2b33181700563c3083f8515f1638c12f2"
+    }
+  ],
+  "preserved_license_files": [
+    {
+      "path": "codex-rs/third_party/i18n-config-0.4.8/LICENSE.txt",
+      "mode": "100644",
+      "oid": "2c0f002f6e181479139353c3f2e5b9c61e05b6c3",
+      "bytes": 1072,
+      "sha256": "a1d2bd09632724b23c62b05e2fd0dc26c5c9d21b409594cf7da1a1aba555f802"
+    }
+  ],
+  "formatter": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "732e934ba496d90fbe042b8d41d479ef901643e5"
+    ],
+    "original_command_checkout": "fcff463449abc987a8552b29102cd3e196214b99",
+    "input_files_equal_at_c213": true,
+    "rust_toolchain": "1.96.0",
+    "configuration": [
+      {
+        "path": "codex-rs/rustfmt.toml",
+        "oid": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "oid": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": "scripts/format.py",
+        "oid": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "justfile",
+        "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      }
+    ],
+    "original_run_receipt_sha256": "c42cc5dfd146c96d9138dc8ead8e89ece58a849a69f9022389a7122606fc6ec2",
+    "original_changed_path_manifest_sha256": "b362d3ceecdfb901241b0469e078cf462f42db0eb65c49789df97d8e81375046",
+    "original_full_command_exit": 1,
+    "original_full_command_failure": "A separate historical source archive lacked its Rust edition context; this is not a full-repository formatting-pass receipt."
+  },
+  "review": {
+    "import_targets_aliases_visibility_and_attached_attributes_equal": true,
+    "comments_byte_equal": true,
+    "non_import_literals_equal": true,
+    "remaining_changes": "Trailing commas, single-expression closure/match block layout, return semicolons, and same-order adjacent derive grouping as emitted by rustfmt.",
+    "method": "Exact Git/SHA/mode checks and complete normalized changed-token classification; not a compiler AST equivalence proof or a new whole-package functional audit.",
+    "runtime_tests_run_for_this_formatting_change": false,
+    "new_runtime_or_scientific_qualification": false
+  },
+  "dependencies_and_features_changed_by_this_formatting_change": false,
+  "minimal_dependency_patch_files_rewritten": false,
+  "license_or_upstream_readme_files_rewritten": false
+}

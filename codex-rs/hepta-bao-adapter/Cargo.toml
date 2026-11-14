@@ -25,6 +25,9 @@ thiserror = { workspace = true }
 url = { workspace = true }
 zeroize = { workspace = true, features = ["serde"] }
 
+[target.'cfg(windows)'.dependencies]
+codex-utils-path = { workspace = true }
+
 [dev-dependencies]
 ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }

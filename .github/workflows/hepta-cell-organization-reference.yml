@@ -1,0 +1,100 @@
+name: Hepta ORG-1 reference
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: ["research/cell-org1-*"]
+    paths:
+      - "scripts/ndu_real_runtime/**"
+      - ".github/workflows/hepta-cell-organization-reference.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-org1-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Bind a fresh artifact directory
+        run: printf '%s\n' "ORG1_OUTPUT=$RUNNER_TEMP/org1-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+
+      - name: Check out exact source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: scripts/ndu_real_runtime
+
+      - name: Record exact source before execution
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          root = Path(os.environ["ORG1_OUTPUT"])
+          root.mkdir(parents=True, exist_ok=False)
+          identity = {"commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+                      "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip()}
+          assert identity["commit"] == os.environ["GITHUB_SHA"]
+          (root / "CI_SOURCE.json").write_text(json.dumps(identity, indent=2) + "\n")
+          PY
+
+      - name: Run organization and existing evidence regressions
+        run: |
+          python3 -m unittest \
+            scripts.ndu_real_runtime.test_organization_policy \
+            scripts.ndu_real_runtime.test_causal_topology \
+            scripts.ndu_real_runtime.test_causal_protocol -v
+
+      - name: Execute all structural reference operations
+        run: |
+          python3 -m scripts.ndu_real_runtime.organization_reference --operation split --output "$ORG1_OUTPUT/split"
+          python3 -m scripts.ndu_real_runtime.organization_reference --operation merge --output "$ORG1_OUTPUT/merge"
+          python3 -m scripts.ndu_real_runtime.organization_reference --operation rewire --output "$ORG1_OUTPUT/rewire"
+
+      - name: Check engineering results and preserve scientific HOLD
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from scripts.ndu_real_runtime import organization_reference
+          from scripts.ndu_real_runtime.organization_reference_artifacts import source_identity
+          root = Path(os.environ["ORG1_OUTPUT"])
+          source = source_identity(organization_reference.__file__)
+          for operation in ("split", "merge", "rewire"):
+              directory = root / operation
+              engineering = json.loads((directory / "ENGINEERING.json").read_text())
+              review = json.loads((directory / "REVIEW.json").read_text())
+              assert engineering["operation"] == operation
+              assert engineering["source_sha256"] == source["sha256"]
+              assert review["status"] == "HOLD" and review["decision"] == "NoUpdate"
+              assert review["scientific_acceptance"] == "HOLD"
+              assert review["observed_pairs"] == review["planned_pairs"] == 33
+              assert review["proposal_trigger_supported"]
+              assert all(r == "TOPOLOGY_EVIDENCE_BLOCKED" or r == "NET_GAIN_UNRESOLVED" or r.startswith("UNKNOWN_COST:") for r in review["reasons"])
+              assert not any(review[k] for k in ("benefit_proven", "adoption_authorized", "runtime_authority", "full_physical_cost_known"))
+              for arm in engineering["arms"].values():
+                  assert arm["key_values_preserved_at_install"] and arm["unique_key_owners"]
+                  assert arm["rollback_exact_bytes"]
+                  assert arm["completed_pairs"] == review["planned_pairs"]
+                  assert arm["score_sum"] == arm["completed_pairs"]
+          PY
+
+      - name: Preserve original reference artifacts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: org1-reference-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ env.ORG1_OUTPUT }}
+          if-no-files-found: error
+          retention-days: 30

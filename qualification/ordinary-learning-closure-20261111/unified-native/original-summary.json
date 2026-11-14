@@ -1,0 +1,346 @@
+{
+  "schema": "hepta.ordinary.unified.native.v1",
+  "phase": "complete",
+  "initial_local": {
+    "commit": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+    "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+    "worktree": ""
+  },
+  "original_after": {
+    "commit": "bc8ac0dc25c621959b7be52280bcfed70b52bb07",
+    "tree": "f0f85fcccf7c51e4d6ae46a252bf785bcaa66f61",
+    "worktree": ""
+  },
+  "before": {
+    "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "worktree": ""
+  },
+  "after": {
+    "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "worktree": ""
+  },
+  "exact_published_commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+  "parents": [
+    "5dcec722472eab39064416d50bf4c4bb7b96b361"
+  ],
+  "source_sha": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+  "tested_sha": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+  "exit": 0,
+  "gates": {
+    "fmt-before": {
+      "command": [
+        "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "fmt",
+        "--base",
+        "08f963973e02e0f74e499c962635518965f4f68a"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.7476706504821777,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fmt-before.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    "fix-agentd": {
+      "command": [
+        "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 68.98168873786926,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fix-agentd.log",
+      "log_bytes": 18768,
+      "log_sha256": "2a66b4cca676940f7d10a117a556acb10e6f008ce4c1f44aac5cb9fd639b335a",
+      "result_lines": []
+    },
+    "fix-artifacts": {
+      "command": [
+        "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "fix",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.958256244659424,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fix-artifacts.log",
+      "log_bytes": 904,
+      "log_sha256": "e4bbbd6dc4cc6a63be2bf59523d850ea024beb657acded54b7f9500a9a8e06e1",
+      "result_lines": []
+    },
+    "fmt-after": {
+      "command": [
+        "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "fmt",
+        "--base",
+        "08f963973e02e0f74e499c962635518965f4f68a"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.3772470951080322,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-fmt-after.log",
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "result_lines": []
+    },
+    "helper-build": {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 60.168962240219116,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helper-build.log",
+      "log_bytes": 184,
+      "log_sha256": "e6563f4177defde15d574b4c9cf5d01339dc5effd21c63c40bf8b51e3e1c4e77",
+      "result_lines": []
+    },
+    "helper-verify-before": {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers",
+        "--verify-only"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.19271612167358398,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helper-verify-before.log",
+      "log_bytes": 1096,
+      "log_sha256": "34b7200f2646b0b55223b17695943512d450d754a110f3b27786fd3d9e77c091",
+      "result_lines": []
+    },
+    "focused-dataset": {
+      "command": [
+        "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-E",
+        "test(q24_dataset_)"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 82.6712760925293,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-focused-dataset.log",
+      "log_bytes": 32142,
+      "log_sha256": "d949f611553d7e4d79dccbcd5fa7d69c76d2bfac5f7c3038dc9834288570d282",
+      "result_lines": [
+        "     Summary [  12.141s] 4 tests run: 4 passed, 985 skipped"
+      ]
+    },
+    "full-agentd": {
+      "command": [
+        "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 45.16554021835327,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-full-agentd.log",
+      "log_bytes": 173698,
+      "log_sha256": "4dd763d2d6291d687327cee852e76700427e20cdeb78e3c7cd0cdf08ec63d278",
+      "result_lines": [
+        "     Summary [  43.361s] 918 tests run: 918 passed (1 slow), 71 skipped"
+      ]
+    },
+    "full-artifacts": {
+      "command": [
+        "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "test",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--lib",
+        "--locked",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.1141037940979004,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-full-artifacts.log",
+      "log_bytes": 18407,
+      "log_sha256": "4d239d72e5fa5d5309ad4e3f934fb6020cf82485fb9be7d8ef77af9b69561e18",
+      "result_lines": [
+        "     Summary [   0.377s] 123 tests run: 123 passed, 1 skipped"
+      ]
+    },
+    "helper-verify-after": {
+      "command": [
+        "/usr/bin/python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers",
+        "--verify-only"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.08260798454284668,
+      "before": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "after": {
+        "commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+        "tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+        "worktree": ""
+      },
+      "source_unchanged": true,
+      "log": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helper-verify-after.log",
+      "log_bytes": 1096,
+      "log_sha256": "34b7200f2646b0b55223b17695943512d450d754a110f3b27786fd3d9e77c091",
+      "result_lines": []
+    }
+  },
+  "all_requested_gates_completed": true,
+  "source_unchanged": true,
+  "original_unchanged": true,
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "target": "/home/qq/af52-learning-20261111/target",
+  "bindgen_args": "-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+  "helper_manifest": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/manifest.json",
+  "helper_manifest_sha256": "5f30c91ed104f494516b5fff18f12b3005e1d55efd32464e0ebbdd52cdf5ace7",
+  "helper_artifacts": {
+    "hepta-joint-propose": {
+      "package": "codex-hepta-infer-worker-host",
+      "package_id": "path+file:///home/qq/af52-learning-20261111/native-97a1/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "compiler_executable": "/home/qq/af52-learning-20261111/target/debug/hepta-joint-propose",
+      "executable": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/bin/hepta-joint-propose",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 1,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "71bff16418b740b22c3252fb157278f3aaa3c1d38b9922bb3b4e8e1fe13fcfe0",
+      "bytes": 6680632
+    }
+  },
+  "helper_environment": {
+    "CARGO_BIN_EXE_hepta-joint-propose": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/bin/hepta-joint-propose",
+    "CARGO_BIN_EXE_hepta_joint_propose": "/home/qq/af52-learning-20261111/ordinary-unified-native-v3-helpers/bin/hepta-joint-propose"
+  },
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "root_uid0_gate": "not run",
+  "scope": "Native library component regressions for the exact unified source; not ordinary full-loop qualification"
+}

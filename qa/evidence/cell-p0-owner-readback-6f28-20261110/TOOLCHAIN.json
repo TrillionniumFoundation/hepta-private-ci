@@ -1,0 +1,17 @@
+{
+  "toolchain": "Rust 1.96.0",
+  "rust_manifest_url": "https://static.rust-lang.org/dist/channel-rust-1.96.0.toml",
+  "rust_manifest_sha256": "9af50610e1d82699f78a40b985c9277ae1a2c5a0bec86ae430cfe58832038285",
+  "rustfmt_archive_sha256": "9754ab68f1b8871f8a714548f66d8d44e91f6d904505882945b27e6e3eeb08e2",
+  "clippy_archive_sha256": "9b0b89c67d5ce8195e1c8733587a63e326353fdda65f62455a64fa03e25659f2",
+  "nextest_release": "https://github.com/nextest-rs/nextest/releases/tag/cargo-nextest-0.9.103",
+  "nextest_archive_sha256": "b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036",
+  "archive_hash_validation": "Nextest matches GitHub release API asset.digest; Rust components match the official Rust 1.96.0 manifest xz_hash.",
+  "local_environment": {
+    "PATH_prefix": "/workspace/scratch/6f28065d17b5/owner-tools:/workspace/scratch/4d2e4721a646/rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/workspace/scratch/1f3ba4601505/tools/just-1.51.0",
+    "CARGO_HOME": "/workspace/scratch/6f28065d17b5/owner-cargo",
+    "CARGO_TARGET_DIR": "/workspace/scratch/6f28065d17b5/owner-target",
+    "LD_LIBRARY_PATH_prefix": "/workspace/scratch/4d2e4721a646/rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib"
+  },
+  "proxy_tls_and_network_policy": "Inherited unchanged; public official sources fetched through the normal configured proxy with TLS verification."
+}

@@ -1,0 +1,222 @@
+{
+  "artifacts": [
+    {
+      "bytes": 196687,
+      "downloaded_and_read": true,
+      "id": 13627946968,
+      "name": "stem-cell-probe-9e3cab866aa6202b99e9546f2c3c52137cc58c86-1",
+      "path": "python-tests/python-probe.zip",
+      "sha256": "88b7facd9296a40ec8819fa47a92967b3ed282b2cf334a7ce230575dfb0d2051",
+      "workflow": "python-tests"
+    },
+    {
+      "bytes": 3807,
+      "downloaded_and_read": true,
+      "id": 13628146166,
+      "name": "cell-local-update-9e3cab866aa6202b99e9546f2c3c52137cc58c86-1",
+      "path": "native-tests/native-junit.zip",
+      "sha256": "70ed41add6e6016dc934d0f120e106c07af5a08eac128dd7ec175818157bb999",
+      "workflow": "native-tests"
+    },
+    {
+      "bytes": 269113,
+      "downloaded_and_read": true,
+      "id": 13628062044,
+      "name": "hepta-stem-maintenance-9e3cab866aa6202b99e9546f2c3c52137cc58c86-1",
+      "path": "maintenance/artifact.zip",
+      "sha256": "ea3ec954eaf8bf2a533095c9039245673a54b70e26b83f5cab67fb4aad5509b3",
+      "workflow": "maintenance"
+    }
+  ],
+  "boundaries": [
+    "The three workflows tested source commit 9e3cab866aa6202b99e9546f2c3c52137cc58c86; these records do not claim the later formatted tree was the identical tested tree.",
+    "The two CI probes repeated the same three seeds and two kernels; twelve fit executions do not mean twelve independent seed conditions.",
+    "Raw logs, ZIP bytes, source-before and source-after records are preserved; artifacts were downloaded and read, not inferred from metadata.",
+    "The parent applied and reviewed the maintenance patch separately. The evidence collectors did not apply a patch, rerun tests, or trigger a new workflow."
+  ],
+  "engineering_probes": {
+    "completed_fit_executions": 12,
+    "distinct_seed_kernel_pairs": 6,
+    "distinct_seeds": [
+      41,
+      67,
+      89
+    ],
+    "energy_joules": null,
+    "executions": 2,
+    "fits_per_execution": 6,
+    "hcsn_formal_fits": 0,
+    "kernels": [
+      "gru",
+      "diag_ssm"
+    ],
+    "llm_vlm_serving_measured": false,
+    "prior_local_probe_fits_included_in_fit_count": false,
+    "production_qualified": false,
+    "protocol_digest": "c9789027c6d8fe6781e144f2a9baa5c1b00c6f024852acd4f14776834fb4554b",
+    "same_fixed_protocol_repeated": true,
+    "scientific_winner_selected": false,
+    "source_manifest_digest": "75ca760f624326039a164488cf7e5113e1ecd2576c18596cb5616d8f3138d7b2",
+    "source_manifest_same_across_both_ci_probes": true,
+    "unit_test_training_fixtures_included_in_fit_count": false,
+    "updates_per_fit": 40
+  },
+  "frozen": true,
+  "frozen_at_utc": "2026-11-08T18:04:10.967814+00:00",
+  "maintenance_evidence": {
+    "changed_paths": [
+      "codex-rs/hepta-learning-artifacts/src/cell_implementation_tests.rs",
+      "codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "scripts/hepta_cells/bundle.py",
+      "scripts/hepta_cells/component_types.py",
+      "scripts/hepta_cells/deterministic.py",
+      "scripts/hepta_cells/lifecycle.py",
+      "scripts/hepta_cells/mlx_provider.py",
+      "scripts/hepta_cells/semantic.py",
+      "scripts/hepta_cells/semantic_component.py",
+      "scripts/hepta_cells/temporal.py",
+      "scripts/hepta_cells/temporal_component.py",
+      "scripts/qualify_hepta_cells.py",
+      "scripts/qualify_hepta_semantic_serving.py",
+      "scripts/test_hepta_cells_bundle.py",
+      "scripts/test_hepta_cells_composition.py",
+      "scripts/test_hepta_cells_lifecycle.py",
+      "scripts/test_hepta_cells_semantic.py",
+      "scripts/test_hepta_cells_temporal.py",
+      "scripts/test_hepta_cells_temporal_component.py"
+    ],
+    "mechanical_import_identity_check": "success",
+    "patch": "maintenance/extracted/_temp/cell-maintenance/formatted.patch",
+    "patch_applied_by_evidence_collector": false,
+    "patch_bytes": 292961,
+    "patch_sha256": "329c0265580427f7e35cfab4aa67adf9c269453f6712f96bd53abc983eef91c3",
+    "source_after": "maintenance/extracted/_temp/cell-maintenance/source-after.json",
+    "source_before": "maintenance/extracted/_temp/cell-maintenance/source-before.json",
+    "tests_run_after_maintenance_within_maintenance_job": false
+  },
+  "parent_application": {
+    "all_after_hashes_match": true,
+    "branch_ref_not_yet_moved_at_parent_report": true,
+    "original_imports_unchanged": true,
+    "python_ast_unchanged_files": 17,
+    "receipt": "../maintenance-application/result.json",
+    "receipt_sha256": "4a0ef9ef1b8c99d3a6270f49266aa689a8d9a17f2d2843f9099211743462a709",
+    "status": "applied_reviewed_mechanical_patch",
+    "style_commit_is_not_the_tested_head": true,
+    "style_commit_reported_by_parent": "b67016d8c44885afdf0df2507d214b02b141744e"
+  },
+  "raw_job_logs": [
+    {
+      "bytes": 39388,
+      "path": "python-tests/job.log",
+      "sha256": "d96f13686f70bb9ecefaffb29dfbad676a453d8f64d97d7d0e48af5984eb3ca5",
+      "workflow": "python-tests"
+    },
+    {
+      "bytes": 56880,
+      "path": "native-tests/job.log",
+      "sha256": "5996eedbae374a0099c78d2c81c06e8a2088687d0ea345393678c57b2ace9a23",
+      "workflow": "native-tests"
+    },
+    {
+      "bytes": 117314,
+      "path": "maintenance/job.log",
+      "sha256": "ad2b922a447d89ce73ccf3a1cd1058521999f9129190cecb38b8df9902bdfd13",
+      "workflow": "maintenance"
+    }
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.stem-cell.premaintenance-ci.v1",
+  "status": "all_three_push_workflows_passed",
+  "test_count_interpretation": {
+    "counts_are_reported_per_workflow_not_as_additional_unique_cases": true,
+    "ignored_native_worker": "owner_host::tests::owner_host_process_fault_worker",
+    "ignored_worker_count_per_native_run": 1,
+    "native_executed_unique_cases": 111,
+    "native_executions_of_that_suite": 2,
+    "python_executions_of_that_suite": 2,
+    "python_unique_cases": 49
+  },
+  "tested_head_sha": "9e3cab866aa6202b99e9546f2c3c52137cc58c86",
+  "tested_tree_sha": "812524cce73a601c09a27e4dbbf50a86b7c03d76",
+  "workflows": [
+    {
+      "conclusion": "success",
+      "engineering_probe_fits": 6,
+      "event": "push",
+      "job_id": 128812389719,
+      "name": "Hepta stem Cell routes",
+      "python_tests": {
+        "errors": 0,
+        "failed": 0,
+        "passed": 49,
+        "seconds": 0.406,
+        "skipped": 0,
+        "tests": 49
+      },
+      "run_id": 42507234997,
+      "summary_path": "python-tests/summary.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42507234997"
+    },
+    {
+      "conclusion": "success",
+      "engineering_probe_fits": 0,
+      "event": "push",
+      "job_id": 128812389830,
+      "name": "Hepta Cell local update contracts",
+      "native_tests": {
+        "errors": 0,
+        "failed": 0,
+        "junit_path": "extracted/junit.xml",
+        "junit_sha256": "0deae42c7721b72dfb1bd7dd1856559939ff1cdbbda33ece8f65dd6ea1daadc6",
+        "junit_skipped_elements": 0,
+        "junit_testcases": 111,
+        "log_and_junit_passed_case_sets_match": true,
+        "passed": 111,
+        "seconds": 2.944,
+        "skipped": 1,
+        "skipped_case": "owner_host::tests::owner_host_process_fault_worker",
+        "skipped_case_evidence": "skipped-test-source.json",
+        "tests_run": 111
+      },
+      "run_id": 42507234988,
+      "summary_path": "native-tests/summary.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42507234988"
+    },
+    {
+      "conclusion": "success",
+      "engineering_probe_fits": 6,
+      "event": "push",
+      "job_id": 128812389618,
+      "maintenance_outcomes": {
+        "fix": "success",
+        "format": "success",
+        "import_identity": "success",
+        "native_tests": "success",
+        "probe": "success",
+        "python_tests": "success"
+      },
+      "name": "Hepta stem Cell final tests and maintenance",
+      "native_tests": {
+        "junit_cases": 111,
+        "junit_errors": 0,
+        "junit_failures": 0,
+        "log_and_junit_case_sets_equal": true,
+        "passed": 111,
+        "seconds": 0.857,
+        "skip_source_blob_unchanged": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b",
+        "skip_source_evidence": "../../native-initial/skipped-test.json",
+        "skipped": 1,
+        "skipped_case": "owner_host::tests::owner_host_process_fault_worker"
+      },
+      "python_tests": {
+        "count": 49,
+        "ok": true,
+        "seconds": 0.402
+      },
+      "run_id": 42507235044,
+      "summary_path": "maintenance/summary.json",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42507235044"
+    }
+  ]
+}

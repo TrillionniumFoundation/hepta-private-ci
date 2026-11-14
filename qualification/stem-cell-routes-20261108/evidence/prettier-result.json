@@ -1,0 +1,96 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/bin/node",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/tool/package/bin/prettier.cjs",
+        "--config",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/configuration/.prettierrc.toml",
+        "--no-editorconfig",
+        "--ignore-path",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/configuration/.prettierignore",
+        "--write",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/formatted/.github/workflows/hepta-cell-local-update.yml",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/formatted/.github/workflows/hepta-stem-cell-maintenance.yml",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/formatted/.github/workflows/hepta-stem-cell-routes.yml"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ".github/workflows/hepta-cell-local-update.yml 10ms (unchanged)\n.github/workflows/hepta-stem-cell-maintenance.yml 5ms (unchanged)\n.github/workflows/hepta-stem-cell-routes.yml 2ms (unchanged)\n"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/node",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/tool/package/bin/prettier.cjs",
+        "--config",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/configuration/.prettierrc.toml",
+        "--no-editorconfig",
+        "--ignore-path",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/configuration/.prettierignore",
+        "--check",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/formatted/.github/workflows/hepta-cell-local-update.yml",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/formatted/.github/workflows/hepta-stem-cell-maintenance.yml",
+        "/Users/qianqi/work/cell-stem-routes-20261108-5e692/prettier/formatted/.github/workflows/hepta-stem-cell-routes.yml"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n"
+    }
+  ],
+  "config": {
+    "editorconfig": false,
+    "git_blob": "4c58c583e5fa327928190f625a1095a9c4d9e72f",
+    "ignore_file": "empty; explicitly selected three workflow files",
+    "sha256": "7b0bd68d96ff06518f3943f9e0acc5c10eb9ebd21dee86e65c86e4c67599a09d"
+  },
+  "files": {
+    ".github/workflows/hepta-cell-local-update.yml": {
+      "after_bytes": 1599,
+      "after_sha256": "a081f50285b211c53846a0b60258e37502957fe53fc135f61f297e003935c85b",
+      "before_bytes": 1599,
+      "before_sha256": "a081f50285b211c53846a0b60258e37502957fe53fc135f61f297e003935c85b",
+      "changed": false
+    },
+    ".github/workflows/hepta-stem-cell-maintenance.yml": {
+      "after_bytes": 10815,
+      "after_sha256": "9e380a83b7596c12dccccc5fc9b7ba1ebc05e289736d03006bca5c6c684d6be2",
+      "before_bytes": 10815,
+      "before_sha256": "9e380a83b7596c12dccccc5fc9b7ba1ebc05e289736d03006bca5c6c684d6be2",
+      "changed": false
+    },
+    ".github/workflows/hepta-stem-cell-routes.yml": {
+      "after_bytes": 1963,
+      "after_sha256": "784bb814201ecdb09cd3172a8c9694d7b19375ec47688580d23fad5074272faf",
+      "before_bytes": 1963,
+      "before_sha256": "784bb814201ecdb09cd3172a8c9694d7b19375ec47688580d23fad5074272faf",
+      "changed": false
+    }
+  },
+  "finished_unix": 1794161205.400084,
+  "network_retry_limit": 0,
+  "package": {
+    "cli_sha256": "9aee781035e9f56b49124e92984ee379b69e333b401ac5c8b5e27e3e14783bde",
+    "installation": "official npm tarball verified and unpacked in isolated task directory; no lifecycle scripts",
+    "metadata_sha256": "5222d628e6316eb47ce939df8884efac4c3d167f8fea97e442abdf0426850603",
+    "metadata_source": "https://registry.npmjs.org/prettier/3.5.3",
+    "package_json_sha256": "c5250fee0ae97d1256f67c8c83f162de3b4137cf840a797099f8ca32181d30b1",
+    "tarball_bytes": 2030462,
+    "tarball_sha256": "14841de7b71a93123d22997db22d088debb13976778d869e3622199108e85b4b",
+    "tarball_source": "https://registry.npmjs.org/prettier/-/prettier-3.5.3.tgz",
+    "verified_integrity": "sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw=="
+  },
+  "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "requested_version": "3.5.3",
+  "schema": "hepta.prettier-format.v1",
+  "scope": "three copied workflow YAML files only",
+  "started_unix": 1794161200.8084211,
+  "status": "success",
+  "tests_executed": false,
+  "version": {
+    "node": "v25.9.0",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "3.5.3\n"
+  },
+  "wall_seconds": 4.591662883758545
+}

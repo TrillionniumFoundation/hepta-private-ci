@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "scope": "Publication Revoked original FinalUse grant component phase ordering",
+  "base_commit": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "base_tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs",
+      "preimage": {
+        "git_blob": "273c92835a7e946bd1207100a6dcb0981b94c199",
+        "bytes": 29001,
+        "sha256": "f80030d5b7edcf15296484d49fbd3ba3d89e8447e15fcad4fa0d7d21c338b9ef"
+      },
+      "postimage": {
+        "git_blob": "9a4c6a4093dd53e17f7f36096f1f98e7b04ae822",
+        "bytes": 29377,
+        "sha256": "ae68fb5c93d0080359e6784ac8bf339f0af55d819c517ee8ffc67cc56e43fc74"
+      },
+      "operations": [
+        {
+          "old": "fn expiry_qualification() -> bool {",
+          "new": "#[cfg(test)]\nimpl crate::HostAuthorityService {\n    /// Share this service's exact original issuer for component revocation.\n    /// This opens no second owner and creates no issuer, key or grant.\n    pub(crate) fn component_original_issuer_handle(\n        &self,\n    ) -> std::sync::Arc<crate::DeploymentFinalUseIssuer> {\n        std::sync::Arc::clone(&self.issuer)\n    }\n}\n\nfn expiry_qualification() -> bool {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_tests.rs",
+      "preimage": {
+        "git_blob": "91b9ffd5a5648de1e75765934040e283717b84b1",
+        "bytes": 13766,
+        "sha256": "ca6861af5e6624dd228f578f0fa52b1fec2519ef80b4c4daed637e68b465c2e3"
+      },
+      "postimage": {
+        "git_blob": "9af36ecda3f1a729a225cf27503bdbe921c8ce0d",
+        "bytes": 14099,
+        "sha256": "aa6e2d353689e80585170683926c43d9cae38db1f2adf68b34d5cc6260e70d5a"
+      },
+      "operations": [
+        {
+          "old": "fn write_original_data(path: &Path, bytes: &[u8]) -> io::Result<()> {",
+          "new": "#[cfg(test)]\nimpl crate::PreparedHostAuthoritySession {\n    /// Retain the same serving issuer for a live, test-only grant revocation.\n    pub(crate) fn component_registered_publication_issuer(\n        &self,\n    ) -> std::sync::Arc<crate::DeploymentFinalUseIssuer> {\n        self.service.component_original_issuer_handle()\n    }\n}\n\nfn write_original_data(path: &Path, bytes: &[u8]) -> io::Result<()> {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_tests.rs",
+      "preimage": {
+        "git_blob": "2f1b7f3710b5f7a92708234db40c56547f01d358",
+        "bytes": 9120,
+        "sha256": "58fcc4e022282e7400992a7ff91e3672cf968041207aa0d65ff12550a0939202"
+      },
+      "postimage": {
+        "git_blob": "15137d8b600108733994b9d807b7b716591bc582",
+        "bytes": 8900,
+        "sha256": "cbf412a67a58dabe0226c1e1b9445741be56457908522b11742338789f4ca88b"
+      },
+      "operations": [
+        {
+          "old": "    // The serving owner has finished. Reopen the exact original issuer solely\n    // for its administrative revocation; no second owner is opened while live.\n    {\n        let (_, _leases, issuer) =\n            crate::authority_host_runtime::open_registered_issuer(&fixture.config)?;\n        let grant = &published\n            .published\n            .as_ref()\n            .ok_or_else(|| anyhow::anyhow!(\"published record\"))?\n            .signed\n            .grant;\n        issuer.revoke(&grant.grant_id)?;\n    }\n",
+          "new": "    // The Revoked phase first opens its original five lanes and restores the\n    // registered publication. Its same serving issuer then revokes this exact\n    // published FinalUse grant; the child waits for the original consumer feed.\n"
+        },
+        {
+          "old": "        .context(\"publication component Revoked phase\")?;\n    assert_eq!(fixture.current.original_broker_head()?, published);\n    assert_eq!(support::protected_files(&fixture.current_path)?, protected);\n",
+          "new": "        .context(\"publication component Revoked phase\")?;\n    assert_eq!(fixture.current.original_broker_head()?, published);\n    assert_eq!(support::protected_files(&fixture.current_path)?, protected);\n    assert_eq!(std::fs::read(&claims_path)?, claimed);\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+        "bytes": 30620,
+        "sha256": "3327b2ed4daa904799a1746c9b1c7d30f3853fe47e610d89735f2ce277b4f9d1"
+      },
+      "postimage": {
+        "git_blob": "4d302f702181a832329ded730541107bf2ddad92",
+        "bytes": 32457,
+        "sha256": "039906fd235388fa7971bee37dc8e4464c0ccdc218569ae38cae83fcf3f613d6"
+      },
+      "operations": [
+        {
+          "old": "        .with_registered_learning(&self.profile_file)?;\n        let mut sealed = prepared.seal_bootstrap(&self.local)?;\n",
+          "new": "        .with_registered_learning(&self.profile_file)?;\n        let revocation_issuer = if matches!(phase, Phase::Revoked) {\n            Some(prepared.component_registered_publication_issuer())\n        } else {\n            None\n        };\n        let mut sealed = prepared.seal_bootstrap(&self.local)?;\n"
+        },
+        {
+          "old": "                send_data(&self.offer, &self.intent)?;\n                if matches!(phase, Phase::Publish) {\n",
+          "new": "                send_data(&self.offer, &self.intent)?;\n                if matches!(phase, Phase::Revoked) {\n                    // The existing schema3 owners and recovered publication\n                    // are now live. Revoke only the original published grant,\n                    // then let their original authenticated feed synchronize.\n                    let head = self.current.original_broker_head()?;\n                    let record = head\n                        .published\n                        .as_ref()\n                        .ok_or_else(|| anyhow::anyhow!(\"original published grant to revoke\"))?;\n                    assert_eq!(record.intent, self.intent);\n                    let issuer = revocation_issuer\n                        .as_ref()\n                        .ok_or_else(|| anyhow::anyhow!(\"same serving issuer\"))?;\n                    let before = issuer.revocations()?;\n                    assert_eq!(before.authority_epoch, record.signed.grant.authority_epoch);\n                    assert!(!before.revoked_grant_ids.contains(&record.signed.grant.grant_id));\n                    let mut expected = before.clone();\n                    expected.revision = expected\n                        .revision\n                        .checked_add(1)\n                        .ok_or_else(|| anyhow::anyhow!(\"original revocation revision exhausted\"))?;\n                    expected\n                        .revoked_grant_ids\n                        .insert(record.signed.grant.grant_id.clone());\n                    let actual = issuer.revoke(&record.signed.grant.grant_id)?;\n                    assert_eq!(actual, expected);\n                    send_data(&self.offer, &actual)?;\n                }\n                if matches!(phase, Phase::Publish) {\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "29b40417626ada0a4df3f07c3bbc4a3f54b54854",
+        "bytes": 15607,
+        "sha256": "38364ee24b4ec033d7473032373bbd1f84ef8620a87c1368a7cf44e7ca40d384"
+      },
+      "postimage": {
+        "git_blob": "bb9f481e3e63be557a081963335f4b354458cfd5",
+        "bytes": 16052,
+        "sha256": "8a642ea51aa2f056964a3d9c5b742e0a34dd56eb7b342387071e378387c8560b"
+      },
+      "operations": [
+        {
+          "old": "            if matches!(phase, Phase::Revoked) {\n                let record = published_head.as_ref().and_then(|head| head.published.as_ref())\n",
+          "new": "            if matches!(phase, Phase::Revoked) {\n                let revoked: codex_hepta_contracts::FinalUseRevocations = data(&socket)\n                    .context(\"publication Revoked: receive original issuer revocation head\")?;\n                production.session.component_wait_for_original_revocations(\n                    [&production.device, &production.notes], &revoked, TIMEOUT,\n                ).await.context(\"publication Revoked: await original consumer and public feed barrier\")?;\n                let record = published_head.as_ref().and_then(|head| head.published.as_ref())\n"
+        }
+      ]
+    }
+  ],
+  "callers": {
+    "base_git_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "operations": [],
+    "reason": "All five changed files are existing component test modules; both new original-issuer getters are explicitly cfg(test). No product caller, checker, boundary, or protected row is changed by this slice."
+  },
+  "exact_forward_and_reverse_reconstruction": true
+}

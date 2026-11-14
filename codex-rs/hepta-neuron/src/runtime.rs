@@ -125,6 +125,59 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
+    /// Recover a first commit whose publication was interrupted, using an
+    /// independently retained expected first checkpoint supplied by the host.
+    ///
+    /// The host must authenticate this initialization intent and bind it to the
+    /// same subject, objective, generation, config and model before calling.
+    /// It must never derive `expected_first` from the journal being recovered.
+    /// An absent/unavailable intent is not permission for unanchored recovery.
+    /// The host must independently establish that initialization is still pending;
+    /// an old first anchor cannot detect rollback of both journal and witness.
+    /// This is not a deletion, revocation, or acknowledged-history repair API.
+    /// The independent witness must positively report no published checkpoint;
+    /// any existing witness continues to use ordinary anchored recovery.
+    /// This entrypoint accepts only the first committed sequence and never
+    /// changes the persistent V1 formats or the behavior of `recover`.
+    #[allow(clippy::too_many_arguments)]
+    pub fn recover_bootstrap_anchored(
+        file: File,
+        native: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        config: NeuronRuntimeConfigV1,
+        expected_first: JournalAnchor,
+        mut witness: W,
+    ) -> Result<Self, NeuronRuntimeError> {
+        config.validate_native(&native)?;
+        if expected_first.sequence != 1 || expected_first.checkpoint_digest.is_zero() {
+            return Err(NeuronRuntimeError::Journal(JournalError::InvalidAnchor));
+        }
+        if witness.current()?.is_some() {
+            return Err(NeuronRuntimeError::BootstrapWitnessPresent);
+        }
+        // The externally supplied anchor is checked before any tail repair.
+        let journal =
+            SparseJournal::open_anchored(file, native, scope, max_records, expected_first)?;
+        let current = journal
+            .current()?
+            .map(|checkpoint| JournalAnchor {
+                sequence: checkpoint.sequence(),
+                checkpoint_digest: checkpoint.digest(),
+            })
+            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
+        if current != expected_first {
+            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
+        }
+        witness.compare_and_swap(None, expected_first)?;
+        Ok(Self {
+            config,
+            journal,
+            witness,
+            pending: None,
+        })
+    }
+
     pub fn model_request(
         &self,
         input: &NeuronTickInputV1,
@@ -269,6 +322,43 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         if input.checkpoint_digest != expected_checkpoint {
             return Err(NeuronRuntimeError::CheckpointMismatch);
         }
+        // Verify context against the journal's *registered* Scope/Objective,
+        // not against caller-provided digests. Wrong identity must never
+        // result in a model request, even for the very first tick.
+        let source_scope_digest = subject_scope_digest(&input.subject_id)?;
+        self.journal
+            .verify_owner_context(source_scope_digest, input.objective_digest)?;
+        // Validate the durable frontier BEFORE invoking the selected model.
+        // SparseJournal::commit used to discover these stale/future inputs only
+        // *after* model.execute(), wasting resources and potentially issuing
+        // an external invocation for a tick that can never be committed.
+        // Keep the same journal/mechanism error categories as sparse_tick.
+        if let Some(checkpoint) = current {
+            if checkpoint.sequence().checked_add(1) != Some(input.logical_sequence) {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::Sequence,
+                )));
+            }
+            if input.monotonic_time_micros <= checkpoint.monotonic_micros() {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::Clock,
+                )));
+            }
+            if checkpoint.body_digest() != body_digest(&self.config, &input) {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::ScopeDrift,
+                )));
+            }
+        } else if input.logical_sequence != 1 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                crate::SparseError::Sequence,
+            )));
+        }
+        // A full journal cannot commit even a valid successor. Do not consume
+        // another model request until an authorized owner rolls the segment.
+        if self.journal.remaining_capacity()? == 0 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Capacity));
+        }
         let expected_anchor = current.map(|checkpoint| JournalAnchor {
             sequence: checkpoint.sequence(),
             checkpoint_digest: checkpoint.digest(),
@@ -280,7 +370,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let model_runtime_digest = digest_model_binding(&model_output)?;
 
         let sparse_tick = SparseTick {
-            scope_digest: subject_scope_digest(&input.subject_id)?,
+            scope_digest: source_scope_digest,
             objective_digest: input.objective_digest,
             ndu_digest: input.ndu_snapshot_digest,
             body_digest: body_digest(&self.config, &input),

@@ -1,0 +1,55 @@
+{
+  "after": {
+    "commit": "2d8295c6d904ab7b770fed345a1cd2a6308c76ca",
+    "dirty": false,
+    "parents": [
+      "ed6480ce07632aea636a4b33afe1d7500ae32026"
+    ],
+    "tree": "723dc64d0b2442b45bc1d5f2a7596ceeb2755186"
+  },
+  "base_sha": "300ebaaedd9ec578ffcd2bc341c2394ead6a92c8",
+  "before": {
+    "commit": "2d8295c6d904ab7b770fed345a1cd2a6308c76ca",
+    "dirty": false,
+    "parents": [
+      "ed6480ce07632aea636a4b33afe1d7500ae32026"
+    ],
+    "tree": "723dc64d0b2442b45bc1d5f2a7596ceeb2755186"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 185.0182003409136,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-10T07:12:08.206853+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 1064762,
+  "log_file": "tests.json.4c3fedb72784446096d10d3cbc0c7331.log",
+  "log_sha256": "6590b2fa38bd6fdb3dacbac0f3b68224ecb51c38fb973e030667eb27036796c8",
+  "minimum_tests": 1,
+  "observed_failed_tests": 435,
+  "observed_passed_tests": 653,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "2d8295c6d904ab7b770fed345a1cd2a6308c76ca",
+  "started_at": "2026-11-10T07:09:03.187065+00:00",
+  "status": "failed",
+  "tested_sha": "2d8295c6d904ab7b770fed345a1cd2a6308c76ca",
+  "timed_out": false,
+  "working_directory": "/home/qq/hepta-framework-followup-a60a-20261110/source"
+}

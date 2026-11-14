@@ -1,5 +1,6 @@
 #![cfg(unix)]
 
+use std::io::Read;
 use std::path::Path;
 use std::time::Duration;
 use std::time::Instant;
@@ -23,6 +24,7 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_supervisor::AgentCommand;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
@@ -35,7 +37,9 @@ use wiremock::matchers::path_regex;
 mod support;
 
 use support::fleet::FleetHarness;
+use support::fleet::agentd_binary;
 use support::fleet::connect_app_server_with_experimental;
+use support::fleet::readiness_diagnostics;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
@@ -183,7 +187,21 @@ async fn assert_agentd_startup_rejected(config_toml: &str, expected_error: &str)
     let mut fleet = FleetHarness::new()?;
     let agent = fleet.register(AGENT_ID, "rejected-workspace")?;
     std::fs::write(agent.layout.home_root().join("config.toml"), config_toml)?;
-    fleet.start(&agent)?;
+    // The supervisor log channel is best-effort and can omit the final stderr
+    // chunk when it observes exit. Retain this process's stderr independently.
+    // exec preserves the supervised PID, inherited environment, and cwd.
+    let stderr = tempfile::NamedTempFile::new()?;
+    let command = AgentCommand::new(
+        "/bin/sh",
+        vec![
+            "-c".into(),
+            "exec \"$1\" 2>\"$2\"".into(),
+            "agentd-startup-rejection".into(),
+            agentd_binary()?.into_os_string(),
+            stderr.path().as_os_str().to_owned(),
+        ],
+    )?;
+    fleet.start_command(&agent, command)?;
 
     let deadline = Instant::now() + Duration::from_secs(20);
     loop {
@@ -205,14 +223,25 @@ async fn assert_agentd_startup_rejected(config_toml: &str, expected_error: &str)
             .snapshot(&agent.agent_id)
             .context("rejected Agent disappeared from supervisor")?;
         if lifecycle == AgentLifecycle::Failed && !snapshot.active {
-            let logs = snapshot
-                .logs
-                .iter()
-                .map(|log| String::from_utf8_lossy(&log.bytes))
-                .collect::<String>();
+            // Read only after the same supervised process has exited, so its
+            // stderr writes are complete and no pipe-reader task needs joining.
+            const MAX_STARTUP_STDERR_BYTES: usize = 65_536;
+            let diagnostics = readiness_diagnostics(Some(&snapshot), "rejected startup");
+            let mut bytes = Vec::new();
+            stderr
+                .reopen()
+                .with_context(|| format!("opening retained startup stderr; {diagnostics}"))?
+                .take((MAX_STARTUP_STDERR_BYTES + 1) as u64)
+                .read_to_end(&mut bytes)
+                .with_context(|| format!("reading retained startup stderr; {diagnostics}"))?;
+            ensure!(
+                bytes.len() <= MAX_STARTUP_STDERR_BYTES,
+                "rejected startup stderr exceeded {MAX_STARTUP_STDERR_BYTES} bytes; {diagnostics}"
+            );
+            let logs = String::from_utf8_lossy(&bytes);
             ensure!(
                 logs.contains(expected_error),
-                "rejected startup omitted the expected fail-closed error {expected_error:?}; logs={logs:?}"
+                "rejected startup omitted the expected fail-closed error {expected_error:?}; logs={logs:?}; {diagnostics}"
             );
             return Ok(());
         }

@@ -1,0 +1,228 @@
+   Compiling version_check v0.9.5
+    Checking typenum v1.20.1
+   Compiling generic-array v0.14.7
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling serde_core v1.0.229
+    Checking crypto-common v0.1.7
+    Checking block-buffer v0.10.4
+   Compiling zmij v1.0.23
+    Checking digest v0.10.7
+   Compiling syn v3.0.9
+    Checking cpufeatures v0.2.17
+   Compiling serde_json v1.0.154
+    Checking cfg-if v1.0.5
+   Compiling serde v1.0.229
+    Checking sha2 v0.10.9
+   Compiling serde_derive v1.0.229
+    Checking memchr v2.8.3
+    Checking itoa v1.0.18
+    Checking codex-hepta-types v0.0.0 (/home/qian-qi/ndu-neuron-host-986c-20261108/source/codex-rs/hepta-types)
+    Checking yansi v1.0.1
+    Checking diff v0.1.13
+    Checking pretty_assertions v1.4.1
+    Checking codex-hepta-infer-core v0.0.0 (/home/qian-qi/ndu-neuron-host-986c-20261108/source/codex-rs/hepta-infer-core)
+    Checking codex-hepta-neuron v0.0.0 (/home/qian-qi/ndu-neuron-host-986c-20261108/source/codex-rs/hepta-neuron)
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:38:5
+    |
+ 38 |     assert_eq!(proposal.disposition, CellGenerationDispositionV2::DeadlineExceeded);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:39:5
+    |
+ 39 |     assert_eq!(proposal.successor_state, harness.request.predecessor.state);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:41:5
+    |
+ 41 |     assert_eq!(proposal.cost.entries().len(), 1);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:43:5
+    |
+ 43 |     assert_eq!(entry.outcome, CellCostOutcomeV2::Cancelled);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:44:5
+    |
+ 44 |     assert_eq!(entry.stage, CellCostStageV2::Codec);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:46:5
+    |
+ 46 |     assert_eq!(entry.metrics.cpu_micros, None);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:57:5
+    |
+ 57 |     assert_eq!(proposal.disposition, CellGenerationDispositionV2::Rejected);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:58:5
+    |
+ 58 |     assert_eq!(proposal.successor_state, harness.request.predecessor.state);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:60:5
+    |
+ 60 |     assert_eq!(proposal.cost.entries().len(), 1);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+error[E0659]: `assert_eq` is ambiguous
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:61:5
+    |
+ 61 |     assert_eq!(proposal.cost.entries()[0].outcome, CellCostOutcomeV2::Rejected);
+    |     ^^^^^^^^^ ambiguous name
+    |
+    = note: ambiguous because of a conflict between a name from a glob import and an outer scope during import or macro resolution
+note: `assert_eq` could refer to the macro imported here
+   --> hepta-neuron/src/cell_joint_observed_process_tests.rs:3:5
+    |
+  3 | use super::*;
+    |     ^^^^^^^^
+    = help: consider adding an explicit import of `assert_eq` to disambiguate
+    = help: or use `self::assert_eq` to refer to this macro unambiguously
+note: `assert_eq` could also refer to the macro defined here
+   --> /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/std/src/prelude/mod.rs:162:13
+    |
+162 |     pub use super::v1::*;
+    |             ^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0659`.
+error: could not compile `codex-hepta-neuron` (lib test) due to 10 previous errors

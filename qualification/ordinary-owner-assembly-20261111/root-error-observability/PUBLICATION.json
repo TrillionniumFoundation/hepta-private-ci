@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "title": "Root publication original-error observability follow-up",
+  "status": "fixed draft; not native-tested",
+  "baseline": {
+    "commit": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "child_override": "c70be8c1b145f82e0ab089cf1bc04ded9a4fbce6"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_support_tests.rs",
+      "preimage": {
+        "git_blob": "b5e5e84aed65e4fb5156eb57f35c81598fb1a7a1",
+        "bytes": 6382,
+        "sha256": "3db950fc0243141b25524ed0ad94baf9b0d66a2efd7cbd733d05d3793db4ff0a"
+      },
+      "postimage": {
+        "git_blob": "e33531e3fecda5e3cd37ca19a48f4698f0ae58e3",
+        "bytes": 7957,
+        "sha256": "17e70f1b907da39042b2ebe19616f639b86efd65c0126734d31ff927f62b7901"
+      },
+      "ops": 6,
+      "exact_replay": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_tests.rs",
+      "preimage": {
+        "git_blob": "f692164419c65c420b2fbfcfeb796f432aca6852",
+        "bytes": 8553,
+        "sha256": "bf5c5b3b3d29fadbc7afbb4e70498f492b7b087f18c21dd7a08488192bb40929"
+      },
+      "postimage": {
+        "git_blob": "2f1b7f3710b5f7a92708234db40c56547f01d358",
+        "bytes": 9120,
+        "sha256": "58fcc4e022282e7400992a7ff91e3672cf968041207aa0d65ff12550a0939202"
+      },
+      "ops": 8,
+      "exact_replay": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "eeca436dab40d6b30c765fd95e69b1f3507e7427",
+        "bytes": 29805,
+        "sha256": "4deab9a45c068b20f59084817734c2b636f4ea9afcc716c3b49c78ea9ceae375"
+      },
+      "postimage": {
+        "git_blob": "480426e7638af68de8a2cda666e72f0a597c41cc",
+        "bytes": 30230,
+        "sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225"
+      },
+      "ops": 3,
+      "exact_replay": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "c70be8c1b145f82e0ab089cf1bc04ded9a4fbce6",
+        "bytes": 13125,
+        "sha256": "e54c6f674f1d1ba94e8ba1ce3bb410352debf8f7437d7aeedbeff0c5aa7c68fd"
+      },
+      "postimage": {
+        "git_blob": "c3030b6519c73bb1cfb4a8ec66069ef3b5db5801",
+        "bytes": 15383,
+        "sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8"
+      },
+      "ops": 15,
+      "exact_replay": true
+    }
+  ],
+  "artifacts": {
+    "source_delta": {
+      "git_blob": "df8954c7b1c609b6be4d4f8936797453c9bd5957",
+      "bytes": 19302,
+      "sha256": "2f86483aea75f7f5076b0f76cded2a404be7ff003e6d930cc05bf8a49465aab1"
+    },
+    "diagnostic": {
+      "git_blob": "f9ca1b4c5fb62e1a2182ed501d55de00570c6434",
+      "bytes": 5278,
+      "sha256": "c06f88799c850faa6f3bfc010ac3cf58c1597255ccc7f355a132056892f34e95"
+    }
+  },
+  "scope": {
+    "production_changes": 0,
+    "callers_changes": 0,
+    "root_parent_roster_changes": 0,
+    "source_files_changed": 4,
+    "ordinary_complete": 0,
+    "adoption": 0,
+    "no_update_or_rollback_chain": 0,
+    "physical_cold_restart": 0
+  },
+  "integration": "Replay exact unique preimage operations against the parent's immutable V16 assembly. Initial-only context patch is separate. Reformat/compile/run on a newly frozen source; preserve the original failed attempt and do not transfer its fifteen passes.",
+  "verification": "All four exactops replay byte-for-byte to the postimage. Source/blob/SHA256 calculated and each create_blob SHA matched. Assertion, explicit-negative and timeout-token sequences equal before/after. No Rust/native execution."
+}

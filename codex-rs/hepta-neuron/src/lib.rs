@@ -15,10 +15,58 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use codex_hepta_infer_core::NeuronFeatureObservationV1;
+pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
+pub use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
+pub use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+pub use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+
+mod cell;
+mod cell_batch;
+mod cell_binding;
+mod cell_generation_control;
+mod cell_generation_current;
+mod cell_generation_journal;
+mod cell_generation_observation;
+mod cell_generation_state;
+mod cell_generation_types;
+mod cell_inference;
+#[cfg(target_os = "linux")]
+mod cell_joint_generation;
+#[cfg(target_os = "linux")]
+mod cell_joint_observed;
+#[cfg(target_os = "linux")]
+mod cell_joint_process;
+#[cfg(target_os = "linux")]
+mod cell_joint_protocol;
+mod cell_journal;
+mod cell_journal_codec;
+mod cell_owner;
+mod cell_task_cost;
+#[cfg(test)]
+mod cell_test_support;
+mod cell_types;
+mod cell_update;
+#[cfg(target_os = "linux")]
+mod cell_v13_assets;
+#[cfg(target_os = "linux")]
+mod cell_v13_generation;
+#[cfg(target_os = "linux")]
+mod cell_v13_process;
+#[cfg(target_os = "linux")]
+mod cell_v13_protocol;
 mod deletion;
+mod feature_control;
 mod inference_control;
 mod journal;
 mod journal_lock;
+mod perception;
+mod perception_encoder;
+mod perception_proposal;
+mod perception_source;
+#[cfg(test)]
+mod perception_test_support;
 mod plasticity;
 mod population_v2;
 mod protocol;
@@ -28,16 +76,161 @@ mod runtime_types;
 mod sparse;
 mod witness;
 
+pub use cell::commit_cell_step;
+pub use cell::decide_cell;
+pub use cell::enter_cell_step;
+pub use cell::prepare_cell_step;
+pub use cell_batch::CellBatchQueueV1;
+pub use cell_batch::CellBatchResultV1;
+pub use cell_batch::CellMicrobatchInferenceControlPortV1;
+pub use cell_binding::canonical_cell_step_request_digest_v1;
+pub use cell_generation_control::CellGenerationWorkerV2;
+pub use cell_generation_control::ControlledCellGenerationConfigV2;
+pub use cell_generation_control::ControlledCellGenerationPortV2;
+pub use cell_generation_current::CellGenerationCurrentV1;
+pub use cell_generation_current::CellGenerationOpenModeV1;
+pub use cell_generation_current::CellGenerationOwnerBindingV1;
+pub use cell_generation_current::CellGenerationPreparedCheckpointV1;
+pub use cell_generation_journal::CellGenerationExpectedContextV1;
+#[cfg(target_os = "linux")]
+pub use cell_generation_journal::CellGenerationJournalObservedV1;
+#[cfg(target_os = "linux")]
+pub use cell_generation_journal::CellGenerationJournalObserverV1;
+pub use cell_generation_journal::CellGenerationJournalV2;
+#[cfg(target_os = "linux")]
+pub use cell_generation_journal::CellGenerationObserverConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_generation_journal::CellGenerationUnpublishedObserverV1;
+pub use cell_generation_observation::CellGenerationObservationV1;
+pub use cell_generation_state::CellGenerationConfigV2;
+pub use cell_generation_types::CellBackendManifestV2;
+pub use cell_generation_types::CellEvolutionBindingV2;
+pub use cell_generation_types::CellGenerationControlPortV2;
+pub use cell_generation_types::CellGenerationDispositionV2;
+pub use cell_generation_types::CellGenerationErrorV2;
+pub use cell_generation_types::CellGenerationIntentV2;
+pub use cell_generation_types::CellGenerationProposalV2;
+pub use cell_generation_types::CellGenerationReceiptV2;
+pub use cell_generation_types::CellGenerationRequestV2;
+pub use cell_generation_types::CellGenerationScopeV2;
+pub use cell_generation_types::CellLearningBindingV2;
+pub use cell_generation_types::CellOutputChunkV2;
+pub use cell_generation_types::CellRuntimeSnapshotV2;
+pub use cell_inference::CellInferenceReadbackPortV1;
+pub use cell_inference::infer_cell;
+pub use cell_inference::infer_cell_with_clock;
+pub use cell_inference::recover_cell_inference;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationCommandV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationDeliveryContractV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_observed::JointGenerationInputV2;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationActionV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationCommandV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationInputV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationModalityV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_protocol::JointGenerationSamplerV1;
+pub use cell_journal::CellJournalPartitionV1;
+#[cfg(target_os = "linux")]
+pub use cell_journal::CellOriginalJournalFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_journal::CellOriginalJournalObservationV1;
+pub use cell_journal::CellOwnerJournalReadbackV1;
+pub use cell_journal::CellOwnerJournalV1;
+#[cfg(target_os = "linux")]
+pub use cell_journal::observe_original_guarded_cell_v1;
+pub use cell_owner::CellPartitionOwnerV1;
+pub use cell_task_cost::CellCostAccountingV2;
+pub use cell_task_cost::CellCostEntryV2;
+pub use cell_task_cost::CellCostMetricsV2;
+pub use cell_task_cost::CellCostOutcomeV2;
+pub use cell_task_cost::CellCostRecordV2;
+pub use cell_task_cost::CellCostStageV2;
+pub use cell_task_cost::CellCostTotalV2;
+pub use cell_task_cost::CellTaskCostErrorV2;
+pub use cell_task_cost::CellTaskCostIdentityV2;
+pub use cell_task_cost::CellTaskCostSummaryV2;
+pub use cell_task_cost::CellTaskCostV2;
+pub use cell_types::CellCandidateKindV1;
+pub use cell_types::CellCandidateMaskV1;
+pub use cell_types::CellCandidateV1;
+pub use cell_types::CellDecisionReceiptV1;
+pub use cell_types::CellDefinitionV1;
+pub use cell_types::CellEncodedInputV1;
+pub use cell_types::CellEncodingRequestV1;
+pub use cell_types::CellExecutionCostV1;
+pub use cell_types::CellExecutionError;
+pub use cell_types::CellInferenceAdmissionV1;
+pub use cell_types::CellInputEncoderV1;
+pub use cell_types::CellOwnerSnapshotV1;
+pub use cell_types::CellPolicyEntryV1;
+pub use cell_types::CellRepresentationV1;
+pub use cell_types::CellScopeV1;
+pub use cell_types::CellStateOwnerV1;
+pub use cell_types::CellStateProposalV1;
+pub use cell_types::CellStepEntryV1;
+pub use cell_types::CellStepInputV1;
+pub use cell_types::InferredCellStepV1;
+pub use cell_types::PreparedCellStepV1;
+pub use cell_update::CellUpdateBudgetV1;
+pub use cell_update::CellUpdateCandidateV1;
+pub use cell_update::CellUpdateOutcomeV1;
+pub use cell_update::CellUpdatePortV1;
+pub use cell_update::CellUpdateRequestV1;
+pub use cell_update::propose_cell_update;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationAssetFileV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessFilesV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_generation::V13GenerationProcessWorkerV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13LearningClosureV1;
+#[cfg(target_os = "linux")]
+pub use cell_v13_protocol::V13TaskInputV1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
 pub use deletion::validate_deletion_rebuild;
+pub use feature_control::ControlledNeuronFeaturePortV1;
+pub use feature_control::NeuronFeatureWorkerV1;
 pub use inference_control::InferenceControlModelPort;
 pub use inference_control::NeuronInferenceControlPort;
 pub use journal::JournalAnchor;
 pub use journal::JournalError;
 pub use journal::JournalScope;
 pub use journal::SparseJournal;
+pub use perception::PerceptionEncoderBindingV1;
+pub use perception::PerceptionLatentV1;
+pub use perception::PerceptionObservationV1;
+pub use perception::PerceptionRepresentationV1;
+pub use perception_encoder::PerceptionCellEncoderV1;
+pub use perception_proposal::PerceptionObservationProposalV1;
+pub use perception_proposal::PerceptionObservationTargetV1;
+pub use perception_proposal::PerceptionProposalAssessmentV1;
+pub use perception_proposal::PerceptionProposalDispositionV1;
+pub use perception_proposal::PerceptionProposalErrorV1;
+pub use perception_proposal::PerceptionProposalPolicyV1;
+pub use perception_source::PerceptionActorSourceV1;
+pub use perception_source::PerceptionCoordinatesV1;
+pub use perception_source::PerceptionErrorV1;
+pub use perception_source::PerceptionEvidenceV1;
+pub use perception_source::PerceptionSourceLayoutV1;
+pub use perception_source::PerceptionSourcePinV1;
 pub use plasticity::EligibilityTraceSampleV1;
 pub use plasticity::IndependentModulatorV1;
 pub use plasticity::ParameterGroupDeltaV1;
@@ -45,7 +238,17 @@ pub use plasticity::ParameterGroupMapV1;
 pub use plasticity::PlasticityError;
 pub use plasticity::PlasticitySufficientStatisticsV1;
 pub use plasticity::PlasticityTrustRegionV1;
+pub use plasticity::TemporalCreditArmV1;
+pub use plasticity::TemporalCreditContractV1;
+pub use plasticity::TemporalCreditError;
+pub use plasticity::TemporalCreditReceiptV1;
+pub use plasticity::TemporalEligibilityActionV1;
+pub use plasticity::TemporalFeedbackV1;
+pub use plasticity::TemporalGroupDeltaV1;
+pub use plasticity::TemporalSplitV1;
 pub use plasticity::accumulate_plasticity;
+pub use plasticity::accumulate_temporal_credit_q24;
+pub use plasticity::accumulate_temporal_credit_q24_online_prefix;
 pub use population_v2::ActivationPopulationV2;
 pub use population_v2::PopulationSparseCheckpointV2;
 pub use population_v2::PopulationSparseConfigV2;
@@ -108,6 +311,8 @@ pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
 pub use witness::FileAnchorWitnessStore;
+#[cfg(target_os = "linux")]
+pub use witness::observe_original_file_anchor_v1;
 
 const MAX_FEATURES: usize = 4_096;
 

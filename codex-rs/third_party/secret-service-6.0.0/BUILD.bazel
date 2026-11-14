@@ -1,0 +1,6 @@
+# Use the same resolved crypto features and library as production consumers.
+alias(
+    name = "secret-service",
+    actual = "@crates//:secret-service-6.0.0",
+    visibility = ["//visibility:public"],
+)

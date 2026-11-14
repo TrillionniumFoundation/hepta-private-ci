@@ -586,10 +586,13 @@ async fn authbus_host(
         checkpoint_root.path(),
         std::fs::Permissions::from_mode(0o700),
     )?;
-    let database = database_root.path().join("authbus-authority.sqlite");
-    let checkpoint = checkpoint_root
-        .path()
-        .join("authbus-authority-checkpoint.json");
+    // macOS temporary roots may use the /var alias. Resolve only the newly
+    // created fixture directories before constructing files; the production
+    // checkpoint validator continues to reject aliased or unsafe input paths.
+    let database_directory = database_root.path().canonicalize()?;
+    let checkpoint_directory = checkpoint_root.path().canonicalize()?;
+    let database = database_directory.join("authbus-authority.sqlite");
+    let checkpoint = checkpoint_directory.join("authbus-authority-checkpoint.json");
 
     let raw = AuthBusAuthorityStore::open(&database).await?;
     let frontier = raw.authority_frontier_digest().await?;

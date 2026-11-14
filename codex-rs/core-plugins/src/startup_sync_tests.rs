@@ -16,6 +16,8 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::header_exists;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
+use zip::System;
+use zip::ZipArchive;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
@@ -1300,10 +1302,37 @@ fn read_extracted_backup_archive_git_sha_rejects_path_traversal_ref() {
     assert!(err.contains("invalid path components"));
 }
 
+#[test]
+fn curated_repo_archive_fixtures_cover_stored_and_deflated_entries() {
+    for (bytes, expected_method) in [
+        (
+            curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA),
+            zip::CompressionMethod::Deflated,
+        ),
+        (
+            curated_repo_backup_archive_zip_bytes(TEST_CURATED_PLUGIN_SHA),
+            zip::CompressionMethod::Stored,
+        ),
+    ] {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(bytes)).expect("read archive fixture");
+        assert!(!archive.is_empty(), "archive fixture must contain entries");
+        for index in 0..archive.len() {
+            let entry = archive.by_index(index).expect("read fixture entry");
+            assert_eq!(
+                entry.compression(),
+                expected_method,
+                "fixture entry {index} must use its declared compression method",
+            );
+        }
+    }
+}
+
 fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default();
+    // Exercise DEFLATE decoding; the backup archive fixture still covers stored entries.
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Deflated);
     let root = format!("openai-plugins-{sha}");
     writer
         .start_file(format!("{root}/.agents/plugins/marketplace.json"), options)
@@ -1340,7 +1369,7 @@ fn curated_repo_zipball_bytes(sha: &str) -> Vec<u8> {
 fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
     let cursor = std::io::Cursor::new(Vec::new());
     let mut writer = ZipWriter::new(cursor);
-    let options = SimpleFileOptions::default();
+    let options = SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
 
     writer
         .start_file("plugins/.git/HEAD", options)
@@ -1381,4 +1410,75 @@ fn curated_repo_backup_archive_zip_bytes(sha: &str) -> Vec<u8> {
         .expect("write plugin manifest");
 
     writer.finish().expect("finish zip writer").into_inner()
+}
+
+#[test]
+fn extract_zipball_rejects_symlink_entries() {
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default().system(System::Unix);
+    writer
+        .add_symlink("root/link", "../../outside", options)
+        .expect("add symlink entry");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read symlink fixture");
+        let entry = archive.by_name("root/link").expect("read symlink entry");
+        assert!(
+            entry.is_symlink(),
+            "fixture must contain a real symlink entry"
+        );
+    }
+    let destination = tempdir().expect("destination");
+
+    let err = extract_zipball_to_dir(&bytes, destination.path())
+        .expect_err("symlink archive entries must be rejected");
+    assert!(err.contains("is a symlink"));
+    assert_eq!(
+        std::fs::symlink_metadata(destination.path().join("link"))
+            .expect_err("rejected symlink must not be created")
+            .kind(),
+        std::io::ErrorKind::NotFound
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn extract_zipball_masks_special_permission_bits() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    let entry_mode = 0o107755;
+    // unix_permissions() masks special bits before the archive is written.
+    let options = SimpleFileOptions::default()
+        .system(System::Unix)
+        .external_attributes(entry_mode << 16);
+    writer
+        .start_file("root/plugin", options)
+        .expect("start executable entry");
+    writer.write_all(b"plugin").expect("write plugin");
+    let bytes = writer.finish().expect("finish zip").into_inner();
+    {
+        let mut archive =
+            ZipArchive::new(std::io::Cursor::new(&bytes)).expect("read permission fixture");
+        let entry = archive
+            .by_name("root/plugin")
+            .expect("read executable entry");
+        assert_eq!(
+            entry.external_attributes() >> 16,
+            entry_mode,
+            "fixture must preserve SUID/SGID/sticky bits before extraction"
+        );
+    }
+    let destination = tempdir().expect("destination");
+
+    extract_zipball_to_dir(&bytes, destination.path()).expect("extract archive");
+    let mode = std::fs::metadata(destination.path().join("plugin"))
+        .expect("plugin metadata")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o7000, 0, "SUID/SGID/sticky bits must be masked");
+    assert_eq!(mode & 0o777, 0o755);
 }

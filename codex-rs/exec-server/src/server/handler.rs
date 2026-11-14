@@ -83,6 +83,7 @@ pub(crate) struct ExecServerHandler {
     http_client: RouteAwareHttpClient,
     initialize_requested: AtomicBool,
     initialized: AtomicBool,
+    process_exit_observation: AtomicBool,
 }
 
 impl ExecServerHandler {
@@ -104,6 +105,7 @@ impl ExecServerHandler {
             http_client: RouteAwareHttpClient::new(http_client_factory),
             initialize_requested: AtomicBool::new(false),
             initialized: AtomicBool::new(false),
+            process_exit_observation: AtomicBool::new(false),
         }
     }
 
@@ -132,6 +134,13 @@ impl ExecServerHandler {
             ));
         }
 
+        if params.resume_session_id.is_some() && !params.process_exit_observation {
+            self.initialize_requested.store(false, Ordering::SeqCst);
+            return Err(invalid_request(
+                "session resumption requires process exit observation support".to_string(),
+            ));
+        }
+
         let session = match self
             .session_registry
             .attach(
@@ -157,8 +166,11 @@ impl ExecServerHandler {
             .session
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(session);
+        self.process_exit_observation
+            .store(params.process_exit_observation, Ordering::SeqCst);
         Ok(InitializeResponse {
             session_id,
+            process_exit_observation: true,
             environment_info: Some(crate::local_environment_info()),
         })
     }
@@ -175,6 +187,11 @@ impl ExecServerHandler {
 
     pub(crate) async fn exec(&self, params: ExecParams) -> Result<ExecResponse, JSONRPCErrorError> {
         let session = self.require_initialized_for("exec")?;
+        if !self.process_exit_observation.load(Ordering::SeqCst) {
+            return Err(invalid_request(
+                "process/start requires negotiated exit observation support".to_string(),
+            ));
+        }
         session.process().exec(params).await
     }
 

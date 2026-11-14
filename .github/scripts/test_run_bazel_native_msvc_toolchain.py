@@ -46,6 +46,114 @@ class NativeWindowsMsvcToolchainTest(unittest.TestCase):
             args.count("--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0"), 1
         )
 
+    def test_cached_native_msvc_preserves_cache_and_matching_native_abi(self) -> None:
+        requested = [
+            "--output_user_root=build root",
+            "test",
+            "--config=ci-windows",
+            "--host_platform=//:local_windows_msvc",
+            "--platforms",
+            "//:windows_x86_64_msvc",
+            "--",
+            "//fake:target with spaces",
+        ]
+        actual = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+            requested,
+            {"RUNNER_OS": "Windows", "BUILDBUDDY_API_KEY": "test-placeholder"},
+        )
+        self.assertEqual(
+            actual,
+            [
+                requested[0],
+                "test",
+                "--config=buildbuddy-generic",
+                "--remote_header=x-buildbuddy-api-key=test-placeholder",
+                "--extra_toolchains=//:local_windows_msvc_cc_toolchain",
+                "--repo_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=0",
+                *requested[2:],
+            ],
+        )
+
+    def test_cached_native_abi_does_not_leak_into_rbe_or_target_payload(self) -> None:
+        requests = [
+            [
+                "build",
+                "--config=ci-windows-cross",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--config=buildbuddy-generic-rbe",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--config=buildbuddy-openai-rbe",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--config",
+                "remote",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--remote_executor=grpcs://executor.example.invalid",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            [
+                "build",
+                "--remote_executor",
+                "grpcs://executor.example.invalid",
+                "--platforms=//:windows_x86_64_msvc",
+                "--",
+                "//fake:target",
+            ],
+            ["run", "//fake:tool", "--", "--platforms=//:windows_x86_64_msvc"],
+        ]
+        for config in ("ci-linux", "ci-macos", "ci-v8", "ci-windows-cross"):
+            requests.append(
+                [
+                    "build",
+                    "--config",
+                    config,
+                    "--platforms=//:windows_x86_64_msvc",
+                    "--",
+                    "//fake:target",
+                ]
+            )
+        for requested in requests:
+            with self.subTest(requested=requested):
+                actual = run_bazel_with_buildbuddy.bazel_args_with_remote_config(
+                    requested,
+                    {"RUNNER_OS": "Windows", "BUILDBUDDY_API_KEY": "test-placeholder"},
+                )
+                config = (
+                    "--config=buildbuddy-generic-rbe"
+                    if "--config=ci-windows-cross" in requested
+                    else "--config=buildbuddy-generic"
+                )
+                self.assertEqual(
+                    actual,
+                    [
+                        requested[0],
+                        config,
+                        "--remote_header=x-buildbuddy-api-key=test-placeholder",
+                        *requested[1:],
+                    ],
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

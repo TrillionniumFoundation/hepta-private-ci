@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.verified-original-archive-transfer.v1",
+  "status": "whole-original-bytes-uploaded",
+  "archive": {
+    "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz",
+    "bytes": 1894408,
+    "sha256": "b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9",
+    "git_blob": "891109a74a5484451195bdaed03629de505dc131",
+    "members": 182,
+    "payload_files": 181,
+    "manifest_sha256": "3fb01629112ad5ca52d9324d7918efa15f804146e9c6eacba2dbe7704e35e63e"
+  },
+  "source_before": {
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "status": ""
+  },
+  "source_after": {
+    "head": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "status": ""
+  },
+  "transfer": {
+    "parts": 53,
+    "per_part_utf8_size_and_sha256_verified": true,
+    "base64_decoded_in_declared_order": true,
+    "whole_size_sha256_and_git_blob_verified": true,
+    "git_api_returned_exact_blob": "891109a74a5484451195bdaed03629de505dc131"
+  },
+  "export_metadata": {
+    "path": "qualification/ordinary-owner-assembly-20261111/native-evidence/v5/export.json",
+    "mode": "100644",
+    "git_blob": "57c11f640ace9476be02aca4c02a784691d2e92b",
+    "bytes": 8045,
+    "sha256": "1b413700ceb0b8ebeb49c8030cb4235bc14a8c0e95362de07f7eaeb17cd67074",
+    "reconstruction": "Original complete export object was serialized using the unchanged exporter format; size, SHA256 and Git blob are byte-identical to the native publisher's original-file record."
+  },
+  "original_export_request": "8e16a604428568c346fdba3cb1b961d5f626b523",
+  "failed_host_git_publish": {
+    "result_git_blob": "57b2b63bedd6aa4e2ecfeb564cb89d26dd1d6e4e",
+    "attempts": 1,
+    "exit": 128,
+    "reason": "No GitHub username credential was available to the non-interactive host Git command.",
+    "remote_ref_absent_after_attempt": true,
+    "host_credentials_changed": false,
+    "source_unchanged": true
+  },
+  "authorityGranted": false,
+  "new_qualification_claimed": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

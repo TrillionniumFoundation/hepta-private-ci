@@ -1,0 +1,42 @@
+{
+  "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "patchSha256": "07f195cbd22315f4ef692c3d1b055cd000932b39e7b32e8ef01437dedac03cc7",
+  "files": [
+    {
+      "path": "makepad-draw/src/shader/draw_text.rs",
+      "beforeSha256": "23603d4c6a7f898a2636fa6088993961e16556845c04fb5c94fec7811a375add",
+      "afterSha256": "617fa4bde0f63ebbd134bd8638232f43e462bd8d8f835baf7e42ab5bda07964f"
+    },
+    {
+      "path": "makepad-draw/src/text/font.rs",
+      "beforeSha256": "b34baa77458989a0e80865d29a4234ffeae687aeacd9ca4b2d3d49fba5701ddb",
+      "afterSha256": "8367ad39b45a5c90e6489503103e8ec69a758893e46a4e5f319d5792ff134b34"
+    },
+    {
+      "path": "makepad-draw/src/text/loader.rs",
+      "beforeSha256": "5c20120fb099e56f315c258980a7feb17f22cf3199ba658d3b4f7ab60c5a0bd2",
+      "afterSha256": "bdbde12a062e182b08ad503c6549f301a183f85962824b37dd5b442dfa7c1aa3"
+    },
+    {
+      "path": "makepad-platform/src/hepta_font_consumer.rs",
+      "beforeSha256": null,
+      "afterSha256": "b556adbb811ac879005536753d5b9a7730af65c3c3eefcb4fe42dcb9959bd5a6"
+    },
+    {
+      "path": "makepad-platform/src/lib.rs",
+      "beforeSha256": "d4be527bc5dc73d9bc2c1f581ad57244c6d5647f1e726124232d8eecba960584",
+      "afterSha256": "7ee070dee0d8ebc661dcb126a52ebce3130bb99dd41a89a58a2aaa8a56577b8e"
+    },
+    {
+      "path": "makepad-platform/src/script/res.rs",
+      "beforeSha256": "30f5ea8653a393db7eb6547613c60f901ff0a2b01bb4d229b5fd3f09db797879",
+      "afterSha256": "ffcdd4dec2643d969e2b8abd37dc07ab492d35f278dad6eb9321ffd65e210555"
+    },
+    {
+      "path": "makepad-platform/src/os/web/web_network.rs",
+      "beforeSha256": "24dffe35dba1218adaa6d9ab9a12f51631f796e8d9f31114ecb973db34417b14",
+      "afterSha256": "e9d75db43bda8fd8b58b360d83dcf0c4667c8a727ca633bf2a5a729e2663423b"
+    }
+  ],
+  "scope": "Disabled-by-default WASM-only observation of actual HTTP transport/public request mapping, existing adoption, parser success and natural glyph instance emission; no acceptance authority"
+}

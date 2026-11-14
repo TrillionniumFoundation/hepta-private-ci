@@ -8,7 +8,6 @@ use crate::runtime::network_proxy_state_for_policy;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use rama_core::extensions::Extensions;
-use rama_core::extensions::ExtensionsMut;
 use rama_core::extensions::ExtensionsRef;
 use rama_http::Body;
 use rama_http::HeaderMap;
@@ -74,12 +73,6 @@ impl AsyncWrite for TestStream {
 impl ExtensionsRef for TestStream {
     fn extensions(&self) -> &Extensions {
         &self.extensions
-    }
-}
-
-impl ExtensionsMut for TestStream {
-    fn extensions_mut(&mut self) -> &mut Extensions {
-        &mut self.extensions
     }
 }
 
@@ -241,9 +234,12 @@ async fn mitm_policy_rechecks_local_private_target_after_connect() {
 
 #[tokio::test]
 async fn mitm_policy_allows_matching_hooked_write_in_full_mode() {
+    // Exercise the hook policy independently of external DNS availability.
+    let target_host = "93.184.216.34";
     let secret_file = NamedTempFile::new().unwrap();
     std::fs::write(secret_file.path(), "ghp-secret\n").unwrap();
     let mut hook = github_write_hook();
+    hook.host = target_host.to_string();
     hook.actions.inject_request_headers[0].secret_env_var = None;
     hook.actions.inject_request_headers[0].secret_file =
         Some(secret_file.path().display().to_string());
@@ -253,18 +249,18 @@ async fn mitm_policy_allows_matching_hooked_write_in_full_mode() {
         mode: NetworkMode::Full,
         ..NetworkProxyConfig::default()
     };
-    network.set_allowed_domains(vec!["api.github.com".to_string()]);
+    network.set_allowed_domains(vec![target_host.to_string()]);
     let app_state = Arc::new(network_proxy_state_for_policy(network));
     let ctx = policy_ctx(
         app_state.clone(),
         NetworkMode::Full,
-        "api.github.com",
+        target_host,
         /*target_port*/ 443,
     );
     let req = Request::builder()
         .method(Method::POST)
         .uri("/repos/openai/codex/issues")
-        .header(HOST, "api.github.com")
+        .header(HOST, target_host)
         .body(Body::empty())
         .unwrap();
 
@@ -279,8 +275,10 @@ async fn mitm_policy_allows_matching_hooked_write_in_full_mode() {
 
 #[tokio::test]
 async fn mitm_policy_blocks_encoded_path_traversal_for_repository_allowlist() {
+    // Exercise every path decision independently of external DNS availability.
+    let target_host = "93.184.216.34";
     let mut hook = github_write_hook();
-    hook.host = "github.com".to_string();
+    hook.host = target_host.to_string();
     hook.matcher.methods = vec!["GET".to_string()];
     hook.matcher.path_prefixes = vec!["pattern:/openai/openai/**".to_string()];
     hook.actions.inject_request_headers.clear();
@@ -290,12 +288,12 @@ async fn mitm_policy_blocks_encoded_path_traversal_for_repository_allowlist() {
         mode: NetworkMode::Full,
         ..NetworkProxyConfig::default()
     };
-    network.set_allowed_domains(vec!["github.com".to_string()]);
+    network.set_allowed_domains(vec![target_host.to_string()]);
     let app_state = Arc::new(network_proxy_state_for_policy(network));
     let ctx = policy_ctx(
         app_state.clone(),
         NetworkMode::Full,
-        "github.com",
+        target_host,
         /*target_port*/ 443,
     );
     let paths = [
@@ -309,7 +307,7 @@ async fn mitm_policy_blocks_encoded_path_traversal_for_repository_allowlist() {
         let req = Request::builder()
             .method(Method::GET)
             .uri(path)
-            .header(HOST, "github.com")
+            .header(HOST, target_host)
             .body(Body::empty())
             .unwrap();
         let response = mitm_blocking_response(&req, &ctx).await.unwrap();

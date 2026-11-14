@@ -1,0 +1,942 @@
+{
+  "schema": "hepta.source-custody-volumes.v1",
+  "source_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "original_directory": "library-recovery/additional-source-20261103",
+  "member_count": 92,
+  "member_bytes": 871730,
+  "source_executed": false,
+  "scientific_or_runtime_qualification": false,
+  "members": [
+    {
+      "path": "library-recovery/additional-source-20261103/MANIFEST.json",
+      "member": "MANIFEST.json",
+      "mode": "100644",
+      "bytes": 21142,
+      "sha256": "1b573487765eff933b71d8f908244ef52ad614fef17963df39c6f56b220afde6",
+      "oid": "c03fc4126c91d49de50a372f9d7afe79c0fdbe9f",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/README.md",
+      "member": "README.md",
+      "mode": "100644",
+      "bytes": 1073,
+      "sha256": "7c7f1b11d6f98de33a30c5bc64f29dcd92075584e4ac9f8dcf8129af83861ba6",
+      "oid": "1a3e46f7e002f9e1304d3b0e5fc95cb130a444ff",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/amcn_archive_source_census.py",
+      "member": "files/amcn_archive_source_census.py",
+      "mode": "100644",
+      "bytes": 6017,
+      "sha256": "321f7ae2deb685769050deb95284bb927b3cbecad2e969214ad67327a64ba787",
+      "oid": "ced54884d607d6b17d61e1adc780e58434ec154c",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/amcn_embedding_only_ablation.py",
+      "member": "files/amcn_embedding_only_ablation.py",
+      "mode": "100644",
+      "bytes": 12406,
+      "sha256": "9c373b428699a5efc2a28e6aa2c4dfb71859ab231e39fa7ebe0dcbaf95c65150",
+      "oid": "5125378c5d12ab24c062f965a6fb6c0d9326aa18",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/amcn_temporal_graph_source_audit.py",
+      "member": "files/amcn_temporal_graph_source_audit.py",
+      "mode": "100644",
+      "bytes": 6478,
+      "sha256": "3ec829516b8afbd327e1557b28e4ef10e2878bdc26cfecdedfb5b3baa8053291",
+      "oid": "a9f724bee4339b11c96a2f869b220302c4be5dae",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/archived_rag_disposition.py",
+      "member": "files/archived_rag_disposition.py",
+      "mode": "100644",
+      "bytes": 27593,
+      "sha256": "b85b62dd512be4c11c52f2a6522ce22fa293fe34b857b597a3f63428a03702b5",
+      "oid": "bb6626eef51d7e7ec3da9cb20d6cf2a0c28a33e2",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/candidate_promotion_gate.py",
+      "member": "files/candidate_promotion_gate.py",
+      "mode": "100644",
+      "bytes": 20194,
+      "sha256": "7c682f3813b2e04fa65dc03df5bd884ff0e12e6f1bafc723ad8066a431f6cd4e",
+      "oid": "6ca28c2ffdefa0dd44658be79ee6865e79f2b1f4",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/deno_binary_git_source_gate.py",
+      "member": "files/deno_binary_git_source_gate.py",
+      "mode": "100644",
+      "bytes": 6611,
+      "sha256": "554ff21c4f87f932f6b558ef0d26f54e54ba66ca25d578b787256913117fea8b",
+      "oid": "38fb968deb50ea71f1c18d463e5cfbfd67662f32",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/deno_lossy_projection_proof.py",
+      "member": "files/deno_lossy_projection_proof.py",
+      "mode": "100644",
+      "bytes": 4028,
+      "sha256": "3e113f46fdb538414ebbf3cbe3d7435dbb2b02f7dc686be2f68d6721426a5b26",
+      "oid": "4dccbcc69e7eb1d9b314c53364fb1c86d049908d",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/e2_beans_paired_uncertainty.py",
+      "member": "files/e2_beans_paired_uncertainty.py",
+      "mode": "100644",
+      "bytes": 10527,
+      "sha256": "4e810301ce2976d081d4a6d8230fdff7cffe1eae30f4af77610a4d34bbd59e74",
+      "oid": "43925e750f213f2d2f4cd8df993962f65233c54e",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/external_family_population.py",
+      "member": "files/external_family_population.py",
+      "mode": "100644",
+      "bytes": 12044,
+      "sha256": "09dfce3e075324f6d52373d577b31a139365de58e1137915cb734bcffe88b9f7",
+      "oid": "863c1c5da27df163689c1cc72d88b7a18bdde1f3",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/formatted_real_source_rank_null.py",
+      "member": "files/formatted_real_source_rank_null.py",
+      "mode": "100644",
+      "bytes": 7116,
+      "sha256": "fc437ea121b1e821eaf283da9f894418a7e10aa48e0bb92e612429a8064cd262",
+      "oid": "7a3094d19c1396d92f0401ceb9bc87eefcaf6d75",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/formatted_test_real_source_rank_null.py",
+      "member": "files/formatted_test_real_source_rank_null.py",
+      "mode": "100644",
+      "bytes": 5296,
+      "sha256": "619c6a2a2ce9b87f4ad6ee71a7450a93b9e99e72bd83965dfca435c9530211d0",
+      "oid": "46f8734bdce3302f001b88705523fbc18670852b",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/github_counterfactual_scorer_audit_source.py",
+      "member": "files/github_counterfactual_scorer_audit_source.py",
+      "mode": "100644",
+      "bytes": 13992,
+      "sha256": "4bd246e93b356b4bfad5e2096c655aa93f00f25782e070add6b9d94a16bf527f",
+      "oid": "eb867c852764b3a29bb9d8e1faf40b9c4c9738b6",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/github_counterfactual_scorer_audit_tests.py",
+      "member": "files/github_counterfactual_scorer_audit_tests.py",
+      "mode": "100644",
+      "bytes": 9936,
+      "sha256": "189b6e484f3888acb96b7690e4a18c89fdf9f7cf6de847d83c840f73c7469662",
+      "oid": "180e5da4b7c22e457adf38bb46afeeec46ae32d7",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/github_counterfactual_scorer_audit_workflow.yml",
+      "member": "files/github_counterfactual_scorer_audit_workflow.yml",
+      "mode": "100644",
+      "bytes": 7917,
+      "sha256": "2f82c8e7cde5839efb7a6ce5a33cbab06ad40207fc4e096def1b96ab7f47d333",
+      "oid": "8a858fb0e198d65f3b438cb106205a81c2f39e49",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/granite97_v9_residency.py",
+      "member": "files/granite97_v9_residency.py",
+      "mode": "100644",
+      "bytes": 12573,
+      "sha256": "8f08095ba116202edeb00ba4e7bab2b246d3998e54238dc1fef4b8034a8775f7",
+      "oid": "827530d55c7a7e1d891ef9c91490ca2bad26bda7",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta-e2-beans-independent-paired-power.yml",
+      "member": "files/hepta-e2-beans-independent-paired-power.yml",
+      "mode": "100644",
+      "bytes": 3093,
+      "sha256": "d42a3a665b7a8050f1870e59672cf635364c6181629b8eee2eca1ef8dc1b68af",
+      "oid": "cf09d896e1d382373f073b2cc0b81df65be9746c",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta_local_blocker_audit.sh",
+      "member": "files/hepta_local_blocker_audit.sh",
+      "mode": "100644",
+      "bytes": 7095,
+      "sha256": "0842edd9a255905bf2dd314821e97ffb6d75a998a132d5fb62b07582bd28fc83",
+      "oid": "d51a6973789ef2047371d5e3bbdd32e92d5bdb29",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta_local_blocker_gate.sh",
+      "member": "files/hepta_local_blocker_gate.sh",
+      "mode": "100644",
+      "bytes": 4895,
+      "sha256": "aad499720d4fbbc5cafa8934a2f8d56a5a03abceccd67a43d8803c56f2f92b95",
+      "oid": "c4334f9fe9c30c95dc15f8c511cfe8efec8a329e",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta_local_blocker_recheck(1).py",
+      "member": "files/hepta_local_blocker_recheck(1).py",
+      "mode": "100644",
+      "bytes": 9974,
+      "sha256": "6c932a371eae861e23de5593d852b7e27162bb3a743356328c00a7c25aa9da39",
+      "oid": "1f4c4d147b0470e6f988eebac2c8d2c6d57e59f6",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta_local_blocker_recheck.py",
+      "member": "files/hepta_local_blocker_recheck.py",
+      "mode": "100644",
+      "bytes": 9974,
+      "sha256": "6c932a371eae861e23de5593d852b7e27162bb3a743356328c00a7c25aa9da39",
+      "oid": "1f4c4d147b0470e6f988eebac2c8d2c6d57e59f6",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta_local_probe(1).py",
+      "member": "files/hepta_local_probe(1).py",
+      "mode": "100644",
+      "bytes": 6758,
+      "sha256": "35b3ccdfa800f1bf6371e3102f196362966cbd3da55dc4d691e6d931cf0d74ea",
+      "oid": "0884fec16da3f9601eff6524c44df649f1edd992",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta_local_probe.py",
+      "member": "files/hepta_local_probe.py",
+      "mode": "100644",
+      "bytes": 6758,
+      "sha256": "35b3ccdfa800f1bf6371e3102f196362966cbd3da55dc4d691e6d931cf0d74ea",
+      "oid": "0884fec16da3f9601eff6524c44df649f1edd992",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hepta_v19_source_export.py",
+      "member": "files/hepta_v19_source_export.py",
+      "mode": "100644",
+      "bytes": 14854,
+      "sha256": "91be7c578c8a161c07a4f41c5c041b21b2442b844d711367597fd9dbc920f86f",
+      "oid": "9c3cb013ce3ccad2322be945debee8c27844236d",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/historical_event_citation_chain.py",
+      "member": "files/historical_event_citation_chain.py",
+      "mode": "100644",
+      "bytes": 15704,
+      "sha256": "4006c31f551fa75c2dfee9cd80c3f2c67736d6974d4a81c72fb1c551a37f56a6",
+      "oid": "2720bb1b97a9e76b1455b29666233f0067f41caf",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hosted_formatted_real_git_order_v4.py",
+      "member": "files/hosted_formatted_real_git_order_v4.py",
+      "mode": "100644",
+      "bytes": 22591,
+      "sha256": "d069ea8aa9dc74486805cfc0df4fc3cec00129fba22feefc29c49f1fe01f00f6",
+      "oid": "38d4c24860ed45c81b0acbbcbc07755f53b02338",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/hosted_formatted_test_real_git_order_v4.py",
+      "member": "files/hosted_formatted_test_real_git_order_v4.py",
+      "mode": "100644",
+      "bytes": 10314,
+      "sha256": "04a5caa1a9dfe1d92ad315906a1349bbaff3fc80fcab40cc65420cb30387d160",
+      "oid": "a104a26b8b3d4c70ec00556d45626aa4dbf5d901",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/independent_v1_audit.py",
+      "member": "files/independent_v1_audit.py",
+      "mode": "100644",
+      "bytes": 12524,
+      "sha256": "9e5f6604f06095d89c316dec8c12755e6c698d63057da6f0023f62031ae807d9",
+      "oid": "a1de4788210e31956117b310225a7aab0b15e884",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/matched_structured_rag_gate.py",
+      "member": "files/matched_structured_rag_gate.py",
+      "mode": "100644",
+      "bytes": 10412,
+      "sha256": "10c61c10dea3e815056e580f6c0e588160e11ad5922cdfe9b00fc0b7ab42ee84",
+      "oid": "fdc35f384f297bf30e14935c539c2b7078fab936",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/multimodal_cell_contract.py",
+      "member": "files/multimodal_cell_contract.py",
+      "mode": "100644",
+      "bytes": 27594,
+      "sha256": "04edb6cb151481b0f252c80cd5a3de21303a10c8c07cb6c53028dc271bc5193e",
+      "oid": "3a0858e206778ddcf76bdf6d0f976869fedf0776",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/numeric_reference_v8.py",
+      "member": "files/numeric_reference_v8.py",
+      "mode": "100644",
+      "bytes": 2274,
+      "sha256": "f995a48d1c240589844878bf2b656f70f4681fd8e6f003a980e3bac3ed7a6053",
+      "oid": "20d8364feef9208b4d2af852a02d4c9885e1688e",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/original_http_runtime.py",
+      "member": "files/original_http_runtime.py",
+      "mode": "100644",
+      "bytes": 8288,
+      "sha256": "d214af1eeab75ca6faabd4c21f824db9f66783e222e7d7f90989f38a8ca284de",
+      "oid": "e92a5ea3b626e97a648a086bd043ecfb19cd27e3",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/original_http_worker.py",
+      "member": "files/original_http_worker.py",
+      "mode": "100644",
+      "bytes": 3414,
+      "sha256": "65778cea0501c39ef8827c91a2fab404cb00dffe6dbe9982dbb3eb59b0b34b35",
+      "oid": "51e7bd10f96ab7bba5e4e673b8d26f5a4bdfca4c",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/patchready_p2219_real_git_declaration_null.py",
+      "member": "files/patchready_p2219_real_git_declaration_null.py",
+      "mode": "100644",
+      "bytes": 10209,
+      "sha256": "7a51986b9d5a19c8990c6fd726ba858e285dab4c4d625bdba790474e5a2d9d15",
+      "oid": "a19fdd6d80d5a434b4988807c481a480f2ba2320",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/patchready_p2219_test_real_git_declaration_null.py",
+      "member": "files/patchready_p2219_test_real_git_declaration_null.py",
+      "mode": "100644",
+      "bytes": 9694,
+      "sha256": "1397e60b67084045c48e8ca84a6d4a4a8b394afd10799b0a3b26fc1f1fcc6c5a",
+      "oid": "06a557f2f6e71277c4631a9ade9147f165683a22",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/prepared_real_source_rank_paired_gate.py",
+      "member": "files/prepared_real_source_rank_paired_gate.py",
+      "mode": "100644",
+      "bytes": 11063,
+      "sha256": "dbf8e288c3f24db1afeef778ca8a8c8ed9cd67518ea2c54f1120f76c78c25b03",
+      "oid": "e5f528bfdf60cfd13fb75c0a2ec71bb264629104",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/prepared_test_real_source_rank_paired_gate.py",
+      "member": "files/prepared_test_real_source_rank_paired_gate.py",
+      "mode": "100644",
+      "bytes": 8023,
+      "sha256": "da89bdba307aafbf8700b1380bef9ad7698547db7c5dd7b01387faaca39f5dc3",
+      "oid": "e071c971dbb4ce7f10e69f1075a7ac1e558ae403",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/project_merge_two_parent_diff_handoff.py",
+      "member": "files/project_merge_two_parent_diff_handoff.py",
+      "mode": "100644",
+      "bytes": 12395,
+      "sha256": "02b83cdeea2aa749ff3ccaac6a12a66f7ac3ba2fc9cd023995b7407a883579b1",
+      "oid": "b93b6db43bb7ad26bf3417d1ef0d13dc0b222219",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/project_pr_review_readiness.py",
+      "member": "files/project_pr_review_readiness.py",
+      "mode": "100644",
+      "bytes": 12032,
+      "sha256": "b2ed099b21ce3926dc1ac7acadfa17464a556c2b905ba6ae33d8373365927f8c",
+      "oid": "6224e97e673c6d063a7c9a60fee842a022a19b6f",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/project_pr_source_first_handoff.py",
+      "member": "files/project_pr_source_first_handoff.py",
+      "mode": "100644",
+      "bytes": 8586,
+      "sha256": "678d63e3ffed6041f10cad3cdf0702e1b636f657ebb7417261ed230179e380af",
+      "oid": "d98e41d093e39c39c29495ac85b86c284f83c438",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/qualification.py",
+      "member": "files/qualification.py",
+      "mode": "100644",
+      "bytes": 16654,
+      "sha256": "10ac7bf7485d94a5c5740b41b57c95c11f4201c8a45d30d839cf65bce55fa440",
+      "oid": "09fd9041c8d10205f955c3c579af7e05a450c064",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/qualification_review_v2.py",
+      "member": "files/qualification_review_v2.py",
+      "mode": "100644",
+      "bytes": 16654,
+      "sha256": "10ac7bf7485d94a5c5740b41b57c95c11f4201c8a45d30d839cf65bce55fa440",
+      "oid": "09fd9041c8d10205f955c3c579af7e05a450c064",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/real_git_declaration_null.py",
+      "member": "files/real_git_declaration_null.py",
+      "mode": "100644",
+      "bytes": 9041,
+      "sha256": "4db2e70934ad183a6fd6dae4b0a7ff2e94988181ef355a972532de633a79709b",
+      "oid": "52bff08b9a84c3fce7f51ac1f53c5c1914aaed9b",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/real_git_declaration_null_v2.py",
+      "member": "files/real_git_declaration_null_v2.py",
+      "mode": "100644",
+      "bytes": 9527,
+      "sha256": "8a0acbe0758f92419fcef93bad8bb80b0cdb27eb7f603da0d95c60685eb286c0",
+      "oid": "d40c073115feeacaae70e9d34e0d06b5df0c7773",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/real_source_rank_null.py",
+      "member": "files/real_source_rank_null.py",
+      "mode": "100644",
+      "bytes": 6815,
+      "sha256": "523cfb41c234cf2c17cd54935347e82209e23b00772c9948a2c7bebf121d0ff4",
+      "oid": "27e0d4cbb0e1c376bdcb79790afeed19855392f0",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/real_source_rank_paired_gate.py",
+      "member": "files/real_source_rank_paired_gate.py",
+      "mode": "100644",
+      "bytes": 11063,
+      "sha256": "dbf8e288c3f24db1afeef778ca8a8c8ed9cd67518ea2c54f1120f76c78c25b03",
+      "oid": "e5f528bfdf60cfd13fb75c0a2ec71bb264629104",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/replay_historical_pareto_20261011.py",
+      "member": "files/replay_historical_pareto_20261011.py",
+      "mode": "100644",
+      "bytes": 6494,
+      "sha256": "d0a43312af5aff3d95298d781c4d041ca62d5ff43340e81600d2296fb9dbf6ce",
+      "oid": "012d044db8573db73bc6577016108540ab5b6ddb",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/scienceqa_image_intervention_v7.py",
+      "member": "files/scienceqa_image_intervention_v7.py",
+      "mode": "100644",
+      "bytes": 14890,
+      "sha256": "8511b6f3eb3cd8736ef51512b8cd355b3fad7a60f085401cae9f8cd128bdca30",
+      "oid": "996f4b499f51eb08c4d48d8e7c57f220c3e71d2c",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/scienceqa_image_intervention_v7_review.py",
+      "member": "files/scienceqa_image_intervention_v7_review.py",
+      "mode": "100644",
+      "bytes": 12413,
+      "sha256": "811d7e1e3c166019a82ffc3d2b57e743b60418a032f19223318f11c6b9973020",
+      "oid": "05815e612a44a938eed8610bcdeb0bd8e3ec6514",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/sealed_cell_checkpoint.py",
+      "member": "files/sealed_cell_checkpoint.py",
+      "mode": "100644",
+      "bytes": 14293,
+      "sha256": "25f372081eb32762034d2d3b3ebe57c96b29eb52492ed69edf54a3b064eaafc2",
+      "oid": "8109c0209c3895f66f11ad331d9170c8704c5d95",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/shared_cell_budget_experiment.py",
+      "member": "files/shared_cell_budget_experiment.py",
+      "mode": "100644",
+      "bytes": 9337,
+      "sha256": "b0e3c7c99dac9b45daf8b76dd4bb48049373d33717aa5677cd4dfeb2efff2217",
+      "oid": "51377dbb6bdbbca331fc84fa5a2467dc5ffbfe0a",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/short_horizon_fbsde_tree.py",
+      "member": "files/short_horizon_fbsde_tree.py",
+      "mode": "100644",
+      "bytes": 15052,
+      "sha256": "1f36b5dba99c77e320205a02762d91c08790c4943adb58750ad1b442e120331f",
+      "oid": "f8711d48d6f940465fff78b0421af21a77c91455",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/strong_rag_actual_disposition.py",
+      "member": "files/strong_rag_actual_disposition.py",
+      "mode": "100644",
+      "bytes": 20444,
+      "sha256": "cd884f93e080f0f757172fafd9916df492fc96503643690cb2b13ff63e72c509",
+      "oid": "af94000e5d31534737bf78288d9ba50782fa88d0",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/ten_project_source_closure.py",
+      "member": "files/ten_project_source_closure.py",
+      "mode": "100644",
+      "bytes": 9519,
+      "sha256": "ddef4f0b7484c512a8a82a9130ae3c2231e023d3cac37668ea0251f1515e410b",
+      "oid": "e05d13bd4294b21c6ef579efcdf613185066fc28",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_archived_rag_disposition.py",
+      "member": "files/test_archived_rag_disposition.py",
+      "mode": "100644",
+      "bytes": 10263,
+      "sha256": "0c304136ff2014db2c14d73b086726d3d58e2ed26a20ab7a15b3cc8a88045daf",
+      "oid": "987029120333eaae663b61dfe119ee9cfa8eab58",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_candidate_promotion_gate.py",
+      "member": "files/test_candidate_promotion_gate.py",
+      "mode": "100644",
+      "bytes": 5299,
+      "sha256": "a1430771566c7c2b4a292de9cbe2a98b8651ab681642726fe42593a8ffafac8b",
+      "oid": "526d82173b224a3c3dfc739aa086c051c22bee7b",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_deno_binary_git_source_gate.py",
+      "member": "files/test_deno_binary_git_source_gate.py",
+      "mode": "100644",
+      "bytes": 4019,
+      "sha256": "1b933578dbfae71d770af5a0ea41be3d8d3b7a8ce82a98c93b5c44645fab6fc5",
+      "oid": "c02f59dec4f15e6dddd38f5c000aebde619d2cbb",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_deno_lossy_projection_proof(1).py",
+      "member": "files/test_deno_lossy_projection_proof(1).py",
+      "mode": "100644",
+      "bytes": 2184,
+      "sha256": "96074fe091711001941f5467e3af03a700d37cb78f09792b1a4f2c2d516ebb19",
+      "oid": "9b3d3e2982060dcdc9269992f124ed92ac90b519",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_deno_lossy_projection_proof.py",
+      "member": "files/test_deno_lossy_projection_proof.py",
+      "mode": "100644",
+      "bytes": 2184,
+      "sha256": "96074fe091711001941f5467e3af03a700d37cb78f09792b1a4f2c2d516ebb19",
+      "oid": "9b3d3e2982060dcdc9269992f124ed92ac90b519",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_e2_beans_paired_uncertainty.py",
+      "member": "files/test_e2_beans_paired_uncertainty.py",
+      "mode": "100644",
+      "bytes": 6923,
+      "sha256": "b9b14046faea3e74c27c54f042030be275e585ca7614af2b2e07e7c41611368f",
+      "oid": "02c3d4324bda4c684558c09c3430ade7d0079c36",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_external_family_population.py",
+      "member": "files/test_external_family_population.py",
+      "mode": "100644",
+      "bytes": 8303,
+      "sha256": "84a0d2d6e5a0d81853ef2542732e9a438c5a332ab074b80bf905dc009e8ce32e",
+      "oid": "eac052e366c1d8e4c940828d1c86e71f3c5bd4b1",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_granite97_v9_residency.py",
+      "member": "files/test_granite97_v9_residency.py",
+      "mode": "100644",
+      "bytes": 3209,
+      "sha256": "9910c3f702cea2bd0e4d0252f6eafb2ecb30ae532ab110c8f872b997f0913997",
+      "oid": "67a93d5cd55f7eff66c94429067cd48937e2af9c",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_historical_event_citation_chain.py",
+      "member": "files/test_historical_event_citation_chain.py",
+      "mode": "100644",
+      "bytes": 7089,
+      "sha256": "f4bbe8cb5d7186ad0a2d64769583fe37ca76d83cd49fc1911948ef5fb2f398f5",
+      "oid": "529211ef7361659d9a3a48c19976e76e9917f788",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_independent_v1_audit_portable.py",
+      "member": "files/test_independent_v1_audit_portable.py",
+      "mode": "100644",
+      "bytes": 4565,
+      "sha256": "1ec07ebf1ccc21b1e8285f48a47c8ff006864a5ae7861ea7ecdbcd9df15a722b",
+      "oid": "dcf82fa1424a99a397e694fc97604a084b7168d6",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_matched_structured_rag_gate.py",
+      "member": "files/test_matched_structured_rag_gate.py",
+      "mode": "100644",
+      "bytes": 3468,
+      "sha256": "795aae049798a54592d1496f54a09ecb1549e839048f30f52c47f46a9ad62ad2",
+      "oid": "2ef37adb93b58297c9a2c0018a75748afcdd840e",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_multimodal_cell_contract.py",
+      "member": "files/test_multimodal_cell_contract.py",
+      "mode": "100644",
+      "bytes": 4518,
+      "sha256": "4544c7658acd3741dd4c58c26b324ff40fff59cfdf4d5f5dd3bd6ccccc2dcca3",
+      "oid": "6753a69cb71aa4d9919faf47ba3ce16e5262fbff",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_original_http_runtime.py",
+      "member": "files/test_original_http_runtime.py",
+      "mode": "100644",
+      "bytes": 6879,
+      "sha256": "3c99773ec2549ef556b1bc5b85525b75bf7edd43a69f2c94f0817b59ccd4a654",
+      "oid": "254f80b59dd692c6e42103fa2b25aafeec372077",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_project_merge_two_parent_diff_handoff(1).py",
+      "member": "files/test_project_merge_two_parent_diff_handoff(1).py",
+      "mode": "100644",
+      "bytes": 6766,
+      "sha256": "c8697657e72d4e8e1b6bde88f4e443de43859857fde9b925f5ac1cd7aabb8f22",
+      "oid": "7549de3f254a0b01206a3637b4fc8c0a5c1e3b68",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_project_merge_two_parent_diff_handoff.py",
+      "member": "files/test_project_merge_two_parent_diff_handoff.py",
+      "mode": "100644",
+      "bytes": 6766,
+      "sha256": "c8697657e72d4e8e1b6bde88f4e443de43859857fde9b925f5ac1cd7aabb8f22",
+      "oid": "7549de3f254a0b01206a3637b4fc8c0a5c1e3b68",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_project_pr_review_readiness.py",
+      "member": "files/test_project_pr_review_readiness.py",
+      "mode": "100644",
+      "bytes": 4331,
+      "sha256": "764a7cd8ff16e715f7672ba6f22005ad0b44db8720cc405cc3f3a75167ad1c58",
+      "oid": "9d18892344c553b58d14d317bc649f696e777c01",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_project_pr_source_first_handoff.py",
+      "member": "files/test_project_pr_source_first_handoff.py",
+      "mode": "100644",
+      "bytes": 4435,
+      "sha256": "7342613b190369afefc7b2a3e7b1ba4a8d3582d5f1a37e476f471599c7367ead",
+      "oid": "b529e9dae6ecc302eff3f989c1d87117f0c76eb8",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_qualification.py",
+      "member": "files/test_qualification.py",
+      "mode": "100644",
+      "bytes": 9746,
+      "sha256": "6e9c7b532193499ed5b70356be4db8c0029a13f993a91c4b5a4ac38bed7feaca",
+      "oid": "3635dfb6ce1e34bd2c6f787968d2e942861367ac",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_qualification_review_v2.py",
+      "member": "files/test_qualification_review_v2.py",
+      "mode": "100644",
+      "bytes": 9746,
+      "sha256": "6e9c7b532193499ed5b70356be4db8c0029a13f993a91c4b5a4ac38bed7feaca",
+      "oid": "3635dfb6ce1e34bd2c6f787968d2e942861367ac",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_real_git_declaration_null.py",
+      "member": "files/test_real_git_declaration_null.py",
+      "mode": "100644",
+      "bytes": 8205,
+      "sha256": "308fcf51848b0a6359063b455e635168a9101164f069de0fdaff27e4f7448c44",
+      "oid": "a2cf01b1e330798cb5c2ccd9e638a2197bb8e7cb",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_real_git_declaration_null_v2(1).py",
+      "member": "files/test_real_git_declaration_null_v2(1).py",
+      "mode": "100644",
+      "bytes": 9095,
+      "sha256": "ec375ffa6bf31c422bb31566cddd5de3a4e630b3ce8260c03635a01de285fd89",
+      "oid": "c3733d9dc0ddc043badc35872d9ab94f6c68682d",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_real_git_declaration_null_v2.py",
+      "member": "files/test_real_git_declaration_null_v2.py",
+      "mode": "100644",
+      "bytes": 9095,
+      "sha256": "ec375ffa6bf31c422bb31566cddd5de3a4e630b3ce8260c03635a01de285fd89",
+      "oid": "c3733d9dc0ddc043badc35872d9ab94f6c68682d",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_real_source_rank_null.py",
+      "member": "files/test_real_source_rank_null.py",
+      "mode": "100644",
+      "bytes": 4617,
+      "sha256": "1aed14ac57dfa81584c49090ed0eadb042a91b93bec525a6d271243ec410b7ee",
+      "oid": "b36fc9a910fea21692e3c980a5a394abb680aef5",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_real_source_rank_paired_gate.py",
+      "member": "files/test_real_source_rank_paired_gate.py",
+      "mode": "100644",
+      "bytes": 8023,
+      "sha256": "da89bdba307aafbf8700b1380bef9ad7698547db7c5dd7b01387faaca39f5dc3",
+      "oid": "e071c971dbb4ce7f10e69f1075a7ac1e558ae403",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_replay_historical_pareto_20261011.py",
+      "member": "files/test_replay_historical_pareto_20261011.py",
+      "mode": "100644",
+      "bytes": 1934,
+      "sha256": "967e5bde2ce644f2c089246a64443833949410426b150b0a80b6cb093333fc9e",
+      "oid": "1f9cea851904777d908408cd9c6c2567ce054b03",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_scienceqa_image_intervention_v7.py",
+      "member": "files/test_scienceqa_image_intervention_v7.py",
+      "mode": "100644",
+      "bytes": 9020,
+      "sha256": "bb284c3ec490612c994451d80adf3c48ba18e41d8957cd4a03a11ab602d1dbcf",
+      "oid": "9c851bced1524532008a2fef2daa0f187d897746",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_sealed_cell_checkpoint.py",
+      "member": "files/test_sealed_cell_checkpoint.py",
+      "mode": "100644",
+      "bytes": 7588,
+      "sha256": "61abc92b8ca264433455f4ac6878049124b77094f8b04b594c2e94c9e4eb17c1",
+      "oid": "764760e2d2dfeb2660a5977c6782c71e5bef5d30",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_shared_cell_budget_experiment.py",
+      "member": "files/test_shared_cell_budget_experiment.py",
+      "mode": "100644",
+      "bytes": 4027,
+      "sha256": "3cd2474035ab4aecea5458c80f92b6bc7323ccde72cfee4fb6ec637ba5329faf",
+      "oid": "364f316e6546c8e2ca59ec571c380716181cb76a",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_short_horizon_fbsde_tree.py",
+      "member": "files/test_short_horizon_fbsde_tree.py",
+      "mode": "100644",
+      "bytes": 1709,
+      "sha256": "ef57aade0e7b124aa41fcdaa58598fe0efe605e5fb49abac4b43a217b32f437f",
+      "oid": "b62cc1fd527552253a7ac8fc9785ae721c22d892",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_ten_project_source_closure.py",
+      "member": "files/test_ten_project_source_closure.py",
+      "mode": "100644",
+      "bytes": 5769,
+      "sha256": "e9b3d03241efc9c6f91ad060ffd79d13fb95c6d38b8ddcdde8960058aa9f6e43",
+      "oid": "23847469c5cdb8ddf14dcb068e2456a596448013",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/test_v19_physical_source_preflight.py",
+      "member": "files/test_v19_physical_source_preflight.py",
+      "mode": "100644",
+      "bytes": 10233,
+      "sha256": "5eef6e039c4ebeddf7c736091ecb4565f4db4a5f811cd90db83c9fd0eea80812",
+      "oid": "c56ac5fb0b9477c58540b53aade3fd30e300fdd3",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/v19_physical_source_preflight.py",
+      "member": "files/v19_physical_source_preflight.py",
+      "mode": "100644",
+      "bytes": 14854,
+      "sha256": "91be7c578c8a161c07a4f41c5c041b21b2442b844d711367597fd9dbc920f86f",
+      "oid": "9c3cb013ce3ccad2322be945debee8c27844236d",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/v4_real_git_order_v4.py",
+      "member": "files/v4_real_git_order_v4.py",
+      "mode": "100644",
+      "bytes": 20381,
+      "sha256": "43e61a88f4f1be3151e0c9e13e54efaad5425008d0e7e38296a1f3aa59c3f5bc",
+      "oid": "5e469d40b260cc35e43ee5a9f7cb1498ea6e4606",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/v4_test_real_git_order_v4.py",
+      "member": "files/v4_test_real_git_order_v4.py",
+      "mode": "100644",
+      "bytes": 9388,
+      "sha256": "d2cd46edd961d2b94e3c9c73a561b6ef09f679da1e53bafcda60bd94b0978ceb",
+      "oid": "730c90a4f3a448cdc77ad43fff73a5f17be17743",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/v9_independent_original_audit.py",
+      "member": "files/v9_independent_original_audit.py",
+      "mode": "100644",
+      "bytes": 19044,
+      "sha256": "0f2ca44955f252dee6ecb12533ae16e82ad7e6a705db72fa236d98b7c9d73239",
+      "oid": "a147964ef2681f22d83c7f1d6434a5501bfa94d7",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/files/verify_strong_rag_20261013.py",
+      "member": "files/verify_strong_rag_20261013.py",
+      "mode": "100644",
+      "bytes": 11666,
+      "sha256": "e912e3059b3c3c46f7a02d0614c05f08dc5c6a91e684b6deffabc6c91e733ae4",
+      "oid": "7111ebb4050bb127a8d4d16c60316e56c4b3fc1e",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/additional-source-20261103/verify_snapshot.py",
+      "member": "verify_snapshot.py",
+      "mode": "100644",
+      "bytes": 732,
+      "sha256": "6dd9e74a7f5afc6675ea07c57e193356f0da99566bba3f0a024f2162b2712717",
+      "oid": "2975169d83a813d3e6b18d0c5a9af3d483d2cb9c",
+      "surface": "maintained_reader",
+      "volume": "source-custody-001.tar.gz"
+    }
+  ],
+  "volumes": [
+    {
+      "path": "source-custody-001.tar.gz",
+      "bytes": 213584,
+      "sha256": "e768227a3c7efce3381e76b3aa6dc5739d73c946fde94bd9664c6540e41245a9",
+      "tar_bytes": 952320,
+      "tar_sha256": "fa97643ab19192bc34c2d021ab1b0142d2b231065f9b7362144b67dde2023d26",
+      "member_count": 92,
+      "member_bytes": 871730
+    }
+  ]
+}

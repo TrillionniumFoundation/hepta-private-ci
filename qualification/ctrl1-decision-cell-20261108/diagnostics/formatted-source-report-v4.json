@@ -1,0 +1,424 @@
+{
+  "schema": "ctrl1.native-format.v4",
+  "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "files": [
+    {
+      "path": "scripts/ndu_ctrl1/__init__.py",
+      "before_sha256": "1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c",
+      "after_sha256": "1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c",
+      "before_bytes": 78,
+      "after_bytes": 78,
+      "changed": false,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "5b2a3fee5af514581fca9d6f9aea7024c0f6db20fe4184cc39162bc6c3a5f6d2",
+      "after_ast_sha256": "5b2a3fee5af514581fca9d6f9aea7024c0f6db20fe4184cc39162bc6c3a5f6d2",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/budget_sensitivity.py",
+      "before_sha256": "dffab065e1518f8de1156a32bed5a6b361dff133c3dd9684c9fe8855c4e2c98b",
+      "after_sha256": "7868f0da26447e3c1f631a3aeb09cef7b1fdf9cfb3d36847e676046bebca663e",
+      "before_bytes": 11324,
+      "after_bytes": 12054,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "10881d894f17d19800f53d77fc9a6dadfeb3ec1bbc4e62621ff06c8c6a383cc1",
+      "after_ast_sha256": "10881d894f17d19800f53d77fc9a6dadfeb3ec1bbc4e62621ff06c8c6a383cc1",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/evaluation.py",
+      "before_sha256": "9fa8a89e6a07a157bb1c6085701d8aa4397e37563614ecdd3d83b2b833b3f437",
+      "after_sha256": "15bdb99af470a20984e37c9a171432a80b2bac7aee563015bdc66d4a38dd6f3e",
+      "before_bytes": 8572,
+      "after_bytes": 8590,
+      "changed": true,
+      "strict_ast_equal": false,
+      "before_ast_sha256": "4897fd5371898bc880e625fed94b6acbea51c9b9a4c73076a6fe30431542bd80",
+      "after_ast_sha256": "8108ab838dbeaf4ec101d5d671ec73569f8141625d7a395f459f1c135dd43508",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [
+        {
+          "node": "module.body[11]",
+          "before": "Execute one public-belief trajectory and retain every realized charge.\n\nIts discounted path return is NOT an estimator of a nested risk-sensitive CE.\nExpectations of payoff, resource cost and time remain ordinary sample means.\n",
+          "after": "Execute one public-belief trajectory and retain every realized charge.\n\n    Its discounted path return is NOT an estimator of a nested risk-sensitive CE.\n    Expectations of payoff, resource cost and time remain ordinary sample means.\n    ",
+          "cleandoc_equal": true
+        },
+        {
+          "node": "module.body[10]",
+          "before": "Exact reachable-policy graph; oracle work is strictly offline reference.\n\nThe NDU value is nested CE, while all other fields are expectations under the\nactual joint kernel. The ideal oracle excludes online computation overhead.\n",
+          "after": "Exact reachable-policy graph; oracle work is strictly offline reference.\n\n    The NDU value is nested CE, while all other fields are expectations under the\n    actual joint kernel. The ideal oracle excludes online computation overhead.\n    ",
+          "cleandoc_equal": true
+        }
+      ],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/learning.py",
+      "before_sha256": "8ab6621797b789029560a4bde7e72a68e54db296b3d829c3ffce8e21fd809482",
+      "after_sha256": "695784397aaa7d2cd7a0f3a9c3315d8aca414104448a42120731da2d3519f011",
+      "before_bytes": 20642,
+      "after_bytes": 22484,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "f4398bfedb779b30c37c5817e20e54a49d0030951f1c0bb32118a2689d01a918",
+      "after_ast_sha256": "f4398bfedb779b30c37c5817e20e54a49d0030951f1c0bb32118a2689d01a918",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/model.py",
+      "before_sha256": "2895944ca45cbce9d01f5a54c2fcd52edefab05f38937b0995a135f21804afe6",
+      "after_sha256": "6001a45f067a7f439a8ae930368baa5959ba3bf0f714d5e113a598147187173f",
+      "before_bytes": 9591,
+      "after_bytes": 10421,
+      "changed": true,
+      "strict_ast_equal": false,
+      "before_ast_sha256": "55bba8173c10e4f66c049fd307a03ee15e68d0cfd8377223bf0f1ae835ebf9e0",
+      "after_ast_sha256": "900dee786d9606f7a5ac1e1bda14b2c84e11654516150dbe8b7a33cdece099e1",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [
+        {
+          "node": "module.body[19]",
+          "before": "Nested finite-entropic edge backup with explicit immediate resource cost.\n\nThe resource charge is outside temporal discount but inside this edge's CE.\nCallers supply observed terminal rewards, or frozen forecast values when making\na prediction; evaluation must always use the environment's terminal rewards.\n",
+          "after": "Nested finite-entropic edge backup with explicit immediate resource cost.\n\n    The resource charge is outside temporal discount but inside this edge's CE.\n    Callers supply observed terminal rewards, or frozen forecast values when making\n    a prediction; evaluation must always use the environment's terminal rewards.\n    ",
+          "cleandoc_equal": true
+        }
+      ],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/oracle.py",
+      "before_sha256": "303401b1a0e23bc39a76eb0cfd070d03a624d4e2539444e40c2d579c3c898ad5",
+      "after_sha256": "0a07c19116253f34fda5cf2c0b2361756bbd424607bf0e2035d5d0de87256382",
+      "before_bytes": 4426,
+      "after_bytes": 4644,
+      "changed": true,
+      "strict_ast_equal": false,
+      "before_ast_sha256": "11a127f917261a87382cbe74821fbe69f25f2033e4e7511b152aa22a84bc7a6d",
+      "after_ast_sha256": "584888f4b7d3339123790b8a3baced7a39c7f7da1c968f5d67c7dbb562b6f11b",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [
+        {
+          "node": "module.body[5]",
+          "before": "Enumerate complete contingent policy trees for tiny validation instances.\n\nUnlike DP this forms the Cartesian product of every child policy choice, using\nno maximizing continuation and no shared backup implementation. A hard cap\nrejects instances too large for this independent check.\n",
+          "after": "Enumerate complete contingent policy trees for tiny validation instances.\n\n    Unlike DP this forms the Cartesian product of every child policy choice, using\n    no maximizing continuation and no shared backup implementation. A hard cap\n    rejects instances too large for this independent check.\n    ",
+          "cleandoc_equal": true
+        }
+      ],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/policies.py",
+      "before_sha256": "512df0e097e4eb2c9e7d92e62663ac12fc7cc125606e41a2dac870cc8f9d575e",
+      "after_sha256": "3f82b001f42ea528d70e64f1805586a494dd64d564c4a6a722f012e2850587f5",
+      "before_bytes": 10848,
+      "after_bytes": 10920,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "a0b33e04a1ff8655cd59f5027d60cfa4ecd2db199d680860224c6b860a06f157",
+      "after_ast_sha256": "a0b33e04a1ff8655cd59f5027d60cfa4ecd2db199d680860224c6b860a06f157",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/routing.py",
+      "before_sha256": "8d805be6669be3eb564194a99e46d0dc917a08fb2f4b674b9ca21ba42410bbba",
+      "after_sha256": "ad3d41c6f2d14560d5be8d7ee093c26c7d8673bbe66a2ee9fa99f7900f9cfea3",
+      "before_bytes": 13036,
+      "after_bytes": 14426,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "f6fb9eb3fa965c271abf35a87ec81cb8f4d24411841562a20101d06a9d64c082",
+      "after_ast_sha256": "f6fb9eb3fa965c271abf35a87ec81cb8f4d24411841562a20101d06a9d64c082",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/run.py",
+      "before_sha256": "d5a721a64c5cec4b27bf7d74c91d9107a6dfa10341af925af8a7b08adfb2f5fc",
+      "after_sha256": "bf220bfdd094613a1cacf32d045b9b29dc150fb3172484ed109b76acbc835933",
+      "before_bytes": 19419,
+      "after_bytes": 23547,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "0735544831a8253447ba187b099c1a030315a2ddd07e08ec090b2cb9aed16e98",
+      "after_ast_sha256": "0735544831a8253447ba187b099c1a030315a2ddd07e08ec090b2cb9aed16e98",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/sensitivity_run.py",
+      "before_sha256": "bfa3e6a2ba38474538a9fc735cf6e4780018be3a7160657785b5ca63431ce47c",
+      "after_sha256": "dfc31f265cf80e03d092d40b17fa27ccb8650ba6967c8bdf01f1d14c39a5a0a5",
+      "before_bytes": 12188,
+      "after_bytes": 16318,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "4cab8288e3aabea56d604e9ee05573008739cbad5264e9a1723aef17d7ac3a75",
+      "after_ast_sha256": "4cab8288e3aabea56d604e9ee05573008739cbad5264e9a1723aef17d7ac3a75",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_evidence.py",
+      "before_sha256": "6e101b5bb0dbc972a9bb5967b64ac19017f3facc0d0fb6bd1a4ab347aef318ca",
+      "after_sha256": "f6eafac5965d920aa706cb3e38f55f7cfd855a09235254b2c1e3f6dca97efb0c",
+      "before_bytes": 11279,
+      "after_bytes": 11853,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "7fc260a818a77f53218f1487389bde8f92f34f886219dcadc62251ba4ca540fe",
+      "after_ast_sha256": "7fc260a818a77f53218f1487389bde8f92f34f886219dcadc62251ba4ca540fe",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_learning.py",
+      "before_sha256": "df2b424b4f2d572885029b6af4cb4e7e6258c4de128bc1f86e735cd8a0170fc3",
+      "after_sha256": "5e73edfaf25ffe1706d21eecece780047c2b8f49487fe0ca5de59629b7c62860",
+      "before_bytes": 11856,
+      "after_bytes": 12957,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "0d440be6b2c50149c8247091cd61d1804b27559978cf01f9715fd54091a6c3f0",
+      "after_ast_sha256": "0d440be6b2c50149c8247091cd61d1804b27559978cf01f9715fd54091a6c3f0",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_model.py",
+      "before_sha256": "0d285a804f7641a700b99f1e8aade9560089d8873fd9314035479e6089f79b11",
+      "after_sha256": "d0ab9c3cd6681f7ebcf12690d29e69b08f6c83764bbad512d1db42d6244f0e56",
+      "before_bytes": 7762,
+      "after_bytes": 8356,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "6e6e47cadede0bc2dc993e795678fd3a40b722c36a951b98bd23e265d986db11",
+      "after_ast_sha256": "6e6e47cadede0bc2dc993e795678fd3a40b722c36a951b98bd23e265d986db11",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_policies.py",
+      "before_sha256": "39fd3d870aa7ffbd28a9ed69f4de05a225e194e3e2a3f02e1fbb33beeeb2314f",
+      "after_sha256": "96cda9dc2058b1a69f345b0d90be3596239c622e625ed73116a3215636ea75e4",
+      "before_bytes": 7121,
+      "after_bytes": 7738,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "fd0b90f7bbfef0f3155aaf61c9f3be6dc8afd39ddbf815d1f26803dfa137e8a5",
+      "after_ast_sha256": "fd0b90f7bbfef0f3155aaf61c9f3be6dc8afd39ddbf815d1f26803dfa137e8a5",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_profiles.py",
+      "before_sha256": "22fe3fd657b7a633dd33684c68c7ea8c7933eeb4acbba95413c771a1c3be91a4",
+      "after_sha256": "02fef20b3412b4ea159fcc0cbca3021cf2875a26fd30c1100b678eb32d3d536a",
+      "before_bytes": 2951,
+      "after_bytes": 3078,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "3754dea2a9d0e14793e785593cbb4ccf779f62a9eacef1c21b3682c28a0506b2",
+      "after_ast_sha256": "3754dea2a9d0e14793e785593cbb4ccf779f62a9eacef1c21b3682c28a0506b2",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_routing.py",
+      "before_sha256": "ed996e87364a20aafd0a369a428d76ed3a252ba3463cbbee4d96b949aa8aab8e",
+      "after_sha256": "c1d93ef85192d309f0fa1069eea4d26ef2c74cc3d9864a1a7b76f087610737b3",
+      "before_bytes": 5107,
+      "after_bytes": 5543,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "027524d52330deacfe57c9ba0daa2ee45a93f8e4439a3112dfd69d2f6f1b80c7",
+      "after_ast_sha256": "027524d52330deacfe57c9ba0daa2ee45a93f8e4439a3112dfd69d2f6f1b80c7",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/verify.py",
+      "before_sha256": "84e27fa3432b227c283e342a85ed450b241f250b5ff68aca79c51e9a6792e814",
+      "after_sha256": "a69fd54bf5b95f2c4f205d241c1b38adc1becc965d8fd87c7f213f831b59047e",
+      "before_bytes": 27307,
+      "after_bytes": 31617,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "eb22fac7b60a36461a604d87683ace6fde95fd9756d2e06db655d612a03903d9",
+      "after_ast_sha256": "eb22fac7b60a36461a604d87683ace6fde95fd9756d2e06db655d612a03903d9",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    },
+    {
+      "path": "scripts/ndu_ctrl1/README.md",
+      "before_sha256": "53abd96df6dfeb5bab1f02d5e17bce46d1dee97e617cf432816686f4c3b25570",
+      "after_sha256": "53abd96df6dfeb5bab1f02d5e17bce46d1dee97e617cf432816686f4c3b25570",
+      "before_bytes": 11808,
+      "after_bytes": 11808,
+      "changed": false
+    },
+    {
+      "path": ".github/workflows/hepta-ndu-recursion.yml",
+      "before_sha256": "fd45c5a1e0600eb8a564eb5e100e2480063294ae1c458c82cb99c3169c8ea2f0",
+      "after_sha256": "fd45c5a1e0600eb8a564eb5e100e2480063294ae1c458c82cb99c3169c8ea2f0",
+      "before_bytes": 6433,
+      "after_bytes": 6433,
+      "changed": false
+    },
+    {
+      "path": "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py",
+      "before_sha256": "1e9f3d3329bc6bc00b900ec980d8f4c7f51cd4374720ffa44daf5ee9663ee719",
+      "after_sha256": "700461978110ac7b78d5ea879a4056a987fabc845ea7dd9aba777a4047710007",
+      "before_bytes": 8168,
+      "after_bytes": 9585,
+      "changed": true,
+      "strict_ast_equal": true,
+      "before_ast_sha256": "437304c46add6e25a7b387de1a6ea61790f56370d0f9e73d5d1c836d2eb788c0",
+      "after_ast_sha256": "437304c46add6e25a7b387de1a6ea61790f56370d0f9e73d5d1c836d2eb788c0",
+      "executable_ast_equal": true,
+      "genuine_docstring_nodes_equal": true,
+      "docstring_changes": [],
+      "all_changed_docstrings_cleandoc_equal": true
+    }
+  ],
+  "strict_ast_parity": false,
+  "executable_ast_parity": true,
+  "docstring_cleandoc_parity": true,
+  "python_files": 18,
+  "archive_path": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/formatted-source-v4.tar.gz",
+  "archive_sha256": "75add77e600919536715e4ad96686e3a38b8dff2b8e87630143eb8255ae14574",
+  "archive_bytes": 55706,
+  "run_source_manifest": {
+    "scripts/ndu_ctrl1/__init__.py": {
+      "sha256": "1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c",
+      "bytes": 78
+    },
+    "scripts/ndu_ctrl1/budget_sensitivity.py": {
+      "sha256": "7868f0da26447e3c1f631a3aeb09cef7b1fdf9cfb3d36847e676046bebca663e",
+      "bytes": 12054
+    },
+    "scripts/ndu_ctrl1/evaluation.py": {
+      "sha256": "15bdb99af470a20984e37c9a171432a80b2bac7aee563015bdc66d4a38dd6f3e",
+      "bytes": 8590
+    },
+    "scripts/ndu_ctrl1/learning.py": {
+      "sha256": "695784397aaa7d2cd7a0f3a9c3315d8aca414104448a42120731da2d3519f011",
+      "bytes": 22484
+    },
+    "scripts/ndu_ctrl1/model.py": {
+      "sha256": "6001a45f067a7f439a8ae930368baa5959ba3bf0f714d5e113a598147187173f",
+      "bytes": 10421
+    },
+    "scripts/ndu_ctrl1/oracle.py": {
+      "sha256": "0a07c19116253f34fda5cf2c0b2361756bbd424607bf0e2035d5d0de87256382",
+      "bytes": 4644
+    },
+    "scripts/ndu_ctrl1/policies.py": {
+      "sha256": "3f82b001f42ea528d70e64f1805586a494dd64d564c4a6a722f012e2850587f5",
+      "bytes": 10920
+    },
+    "scripts/ndu_ctrl1/routing.py": {
+      "sha256": "ad3d41c6f2d14560d5be8d7ee093c26c7d8673bbe66a2ee9fa99f7900f9cfea3",
+      "bytes": 14426
+    },
+    "scripts/ndu_ctrl1/run.py": {
+      "sha256": "bf220bfdd094613a1cacf32d045b9b29dc150fb3172484ed109b76acbc835933",
+      "bytes": 23547
+    },
+    "scripts/ndu_ctrl1/sensitivity_run.py": {
+      "sha256": "dfc31f265cf80e03d092d40b17fa27ccb8650ba6967c8bdf01f1d14c39a5a0a5",
+      "bytes": 16318
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py": {
+      "sha256": "700461978110ac7b78d5ea879a4056a987fabc845ea7dd9aba777a4047710007",
+      "bytes": 9585
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_evidence.py": {
+      "sha256": "f6eafac5965d920aa706cb3e38f55f7cfd855a09235254b2c1e3f6dca97efb0c",
+      "bytes": 11853
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_learning.py": {
+      "sha256": "5e73edfaf25ffe1706d21eecece780047c2b8f49487fe0ca5de59629b7c62860",
+      "bytes": 12957
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_model.py": {
+      "sha256": "d0ab9c3cd6681f7ebcf12690d29e69b08f6c83764bbad512d1db42d6244f0e56",
+      "bytes": 8356
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_policies.py": {
+      "sha256": "96cda9dc2058b1a69f345b0d90be3596239c622e625ed73116a3215636ea75e4",
+      "bytes": 7738
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_profiles.py": {
+      "sha256": "02fef20b3412b4ea159fcc0cbca3021cf2875a26fd30c1100b678eb32d3d536a",
+      "bytes": 3078
+    },
+    "scripts/ndu_ctrl1/test_ctrl1_routing.py": {
+      "sha256": "c1d93ef85192d309f0fa1069eea4d26ef2c74cc3d9864a1a7b76f087610737b3",
+      "bytes": 5543
+    },
+    "scripts/ndu_ctrl1/verify.py": {
+      "sha256": "a69fd54bf5b95f2c4f205d241c1b38adc1becc965d8fd87c7f213f831b59047e",
+      "bytes": 31617
+    },
+    "scripts/ndu_real_runtime/objective.py": {
+      "sha256": "cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd",
+      "bytes": 3377
+    },
+    "scripts/ndu_real_runtime/finite_entropic_golden.json": {
+      "sha256": "361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc",
+      "bytes": 2076
+    }
+  },
+  "base_helpers": {
+    "scripts/ndu_real_runtime/objective.py": {
+      "base_git_blob": "ca2a6aad749815d15f84a613c8058b3a07c03e8f",
+      "local_git_blob": "ca2a6aad749815d15f84a613c8058b3a07c03e8f",
+      "unchanged": true
+    },
+    "scripts/ndu_real_runtime/finite_entropic_golden.json": {
+      "base_git_blob": "bc43a6f53def4420f1b3270ede66371d3b1bd62f",
+      "local_git_blob": "bc43a6f53def4420f1b3270ede66371d3b1bd62f",
+      "unchanged": true
+    }
+  },
+  "ruff_version": "0.15.13",
+  "real_just_fmt_passed": true,
+  "locked_ruff_check_passed": true,
+  "prettier": "deferred"
+}

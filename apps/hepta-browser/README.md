@@ -3,7 +3,7 @@
 This root contains the repository-owned `browser.servo` boundary. It now has two deliberately separated layers:
 
 1. authority-free browser presentation/proposal helpers in `src/browser.js`;
-2. a stateful effect owner in `src/runtime.js` / `src/runtime-host.js`, with typed actions, final-use authority fencing, durable operation recovery and an optional isolated subprocess driver.
+2. a stateful effect owner in `src/runtime.js` / `src/runtime-host.js`, with typed actions, final-use authority fencing, a durable operation journal, replay of recorded terminal outcomes and an optional isolated subprocess driver.
 
 The code in this package does **not** by itself prove that a Servo artifact exists or has passed deployment qualification. `third_party/servo-patches/MANIFEST.json` remains the canonical upstream source pin; a worker executable must additionally be artifact-digest bound before `SubprocessBrowserDriver` will launch it.
 
@@ -17,9 +17,15 @@ Typed runtime actions are closed-world and bounded. Current action kinds are `na
 
 `BrowserProfileHost` serializes profile mutations and reserves an operation identity before dispatch. Final-use authority is expressed as `authority.withVerifiedUse(request, callback)`: durable intent fsync and local worker dispatch execute inside that fence. A concurrent retry therefore cannot race a revocation or dispatch the same operation twice.
 
-After a dispatch may have crossed the worker boundary, exceptions and timeouts become `indeterminate`. They never delete the operation identity and never authorize redispatch. Reconciliation observes the original identity and is intentionally allowed after the original profile/effect deadline has expired; expiry prevents a new effect, not recovery of an old one.
+After a dispatch may have crossed the worker boundary, exceptions and timeouts become `indeterminate`. They never delete the operation identity and never authorize redispatch. Host policy permits reconciliation of the original identity after the profile/effect deadline; this permission alone does not provide a surviving worker readback channel. Expiry fences new effects and requests that execution stop.
 
-`FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. A process restart can use `reconcilePersistedOperation()` without issuing another effect. Terminal operations are bounded in memory while durable tombstones remain available for replay.
+`FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. `reconcilePersistedOperation()` can replay an already-recorded terminal outcome after a host restart without issuing another effect. An unresolved record requires readback from its original worker identity; the journal does not by itself establish that outcome. Terminal operations are bounded in memory while durable tombstones remain available for replay.
+
+### Stopped-worker recovery: SOURCE_ONLY_HOLD
+
+The current `SubprocessBrowserDriver.stop()` closes its client, clears the child/client handles and removes the private profile directory. The Servo worker's operation table is in memory, and the worker exits on stop. There is no current attach/reopen endpoint or durable worker outcome store that reconstructs unresolved observations after that session is lost.
+
+Consequently, closing or expiring a real subprocess profile can leave unresolved operations fenced and `indeterminate`; a later reconciliation attempt cannot use the discarded client and can report `reconcile_error`. A new host/worker session does not prove the old operation's outcome. Already-durable terminal records remain replayable, but recovery of unresolved operations after stop/restart is **SOURCE_ONLY_HOLD**. The host retains the original identity and never redispatches it. Implementing that missing recovery capability requires a reviewed durable readback/attachment contract and an owning process fixture; keeping an expired effect-capable worker alive is not a substitute.
 
 ## Worker boundary
 
@@ -35,6 +41,6 @@ Run from the repository root:
 node --test apps/hepta-browser/test/*.test.js
 ```
 
-The focused suite covers canonical URL/proposal parsing, typed actions, proposal-to-effect bridging, duplicate-dispatch exclusion, post-dispatch failures, deadline-expired reconciliation, final-use fencing, durable recovery, journal tamper rejection, bounded retention, private framing, artifact binding and the Linux sandbox command posture.
+The focused suite covers canonical URL/proposal parsing, typed actions, proposal-to-effect bridging, duplicate-dispatch exclusion, post-dispatch failures, host-policy reconciliation after deadline expiry using test drivers, final-use fencing, durable journal replay, journal tamper rejection, bounded retention, private framing, artifact binding and the Linux sandbox command posture. A fake driver that retains reconciliation after stop does not establish recovery through the real subprocess driver after its session is destroyed.
 
 For the module completion boundary and remaining Servo artifact gates, see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md` and `qualification/module-execution-dossiers/detail/browser.servo.md`.

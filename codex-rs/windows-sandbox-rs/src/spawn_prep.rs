@@ -16,6 +16,7 @@ use crate::env::inherit_path_env;
 use crate::env::normalize_null_device_env;
 use crate::identity::SandboxCreds;
 use crate::identity::require_logon_sandbox_creds;
+use crate::legacy_admission::require_legacy_filesystem_isolation;
 use crate::logging::log_start;
 use crate::path_normalization::canonicalize_path;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
@@ -129,6 +130,7 @@ pub(crate) fn prepare_legacy_spawn_context(
     command: &[String],
     options: SpawnPrepOptions,
 ) -> Result<SpawnContext> {
+    require_legacy_filesystem_isolation()?;
     let common = prepare_spawn_context_common(
         permission_profile,
         workspace_roots,
@@ -150,6 +152,7 @@ pub(crate) fn prepare_legacy_session_security(
     cwd: &Path,
     capability_roots: impl IntoIterator<Item = PathBuf>,
 ) -> Result<LegacySessionSecurity> {
+    require_legacy_filesystem_isolation()?;
     let caps = load_or_create_cap_sids(codex_home)?;
     let (h_token, readonly_sid, readonly_sid_str, write_root_sids) = unsafe {
         if uses_write_capabilities {
@@ -525,13 +528,13 @@ mod tests {
     }
 
     #[test]
-    fn legacy_spawn_env_applies_offline_network_rewrite() {
+    fn legacy_spawn_refusal_keeps_environment_unchanged() {
         let codex_home = TempDir::new().expect("tempdir");
         let cwd = TempDir::new().expect("tempdir");
         let mut env_map = HashMap::new();
         let workspace_roots = workspace_roots_for(cwd.path());
 
-        let _context = prepare_legacy_spawn_context(
+        let result = prepare_legacy_spawn_context(
             &PermissionProfile::workspace_write(),
             workspace_roots.as_slice(),
             codex_home.path(),
@@ -542,13 +545,14 @@ mod tests {
                 inherit_path: true,
                 add_git_safe_directory: false,
             },
-        )
-        .expect("legacy env prep");
-
-        assert_eq!(env_map.get("SBX_NONET_ACTIVE"), Some(&"1".to_string()));
+        );
+        crate::legacy_admission_tests::assert_unavailable(result);
+        assert!(env_map.is_empty());
         assert_eq!(
-            env_map.get("HTTP_PROXY"),
-            Some(&"http://127.0.0.1:9".to_string())
+            std::fs::read_dir(codex_home.path())
+                .expect("read home")
+                .count(),
+            0
         );
     }
 

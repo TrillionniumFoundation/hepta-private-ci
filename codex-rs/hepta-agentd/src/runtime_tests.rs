@@ -1,4 +1,7 @@
 use std::sync::Arc;
+
+#[path = "circuit_task_ingress_tests.rs"]
+mod circuit_task_ingress;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -138,6 +141,14 @@ async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
 async fn drain_runtime_keeps_control_reconciliation_live_until_terminal_observation() {
     let fixture = runtime_fixture();
     attach_runtime_prerequisites(&fixture).await;
+    fixture
+        .state
+        .attach_automation_store(
+            AutomationStore::open(&fixture.identity.layout)
+                .await
+                .expect("real empty automation owner"),
+        )
+        .expect("attach automation owner for verified drain");
     fixture
         .registry
         .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
@@ -397,6 +408,7 @@ async fn qualification_host_binds_one_local_turn_and_replays_exactly_once() {
         Arc::clone(&fixture.state),
         runtime,
         /*production_cognitive_mutation*/ None,
+        crate::app_runtime::AppServerModelToolProfile::Standard,
     )
     .expect("runtime options");
     assert!(
@@ -629,11 +641,25 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         Sha256Digest::for_bytes(format!("qualification:logical-binding:v1:{turn_id}").as_bytes()),
     )
     .expect("logical request");
-    let expires_at = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("clock")
-        .as_secs()
-        + 1;
+    let fixture_started = std::time::Instant::now();
+    let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
+    // Round the nominal one-second deadline up to the lease field's precision.
+    // This changes the live window from (0s, 1s] to [1s, 2s). For fractional
+    // mints the old expiry moves by one second; the excess over the nominal
+    // one-second duration is strictly less than one second.
+    let lease_deadline = minted_at + Duration::from_secs(1);
+    let expires_at = lease_deadline.as_secs() + u64::from(lease_deadline.subsec_nanos() != 0);
+    let expiry_stage = |stage: &str| {
+        let observed_at = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|duration| duration.as_millis());
+        format!(
+            "expired-registry fixture stage={stage}, minted_at_unix_ms={}, expires_at_unix_seconds={expires_at}, remaining_ms_at_mint={}, elapsed_ms={}, observed_at_unix_ms={observed_at:?}",
+            minted_at.as_millis(),
+            (u128::from(expires_at) * 1_000).saturating_sub(minted_at.as_millis()),
+            fixture_started.elapsed().as_millis(),
+        )
+    };
     let old = LogicalTurnAttemptRequest::new(
         "seed-terminal-attempt",
         "seed-terminal-lease",
@@ -650,14 +676,14 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let reservation = store
         .reserve_or_replay_logical_turn(logical, old)
         .await
-        .expect("seed registry attempt");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("seed registry attempt")));
     let codex_hepta_memory::LogicalTurnReservation::Acquired { attempt } = reservation else {
         panic!("seed must acquire registry attempt")
     };
     let head = store
         .inspect_local_lease_head(&attempt.lease_id)
         .await
-        .expect("inspect seeded head")
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("inspect seeded head")))
         .head
         .expect("seeded head");
     let lease = store
@@ -668,7 +694,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
             attempt.lease_expires_at_unix_seconds,
         )
         .await
-        .expect("reopen seeded lease");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("reopen seeded lease")));
     let fence = CompactFence::new(
         attempt.authority_epoch,
         attempt.owner_epoch,
@@ -679,7 +705,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let executor = store
         .open_local_compact_executor_bound(attempt.journal_id.clone(), fence, &lease)
         .await
-        .expect("open compact executor");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("open compact executor")));
     let binding =
         LocalTurnLifecycleBinding::from_handles(turn_id, &lease, &executor).expect("binding");
     let payload = r#"{"schema_version":1,"external_effect":false,"kg_write_authority":false,"production_caller":false}"#;
@@ -690,7 +716,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
             payload,
         )
         .await
-        .expect("admit local intent")
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("admit local intent")))
     {
         LocalAdmission::Queued(receipt) | LocalAdmission::Replay(receipt) => receipt,
     };
@@ -720,7 +746,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
         ..
     } = append_h7_trajectory_event_bound(&lease, &executor, &binding, &start)
         .await
-        .expect("append H7 start")
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("append H7 start")))
     else {
         panic!("start must be inserted")
     };
@@ -743,7 +769,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     .expect("terminal trajectory");
     append_h7_trajectory_event_bound(&lease, &executor, &binding, &terminal)
         .await
-        .expect("append H7 terminal");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("append H7 terminal")));
     drop(binding);
     drop(executor);
     drop(lease);
@@ -764,7 +790,7 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
     let inspected = store
         .inspect_local_lease_head(&attempt.lease_id)
         .await
-        .expect("inspect recovered head");
+        .unwrap_or_else(|error| panic!("{}: {error:?}", expiry_stage("inspect recovered head")));
     assert_eq!(
         inspected.disposition,
         LocalLeaseHeadDisposition::ExpiredActive,
@@ -1068,3 +1094,7 @@ async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
     result?;
     Ok(())
 }
+
+#[cfg(target_os = "linux")]
+#[path = "control_source_capture_tests.rs"]
+mod source_capture_tests;

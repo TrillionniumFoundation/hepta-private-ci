@@ -99,6 +99,20 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    let runtime = TempDir::new()?;
+    #[cfg(windows)]
+    let codex = {
+        // The real CLI discovers native helpers beside its executable. Bazel
+        // places these binaries in separate runfiles directories.
+        let staged = runtime.path().join("codex.exe");
+        std::fs::copy(&codex, &staged)?;
+        for helper in ["codex-command-runner", "codex-windows-sandbox-setup"] {
+            let source = codex_utils_cargo_bin::cargo_bin(helper)?;
+            std::fs::copy(&source, runtime.path().join(format!("{helper}.exe")))?;
+        }
+        staged
+    };
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
@@ -131,18 +145,27 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         && output.status.code() == Some(71)
         && stderr.contains("sandbox-exec: sandbox_apply: Operation not permitted");
 
-    assert!(
-        output.status.success() || nested_macos_sandbox_unavailable,
-        "cloud-managed sandbox profile was not enforced: status={:?}; stdout={}; stderr={}; cloud bundle requests={cloud_bundle_request_paths:?}",
-        output.status.code(),
-        String::from_utf8_lossy(&output.stdout),
-        stderr,
-    );
-    if !nested_macos_sandbox_unavailable {
-        assert!(
-            String::from_utf8(output.stdout)?.starts_with("codex"),
-            "expected the sandboxed Codex version command to run",
+    if cfg!(windows) {
+        assert_eq!(output.status.code(), Some(1));
+        assert_eq!(
+            stderr.trim(),
+            "windows sandbox failed: disabled Windows sandbox level cannot launch a sandbox session"
         );
+        assert!(output.stdout.is_empty());
+    } else {
+        assert!(
+            output.status.success() || nested_macos_sandbox_unavailable,
+            "cloud-managed sandbox profile was not enforced: status={:?}; stdout={}; stderr={}; cloud bundle requests={cloud_bundle_request_paths:?}",
+            output.status.code(),
+            String::from_utf8_lossy(&output.stdout),
+            stderr,
+        );
+        if !nested_macos_sandbox_unavailable {
+            assert!(
+                String::from_utf8(output.stdout)?.starts_with("codex"),
+                "expected the sandboxed Codex version command to run",
+            );
+        }
     }
 
     let cache: Value = serde_json::from_slice(&std::fs::read(
