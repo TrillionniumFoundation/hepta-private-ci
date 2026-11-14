@@ -146,6 +146,7 @@ jobs:
       CARGO_INCREMENTAL: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
+      NEXTEST_TEST_THREADS: "2"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -163,6 +164,8 @@ jobs:
           # Preserve the checkout, Cargo/V8 artifacts, and exhaustive test selection.
           printf '%s\n' 'Runner disk before native prerequisites:'
           df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-before.txt"
+          workspace_before_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR==2 {print $4}')"
+          minimum_free_kib=$((10 * 1024 * 1024))
           if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" || "${RUNNER_OS:-}" != "Linux" ]]; then
             echo "Not a GitHub-hosted Linux runner: no SDK directories removed"
           else
@@ -184,9 +187,18 @@ jobs:
           fi
           printf '%s\n' 'Runner disk after reclaiming unused tools:'
           df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-reclaim.txt"
+          workspace_free_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR==2 {print $4}')"
           free_kib="$(df -Pk "$RUNNER_TEMP" | awk 'NR==2 {print $4}')"
-          if ! [[ "$free_kib" =~ ^[0-9]+$ ]] || (( free_kib < 6 * 1024 * 1024 )); then
-            echo '::error::Less than 6 GiB free for exact-SHA native reverse-consumer tests'
+          if ! [[ "$workspace_before_kib" =~ ^[0-9]+$ && "$workspace_free_kib" =~ ^[0-9]+$ && "$free_kib" =~ ^[0-9]+$ ]]; then
+            echo '::error::Cannot determine free disk space for exact-SHA native reverse-consumer tests'
+            exit 1
+          fi
+          printf 'source=%s\nfree_before_bytes=%s\nfree_after_bytes=%s\ntemp_free_after_bytes=%s\nminimum_required_bytes=%s\n' \
+            "$(git rev-parse HEAD)" "$((workspace_before_kib * 1024))" \
+            "$((workspace_free_kib * 1024))" "$((free_kib * 1024))" \
+            "$((minimum_free_kib * 1024))" > "$RUNNER_TEMP/hepta-scoped-disk.txt"
+          if (( workspace_free_kib < minimum_free_kib || free_kib < minimum_free_kib )); then
+            echo '::error::Less than 10 GiB free on the checkout or temporary filesystem for exact-SHA native reverse-consumer tests'
             exit 1
           fi
       - name: Prepare native test prerequisites before compilation
@@ -268,6 +280,7 @@ jobs:
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
             ${{ runner.temp }}/scoped-disk-*.txt
+            ${{ runner.temp }}/hepta-scoped-disk.txt
             ${{ runner.temp }}/impact-helper-build.json*
             ${{ runner.temp }}/impact-test-helpers
             !${{ runner.temp }}/impact-test-helpers/bin/**

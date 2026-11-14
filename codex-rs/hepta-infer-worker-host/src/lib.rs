@@ -10,6 +10,9 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+/// Composition-aware shared encoder residency seam (qualification only).
+pub mod composition;
+
 pub mod final_use_authorizer;
 pub mod native_app_server;
 
