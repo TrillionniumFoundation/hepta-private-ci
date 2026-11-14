@@ -201,6 +201,9 @@ jobs:
             echo '::error::Less than 10 GiB free on the checkout or temporary filesystem for exact-SHA native reverse-consumer tests'
             exit 1
           fi
+          # Retain the original scoped-lane toolchain survival diagnostics.
+          rustc --version --verbose
+          cargo --version
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
