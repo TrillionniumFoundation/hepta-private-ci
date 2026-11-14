@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_SOURCE = ROOT / "codex-rs/utils/string/src/truncate.rs"
 ADAPTER = ROOT / "codex-rs/utils/string/src/hia_native_truncate.rs"
 HIA_SOURCE = ROOT / "hia/truncate.hepta"
+TOKEN_BUDGET_SOURCE = ROOT / "hia/token_budget.hepta"
 TEST_SOURCE = ROOT / "hia/tests/native_truncate_caller.rs"
 BASELINE_REVISION = "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095"
 BASELINE_BLOB = "fa5b871774c242fb1380b927dd34fd7f73d3680b"
@@ -61,6 +62,23 @@ def verify(args, report):
         raise RuntimeError(f"a real Rust compiler is required: {args.rustc}")
     library_dir = args.library_dir.resolve(strict=True)
     archive = library_dir / "libcodex_hia_truncate.a"
+    token_budget_archive = library_dir / "libcodex_hia_token_budget.a"
+    build_report = library_dir / "build.json"
+    build = json.loads(build_report.read_text())
+    if build.get("status") != "built" or build.get("compiler_fixed_point") is not True:
+        raise RuntimeError("the native caller requires an actual fixed-point HIA build")
+    for module, hia_source, native_archive in (
+        ("truncate", HIA_SOURCE, archive),
+        ("token_budget", TOKEN_BUDGET_SOURCE, token_budget_archive),
+    ):
+        component = build["modules"][module]
+        abi = component["codex_link_abi"]
+        if component["source_sha256"] != sha256(hia_source):
+            raise RuntimeError(f"the native {module} artifact has a different HIA source")
+        if abi["archive_sha256"] != sha256(native_archive):
+            raise RuntimeError(f"the native {module} archive differs from its build report")
+        if abi["symbol"] != f"codex_hia_{module}":
+            raise RuntimeError(f"the native {module} entry symbol differs from its contract")
     source = PUBLIC_SOURCE.read_text()
     if '#[cfg(not(feature = "hia-native"))]' not in source:
         raise RuntimeError("the original Rust reference branch is missing")
@@ -80,7 +98,9 @@ def verify(args, report):
         "extracted_source_sha256": hashlib.sha256(extracted_source.encode()).hexdigest(),
         "adapter_sha256": sha256(ADAPTER), "hia_source_sha256": sha256(HIA_SOURCE),
         "test_source_sha256": sha256(TEST_SOURCE), "archive_sha256": sha256(archive),
-        "build_report_sha256": sha256(library_dir / "build.json"),
+        "token_budget_source_sha256": sha256(TOKEN_BUDGET_SOURCE),
+        "token_budget_archive_sha256": sha256(token_budget_archive),
+        "build_report_sha256": sha256(build_report),
         "original_revision": BASELINE_REVISION, "original_blob": BASELINE_BLOB,
         "original_production_tokens_sha256": BASELINE_TOKENS_SHA256,
     }
@@ -102,7 +122,8 @@ def verify(args, report):
         run([
             rustc, "--edition=2024", "--test", "--cfg", 'feature="hia-native"', str(TEST_SOURCE),
             "--extern", f"truncate_reference={reference}", "-L", f"native={library_dir}",
-            "-l", "static=codex_hia_truncate", "-o", str(binary),
+            "-l", "static=codex_hia_truncate", "-l", "static=codex_hia_token_budget",
+            "-o", str(binary),
         ], report, env=environment)
         report["outputs"] = {
             "reference_rlib_sha256": sha256(reference), "native_test_binary_sha256": sha256(binary),
@@ -116,7 +137,7 @@ def verify(args, report):
         "passed": True, "tests_passed": int(summary.group(1)), "tests_skipped": 0,
         "original_rust_comparisons": max(map(int, counts)),
         "oracle": "complete preserved original Rust source; all production tokens match the pinned original Git blob",
-        "caller": "same public source compiled with hia-native, production adapter and native HIA archive",
+        "caller": "same public source compiled with hia-native, production adapter and both source-bound native HIA archives",
     })
 
 
@@ -129,7 +150,7 @@ def main():
     report = {"schema": "codex.hia.native-truncate-caller.v1", "passed": False, "commands": []}
     try:
         verify(args, report)
-    except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
+    except (OSError, RuntimeError, KeyError, ValueError, subprocess.TimeoutExpired) as error:
         report["error"] = str(error)
         print(str(error), file=sys.stderr)
     args.report.parent.mkdir(parents=True, exist_ok=True)

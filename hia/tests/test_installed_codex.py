@@ -27,6 +27,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_markdown_location",
     "codex_hia_ascii_json_fragment",
     "codex_hia_truncate",
+    "codex_hia_token_budget",
 )
 
 

@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: TrillionniumFoundation/Hepta
-          ref: f33d8da316de8fdf27b504371f1a5310997ff548
+          ref: 0de5657a80f96b138525ac7ee9ce11712a83a10d
           path: Hepta
           persist-credentials: false
 
@@ -100,6 +100,14 @@ jobs:
             --output "$RUNNER_TEMP/hia-native" \
             2>&1 | tee "$RUNNER_TEMP/hia-build.log"
 
+      - name: Verify pinned word-memory language contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: Hepta
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest tests.test_hia_word_memory \
+            2>&1 | tee "$RUNNER_TEMP/hia-word-memory.log"
+
       - name: Verify Cargo build receipts and reject stale artifacts
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -121,6 +129,21 @@ jobs:
             --rustc "$RUSTC" \
             --report "$RUNNER_TEMP/hia-seek-sequence.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-seek-sequence.log"
+
+      - name: Verify typed scalar admission and unchanged Cargo receipt checks
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_scalar_build_admission.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-scalar-admission.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-scalar-admission.log"
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module token_budget \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-scalar-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-scalar-receipt.log"
 
       - name: Compare HIA UTF-8 boundaries with Rust and Core VM
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -274,6 +297,15 @@ jobs:
             --features codex-utils-string/hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-consumers.log"
 
+      - name: Verify native scalar token arithmetic and invalid-mode traps
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_token_budget_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-token-budget-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-token-budget-abi.log"
+
       - name: Verify installed HIA apply_patch executable
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -373,6 +405,12 @@ jobs:
             ${{ runner.temp }}/hia-truncate-abi.json
             ${{ runner.temp }}/hia-truncate-abi.log
             ${{ runner.temp }}/hia-truncate-consumers.log
+            ${{ runner.temp }}/hia-token-budget-abi.json
+            ${{ runner.temp }}/hia-token-budget-abi.log
+            ${{ runner.temp }}/hia-scalar-admission.json
+            ${{ runner.temp }}/hia-scalar-admission.log
+            ${{ runner.temp }}/hia-scalar-receipt.json
+            ${{ runner.temp }}/hia-scalar-receipt.log
             ${{ runner.temp }}/hia-native-crates.log
             ${{ runner.temp }}/hia-installed-patch-build.log
             ${{ runner.temp }}/hia-original-patch-build.log
@@ -385,6 +423,7 @@ jobs:
             ${{ runner.temp }}/hia-installed-codex.json
             ${{ runner.temp }}/hia-installed-codex.log
             ${{ runner.temp }}/hia-build.log
+            ${{ runner.temp }}/hia-word-memory.log
             ${{ runner.temp }}/hia-build-receipt.json
             ${{ runner.temp }}/hia-build-receipt.log
             ${{ runner.temp }}/hia-seek-sequence.json
