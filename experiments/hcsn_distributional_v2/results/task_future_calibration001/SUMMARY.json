@@ -1,0 +1,220 @@
+{
+  "cached_native_first16_parity": {
+    "actual": true,
+    "fire_clock": true,
+    "forecast": true,
+    "source_ids_equal": true,
+    "status": "passed"
+  },
+  "discount_per_tick": 1.0,
+  "first_task_reward_excluded": true,
+  "new_dp_solves": 0,
+  "new_inference_steps": 0,
+  "new_policy_selection": false,
+  "new_training_updates": 0,
+  "paired_definition": "Stored first FIRE future_after_reset minus the same executed policy subsequent actual correctness less every later READ price",
+  "panels": {
+    "v1_cached128": {
+      "bias_prediction_minus_actual": 0.04951353840985413,
+      "bootstrap": {
+        "cluster_count": 128,
+        "confidence_level": 0.95,
+        "formal_preregistered_hypothesis_test": false,
+        "intervals": {
+          "actual_later_net_reward": [
+            0.299328125,
+            0.44975078124999995
+          ],
+          "bias": [
+            -0.024211604905773745,
+            0.12092660215920129
+          ],
+          "mae_of_price_macro_errors": [
+            0.2929876608149,
+            0.3823322641001433
+          ],
+          "mean_of_per_price_absolute_errors": [
+            0.3694641741238723,
+            0.4432165243898658
+          ],
+          "predicted_future": [
+            0.40395927668864096,
+            0.4413357429203513
+          ]
+        },
+        "method": "nominal descriptive 95% percentile, whole stream after equal three-price macro",
+        "replicates": 19999,
+        "seed": 730151
+      },
+      "macro_actual_range": [
+        -0.08333333333333333,
+        1.5946666666666667
+      ],
+      "macro_forecast_range": [
+        0.19728307958482785,
+        0.5077745599858412
+      ],
+      "mae_of_price_macro_errors": 0.3368038876843809,
+      "mean_actual_later_net_reward": 0.3735104166666666,
+      "mean_of_per_price_absolute_errors": 0.40547658932287944,
+      "mean_predicted_future": 0.42302395507652074,
+      "per_price": {
+        "0.001": {
+          "bias_prediction_minus_actual": 0.0893095101128509,
+          "first_fire_clock_mean": 12.2109375,
+          "mae": 0.4556508480952467,
+          "mean_actual_later_net_reward": 0.4972109375,
+          "mean_predicted_future": 0.5865204476128509
+        },
+        "0.005": {
+          "bias_prediction_minus_actual": 0.05727872438982381,
+          "first_fire_clock_mean": 8.5703125,
+          "mae": 0.4326848909929444,
+          "mean_actual_later_net_reward": 0.4601953125,
+          "mean_predicted_future": 0.5174740368898239
+        },
+        "0.02": {
+          "bias_prediction_minus_actual": 0.0019523807268877359,
+          "first_fire_clock_mean": 1.0,
+          "mae": 0.3280940288804471,
+          "mean_actual_later_net_reward": 0.16312499999999996,
+          "mean_predicted_future": 0.16507738072688777
+        }
+      },
+      "prices": [
+        0.001,
+        0.005,
+        0.02
+      ],
+      "status": "available",
+      "streams": 128
+    },
+    "v1_native16": {
+      "bias_prediction_minus_actual": -0.23394517592394545,
+      "bootstrap": {
+        "cluster_count": 16,
+        "confidence_level": 0.95,
+        "formal_preregistered_hypothesis_test": false,
+        "intervals": {
+          "actual_later_net_reward": [
+            0.4543208333333334,
+            0.8663552083333333
+          ],
+          "bias": [
+            -0.446182660207545,
+            -0.03173073622145298
+          ],
+          "mae_of_price_macro_errors": [
+            0.1887941529717003,
+            0.5205273826593176
+          ],
+          "mean_of_per_price_absolute_errors": [
+            0.3199801131969133,
+            0.5921691132303613
+          ],
+          "predicted_future": [
+            0.3763450323483823,
+            0.4692666797853204
+          ]
+        },
+        "method": "nominal descriptive 95% percentile, whole stream after equal three-price macro",
+        "replicates": 19999,
+        "seed": 730152
+      },
+      "macro_actual_range": [
+        -0.06933333333333334,
+        1.5946666666666667
+      ],
+      "macro_forecast_range": [
+        0.19778542942091948,
+        0.5077572516743272
+      ],
+      "mae_of_price_macro_errors": 0.3464799081720009,
+      "mean_actual_later_net_reward": 0.659875,
+      "mean_of_per_price_absolute_errors": 0.4485703617709762,
+      "mean_predicted_future": 0.4259298240760545,
+      "per_price": {
+        "0.001": {
+          "bias_prediction_minus_actual": -0.23804063006098325,
+          "first_fire_clock_mean": 14.1875,
+          "mae": 0.49400001433264495,
+          "mean_actual_later_net_reward": 0.7883749999999999,
+          "mean_predicted_future": 0.5503343699390167
+        },
+        "0.005": {
+          "bias_prediction_minus_actual": -0.2938722784377408,
+          "first_fire_clock_mean": 5.25,
+          "mae": 0.42544172579856177,
+          "mean_actual_later_net_reward": 0.85625,
+          "mean_predicted_future": 0.5623777215622592
+        },
+        "0.02": {
+          "bias_prediction_minus_actual": -0.16992261927311225,
+          "first_fire_clock_mean": 1.0,
+          "mae": 0.42626934518172194,
+          "mean_actual_later_net_reward": 0.33499999999999996,
+          "mean_predicted_future": 0.16507738072688774
+        }
+      },
+      "prices": [
+        0.001,
+        0.005,
+        0.02
+      ],
+      "status": "available",
+      "streams": 16
+    },
+    "v2_engineering2": {
+      "bias_prediction_minus_actual": 0.5963135218056914,
+      "bootstrap": null,
+      "macro_actual_range": [
+        -0.1376666666666667,
+        -0.10400000000000002
+      ],
+      "macro_forecast_range": [
+        0.3560683193913991,
+        0.5948920575533171
+      ],
+      "mae_of_price_macro_errors": 0.5963135218056914,
+      "mean_actual_later_net_reward": -0.12083333333333335,
+      "mean_of_per_price_absolute_errors": 0.5963135218056914,
+      "mean_predicted_future": 0.47548018847235807,
+      "no_bootstrap_reason": "Two reused-VAL source streams: engineering description only; no population inference",
+      "per_price": {
+        "0.001": {
+          "bias_prediction_minus_actual": 0.6454370870650783,
+          "first_fire_clock_mean": 16.0,
+          "mae": 0.6454370870650783,
+          "mean_actual_later_net_reward": -0.027499999999999997,
+          "mean_predicted_future": 0.6179370870650783
+        },
+        "0.005": {
+          "bias_prediction_minus_actual": 0.6603206311949372,
+          "first_fire_clock_mean": 16.0,
+          "mae": 0.6603206311949372,
+          "mean_actual_later_net_reward": -0.135,
+          "mean_predicted_future": 0.5253206311949372
+        },
+        "0.02": {
+          "bias_prediction_minus_actual": 0.4831828471570587,
+          "first_fire_clock_mean": 2.5,
+          "mae": 0.4831828471570587,
+          "mean_actual_later_net_reward": -0.2,
+          "mean_predicted_future": 0.2831828471570587
+        }
+      },
+      "prices": [
+        0.001,
+        0.005,
+        0.02
+      ],
+      "status": "available",
+      "streams": 2
+    }
+  },
+  "registered_post_panel_analysis": true,
+  "reset_and_refractory_handled_by_existing_deadline_execution": true,
+  "schema": "hcsn-task-future-calibration.v1",
+  "scope": "Marginal prediction calibration on observed streams; no exact neural belief-state claim",
+  "status": "completed"
+}

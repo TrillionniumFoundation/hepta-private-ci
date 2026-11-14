@@ -1,0 +1,44 @@
+{
+  "complete_prelaunch_child_cpu_seconds": 15.736134,
+  "formal_training_cpu_nominal": 2160.0,
+  "known_unmeasured": [
+    "Wrapper/setup/report filesystem utilities outside the recorded child windows are not timed here; this sum is not a complete all-development CPU accounting."
+  ],
+  "nested_components_not_added": [
+    "Each preflight contains a deliberately failing scheduler probe child; its inner wait4 receipt is included in the enclosing preflight receipt.",
+    "Preflight self-process and body clocks are already included in complete preflight process receipts."
+  ],
+  "nominal_training_cost_is_not_actual_charge": true,
+  "records": [
+    {
+      "complete_child_cpu_seconds": 5.026590000000001,
+      "exit_code": 0,
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_preflight001/EXECUTION.json",
+      "sha256": "2a4873d837852fe130c1f413bac385d53dc0b86eca911be45159b5f943be95ce",
+      "wall_seconds": 12.992627535999418
+    },
+    {
+      "complete_child_cpu_seconds": 5.478468,
+      "exit_code": 0,
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_preflight002/EXECUTION.json",
+      "sha256": "fcd45729afb353fb92b1fe3e9798932bc9190ec779cb2fddc62949fef1bf22e9",
+      "wall_seconds": 13.472763883999505
+    },
+    {
+      "complete_child_cpu_seconds": 2.58221,
+      "exit_code": 1,
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_registration_failed001.json",
+      "sha256": "81f71ff1d33f768eed06ba84351860746c97f73714ccdcf1d53e2622c5d64f84",
+      "wall_seconds": 6.78859146800005
+    },
+    {
+      "complete_child_cpu_seconds": 2.648866,
+      "exit_code": 0,
+      "receipt": "experiments/hcsn_distributional_v2/results/lif_supplement001/REGISTRATION_EXECUTION.json",
+      "sha256": "5c9c495f9b37f2f233d8045a16e6b3214822b36860966feaa362efe90806d048",
+      "wall_seconds": 7.343081936999624
+    }
+  ],
+  "schema": "hcsn-lif-engineering-costs.v1",
+  "scope": "Prelaunch preflight and registration only. Formal search tree and final analysis are separate future receipts."
+}

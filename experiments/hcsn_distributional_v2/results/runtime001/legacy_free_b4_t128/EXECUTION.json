@@ -1,0 +1,22 @@
+{
+  "child_cpu_seconds": 6.314131,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.runtime_eval",
+    "bench",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/runtime001/legacy_free_b4_t128",
+    "--model",
+    "legacy_free",
+    "--batch",
+    "4",
+    "--length",
+    "128",
+    "--registration",
+    "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+  ],
+  "exit_code": 0,
+  "maxrss_kib": 302868,
+  "wall_seconds": 14.37387869899976
+}

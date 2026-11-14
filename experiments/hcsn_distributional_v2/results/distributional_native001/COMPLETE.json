@@ -1,0 +1,199 @@
+{
+  "active_distribution_state": [
+    {
+      "maximum_mass_error": 1.1324882507324219e-06,
+      "refractory_phase_mass": 0.04441814124584198,
+      "shape": [
+        1,
+        8,
+        10
+      ],
+      "state_identity": "41a54e9da81aceb0c8d94f09890bf61a4c65899604137976430abc09eacd0c55"
+    }
+  ],
+  "complete_measured_phase_cpu_seconds": 34.607003,
+  "coordinator_whole_self_cpu_seconds_through_audit": 2.207479558,
+  "evaluation_native_audit": {
+    "actual_kernel_calls": 397,
+    "actual_ndu_calls": 397,
+    "float_q24_disagreements": 0,
+    "intentional_post_stop_rejections": 34,
+    "native_processes": 34,
+    "owner_ticks": 397,
+    "paid_reads": 397,
+    "paired_streams_with_action_difference": 4,
+    "streams": 12
+  },
+  "new_v2_content_training": false,
+  "phases": {
+    "evaluate": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.distributional_native_smoke",
+        "--output",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+        "--backbone-run",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+        "--worker",
+        "evaluate"
+      ],
+      "complete_child_cpu_seconds": 9.467432,
+      "exit_code": 0,
+      "measurement": "wait4 includes imports and waited native descendants",
+      "peak_rss_kib_linux": 253304,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 28.24136261800004
+    },
+    "prepare": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.distributional_native_smoke",
+        "--output",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+        "--backbone-run",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+        "--worker",
+        "prepare"
+      ],
+      "complete_child_cpu_seconds": 5.723704,
+      "exit_code": 0,
+      "measurement": "wait4 includes imports and waited native descendants",
+      "peak_rss_kib_linux": 227716,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 13.945765990000382
+    },
+    "recovery_active": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.distributional_native_smoke",
+        "--output",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+        "--backbone-run",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+        "--worker",
+        "recovery",
+        "--kind",
+        "active"
+      ],
+      "complete_child_cpu_seconds": 3.542109,
+      "exit_code": 0,
+      "measurement": "wait4 includes imports and waited native descendants",
+      "peak_rss_kib_linux": 249344,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 9.292104801000278
+    },
+    "recovery_quiet": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.distributional_native_smoke",
+        "--output",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+        "--backbone-run",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+        "--worker",
+        "recovery",
+        "--kind",
+        "quiet"
+      ],
+      "complete_child_cpu_seconds": 4.0072589999999995,
+      "exit_code": 0,
+      "measurement": "wait4 includes imports and waited native descendants",
+      "peak_rss_kib_linux": 249200,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 8.825500976000058
+    },
+    "recovery_reference": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.distributional_native_smoke",
+        "--output",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+        "--backbone-run",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+        "--worker",
+        "recovery",
+        "--kind",
+        "reference"
+      ],
+      "complete_child_cpu_seconds": 4.102601,
+      "exit_code": 0,
+      "measurement": "wait4 includes imports and waited native descendants",
+      "peak_rss_kib_linux": 249772,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 12.647067198000059
+    },
+    "resume_active": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.distributional_native_smoke",
+        "--output",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+        "--backbone-run",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+        "--worker",
+        "recovery",
+        "--kind",
+        "active",
+        "--resume"
+      ],
+      "complete_child_cpu_seconds": 4.142465,
+      "exit_code": 0,
+      "measurement": "wait4 includes imports and waited native descendants",
+      "peak_rss_kib_linux": 250652,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 8.631799887999932
+    },
+    "resume_quiet": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "experiments.hcsn_distributional_v2.distributional_native_smoke",
+        "--output",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+        "--backbone-run",
+        "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+        "--worker",
+        "recovery",
+        "--kind",
+        "quiet",
+        "--resume"
+      ],
+      "complete_child_cpu_seconds": 3.6214329999999997,
+      "exit_code": 0,
+      "measurement": "wait4 includes imports and waited native descendants",
+      "peak_rss_kib_linux": 250616,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 8.244955003000086
+    }
+  },
+  "recovery": {
+    "active": {
+      "checkpoint_writer_pid": 45,
+      "deadline_ticks_remaining": 44,
+      "different_python_process": true,
+      "fresh_process_pid": 47,
+      "mode": "active",
+      "prefix": 4,
+      "quiet_ticks_remaining": 0,
+      "task_index": 0
+    },
+    "quiet": {
+      "checkpoint_writer_pid": 51,
+      "deadline_ticks_remaining": 39,
+      "different_python_process": true,
+      "fresh_process_pid": 53,
+      "mode": "quiet",
+      "prefix": 0,
+      "quiet_ticks_remaining": 1,
+      "task_index": 1
+    }
+  },
+  "scope": "Actual execution and recovery engineering;6 reusedVAL images, not a quality/generalization result",
+  "status": "completed"
+}

@@ -1,0 +1,18 @@
+{
+  "benchmark_source_sha256": "be79c27898c56e557b3b58ee9858d116dbfd61998129a5f1e2ab84f0115db6fa",
+  "original_analysis": {
+    "expected": 176,
+    "invalid": 1,
+    "path": "experiments/hcsn_distributional_v2/results/content_analysis002/ANALYSIS.json",
+    "sha256": "654f1f3b235bd066e8ee64f2f20e18dc16eb7f83ecbef31379a066d94433da76",
+    "valid": 175
+  },
+  "protocol_sha256": "287c56ae904ec5c4cabe6e5ee309d6a22b8f4648e9b1890ed650af2b0fbc1fa3",
+  "reason": "Original strict analysis175/1 fails the unchanged SCALING001 admission gate; no formal001 timing was started",
+  "schema": "hcsn-v2-scaling-not-executed.v1",
+  "started_workers": 0,
+  "status": "not_executed",
+  "strict_gate_passed": false,
+  "study_id": "scaling001",
+  "successor_study": "scaling002"
+}

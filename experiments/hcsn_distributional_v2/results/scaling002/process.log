@@ -1,0 +1,43 @@
+scaling002 1/30 distribution_free_dual_b1_t16_w32_d1 returncode=0
+scaling002 2/30 two_gates_b1_t16_w32_d1 returncode=0
+scaling002 3/30 transformer_b1_t16_w32_d1 returncode=0
+scaling002 4/30 distribution_free_dual_b1_t32_w32_d1 returncode=0
+scaling002 5/30 two_gates_b1_t32_w32_d1 returncode=0
+scaling002 6/30 transformer_b1_t32_w32_d1 returncode=0
+scaling002 7/30 distribution_free_dual_b1_t64_w32_d1 returncode=0
+scaling002 8/30 two_gates_b1_t64_w32_d1 returncode=0
+scaling002 9/30 transformer_b1_t64_w32_d1 returncode=0
+scaling002 10/30 distribution_free_dual_b1_t128_w32_d1 returncode=0
+scaling002 11/30 two_gates_b1_t128_w32_d1 returncode=0
+scaling002 12/30 transformer_b1_t128_w32_d1 returncode=0
+scaling002 13/30 distribution_free_dual_b1_t256_w32_d1 returncode=0
+scaling002 14/30 two_gates_b1_t256_w32_d1 returncode=0
+scaling002 15/30 transformer_b1_t256_w32_d1 returncode=0
+scaling002 16/30 distribution_free_dual_b1_t512_w32_d1 returncode=0
+scaling002 17/30 two_gates_b1_t512_w32_d1 returncode=0
+scaling002 18/30 transformer_b1_t512_w32_d1 returncode=0
+scaling002 19/30 distribution_free_dual_b1_t64_w32_d2 returncode=0
+scaling002 20/30 two_gates_b1_t64_w32_d2 returncode=0
+scaling002 21/30 transformer_b1_t64_w32_d2 returncode=0
+scaling002 22/30 distribution_free_dual_b1_t64_w32_d4 returncode=0
+scaling002 23/30 two_gates_b1_t64_w32_d4 returncode=0
+scaling002 24/30 transformer_b1_t64_w32_d4 returncode=0
+scaling002 25/30 distribution_free_dual_b1_t64_w64_d1 returncode=0
+scaling002 26/30 two_gates_b1_t64_w64_d1 returncode=0
+scaling002 27/30 transformer_b1_t64_w64_d1 returncode=0
+scaling002 28/30 distribution_free_dual_b1_t64_w64_d2 returncode=0
+scaling002 29/30 two_gates_b1_t64_w64_d2 returncode=0
+scaling002 30/30 transformer_b1_t64_w64_d2 returncode=0
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/scaling_admission.py", line 363, in <module>
+    main()
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/scaling_admission.py", line 357, in main
+    suite(protocol, output)
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/scaling_admission.py", line 314, in suite
+    frozen.summary_report(output, protocol, records)
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/scaling_eval.py", line 384, in summary_report
+    forward_cpu_ratio_to_16=row["forward_cpu_median"] / base["forward_cpu_median"] if valid else None,
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ZeroDivisionError: float division by zero

@@ -1,0 +1,33 @@
+{
+  "actual": "Stored actual later net reward, independently checked against per-task correct/read ledgers",
+  "additional_mae": "Average per-price absolute errors within each stream, reported separately to expose cancellation",
+  "analysis_timing": "Post-panel; existing policy outcomes and one ledger example already inspected",
+  "bootstrap": "Nominal descriptive two-sided 95% percentile over whole streams",
+  "bootstrap_replicates": 19999,
+  "bootstrap_seeds": {
+    "v1_cached128": 730151,
+    "v1_native16": 730152
+  },
+  "cached_if_missing_fields": "Skip, never fabricate per-stream values from aggregate means",
+  "cached_streams": 128,
+  "error_sign": "forecast minus actual; positive is overprediction",
+  "family": "tabular_bellman",
+  "forecast": "Stored first FIRE teacher_future_after_reset or first_fire_predicted_future",
+  "macro": "Equal three-price average within each source stream before mean error, principal MAE and bootstrap",
+  "native_streams": 16,
+  "new_inference": false,
+  "new_selection": false,
+  "new_solver": false,
+  "new_training": false,
+  "prices": [
+    0.001,
+    0.005,
+    0.02
+  ],
+  "schema": "hcsn-task-future-calibration-protocol.v1",
+  "source": "experiments/hcsn_distributional_v2/results/task_value002",
+  "study_id": "task_future_calibration001",
+  "v2_bootstrap": false,
+  "v2_engineering_streams": 2,
+  "v2_source": "experiments/hcsn_distributional_v2/results/distributional_native001"
+}
