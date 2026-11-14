@@ -356,6 +356,16 @@ crate.from_cargo(
 
 bazel_dep(name = "zstd", version = "1.5.7")
 
+# Keep the crate's existing build script and its target-specific MSVC headers.
+crate.annotation(
+    crate = "zstd-sys",
+    gen_build_script = "on",
+    patch_args = ["-p1"],
+    patches = [
+        "//patches:zstd-sys_windows_msvc_include_dirs.patch",
+    ],
+)
+
 crate.annotation(
     # The Windows lint toolchain cannot reliably materialize blake3's native x86 assembly archives.
     crate = "blake3",
