@@ -21,6 +21,11 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - name: Test archived source spelling boundary
+        run: python3 -B -m unittest discover -s .github/scripts -p test_codespell_custody.py -v
+      - name: Verify exact archived source bytes
+        id: custody
+        run: python3 -B .github/scripts/codespell_custody.py --github-output "$GITHUB_OUTPUT"
       - name: Annotate locations with typos
         uses: codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42 # v1.1.0
       - name: Codespell
@@ -28,7 +33,11 @@ jobs:
         with:
           ignore_words_file: .codespellignore
           # Preserve immutable CI/evaluation artifacts; do not spell-check binary archive shards.
-          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/cell-common-20261109-e1c98/actual-model-no-update/full/raw-all-model.tar.gz.part*,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-00,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-01,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-02,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-03,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-04,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-05
+          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/cell-common-20261109-e1c98/actual-model-no-update/full/raw-all-model.tar.gz.part*,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-00,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-01,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-02,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-03,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-04,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-05,${{ steps.custody.outputs.skip }}
+
+      - name: Recheck excluded archived source bytes
+        if: always() && !cancelled() && steps.custody.outcome == 'success'
+        run: python3 -B .github/scripts/codespell_custody.py
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
