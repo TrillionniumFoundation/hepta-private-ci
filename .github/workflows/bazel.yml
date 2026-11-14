@@ -39,6 +39,7 @@ jobs:
             target: x86_64-unknown-linux-gnu
           - os: ubuntu-24.04
             target: x86_64-unknown-linux-musl
+            bazel_platform: "@rules_rs//rs/platforms:x86_64-unknown-linux-musl"
           # 2026-02-27 Bazel tests have been flaky on arm in CI.
           # Disable until we can investigate and stabilize them.
           # - os: ubuntu-24.04-arm
@@ -47,6 +48,9 @@ jobs:
           #   target: aarch64-unknown-linux-gnu
 
     runs-on: ${{ matrix.os }}
+    env:
+      # Apply the target ABI to the broad and both required native test calls.
+      CODEX_BAZEL_LINUX_TARGET_PLATFORM: ${{ matrix.bazel_platform || '' }}
 
     # Configure a human readable name for each job
     name: Bazel test on ${{ matrix.os }} for ${{ matrix.target }}
