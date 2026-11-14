@@ -28,6 +28,7 @@ use crate::ContextAttachmentV2;
 use crate::ContextCompilerV2Error;
 use crate::ContextDeliveryPreparationV2;
 use crate::ContextDeliveryReceiptV2;
+use crate::ContextDeliveryRequestV2;
 use crate::ContextModelProfileV2;
 use crate::ContextProviderDeliveryVerifierV2;
 use crate::ContextRealizedItemV2;
@@ -46,10 +47,8 @@ const CANONICAL_SEGMENT_MAP_DOMAIN: &[u8] = b"hepta.context-canonical-segment-ma
 const CANONICAL_BUNDLE_DOMAIN: &[u8] = b"hepta.context-canonical-bundle-receipt.v2";
 const SNAPSHOT_SUCCESSOR_DOMAIN: &[u8] = b"hepta.context-snapshot-successor.v2";
 const TOKENIZER_DESCRIPTOR_DOMAIN: &[u8] = b"hepta.provider-tokenizer-descriptor.v2";
-const FINAL_REQUEST_TOKENIZATION_DOMAIN: &[u8] =
-    b"hepta.provider-final-request-tokenization.v2";
-const PROVIDER_BOUND_PREPARATION_DOMAIN: &[u8] =
-    b"hepta.context-provider-bound-preparation.v2";
+const FINAL_REQUEST_TOKENIZATION_DOMAIN: &[u8] = b"hepta.provider-final-request-tokenization.v2";
+const PROVIDER_BOUND_PREPARATION_DOMAIN: &[u8] = b"hepta.context-provider-bound-preparation.v2";
 const PROVIDER_BOUND_DELIVERY_DOMAIN: &[u8] = b"hepta.context-provider-bound-delivery.v2";
 
 pub const MAX_PROVIDER_FINAL_REQUEST_BYTES_V2: usize = 64 * 1024 * 1024;
@@ -293,8 +292,7 @@ pub fn verify_typed_admission_snapshot_successor_v2(
     predecessor: &VerifiedAdmissionSnapshotV2,
     verifier: &impl ContextAdmissionVerifierV2,
 ) -> Result<VerifiedAdmissionSnapshotSuccessorV2, ProviderBoundErrorV2> {
-    let successor =
-        verify_admission_snapshot_successor_v2(snapshot, predecessor, verifier)?;
+    let successor = verify_admission_snapshot_successor_v2(snapshot, predecessor, verifier)?;
     let mut typed = VerifiedAdmissionSnapshotSuccessorV2 {
         predecessor_snapshot_digest: predecessor.snapshot_digest(),
         predecessor_verification_digest: predecessor.verification_digest(),
@@ -417,9 +415,7 @@ impl ProviderTokenizerDescriptorV2 {
             return Err(ProviderBoundErrorV2::InvalidTokenizerVersion);
         }
         if self.descriptor_digest != self.compute_descriptor_digest() {
-            return Err(ProviderBoundErrorV2::DigestMismatch(
-                "tokenizer descriptor",
-            ));
+            return Err(ProviderBoundErrorV2::DigestMismatch("tokenizer descriptor"));
         }
         Ok(())
     }
@@ -439,10 +435,7 @@ impl ProviderTokenizerDescriptorV2 {
 pub trait ExactProviderRequestTokenizerV2 {
     fn descriptor(&self) -> &ProviderTokenizerDescriptorV2;
 
-    fn count_tokens(
-        &self,
-        canonical_final_request: &[u8],
-    ) -> Result<u64, ProviderBoundErrorV2>;
+    fn count_tokens(&self, canonical_final_request: &[u8]) -> Result<u64, ProviderBoundErrorV2>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -623,9 +616,15 @@ impl ProviderBoundDeliveryPreparationV2 {
         if self.canonical_bundle_digest != bundle.bundle_digest()
             || self.canonical_segment_map_digest != bundle.segment_map_digest()
             || self.preparation.payload_digest() != bundle.serialized().receipt().payload_digest()
-            || self.final_request_tokenization.descriptor().provider_id_digest()
+            || self
+                .final_request_tokenization
+                .descriptor()
+                .provider_id_digest()
                 != profile.provider_id_digest
-            || self.final_request_tokenization.descriptor().provider_model_digest()
+            || self
+                .final_request_tokenization
+                .descriptor()
+                .provider_model_digest()
                 != profile.provider_model_digest
         {
             return Err(ProviderBoundErrorV2::ProviderModelProfileMismatch);
@@ -647,10 +646,7 @@ impl ProviderBoundDeliveryPreparationV2 {
         push_digest(&mut bytes, self.canonical_bundle_digest);
         push_digest(&mut bytes, self.canonical_segment_map_digest);
         push_digest(&mut bytes, self.prompt_fragments_digest);
-        push_digest(
-            &mut bytes,
-            self.final_request_tokenization.receipt_digest(),
-        );
+        push_digest(&mut bytes, self.final_request_tokenization.receipt_digest());
         push_digest(
             &mut bytes,
             self.final_request_tokenization.final_request_digest(),
@@ -679,9 +675,10 @@ pub fn prepare_provider_bound_delivery_v2(
     ensure_nonzero("prompt fragments", prompt_fragments_digest)?;
     bundle.validate_for(compiled, profile)?;
     final_request_tokenization.validate(profile.maximum_context_tokens)?;
-    if final_request_tokenization.descriptor().provider_id_digest()
-        != profile.provider_id_digest
-        || final_request_tokenization.descriptor().provider_model_digest()
+    if final_request_tokenization.descriptor().provider_id_digest() != profile.provider_id_digest
+        || final_request_tokenization
+            .descriptor()
+            .provider_model_digest()
             != profile.provider_model_digest
     {
         return Err(ProviderBoundErrorV2::ProviderModelProfileMismatch);
@@ -788,10 +785,7 @@ impl ProviderBoundDeliveryReceiptV2 {
         push_digest(&mut bytes, self.delivery.receipt_digest());
         push_digest(&mut bytes, self.provider_bound_preparation_digest);
         push_text(&mut bytes, self.provider_wire_semantic_sha256.as_str());
-        push_digest(
-            &mut bytes,
-            self.final_request_tokenization_receipt_digest,
-        );
+        push_digest(&mut bytes, self.final_request_tokenization_receipt_digest);
         Digest32::of_bytes(&bytes)
     }
 }
@@ -817,14 +811,16 @@ pub fn observe_provider_bound_delivery_v2(
         return Err(ProviderBoundErrorV2::ProviderWireDigestMismatch);
     }
     let delivery = observe_delivery(
-        preparation.preparation(),
-        attachment,
-        bundle.serialized(),
-        profile,
-        delivery_id,
-        provider_receipt,
+        ContextDeliveryRequestV2 {
+            preparation: preparation.preparation(),
+            attachment,
+            serialization: bundle.serialized(),
+            profile,
+            delivery_id,
+            provider_receipt,
+            observed_unix_ms,
+        },
         delivery_verifier,
-        observed_unix_ms,
     )?;
     let mut value = ProviderBoundDeliveryReceiptV2 {
         delivery,
@@ -853,10 +849,7 @@ pub enum ProviderBoundErrorV2 {
     SnapshotPredecessorMismatch,
     InvalidTokenizerVersion,
     FinalRequestSizeInvalid,
-    FinalRequestTokenBudgetExceeded {
-        token_count: u64,
-        token_budget: u64,
-    },
+    FinalRequestTokenBudgetExceeded { token_count: u64, token_budget: u64 },
     ProviderWireDigestMismatch,
     ProviderModelProfileMismatch,
     DeliveryBindingMismatch,
@@ -890,10 +883,7 @@ fn order_canonical_realizations(
     for realization in realizations {
         let item_id = realization.item_id.clone();
         if by_id.insert(item_id.clone(), realization).is_some() {
-            return Err(ContextCompilerV2Error::DuplicateRealization(
-                item_id.to_string(),
-            )
-            .into());
+            return Err(ContextCompilerV2Error::DuplicateRealization(item_id.to_string()).into());
         }
     }
     let mut ordered = Vec::with_capacity(compiled.selected_candidates().len());
@@ -951,9 +941,7 @@ fn encode_canonical_context(
             &u64::try_from(item_id.len())
                 .unwrap_or(u64::MAX)
                 .to_be_bytes(),
-            CanonicalContextSegmentKindV2::TypedFraming(
-                CanonicalContextFramingV2::ItemIdLength,
-            ),
+            CanonicalContextSegmentKindV2::TypedFraming(CanonicalContextFramingV2::ItemIdLength),
         );
         push_segment(
             &mut payload,
@@ -1033,10 +1021,9 @@ fn validate_segment_coverage(
             .offset
             .checked_add(segment.length)
             .ok_or(ProviderBoundErrorV2::Arithmetic)?;
-        let start = usize::try_from(segment.offset)
-            .map_err(|_| ProviderBoundErrorV2::Arithmetic)?;
-        let end_usize =
-            usize::try_from(end).map_err(|_| ProviderBoundErrorV2::Arithmetic)?;
+        let start =
+            usize::try_from(segment.offset).map_err(|_| ProviderBoundErrorV2::Arithmetic)?;
+        let end_usize = usize::try_from(end).map_err(|_| ProviderBoundErrorV2::Arithmetic)?;
         let Some(bytes) = payload.get(start..end_usize) else {
             return Err(ProviderBoundErrorV2::InvalidSegmentMap(
                 "segment outside payload",
@@ -1165,20 +1152,16 @@ fn expect_framing(
             "missing framing segment",
         ));
     };
-    if segment.kind
-        != CanonicalContextSegmentKindV2::TypedFraming(expected_kind)
+    if segment.kind != CanonicalContextSegmentKindV2::TypedFraming(expected_kind)
         || segment.length != u64::try_from(expected_bytes.len()).unwrap_or(u64::MAX)
     {
         return Err(ProviderBoundErrorV2::InvalidSegmentMap(
             "framing kind or length mismatch",
         ));
     }
-    let start =
-        usize::try_from(segment.offset).map_err(|_| ProviderBoundErrorV2::Arithmetic)?;
+    let start = usize::try_from(segment.offset).map_err(|_| ProviderBoundErrorV2::Arithmetic)?;
     let end = start
-        .checked_add(
-            usize::try_from(segment.length).map_err(|_| ProviderBoundErrorV2::Arithmetic)?,
-        )
+        .checked_add(usize::try_from(segment.length).map_err(|_| ProviderBoundErrorV2::Arithmetic)?)
         .ok_or(ProviderBoundErrorV2::Arithmetic)?;
     if payload.get(start..end) != Some(expected_bytes) {
         return Err(ProviderBoundErrorV2::InvalidSegmentMap(
@@ -1216,10 +1199,7 @@ fn compute_segment_map_digest(segments: &[CanonicalContextSegmentV2]) -> Digest3
     Digest32::of_bytes(&bytes)
 }
 
-fn ensure_nonzero(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), ProviderBoundErrorV2> {
+fn ensure_nonzero(name: &'static str, digest: Digest32) -> Result<(), ProviderBoundErrorV2> {
     if digest.is_zero() {
         return Err(ProviderBoundErrorV2::EmptyDigest(name));
     }

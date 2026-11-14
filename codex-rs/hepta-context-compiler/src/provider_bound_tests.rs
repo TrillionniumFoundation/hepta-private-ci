@@ -96,10 +96,7 @@ impl ExactProviderRequestTokenizerV2 for FixtureProviderTokenizer {
         &self.descriptor
     }
 
-    fn count_tokens(
-        &self,
-        canonical_final_request: &[u8],
-    ) -> Result<u64, ProviderBoundErrorV2> {
+    fn count_tokens(&self, canonical_final_request: &[u8]) -> Result<u64, ProviderBoundErrorV2> {
         let text = std::str::from_utf8(canonical_final_request)
             .map_err(|_| ProviderBoundErrorV2::FinalRequestSizeInvalid)?;
         Ok(u64::try_from(text.chars().count()).unwrap_or(u64::MAX))
@@ -120,8 +117,7 @@ impl ContextProviderDeliveryVerifierV2 for TestDeliveryVerifier {
         receipt: &ProviderInvocationReceipt,
         preparation: &ContextDeliveryPreparationV2,
     ) -> Result<ContextProviderDeliveryDecisionV2, String> {
-        let expected =
-            Sha256Digest::for_bytes(preparation.preparation_digest().as_array());
+        let expected = Sha256Digest::for_bytes(preparation.preparation_digest().as_array());
         if receipt
             .intent
             .binding
@@ -182,7 +178,9 @@ fn successor_snapshot(
     revoked: Vec<StableId>,
 ) -> Result<VerifiedAdmissionSnapshotSuccessorV2, ProviderBoundErrorV2> {
     let raw = ContextAdmissionSnapshotV2::new(
-        id(&format!("snapshot:successor:{observed_unix_ms}:{revocation_epoch}")),
+        id(&format!(
+            "snapshot:successor:{observed_unix_ms}:{revocation_epoch}"
+        )),
         predecessor.scope_digest(),
         predecessor.authority_domain_digest(),
         observed_unix_ms,
@@ -191,11 +189,7 @@ fn successor_snapshot(
         true,
         Some(predecessor.snapshot_digest()),
     )?;
-    verify_typed_admission_snapshot_successor_v2(
-        raw,
-        predecessor,
-        &TestAdmissionVerifier,
-    )
+    verify_typed_admission_snapshot_successor_v2(raw, predecessor, &TestAdmissionVerifier)
 }
 
 fn candidate(
@@ -205,9 +199,8 @@ fn candidate(
     snapshot: &VerifiedAdmissionSnapshotV2,
     tokenizer: &impl ExactTokenizerV2,
 ) -> (ContextCandidateV2, ContextRealizedItemV2) {
-    let tokenization =
-        TokenizationReceiptV2::from_exact_bytes(id(item_id), &content, tokenizer)
-            .unwrap_or_else(|error| panic!("tokenization: {error}"));
+    let tokenization = TokenizationReceiptV2::from_exact_bytes(id(item_id), &content, tokenizer)
+        .unwrap_or_else(|error| panic!("tokenization: {error}"));
     let source_digest = digest(&format!("source:{item_id}"));
     let record = ContextAdmissionRecordV2::new(
         id(&format!("admission:{item_id}")),
@@ -365,9 +358,7 @@ fn canonical_bundle_has_exhaustive_typed_coverage() {
         .segments()
         .iter()
         .filter_map(|segment| match &segment.kind {
-            CanonicalContextSegmentKindV2::SelectedItem { item_id, .. } => {
-                Some(item_id.clone())
-            }
+            CanonicalContextSegmentKindV2::SelectedItem { item_id, .. } => Some(item_id.clone()),
             CanonicalContextSegmentKindV2::TypedFraming(_) => None,
         })
         .collect::<Vec<_>>();
@@ -459,7 +450,12 @@ fn strict_api_removes_the_prepared_payload_injection_seam() {
         &ByteTokenizer,
     )
     .unwrap_or_else(|error| panic!("strict serializer: {error}"));
-    assert!(!strict.payload().windows(10).any(|window| window == b"UNDECLARED"));
+    assert!(
+        !strict
+            .payload()
+            .windows(10)
+            .any(|window| window == b"UNDECLARED")
+    );
     strict
         .validate_for(&compiled, &profile)
         .unwrap_or_else(|error| panic!("strict bundle validates: {error}"));
@@ -480,12 +476,10 @@ fn typed_successor_rejects_reset_rollback_and_revocation_resurrection() {
         None,
     )
     .unwrap_or_else(|error| panic!("reset snapshot shape: {error}"));
-    assert!(verify_typed_admission_snapshot_successor_v2(
-        reset,
-        &predecessor,
-        &TestAdmissionVerifier,
-    )
-    .is_err());
+    assert!(
+        verify_typed_admission_snapshot_successor_v2(reset, &predecessor, &TestAdmissionVerifier,)
+            .is_err()
+    );
 
     let rollback = ContextAdmissionSnapshotV2::new(
         id("snapshot:rollback"),
@@ -498,12 +492,14 @@ fn typed_successor_rejects_reset_rollback_and_revocation_resurrection() {
         Some(predecessor.snapshot_digest()),
     )
     .unwrap_or_else(|error| panic!("rollback snapshot shape: {error}"));
-    assert!(verify_typed_admission_snapshot_successor_v2(
-        rollback,
-        &predecessor,
-        &TestAdmissionVerifier,
-    )
-    .is_err());
+    assert!(
+        verify_typed_admission_snapshot_successor_v2(
+            rollback,
+            &predecessor,
+            &TestAdmissionVerifier,
+        )
+        .is_err()
+    );
 
     let revoked_id = id("admission:revoked");
     let revoked = successor_snapshot(&predecessor, 11, 8, vec![revoked_id.clone()])
@@ -519,12 +515,14 @@ fn typed_successor_rejects_reset_rollback_and_revocation_resurrection() {
         Some(revoked.successor().snapshot_digest()),
     )
     .unwrap_or_else(|error| panic!("resurrection shape: {error}"));
-    assert!(verify_typed_admission_snapshot_successor_v2(
-        resurrection,
-        revoked.successor(),
-        &TestAdmissionVerifier,
-    )
-    .is_err());
+    assert!(
+        verify_typed_admission_snapshot_successor_v2(
+            resurrection,
+            revoked.successor(),
+            &TestAdmissionVerifier,
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -532,9 +530,8 @@ fn exact_final_request_tokenization_binds_all_runtime_identity() {
     let tokenizer = FixtureProviderTokenizer::new();
     let request = "{\"model\":\"model\",\"input\":\"A\u{030A}\\n\u{0001}\u{2603}\"}".as_bytes();
     let wire = Sha256Digest::for_bytes(request);
-    let receipt =
-        tokenize_provider_final_request_v2(request, wire.clone(), 4_096, &tokenizer)
-            .unwrap_or_else(|error| panic!("tokenize final request: {error}"));
+    let receipt = tokenize_provider_final_request_v2(request, wire.clone(), 4_096, &tokenizer)
+        .unwrap_or_else(|error| panic!("tokenize final request: {error}"));
     assert_eq!(
         receipt.token_count(),
         u64::try_from(
@@ -551,9 +548,7 @@ fn exact_final_request_tokenization_binds_all_runtime_identity() {
     descriptor.vocabulary_digest = digest("mutated-vocabulary");
     assert!(matches!(
         descriptor.validate(),
-        Err(ProviderBoundErrorV2::DigestMismatch(
-            "tokenizer descriptor"
-        ))
+        Err(ProviderBoundErrorV2::DigestMismatch("tokenizer descriptor"))
     ));
     assert!(matches!(
         tokenize_provider_final_request_v2(
@@ -571,8 +566,7 @@ fn provider_bound_delivery_closes_wire_semantic_identity() {
     let (snapshot, profile, compiled, bundle, attachment) = strict_fixture();
     let successor = successor_snapshot(&snapshot, 20, 8, Vec::new())
         .unwrap_or_else(|error| panic!("successor: {error}"));
-    let final_request =
-        b"{\"model\":\"model\",\"input\":[\"follow policy\",\"snowman: \\u2603\"]}";
+    let final_request = b"{\"model\":\"model\",\"input\":[\"follow policy\",\"snowman: \\u2603\"]}";
     let tokenizer = FixtureProviderTokenizer::new();
     let tokenization = tokenize_provider_final_request_v2(
         final_request,
@@ -592,7 +586,7 @@ fn provider_bound_delivery_closes_wire_semantic_identity() {
         tokenization,
     )
     .unwrap_or_else(|error| panic!("provider-bound preparation: {error}"));
-    let provider_receipt = provider_receipt(
+    let observed_provider_receipt = provider_receipt(
         &bundle,
         &preparation,
         Sha256Digest::for_bytes(final_request),
@@ -604,7 +598,7 @@ fn provider_bound_delivery_closes_wire_semantic_identity() {
         &attachment,
         &profile,
         id("delivery:provider-bound"),
-        &provider_receipt,
+        &observed_provider_receipt,
         &TestDeliveryVerifier {
             recorded_at_unix_ms: 21,
         },
