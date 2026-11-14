@@ -339,7 +339,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    # Upstream sandbox-enabled V8 from-source builds can exceed 30 minutes
+    # on MSVC. Retain all link/smoke checks and the existing job matrix.
+    timeout-minutes: 120
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
