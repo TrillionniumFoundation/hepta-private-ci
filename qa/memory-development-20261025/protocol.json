@@ -1,0 +1,174 @@
+{
+  "base_inventory": {
+    "config.json": {
+      "bytes": 861,
+      "sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a"
+    },
+    "generation_config.json": {
+      "bytes": 132,
+      "sha256": "87b916edaaab66b3899b9d0dd0752727dff6666686da0504d89ae0a6e055a013"
+    },
+    "model.safetensors": {
+      "bytes": 269060552,
+      "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+    },
+    "special_tokens_map.json": {
+      "bytes": 655,
+      "sha256": "2b7379f3ae813529281a5c602bc5a11c1d4e0a99107aaa597fe936c1e813ca52"
+    },
+    "tokenizer.json": {
+      "bytes": 2104556,
+      "sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+    },
+    "tokenizer_config.json": {
+      "bytes": 3764,
+      "sha256": "4ec77d44f62efeb38d7e044a1db318f6a939438425312dfa333b8382dbad98df"
+    }
+  },
+  "expected_development_operations": [
+    "ruff check --fix",
+    "ruff check --fix --unsafe-fixes"
+  ],
+  "exposure": "two authored teaching programs and one historical exposed project task; same known failure families",
+  "facts": [
+    {
+      "entity": "F401 unused-import",
+      "relation": "repair command",
+      "scope": "ruff-procedural-development-20261025",
+      "source_digest": "c6c071d12bb8a0aeb50498e67d925d54f4a51f879fffd19e1f6a734560fe8eb5",
+      "value": "ruff check --fix"
+    },
+    {
+      "entity": "E731 lambda-assignment",
+      "relation": "repair command",
+      "scope": "ruff-procedural-development-20261025",
+      "source_digest": "10ed886b1172ad317a4af4b75b718cee4b36198780127d694cbbad09fad4a83f",
+      "value": "ruff check --fix --unsafe-fixes"
+    }
+  ],
+  "fixed_operations": {
+    "ruff check --fix": [
+      "--fix"
+    ],
+    "ruff check --fix --unsafe-fixes": [
+      "--fix",
+      "--unsafe-fixes"
+    ]
+  },
+  "full_budget_fission_claim": false,
+  "implementation": {
+    "scripts/memory_cell_development/procedural_support.py": "8df92b1f262833af479681a85bbf6be4f442d06cfc6947ac60c80c5ae6fee9f4",
+    "scripts/memory_cell_development/procedural_trial.py": "5e20da467cdd322a13d0fbdfcb4142a18352bffb34a3363fb257138d82deecb2",
+    "scripts/memory_cell_development/procedural_worker.py": "0a98e69357cd1f442d76d31c2a26a40f2449c0070691f2986ba6fac61899cac4"
+  },
+  "input_policy": "same typed diagnostic codes and rule names; no source value in model prompts",
+  "learning_rate": 0.003,
+  "objective": "completion_ce",
+  "original_task_groups": 1,
+  "prospective_groups": 0,
+  "questions": [
+    "According to incident memory, what repair command resolves failure F401 unused-import?",
+    "According to incident memory, what repair command resolves failure E731 lambda-assignment?",
+    "According to incident memory, what repair command resolves failure E731 lambda-assignment; F401 unused-import?"
+  ],
+  "rank": 8,
+  "registered_at": "2026-10-25T10:24:04.013534+00:00",
+  "retrieval_operation": "ruff check --fix --unsafe-fixes",
+  "retrieval_policy": "intersect successful source operations for all diagnosed codes, then least-permission order",
+  "retuning_after_outcomes": false,
+  "schema": "hepta.memory.procedural-development.v1",
+  "scope": "ruff-procedural-development-20261025",
+  "seeds": [
+    24041,
+    24043,
+    24047
+  ],
+  "source": {
+    "archive_sha256": "585e07975a1edf844e5656917571cfa2713842a9ac462e5d5402a75b58244bbc",
+    "original_fixture_files": {
+      "experiments/multimodal_output_portfolio/v4/counterfactual_audit.py": {
+        "bytes": 12461,
+        "sha256": "23a15a9574da00ba8272bbcaaf7988361c8a4190c5769d1ebe717ba0d3f228d9"
+      },
+      "experiments/multimodal_output_portfolio/v4/information_acquisition.py": {
+        "bytes": 8289,
+        "sha256": "8abca5bd5c598683630067c606f42fdfd47dc206a9c79204ad5f678c4267a310"
+      },
+      "experiments/multimodal_output_portfolio/v4/joint_evidence_generation.py": {
+        "bytes": 14367,
+        "sha256": "6330363892fd78d5783b39dbb87e8d67d28da3992eefbc07ab82b404fa5b9307"
+      },
+      "experiments/multimodal_output_portfolio/v4/portfolio.py": {
+        "bytes": 14789,
+        "sha256": "f1bfe3ad6b6245b47520cf389bbc5d08bde37f7e937d7a1b53f8fe719b37c1e9"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_counterfactual_audit.py": {
+        "bytes": 4838,
+        "sha256": "fea4ba25e741a9fb77821fdc7111f162ee5bac348b7c955e7eb805a217b8ef50"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_execute_boundary.py": {
+        "bytes": 2826,
+        "sha256": "ff934c905bde2795013d990d7b9689c77995fa0b4c5ba21793bddf4c757e37cd"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_extreme_risk.py": {
+        "bytes": 5936,
+        "sha256": "1a27be71acd2d20b938c358153f0c6aedd7b2f9f1e926f3e663e5139a819ef46"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_fresh_audit_admission.py": {
+        "bytes": 2592,
+        "sha256": "b595413fe648c0d241b99d7855fbfdbe1e0b79f5356b053796f3abd41d74ee1e"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_fresh_root_custody.py": {
+        "bytes": 2338,
+        "sha256": "6d66616e3872aa3acbe1ac2d03ceb35e4476c3b1d3fd16baa6784d0da0b35e59"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_information_acquisition.py": {
+        "bytes": 4404,
+        "sha256": "51b7755b0be40bc777a0d8095bca77288b8f632e5abe345f8398d4a9fe1f6944"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_joint_evidence_generation.py": {
+        "bytes": 11425,
+        "sha256": "b2a08fdf77d12d1cffe51e5b7c3011d44dc8df2afa719aa0d1d98e76fa2e06c5"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_joint_generation_admission.py": {
+        "bytes": 3460,
+        "sha256": "7fe66f3d2a56cd77c59fe39fee1c733c6f9b452ed6ce1c10c252e28134ab99c8"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_near_neutral_risk.py": {
+        "bytes": 3497,
+        "sha256": "3b25a0325dc8f720cb3703a00ac6e59a57709bb68d01c802b3d8bccdf9c028ab"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_numeric_admission.py": {
+        "bytes": 3543,
+        "sha256": "0e4d18602053be11b42c9db4bb7288aa6398b89e076f08da5b345545e81127ef"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_policy_replay_admission.py": {
+        "bytes": 2486,
+        "sha256": "9ff12c18eafbf802752f7454522b19d3d52e3b8cfe272e7773a0a36b5531bcb7"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_portfolio.py": {
+        "bytes": 6826,
+        "sha256": "e3366e95976c8929d82dada62f50d3473c7a6b8c18f65dcce1d311bf521bccaa"
+      },
+      "experiments/multimodal_output_portfolio/v4/test_reallocation.py": {
+        "bytes": 1057,
+        "sha256": "b7d066f60d6e4c1c0689ca9214d4aaf3d30d1214d63c4e6ebd12dae9770b321a"
+      }
+    },
+    "original_semantic_tests": 76,
+    "ruff_sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97"
+  },
+  "source_head": "ba32a22de7c586ae6a1ac6ebeb5d67b54259021b",
+  "steps": 96,
+  "strong_rag_qualified": false,
+  "task_gate": "original pinned Ruff check plus all 76 original semantic tests; only TARGET may change",
+  "task_query_index": 2,
+  "templates": [
+    "For failure {entity}, return the recorded {relation}.",
+    "Which {relation} was recorded for failure {entity}?",
+    "Recall the {relation} for this failure: {entity}",
+    "Failure: {entity}. Give its stored {relation}."
+  ],
+  "training_cpu_limit_seconds_per_child": 180,
+  "training_spec_sha256": "3190c6b56c647f348327cbfd7731aebac34efb6b4c5ee333539dd19ffa916b74"
+}

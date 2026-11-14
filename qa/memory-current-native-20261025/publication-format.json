@@ -1,0 +1,399 @@
+{
+  "schema": "hepta.memory-cell.current-owner.publication-format.v1",
+  "source_baseline": "ba32a22de7c586ae6a1ac6ebeb5d67b54259021b",
+  "final_fix": {
+    "name": "native-final-fix-001",
+    "started_utc": "2026-10-25T11:05:58.559772+00:00",
+    "wall_seconds": 233.23703526100144,
+    "command": [
+      "just",
+      "fix",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-ndu",
+      "--features",
+      "codex-hepta-agentd/qualification-cognitive-write"
+    ],
+    "cwd": "/workspace/scratch/12ef9c5bdc23/hepta-memory-resume-20261024/codex-rs",
+    "exit_code": 0,
+    "source_scopes": [
+      "codex-rs/hepta-agentd",
+      "codex-rs/hepta-ndu"
+    ],
+    "source_files": 188,
+    "source_changed_during_execution": [],
+    "output_files": {
+      "source-after.json": {
+        "bytes": 27756,
+        "sha256": "da78b9341850a3eb59eb0df7b6540d4376a40009c9fbcd237eeb4ed0d9937d02"
+      },
+      "source-before.json": {
+        "bytes": 27756,
+        "sha256": "da78b9341850a3eb59eb0df7b6540d4376a40009c9fbcd237eeb4ed0d9937d02"
+      },
+      "stderr.log": {
+        "bytes": 92989,
+        "sha256": "3bb075011aad79c50e8aad1e9f78ae9fc3de88e3c9354a4812700d492abf43af"
+      },
+      "stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "final_fmt": {
+    "name": "native-final-fmt-001",
+    "started_utc": "2026-10-25T11:10:13.350542+00:00",
+    "wall_seconds": 1.5184057139995275,
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "cwd": "/workspace/scratch/12ef9c5bdc23/hepta-memory-resume-20261024/codex-rs",
+    "exit_code": 0,
+    "source_scopes": [
+      "codex-rs/hepta-agentd",
+      "codex-rs/hepta-ndu",
+      "scripts/memory_cell_native/current",
+      "scripts/memory_cell_development",
+      "scripts/memory_cell_distributed"
+    ],
+    "source_files": 220,
+    "source_changed_during_execution": [
+      "codex-rs/hepta-agentd/src/config.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "codex-rs/hepta-agentd/src/lib.rs",
+      "codex-rs/hepta-agentd/src/native_memory.rs",
+      "codex-rs/hepta-agentd/src/native_memory_context_binding.rs",
+      "codex-rs/hepta-agentd/src/native_memory_context_binding_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_current.rs",
+      "codex-rs/hepta-agentd/src/native_memory_current_model.rs",
+      "codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_model.rs",
+      "codex-rs/hepta-agentd/src/native_memory_registration.rs",
+      "codex-rs/hepta-agentd/src/native_memory_registration_current_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_registration_pretrained_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_registration_startup_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_registration_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_shadow_namespace.rs",
+      "codex-rs/hepta-agentd/src/native_memory_shadow_namespace_tests.rs",
+      "codex-rs/hepta-agentd/src/native_memory_test_support.rs",
+      "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-agentd/src/state_current_objective.rs",
+      "codex-rs/hepta-ndu/src/owner_current.rs",
+      "codex-rs/hepta-ndu/src/owner_current_tests.rs",
+      "codex-rs/hepta-ndu/src/owner_tests.rs",
+      "scripts/memory_cell_native/current/native_current_ci.py"
+    ],
+    "output_files": {
+      "source-after.json": {
+        "bytes": 32581,
+        "sha256": "79ba8e1a5a234e8e9b627e028c2218b82c723652cde8eb22bf7a716e3cf94f6b"
+      },
+      "source-before.json": {
+        "bytes": 32578,
+        "sha256": "3b27b9b8efc612cecf01eac359ffde1b6d7cda9c0c56463c83e78292097e354a"
+      },
+      "stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "local_tests_after_final_tools": 0,
+  "current_ci_python": {
+    "path": "scripts/memory_cell_native/current/native_current_ci.py",
+    "executed_utf8": "\"\"\"Prepare and audit one default-build current-owner decoder qualification.\n\nThe workflow runs Rust through `just test` between these two phases. This\ndriver never trains, launches Rust, retries a decoder, or supplies an answer.\n\"\"\"\n\nimport argparse\nimport json\nfrom pathlib import Path\nimport sys\nimport traceback\n\nsys.path.insert(0, str(Path(__file__).resolve().parents[1]))\nfrom native_backend import file_set, file_sha, inspect\nfrom native_ci_support import identity\nfrom native_tick_contract import validate_tick_binding\nfrom native_trial import retain\n\n\ndef source_identity(repo):\n    source = identity(repo)\n    source[\"current_ndu_owner_files\"] = file_set(\n        repo, (repo / \"codex-rs/hepta-ndu\").rglob(\"*.rs\")\n    )\n    return source\n\n\ndef frozen_inputs(native, shadow, checkpoint):\n    return {\n        \"native\": file_set(native, (p for p in native.rglob(\"*\") if p.is_file())),\n        \"controlled_shadow\": file_set(shadow, (p for p in shadow.rglob(\"*\") if p.is_file())),\n        \"checkpoint\": file_set(checkpoint, (p for p in checkpoint.rglob(\"*\") if p.is_file())),\n    }\n\n\ndef prepare(args):\n    repo = args.repo.resolve(strict=True)\n    native, shadow = args.native_run.resolve(strict=True), args.shadow_run.resolve(strict=True)\n    args.out.mkdir(mode=0o700, parents=True, exist_ok=False)\n    source = source_identity(repo)\n    if source[\"head\"] != args.expected_head:\n        raise ValueError(\"current-owner qualification requires its exact committed source\")\n    retain(args.out / \"source-before.json\", source)\n    original = json.loads((native / \"report.json\").read_text())\n    controlled = json.loads((shadow / \"report.json\").read_text())\n    config = json.loads((shadow / \"shadow_config.json\").read_text())\n    protocol = json.loads((native / \"trial/protocol.json\").read_text())\n    training = json.loads((native / \"trial/training.json\").read_text())\n    if (not original[\"engineering_pass\"] or not controlled[\"engineering_pass\"]\n        or original[\"source_head\"] != args.expected_head\n        or controlled[\"source_head\"] != args.expected_head\n        or protocol[\"steps\"] != 96 or protocol[\"rank\"] != 8 or protocol[\"seed\"] != 24031\n        or protocol[\"learning_rate\"] != 0.01 or protocol[\"objective\"] != \"completion_ce\"\n        or training[\"receipt\"][\"steps\"] != 96\n        or len(training[\"receipt\"][\"schedule_indices\"]) != 96\n        or controlled[\"actual_total_decoder_queries_including_original_v1\"] != 4\n        or controlled[\"actual_total_native_feature_forwards_including_original_v1\"] != 2\n        or config[\"output_width\"] != 5\n        or Path(config[\"python\"]).resolve() != Path(sys.executable).resolve()\n        or Path(config[\"repo\"]).resolve() != repo):\n        raise ValueError(\"completed fixed v1 and controlled v2 qualifications are required\")\n    checkpoint = Path(config[\"checkpoint\"]).resolve(strict=True)\n    pins, inspected = inspect(repo, config[\"model\"], checkpoint)\n    if pins != config[\"pins\"]:\n        raise ValueError(\"pretrained shadow pins differ from the current runtime\")\n    document = native / \"trial/source_document.json\"\n    if inspected[\"lineage\"][\"roots\"] != [file_sha(document)]:\n        raise ValueError(\"current source must preserve the trained single-root bytes\")\n    current = {**config, \"config_id\": \"memory-cell:current-owner-pretrained-v1\",\n               \"receipt_directory\": str(args.out.resolve() / \"execution\")}\n    retain(args.out / \"model_config.json\", current)\n    retain(args.out / \"registration.json\", {\n        \"schema\": \"hepta.memory-cell.current-factory-registration.v1\",\n        \"expected_head\": args.expected_head, \"original_shadow_config\": config,\n        \"current_config\": current, \"source_document\": str(document),\n        \"frozen_inputs\": frozen_inputs(native, shadow, checkpoint),\n        \"extra_training_updates\": 0, \"new_decoder_queries_planned\": 1,\n        \"default_daemon_process_exercised\": False, \"production_qualified\": False,\n    })\n\n\ndef finish(args):\n    repo = args.repo.resolve(strict=True)\n    native, shadow = args.native_run.resolve(strict=True), args.shadow_run.resolve(strict=True)\n    registered = json.loads((args.out / \"registration.json\").read_text())\n    config = registered[\"current_config\"]\n    if json.loads((args.out / \"model_config.json\").read_text()) != config:\n        raise ValueError(\"current factory configuration changed\")\n    checkpoint = Path(config[\"checkpoint\"]).resolve(strict=True)\n    before = json.loads((args.out / \"source-before.json\").read_text())\n    after = source_identity(repo)\n    if before != after or after[\"head\"] != args.expected_head:\n        raise ValueError(\"qualified source changed\")\n    frozen = frozen_inputs(native, shadow, checkpoint)\n    if frozen != registered[\"frozen_inputs\"] or inspect(repo, config[\"model\"], checkpoint)[0] != config[\"pins\"]:\n        raise ValueError(\"original controls, weights or registered runtime changed\")\n    execution_root = Path(config[\"receipt_directory\"])\n    result = json.loads((execution_root / \"current-factory-report.json\").read_text())\n    worker = execution_root / result[\"execution\"][\"request_sha256\"]\n    if sorted(path for path in execution_root.iterdir() if path.is_dir()) != [worker]:\n        raise ValueError(\"exactly one independently retained worker directory is required\")\n    raw_execution = json.loads((worker / \"stdout.json\").read_text())\n    request = json.loads((worker / \"request.json\").read_text())\n    process = json.loads((worker / \"process.json\").read_text())\n    validate_tick_binding(request)\n    if (raw_execution != result[\"execution\"]\n        or file_sha(worker / \"request.json\") != raw_execution[\"request_sha256\"]\n        or request[\"schema\"] != \"hepta.memory-cell.native-request.v2\"\n        or request[\"pins\"] != config[\"pins\"]\n        or request[\"source_root\"] != result[\"source_document_sha256\"]\n        or request[\"query_digest\"] != raw_execution[\"query_digest\"]\n        or request[\"source_binding_digest\"] != raw_execution[\"source_binding_digest\"]\n        or raw_execution[\"decoder_queries\"] != 1 or raw_execution[\"feature_forward_calls\"] != 1\n        or process[\"exit_code\"] != 0 or process[\"timed_out\"] is not False\n        or process[\"owner_cancelled\"] is not False or process[\"stdin_completed\"] is not True\n        or process[\"stdout_bytes\"] != (worker / \"stdout.json\").stat().st_size\n        or process[\"stderr_bytes\"] != (worker / \"stderr.log\").stat().st_size):\n        raise ValueError(\"raw worker request, execution or process evidence differs\")\n    if (not result[\"engineering_pass\"] or not result[\"actual_current_owner_factory\"]\n        or not result[\"exact_query_substitution_refused\"] or not result[\"cancelled_runtime_delivery_refused\"]\n        or result[\"actual_decoder_queries\"] != 1 or result[\"actual_feature_forward_calls\"] != 1\n        or result[\"completed_worker_processes\"] != 1 or result[\"extra_training_updates\"] != 0\n        or result[\"production_qualified\"] or result[\"default_daemon_process_exercised\"]\n        or result[\"source_document_sha256\"] != file_sha(Path(registered[\"source_document\"]))\n        or result[\"configuration_sha256\"] != file_sha(args.out / \"model_config.json\")):\n        raise ValueError(\"actual default factory execution or evidence boundary differs\")\n    retain(args.out / \"source-after.json\", after)\n    retain(args.out / \"frozen-after.json\", frozen)\n    retain(args.out / \"report.json\", {\n        \"schema\": \"hepta.memory-cell.current-factory-driver.v1\",\n        \"engineering_pass\": True, \"source_head\": after[\"head\"], \"execution\": result,\n        \"training_updates_reused\": 96, \"training_updates_added\": 0,\n        \"new_decoder_queries\": 1, \"new_feature_forwards\": 1,\n        \"total_decoder_queries_including_prior_v1_v2\": 5,\n        \"total_feature_forwards_including_prior_v1_v2\": 3,\n        \"independent_future_tasks\": 0, \"future_accuracy\": None,\n        \"production_qualified\": False, \"default_daemon_process_exercised\": False,\n        \"authority_and_clock\": \"explicit test-controlled real durable owners\",\n        \"automatic_retry\": False,\n        \"retained_execution_files\": file_set(execution_root, (p for p in execution_root.rglob(\"*\") if p.is_file())),\n    })\n\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser(description=__doc__)\n    parser.add_argument(\"phase\", choices=(\"prepare\", \"finish\"))\n    parser.add_argument(\"--repo\", type=Path, required=True)\n    parser.add_argument(\"--native-run\", type=Path, required=True)\n    parser.add_argument(\"--shadow-run\", type=Path, required=True)\n    parser.add_argument(\"--out\", type=Path, required=True)\n    parser.add_argument(\"--expected-head\", required=True)\n    arguments = parser.parse_args()\n    try:\n        globals()[arguments.phase](arguments)\n    except BaseException as error:\n        if arguments.out.is_dir():\n            retain(arguments.out / (arguments.phase + \"-failure.json\"), {\n                \"error\": f\"{type(error).__name__}: {error}\", \"traceback\": traceback.format_exc(),\n                \"engineering_pass\": False, \"production_qualified\": False,\n            })\n        raise\n",
+    "executed_sha256": "f9057a5bbea5a2a87b327596c92c8de2501b4c81255321fb3e69301dc5cfca6c",
+    "published_sha256": "96781d6704595e326f6262c79f0f378908ea2839c80e01ae1f6c74444c614f1a",
+    "complete_ast_equal_including_docstrings": true,
+    "negative_checks_report_sha256": "1847db672dd70dd285eb44275363bcb3b22489589c0b4f8ec9f435211a7a2d04"
+  },
+  "files": [
+    {
+      "path": ".github/workflows/hepta-native-memory.yml",
+      "publication_sha256": "f7952a319e1c0c1c97a168a268d6bfc09e1a507bccea42e4643daeec513edb9b",
+      "publication_bytes": 9930,
+      "publication_lines": 173,
+      "pre_final_sha256": "f7952a319e1c0c1c97a168a268d6bfc09e1a507bccea42e4643daeec513edb9b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "publication_sha256": "242ed497e161c73b72c73293c75f31d4a88438ed030ba3202e9b36a3b273027a",
+      "publication_bytes": 25004,
+      "publication_lines": 642,
+      "pre_final_sha256": "d7ccee852538cea5c903a5ac389d1a1622c70af1937437ca0e6b9f16feb13093"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "publication_sha256": "f812538aa74da34096700b973b9d961e90ac817bf3093077b8e658048b59a5f9",
+      "publication_bytes": 28467,
+      "publication_lines": 743,
+      "pre_final_sha256": "f812538aa74da34096700b973b9d961e90ac817bf3093077b8e658048b59a5f9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "publication_sha256": "fa6b3296f6f3ae9d7bdade9619b73489c461b406e43cdbd0fc86d16755ab78b0",
+      "publication_bytes": 38411,
+      "publication_lines": 992,
+      "pre_final_sha256": "fa6b3296f6f3ae9d7bdade9619b73489c461b406e43cdbd0fc86d16755ab78b0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "publication_sha256": "94ba0a162353eead4d028e463548b49f3d6c8e1e6c107e485fc8bdc002fcdcf6",
+      "publication_bytes": 26930,
+      "publication_lines": 770,
+      "pre_final_sha256": "029f5855f06551566c89e771628617935789ed4ec51787e9d1164ade03f96705"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "publication_sha256": "3553367d97872687ad314080dbabfd2eda16fa999d4d8c4082474d421719878d",
+      "publication_bytes": 14206,
+      "publication_lines": 286,
+      "pre_final_sha256": "6fab79f1f67699b0e5db495ea8de7637cf0f7007e005d5dd8dc87851d4b0118e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory.rs",
+      "publication_sha256": "a45d40b8aabe5231b0b72f200d313e3abf4c267a91b1667268f3d53a28511f83",
+      "publication_bytes": 14283,
+      "publication_lines": 364,
+      "pre_final_sha256": "845d816f0fde52cf7a3b1f78ed6307ec4b2140d579692a9cdd4c067b392a3325"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_context_binding.rs",
+      "publication_sha256": "277c6653cd0f4374db89d8b641aada38ef881fae82923fb81be0dead67abf1ac",
+      "publication_bytes": 1472,
+      "publication_lines": 49,
+      "pre_final_sha256": "78fee834715b30ef7043fc9cc6896b8dcea258ce440d6c8bdec700e0d6985195"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_context_binding_tests.rs",
+      "publication_sha256": "956e43d0d06841e9fa4a68c94520b038a58472ee790873f92076d9a4aea5b6e6",
+      "publication_bytes": 5582,
+      "publication_lines": 157,
+      "pre_final_sha256": "0f079e07b461a6dce866aa8778e2772b8512b2595f8cb3ed733e4d80b76ae2d5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current.rs",
+      "publication_sha256": "28664fb29af9b838fe2999d1a7b053215d17c5f7e6df5d0ccc5687e3284fe4b5",
+      "publication_bytes": 11738,
+      "publication_lines": 312,
+      "pre_final_sha256": "395476672e8626bd4d1877fcbc51206c9e810e85815775cba1e792ac20c0e3d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_model.rs",
+      "publication_sha256": "f8ff22c9c1a93171b194ecc7203fa3f805fe6c3185decad99ac5c548d27ec842",
+      "publication_bytes": 1542,
+      "publication_lines": 43,
+      "pre_final_sha256": "252ffa1992c9c5b517b1568e80e4b6c2fd5d721117f8b31f03a05fd63bbff7e4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_model_tests.rs",
+      "publication_sha256": "0c8326b79af5507eff2eef65634824e193e26766873d1c08511d73d8f4e66e24",
+      "publication_bytes": 9911,
+      "publication_lines": 240,
+      "pre_final_sha256": "9c55891e7c1d97d4a779dffe0e6f87871c4d47eba78f4af56b027d4bb48c7dee"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "publication_sha256": "97f124c2398520742066561d4fc2b5eb96647ced4e445b8a7c254e4907604e7e",
+      "publication_bytes": 10417,
+      "publication_lines": 283,
+      "pre_final_sha256": "b038e05b11fb6c70997d666cc52a36f2ffa6c86d70846c7c213dc66a5bab466c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_tests.rs",
+      "publication_sha256": "c49fbfb25e372e1330df82544a641b33132760addb7d2f24585b207a83b887a5",
+      "publication_bytes": 5583,
+      "publication_lines": 145,
+      "pre_final_sha256": "91d027fffebbef1c3d4d2e9f3f84cc9d437f782f4e5cd3c234d10500559bc985"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_model.rs",
+      "publication_sha256": "b52de82194f7f59eba6f93ab3cd9c7aa84219e2b994fe004a51483dfaba6d134",
+      "publication_bytes": 13098,
+      "publication_lines": 333,
+      "pre_final_sha256": "7edc338e489ba13fed59d57d043887fff85ba68e7fe0620c9d71ce02dd151525"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration.rs",
+      "publication_sha256": "66758e7f573c5a85548a793daae06f52c12c1f5b7991b0c4f27bc393f70acfd6",
+      "publication_bytes": 6284,
+      "publication_lines": 176,
+      "pre_final_sha256": "fa9e7c44d857bf467d68e6f55a634a6b80ab0c00b1739e30419c005d06ab2e0d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_current_tests.rs",
+      "publication_sha256": "109f7a63a390f961dc1b61e094852f3abeb2ca3b688da8fab5d1c9871a66793c",
+      "publication_bytes": 11824,
+      "publication_lines": 333,
+      "pre_final_sha256": "1a92a9f67da1c0dc03a49e11bc6f41425222f874d72aef503e09b37abafcdc75"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_pretrained_tests.rs",
+      "publication_sha256": "e2ca8cab07fe6c24477889eb0d7e406a5bdccb1edaeb8defed978e15474a20a6",
+      "publication_bytes": 8457,
+      "publication_lines": 206,
+      "pre_final_sha256": "8234d6d930559cc45b8eeaad3a1f573da33b5b7be97a836f97d73350ddefef22"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_startup_tests.rs",
+      "publication_sha256": "57fe4bef68b4be1ee3eeb79c9197af8a0f9207261da3aed2516a234c5bbe92c0",
+      "publication_bytes": 2937,
+      "publication_lines": 90,
+      "pre_final_sha256": "3155433e4eccd538e2f25594654cab2aa0c5bb46342693b046ea1e7394a00546"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_registration_tests.rs",
+      "publication_sha256": "d1dc9a246e93e2232c8e7a43bda1e4f652285d964ab5e66ca2594a7a3c1db4de",
+      "publication_bytes": 3289,
+      "publication_lines": 107,
+      "pre_final_sha256": "665aeca7c341abc10375b71aa3285b860182f95bb27416cef01d47e9038d8d30"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_shadow_namespace.rs",
+      "publication_sha256": "fd903078a84c20c48e0b5c8b7ccfbc70697421ce13e75b505f69103310e9be10",
+      "publication_bytes": 6728,
+      "publication_lines": 188,
+      "pre_final_sha256": "c247636fa9191b37aeadcc6f280a118efa70504a34933f79299da9f97f0af6e1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_shadow_namespace_tests.rs",
+      "publication_sha256": "45be8d711bda48c4168701beec513b93c6972f1a37a5d4fa53c9e18bac6e8f70",
+      "publication_bytes": 8384,
+      "publication_lines": 236,
+      "pre_final_sha256": "9972f77dd04b6b227f6fd8786aa9cdd325bb799b0313bba6f00302c8cf6a3aa2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_test_support.rs",
+      "publication_sha256": "adce2d2f67747a500a4f4bd9504c96777b667ac8f8b0bc74ad323cf7e5bd7162",
+      "publication_bytes": 9239,
+      "publication_lines": 243,
+      "pre_final_sha256": "f0b8e157fa9fb27eb394dedebed8143d4ff21441f3bbdf2f1516cf17a437125f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_tick_binding.rs",
+      "publication_sha256": "654cc2e5bdfb177d1e5f7630a6ca4d2163f21b27be0dcf220365fb78f573e893",
+      "publication_bytes": 2293,
+      "publication_lines": 61,
+      "pre_final_sha256": "654cc2e5bdfb177d1e5f7630a6ca4d2163f21b27be0dcf220365fb78f573e893"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_tick_owner.rs",
+      "publication_sha256": "e3feaeb054c1517a9a25b9cfd2ce13e51b2bee447fab97cb5dd54670d92bdbc4",
+      "publication_bytes": 18127,
+      "publication_lines": 451,
+      "pre_final_sha256": "b486f1d6e0cb4d00485312a026aa32a066e715ab76f31f78bb373c73772e8954"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_tick_owner_tests.rs",
+      "publication_sha256": "6d02cd3414e7622aec3e494219043feafe686716dcd8cddeadc53d1dfa27409d",
+      "publication_bytes": 7641,
+      "publication_lines": 183,
+      "pre_final_sha256": "6d02cd3414e7622aec3e494219043feafe686716dcd8cddeadc53d1dfa27409d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "publication_sha256": "ca82f5ae3b2fbd0c71aacc5c1e54974ba339dca55124dca65a80366ddfe33881",
+      "publication_bytes": 23692,
+      "publication_lines": 599,
+      "pre_final_sha256": "17eefcf566e24bcfdef9231b95debe4853257390aa1c6c8cf70843b40de3f0fc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs",
+      "publication_sha256": "f69d0ba9b5589cc167d5aa83f772fccf7ceb7e2cea2137f73de40e2f85209938",
+      "publication_bytes": 10487,
+      "publication_lines": 303,
+      "pre_final_sha256": "28a1f7b066c4170dc39eddbe7fe5b789cf6332be5c5a2c19434686c73fb7b175"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "publication_sha256": "5fc4401e5440c5b9b57bd787a8fc0fb6d2c2a297695ca045a4ee914ba7fa0c96",
+      "publication_bytes": 12466,
+      "publication_lines": 322,
+      "pre_final_sha256": "15bf4d75a056d703b6713a1b737e3a421fe5b541676b169c955a4d63f0a19944"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "publication_sha256": "fa8a26f4ccf886014a9ab000b15482489e0fa966be3d005ba5d8c39ccaa5465a",
+      "publication_bytes": 22539,
+      "publication_lines": 582,
+      "pre_final_sha256": "cf4b8bae8f8183958b234b461a9c4de9ff9382513dc350d6b3d795311bad0542"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "publication_sha256": "1615fd2598d63c0cea891f6033fe19fe6a63fb4cc4f84163ce1054fad8b88cfc",
+      "publication_bytes": 33923,
+      "publication_lines": 831,
+      "pre_final_sha256": "1615fd2598d63c0cea891f6033fe19fe6a63fb4cc4f84163ce1054fad8b88cfc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_current_objective.rs",
+      "publication_sha256": "20810ecb61e5e3b6ea4ce2ca11a00a3cc9ae7654bad8414aa7a0d8d515d87554",
+      "publication_bytes": 8432,
+      "publication_lines": 192,
+      "pre_final_sha256": "394c3187226b721c8555c9e696a358fd685489cafed0735e80dde03583cf852e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+      "publication_sha256": "bd45d1b6fac65d4d9f8da1f27693e49fe4066ae2f4a6bffb1bd63ea1f6cad769",
+      "publication_bytes": 24197,
+      "publication_lines": 670,
+      "pre_final_sha256": "bd45d1b6fac65d4d9f8da1f27693e49fe4066ae2f4a6bffb1bd63ea1f6cad769"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "publication_sha256": "949916b3df208cfd6584edec781fa81f92cab43ed74d9a431025b72c1446390f",
+      "publication_bytes": 5580,
+      "publication_lines": 139,
+      "pre_final_sha256": "949916b3df208cfd6584edec781fa81f92cab43ed74d9a431025b72c1446390f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner.rs",
+      "publication_sha256": "d9b1b80c6500bc7c1f79c272af4dbd40fb5f1cc9986216ab93e6de09b9246c36",
+      "publication_bytes": 13166,
+      "publication_lines": 408,
+      "pre_final_sha256": "d9b1b80c6500bc7c1f79c272af4dbd40fb5f1cc9986216ab93e6de09b9246c36"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "publication_sha256": "56acf2d420a363c59cac342b2772da8f1bd5b7f283ad100b8d5cfdde0f06ae9c",
+      "publication_bytes": 10639,
+      "publication_lines": 287,
+      "pre_final_sha256": "ea52218b39019e9cc048411d74f1acb89aa8dce6c3b9cd6ef4be1ae60de808cd"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_current_tests.rs",
+      "publication_sha256": "ff8d5eee0a85667d8bc76738f42e10de839e9ab7eae69006c506b9f85717f3b3",
+      "publication_bytes": 9079,
+      "publication_lines": 251,
+      "pre_final_sha256": "9c407ca0110b9981205ad8ff27aa746f2abd2b97483e9f63f605d7ea244f2f60"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+      "publication_sha256": "2d914d64b75a0ee7ba6c20e9062d4c673ef061f77966fc99f506ca15eb6df698",
+      "publication_bytes": 9987,
+      "publication_lines": 309,
+      "pre_final_sha256": "11d618bfa67702ca18bf3e27eec37cb64d2867e9b8fadfe3dd41a962065a042a"
+    },
+    {
+      "path": "scripts/memory_cell_native/current/native_current_ci.py",
+      "publication_sha256": "96781d6704595e326f6262c79f0f378908ea2839c80e01ae1f6c74444c614f1a",
+      "publication_bytes": 9775,
+      "publication_lines": 227,
+      "pre_final_sha256": "f9057a5bbea5a2a87b327596c92c8de2501b4c81255321fb3e69301dc5cfca6c"
+    }
+  ],
+  "rust_equivalence_claim": "Formatter operation and per-file hashes retained; exact published Rust head requires its own hosted qualification, not an asserted AST proof."
+}

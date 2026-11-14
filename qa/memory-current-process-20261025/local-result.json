@@ -1,0 +1,221 @@
+{
+  "schema": "hepta.memory-current-default-process.compact.v1",
+  "created_utc": "2026-10-25T13:25:09.732500+00:00",
+  "local_engineering_pass": true,
+  "local_source_profile": "development-inventory: frozen working-tree bytes, not a clean committed checkout",
+  "local_git_head": "ba32a22de7c586ae6a1ac6ebeb5d67b54259021b",
+  "publication_parent_requested": "454a43ab0fc6e58e88450c7dd5748a0513fc99a4",
+  "executed_source_manifest_sha256": "530779a86b64c6c0537eb7a0a0758ac5c95bc4c1964b8539a479a6051ad1beed",
+  "full_source_closure_files": 467,
+  "full_source_before_and_after_sha256": "67e92c756a27968cf375b3cbaf7a32b875d6cfd0d70f423b299a0025722b11e2",
+  "positive_registration_sha256": "2632c8d0fed14863a6ce2c16ade1b2eed4fc62c89de74169242a86a0d78af75a",
+  "positive_raw_audit_sha256": "1f1d200d94dcf8140a83d31450b2b73b0ed6a0d13535e430fe181b841ded424c",
+  "negative_raw_audit_sha256": "1d5a5c88cce7ff43f0666b163c883f85456bce45b54cdd85908cdeb182cd5f92",
+  "focused_gates": {
+    "retained_owner": {
+      "selected": 2,
+      "passed": 2,
+      "attempt": "retained-tests-002"
+    },
+    "local_signed_trust": {
+      "selected": 4,
+      "passed": 4,
+      "attempt": "trust-tests-005"
+    },
+    "actual_default_negative": {
+      "selected": 1,
+      "passed": 1,
+      "attempt": "process-tests-007"
+    },
+    "actual_default_positive": {
+      "selected": 1,
+      "passed": 1,
+      "attempt": "process-positive-001"
+    }
+  },
+  "positive_process": {
+    "engineering_pass": true,
+    "error": null,
+    "result": {
+      "actual_default_daemon_process": true,
+      "actual_objective_start": true,
+      "daemon_pid": 659840,
+      "decoder_queries": 1,
+      "denominator": 1,
+      "issuer_pid": 659475,
+      "ndu_authority_epoch": 11,
+      "new_training_updates": 0,
+      "objective_authority_epoch": 7,
+      "positive_delivery": true,
+      "previously_exposed_case": true,
+      "production_qualified": false,
+      "revocation_refused": true,
+      "separate_issuer_process": true,
+      "source_authority_epoch": 23,
+      "source_owner_epoch": 31
+    },
+    "shutdown": {
+      "drain_acknowledged": true,
+      "exit_code": 0,
+      "pid": 659840,
+      "run_released": true,
+      "sigkill_used": false,
+      "signal": "SIGTERM"
+    },
+    "shutdown_error": null
+  },
+  "positive_restart": {
+    "error": "Error: invalid agentd configuration: pinned file drift\n",
+    "exit_code": 1,
+    "new_spawn_generation": 5,
+    "old_authority_cut_rebound_to_current_generation": true,
+    "production_qualified": false
+  },
+  "positive_worker_process": {
+    "exit_code": 0,
+    "owner_cancelled": false,
+    "parent_pid": 659840,
+    "pid": 659946,
+    "stderr_bytes": 483,
+    "stdin_completed": true,
+    "stdout_bytes": 2591,
+    "timed_out": false
+  },
+  "actual_default_binary_sha256": "bbcb74f40f556e5f6cdb95c89378c9a108e233af032e1d19b734577e8433ec92",
+  "model": {
+    "base_identity": "46b83e37620f8bb1ae57754856718886c6aa1b12d267b5b0993e779f9596f96f",
+    "adapter_sha256": "d78441dcbf75118c1539b493c16a1ee50976ce7e61e3cf735ab03081bd6a8509",
+    "manifest_sha256": "176af7ffbd0f08a6dce09493f9e4c53ce90224816ee3e7bfb9e65d3bd3f59530",
+    "runtime_digest": "661adcaf3df5433183dc78ace1e567d194d02fe9916afa87cc00c1d438858be3",
+    "training_updates_reused": 96,
+    "training_updates_added": 0,
+    "decoder_queries": 1,
+    "feature_forward_calls": 1,
+    "raw_text": "order",
+    "answer_postprocessed": false,
+    "facts_received": false,
+    "retrieval_received": false,
+    "generated_token_ids": [
+      2559,
+      2
+    ],
+    "request_sha256": "cc501eb39d746d3413d5d9d3031bffb1d8d2b374304bd15c9825fcde04de0c9c",
+    "raw_stdout_sha256": "c837c8fe3105ade96109cb6be7e2e3ca3bd8f7cdd145348263488c397d48c06c",
+    "raw_process_sha256": "02c558aeb4dcb6b94effd46ff0218469a2e18236fc54d2262bba211fb339d05e",
+    "reported_decoder_latency_micros": 3821469,
+    "process_peak_rss_bytes": 1131909120,
+    "parameter_bytes_excluding_allocator": 539903232
+  },
+  "hosted": {
+    "status": "not executed at this receipt",
+    "trigger_event": "pull_request only",
+    "exact_head_ref": "codex/memory-native-tick-process-qualified-20261025",
+    "same_repository_required": true,
+    "candidate_identity": "github.event.pull_request.head.sha",
+    "new_training_updates_allowed": 0,
+    "new_decoder_queries_allowed": 1,
+    "source_checkpoint_run": 40188170696,
+    "source_checkpoint_artifact": 12598070717,
+    "source_artifact_sha256": "85a4895749a6c2cc2a37e74e22d1f6658d7be1ac66e75a202e9daa553fd2c52d",
+    "offline_restore_selected_members": 10,
+    "offline_restore_selected_bytes": 1967792,
+    "offline_restore_receipt_sha256": "334faf8839b5e773a15ea607f035893482376b89d580f2df83e3c40a7337bdd5",
+    "offline_restoration_sha256": "601c82bc5268757b970ebaae31f9c688822e44f381269d7716bad900bba9ed61",
+    "workflow_review_sha256": "fb9880601e38266148da33ac8d7ed418c5a6aff91f219a52e92b125a70ca2154",
+    "raw_zip_or_base_in_new_git_deliverable": false
+  },
+  "limits": {
+    "production_qualified": false,
+    "protected_clock_or_external_frontier_qualified": false,
+    "deployed_external_source_authority_qualified": false,
+    "distributed_quorum_or_hardware_attestation": false,
+    "same_uid_local_rollback_resistance": false,
+    "independent_future_tasks": 0,
+    "future_accuracy": null,
+    "continuous_cross_generation_shadow_namespace_migration": false,
+    "local_post_await_check_is_not_a_global_revocation_lease": true
+  },
+  "style_resolution_receipt_sha256": "6843784e09dc1bf21a3876934210215d08943631ba0aa1c6b6a8acb71418acee",
+  "final_fix_or_format_performed_at_receipt": false,
+  "final_fix_format_owner": "root; no subsequent tests permitted",
+  "attempts_retained": {
+    "trust-tests-001": {
+      "exit_code": 101,
+      "wall_seconds": 12.64774518700142,
+      "receipt_sha256": "a4ef176cbf25ece783008f17a732021a423aeebadcdc5d1cb8a30075d78a365d"
+    },
+    "trust-tests-002": {
+      "exit_code": 101,
+      "wall_seconds": 5.801645164996444,
+      "receipt_sha256": "e72a7bf76cf6ebe33ef897e3cae675eb60bac9edb58aee5b249831199c56504e"
+    },
+    "trust-tests-003": {
+      "exit_code": 0,
+      "wall_seconds": 110.35637364899594,
+      "receipt_sha256": "5bc95f5677cedd88163b9e26e7ae6ae9329b6bd33300d885820242f8487ba126"
+    },
+    "trust-tests-004": {
+      "exit_code": 101,
+      "wall_seconds": 27.848236082994845,
+      "receipt_sha256": "5695f911616b235f63923c10dd20137a8d67ec5509ddf521b25c5d51741cbbc4"
+    },
+    "trust-tests-005": {
+      "exit_code": 0,
+      "wall_seconds": 29.810569913002837,
+      "receipt_sha256": "46640ccbba8733bc015a9fd46f3c136abd5dbb32f82905c4f21ce16c6bff1b6f"
+    },
+    "retained-tests-001": {
+      "exit_code": 0,
+      "wall_seconds": 128.3568847419956,
+      "receipt_sha256": "6f9cddb16fc29b74354ca9c19153fe30224a8d62b0be44c4cb9daff422e74362"
+    },
+    "retained-tests-002": {
+      "exit_code": 0,
+      "wall_seconds": 27.085283053005696,
+      "receipt_sha256": "9846db3e16ae12b5f066446ebb557bc731728d2e860ae354b3163ecd2f699bfa"
+    },
+    "process-tests-001": {
+      "exit_code": 101,
+      "wall_seconds": 4.889515490998747,
+      "receipt_sha256": "f7f677c3a7e73e61e781457120ab08990064b7468debff0ad581c323b4875884"
+    },
+    "process-tests-002": {
+      "exit_code": 101,
+      "wall_seconds": 4.607655004998378,
+      "receipt_sha256": "8e143454f395d479a91d6ade410e913f21f3ff4abbbd9adf00e468ccdcc93475"
+    },
+    "process-tests-003": {
+      "exit_code": 100,
+      "wall_seconds": 29.86769285400078,
+      "receipt_sha256": "c197578a5c73398de9df71582c215cd9faf7d159d4805948227408ca8e0370f5"
+    },
+    "process-tests-004": {
+      "exit_code": 100,
+      "wall_seconds": 11.305205042001035,
+      "receipt_sha256": "7ab69c3d70f6dbc5c1459629d6db658a1be5a382a7093d1f7ec869a5ab9a4f80"
+    },
+    "process-tests-005": {
+      "exit_code": 100,
+      "wall_seconds": 44.33756020400324,
+      "receipt_sha256": "f018e4ddb8a3b58bd8792be1ec12bee304071b7e82ac1be938f92e4f52d9bbf5"
+    },
+    "process-tests-006": {
+      "exit_code": 100,
+      "wall_seconds": 60.56976402700093,
+      "receipt_sha256": "a37f4cca7a6bd61817b90f2b56bd855f59df30b6c735462525674380af056709"
+    },
+    "process-tests-007": {
+      "exit_code": 0,
+      "wall_seconds": 60.367142776005494,
+      "receipt_sha256": "e477b6a6384c25a49be73c77e4a136316e3b70d9750f9b2e9997f2e402f9d6d4"
+    },
+    "process-positive-001": {
+      "exit_code": 0,
+      "wall_seconds": 62.85113321899553,
+      "receipt_sha256": "cb71a8239ed1971411aea639cce803ae167b96fc17822bfe834d04b05b50cee7"
+    }
+  },
+  "raw_evidence_location": "/workspace/scratch/12ef9c5bdc23/memory-round3-control-20261025/native",
+  "raw_positive_fixture": "/tmp/hm-cp-r3-p1/positive",
+  "raw_negative_fixture": "/tmp/hm-cp-r3-005/negative"
+}

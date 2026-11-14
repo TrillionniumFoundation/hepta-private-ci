@@ -1,0 +1,131 @@
+{
+  "allowed_paths": [
+    ".github/workflows/hepta-ndu-dmgp-decoded-media.yml",
+    "qualification/ndu-dmgp-shadow/run_codec_acceptance.py"
+  ],
+  "failing_commit": "a88f2832f2a1a4d3734c1c88f76977dcc9b98ff1",
+  "failure_signatures": [
+    "ffmpeg and ffprobe absent",
+    "version pipelines mask command-not-found",
+    "21 media tests all skipped but CI green"
+  ],
+  "files": {
+    ".github/workflows/hepta-ndu-dmgp-decoded-media.yml": {
+      "bytes": 2514,
+      "sha256": "b0bde9912c82e5b30fb3654584c8a586e6d178aca7d9465cd9cb51e83acedc03"
+    },
+    "qualification/ndu-dmgp-shadow/MANIFEST.json": {
+      "bytes": 883,
+      "sha256": "a7f4ad748d6938d700bcd66ee6bd819ecf7e6e07674a054c47da3acd41374be8"
+    },
+    "qualification/ndu-dmgp-shadow/decoded_media_audit.py": {
+      "bytes": 14027,
+      "sha256": "c119ea54792ff6c125504f65e4f9a3f5cc75be32c5c53059abfd028532510ada"
+    },
+    "qualification/ndu-dmgp-shadow/signed_evidence.py": {
+      "bytes": 17592,
+      "sha256": "6cb46ddbc20a73e6effcf195a7f5769b3e0d02565c754851e2adf7117aa7f9fb"
+    },
+    "qualification/ndu-dmgp-shadow/signed_media_bridge.py": {
+      "bytes": 4646,
+      "sha256": "a8cc3b28b6ca4515faae7e2184103f37ecae73dfa533970d68ca274cfa23316d"
+    },
+    "qualification/ndu-dmgp-shadow/test_decoded_media_audit.py": {
+      "bytes": 8455,
+      "sha256": "c22892f26e2c51351861a018d03a1c78cfb85dc20c62b0e8bd87c1764dd2f73c"
+    },
+    "qualification/ndu-dmgp-shadow/test_media_type_admission.py": {
+      "bytes": 3685,
+      "sha256": "b0c058244fd8879afb03c169fbfd0d0c821c078e2e1a4ebe9df00bb687c8a762"
+    },
+    "qualification/ndu-dmgp-shadow/test_signed_evidence.py": {
+      "bytes": 13260,
+      "sha256": "0e4805ee0e8df4059f8f4ae79db7a7e21ab71c243010883a7e447c13c9c97fc1"
+    },
+    "qualification/ndu-dmgp-shadow/test_signed_media_bridge.py": {
+      "bytes": 6644,
+      "sha256": "1a333eb7020dbe968447e91a363f939ab68697ab7abbae816841aa07ef4b7e94"
+    }
+  },
+  "limits": {
+    "address_bytes": 2147483648,
+    "candidate_bytes": 262144,
+    "content_bytes": 65536,
+    "cpu_seconds": 90,
+    "nested_output_bytes": 262144,
+    "output_file_bytes": 4194304,
+    "wall_seconds": 120
+  },
+  "module_directory": "qualification/ndu-dmgp-shadow",
+  "no_promotion_fields": [
+    "real_model_execution",
+    "independent_real_outcomes",
+    "hardware_efficiency_qualified",
+    "six_scientific_blockers_production_closed",
+    "future_snapshot_selection_authorized"
+  ],
+  "original_command": "python3 -m unittest discover -s qualification/ndu-dmgp-shadow -p 'test_*media*.py' -v",
+  "profiles": {
+    "missing_ffmpeg": [
+      "ffprobe",
+      "openssl"
+    ],
+    "missing_ffprobe": [
+      "ffmpeg",
+      "openssl"
+    ],
+    "provisioned": [
+      "ffmpeg",
+      "ffprobe",
+      "openssl"
+    ]
+  },
+  "runner": "qualification/ndu-dmgp-shadow/run_codec_acceptance.py",
+  "runner_command": "python3 qualification/ndu-dmgp-shadow/run_codec_acceptance.py",
+  "schema": "hepta.memory-cell.pinned-task.v2",
+  "scope": "exposed historical development; selected local workflow entrypoint only",
+  "source_authorization": "Authenticated repository read for these old exact refs; not native NDU/source grant",
+  "task_id": "dev:media-false-green",
+  "test_ids": [
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_forged_hash_still_cannot_claim_corrupt_media_decoded",
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_physically_decodes_all_four_modalities_without_promotion",
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_refuses_unmatched_model_sources_or_required_modality",
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_forged_file_type_and_timeline",
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_material_substitution_even_with_same_filename",
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_noninteger_clock_or_obvious_bypass",
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_rejects_unrealistic_av_skew",
+    "test_decoded_media_audit.DecodedMediaAuditTests.test_symlink_and_path_traversal_fail_closed",
+    "test_media_type_admission.MediaTypeAdmissionTests.test_adpcm_wav_rejected_after_rehash",
+    "test_media_type_admission.MediaTypeAdmissionTests.test_faststart_and_fragmented_mp4_remain_admitted",
+    "test_media_type_admission.MediaTypeAdmissionTests.test_jpeg_renamed_png_rejected_after_rehash",
+    "test_media_type_admission.MediaTypeAdmissionTests.test_legitimate_pcm_wav_variants_remain_admitted",
+    "test_media_type_admission.MediaTypeAdmissionTests.test_matroska_renamed_mp4_rejected_after_rehash",
+    "test_media_type_admission.MediaTypeAdmissionTests.test_quicktime_renamed_mp4_rejected_after_rehash",
+    "test_signed_media_bridge.SignedMediaBridgeTests.test_fake_signature_or_missing_reference_fails_closed",
+    "test_signed_media_bridge.SignedMediaBridgeTests.test_genuine_ed25519_dual_signer_to_decoded_original_bytes",
+    "test_signed_media_bridge.SignedMediaBridgeTests.test_independent_plan_pin_rejects_output_time_reregister",
+    "test_signed_media_bridge.SignedMediaBridgeTests.test_modality_mismatch_from_signed_observer_rejected",
+    "test_signed_media_bridge.SignedMediaBridgeTests.test_new_content_digest_cannot_be_spliced_into_old_signatures",
+    "test_signed_media_bridge.SignedMediaBridgeTests.test_observer_and_meter_must_sign_same_media",
+    "test_signed_media_bridge.SignedMediaBridgeTests.test_refuse_signer_key_collision_and_changed_input"
+  ],
+  "tools": {
+    "ffmpeg": {
+      "bytes": 342488,
+      "sha256": "ed16af623947494a72e284b6eb8ff225f2da22b38b5d5069c2fd4b4ba3384e41"
+    },
+    "ffprobe": {
+      "bytes": 191888,
+      "sha256": "272f6ebc634a63d9c8b4ca68e964119d980f25154e5aa2c35e5487da48e9a58f"
+    },
+    "openssl": {
+      "bytes": 1005368,
+      "sha256": "204951390b4f82d39f98b0dd0fa54502f27256c8d2fd08b55a5e3781408ae83b"
+    },
+    "python": {
+      "bytes": 30894944,
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+    }
+  },
+  "workflow": ".github/workflows/hepta-ndu-dmgp-decoded-media.yml"
+}

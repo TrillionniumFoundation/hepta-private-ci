@@ -1,0 +1,72 @@
+{
+  "archive": {
+    "bytes": 205863,
+    "path": "hepta-ci-repair-replay-20261023.tar.gz",
+    "sha256": "5406471573479504b96995551f9017581a65b50f3817e3e2a915289b6e680e6c"
+  },
+  "archive_members_including_manifest": 135,
+  "code": [
+    {
+      "bytes": 8623,
+      "lines": 178,
+      "path": "replay_bundle.py",
+      "sha256": "bb111bdc073e8c43df987dba6f67680f1373b04e31317b7ffdc8172ffe138338"
+    },
+    {
+      "bytes": 14512,
+      "lines": 280,
+      "path": "replay_run.py",
+      "sha256": "ed01d33798efe1075c8f8a525ea97f574310bbf6e98c985002ecae8dc4df21ab"
+    },
+    {
+      "bytes": 15586,
+      "lines": 282,
+      "path": "package_evidence.py",
+      "sha256": "9cb4a0bb214b06a2a34ae79437ecd4908d3c4e54de818b4ccf322ec21ad9244b"
+    }
+  ],
+  "code_stages": [
+    {
+      "files": [
+        "replay_bundle.py",
+        "replay_run.py"
+      ],
+      "lines": 458,
+      "stage": 1
+    },
+    {
+      "files": [
+        "package_evidence.py"
+      ],
+      "lines": 282,
+      "stage": 2
+    }
+  ],
+  "compressed_members_verified": true,
+  "deterministic_double_build_equal": true,
+  "manifest": {
+    "bytes": 31282,
+    "path": "evidence-manifest.json",
+    "sha256": "3bd19d0cdc3224869e0fefb791abe55c7b6b9c514829a489bae5d38fb3837e7d"
+  },
+  "model_calls": 0,
+  "omitted_disposable_bytes": 870930,
+  "omitted_disposable_files": 207,
+  "original_audit_scope_preserved": true,
+  "published": false,
+  "remote_mutations": 0,
+  "roles": {
+    "actual_local_execution_evidence": 75,
+    "exact_executed_unformatted_code": 2,
+    "original_hosted_evidence": 9,
+    "original_source": 18,
+    "packaging_code": 1,
+    "pre_execution_protocol_or_original_patch": 4,
+    "related_provenance_not_new_training": 19,
+    "review_document_or_package_audit": 6
+  },
+  "schema": "hepta.historical-replay.bundle-index.v1",
+  "source_reconstruction_verified_for_arms": 15,
+  "tests_rerun": 0,
+  "uncompressed_payload_bytes": 1239915
+}

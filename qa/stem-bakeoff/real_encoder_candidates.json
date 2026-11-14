@@ -1,0 +1,38 @@
+{
+  "granite97m": {
+    "repository": "ibm-granite/granite-embedding-97m-multilingual-r2",
+    "revision": "835ad14087e140460703cf0fae09f97d469d65c2",
+    "model_type": "modernbert",
+    "weight_sha256": "f3ea88b230492811046145513710e76b4cc8c2ad49e8708da0e7247e548903be",
+    "width": 384,
+    "pooling": "cls",
+    "checkpoint_parameters": 97441152
+  },
+  "mmbert_small": {
+    "repository": "jhu-clsp/mmBERT-small",
+    "revision": "abc32620dd4f6ab06f5fbe905dc25f310618e09f",
+    "model_type": "modernbert",
+    "upstream_bin_sha256": "be7c9ce2af947fb5bb17a3bc919552f898c5ef4164bf0a7190cf25a0f98f85b6",
+    "width": 384,
+    "pooling": "mean",
+    "checkpoint_parameters": null
+  },
+  "embeddinggemma2_740m": {
+    "repository": "google/embeddinggemma-2",
+    "revision": "914f7f89142e33e77833254d9c9b90c3cef7303b",
+    "model_type": "embedding_gemma2",
+    "weight_sha256": "197a32965d4b1105faf060417baa899e193fb73cd401f42ec9295234d5553d79",
+    "width": 768,
+    "pooling": "mean",
+    "checkpoint_parameters": 744371512
+  },
+  "laya_encoder_only": {
+    "repository": "convaiinnovations/laya",
+    "revision": "7b928d828b7b0e022f929d9bd2e44165aa270148",
+    "model_type": "laya",
+    "weight_sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
+    "width": 1024,
+    "pooling": "mean",
+    "checkpoint_parameters": 421293830
+  }
+}

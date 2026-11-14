@@ -1,0 +1,336 @@
+{
+  "accepted": true,
+  "actual_historical_checkpoint_reads": {
+    "inputs": [
+      {
+        "config": {
+          "identity": {
+            "bytes": 856,
+            "sha256": "7ab85ba445591dad9b25af3b9a6c36d4bbbb415831592b9e1a63d2bfc1055b6c"
+          },
+          "path": "/workspace/scratch/12ef9c5bdc23/memory-development-20261025-001/runs/24041/checkpoint/adapter_config.json"
+        },
+        "id": "historical-r8-24041",
+        "identity": {
+          "bytes": 1858776,
+          "sha256": "b1b35d1cc3541bc4a0d93dcd57ec4df928fc4c80a245d478a891ed02acc16a44"
+        },
+        "path": "/workspace/scratch/12ef9c5bdc23/memory-development-20261025-001/runs/24041/checkpoint/adapter_model.safetensors",
+        "rank": 8,
+        "role": "active_adapter",
+        "targets": [
+          "q_proj",
+          "v_proj"
+        ]
+      },
+      {
+        "config": {
+          "identity": {
+            "bytes": 856,
+            "sha256": "4907f852790a4d256096ffb4ee84354a5f302d69b2d929932ad34ae70f48ffc8"
+          },
+          "path": "/workspace/scratch/12ef9c5bdc23/memory-development-20261025-001/runs/24043/checkpoint/adapter_config.json"
+        },
+        "id": "historical-r8-24043",
+        "identity": {
+          "bytes": 1858776,
+          "sha256": "503c9d5a5dc1039dc8fb30776965748fb9f0b3e2ecceb0ded5df9f675b87d497"
+        },
+        "path": "/workspace/scratch/12ef9c5bdc23/memory-development-20261025-001/runs/24043/checkpoint/adapter_model.safetensors",
+        "rank": 8,
+        "role": "active_adapter",
+        "targets": [
+          "q_proj",
+          "v_proj"
+        ]
+      }
+    ],
+    "one_r8_unique_checkpoint_and_config_bytes": 1859632,
+    "r4_qualification": "Synthetic safetensors format fixtures only; no new r4 model/checkpoint training or performance claim.",
+    "single_r8_tensor_bytes": 1843200,
+    "single_r8_values": 460800,
+    "two_r8_rejected_at_one_r8_cap": true,
+    "two_r8_tensor_bytes": 3686400,
+    "two_r8_unique_checkpoint_and_config_bytes": 3719264,
+    "two_r8_values": 921600
+  },
+  "actual_qualification_and_lint_processes": [
+    {
+      "cpu_ns": 322262000,
+      "id": "qualification-001-process",
+      "peak_rss_kib": 21916,
+      "receipt": {
+        "bytes": 1570,
+        "sha256": "b5a89648792a2e8e35451c9e964d7ee9935bac3e78e5a097f07eb11acadacc59"
+      },
+      "returncode": 0,
+      "timeout": false,
+      "wall_ns": 438159965
+    },
+    {
+      "cpu_ns": 8993000,
+      "id": "source-lint-001",
+      "peak_rss_kib": 18632,
+      "receipt": {
+        "bytes": 1156,
+        "sha256": "4d47150c463cc5d5e84da9db65071fcbe3d70f77fb28f0597ed6ea9d8d02ed15"
+      },
+      "returncode": 1,
+      "timeout": false,
+      "wall_ns": 15129922
+    },
+    {
+      "cpu_ns": 303772999,
+      "id": "qualification-002-process",
+      "peak_rss_kib": 22040,
+      "receipt": {
+        "bytes": 1581,
+        "sha256": "cb3ac8c77523a582438bedef73c34180023a1577d4e9a73c71486e101b29f1eb"
+      },
+      "returncode": 0,
+      "timeout": false,
+      "wall_ns": 421821424
+    },
+    {
+      "cpu_ns": 8441998,
+      "id": "source-lint-002",
+      "peak_rss_kib": 18180,
+      "receipt": {
+        "bytes": 1181,
+        "sha256": "e92131aab64c47f29f90a58e6139f62dd3cb3a66327b8cacbd08fb4861a9bca5"
+      },
+      "returncode": 0,
+      "timeout": false,
+      "wall_ns": 11545293
+    }
+  ],
+  "created_at": "2026-10-25T14:00:35.259336+00:00",
+  "formatting": "No fmt or autofix was run on this directory; root owns final fmt/publication. No more tests planned unless a concrete new defect requires a new frozen qualification.",
+  "historical_receipt_replay": {
+    "actual_original_receipts": {
+      "rows": [
+        {
+          "id": "retrieval",
+          "identity": {
+            "bytes": 6367,
+            "sha256": "07de6778f64e0916bc1ff604dea4ffd9b282695e09917e2d5f99555ac13d5533"
+          },
+          "kind": "wait4-v2",
+          "path": "/workspace/scratch/12ef9c5bdc23/memory-round3-control-20261025/cost-v2/warm-run-002-001/retrieval/process.json",
+          "related": []
+        },
+        {
+          "id": "memory",
+          "identity": {
+            "bytes": 6361,
+            "sha256": "79a87b12458bf4fb98314ca1d623a9ef619faf56d6a38c5ba12b3c59b2cb3a87"
+          },
+          "kind": "wait4-v2",
+          "path": "/workspace/scratch/12ef9c5bdc23/memory-round3-control-20261025/cost-v2/warm-run-002-001/memory/process.json",
+          "related": []
+        },
+        {
+          "id": "controller",
+          "identity": {
+            "bytes": 416,
+            "sha256": "f177e0b97ee46f71933383a84e8d8b077e77f6742c516be67e13290391c4d567"
+          },
+          "kind": "warm-controller-v1",
+          "path": "/workspace/scratch/12ef9c5bdc23/memory-round3-control-20261025/cost-v2/warm-run-002-001/controller-cost.json",
+          "related": [
+            "retrieval",
+            "memory"
+          ]
+        }
+      ],
+      "wall_owner": "controller"
+    },
+    "charge_ids": [
+      "retrieval",
+      "memory",
+      "controller"
+    ],
+    "controller_cpu_budget_ns": 50000000000,
+    "cpu_ns": 42343564826,
+    "gate_rejected_before_callback": true,
+    "gate_requested_cpu_ns": 8000000000,
+    "legacy_ledger_numbers_are_budget_charges_not_new_physical_work": true,
+    "new_physical_work": false,
+    "remaining_cpu_ns": 7656435174,
+    "token_observations": {
+      "decoder_queries": null,
+      "input_tokens": null,
+      "output_tokens": null,
+      "train_tokens": null
+    },
+    "unknowns_preserved": true,
+    "wall_ns": 44638723331
+  },
+  "implemented_boundaries": [
+    "One arm/seed/controller binding and remaining ledger across stages",
+    "Atomic once-only event claims and per-arm raw receipt claims",
+    "Failed/timeout/lost conservative charges; observed unknowns stay null; known overrun lower bounds retained",
+    "Covering wait4 and controller self costs are separate; nested rows attribution-only; one wall owner",
+    "Actual pinned checkpoint shape/dtype/range/rank/target admission; active adapter/router total separate from parent/base/optimizer/gradient"
+  ],
+  "independent_review": {
+    "boundaries": [
+      "No parent-directory fsync or power-loss exactly-once claim",
+      "Coverage graph is trusted-controller evidence; no OS or remote attestation",
+      "Serialized checkpoint capacity is not dynamic loader/runtime allocation qualification"
+    ],
+    "final_fix_confirmed": true,
+    "fixed": [
+      "Known partial CPU overrun could be hidden by another null row: charge now >= known lower bound and full reservation, observation stays null",
+      "Every declared adapter target must appear in the actual tensor header"
+    ],
+    "method": "readonly source review, no peer tests or model calls",
+    "reviewer": "/root/ndu_current_proof"
+  },
+  "new_process_cpu_ns_sum": 643469997,
+  "qualification": {
+    "executed_sources": "executed-sources-002",
+    "final_tests": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "ids": [
+        "test_arm_controller.Controller.test_checkpoint_over_capacity_or_drift_prevents_callback",
+        "test_arm_controller.Controller.test_concurrent_duplicate_claim_has_one_admission",
+        "test_arm_controller.Controller.test_exception_and_missing_raw_close_arm_without_refund",
+        "test_arm_controller.Controller.test_failed_timeout_and_lost_preserve_full_charge_and_deny_replay",
+        "test_arm_controller.Controller.test_identity_change_cross_seed_and_missing_reservation_dimensions",
+        "test_arm_controller.Controller.test_measured_overrun_is_retained_and_closes_arm",
+        "test_arm_controller.Controller.test_same_raw_receipt_cannot_settle_another_operation",
+        "test_arm_controller.Controller.test_training_then_gate_uses_same_remaining_before_effect",
+        "test_arm_controller.Controller.test_unknown_total_preserves_known_overrun_lower_bound",
+        "test_receipt_bridge.Receipts.test_controller_children_and_covering_outer_are_not_double_charged",
+        "test_receipt_bridge.Receipts.test_covered_wall_owner_and_receipt_pin_drift_refused",
+        "test_receipt_bridge.Receipts.test_duplicate_receipt_and_duplicate_coverage_refused",
+        "test_receipt_bridge.Receipts.test_tampered_raw_stream_and_controller_sum_refused",
+        "test_receipt_bridge.Receipts.test_timeout_is_infrastructure_failure_but_task_negative_is_complete",
+        "test_receipt_bridge.Receipts.test_unknown_stays_null_with_known_subtotal",
+        "test_tensor_capacity.Capacity.test_every_declared_target_must_appear",
+        "test_tensor_capacity.Capacity.test_overlap_and_duplicate_json_keys_refused",
+        "test_tensor_capacity.Capacity.test_parent_optimizer_gradient_and_base_separate_router_active",
+        "test_tensor_capacity.Capacity.test_r4_r8_and_two_cells_use_actual_tensor_sums",
+        "test_tensor_capacity.Capacity.test_shared_file_does_not_reduce_two_logical_cells_capacity",
+        "test_tensor_capacity.Capacity.test_symlink_checkpoint_refused",
+        "test_tensor_capacity.Capacity.test_wrong_rank_config_or_checkpoint_pin_refused"
+      ],
+      "raw": {
+        "bytes": 3336,
+        "sha256": "46b288b580600c3cc4617ff5f605ad50743c2bfe8f74fb821b321f32aa2fbfad"
+      },
+      "run": 22,
+      "skips": 0,
+      "unexpected_successes": 0
+    },
+    "historical_tests_001": 20,
+    "plan_001": {
+      "bytes": 10575,
+      "sha256": "64fefa97b77a8fa4a4fd0035769bc9b0f2f28564f7f9b8738a3771ff5ee47a9e"
+    },
+    "plan_002": {
+      "bytes": 11226,
+      "sha256": "c22aec16a7015110df722b4814eb32e34e0c174bab7f834e3c7b958a3ca71bdd"
+    },
+    "result_001": {
+      "bytes": 6587,
+      "sha256": "a562928a2de212169806cd0a7ff9ad6d3ed02b620ba50708904e066952b4ca58"
+    },
+    "result_002": {
+      "bytes": 6746,
+      "sha256": "4d0c00071e47d480846de05d340a0555a1c0fce9d0789067970901f131477899"
+    },
+    "source_lint_001": {
+      "findings": [
+        "E402 import after path setup in common.py, two occurrences"
+      ],
+      "retained": true,
+      "returncode": 1
+    },
+    "source_lint_002": {
+      "returncode": 0
+    }
+  },
+  "qualification_self_and_test_phase_costs_are_attribution_not_added_again": true,
+  "remaining_work": [
+    "Versioned call-site integration with old model/baseline runners and actual repair solver/executors",
+    "Whole-study shared-parent allocation/physical-cost view",
+    "Training/generation inner-loop guards and any claimed aggregate process-tree RSS/storage enforcement",
+    "Layer/base loader compatibility, runtime allocation peaks and full deployment inventory",
+    "Independent future task evidence, strong retrieval qualification, five-arm benefit and net compression"
+  ],
+  "schema": "hepta.memory-budget-v2.engineering-qualification-summary.v1",
+  "scope": {
+    "future_task_reads": 0,
+    "new_directory_only": true,
+    "new_five_arm_runs": 0,
+    "new_model_calls": 0,
+    "new_optimizer_updates": 0,
+    "new_task_gate_runs": 0,
+    "old_runners_modified": false,
+    "scientific_gain_qualified": false,
+    "whole_system_cost_complete": false
+  },
+  "source_bytes": 56922,
+  "source_files": {
+    "scripts/memory_cell_budget_v2/README.md": {
+      "bytes": 5594,
+      "lines": 92,
+      "sha256": "08dc5d53f60c1570dd0f653308d3091f43937078b811498daffa5ed6976bfdb4"
+    },
+    "scripts/memory_cell_budget_v2/arm_controller.py": {
+      "bytes": 7748,
+      "lines": 160,
+      "sha256": "8279853eb3913fab019f3fdc40f10c17d71adb9fc0879324b53f0cb603779ac5"
+    },
+    "scripts/memory_cell_budget_v2/common.py": {
+      "bytes": 1916,
+      "lines": 55,
+      "sha256": "dc1695aeef715a74d1399bdffa503ae01a3a656d2283fd09821beeddc56595e4"
+    },
+    "scripts/memory_cell_budget_v2/qualify.py": {
+      "bytes": 6002,
+      "lines": 127,
+      "sha256": "d7d923dd671d8ad05743bd8e39f760211b187c9c55cacb9e843769375b207136"
+    },
+    "scripts/memory_cell_budget_v2/receipt_bridge.py": {
+      "bytes": 7227,
+      "lines": 159,
+      "sha256": "1997290ebbd46ecbd6f0bd85d31b7c8ea7b25e9ccddb19a20e12e57d570794e5"
+    },
+    "scripts/memory_cell_budget_v2/tensor_capacity.py": {
+      "bytes": 8048,
+      "lines": 158,
+      "sha256": "f4ccd0ff3a02d8964b1acd4f51c5936b6ff4dccb13f6dfb80ada5d17bd247644"
+    },
+    "scripts/memory_cell_budget_v2/test_arm_controller.py": {
+      "bytes": 8185,
+      "lines": 147,
+      "sha256": "79bcc3f732ee47d180035599d0b63cb93b3bf2eb7e25e6a16d056498281ce03a"
+    },
+    "scripts/memory_cell_budget_v2/test_receipt_bridge.py": {
+      "bytes": 4622,
+      "lines": 93,
+      "sha256": "72a507ebf52bef8a332c285cbc3e1d1755bd0c7a92a2f659042940e168f41164"
+    },
+    "scripts/memory_cell_budget_v2/test_support.py": {
+      "bytes": 3067,
+      "lines": 79,
+      "sha256": "b470917ffc2dce66f45897091e450253738316695ec948b8614525be8f3ed4d1"
+    },
+    "scripts/memory_cell_budget_v2/test_tensor_capacity.py": {
+      "bytes": 4513,
+      "lines": 97,
+      "sha256": "e0e1c69dddf087f2ea623da4feae3a0bf820cfffef2da864e1503b05f864fdd0"
+    }
+  },
+  "unknown_costs": {
+    "billing_usd": null,
+    "energy_joules": null,
+    "outer_launcher_self_cpu_ns": null,
+    "whole_host_cpu_ns": null
+  }
+}

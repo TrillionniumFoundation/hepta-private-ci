@@ -1132,12 +1132,16 @@ fn apply_zip_permissions<R: std::io::Read + ?Sized>(
     let Some(mode) = entry.unix_mode() else {
         return Ok(());
     };
-    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
-        format!(
-            "failed to set permissions on curated plugins file {}: {err}",
-            output_path.display()
-        )
-    })
+    // Never restore downloaded archive SUID, SGID, or sticky bits.
+    let safe_mode = mode & 0o777;
+    std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(safe_mode)).map_err(
+        |err| {
+            format!(
+                "failed to set permissions on curated plugins file {}: {err}",
+                output_path.display()
+            )
+        },
+    )
 }
 
 #[cfg(not(unix))]

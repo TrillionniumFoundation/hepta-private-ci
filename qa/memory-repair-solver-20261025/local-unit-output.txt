@@ -1,0 +1,23 @@
+test_added_runner_or_symlink_refused_before_prompt (test_solver_admission.AdmissionTests.test_added_runner_or_symlink_refused_before_prompt) ... ok
+test_codec_feedback_reports_missing_ids_and_valid_bounded_json (test_solver_admission.AdmissionTests.test_codec_feedback_reports_missing_ids_and_valid_bounded_json) ... ok
+test_failed_qualification_or_new_source_in_frozen_input_refused (test_solver_admission.AdmissionTests.test_failed_qualification_or_new_source_in_frozen_input_refused) ... ok
+test_profile_and_executable_drift_refused (test_solver_admission.AdmissionTests.test_profile_and_executable_drift_refused) ... ok
+test_real_candidate_lint_feedback_not_baseline_codes (test_solver_admission.AdmissionTests.test_real_candidate_lint_feedback_not_baseline_codes) ... ok
+test_valid_frozen_input_is_consumed_without_model (test_solver_admission.AdmissionTests.test_valid_frozen_input_is_consumed_without_model) ... ok
+test_wrong_qualification_command_binding_refused (test_solver_admission.AdmissionTests.test_wrong_qualification_command_binding_refused) ... ok
+test_completed_response_is_charged_without_final_receipt (test_solver_execution.CostRecoveryTests.test_completed_response_is_charged_without_final_receipt) ... ok
+test_interrupted_second_call_is_retained_and_cost_is_a_lower_bound (test_solver_execution.CostRecoveryTests.test_interrupted_second_call_is_retained_and_cost_is_a_lower_bound) ... ok
+test_invalid_usage_cannot_reduce_recorded_cost (test_solver_execution.CostRecoveryTests.test_invalid_usage_cannot_reduce_recorded_cost) ... ok
+test_late_integrity_failure_invalidates_an_actual_gate_success (test_solver_execution.TrajectoryIntegrityTests.test_late_integrity_failure_invalidates_an_actual_gate_success) ... ok
+test_model_runtime_failure_is_not_retried_as_a_bad_proposal (test_solver_execution.TrajectoryIntegrityTests.test_model_runtime_failure_is_not_retried_as_a_bad_proposal) ... ok
+test_ambiguous_missing_empty_and_outside_edits_refused (test_solver_protocol.EditProtocolTests.test_ambiguous_missing_empty_and_outside_edits_refused) ... ok
+test_candidate_content_bound_cannot_be_bypassed (test_solver_protocol.EditProtocolTests.test_candidate_content_bound_cannot_be_bypassed) ... ok
+test_cumulative_exact_edits_keep_untouched_source (test_solver_protocol.EditProtocolTests.test_cumulative_exact_edits_keep_untouched_source) ... ok
+test_duplicate_fields_and_nonjson_output_refused (test_solver_protocol.EditProtocolTests.test_duplicate_fields_and_nonjson_output_refused) ... ok
+test_failed_late_edit_does_not_partially_mutate_input (test_solver_protocol.EditProtocolTests.test_failed_late_edit_does_not_partially_mutate_input) ... ok
+test_only_absent_admitted_file_can_be_created (test_solver_protocol.EditProtocolTests.test_only_absent_admitted_file_can_be_created) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.049s
+
+OK
