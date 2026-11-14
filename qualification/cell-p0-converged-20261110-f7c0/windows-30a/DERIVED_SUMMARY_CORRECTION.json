@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.p0.windows-derived-source-correction.v1",
+  "source_sha": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "observed_at": "2026-11-11T03:33:48.907100+00:00",
+  "reason": "Corrected one copied source-label sentence in the derived scope summary; raw CI records unchanged.",
+  "changed_field": "SUMMARY.json.scope_limits[0]",
+  "old_value": "Only the recorded Windows private-state and Prompt Runtime scope is established on cb0598.",
+  "new_value": "Only the recorded Windows private-state and Prompt Runtime scope is established on 30a697c50e10abd56e61b6b84f28ac9ae9f32f5d.",
+  "before": {
+    "bundle": {
+      "bytes": 74386,
+      "sha256": "d31b6d26d2fc931f3b45d0de38a640e8f9dd14070273c8598a693091622cb1c6"
+    },
+    "SUMMARY.json": {
+      "bytes": 21087,
+      "sha256": "58d866da9850edce0b5615c51838639f7479775c8809dbcec372cbd1140ba7e5"
+    },
+    "MANIFEST.json": {
+      "bytes": 952,
+      "sha256": "131c218b26061a11442dc3df0e58fcd65652054247b836faf14afb4e99d7876a"
+    },
+    "builder": {
+      "bytes": 10715,
+      "sha256": "e004e5824ea5e0139ad93614474cb0ce536926b6b92b5fb0f674b680a8081d43"
+    }
+  },
+  "after": {
+    "bundle": {
+      "bytes": 74383,
+      "sha256": "26e3773d2a446fc77edd5d8aa6884c2b34c03d6e6b33a839389043b10bfd2561"
+    },
+    "SUMMARY.json": {
+      "bytes": 21121,
+      "sha256": "3dea9eef7fc1fbbfb111823b9db28da1f58fbfe759e1b04f112ae4570a84f40e"
+    },
+    "MANIFEST.json": {
+      "bytes": 952,
+      "sha256": "493441fe73168fd5313046bcdc202000256aee21450a382ebff4d3a3076bc0eb"
+    },
+    "builder": {
+      "bytes": 10715,
+      "sha256": "9f8899140054cbbaf3ffa19c1745728519f6be054dfaa03d96e7963c830b1bd1"
+    }
+  },
+  "preserved_delivery_raw_files": {
+    "API_CAPTURE.json.gz": {
+      "bytes": 2985,
+      "sha256": "3c25e834954fbfe067967d850468fac42c2affd3df4965461eb80195dc63b458"
+    },
+    "job-130295511276.log.gz": {
+      "bytes": 52223,
+      "sha256": "199c031bdf3bdde1c72b4d513d4b7570bb5802e7c6bb4e65d4cbea41dbaf2111"
+    },
+    "ORIGINAL_MEMBER_INDEX.json": {
+      "bytes": 2049,
+      "sha256": "0675708e4874dd5c575b2a60d06118b9179bbdf4570322f0d466e4df2149396e"
+    },
+    "original-artifact-13825437726.zip": {
+      "bytes": 13521,
+      "sha256": "fd6dfa58478d3afad8b65608827c6f04c86cd10b4017e63cb6b4b6a5ec03b7f9"
+    }
+  },
+  "preserved_external_raw_files": {
+    "original-artifact-13825437726.zip": {
+      "bytes": 13521,
+      "sha256": "fd6dfa58478d3afad8b65608827c6f04c86cd10b4017e63cb6b4b6a5ec03b7f9"
+    },
+    "job-130295511276.decoded.log": {
+      "bytes": 259732,
+      "sha256": "18f21cae859a31d0e5ab7763f202cc5168a0bb5ae40e15d28a17a1f5b447612c"
+    },
+    "API_CAPTURE.json": {
+      "bytes": 21525,
+      "sha256": "98d11f47e77765e33de1a3ce4705f7b133b9859c1291632b1142366073f233ca"
+    }
+  },
+  "original_artifact_members_unchanged": {
+    "manifest.json": {
+      "bytes": 3166,
+      "sha256": "b993eb4bb8fe037615db9af7e218193c555cf7ca91237346ccaed6c0b210c852"
+    },
+    "path-check-open.log": {
+      "bytes": 8215,
+      "sha256": "67c9c02394b4d4f62404ae9243d64c58e4d708984a693ba149ff0525e0f154a2"
+    },
+    "path-check-open.patch": {
+      "bytes": 962,
+      "sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3"
+    },
+    "path-check-open.rs": {
+      "bytes": 6191,
+      "sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4"
+    },
+    "positive.log": {
+      "bytes": 7484,
+      "sha256": "58221cee544e37f21f9f752929e4107a6c4121bcc3befae92d478fb9c90a32cb"
+    },
+    "unchecked-create.log": {
+      "bytes": 8135,
+      "sha256": "6ec85fc7039f1040aa5499424e904415f1fa4e43ecb16762cf16bfc85a99d381"
+    },
+    "positive.rs": {
+      "bytes": 5855,
+      "sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac"
+    },
+    "unchecked-create.patch": {
+      "bytes": 694,
+      "sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c"
+    },
+    "unchecked-create.rs": {
+      "bytes": 6231,
+      "sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e"
+    }
+  },
+  "checks": {
+    "raw_delivery_bytes_equal": true,
+    "raw_external_bytes_equal": true,
+    "original_artifact_member_count": 9,
+    "original_artifact_crc_ok": true,
+    "outer_crc_ok": true,
+    "outer_members_equal_corrected_delivery": true,
+    "maximum_delivered_blob_bytes": 52223,
+    "new_downloads": 0,
+    "new_ci_runs": 0,
+    "native_builds_or_tests": 0
+  },
+  "old_bundle_backup": "/workspace/scratch/f7c0ded86bcc/p0-ci-audit/windows-30a697c-readback/windows-30a697c-raw-bundle.pre-derived-source-correction.zip",
+  "builder_path": "/workspace/scratch/f7c0ded86bcc/p0-ci-audit/build_windows_30a_readback.py"
+}

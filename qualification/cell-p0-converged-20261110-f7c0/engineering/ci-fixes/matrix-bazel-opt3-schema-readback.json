@@ -1,0 +1,127 @@
+{
+  "base": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "reviewed_at": "2026-11-11T02:39:49.609Z",
+  "proposal_file": "MODULE.bazel",
+  "proposed_annotation": {
+    "crate": "matrix-sdk-store-encryption",
+    "repositories": [
+      "crates"
+    ],
+    "version": "0.19.1",
+    "rustc_flags": [
+      "-Copt-level=3"
+    ]
+  },
+  "mutation_performed": false,
+  "compilation_performed": false,
+  "limits": "Configuration alignment only; original Matrix failure cause not established. MODULE lock expected unchanged for flags-only reproducible extension, standard lock validation still needed.",
+  "sources": [
+    {
+      "path": "rs/extensions.bzl",
+      "sha": "03c143215149f281fd1b03626d43b273254c0d2e",
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/v0.0.96/rs/extensions.bzl",
+      "snippets": [
+        {
+          "start_line": 321,
+          "end_line": 339,
+          "content": "        kwargs = dict(\n            hub_name = hub_name,\n            gen_build_script = annotation.gen_build_script,\n            build_script_deps = [],\n            build_script_deps_select = _select(feature_resolutions.build_deps),\n            build_script_data = annotation.build_script_data,\n            build_script_data_select = annotation.build_script_data_select,\n            build_script_env = annotation.build_script_env,\n            allow_build_script_to_detect_nonhermetic_paths = annotation.allow_build_script_to_detect_nonhermetic_paths,\n            build_script_toolchains = annotation.build_script_toolchains,\n            build_script_tools = annotation.build_script_tools,\n            build_script_tags = annotation.build_script_tags,\n            build_script_tools_select = annotation.build_script_tools_select,\n            build_script_env_select = annotation.build_script_env_select,\n            rustc_flags = annotation.rustc_flags,\n            rustc_flags_select = annotation.rustc_flags_select,\n            data = annotation.data,\n            deps = annotation.deps,\n            crate_tags = annotation.tags,"
+        },
+        {
+          "start_line": 806,
+          "end_line": 815,
+          "content": "    kwargs = dict(\n        root_module_direct_deps = direct_deps,\n        root_module_direct_dev_deps = direct_dev_deps,\n        reproducible = True,\n    )\n\n    if hasattr(mctx, \"facts\"):\n        kwargs[\"facts\"] = facts\n\n    return mctx.extension_metadata(**kwargs)"
+        },
+        {
+          "start_line": 850,
+          "end_line": 865,
+          "content": "_annotation = tag_class(\n    doc = \"A collection of extra attributes and settings for a particular crate.\",\n    attrs = {\n        \"crate\": attr.string(\n            doc = \"The name of the crate the annotation is applied to\",\n            mandatory = True,\n        ),\n        \"version\": attr.string(\n            doc = \"The version of the crate the annotation is applied to. Defaults to all versions.\",\n            default = \"*\",\n        ),\n        \"repositories\": attr.string_list(\n            doc = \"A list of repository names specified from `crate.from_cargo(name=...)` that this annotation is applied to. Defaults to all repositories.\",\n            default = [],\n        ),\n    } | {"
+        },
+        {
+          "start_line": 985,
+          "end_line": 994,
+          "content": "        # ),\n        # \"rustc_env_files\": attr.label_list(\n        #     doc = \"A list of labels to set on a crate's `rust_library::rustc_env_files` attribute.\",\n        # ),\n        \"rustc_flags\": attr.string_list(\n            doc = \"A list of strings to set on a crate's `rust_library::rustc_flags` attribute.\",\n        ),\n        \"rustc_flags_select\": attr.string_list_dict(\n            doc = \"A list of strings to set on a crate's `rust_library::rustc_flags` attribute. Keys should be the platform triplet. Value should be a list of flags.\",\n        ),"
+        }
+      ]
+    },
+    {
+      "path": "rs/private/annotations.bzl",
+      "sha": "2e739c0c0c04959e6450797d55333191132a0285",
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/v0.0.96/rs/private/annotations.bzl",
+      "snippets": [
+        {
+          "start_line": 14,
+          "end_line": 25,
+          "content": "        data = [],\n        deps = [],\n        tags = [],\n        crate_features = [],\n        crate_features_select = {},\n        gen_binaries = [],\n        extra_aliased_targets = {},\n        rustc_flags = [],\n        rustc_flags_select = {},\n        patch_args = [],\n        patch_tool = None,\n        patches = [],"
+        },
+        {
+          "start_line": 43,
+          "end_line": 51,
+          "content": "        tags = tags,\n        crate_features = crate_features,\n        crate_features_select = crate_features_select,\n        gen_binaries = gen_binaries,\n        extra_aliased_targets = extra_aliased_targets,\n        rustc_flags = rustc_flags,\n        rustc_flags_select = rustc_flags_select,\n        patch_args = patch_args,\n        patch_tool = patch_tool,"
+        }
+      ]
+    },
+    {
+      "path": "rs/private/repository_utils.bzl",
+      "sha": "fc195ff771d017071193069f4ff8381435d938cc",
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/v0.0.96/rs/private/repository_utils.bzl",
+      "snippets": [
+        {
+          "start_line": 180,
+          "end_line": 190,
+          "content": "{indent}    ],\n{extra_compile_data_attr}{indent}    crate_features = {crate_features},\n{indent}    triples = {triples},\n{indent}    conditional_crate_features = {conditional_crate_features},\n{indent}    crate_root = {crate_root},\n{indent}    edition = {edition},\n{rustc_env_attr}{indent}    rustc_flags = {rustc_flags}{conditional_rustc_flags},\n{indent}    tags = {tags},\n{indent}    target_compatible_with = RESOLVED_PLATFORMS,\n{indent}    links = {links},\n{indent}    build_script = {build_script},"
+        },
+        {
+          "start_line": 213,
+          "end_line": 220,
+          "content": "    )\n    use_legacy_rules_rust_platforms = attr.use_legacy_rules_rust_platforms\n    build_deps, conditional_build_deps = render_select(attr.build_script_deps, attr.build_script_deps_select, use_legacy_rules_rust_platforms)\n    build_script_data, conditional_build_script_data = render_select(attr.build_script_data, attr.build_script_data_select, use_legacy_rules_rust_platforms)\n    build_script_tools, conditional_build_script_tools = render_select(attr.build_script_tools, attr.build_script_tools_select, use_legacy_rules_rust_platforms)\n    rustc_flags, conditional_rustc_flags = render_select(attr.rustc_flags, attr.rustc_flags_select, use_legacy_rules_rust_platforms)\n    deps, conditional_deps = render_select(attr.deps + bazel_metadata.get(\"deps\", []), attr.deps_select, use_legacy_rules_rust_platforms)\n"
+        },
+        {
+          "start_line": 255,
+          "end_line": 260,
+          "content": "        crate_root = values[\"crate_root\"],\n        edition = values[\"edition\"],\n        rustc_env_attr = rustc_env_attr,\n        rustc_flags = repr(rustc_flags),\n        conditional_rustc_flags = \" + \" + conditional_rustc_flags if conditional_rustc_flags else \"\",\n        tags = repr(attr.crate_tags),"
+        }
+      ]
+    },
+    {
+      "path": "rs/rust_crate.bzl",
+      "sha": "ff2261c881bad5724d44d2d1b2e86f64ea1754dc",
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/v0.0.96/rs/rust_crate.bzl",
+      "snippets": [
+        {
+          "start_line": 186,
+          "end_line": 209,
+          "content": "            aliases = aliases,\n            deps = deps,\n            data = data,\n            crate_features = crate_features + select(\n                {_platform(k, use_legacy_rules_rust_platforms): v for k, v in conditional_crate_features.items()} |\n                {\"//conditions:default\": []},\n            ),\n            crate_root = crate_root,\n            edition = edition,\n            rustc_env = rustc_env,\n            rustc_env_files = [\"cargo_toml_env_vars.env\"],\n            rustc_flags = rustc_flags + [\"--cap-lints=allow\"],\n            tags = crate_tags,\n            target_compatible_with = target_compatible_with,\n            package_metadata = [name + \"_package_metadata\"],\n            skip_deps_verification = skip_deps_verification,\n            visibility = [\"//visibility:public\"],\n            skip_per_crate_rustc_flags = True,\n        )\n\n        if is_proc_macro:\n            (_rust_proc_macro if skip_deps_verification else rust_proc_macro)(**kwargs)\n        else:\n            (_rust_library if skip_deps_verification else rust_library)(**kwargs)"
+        }
+      ]
+    },
+    {
+      "path": "rs/rules_rust.bzl",
+      "sha": "dc5fe3b90bf04437bf1c30f4779667158371e35c",
+      "url": "https://github.com/hermeticbuild/rules_rs/blob/v0.0.96/rs/rules_rust.bzl",
+      "snippets": [
+        {
+          "start_line": 26,
+          "end_line": 39,
+          "content": "\n    if len(strip_values) > 1:\n        fail(\"Found conflicting strip values in rules_rust.patch tags\")\n\n    strip = list(strip_values)[0] if strip_values else 0\n\n    http_archive(\n        name = \"rules_rust\",\n        integrity = \"sha256-2Omls/gtvOOdKgmcXazTqrCxf5zegAK6JMSRL/3J51c=\",\n        strip_prefix = \"rules_rust-f19661ba71f77c993ce1eb082053692610fe4313\",\n        url = \"https://github.com/hermeticbuild/rules_rust/archive/f19661ba71f77c993ce1eb082053692610fe4313.tar.gz\",\n        patches = patches,\n        patch_strip = strip,\n    )"
+        }
+      ]
+    },
+    {
+      "path": "rust/private/rustc.bzl",
+      "sha": "218d3d20835a11730e5bb32ddca2cc83f539763f",
+      "url": "https://github.com/hermeticbuild/rules_rust/blob/f19661ba71f77c993ce1eb082053692610fe4313/rust/private/rustc.bzl",
+      "snippets": [
+        {
+          "start_line": 1262,
+          "end_line": 1270,
+          "content": "        # dirname so Bazel can apply path mapping (--experimental_output_paths=strip)\n        # to the directory portion of the path.\n        rustc_flags.add_all([crate_info.output], map_each = _get_dirname, format_each = \"--out-dir=%s\")\n\n    compilation_mode = get_compilation_mode_opts(ctx, toolchain)\n    rustc_flags.add(compilation_mode.opt_level, format = \"--codegen=opt-level=%s\")\n    rustc_flags.add(compilation_mode.debug_info, format = \"--codegen=debuginfo=%s\")\n    rustc_flags.add(compilation_mode.strip_level, format = \"--codegen=strip=%s\")\n"
+        },
+        {
+          "start_line": 1554,
+          "end_line": 1573,
+          "content": "        # require_explicit_unstable_features makes no sense when all features are allowed anyway\n        if require_explicit_unstable_features:\n            process_wrapper_flags.add(\"--require-explicit-unstable-features\", \"true\")\n    rustc_flags.add_all(extra_rustc_flags, map_each = map_flag)\n\n    if is_no_std(ctx, toolchain, crate_info.is_test):\n        rustc_flags.add('--cfg=feature=\"no_std\"')\n\n    # Add target specific flags last, so they can override previous flags\n    authored_rustc_flags = getattr(attr, \"rustc_flags\", [])\n    rustc_flags.add_all(\n        expand_list_element_locations(\n            ctx,\n            authored_rustc_flags,\n            data_paths,\n            {},\n        ),\n        map_each = map_flag,\n    )\n"
+        }
+      ]
+    }
+  ]
+}
