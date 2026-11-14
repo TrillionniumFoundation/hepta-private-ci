@@ -4,6 +4,10 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 
+[features]
+# Native HIA string operations; requires pinned Linux x86-64 artifacts.
+hia-native = []
+
 [lints]
 workspace = true
 

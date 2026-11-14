@@ -14,28 +14,35 @@ impl serde_json::ser::Formatter for AsciiJsonFormatter {
     where
         W: ?Sized + io::Write,
     {
-        let mut start = 0;
-        for (index, ch) in fragment.char_indices() {
-            if ch.is_ascii() {
-                continue;
-            }
-
-            if start < index {
-                writer.write_all(&fragment.as_bytes()[start..index])?;
-            }
-
-            let mut utf16 = [0; 2];
-            for code_unit in ch.encode_utf16(&mut utf16) {
-                write!(writer, "\\u{code_unit:04x}")?;
-            }
-            start = index + ch.len_utf8();
+        #[cfg(feature = "hia-native")]
+        {
+            super::hia_native_ascii_json::write_string_fragment(writer, fragment)
         }
+        #[cfg(not(feature = "hia-native"))]
+        {
+            let mut start = 0;
+            for (index, ch) in fragment.char_indices() {
+                if ch.is_ascii() {
+                    continue;
+                }
 
-        if start < fragment.len() {
-            writer.write_all(&fragment.as_bytes()[start..])?;
+                if start < index {
+                    writer.write_all(&fragment.as_bytes()[start..index])?;
+                }
+
+                let mut utf16 = [0; 2];
+                for code_unit in ch.encode_utf16(&mut utf16) {
+                    write!(writer, "\\u{code_unit:04x}")?;
+                }
+                start = index + ch.len_utf8();
+            }
+
+            if start < fragment.len() {
+                writer.write_all(&fragment.as_bytes()[start..])?;
+            }
+
+            Ok(())
         }
-
-        Ok(())
     }
 }
 

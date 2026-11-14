@@ -123,6 +123,7 @@ fn request_permissions_tool_event(
 
 fn exec_command_event(call_id: &str, command: &str) -> Result<Value> {
     let args = json!({
+        "login": false,
         "cmd": command,
         "yield_time_ms": 10_000_u64,
     });
@@ -136,6 +137,7 @@ fn exec_command_event_with_request_permissions<S: serde::Serialize>(
     additional_permissions: &S,
 ) -> Result<Value> {
     let args = json!({
+        "login": false,
         "cmd": command,
         "yield_time_ms": 10_000_u64,
         "sandbox_permissions": SandboxPermissions::WithAdditionalPermissions,
@@ -150,6 +152,7 @@ fn exec_command_event_with_missing_additional_permissions(
     command: &str,
 ) -> Result<Value> {
     let args = json!({
+        "login": false,
         "cmd": command,
         "yield_time_ms": 1_000_u64,
         "sandbox_permissions": SandboxPermissions::WithAdditionalPermissions,

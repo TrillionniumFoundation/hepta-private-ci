@@ -13,6 +13,10 @@ doctest = false
 name = "apply_patch"
 path = "src/main.rs"
 
+[features]
+# Explicit Linux x86-64 native HIA caller. Requires the HIA-generated artifact.
+hia-native = []
+
 [lints]
 workspace = true
 

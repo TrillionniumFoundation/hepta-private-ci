@@ -5,10 +5,28 @@
 //! - `{{{{` for a literal `{{`
 //! - `}}}}` for a literal `}}`
 
+#[cfg(not(feature = "hia-native"))]
 use std::collections::BTreeMap;
+#[cfg(not(feature = "hia-native"))]
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
+
+#[cfg(feature = "hia-native")]
+mod hia_native;
+#[cfg(feature = "hia-native")]
+mod hia_native_index;
+#[cfg(feature = "hia-native")]
+mod hia_native_placeholders;
+#[cfg(feature = "hia-native")]
+mod hia_native_render;
+#[cfg(feature = "hia-native")]
+mod hia_render_abi;
+
+#[cfg(feature = "hia-native")]
+use hia_native_placeholders::Placeholders;
+#[cfg(not(feature = "hia-native"))]
+type Placeholders = BTreeSet<String>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TemplateParseError {
@@ -114,57 +132,64 @@ enum Segment {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Template {
-    placeholders: BTreeSet<String>,
+    placeholders: Placeholders,
     segments: Vec<Segment>,
 }
 
 impl Template {
     pub fn parse(source: &str) -> Result<Self, TemplateParseError> {
-        let mut placeholders = BTreeSet::new();
-        let mut segments = Vec::new();
-        let mut literal_start = 0usize;
-        let mut cursor = 0usize;
-
-        while cursor < source.len() {
-            let rest = &source[cursor..];
-            if rest.starts_with("{{{{") {
-                push_literal(&mut segments, &source[literal_start..cursor]);
-                push_literal(&mut segments, "{{");
-                cursor += "{{{{".len();
-                literal_start = cursor;
-                continue;
-            }
-            if rest.starts_with("}}}}") {
-                push_literal(&mut segments, &source[literal_start..cursor]);
-                push_literal(&mut segments, "}}");
-                cursor += "}}}}".len();
-                literal_start = cursor;
-                continue;
-            }
-            if rest.starts_with("{{") {
-                push_literal(&mut segments, &source[literal_start..cursor]);
-                let (placeholder, next_cursor) = parse_placeholder(source, cursor)?;
-                placeholders.insert(placeholder.clone());
-                segments.push(Segment::Placeholder(placeholder));
-                cursor = next_cursor;
-                literal_start = cursor;
-                continue;
-            }
-            if rest.starts_with("}}") {
-                return Err(TemplateParseError::UnmatchedClosingDelimiter { start: cursor });
-            }
-
-            let Some(ch) = rest.chars().next() else {
-                break;
-            };
-            cursor += ch.len_utf8();
+        #[cfg(feature = "hia-native")]
+        {
+            hia_native::parse(source)
         }
+        #[cfg(not(feature = "hia-native"))]
+        {
+            let mut placeholders = BTreeSet::new();
+            let mut segments = Vec::new();
+            let mut literal_start = 0usize;
+            let mut cursor = 0usize;
 
-        push_literal(&mut segments, &source[literal_start..]);
-        Ok(Self {
-            placeholders,
-            segments,
-        })
+            while cursor < source.len() {
+                let rest = &source[cursor..];
+                if rest.starts_with("{{{{") {
+                    push_literal(&mut segments, &source[literal_start..cursor]);
+                    push_literal(&mut segments, "{{");
+                    cursor += "{{{{".len();
+                    literal_start = cursor;
+                    continue;
+                }
+                if rest.starts_with("}}}}") {
+                    push_literal(&mut segments, &source[literal_start..cursor]);
+                    push_literal(&mut segments, "}}");
+                    cursor += "}}}}".len();
+                    literal_start = cursor;
+                    continue;
+                }
+                if rest.starts_with("{{") {
+                    push_literal(&mut segments, &source[literal_start..cursor]);
+                    let (placeholder, next_cursor) = parse_placeholder(source, cursor)?;
+                    placeholders.insert(placeholder.clone());
+                    segments.push(Segment::Placeholder(placeholder));
+                    cursor = next_cursor;
+                    literal_start = cursor;
+                    continue;
+                }
+                if rest.starts_with("}}") {
+                    return Err(TemplateParseError::UnmatchedClosingDelimiter { start: cursor });
+                }
+
+                let Some(ch) = rest.chars().next() else {
+                    break;
+                };
+                cursor += ch.len_utf8();
+            }
+
+            push_literal(&mut segments, &source[literal_start..]);
+            Ok(Self {
+                placeholders,
+                segments,
+            })
+        }
     }
 
     pub fn placeholders(&self) -> impl ExactSizeIterator<Item = &str> {
@@ -177,35 +202,42 @@ impl Template {
         K: AsRef<str>,
         V: AsRef<str>,
     {
-        let variables = build_variable_map(variables)?;
-
-        for placeholder in &self.placeholders {
-            if !variables.contains_key(placeholder.as_str()) {
-                return Err(TemplateRenderError::MissingValue {
-                    name: placeholder.clone(),
-                });
-            }
+        #[cfg(feature = "hia-native")]
+        {
+            hia_native_render::render(self, variables)
         }
+        #[cfg(not(feature = "hia-native"))]
+        {
+            let variables = build_variable_map(variables)?;
 
-        for name in variables.keys() {
-            if !self.placeholders.contains(name.as_str()) {
-                return Err(TemplateRenderError::ExtraValue { name: name.clone() });
-            }
-        }
-
-        let mut rendered = String::new();
-        for segment in &self.segments {
-            match segment {
-                Segment::Literal(literal) => rendered.push_str(literal),
-                Segment::Placeholder(name) => {
-                    let Some(value) = variables.get(name.as_str()) else {
-                        return Err(TemplateRenderError::MissingValue { name: name.clone() });
-                    };
-                    rendered.push_str(value);
+            for placeholder in &self.placeholders {
+                if !variables.contains_key(placeholder.as_str()) {
+                    return Err(TemplateRenderError::MissingValue {
+                        name: placeholder.clone(),
+                    });
                 }
             }
+
+            for name in variables.keys() {
+                if !self.placeholders.contains(name.as_str()) {
+                    return Err(TemplateRenderError::ExtraValue { name: name.clone() });
+                }
+            }
+
+            let mut rendered = String::new();
+            for segment in &self.segments {
+                match segment {
+                    Segment::Literal(literal) => rendered.push_str(literal),
+                    Segment::Placeholder(name) => {
+                        let Some(value) = variables.get(name.as_str()) else {
+                            return Err(TemplateRenderError::MissingValue { name: name.clone() });
+                        };
+                        rendered.push_str(value);
+                    }
+                }
+            }
+            Ok(rendered)
         }
-        Ok(rendered)
     }
 }
 
@@ -232,6 +264,7 @@ fn push_literal(segments: &mut Vec<Segment>, literal: &str) {
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn parse_placeholder(source: &str, start: usize) -> Result<(String, usize), TemplateParseError> {
     let placeholder_start = start + "{{".len();
     let mut cursor = placeholder_start;
@@ -258,6 +291,7 @@ fn parse_placeholder(source: &str, start: usize) -> Result<(String, usize), Temp
     Err(TemplateParseError::UnterminatedPlaceholder { start })
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn build_variable_map<I, K, V>(
     variables: I,
 ) -> Result<BTreeMap<String, String>, TemplateRenderError>
@@ -440,3 +474,11 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "parser_native_tests.rs"]
+mod parser_native_tests;
+
+#[cfg(test)]
+#[path = "render_native_tests.rs"]
+mod render_native_tests;

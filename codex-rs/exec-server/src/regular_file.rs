@@ -24,7 +24,7 @@ pub async fn read_sensitive_file_to_string(path: &Path) -> io::Result<String> {
     configure_open(&mut options);
 
     #[cfg(unix)]
-    options.custom_flags(libc::O_NONBLOCK | libc::O_NOFOLLOW);
+    options.custom_flags(libc::O_NONBLOCK | libc::O_NOFOLLOW | libc::O_NOCTTY);
 
     #[cfg(windows)]
     {
@@ -49,7 +49,7 @@ pub async fn read_sensitive_file_to_string(path: &Path) -> io::Result<String> {
 
 #[cfg(unix)]
 fn configure_open(options: &mut tokio::fs::OpenOptions) {
-    options.custom_flags(libc::O_NONBLOCK);
+    options.custom_flags(libc::O_NONBLOCK | libc::O_NOCTTY);
 }
 
 #[cfg(windows)]

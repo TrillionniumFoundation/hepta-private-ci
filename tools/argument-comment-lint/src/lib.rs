@@ -13,14 +13,13 @@ extern crate rustc_span;
 use clippy_utils::diagnostics::span_lint_and_help;
 use clippy_utils::diagnostics::span_lint_and_sugg;
 use clippy_utils::fn_def_id;
-use clippy_utils::is_res_lang_ctor;
+use clippy_utils::is_none_expr;
 use clippy_utils::peel_blocks;
 use clippy_utils::source::snippet;
 use rustc_ast::LitKind;
 use rustc_errors::Applicability;
 use rustc_hir::Expr;
 use rustc_hir::ExprKind;
-use rustc_hir::LangItem;
 use rustc_hir::UnOp;
 use rustc_hir::def::DefKind;
 use rustc_lint::LateContext;
@@ -266,9 +265,7 @@ fn is_anonymous_literal_like(cx: &LateContext<'_>, expr: &Expr<'_>) -> bool {
             LitKind::Str(..) | LitKind::ByteStr(..) | LitKind::CStr(..) | LitKind::Char(..)
         ),
         ExprKind::Unary(UnOp::Neg, inner) => matches!(peel_blocks(inner).kind, ExprKind::Lit(_)),
-        ExprKind::Path(qpath) => {
-            is_res_lang_ctor(cx, cx.qpath_res(&qpath, expr.hir_id), LangItem::OptionNone)
-        }
+        ExprKind::Path(_) => is_none_expr(cx, expr),
         _ => false,
     }
 }

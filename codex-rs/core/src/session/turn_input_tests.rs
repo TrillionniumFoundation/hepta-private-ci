@@ -1,4 +1,5 @@
 use super::*;
+use crate::session::history_mutation_retry::HistoryMutationReservation;
 use crate::session::session::RecoveryCandidate;
 use crate::session::session::RolloutPersistenceFault;
 use crate::session::tests::attach_in_memory_thread_store;
@@ -996,11 +997,13 @@ async fn live_recovery_candidate_requires_exact_recoverable_model_task_and_is_in
         .expect("recoverable model interrupt should publish an exact candidate");
     assert_eq!(session.recovery_epoch_if_idle("wrong-turn").await, None);
 
-    let reservation = session
-        .reserve_history_mutation_if_idle()
+    let HistoryMutationReservation::Reserved(reservation) = session
+        .reserve_history_mutation_or_finish()
         .await
         .expect("recovery authority should be consumed")
-        .expect("idle session should reserve history mutation");
+    else {
+        panic!("idle session should reserve history mutation");
+    };
     assert_eq!(session.recovery_epoch_if_idle(turn_id).await, None);
     assert!(session.turn_epoch.load(Ordering::Acquire) > epoch);
     session

@@ -392,8 +392,10 @@ fn hook_matches(hook: &MitmHook, req: &Request) -> bool {
         return false;
     }
 
-    let path = req.uri().path();
-    if !is_safe_for_authorization(path) || !path_matches(&hook.matcher.path_prefixes, path) {
+    let path = crate::rama_ext::request_path(req.uri());
+    if !is_safe_for_authorization(path.as_ref())
+        || !path_matches(&hook.matcher.path_prefixes, path.as_ref())
+    {
         return false;
     }
 
@@ -409,7 +411,7 @@ fn query_matches(query_constraints: &[QueryConstraint], req: &Request) -> bool {
         return true;
     }
 
-    let actual_query = req.uri().query().unwrap_or_default();
+    let actual_query = req.uri().query_or_empty();
     let mut actual_values: BTreeMap<String, Vec<String>> = BTreeMap::new();
     for (name, value) in form_urlencoded::parse(actual_query.as_bytes()) {
         actual_values

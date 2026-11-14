@@ -146,14 +146,16 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
-        let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
-            .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+        // The helper already rejects redirection. Keep its canonical spelling:
+        // Windows drive/UNC verbatim prefixes name the same validated root.
+        let exclusive_guard = std::sync::Arc::new(
+            CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
+                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?,
+        );
         let source_path = resolve_active_database_path(&canonical_root)
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        #[cfg(windows)]
+        super::windows::ensure_root_binding(&canonical_root, &exclusive_guard._directory)
             .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
         let sqlite_home = AbsolutePathBuf::try_from(canonical_root.clone())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
@@ -220,12 +222,18 @@ impl CognitiveStore {
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&candidate)
-                .and_then(|file| file.sync_all())
+            #[cfg(windows)]
+            super::windows::sync_candidate(&canonical_root, &candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&canonical_root)
-                .and_then(|directory| directory.sync_all())
-                .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            #[cfg(not(windows))]
+            {
+                std::fs::File::open(&candidate)
+                    .and_then(|file| file.sync_all())
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+                std::fs::File::open(&canonical_root)
+                    .and_then(|directory| directory.sync_all())
+                    .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
+            }
 
             let pool = config
                 .open_durable_evidence_pool(&candidate)
@@ -259,6 +267,9 @@ impl CognitiveStore {
                 return Err(error);
             }
 
+            #[cfg(windows)]
+            super::windows::ensure_root_binding(&canonical_root, &exclusive_guard._directory)
+                .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
             publish_active_database(&canonical_root, &candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             // Keep the recovery fence exclusive for this recovered writer
@@ -269,18 +280,31 @@ impl CognitiveStore {
                 pool,
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
-                _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
+                _open_guard: Some(std::sync::Arc::clone(&exclusive_guard)),
             })
         }
         .await;
 
         match result {
             Ok(store) => Ok(store),
-            Err(error) => Err(reconcile_failed_recovery_candidate(
-                &canonical_root,
-                &candidate,
-                error,
-            )),
+            Err(error) => {
+                // Keep the exclusive fence while reconciling failed publication.
+                // An unresolved namespace must preserve the candidate as evidence.
+                #[cfg(windows)]
+                if let Err(binding_error) = super::windows::ensure_root_binding(
+                    &canonical_root,
+                    &exclusive_guard._directory,
+                ) {
+                    return Err(CognitiveRecoveryError::Indeterminate(format!(
+                        "recovery root changed before candidate cleanup: {binding_error}; {error}"
+                    )));
+                }
+                Err(reconcile_failed_recovery_candidate(
+                    &canonical_root,
+                    &candidate,
+                    error,
+                ))
+            }
         }
     }
 }
@@ -294,8 +318,8 @@ fn reconcile_failed_recovery_candidate(
     // an error. In that state publication durability is unknown: never launder
     // it into ordinary Unavailable and never delete the possibly-active
     // generation. A later trusted recovery ceremony must reconcile it.
-    let active = resolve_active_database_path(root).ok();
-    if active.as_deref() == Some(candidate) {
+    let active = resolve_active_database_path(root);
+    if !matches!(&active, Ok(path) if path != candidate) {
         return CognitiveRecoveryError::Indeterminate(format!(
             "active generation publication became ambiguous after pointer rename: {error}"
         ));
@@ -304,6 +328,13 @@ fn reconcile_failed_recovery_candidate(
     error
 }
 
+#[cfg(windows)]
+fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRecoveryError> {
+    super::windows::cleanup_candidate(path, /*include_database*/ false)
+        .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))
+}
+
+#[cfg(not(windows))]
 fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRecoveryError> {
     for suffix in ["-wal", "-shm", "-journal"] {
         let mut name = path.as_os_str().to_os_string();
@@ -321,6 +352,12 @@ fn cleanup_candidate_sidecars(path: &std::path::Path) -> Result<(), CognitiveRec
     Ok(())
 }
 
+#[cfg(windows)]
+fn cleanup_recovery_candidate(path: &std::path::Path) {
+    let _ = super::windows::cleanup_candidate(path, /*include_database*/ true);
+}
+
+#[cfg(not(windows))]
 fn cleanup_recovery_candidate(path: &std::path::Path) {
     let _ = cleanup_candidate_sidecars(path);
     let _ = std::fs::remove_file(path);

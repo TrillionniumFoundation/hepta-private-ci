@@ -25,6 +25,7 @@ use codex_protocol::protocol::Op;
 use codex_protocol::protocol::ReviewDecision;
 use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses::ResponseMock;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -113,6 +114,112 @@ async fn unified_exec_zsh_fork_parent_approval_preserves_denied_reads() -> Resul
         result.stdout
     );
 
+    Ok(())
+}
+
+#[derive(Clone, Copy)]
+enum DeniedReadExecRule {
+    Prompt,
+    Forbidden,
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn unified_exec_zsh_fork_denied_reads_preserve_explicit_prompt_rule() -> Result<()> {
+    denied_reads_preserve_explicit_exec_rule(DeniedReadExecRule::Prompt).await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn unified_exec_zsh_fork_denied_reads_preserve_explicit_forbidden_rule() -> Result<()> {
+    denied_reads_preserve_explicit_exec_rule(DeniedReadExecRule::Forbidden).await
+}
+
+async fn denied_reads_preserve_explicit_exec_rule(rule: DeniedReadExecRule) -> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let denied_dir = tempfile::tempdir_in(std::env::current_dir()?)?;
+    let denied_path = denied_dir.path().join("secret.env");
+    let secret = "unified-exec-zsh-fork-explicit-rule-secret";
+    fs::write(&denied_path, format!("{secret}\n"))?;
+    let permission_profile = denied_read_permission_profile(&denied_path)?;
+    let decision = match rule {
+        DeniedReadExecRule::Prompt => "prompt",
+        DeniedReadExecRule::Forbidden => "forbidden",
+    };
+    let rules = format!(r#"prefix_rule(pattern=["cat"], decision="{decision}")"#);
+    let approval_policy = AskForApproval::OnRequest;
+    let Some((server, test)) = build_unified_exec_zsh_fork_test_or_skip(
+        "unified-exec zsh-fork denied-read explicit rule test",
+        approval_policy,
+        permission_profile,
+        move |home| {
+            let rules_dir = home.join("rules");
+            fs::create_dir_all(&rules_dir).unwrap_or_else(|error| {
+                panic!("failed to create the execution rule fixture directory: {error}");
+            });
+            fs::write(rules_dir.join("default.rules"), rules).unwrap_or_else(|error| {
+                panic!("failed to write the execution rule fixture: {error}");
+            });
+        },
+    )
+    .await?
+    else {
+        return Ok(());
+    };
+
+    // Exercise the rule against the executable resolved by the shell.
+    let command = format!("program=cat; \"$program\" {denied_path:?}");
+    let call_id = "uexec-zsh-fork-denied-read-explicit-rule";
+    let results = mount_unified_exec_command(
+        &server,
+        "uexec-zsh-fork-denied-read-explicit-rule",
+        call_id,
+        &command,
+        "attempt a denied read with an explicit execution rule",
+    )
+    .await?;
+    submit_turn_with_session_permissions(
+        &test,
+        "run approved unified exec with denied reads and an explicit execution rule",
+        approval_policy,
+        ApprovalsReviewer::User,
+    )
+    .await?;
+    approve_expected_exec(&test, &command).await?;
+    if matches!(rule, DeniedReadExecRule::Prompt) {
+        let event = wait_for_event(&test.codex, |event| {
+            matches!(
+                event,
+                EventMsg::ExecApprovalRequest(_) | EventMsg::TurnComplete(_)
+            )
+        })
+        .await;
+        let EventMsg::ExecApprovalRequest(approval) = event else {
+            panic!("expected the explicit rule to prompt for the intercepted cat command");
+        };
+        let program = approval.command.first().context("intercepted program")?;
+        assert!(Path::new(program).is_absolute());
+        assert_eq!(
+            Path::new(program).file_name(),
+            Some(std::ffi::OsStr::new("cat"))
+        );
+        assert_eq!(
+            &approval.command[1..],
+            &[denied_path.to_string_lossy().into_owned()],
+        );
+        approve_exec(&test, approval.effective_approval_id()).await?;
+    }
+    wait_for_completion_without_approval(&test).await;
+
+    let result = command_result(&results, call_id);
+    assert_ne!(result.exit_code.unwrap_or(0), 0, "{}", result.stdout);
+    assert!(!result.stdout.contains(secret), "{}", result.stdout);
+    if matches!(rule, DeniedReadExecRule::Forbidden) {
+        assert!(
+            result.stdout.contains("Execution forbidden by policy"),
+            "{}",
+            result.stdout
+        );
+    }
     Ok(())
 }
 
@@ -666,9 +773,9 @@ fn permission_profile_from_toml(profile: &str) -> Result<PermissionProfile> {
                 ":project_roots" => FileSystemPath::Special {
                     value: FileSystemSpecialPath::project_roots(/*subpath*/ None),
                 },
-                _ if *access == FileSystemAccessMode::Deny => FileSystemPath::GlobPattern {
-                    pattern: path.clone(),
-                },
+                _ if *access == FileSystemAccessMode::Deny => {
+                    FileSystemPath::from(AbsolutePathBuf::from_absolute_path_checked(path)?)
+                }
                 _ => anyhow::bail!("unexpected filesystem entry in test profile: {path}"),
             };
             Ok(FileSystemSandboxEntry {

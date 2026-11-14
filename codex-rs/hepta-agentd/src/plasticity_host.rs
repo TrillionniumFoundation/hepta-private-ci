@@ -23,7 +23,6 @@ use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_plasticity::DurableRegistryAnchorV1;
 use codex_hepta_plasticity::GeneratedParameterCandidateSetV3;
 use codex_hepta_plasticity::ParameterGeneratorProfileV3;
@@ -37,6 +36,11 @@ use codex_hepta_types::StableId;
 use crate::plasticity_anchor_journal::AdaptiveAnchorJournalErrorV1;
 use crate::plasticity_anchor_journal::AdaptiveAnchorJournalV1;
 use crate::plasticity_anchor_journal::AdaptiveAnchorV1;
+
+#[path = "plasticity_host_request.rs"]
+mod request;
+
+pub use request::AgentdPlasticityProposalContextV1;
 
 const ANCHOR_MAGIC: [u8; 8] = *b"HPTAANC2";
 
@@ -703,15 +707,18 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// transplanted across artifact/ledger changes.
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
-    artifacts: &ArtifactRegistry,
-    ledger: &DurableLedger,
-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
-    verifier: &LearningEvidenceVerifierV1,
-    writer: &mut AnchoredPlasticityWriterV1,
-    anchor_store: &mut AgentdPlasticityAnchorStoreV1,
+    context: AgentdPlasticityProposalContextV1<'_>,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    let AgentdPlasticityProposalContextV1 {
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        verifier,
+        writer,
+        anchor_store,
+    } = context;
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),

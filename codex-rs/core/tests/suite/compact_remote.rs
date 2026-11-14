@@ -1628,6 +1628,8 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
         .await?;
     wait_for_turn_complete(&codex).await;
 
+    let history_before_compaction =
+        core_test_support::history_annotations::response_items(&codex).await;
     codex.submit(Op::Compact).await?;
     wait_for_turn_complete(&codex).await;
 
@@ -1640,11 +1642,35 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
     wait_for_turn_complete(&codex).await;
 
     let response_requests = responses_mock.requests();
+    assert_eq!(response_requests.len(), 5);
+    for request in &response_requests {
+        core_test_support::history_annotations::assert_metadata_is_private(request);
+    }
     let compact_request = &response_requests[3];
-    let item_create_time = |request: &responses::ResponsesRequest, text: &str| {
-        request
-            .input()
+    let history_after_compaction =
+        core_test_support::history_annotations::response_items(&codex).await;
+    // Read the persisted replacement, not the pre-compaction entries that
+    // remain in the append-only rollout. The custom provider sees only its
+    // public projection, while local timestamps must survive compaction.
+    let replacement_history =
+        fs::read_to_string(codex.rollout_path().context("compacted thread rollout")?)?
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .map(serde_json::from_str::<RolloutLine>)
+            .collect::<serde_json::Result<Vec<_>>>()?
             .into_iter()
+            .rev()
+            .find_map(|line| match line.item {
+                RolloutItem::Compacted(compacted) => compacted.replacement_history,
+                _ => None,
+            })
+            .context("persisted compaction replacement history")?
+            .into_iter()
+            .map(|envelope| serde_json::to_value(envelope.item))
+            .collect::<serde_json::Result<Vec<_>>>()?;
+    let item_create_time = |items: &[Value], text: &str| {
+        items
+            .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
                     content.iter().any(|part| {
@@ -1659,9 +1685,10 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
             })
             .expect("matching message should include a creation timestamp")
     };
-    let original_user_create_time = item_create_time(&response_requests[0], "hello remote compact");
+    let original_user_create_time =
+        item_create_time(&history_before_compaction, "hello remote compact");
     let delegated_task_create_time =
-        item_create_time(&response_requests[1], &delegated_task_ciphertext);
+        item_create_time(&history_before_compaction, &delegated_task_ciphertext);
     assert!(
         compact_request
             .inputs_of_type("agent_message")
@@ -1742,15 +1769,15 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let follow_up_request = response_requests.last().expect("follow-up request missing");
     assert_eq!(
-        item_create_time(follow_up_request, "hello remote compact"),
+        item_create_time(&replacement_history, "hello remote compact"),
         original_user_create_time
     );
     assert_eq!(
-        item_create_time(follow_up_request, &delegated_task_ciphertext),
+        item_create_time(&replacement_history, &delegated_task_ciphertext),
         delegated_task_create_time
     );
     assert!(
-        item_create_time(follow_up_request, "after compact")
+        item_create_time(&history_after_compaction, "after compact")
             .as_f64()
             .is_some_and(|create_time| create_time > 0.0)
     );

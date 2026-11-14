@@ -2,6 +2,24 @@
 
 set -euo pipefail
 
+windows_cross_compile=false
+if [[ "${1:-}" == "--windows-cross-compile" ]]; then
+  windows_cross_compile=true
+  shift
+fi
+if [[ $# -ne 0 ]]; then
+  echo "Usage: $0 [--windows-cross-compile]" >&2
+  exit 2
+fi
+
+# Native Windows query output is CRLF; preserve labels apart from that terminator.
+normalize_labels() {
+  local label
+  while IFS= read -r label || [[ -n "$label" ]]; do
+    printf '%s\n' "${label%$'\r'}"
+  done
+}
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "${repo_root}"
 
@@ -12,10 +30,14 @@ cd "${repo_root}"
 manual_rust_test_targets="$(
   ./.github/scripts/run-bazel-query-ci.sh \
     --output=label \
-    -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/...))'
+    -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/...))' | normalize_labels
 )"
-if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
+if [[ "${windows_cross_compile}" != "true" ]]; then
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
+else
+  # Sharded native test entrypoints are incompatible with the cross platform.
+  # Keep the separate native unit-tests helpers, which do not use this suffix.
+  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-test-bin$' || true)"
 fi
 
 # Convert semantic lint opt-outs into negative target patterns so wildcard
@@ -23,7 +45,7 @@ fi
 excluded_targets="$(
   ./.github/scripts/run-bazel-query-ci.sh \
     --output=label \
-    -- 'attr(tags, "no-argument-comment-lint", //codex-rs/...)'
+    -- 'attr(tags, "no-argument-comment-lint", //codex-rs/...)' | normalize_labels
 )"
 
 # The lint configuration does not register the transitioned Windows toolchain.

@@ -15,6 +15,10 @@ use serde::Deserialize;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[cfg(windows)]
+#[path = "private_owner_file_windows.rs"]
+pub(crate) mod windows;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct TextTrust {
@@ -142,14 +146,24 @@ pub(crate) fn read_private_owner_file(
     Ok(bytes)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+pub(crate) fn read_private_owner_file(
+    path: &Path,
+    identity: &AgentdIdentity,
+    maximum_bytes: u64,
+) -> Result<Vec<u8>, AgentdError> {
+    windows::read(path, &identity.home_root, maximum_bytes)
+        .map_err(|error| invalid(&format!("private owner file validation failed: {error}")))
+}
+
+#[cfg(not(any(unix, windows)))]
 pub(crate) fn read_private_owner_file(
     _path: &Path,
     _identity: &AgentdIdentity,
     _maximum_bytes: u64,
 ) -> Result<Vec<u8>, AgentdError> {
     Err(invalid(
-        "private owner configuration currently requires Unix ownership checks",
+        "private owner configuration requires supported ownership checks",
     ))
 }
 

@@ -491,8 +491,13 @@ async fn modern_http_rejects_oversized_discovery_and_tool_json_responses() -> an
                 .await
                 .expect_err("oversized tools response must be rejected")
         };
+        let limit = if oversized_method == "tools/list:error" {
+            64 * 1024
+        } else {
+            MAX_MCP_MESSAGE_BYTES
+        };
         assert!(
-            format!("{error:#}").contains("8388608 bytes"),
+            format!("{error:#}").contains(&format!("{limit} bytes")),
             "expected bounded {oversized_method} response, got {error:#}"
         );
         client.shutdown().await;

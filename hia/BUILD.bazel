@@ -1,0 +1,11 @@
+filegroup(
+    name = "build_inputs",
+    srcs = glob(["*.hepta"]) + [
+        "build.py",
+        "cargo_build.rs",
+        "toolchain.json",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+exports_files(["cargo_build.rs"])

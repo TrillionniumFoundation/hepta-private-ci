@@ -40,6 +40,7 @@ use ed25519_dalek::SigningKey;
 
 use crate::AgentdPayload;
 use crate::LifecycleSnapshot;
+#[cfg(unix)]
 use crate::RunPhase;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
@@ -653,18 +654,18 @@ async fn final_use_revalidation_rejects_stale_spawn_generation_before_store_acce
     assert!(matches!(result, Err(AgentdError::GenerationFenced(_))));
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 #[test]
 fn private_owner_trust_refuses_unsupported_platform_ownership() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
     let path = state.identity.home_root.join("run-start-trust.json");
     let error = crate::authbus_trust::read_private_owner_file(&path, state.identity(), 16_384)
-        .expect_err("Unix ownership proof must not be synthesized on another platform");
+        .expect_err("ownership proof must not be synthesized on an unsupported platform");
     let AgentdError::Invalid(message) = error else {
         panic!("unsupported ownership checks must reject configuration");
     };
     assert_eq!(
         message,
-        "AuthBus text: private owner configuration currently requires Unix ownership checks"
+        "AuthBus text: private owner configuration requires supported ownership checks"
     );
 }

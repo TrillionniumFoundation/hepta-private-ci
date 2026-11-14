@@ -1,3 +1,4 @@
+use self::resume_runtime_environment::PersistedResumeRuntime;
 use super::persisted_resume_settings::PersistedResumeSettings;
 use super::persisted_resume_settings::latest_persisted_resume_settings;
 use super::thread_enrichment::enrich_loaded_threads;
@@ -21,6 +22,9 @@ use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::mcp::ClientMcpExtensions;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_thread_store::PersistContext;
+
+#[path = "resume_runtime_environment.rs"]
+mod resume_runtime_environment;
 
 pub(super) const THREAD_LIST_DEFAULT_LIMIT: usize = 25;
 pub(super) const THREAD_LIST_MAX_LIMIT: usize = 100;
@@ -4059,18 +4063,23 @@ impl ThreadRequestProcessor {
             .await;
 
         // Derive a Config using the same logic as new conversation, honoring overrides if provided.
-        let mut config = match self
-            .config_manager
-            .load_for_cwd(request_overrides, typesafe_overrides, history_cwd)
+        let (mut config, persisted_runtime_environment) =
+            match resume_runtime_environment::load_config_for_resume(
+                &self.config_manager,
+                request_overrides,
+                typesafe_overrides,
+                history_cwd,
+                persisted_runtime_environment,
+            )
             .await
-        {
-            Ok(config) => config,
-            Err(err) => {
-                let error = config_load_error(&err);
-                self.outgoing.send_error(request_id, error).await;
-                return Ok(());
-            }
-        };
+            {
+                Ok(loaded) => loaded,
+                Err(err) => {
+                    let error = config_load_error(&err);
+                    self.outgoing.send_error(request_id, error).await;
+                    return Ok(());
+                }
+            };
         if !has_explicit_model_resume_override
             && persisted_metadata
                 .as_ref()
@@ -4324,36 +4333,19 @@ impl ThreadRequestProcessor {
         thread_history: &InitialHistory,
         request_overrides: &mut Option<HashMap<String, serde_json::Value>>,
         typesafe_overrides: &mut ConfigOverrides,
-    ) -> (
-        Option<ThreadMetadata>,
-        Option<(AbsolutePathBuf, Vec<AbsolutePathBuf>)>,
-    ) {
+    ) -> (Option<ThreadMetadata>, Option<PersistedResumeRuntime>) {
         let InitialHistory::Resumed(resumed_history) = thread_history else {
             return (None, None);
         };
         let mut persisted_runtime_environment = None;
         if let Some(persisted_settings) = latest_persisted_resume_settings(&resumed_history.history)
         {
-            let has_raw_cwd_override = request_overrides
-                .as_ref()
-                .is_some_and(|overrides| overrides.contains_key("cwd"));
-            let has_raw_workspace_roots_override = request_overrides
-                .as_ref()
-                .is_some_and(|overrides| overrides.contains_key("workspace_roots"));
-            if typesafe_overrides.cwd.is_none()
-                && typesafe_overrides.workspace_roots.is_none()
-                && !has_raw_cwd_override
-                && !has_raw_workspace_roots_override
-            {
-                persisted_runtime_environment = persisted_settings
-                    .runtime_cwd
-                    .clone()
-                    .zip(persisted_settings.runtime_workspace_roots.clone());
-            }
-            if typesafe_overrides.workspace_roots.is_none() && !has_raw_workspace_roots_override {
-                typesafe_overrides.workspace_roots =
-                    persisted_settings.runtime_workspace_roots.clone();
-            }
+            persisted_runtime_environment = Some(PersistedResumeRuntime::apply(
+                &persisted_settings,
+                &resumed_history.history,
+                request_overrides.as_ref(),
+                typesafe_overrides,
+            ));
             if typesafe_overrides.approval_policy.is_none() {
                 typesafe_overrides.approval_policy = Some(persisted_settings.approval_policy);
             }

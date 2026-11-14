@@ -204,7 +204,7 @@ nightly_rust.toolchain(
         "aarch64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
         "x86_64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
     },
-    versions = ["nightly/2025-09-18"],
+    versions = ["nightly/2026-05-13"],
 )
 
 # Keep the reexported extension's default Windows set constrained to MSVC so
@@ -227,7 +227,7 @@ nightly_rust.repository_set(
         "@llvm//constraints/windows/abi:msvc",
     ],
     target_triple = "x86_64-pc-windows-msvc",
-    versions = ["nightly/2025-09-18"],
+    versions = ["nightly/2026-05-13"],
 )
 
 # Keep the GNU target's CRT flags separate from its MSVC execution toolchain.
@@ -248,7 +248,7 @@ nightly_rust.repository_set(
         "@llvm//constraints/windows/crt:msvcrt",
     ],
     target_triple = "x86_64-pc-windows-gnullvm",
-    versions = ["nightly/2025-09-18"],
+    versions = ["nightly/2026-05-13"],
 )
 
 # Every repository set also generates an implicit exec-triple target. This
@@ -279,7 +279,7 @@ nightly_rust.repository_set(
         "@llvm//constraints/windows/crt:msvcrt",
     ],
     target_triple = "x86_64-pc-windows-gnullvm",
-    versions = ["nightly/2025-09-18"],
+    versions = ["nightly/2026-05-13"],
 )
 use_repo(nightly_rust, "rust_toolchains")
 
@@ -296,7 +296,7 @@ toolchains.toolchain(
         "aarch64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
         "x86_64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
     },
-    version = "1.95.0",
+    version = "1.96.1",
 )
 use_repo(toolchains, "default_rust_toolchains")
 
@@ -525,6 +525,44 @@ inject_repo(crate, "v8_targets")
 llvm = use_extension("@llvm//extensions:llvm.bzl", "llvm")
 use_repo(llvm, "llvm-project")
 
+# Only GNU Linux targets use Rama's generated libresolv bindings.
+_RAMA_LIBRESOLV_TARGETS = [
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-gnu",
+]
+
+crate.annotation(
+    # Keep libclang in the exec configuration, with the target C toolchain headers.
+    build_script_deps = ["@crates//:shlex-1.3.0"],
+    build_script_env_select = {
+        target: """{
+            "BINDGEN_EXTRA_CLANG_ARGS": "-Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include",
+            "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)"
+        }"""
+        for target in _RAMA_LIBRESOLV_TARGETS
+    },
+    build_script_tools_select = {
+        target: [
+            "@llvm-project//clang:libclang_interface_output",
+            "@llvm//:builtin_resource_dir",
+        ] if target in _RAMA_LIBRESOLV_TARGETS else []
+        # Explicit empty branches prevent rules_rs from hoisting GNU-only tools.
+        for target in _RAMA_LIBRESOLV_TARGETS + [
+            "aarch64-apple-darwin",
+            "aarch64-pc-windows-gnullvm",
+            "aarch64-pc-windows-msvc",
+            "aarch64-unknown-linux-musl",
+            "x86_64-apple-darwin",
+            "x86_64-pc-windows-gnullvm",
+            "x86_64-pc-windows-msvc",
+            "x86_64-unknown-linux-musl",
+        ]
+    },
+    crate = "rama-dns",
+    gen_build_script = "on",
+    patch_args = ["-p1"],
+    patches = ["//patches:rama-dns_hermetic_toolchain.patch"],
+)
 crate.annotation(
     # Provide the hermetic SDK path so the build script doesn't try to invoke an unhermetic `xcrun --show-sdk-path`.
     build_script_data = [

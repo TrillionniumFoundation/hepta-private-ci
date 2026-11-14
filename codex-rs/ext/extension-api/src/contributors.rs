@@ -187,10 +187,24 @@ pub trait ThreadLifecycleContributor<C: Sync>: Send + Sync {
 
     /// Called after the host has drained immediately pending thread work.
     ///
-    /// Implementations may use host capabilities captured by the extension to
-    /// submit follow-up input. The host remains responsible for deciding
-    /// whether that input starts a turn, is queued, or is ignored.
+    /// This observation remains part of terminal cleanup and may run while the
+    /// finishing turn still fences admission. Extensions that submit follow-up
+    /// input should use `on_thread_idle_ready` instead.
     fn on_thread_idle<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
+        Box::pin(async move {
+            let _self = self;
+            let _input = input;
+        })
+    }
+
+    /// Called after terminal cleanup releases its admission fence, provided
+    /// the same idle turn generation is still current.
+    ///
+    /// Implementations may re-evaluate durable work and submit it through the
+    /// host's ordinary idle admission capability. Another input can win that
+    /// admission race, so this notification does not grant a turn or authorize
+    /// bypassing shutdown, interruption, or recovery checks.
+    fn on_thread_idle_ready<'a>(&'a self, input: ThreadIdleInput<'a>) -> ExtensionFuture<'a, ()> {
         Box::pin(async move {
             let _self = self;
             let _input = input;

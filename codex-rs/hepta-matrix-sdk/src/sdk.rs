@@ -431,8 +431,6 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
             .unwrap_or(MatrixTransportError::Permanent),
         HttpError::Cached(error) => classify_http_error(error),
         HttpError::IntoHttp(_) | HttpError::RefreshToken(_) => MatrixTransportError::Permanent,
-        #[cfg(target_os = "android")]
-        HttpError::VerifierBuilder(_) => MatrixTransportError::Permanent,
     }
 }
 
@@ -562,9 +560,7 @@ fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<()
             .sync_all()
             .map_err(|_| MatrixSdkError::Initialization)?;
         drop(output);
-        std::fs::rename(&temporary, path).map_err(|_| MatrixSdkError::Initialization)?;
-        std::fs::File::open(parent)
-            .and_then(|directory| directory.sync_all())
+        codex_utils_path::publish_file_with_sync(&temporary, path)
             .map_err(|_| MatrixSdkError::Initialization)?;
         Ok(())
     })();

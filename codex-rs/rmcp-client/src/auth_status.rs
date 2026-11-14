@@ -296,6 +296,7 @@ fn normalize_scopes(scopes_supported: Option<Vec<String>>) -> Option<Vec<String>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Context;
     use axum::Json;
     use axum::Router;
     use axum::http::StatusCode;
@@ -391,16 +392,26 @@ mod tests {
         }
     }
 
-    fn assert_recorded_discovery_failure(discovery: Result<Option<StreamableHttpOAuthDiscovery>>) {
-        let error = discovery.expect_err("the recording HTTP client rejects OAuth discovery");
+    fn assert_recorded_discovery_failure(
+        discovery: Result<Option<StreamableHttpOAuthDiscovery>>,
+    ) -> Result<()> {
+        let error = discovery
+            .err()
+            .context("the recording HTTP client rejects OAuth discovery")?;
         assert!(
             matches!(
                 error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("expected discovery request failure")
+                Some(AuthError::DiscoveryRequestFailed { url, source })
+                    if url.as_str() == "http://example.com/mcp"
+                        && matches!(
+                            source.downcast_ref::<ExecServerError>(),
+                            Some(ExecServerError::HttpRequest(reason))
+                                if reason == "expected discovery request failure"
+                        )
             ),
             "OAuth discovery must preserve the executor transport failure: {error:#}"
         );
+        Ok(())
     }
 
     async fn spawn_oauth_discovery_server(metadata: serde_json::Value) -> TestServer {
@@ -612,9 +623,10 @@ mod tests {
         assert!(
             matches!(
                 error.downcast_ref::<AuthError>(),
-                Some(AuthError::MetadataError(reason))
-                    if reason.contains("OAuth discovery redirect to non-same-origin URL rejected")
-                        && reason.contains(&redirect_url)
+                Some(AuthError::DiscoveryRequestFailed { url, source })
+                    if url.as_str() == format!("{}/mcp", resource_server.uri())
+                        && source.to_string().contains("OAuth discovery redirect to non-same-origin URL rejected")
+                        && source.to_string().contains(&redirect_url)
             ),
             "OAuth discovery must preserve the cross-origin redirect rejection: {error:#}"
         );
@@ -655,7 +667,9 @@ mod tests {
             assert!(
                 matches!(
                     error.downcast_ref::<AuthError>(),
-                    Some(AuthError::MetadataError(reason)) if reason.contains(status.as_str())
+                    Some(AuthError::DiscoveryRequestFailed { url, source })
+                        if url.as_str() == format!("{}/mcp", server.uri())
+                            && source.to_string().contains(status.as_str())
                 ),
                 "auth-status discovery must preserve HTTP {status}: {error:#}"
             );
@@ -691,7 +705,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn routed_oauth_discovery_caps_local_discovery_timeout() {
+    async fn routed_oauth_discovery_caps_local_discovery_timeout() -> Result<()> {
         let http_client = Arc::new(RecordingHttpClient::default());
 
         let discovery = discover_streamable_http_oauth(
@@ -704,7 +718,7 @@ mod tests {
         )
         .await;
 
-        assert_recorded_discovery_failure(discovery);
+        assert_recorded_discovery_failure(discovery)?;
         assert_eq!(
             *http_client
                 .timeout_ms
@@ -715,10 +729,11 @@ mod tests {
                     .expect("discovery timeout should fit in u64")
             ))
         );
+        Ok(())
     }
 
     #[tokio::test]
-    async fn routed_oauth_discovery_preserves_requested_timeout() {
+    async fn routed_oauth_discovery_preserves_requested_timeout() -> Result<()> {
         let http_client = Arc::new(RecordingHttpClient::default());
 
         let discovery = discover_streamable_http_oauth(
@@ -731,7 +746,7 @@ mod tests {
         )
         .await;
 
-        assert_recorded_discovery_failure(discovery);
+        assert_recorded_discovery_failure(discovery)?;
         assert_eq!(
             *http_client
                 .timeout_ms
@@ -739,10 +754,11 @@ mod tests {
                 .expect("timeout recorder lock should not be poisoned"),
             Some(Some(30_000))
         );
+        Ok(())
     }
 
     #[tokio::test]
-    async fn routed_agent_plugin_oauth_discovery_stops_with_configured_headers() {
+    async fn routed_agent_plugin_oauth_discovery_stops_with_configured_headers() -> Result<()> {
         let http_client = Arc::new(RecordingHttpClient::default());
 
         let discovery = discover_streamable_http_oauth(
@@ -758,7 +774,7 @@ mod tests {
         )
         .await;
 
-        assert_recorded_discovery_failure(discovery);
+        assert_recorded_discovery_failure(discovery)?;
         let headers = http_client
             .headers
             .lock()
@@ -779,6 +795,7 @@ mod tests {
                 .expect("redirect policy recorder lock should not be poisoned"),
             Some(HttpRedirectPolicy::Stop)
         );
+        Ok(())
     }
 
     #[tokio::test]

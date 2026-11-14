@@ -220,8 +220,10 @@ pub(crate) mod context_window;
 mod environment;
 pub(crate) mod extension_metrics;
 mod handlers;
+mod history_mutation_retry;
 mod inject;
 mod input_queue;
+mod mailbox_retry;
 mod mcp;
 mod mcp_prewarm;
 mod mcp_refresh;
@@ -234,17 +236,21 @@ mod rollout_reconstruction;
 pub(crate) mod session;
 pub(crate) mod step_context;
 mod thread_settings;
+mod thread_settings_retry;
 pub(crate) mod time_reminder;
 mod token_budget;
 pub(crate) mod turn;
 pub(crate) mod turn_context;
 mod turn_input;
+mod turn_input_retry;
 mod turn_suspension;
 mod world_state;
 use self::code_mode_warning::unsupported_code_mode_warning;
 #[cfg(test)]
 use self::handlers::submission_dispatch_span;
 use self::handlers::submission_loop;
+pub(crate) use self::history_mutation_retry::HistoryMutation;
+use self::history_mutation_retry::HistoryMutationReservation;
 pub(crate) use self::input_queue::InputQueueActivity;
 pub(crate) use self::input_queue::TurnInput;
 pub(crate) use self::input_queue::TurnInputQueue;
@@ -263,6 +269,8 @@ use self::turn::agent_message_text;
 use self::turn::collect_explicit_app_ids_from_skill_items;
 use self::turn::realtime_text_for_event;
 use self::turn_context::TurnContext;
+pub(crate) use self::turn_input_retry::FinishFences;
+pub(crate) use self::turn_input_retry::FinishRetryState;
 #[cfg(test)]
 mod rollout_reconstruction_tests;
 
@@ -297,7 +305,6 @@ use crate::state::PendingRequestPermissions;
 use crate::state::SessionServices;
 use crate::state::SessionState;
 use crate::state::TurnRecoveryAuthority;
-use crate::state::TurnState;
 #[cfg(test)]
 use crate::stream_events_utils::HandleOutputCtx;
 #[cfg(test)]
@@ -1282,29 +1289,31 @@ impl Session {
         Ok(true)
     }
 
-    /// Reserves the idle session for a history mutation and durably consumes
-    /// recovery authority before releasing the active-turn lock. The returned
-    /// turn state must be passed to `clear_reserved_idle_turn` on every exit.
+    /// Captures an exact Finish or reserves idle history in one admission
+    /// decision, before consuming recovery authority or changing any history.
     #[expect(
         clippy::await_holding_invalid_type,
         reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
     )]
-    pub(crate) async fn reserve_history_mutation_if_idle(
+    pub(crate) async fn reserve_history_mutation_or_finish(
         &self,
-    ) -> CodexResult<Option<Arc<Mutex<TurnState>>>> {
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
-            return Ok(None);
-        }
+    ) -> CodexResult<HistoryMutationReservation> {
         let mut active_turn = self.active_turn.lock().await;
-        if self.shutdown_started()
-            || self.has_pending_task_terminalization()
-            || active_turn.is_some()
-        {
-            return Ok(None);
+        match self.finish_retry_state(active_turn.as_ref()) {
+            FinishRetryState::Finishing(fences) => {
+                return Ok(HistoryMutationReservation::Finishing(fences));
+            }
+            FinishRetryState::Blocked => return Ok(HistoryMutationReservation::Busy),
+            FinishRetryState::Clear => {}
+        }
+        if active_turn.is_some() {
+            return Ok(HistoryMutationReservation::Busy);
         }
         self.consume_recovery_candidate_for_mutation().await?;
         let reserved = active_turn.get_or_insert_with(ActiveTurn::default);
-        Ok(Some(Arc::clone(&reserved.turn_state)))
+        Ok(HistoryMutationReservation::Reserved(Arc::clone(
+            &reserved.turn_state,
+        )))
     }
 
     pub(crate) fn is_interrupted(&self) -> bool {

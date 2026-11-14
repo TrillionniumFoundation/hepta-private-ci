@@ -2,11 +2,49 @@ use super::*;
 use crate::intelligence_product::evaluation_tests::evidence_fixture;
 use codex_hepta_intelligence::build_legal_candidates;
 
-fn signed_fixture() -> (
+pub(super) fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
     let mut value = fixture();
+    // A complete learning decision includes the explicit abstain alternative.
+    let abstain_support = digest("abstain-support");
+    value
+        .request
+        .legal_candidates
+        .candidates
+        .push(LegalActionCandidateV1 {
+            candidate_id: id("abstain"),
+            support_digest: abstain_support,
+        });
+    value
+        .request
+        .legal_candidates
+        .candidates
+        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+    let intuition = &mut value.inputs.intuition_request;
+    intuition.candidates.push(CalibratedActionCandidateV1 {
+        candidate_id: id("abstain"),
+        legal: true,
+        hard_veto: false,
+        utility: FixedQ32::ZERO,
+        calibrated_confidence: ProbabilityQ32::ONE,
+        ood_score: ProbabilityQ32::ZERO,
+        assignment_probability: ProbabilityQ32::ZERO,
+        support_digest: abstain_support,
+    });
+    intuition
+        .candidates
+        .sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));
+    intuition.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&intuition.candidates).expect("candidate set digest");
+    intuition.completeness.canonical_order_digest =
+        canonical_candidate_order_digest_v1(&intuition.candidates).expect("candidate order digest");
+    intuition.completeness.candidate_count = intuition
+        .candidates
+        .len()
+        .try_into()
+        .expect("candidate count");
     let key = SigningKey::from_bytes(&[47; 32]);
     for owner in &mut value.owners {
         if owner.owner_id.as_str() == "learning.eval" {

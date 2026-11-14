@@ -170,7 +170,7 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
     std::fs::write(
         &profile_path,
         format!(
-            "printf x >> \"$HOME/captures\"\nexport PATH=\"$HOME/profile-bin:/usr/bin:/bin\"\nexport PROFILE_ALLOWED=profile\nexport PROFILE_SECRET=secret\nexport PROFILE_DENIED=denied\nprofile_helper() {{ printf helper; }}\n{shadowed_builtins}{padding}"
+            "export PROFILE_CAPTURE_PID=$$\nexport PATH=\"$HOME/profile-bin:/usr/bin:/bin\"\nexport PROFILE_ALLOWED=profile\nexport PROFILE_SECRET=secret\nexport PROFILE_DENIED=denied\nprofile_helper() {{ printf helper; }}\n{shadowed_builtins}{padding}"
         ),
     )?;
     if shell_name == "zsh" && automatic_startup {
@@ -214,7 +214,7 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
         ("profile_helper; ", "helper")
     };
     let command = format!(
-        "export PATH='{}':\"$PATH\"; {command_prefix}printf '|%s|%s|%s|%s|%s|%s' \"$PROFILE_ALLOWED\" \"${{PROFILE_SECRET-missing}}\" \"${{PROFILE_DENIED-missing}}\" \"$PATH\" \"${{__CODEX_SHELL_SNAPSHOT_STATE_0-missing}}\" \"${{__CODEX_SHELL_SNAPSHOT_STATE_1-missing}}\"",
+        "export PATH='{}':\"$PATH\"; {command_prefix}printf '|%s|%s|%s|%s|%s|%s|%s' \"$PROFILE_ALLOWED\" \"${{PROFILE_SECRET-missing}}\" \"${{PROFILE_DENIED-missing}}\" \"$PATH\" \"${{__CODEX_SHELL_SNAPSHOT_STATE_0-missing}}\" \"${{__CODEX_SHELL_SNAPSHOT_STATE_1-missing}}\" \"$PROFILE_CAPTURE_PID\"",
         runtime_path_entry.display(),
     );
     let expected_stdout = format!(
@@ -223,7 +223,8 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
         profile_path_entry.display(),
     );
 
-    for attempt in 0..2 {
+    let mut capture_pids = Vec::new();
+    for attempt in 0..3 {
         let started = context
             .backend
             .start(ExecParams {
@@ -242,7 +243,7 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
                 tty,
                 pipe_stdin: false,
                 arg0: None,
-                sandbox: (use_sandbox && attempt == 0).then(|| {
+                sandbox: (use_sandbox && attempt < 2).then(|| {
                     FileSystemSandboxContext::from_permission_profile_with_cwd(
                         PermissionProfile::read_only(),
                         cwd.clone(),
@@ -255,13 +256,27 @@ async fn shell_snapshot_v2_filters_profile_exports_and_stays_in_memory(
             .await?;
         let (stdout, stderr, status, closed) =
             collect_process_output_from_events(started.process).await?;
+        let (output, capture_pid) = stdout
+            .rsplit_once('|')
+            .context("snapshot must retain its capture process identity")?;
         assert_eq!(
-            (stdout, stderr, status, closed),
-            (expected_stdout.clone(), String::new(), Some(0), true,)
+            (output, stderr, status, closed),
+            (expected_stdout.as_str(), String::new(), Some(0), true,)
         );
+        assert!(capture_pid.parse::<u32>().is_ok_and(|pid| pid > 0));
+        capture_pids.push(capture_pid.to_string());
     }
 
-    assert_eq!(std::fs::read_to_string(home.path().join("captures"))?, "x");
+    // Reuse is observable without asking a read-only profile to write a counter.
+    assert_eq!(capture_pids[0], capture_pids[1]);
+    if use_sandbox {
+        // Removing the sandbox must capture a different context, not reuse
+        // state collected with another set of filesystem permissions.
+        assert_ne!(capture_pids[1], capture_pids[2]);
+    } else {
+        assert_eq!(capture_pids[1], capture_pids[2]);
+    }
+    assert!(!home.path().join("captures").exists());
     if let Some(server) = context._server {
         assert!(!server.codex_home().join("shell_snapshots").exists());
     }
@@ -381,6 +396,24 @@ async fn shell_snapshot_v2_capture_failure_falls_back_and_retries(
         "bash" => ("/bin/bash", ".bashrc"),
         "zsh" => ("/bin/zsh", ".zshrc"),
         name => anyhow::bail!("unsupported test shell {name}"),
+    };
+    let isolated_shell;
+    let shell_path = if shell_name == "bash" {
+        use std::os::unix::fs::PermissionsExt as _;
+
+        // Preserve the real Bash login invocation and this test's .bashrc,
+        // while excluding unrelated machine-wide login profile side effects.
+        isolated_shell = home.path().join("snapshot-bash");
+        std::fs::write(
+            &isolated_shell,
+            "#!/bin/sh\nexec /bin/bash --noprofile \"$@\"\n",
+        )?;
+        std::fs::set_permissions(&isolated_shell, std::fs::Permissions::from_mode(0o700))?;
+        isolated_shell
+            .to_str()
+            .context("UTF-8 shell fixture path")?
+    } else {
+        shell_path
     };
     std::fs::write(
         home.path().join(profile_name),

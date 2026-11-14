@@ -9,6 +9,10 @@ name = "codex_arg0"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+# Static HIA components are currently qualified for Linux x86-64 GNU.
+hia-native = ["codex-apply-patch/hia-native"]
+
 [lints]
 workspace = true
 

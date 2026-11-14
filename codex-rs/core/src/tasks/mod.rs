@@ -34,6 +34,8 @@ use crate::codex_thread::BackgroundTerminalInfo;
 use crate::config::Config;
 use crate::context::ContextualUserFragment;
 use crate::context_manager::ContextManager;
+use crate::session::FinishFences;
+use crate::session::FinishRetryState;
 use crate::session::TurnInput;
 use crate::session::session::RecoveryCandidate;
 use crate::session::session::Session;
@@ -1132,6 +1134,16 @@ pub(crate) enum StartTaskOutcome {
     Stale,
 }
 
+/// A direct task start can defer only behind the exact observed Finish owners.
+/// Legacy callers retain their original rejection through `spawn_task`.
+pub(crate) enum TaskSpawnOutcome {
+    Started,
+    RetryAfterFinish {
+        fences: FinishFences,
+        rejection: Box<CodexErr>,
+    },
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum RecoveryReadyForSampling {
     Ready,
@@ -2054,33 +2066,85 @@ impl Session {
         Ok(RecoveryProviderOutputGate::Attached)
     }
 
-    #[expect(
-        clippy::await_holding_invalid_type,
-        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
-    )]
     pub async fn spawn_task<T: SessionTask>(
         self: &Arc<Self>,
         turn_context: Arc<TurnContext>,
         input: Vec<TurnInput>,
         task: T,
     ) -> CodexResult<()> {
+        match self
+            .spawn_task_with_finish_retry(turn_context, input, task)
+            .await?
+        {
+            TaskSpawnOutcome::Started => Ok(()),
+            TaskSpawnOutcome::RetryAfterFinish { rejection, .. } => Err(*rejection),
+        }
+    }
+
+    /// Keeps replacement semantics while returning exact Finish witnesses to
+    /// callers that can wait outside the ordered submission loop.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "the active-turn guard is the atomic ownership fence across this awaited state transition"
+    )]
+    pub(crate) async fn spawn_task_with_finish_retry<T: SessionTask>(
+        self: &Arc<Self>,
+        turn_context: Arc<TurnContext>,
+        input: Vec<TurnInput>,
+        task: T,
+    ) -> CodexResult<TaskSpawnOutcome> {
         if self.shutdown_started() {
             return Err(CodexErr::InvalidRequest(
                 "cannot start a task while the session is shutting down".to_string(),
             ));
         }
-        if self.has_pending_admission_fence() {
-            return Err(CodexErr::InvalidRequest(
-                "cannot start a task while the previous turn is terminalizing".to_string(),
-            ));
+        {
+            let active_turn = self.active_turn.lock().await;
+            match self.finish_retry_state(active_turn.as_ref()) {
+                FinishRetryState::Finishing(fences) => {
+                    return Ok(TaskSpawnOutcome::RetryAfterFinish {
+                        fences,
+                        rejection: Box::new(CodexErr::InvalidRequest(
+                            "cannot start a task while the previous turn is terminalizing"
+                                .to_string(),
+                        )),
+                    });
+                }
+                FinishRetryState::Blocked => {
+                    return Err(CodexErr::InvalidRequest(
+                        "cannot start a task while the previous turn is terminalizing".to_string(),
+                    ));
+                }
+                FinishRetryState::Clear => {}
+            }
+            if self.has_pending_start_transition() {
+                return Err(CodexErr::InvalidRequest(
+                    "cannot start a task while the previous turn is terminalizing".to_string(),
+                ));
+            }
         }
         self.abort_all_tasks(TurnAbortReason::Replaced).await;
         let start_reservation = {
             let mut active_turn = self.active_turn.lock().await;
-            if self.shutdown_started()
-                || self.has_pending_admission_fence()
-                || active_turn.is_some()
-            {
+            match self.finish_retry_state(active_turn.as_ref()) {
+                FinishRetryState::Finishing(fences) => {
+                    return Ok(TaskSpawnOutcome::RetryAfterFinish {
+                        fences,
+                        rejection: Box::new(CodexErr::InvalidRequest(
+                            "cannot start replacement task while the previous turn is transitioning"
+                                .to_string(),
+                        )),
+                    });
+                }
+                FinishRetryState::Blocked => {
+                    return Err(CodexErr::InvalidRequest(
+                        "cannot start replacement task while the previous turn is transitioning"
+                            .to_string(),
+                    ));
+                }
+                FinishRetryState::Clear => {}
+            }
+            if self.has_pending_start_transition() || active_turn.is_some() {
                 return Err(CodexErr::InvalidRequest(
                     "cannot start replacement task while the previous turn is transitioning"
                         .to_string(),
@@ -2093,6 +2157,11 @@ impl Session {
                 .unwrap_or_else(|| panic!("idle slot should accept one start reservation"))
         };
         let mut start_reservation_owner = StartReservationOwner::new(self, start_reservation);
+        // Manual compaction has now passed ordered admission. Release its
+        // caller before start hooks can wait for an external event consumer.
+        // Later start errors still use the original correlated event stream.
+        self.pending_history_mutation_retries
+            .complete(&turn_context.sub_id);
         self.clear_connector_selection().await;
         let start_outcome = self
             .start_task_owned(
@@ -2106,7 +2175,7 @@ impl Session {
         match start_outcome {
             StartTaskOutcome::Attached | StartTaskOutcome::Aborted => {
                 start_reservation_owner.disarm();
-                Ok(())
+                Ok(TaskSpawnOutcome::Started)
             }
             StartTaskOutcome::Stale => Err(CodexErr::InvalidRequest(
                 "start reservation became stale before task attachment".to_string(),
@@ -3180,11 +3249,14 @@ impl Session {
         }
     }
 
-    async fn run_finish_handoff(self: &Arc<Self>, handoff: &mut TaskFinishHandoff) {
+    async fn run_finish_handoff(
+        self: &Arc<Self>,
+        handoff: &mut TaskFinishHandoff,
+    ) -> Option<(ThreadIdleCause, u64)> {
         let (task_identity, task_epoch) = {
             let Some(task) = handoff.task.as_ref() else {
                 handoff.failed_closed = true;
-                return;
+                return None;
             };
             (Arc::clone(&task.task), task.attach_epoch)
         };
@@ -3480,7 +3552,7 @@ impl Session {
         };
         if cleared_completion.is_none() {
             handoff.failed_closed = true;
-            return;
+            return None;
         }
         handoff.phase = TaskFinishHandoffPhase::RecoveryPublishing;
         self.publish_recovery_seed_after_terminal(
@@ -3503,7 +3575,9 @@ impl Session {
             self.finish_task_terminalization(&handoff.terminalization_identity, completion);
             handoff.phase = TaskFinishHandoffPhase::Complete;
             handoff.task.take();
+            return Some((idle_cause, task_epoch));
         }
+        None
     }
 
     fn take_finish_handoff(slot: &TaskFinishHandoffSlot) -> Option<TaskFinishHandoff> {
@@ -3548,19 +3622,32 @@ impl Session {
             AssertUnwindSafe(self.run_finish_handoff(owner.handoff_mut())).catch_unwind(),
         )
         .await;
-        match result {
-            Ok(Ok(())) => {
+        let idle_ready = match result {
+            Ok(Ok(idle_ready)) => {
                 if owner.is_complete() {
                     owner.disarm();
+                    idle_ready
+                } else {
+                    None
                 }
             }
             Ok(Err(_)) => {
                 warn!("finish handoff panicked; retaining its completion fence");
                 owner.handoff_mut().failed_closed = true;
+                None
             }
             Err(_) => {
                 warn!("finish handoff watchdog expired; retaining its completion fence");
+                None
             }
+        };
+        // Idle work uses ordinary admission after the old fence is retired.
+        // Keep it in this detached driver, outside the completed terminalizer's
+        // watchdog, so caller cancellation or its elapsed budget cannot drop a
+        // freshly re-evaluated continuation midway through submission.
+        if let Some((cause, attach_epoch)) = idle_ready {
+            self.emit_thread_idle_ready_lifecycle_if_idle(cause, attach_epoch)
+                .await;
         }
     }
 

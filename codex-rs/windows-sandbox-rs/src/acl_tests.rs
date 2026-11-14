@@ -79,7 +79,8 @@ fn complete_denies_compare_mapped_masks_and_require_every_right() -> Result<()> 
         let mut acl = NativeAcl::new()?;
         acl.deny(&sid, mask, inheritance)?;
         // SAFETY: both arguments point into live, initialized native objects.
-        let complete = unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) };
+        let complete =
+            unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory) };
         assert_eq!(complete, expected, "mask={mask:#x}");
     }
     Ok(())
@@ -102,7 +103,9 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
             acl.deny(&sid, kind.mask(), flags)?;
             // SAFETY: the ACL and SID are valid and retained for this query.
             assert!(
-                !unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) },
+                !unsafe {
+                    kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+                },
                 "flags={flags:#x}",
             );
         }
@@ -123,7 +126,173 @@ fn complete_denies_require_effective_recursive_scope_and_precede_allows() -> Res
         }
         acl.deny(&sid, kind.mask(), inheritance)?;
         // SAFETY: the ACL and SID remain valid through the query.
-        assert!(!unsafe { kind.already_present(acl.as_ptr(), sid.as_ptr()) });
+        assert!(!unsafe {
+            kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+        });
+    }
+    Ok(())
+}
+
+#[test]
+fn split_denies_cover_effective_and_recursive_rights_independently() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
+    let inheritance = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for (kind, effective, inheritable) in [
+        (DenyAceKind::Read, FILE_GENERIC_READ, GENERIC_READ_MASK),
+        (
+            DenyAceKind::Write,
+            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+            GENERIC_WRITE_MASK | DELETE | FILE_DELETE_CHILD,
+        ),
+    ] {
+        let mut acl = NativeAcl::new()?;
+        acl.deny(&sid, effective, /*flags*/ 0)?;
+        // SAFETY: both ACL and SID remain valid throughout the two queries.
+        let effective_only = unsafe {
+            (
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::File),
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory),
+            )
+        };
+        acl.deny(&sid, inheritable, inheritance | u32::from(INHERIT_ONLY_ACE))?;
+        // SAFETY: the appended ACE retains the same initialized ACL and SID.
+        let split = unsafe {
+            (
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::File),
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory),
+            )
+        };
+        assert_eq!((effective_only, split), ((true, false), (true, true)));
+    }
+    Ok(())
+}
+
+#[test]
+fn split_denies_cannot_borrow_missing_rights_from_another_scope_or_sid() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-191-292-393-494")?;
+    let other = LocalSid::from_string("S-1-5-21-192-293-394-495")?;
+    let files = OBJECT_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE);
+    let directories = CONTAINER_INHERIT_ACE | u32::from(INHERIT_ONLY_ACE);
+    let both = OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE;
+    for (kind, full, missing) in [
+        (DenyAceKind::Read, FILE_GENERIC_READ, FILE_READ_DATA),
+        (
+            DenyAceKind::Write,
+            FILE_GENERIC_WRITE | DELETE | FILE_DELETE_CHILD,
+            DELETE,
+        ),
+    ] {
+        for (name, entries, expected) in [
+            (
+                "rights split across leading denies",
+                vec![(&sid, full & !missing, both), (&sid, missing, both)],
+                true,
+            ),
+            (
+                "separate file and directory inheritance",
+                vec![
+                    (&sid, full, 0),
+                    (&sid, full, files),
+                    (&sid, full, directories),
+                ],
+                true,
+            ),
+            (
+                "effective right missing",
+                vec![
+                    (&sid, full & !missing, 0),
+                    (&sid, full, files | directories),
+                ],
+                false,
+            ),
+            (
+                "other SID cannot complete effective rights",
+                vec![
+                    (&sid, full & !missing, 0),
+                    (&other, missing, 0),
+                    (&sid, full, files | directories),
+                ],
+                false,
+            ),
+            (
+                "file inheritance right missing",
+                vec![
+                    (&sid, full, 0),
+                    (&sid, full & !missing, files),
+                    (&sid, full, directories),
+                ],
+                false,
+            ),
+            (
+                "directory inheritance right missing",
+                vec![
+                    (&sid, full, 0),
+                    (&sid, full, files),
+                    (&sid, full & !missing, directories),
+                ],
+                false,
+            ),
+            (
+                "file inheritance stops after one generation",
+                vec![
+                    (&sid, full, 0),
+                    (&sid, full, files | NO_PROPAGATE_INHERIT_ACE),
+                    (&sid, full, directories),
+                ],
+                false,
+            ),
+            (
+                "directory inheritance stops after one generation",
+                vec![
+                    (&sid, full, 0),
+                    (&sid, full, files),
+                    (&sid, full, directories | NO_PROPAGATE_INHERIT_ACE),
+                ],
+                false,
+            ),
+            (
+                "ancestor denial is not an explicit repair",
+                vec![
+                    (&sid, full, 0),
+                    (&sid, full, files | directories | u32::from(INHERITED_ACE)),
+                ],
+                false,
+            ),
+        ] {
+            let mut acl = NativeAcl::new()?;
+            for (principal, mask, flags) in entries {
+                acl.deny(principal, mask, flags)?;
+            }
+            // SAFETY: all ACEs and the queried SID are valid native objects.
+            let complete = unsafe {
+                kind.already_present(acl.as_ptr(), sid.as_ptr(), DenyAceScope::Directory)
+            };
+            assert_eq!(complete, expected, "{name}");
+        }
+    }
+    Ok(())
+}
+
+#[test]
+fn native_file_and_directory_deny_repairs_are_idempotent() -> Result<()> {
+    let sid = LocalSid::from_string("S-1-5-21-201-302-403-504")?;
+    for kind in [DenyAceKind::Read, DenyAceKind::Write] {
+        let fixture = tempfile::tempdir()?;
+        let file = fixture.path().join("child.txt");
+        std::fs::write(&file, "fixture")?;
+        // SAFETY: both existing paths and the validated fixture SID remain live.
+        // The first file repair must be explicit even after inheriting the
+        // directory's denial; subsequent calls must recognize native storage.
+        let repairs = unsafe {
+            (
+                add_deny_ace(fixture.path(), sid.as_ptr(), kind)?,
+                add_deny_ace(fixture.path(), sid.as_ptr(), kind)?,
+                add_deny_ace(&file, sid.as_ptr(), kind)?,
+                add_deny_ace(&file, sid.as_ptr(), kind)?,
+            )
+        };
+        assert_eq!(repairs, (true, false, true, false));
+        assert_eq!(std::fs::read_to_string(&file)?, "fixture");
     }
     Ok(())
 }

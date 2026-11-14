@@ -1,3 +1,22 @@
+/// Select native HIA matching in real patch application when requested.
+/// The original Rust function remains as the parity-test oracle.
+pub(crate) fn seek_sequence_checked(
+    lines: &[String],
+    pattern: &[String],
+    start: usize,
+    eof: bool,
+    update_file_mode: crate::ApplyPatchFileUpdateMode,
+) -> Result<Option<usize>, crate::ApplyPatchError> {
+    #[cfg(feature = "hia-native")]
+    {
+        crate::hia_native::seek_sequence_checked(lines, pattern, start, eof, update_file_mode)
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        Ok(seek_sequence(lines, pattern, start, eof, update_file_mode))
+    }
+}
+
 /// Attempt to find the sequence of `pattern` lines within `lines` beginning at or after `start`.
 /// Returns the starting index of the match or `None` if not found. Matches are attempted with
 /// decreasing strictness: exact match, then ignoring trailing whitespace, then ignoring leading
@@ -9,6 +28,7 @@
 ///  • Empty `pattern` → returns `Some(start)` (no-op match)
 ///  • `pattern.len() > lines.len()` → returns `None` (cannot match, avoids
 ///    out‑of‑bounds panic that occurred pre‑2025‑04‑12)
+#[cfg(any(not(feature = "hia-native"), test))]
 pub(crate) fn seek_sequence(
     lines: &[String],
     pattern: &[String],

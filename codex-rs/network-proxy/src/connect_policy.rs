@@ -1,16 +1,19 @@
+use crate::dns::ProxyDnsResolver;
 use crate::policy::is_non_public_ip;
 use crate::runtime::HostBlockDecision;
 use crate::state::NetworkProxyState;
 use rama_core::Service;
 use rama_core::error::BoxError;
 use rama_core::error::ErrorExt as _;
-use rama_core::error::OpaqueError;
-use rama_core::extensions::ExtensionsMut;
+use rama_core::error::extra::OpaqueError;
+use rama_dns::client::DnsConnector;
+use rama_dns::client::resolver::DnsAddressResolver;
+use rama_net::ConnectorTargetInputExt;
+use rama_net::TransportProtocolInputExt;
 use rama_net::address::Host;
 use rama_net::address::HostWithPort;
 use rama_net::address::ProxyAddress;
 use rama_net::client::EstablishedClientConnection;
-use rama_net::transport::TryRefIntoTransportContext;
 use rama_tcp::TcpStream;
 use rama_tcp::client::TcpStreamConnector;
 use rama_tcp::client::service::TcpConnector;
@@ -19,40 +22,44 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 #[derive(Clone)]
-pub(crate) struct TargetCheckedTcpConnector {
+pub(crate) struct TargetCheckedTcpConnector<Resolver = ProxyDnsResolver> {
     state: Arc<NetworkProxyState>,
+    resolver: Resolver,
 }
 
 impl TargetCheckedTcpConnector {
     pub(crate) fn new(state: Arc<NetworkProxyState>) -> Self {
-        Self { state }
+        Self {
+            state,
+            resolver: ProxyDnsResolver,
+        }
     }
 }
 
-impl<Input> Service<Input> for TargetCheckedTcpConnector
+impl<Input, Resolver> Service<Input> for TargetCheckedTcpConnector<Resolver>
 where
-    Input: TryRefIntoTransportContext + Send + ExtensionsMut + 'static,
-    Input::Error: Into<BoxError> + Send + Sync + 'static,
+    Input: ConnectorTargetInputExt + TransportProtocolInputExt + Send + 'static,
+    Resolver: DnsAddressResolver + Clone,
 {
     type Output = EstablishedClientConnection<TcpStream, Input>;
     type Error = BoxError;
 
     async fn serve(&self, input: Input) -> Result<Self::Output, Self::Error> {
-        if input.extensions().get::<ProxyAddress>().is_some() {
-            return TcpConnector::new().serve(input).await;
+        if input.extensions().get_ref::<ProxyAddress>().is_some() {
+            return DnsConnector::with_resolver(TcpConnector::new(), self.resolver.clone())
+                .serve(input)
+                .await;
         }
 
         let target = input
-            .try_ref_into_transport_ctx()
-            .map_err(|err| OpaqueError::from_boxed(err.into()).context("read network target"))?
-            .host_with_port()
-            .ok_or_else(|| OpaqueError::from_display("network target is missing a port"))?;
+            .connector_target()
+            .ok_or_else(|| OpaqueError::from_static_str("network target is missing a port"))?;
 
-        TcpConnector::new()
-            .with_connector(TargetCheckedStreamConnector {
-                state: self.state.clone(),
-                target,
-            })
+        let connector = TcpConnector::new().with_connector(TargetCheckedStreamConnector {
+            state: self.state.clone(),
+            target,
+        });
+        DnsConnector::with_resolver(connector, self.resolver.clone())
             .serve(input)
             .await
     }
@@ -87,9 +94,7 @@ impl TargetCheckedStreamConnector {
     async fn allows_non_public_target(&self, addr: SocketAddr) -> Result<bool, BoxError> {
         if self.state.allow_local_binding().await.map_err(|err| {
             let err: BoxError = err.into();
-            OpaqueError::from_boxed(err)
-                .context("read network proxy config")
-                .into_boxed()
+            err.context("read network proxy config")
         })? {
             return Ok(true);
         }
@@ -104,9 +109,7 @@ impl TargetCheckedStreamConnector {
             .map(|decision| decision == HostBlockDecision::Allowed)
             .map_err(|err| {
                 let err: BoxError = err.into();
-                OpaqueError::from_boxed(err)
-                    .context("evaluate network proxy target")
-                    .into_boxed()
+                err.context("evaluate network proxy target")
             })
     }
 }
@@ -118,6 +121,8 @@ pub(crate) fn is_non_public_target(host: &Host) -> bool {
             .as_str()
             .trim_end_matches('.')
             .eq_ignore_ascii_case("localhost"),
+        // Unknown host kinds must not bypass the direct-connection policy.
+        _ => true,
     }
 }
 
@@ -130,8 +135,13 @@ fn target_matches_non_public_addr(host: &Host, addr: std::net::IpAddr) -> bool {
                 .eq_ignore_ascii_case("localhost")
                 && addr.is_loopback()
         }
+        _ => false,
     }
 }
+
+#[cfg(test)]
+#[path = "connect_policy_dns_tests.rs"]
+mod dns_tests;
 
 #[cfg(test)]
 mod tests {
@@ -152,8 +162,8 @@ mod tests {
             NetworkProxyConfig::default(),
         )));
 
-        let request: rama_tcp::client::Request =
-            rama_tcp::client::Request::new(HostWithPort::from(target));
+        let request: rama_net::client::Request =
+            rama_net::client::Request::new(HostWithPort::from(target));
         let err = Service::serve(&connector, request)
             .await
             .expect_err("local target should be rejected");
@@ -177,8 +187,8 @@ mod tests {
             },
         )));
 
-        let request: rama_tcp::client::Request =
-            rama_tcp::client::Request::new(HostWithPort::from(target));
+        let request: rama_net::client::Request =
+            rama_net::client::Request::new(HostWithPort::from(target));
         let result = Service::serve(&connector, request).await;
 
         assert!(result.is_ok(), "local target should be allowed: {result:?}");
@@ -195,8 +205,8 @@ mod tests {
         let connector =
             TargetCheckedTcpConnector::new(Arc::new(network_proxy_state_for_policy(config)));
 
-        let request: rama_tcp::client::Request =
-            rama_tcp::client::Request::new(HostWithPort::from(target));
+        let request: rama_net::client::Request =
+            rama_net::client::Request::new(HostWithPort::from(target));
         let result = Service::serve(&connector, request).await;
 
         assert!(
@@ -216,8 +226,8 @@ mod tests {
         let connector =
             TargetCheckedTcpConnector::new(Arc::new(network_proxy_state_for_policy(config)));
 
-        let request: rama_tcp::client::Request =
-            rama_tcp::client::Request::new(HostWithPort::new(Host::LOCALHOST_NAME, target.port()));
+        let request: rama_net::client::Request =
+            rama_net::client::Request::new(HostWithPort::new(Host::LOCALHOST_NAME, target.port()));
         let result = Service::serve(&connector, request).await;
 
         assert!(

@@ -14,8 +14,10 @@ use super::session::SessionSettingsUpdate;
 use super::thread_settings;
 use super::turn::TurnRunOrigin;
 use super::turn_context::TurnContext;
+use super::turn_input_retry::FinishRetryState;
 use crate::state::ActiveTurn;
 use crate::state::StartReservationHandle;
+use crate::state::TaskTerminalizationKind;
 use crate::state::TurnState;
 use crate::tasks::MailboxParentProvenance;
 use crate::tasks::RecoveryHistoryTransition;
@@ -95,6 +97,22 @@ fn reserve_start_after_admission(
 #[cfg(test)]
 #[path = "turn_input_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "steer_finish_rejection_tests.rs"]
+mod steer_finish_rejection_tests;
+
+/// Metadata that accompanies one atomic steering decision. Only the public
+/// start-or-steer path registers a finish retry under its exact submission ID.
+struct SteerInputContext<'a> {
+    additional_context: BTreeMap<String, AdditionalContextEntry>,
+    expected_turn_id: Option<&'a str>,
+    required_final_output_json_schema: Option<&'a Value>,
+    client_user_message_id: Option<String>,
+    responsesapi_client_metadata: Option<HashMap<String, String>>,
+    incoming_root_turn_id: Option<Option<String>>,
+    retry_submission_id: Option<&'a str>,
+}
 
 /// Thread settings and start-only options prepared before Core knows whether
 /// turn input starts or steers.
@@ -269,12 +287,16 @@ async fn start_or_steer(
     match session
         .steer_input(
             &mut items,
-            additional_context.clone(),
-            /*expected_turn_id*/ None,
-            settings.required_active_final_output_json_schema(),
-            client_id.clone(),
-            responsesapi_client_metadata.clone(),
-            incoming_root_turn_id,
+            SteerInputContext {
+                additional_context: additional_context.clone(),
+                expected_turn_id: None,
+                required_final_output_json_schema: settings
+                    .required_active_final_output_json_schema(),
+                client_user_message_id: client_id.clone(),
+                responsesapi_client_metadata: responsesapi_client_metadata.clone(),
+                incoming_root_turn_id,
+                retry_submission_id: Some(&submission_id),
+            },
         )
         .await
     {
@@ -291,6 +313,11 @@ async fn start_or_steer(
         Err(NotSubmittedReason::NoActiveTurn) => {
             let start_reservation = {
                 let mut active_turn = session.active_turn.lock().await;
+                if session.record_turn_input_finish_retry(&submission_id, active_turn.as_ref()) {
+                    return Ok(TurnInputSubmission::NotSubmitted {
+                        reason: NotSubmittedReason::NotIdle,
+                    });
+                }
                 if session.shutdown_started()
                     || session.has_pending_admission_fence()
                     || active_turn.is_some()
@@ -800,12 +827,16 @@ async fn steer(
     match session
         .steer_input(
             &mut items,
-            additional_context,
-            Some(expected_turn_id.as_str()),
-            settings.required_active_final_output_json_schema(),
-            client_id,
-            responsesapi_client_metadata,
-            incoming_root_turn_id,
+            SteerInputContext {
+                additional_context,
+                expected_turn_id: Some(expected_turn_id.as_str()),
+                required_final_output_json_schema: settings
+                    .required_active_final_output_json_schema(),
+                client_user_message_id: client_id,
+                responsesapi_client_metadata,
+                incoming_root_turn_id,
+                retry_submission_id: None,
+            },
         )
         .await
     {
@@ -903,20 +934,20 @@ impl Session {
         clippy::await_holding_invalid_type,
         reason = "active turn checks and turn state updates must remain atomic"
     )]
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "steering carries the accepted input plus its turn-scoped metadata"
-    )]
     async fn steer_input(
         &self,
         input: &mut Vec<UserInput>,
-        additional_context: BTreeMap<String, AdditionalContextEntry>,
-        expected_turn_id: Option<&str>,
-        required_final_output_json_schema: Option<&Value>,
-        client_user_message_id: Option<String>,
-        responsesapi_client_metadata: Option<HashMap<String, String>>,
-        incoming_root_turn_id: Option<Option<String>>,
+        context: SteerInputContext<'_>,
     ) -> Result<Arc<TurnContext>, NotSubmittedReason> {
+        let SteerInputContext {
+            additional_context,
+            expected_turn_id,
+            required_final_output_json_schema,
+            client_user_message_id,
+            responsesapi_client_metadata,
+            incoming_root_turn_id,
+            retry_submission_id,
+        } = context;
         let mut active = self.active_turn.lock().await;
         let Some(active_turn) = active.as_mut() else {
             return Err(NotSubmittedReason::NoActiveTurn);
@@ -938,7 +969,24 @@ impl Session {
             }
         }
 
-        if active_turn.task_terminalization.is_some() {
+        if let Some(terminalization) = active_turn.task_terminalization.as_ref() {
+            // A directed steer cannot target a task that has already finished.
+            // Classify that rejection without releasing its durable Finish fence
+            // or applying the rejected request's settings. Start-or-steer keeps
+            // its separate caller-owned retry path below.
+            if expected_turn_id.is_some()
+                && active_turn.task.is_none()
+                && terminalization.kind == TaskTerminalizationKind::Finish
+                && matches!(
+                    self.finish_retry_state(Some(active_turn)),
+                    FinishRetryState::Clear | FinishRetryState::Finishing(_)
+                )
+            {
+                return Err(NotSubmittedReason::NoActiveTurn);
+            }
+            if let Some(submission_id) = retry_submission_id {
+                self.record_turn_input_finish_retry(submission_id, Some(active_turn));
+            }
             return Err(NotSubmittedReason::NotIdle);
         }
 
