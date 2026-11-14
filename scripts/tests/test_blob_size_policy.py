@@ -1,11 +1,14 @@
 """Exercise the actual Git blob policy, including pinned historical assets."""
 
 import hashlib
+import importlib.util
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 CHECKER = Path(__file__).resolve().parents[1] / "check_blob_size.py"
 LIMIT = 512000
@@ -122,6 +125,78 @@ class BlobSizePolicyTests(unittest.TestCase):
         head = self.commit_asset(original, "historical evidence.gz")
         self.allowlist.write_text(self.pin(original, "historical evidence.gz"))
         self.assertEqual(self.check(head).returncode, 0)
+
+    def test_sampled_summary_preserves_full_cli_output_and_rejection(self):
+        content = b"x" * (LIMIT + 1)
+        for index in range(25):
+            (self.repo / f"oversized-{index:02d}.bin").write_bytes(content)
+        self.git("add", ".")
+        self.git("commit", "-qm", "many oversized assets")
+        head = self.git("rev-parse", "HEAD").strip()
+        summary = self.root / "summary.md"
+        with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary)}):
+            result = self.check(head)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("oversized-00.bin", result.stdout)
+        self.assertIn("oversized-24.bin", result.stdout)
+        self.assertIn("Checked 25 changed file(s)", result.stdout)
+        rendered = summary.read_text()
+        self.assertIn("Violations: `25`", rendered)
+        self.assertIn("Showing 20 of 25 violations.", rendered)
+        self.assertNotIn("oversized-24.bin", rendered)
+        self.assertLess(len(rendered.encode("utf-8")), 32768)
+
+
+class BlobSizeSummaryTests(unittest.TestCase):
+    def setUp(self):
+        spec = importlib.util.spec_from_file_location(
+            "blob_policy_summary_fixture", CHECKER
+        )
+        self.checker = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = self.checker
+        self.addCleanup(sys.modules.pop, spec.name)
+        spec.loader.exec_module(self.checker)
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.summary = Path(self.temp.name) / "summary.md"
+
+    def test_large_multibyte_inventory_keeps_all_totals_and_bounds_summary(self):
+        blobs = [
+            self.checker.ChangedBlob(
+                path=f"{index}/" + "測試資料" * 100 + "\n|`asset",
+                size_bytes=LIMIT + 1,
+                is_allowlisted=False,
+                is_binary=True,
+            )
+            for index in range(22000)
+        ]
+        with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(self.summary)}):
+            self.checker.write_step_summary(LIMIT, blobs, blobs)
+        rendered = self.summary.read_text()
+        self.assertIn("Changed files checked: `22000`", rendered)
+        self.assertIn("Violations: `22000`", rendered)
+        self.assertIn("Showing 20 of 22000 violations.", rendered)
+        self.assertEqual(len(blobs), 22000)
+        self.assertLess(len(rendered.encode("utf-8")), 32768)
+
+    def test_successful_large_inventory_has_totals_without_per_file_table(self):
+        blobs = [
+            self.checker.ChangedBlob(
+                path=f"small-{index}.txt",
+                size_bytes=1,
+                is_allowlisted=False,
+                is_binary=False,
+            )
+            for index in range(22000)
+        ]
+        with mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(self.summary)}):
+            self.checker.write_step_summary(LIMIT, blobs, [])
+        rendered = self.summary.read_text()
+        self.assertIn("Changed files checked: `22000`", rendered)
+        self.assertIn("Violations: `0`", rendered)
+        self.assertIn("No violations were detected.", rendered)
+        self.assertNotIn("| Path |", rendered)
+        self.assertLess(len(rendered.encode("utf-8")), 1024)
 
 
 if __name__ == "__main__":

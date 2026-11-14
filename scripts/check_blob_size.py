@@ -122,13 +122,22 @@ def format_kib(size_bytes: int) -> str:
     return f"{size_bytes / 1024:.1f} KiB"
 
 
+def summary_path(path: str) -> str:
+    escaped = path.replace("\r", "\\r").replace("\n", "\\n")
+    escaped = escaped.replace("`", "\\`").replace("|", "\\|")
+    encoded = escaped.encode("utf-8")
+    if len(encoded) <= 512:
+        return escaped
+    return encoded[:509].decode("utf-8", errors="ignore") + "..."
+
+
 def write_step_summary(
     max_bytes: int,
     blobs: list[ChangedBlob],
     violations: list[ChangedBlob],
 ) -> None:
-    summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
-    if not summary_path:
+    summary_path_value = os.environ.get("GITHUB_STEP_SUMMARY")
+    if not summary_path_value:
         return
 
     lines = [
@@ -137,29 +146,44 @@ def write_step_summary(
         f"Default max: `{max_bytes}` bytes ({format_kib(max_bytes)})",
         f"Changed files checked: `{len(blobs)}`",
         f"Violations: `{len(violations)}`",
+        f"Allowlisted files: `{sum(blob.is_allowlisted for blob in blobs)}`",
         "",
     ]
 
-    if blobs:
+    displayed = violations[:20]
+    if displayed:
         lines.extend(
             [
                 "| Path | Kind | Size | Status |",
                 "| --- | --- | ---: | --- |",
             ]
         )
-        for blob in blobs:
-            status = "allowlisted" if blob.is_allowlisted else "ok"
-            if blob in violations:
-                status = "blocked"
+        for blob in displayed:
             kind = "binary" if blob.is_binary else "non-binary"
             lines.append(
-                f"| `{blob.path}` | {kind} | `{blob.size_bytes}` bytes ({format_kib(blob.size_bytes)}) | {status} |"
+                f"| `{summary_path(blob.path)}` | {kind} | "
+                f"`{blob.size_bytes}` bytes ({format_kib(blob.size_bytes)}) | blocked |"
             )
+        lines.extend(
+            [
+                "",
+                f"Showing {len(displayed)} of {len(violations)} violations.",
+            ]
+        )
+    elif blobs:
+        lines.append("No violations were detected.")
     else:
         lines.append("No changed files were detected.")
 
-    lines.append("")
-    Path(summary_path).write_text("\n".join(lines), encoding="utf-8")
+    lines.extend(
+        [
+            "",
+            "The full checked-file list and every violation remain in the step log.",
+            "Only this summary is sampled; the size decision checks every changed file.",
+            "",
+        ]
+    )
+    Path(summary_path_value).write_text("\n".join(lines), encoding="utf-8")
 
 
 def main() -> int:
