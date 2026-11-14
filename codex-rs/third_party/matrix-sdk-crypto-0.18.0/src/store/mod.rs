@@ -38,53 +38,87 @@
 //! [`OlmMachine`]: /matrix_sdk_crypto/struct.OlmMachine.html
 //! [`CryptoStore`]: trait.Cryptostore.html
 
-use std::{
-    collections::{BTreeMap, BTreeSet, HashMap, HashSet},
-    fmt::Debug,
-    ops::Deref,
-    pin::pin,
-    sync::{Arc, atomic::Ordering},
-    time::Duration,
-};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::fmt::Debug;
+use std::ops::Deref;
+use std::pin::pin;
+use std::sync::Arc;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
 
 use as_variant::as_variant;
 use futures_core::Stream;
 use futures_util::StreamExt;
-use itertools::{Either, Itertools};
-use ruma::{
-    DeviceId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, OwnedUserId, RoomId, UserId,
-    encryption::KeyUsage, events::secret::request::SecretName,
-};
-use serde::{Serialize, de::DeserializeOwned};
+use itertools::Either;
+use itertools::Itertools;
+use ruma::DeviceId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::UserId;
+use ruma::encryption::KeyUsage;
+use ruma::events::secret::request::SecretName;
+use serde::Serialize;
+use serde::de::DeserializeOwned;
 use thiserror::Error;
-use tokio::sync::{Mutex, Notify, OwnedRwLockWriteGuard, RwLock};
+use tokio::sync::Mutex;
+use tokio::sync::Notify;
+use tokio::sync::OwnedRwLockWriteGuard;
+use tokio::sync::RwLock;
 use tokio_stream::wrappers::errors::BroadcastStreamRecvError;
-use tracing::{info, instrument, trace, warn};
-use types::{RoomKeyBundleInfo, StoredRoomKeyBundleData};
-use vodozemac::{Curve25519PublicKey, megolm::SessionOrdering};
+use tracing::info;
+use tracing::instrument;
+use tracing::trace;
+use tracing::warn;
+use types::RoomKeyBundleInfo;
+use types::StoredRoomKeyBundleData;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::megolm::SessionOrdering;
 
-use self::types::{
-    Changes, CrossSigningKeyExport, DeviceChanges, DeviceUpdates, IdentityChanges, IdentityUpdates,
-    PendingChanges, RoomKeyInfo, RoomKeyWithheldInfo, RoomPendingKeyBundleDetails,
-    UserKeyQueryResult,
-};
-use crate::{
-    CrossSigningStatus, OwnUserIdentityData, RoomKeyImportResult,
-    gossiping::GossippedSecret,
-    identities::{Device, DeviceData, UserDevices, UserIdentityData, user::UserIdentity},
-    olm::{
-        Account, ExportedRoomKey, ForwarderData, InboundGroupSession, PrivateCrossSigningIdentity,
-        SenderData, Session, StaticAccountData,
-    },
-    store::types::{RoomKeyWithheldEntry, SecretsInboxItem},
-    types::{
-        BackupSecrets, CrossSigningSecrets, MegolmBackupV1Curve25519AesSha2Secrets, RoomKeyExport,
-        SecretsBundle,
-    },
-    verification::VerificationMachine,
-};
+use self::types::Changes;
+use self::types::CrossSigningKeyExport;
+use self::types::DeviceChanges;
+use self::types::DeviceUpdates;
+use self::types::IdentityChanges;
+use self::types::IdentityUpdates;
+use self::types::PendingChanges;
+use self::types::RoomKeyInfo;
+use self::types::RoomKeyWithheldInfo;
+use self::types::RoomPendingKeyBundleDetails;
+use self::types::UserKeyQueryResult;
+use crate::CrossSigningStatus;
+use crate::OwnUserIdentityData;
+use crate::RoomKeyImportResult;
 #[cfg(doc)]
-use crate::{backups::BackupMachine, identities::OwnUserIdentity};
+use crate::backups::BackupMachine;
+use crate::gossiping::GossippedSecret;
+use crate::identities::Device;
+use crate::identities::DeviceData;
+#[cfg(doc)]
+use crate::identities::OwnUserIdentity;
+use crate::identities::UserDevices;
+use crate::identities::UserIdentityData;
+use crate::identities::user::UserIdentity;
+use crate::olm::Account;
+use crate::olm::ExportedRoomKey;
+use crate::olm::ForwarderData;
+use crate::olm::InboundGroupSession;
+use crate::olm::PrivateCrossSigningIdentity;
+use crate::olm::SenderData;
+use crate::olm::Session;
+use crate::olm::StaticAccountData;
+use crate::store::types::RoomKeyWithheldEntry;
+use crate::store::types::SecretsInboxItem;
+use crate::types::BackupSecrets;
+use crate::types::CrossSigningSecrets;
+use crate::types::MegolmBackupV1Curve25519AesSha2Secrets;
+use crate::types::RoomKeyExport;
+use crate::types::SecretsBundle;
+use crate::verification::VerificationMachine;
 
 pub mod caches;
 mod crypto_store_wrapper;
@@ -99,23 +133,27 @@ pub mod types;
 pub mod integration_tests;
 
 pub(crate) use crypto_store_wrapper::CryptoStoreWrapper;
-pub use error::{CryptoStoreError, Result};
-use matrix_sdk_common::{
-    cross_process_lock::{CrossProcessLock, CrossProcessLockConfig, CrossProcessLockGeneration},
-    deserialized_responses::WithheldCode,
-    timeout::timeout,
-};
+pub use error::CryptoStoreError;
+pub use error::Result;
+use matrix_sdk_common::cross_process_lock::CrossProcessLock;
+use matrix_sdk_common::cross_process_lock::CrossProcessLockConfig;
+use matrix_sdk_common::cross_process_lock::CrossProcessLockGeneration;
+use matrix_sdk_common::deserialized_responses::WithheldCode;
+use matrix_sdk_common::timeout::timeout;
 pub use memorystore::MemoryStore;
-pub use traits::{CryptoStore, DynCryptoStore, IntoCryptoStore};
+pub use traits::CryptoStore;
+pub use traits::DynCryptoStore;
+pub use traits::IntoCryptoStore;
 
-use self::caches::{SequenceNumber, StoreCache, StoreCacheGuard, UsersForKeyQuery};
-use crate::types::{
-    events::room_key_withheld::RoomKeyWithheldContent, room_history::RoomKeyBundle,
-};
-pub use crate::{
-    dehydrated_devices::DehydrationError,
-    gossiping::{GossipRequest, SecretInfo},
-};
+use self::caches::SequenceNumber;
+use self::caches::StoreCache;
+use self::caches::StoreCacheGuard;
+use self::caches::UsersForKeyQuery;
+pub use crate::dehydrated_devices::DehydrationError;
+pub use crate::gossiping::GossipRequest;
+pub use crate::gossiping::SecretInfo;
+use crate::types::events::room_key_withheld::RoomKeyWithheldContent;
+use crate::types::room_history::RoomKeyBundle;
 
 /// A wrapper for our CryptoStore trait object.
 ///
@@ -140,7 +178,10 @@ pub(crate) struct KeyQueryManager {
 impl KeyQueryManager {
     pub async fn synced<'a>(&'a self, cache: &'a StoreCache) -> Result<SyncedKeyQueryManager<'a>> {
         self.ensure_sync_tracked_users(cache).await?;
-        Ok(SyncedKeyQueryManager { cache, manager: self })
+        Ok(SyncedKeyQueryManager {
+            cache,
+            manager: self,
+        })
     }
 
     /// Load the list of users for whom we are tracking their device lists and
@@ -340,7 +381,11 @@ impl SyncedKeyQueryManager<'_> {
     /// be queried, and `sequence_number` is the current sequence number,
     /// which should be returned in `mark_tracked_users_as_up_to_date`.
     pub async fn users_for_key_query(&self) -> (HashSet<OwnedUserId>, SequenceNumber) {
-        self.manager.users_for_key_query.lock().await.users_for_key_query()
+        self.manager
+            .users_for_key_query
+            .lock()
+            .await
+            .users_for_key_query()
     }
 
     /// See the docs for [`crate::OlmMachine::tracked_users()`].
@@ -354,7 +399,11 @@ impl SyncedKeyQueryManager<'_> {
     /// This means that the user will be considered for a `/keys/query` request
     /// next time [`Store::users_for_key_query()`] is called.
     pub async fn mark_user_as_changed(&self, user: &UserId) -> Result<()> {
-        self.manager.users_for_key_query.lock().await.insert_user(user);
+        self.manager
+            .users_for_key_query
+            .lock()
+            .await
+            .insert_user(user);
         self.cache.tracked_users.write().insert(user.to_owned());
 
         self.cache.store.save_tracked_users(&[(user, true)]).await
@@ -426,7 +475,11 @@ impl StoreTransaction {
     async fn new(store: Store) -> Self {
         let cache = store.inner.cache.clone();
 
-        Self { store, changes: PendingChanges::default(), cache: cache.clone().write_owned().await }
+        Self {
+            store,
+            changes: PendingChanges::default(),
+            cache: cache.clone().write_owned().await,
+        }
     }
 
     pub(crate) fn cache(&self) -> &StoreCache {
@@ -579,7 +632,9 @@ impl Store {
     }
 
     pub(crate) async fn cache(&self) -> Result<StoreCacheGuard> {
-        Ok(StoreCacheGuard { cache: self.inner.cache.clone().read_owned().await })
+        Ok(StoreCacheGuard {
+            cache: self.inner.cache.clone().read_owned().await,
+        })
     }
 
     pub(crate) async fn transaction(&self) -> StoreTransaction {
@@ -609,7 +664,10 @@ impl Store {
 
     /// Save the given Sessions to the store
     pub(crate) async fn save_sessions(&self, sessions: &[Session]) -> Result<()> {
-        let changes = Changes { sessions: sessions.to_vec(), ..Default::default() };
+        let changes = Changes {
+            sessions: sessions.to_vec(),
+            ..Default::default()
+        };
 
         self.save_changes(changes).await
     }
@@ -649,8 +707,9 @@ impl Store {
         };
 
         let index_comparison = session.compare_ratchet(&old_session).await;
-        let trust_level_comparison =
-            session.sender_data.compare_trust_level(&old_session.sender_data);
+        let trust_level_comparison = session
+            .sender_data
+            .compare_trust_level(&old_session.sender_data);
 
         let result = match (index_comparison, trust_level_comparison) {
             (SessionOrdering::Unconnected, _) => {
@@ -721,7 +780,10 @@ impl Store {
         use types::DeviceChanges;
 
         let changes = Changes {
-            devices: DeviceChanges { changed: devices.to_vec(), ..Default::default() },
+            devices: DeviceChanges {
+                changed: devices.to_vec(),
+                ..Default::default()
+            },
             ..Default::default()
         };
 
@@ -733,7 +795,10 @@ impl Store {
         &self,
         sessions: &[InboundGroupSession],
     ) -> Result<()> {
-        let changes = Changes { inbound_group_sessions: sessions.to_vec(), ..Default::default() };
+        let changes = Changes {
+            inbound_group_sessions: sessions.to_vec(),
+            ..Default::default()
+        };
 
         self.save_changes(changes).await
     }
@@ -771,12 +836,16 @@ impl Store {
         &self,
         user_id: &UserId,
     ) -> Result<HashMap<OwnedDeviceId, DeviceData>> {
-        self.inner.store.get_user_devices(user_id).await.map(|mut d| {
-            if user_id == self.user_id() {
-                d.remove(self.device_id());
-            }
-            d
-        })
+        self.inner
+            .store
+            .get_user_devices(user_id)
+            .await
+            .map(|mut d| {
+                if user_id == self.user_id() {
+                    d.remove(self.device_id());
+                }
+                d
+            })
     }
 
     /// Get the [`DeviceData`] for all the devices a user has.
@@ -870,8 +939,11 @@ impl Store {
             .await?
             .and_then(|i| i.own().cloned());
 
-        let device_owner_identity =
-            self.inner.store.get_user_identity(device_data.user_id()).await?;
+        let device_owner_identity = self
+            .inner
+            .store
+            .get_user_identity(device_data.user_id())
+            .await?;
 
         Ok(Device {
             inner: device_data,
@@ -916,7 +988,12 @@ impl Store {
             SecretName::CrossSigningMasterKey
             | SecretName::CrossSigningUserSigningKey
             | SecretName::CrossSigningSelfSigningKey => {
-                self.inner.identity.lock().await.export_secret(secret_name).await
+                self.inner
+                    .identity
+                    .lock()
+                    .await
+                    .export_secret(secret_name)
+                    .await
             }
             SecretName::RecoveryKey => {
                 if let Some(key) = self.load_backup_keys().await?.decryption_key {
@@ -943,15 +1020,27 @@ impl Store {
     pub async fn export_cross_signing_keys(
         &self,
     ) -> Result<Option<CrossSigningKeyExport>, CryptoStoreError> {
-        let master_key = self.export_secret(&SecretName::CrossSigningMasterKey).await?;
-        let self_signing_key = self.export_secret(&SecretName::CrossSigningSelfSigningKey).await?;
-        let user_signing_key = self.export_secret(&SecretName::CrossSigningUserSigningKey).await?;
+        let master_key = self
+            .export_secret(&SecretName::CrossSigningMasterKey)
+            .await?;
+        let self_signing_key = self
+            .export_secret(&SecretName::CrossSigningSelfSigningKey)
+            .await?;
+        let user_signing_key = self
+            .export_secret(&SecretName::CrossSigningUserSigningKey)
+            .await?;
 
-        Ok(if master_key.is_none() && self_signing_key.is_none() && user_signing_key.is_none() {
-            None
-        } else {
-            Some(CrossSigningKeyExport { master_key, self_signing_key, user_signing_key })
-        })
+        Ok(
+            if master_key.is_none() && self_signing_key.is_none() && user_signing_key.is_none() {
+                None
+            } else {
+                Some(CrossSigningKeyExport {
+                    master_key,
+                    self_signing_key,
+                    user_signing_key,
+                })
+            },
+        )
     }
 
     /// Import our private cross signing keys.
@@ -962,8 +1051,10 @@ impl Store {
         &self,
         export: CrossSigningKeyExport,
     ) -> Result<CrossSigningStatus, SecretImportError> {
-        if let Some(public_identity) =
-            self.get_identity(self.user_id()).await?.and_then(|i| i.own())
+        if let Some(public_identity) = self
+            .get_identity(self.user_id())
+            .await?
+            .and_then(|i| i.own())
         {
             let identity = self.inner.identity.lock().await;
 
@@ -978,17 +1069,27 @@ impl Store {
 
             let status = identity.status().await;
 
-            let diff = identity.get_public_identity_diff(&public_identity.inner).await;
+            let diff = identity
+                .get_public_identity_diff(&public_identity.inner)
+                .await;
 
-            let mut changes =
-                Changes { private_identity: Some(identity.clone()), ..Default::default() };
+            let mut changes = Changes {
+                private_identity: Some(identity.clone()),
+                ..Default::default()
+            };
 
             if diff.none_differ() {
                 public_identity.mark_as_verified();
-                changes.identities.changed.push(UserIdentityData::Own(public_identity.inner));
+                changes
+                    .identities
+                    .changed
+                    .push(UserIdentityData::Own(public_identity.inner));
             }
 
-            info!(?status, "Successfully imported the private cross-signing keys");
+            info!(
+                ?status,
+                "Successfully imported the private cross-signing keys"
+            );
 
             self.save_changes(changes).await?;
         } else {
@@ -1018,15 +1119,21 @@ impl Store {
         };
 
         let Some(master_key) = cross_signing.master_key.clone() else {
-            return Err(SecretsBundleExportError::MissingCrossSigningKey(KeyUsage::Master));
+            return Err(SecretsBundleExportError::MissingCrossSigningKey(
+                KeyUsage::Master,
+            ));
         };
 
         let Some(user_signing_key) = cross_signing.user_signing_key.clone() else {
-            return Err(SecretsBundleExportError::MissingCrossSigningKey(KeyUsage::UserSigning));
+            return Err(SecretsBundleExportError::MissingCrossSigningKey(
+                KeyUsage::UserSigning,
+            ));
         };
 
         let Some(self_signing_key) = cross_signing.self_signing_key.clone() else {
-            return Err(SecretsBundleExportError::MissingCrossSigningKey(KeyUsage::SelfSigning));
+            return Err(SecretsBundleExportError::MissingCrossSigningKey(
+                KeyUsage::SelfSigning,
+            ));
         };
 
         let backup_keys = self.load_backup_keys().await?;
@@ -1034,7 +1141,10 @@ impl Store {
         let backup = if let Some(key) = backup_keys.decryption_key {
             if let Some(backup_version) = backup_keys.backup_version {
                 Some(BackupSecrets::MegolmBackupV1Curve25519AesSha2(
-                    MegolmBackupV1Curve25519AesSha2Secrets { key, backup_version },
+                    MegolmBackupV1Curve25519AesSha2Secrets {
+                        key,
+                        backup_version,
+                    },
                 ))
             } else {
                 return Err(SecretsBundleExportError::MissingBackupVersion);
@@ -1044,7 +1154,11 @@ impl Store {
         };
 
         Ok(SecretsBundle {
-            cross_signing: CrossSigningSecrets { master_key, user_signing_key, self_signing_key },
+            cross_signing: CrossSigningSecrets {
+                master_key,
+                user_signing_key,
+                self_signing_key,
+            },
             backup,
         })
     }
@@ -1092,7 +1206,10 @@ impl Store {
         );
 
         changes.private_identity = Some(identity.clone());
-        changes.identities.new.push(UserIdentityData::Own(public_identity));
+        changes
+            .identities
+            .new
+            .push(UserIdentityData::Own(public_identity));
 
         Ok(self.save_changes(changes).await?)
     }
@@ -1103,8 +1220,10 @@ impl Store {
             SecretName::CrossSigningMasterKey
             | SecretName::CrossSigningUserSigningKey
             | SecretName::CrossSigningSelfSigningKey => {
-                if let Some(public_identity) =
-                    self.get_identity(self.user_id()).await?.and_then(|i| i.own())
+                if let Some(public_identity) = self
+                    .get_identity(self.user_id())
+                    .await?
+                    .and_then(|i| i.own())
                 {
                     let identity = self.inner.identity.lock().await;
 
@@ -1120,8 +1239,10 @@ impl Store {
                         "Successfully imported a private cross signing key"
                     );
 
-                    let changes =
-                        Changes { private_identity: Some(identity.clone()), ..Default::default() };
+                    let changes = Changes {
+                        private_identity: Some(identity.clone()),
+                        ..Default::default()
+                    };
 
                     self.save_changes(changes).await?;
                 }
@@ -1144,7 +1265,10 @@ impl Store {
     /// Check whether there is a global flag to only encrypt messages for
     /// trusted devices or for everyone.
     pub async fn get_only_allow_trusted_devices(&self) -> Result<bool> {
-        let value = self.get_value("only_allow_trusted_devices").await?.unwrap_or_default();
+        let value = self
+            .get_value("only_allow_trusted_devices")
+            .await?
+            .unwrap_or_default();
         Ok(value)
     }
 
@@ -1154,7 +1278,8 @@ impl Store {
         &self,
         block_untrusted_devices: bool,
     ) -> Result<()> {
-        self.set_value("only_allow_trusted_devices", &block_untrusted_devices).await
+        self.set_value("only_allow_trusted_devices", &block_untrusted_devices)
+            .await
     }
 
     /// Get custom stored value associated with a key
@@ -1250,27 +1375,35 @@ impl Store {
         let verification_machine = self.inner.verification_machine.to_owned();
 
         let this = self.clone();
-        self.inner.store.identities_stream().map(move |(own_identity, identities, _)| {
-            let (new_identities, changed_identities, unchanged_identities) = identities.into_maps();
+        self.inner
+            .store
+            .identities_stream()
+            .map(move |(own_identity, identities, _)| {
+                let (new_identities, changed_identities, unchanged_identities) =
+                    identities.into_maps();
 
-            let map_identity = |(user_id, identity)| {
-                (
-                    user_id,
-                    UserIdentity::new(
-                        this.clone(),
-                        identity,
-                        verification_machine.to_owned(),
-                        own_identity.to_owned(),
-                    ),
-                )
-            };
+                let map_identity = |(user_id, identity)| {
+                    (
+                        user_id,
+                        UserIdentity::new(
+                            this.clone(),
+                            identity,
+                            verification_machine.to_owned(),
+                            own_identity.to_owned(),
+                        ),
+                    )
+                };
 
-            let new = new_identities.into_iter().map(map_identity).collect();
-            let changed = changed_identities.into_iter().map(map_identity).collect();
-            let unchanged = unchanged_identities.into_iter().map(map_identity).collect();
+                let new = new_identities.into_iter().map(map_identity).collect();
+                let changed = changed_identities.into_iter().map(map_identity).collect();
+                let unchanged = unchanged_identities.into_iter().map(map_identity).collect();
 
-            IdentityUpdates { new, changed, unchanged }
-        })
+                IdentityUpdates {
+                    new,
+                    changed,
+                    unchanged,
+                }
+            })
     }
 
     /// Returns a stream of device updates, allowing users to listen for
@@ -1307,14 +1440,17 @@ impl Store {
     pub fn devices_stream(&self) -> impl Stream<Item = DeviceUpdates> + use<> {
         let verification_machine = self.inner.verification_machine.to_owned();
 
-        self.inner.store.identities_stream().map(move |(own_identity, identities, devices)| {
-            collect_device_updates(
-                verification_machine.to_owned(),
-                own_identity,
-                identities,
-                devices,
-            )
-        })
+        self.inner
+            .store
+            .identities_stream()
+            .map(move |(own_identity, identities, devices)| {
+                collect_device_updates(
+                    verification_machine.to_owned(),
+                    own_identity,
+                    identities,
+                    devices,
+                )
+            })
     }
 
     /// Returns a [`Stream`] of user identity and device updates
@@ -1329,7 +1465,10 @@ impl Store {
     pub fn identities_stream_raw(
         &self,
     ) -> impl Stream<Item = (IdentityChanges, DeviceChanges)> + use<> {
-        self.inner.store.identities_stream().map(|(_, identities, devices)| (identities, devices))
+        self.inner
+            .store
+            .identities_stream()
+            .map(|(_, identities, devices)| (identities, devices))
     }
 
     /// Creates a [`CrossProcessLock`] for this store, that will contain the
@@ -1459,7 +1598,8 @@ impl Store {
                 })
                 .ok()
         });
-        self.import_sessions_impl(exported_keys, from_backup_version, progress_listener).await
+        self.import_sessions_impl(exported_keys, from_backup_version, progress_listener)
+            .await
     }
 
     /// Import the given room keys into our store.
@@ -1493,7 +1633,8 @@ impl Store {
         exported_keys: Vec<ExportedRoomKey>,
         progress_listener: impl Fn(usize, usize),
     ) -> Result<RoomKeyImportResult> {
-        self.import_room_keys(exported_keys, None, progress_listener).await
+        self.import_room_keys(exported_keys, None, progress_listener)
+            .await
     }
 
     async fn import_sessions_impl(
@@ -1623,8 +1764,10 @@ impl Store {
     ) -> Result<impl Stream<Item = ExportedRoomKey>> {
         // TODO: if/when there is a get_inbound_group_sessions_stream, use that here.
         let sessions = self.get_inbound_group_sessions().await?;
-        Ok(futures_util::stream::iter(sessions.into_iter().filter(predicate))
-            .then(|session| async move { session.export().await }))
+        Ok(
+            futures_util::stream::iter(sessions.into_iter().filter(predicate))
+                .then(|session| async move { session.export().await }),
+        )
     }
 
     /// Assemble a room key bundle for sharing encrypted history, as per
@@ -1713,7 +1856,8 @@ impl Store {
             progress_listener,
         )
         .await?;
-        self.import_room_key_bundle_withheld_info(bundle_info, &bundle).await?;
+        self.import_room_key_bundle_withheld_info(bundle_info, &bundle)
+            .await?;
 
         Ok(())
     }
@@ -1742,8 +1886,10 @@ impl Store {
 
             // Case 2: A bundle for the wrong room.
             (false, true) => {
-                let bad_keys: Vec<_> =
-                    bad.iter().map(|&key| (&key.room_id, &key.session_id)).collect();
+                let bad_keys: Vec<_> = bad
+                    .iter()
+                    .map(|&key| (&key.room_id, &key.session_id))
+                    .collect();
 
                 warn!(
                     ?bad_keys,
@@ -1777,7 +1923,8 @@ impl Store {
                         .ok()
                 });
 
-                self.import_sessions_impl(keys, None, progress_listener).await?;
+                self.import_sessions_impl(keys, None, progress_listener)
+                    .await?;
             }
         }
 
@@ -1807,17 +1954,24 @@ impl Store {
             };
 
             if room_id != bundle_info.bundle_data.room_id {
-                trace!("Ignoring withheld info for incorrect room {} in bundle", room_id);
+                trace!(
+                    "Ignoring withheld info for incorrect room {} in bundle",
+                    room_id
+                );
                 continue;
             }
 
-            changes.withheld_session_info.entry(room_id.to_owned()).or_default().insert(
-                session_id.to_owned(),
-                RoomKeyWithheldEntry {
-                    sender: bundle_info.sender_user.clone(),
-                    content: withheld.to_owned(),
-                },
-            );
+            changes
+                .withheld_session_info
+                .entry(room_id.to_owned())
+                .or_default()
+                .insert(
+                    session_id.to_owned(),
+                    RoomKeyWithheldEntry {
+                        sender: bundle_info.sender_user.clone(),
+                        content: withheld.to_owned(),
+                    },
+                );
             session_id_to_withheld_code_map.insert(session_id, withheld.withheld_code());
         }
 
@@ -1892,40 +2046,50 @@ impl matrix_sdk_common::cross_process_lock::TryLock for LockableCryptoStore {
         key: &str,
         holder: &str,
     ) -> std::result::Result<Option<CrossProcessLockGeneration>, Self::LockError> {
-        self.0.try_take_leased_lock(lease_duration_ms, key, holder).await
+        self.0
+            .try_take_leased_lock(lease_duration_ms, key, holder)
+            .await
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::BTreeMap, pin::pin};
+    use std::collections::BTreeMap;
+    use std::pin::pin;
 
-    use assert_matches2::{assert_let, assert_matches};
+    use assert_matches2::assert_let;
+    use assert_matches2::assert_matches;
     use futures_util::StreamExt;
-    use insta::{_macro_support::Content, assert_json_snapshot, internals::ContentPath};
+    use insta::_macro_support::Content;
+    use insta::assert_json_snapshot;
+    use insta::internals::ContentPath;
     use matrix_sdk_test::async_test;
     use rand::RngExt;
-    use ruma::{
-        RoomId, device_id,
-        events::room::{EncryptedFile, EncryptedFileHashes, V2EncryptedFileInfo},
-        owned_device_id, owned_mxc_uri, room_id, user_id,
-    };
+    use ruma::RoomId;
+    use ruma::device_id;
+    use ruma::events::room::EncryptedFile;
+    use ruma::events::room::EncryptedFileHashes;
+    use ruma::events::room::V2EncryptedFileInfo;
+    use ruma::owned_device_id;
+    use ruma::owned_mxc_uri;
+    use ruma::room_id;
+    use ruma::user_id;
     use serde_json::json;
-    use vodozemac::{Ed25519Keypair, megolm::SessionKey};
+    use vodozemac::Ed25519Keypair;
+    use vodozemac::megolm::SessionKey;
 
-    use crate::{
-        Account, OlmMachine,
-        machine::test_helpers::get_machine_pair,
-        olm::{InboundGroupSession, SenderData},
-        store::types::{DehydratedDeviceKey, RoomKeyWithheldEntry, StoredRoomKeyBundleData},
-        types::{
-            EventEncryptionAlgorithm,
-            events::{
-                room_key_bundle::RoomKeyBundleContent,
-                room_key_withheld::{MegolmV1AesSha2WithheldContent, RoomKeyWithheldContent},
-            },
-        },
-    };
+    use crate::Account;
+    use crate::OlmMachine;
+    use crate::machine::test_helpers::get_machine_pair;
+    use crate::olm::InboundGroupSession;
+    use crate::olm::SenderData;
+    use crate::store::types::DehydratedDeviceKey;
+    use crate::store::types::RoomKeyWithheldEntry;
+    use crate::store::types::StoredRoomKeyBundleData;
+    use crate::types::EventEncryptionAlgorithm;
+    use crate::types::events::room_key_bundle::RoomKeyBundleContent;
+    use crate::types::events::room_key_withheld::MegolmV1AesSha2WithheldContent;
+    use crate::types::events::room_key_withheld::RoomKeyWithheldContent;
 
     #[async_test]
     async fn test_merge_received_group_session() {
@@ -1941,28 +2105,55 @@ mod tests {
         let mut inbound_at_index_5 =
             InboundGroupSession::from_export(&inbound.export_at_index(5).await).unwrap();
         inbound_at_index_5.sender_data = inbound.sender_data.clone();
-        bob.store().save_inbound_group_sessions(&[inbound_at_index_5.clone()]).await.unwrap();
+        bob.store()
+            .save_inbound_group_sessions(&[inbound_at_index_5.clone()])
+            .await
+            .unwrap();
 
         // No changes if we get a disconnected session.
         let disconnected = make_inbound_group_session(&alice_account, &megolm_signing_key, room_id);
-        assert_eq!(bob.store().merge_received_group_session(disconnected).await.unwrap(), None);
+        assert_eq!(
+            bob.store()
+                .merge_received_group_session(disconnected)
+                .await
+                .unwrap(),
+            None
+        );
 
         // No changes needed when we receive a worse copy of the session
         let mut worse =
             InboundGroupSession::from_export(&inbound.export_at_index(10).await).unwrap();
         worse.sender_data = inbound.sender_data.clone();
-        assert_eq!(bob.store().merge_received_group_session(worse).await.unwrap(), None);
+        assert_eq!(
+            bob.store()
+                .merge_received_group_session(worse)
+                .await
+                .unwrap(),
+            None
+        );
 
         // Nor when we receive an exact copy of what we already have
         let mut copy = InboundGroupSession::from_pickle(inbound_at_index_5.pickle().await).unwrap();
         copy.sender_data = inbound.sender_data.clone();
-        assert_eq!(bob.store().merge_received_group_session(copy).await.unwrap(), None);
+        assert_eq!(
+            bob.store()
+                .merge_received_group_session(copy)
+                .await
+                .unwrap(),
+            None
+        );
 
         // But when we receive a better copy of the session, we should get it back
         let mut better =
             InboundGroupSession::from_export(&inbound.export_at_index(0).await).unwrap();
         better.sender_data = inbound.sender_data.clone();
-        assert_let!(Some(update) = bob.store().merge_received_group_session(better).await.unwrap());
+        assert_let!(
+            Some(update) = bob
+                .store()
+                .merge_received_group_session(better)
+                .await
+                .unwrap()
+        );
         assert_eq!(update.first_known_index(), 0);
 
         // A worse copy of the ratchet, but better trust data
@@ -2069,11 +2260,17 @@ mod tests {
             get_machine_pair(user_id!("@a:s.co"), user_id!("@b:s.co"), false).await;
 
         let room1_id = room_id!("!room1:localhost");
-        alice.create_outbound_group_session_with_defaults_test_helper(room1_id).await.unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room1_id)
+            .await
+            .unwrap();
         let exported_sessions = alice.store().export_room_keys(|_| true).await.unwrap();
 
         let mut room_keys_received_stream = Box::pin(bob.store().room_keys_received_stream());
-        bob.store().import_room_keys(exported_sessions, None, |_, _| {}).await.unwrap();
+        bob.store()
+            .import_room_keys(exported_sessions, None, |_, _| {})
+            .await
+            .unwrap();
 
         let room_keys = room_keys_received_stream
             .next()
@@ -2092,9 +2289,18 @@ mod tests {
         let room1_id = room_id!("!room1:localhost");
         let room2_id = room_id!("!room2:localhost");
         let room3_id = room_id!("!room3:localhost");
-        alice.create_outbound_group_session_with_defaults_test_helper(room1_id).await.unwrap();
-        alice.create_outbound_group_session_with_defaults_test_helper(room2_id).await.unwrap();
-        alice.create_outbound_group_session_with_defaults_test_helper(room3_id).await.unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room1_id)
+            .await
+            .unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room2_id)
+            .await
+            .unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room3_id)
+            .await
+            .unwrap();
 
         // When I export some of the keys
         let keys = alice
@@ -2119,11 +2325,23 @@ mod tests {
         let (alice, _, _) = get_machine_pair(user_id!("@a:s.co"), user_id!("@b:s.co"), false).await;
         let room1_id = room_id!("!room1:localhost");
         let room2_id = room_id!("!room2:localhost");
-        alice.create_outbound_group_session_with_defaults_test_helper(room1_id).await.unwrap();
-        alice.create_outbound_group_session_with_defaults_test_helper(room2_id).await.unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room1_id)
+            .await
+            .unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room2_id)
+            .await
+            .unwrap();
 
         // When I export the keys as a stream
-        let mut keys = pin!(alice.store().export_room_keys_stream(|_| true).await.unwrap());
+        let mut keys = pin!(
+            alice
+                .store()
+                .export_room_keys_stream(|_| true)
+                .await
+                .unwrap()
+        );
 
         // And collect them
         let mut collected = vec![];
@@ -2133,8 +2351,14 @@ mod tests {
 
         // Then all the keys were provided
         assert_eq!(collected.len(), 2);
-        assert_eq!(collected[0].algorithm, EventEncryptionAlgorithm::MegolmV1AesSha2);
-        assert_eq!(collected[1].algorithm, EventEncryptionAlgorithm::MegolmV1AesSha2);
+        assert_eq!(
+            collected[0].algorithm,
+            EventEncryptionAlgorithm::MegolmV1AesSha2
+        );
+        assert_eq!(
+            collected[1].algorithm,
+            EventEncryptionAlgorithm::MegolmV1AesSha2
+        );
         assert_eq!(collected[0].room_id, "!room1:localhost");
         assert_eq!(collected[1].room_id, "!room2:localhost");
         assert_eq!(collected[0].session_key.to_base64().len(), 220);
@@ -2147,12 +2371,23 @@ mod tests {
         let (alice, _, _) = get_machine_pair(user_id!("@a:s.co"), user_id!("@b:s.co"), false).await;
         let room1_id = room_id!("!room1:localhost");
         let room2_id = room_id!("!room2:localhost");
-        alice.create_outbound_group_session_with_defaults_test_helper(room1_id).await.unwrap();
-        alice.create_outbound_group_session_with_defaults_test_helper(room2_id).await.unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room1_id)
+            .await
+            .unwrap();
+        alice
+            .create_outbound_group_session_with_defaults_test_helper(room2_id)
+            .await
+            .unwrap();
 
         // When I export the keys as a stream
-        let mut keys =
-            pin!(alice.store().export_room_keys_stream(|s| s.room_id() == room1_id).await.unwrap());
+        let mut keys = pin!(
+            alice
+                .store()
+                .export_room_keys_stream(|s| s.room_id() == room1_id)
+                .await
+                .unwrap()
+        );
 
         // And collect them
         let mut collected = vec![];
@@ -2162,7 +2397,10 @@ mod tests {
 
         // Then all the keys matching our predicate were provided, and no others
         assert_eq!(collected.len(), 1);
-        assert_eq!(collected[0].algorithm, EventEncryptionAlgorithm::MegolmV1AesSha2);
+        assert_eq!(
+            collected[0].algorithm,
+            EventEncryptionAlgorithm::MegolmV1AesSha2
+        );
         assert_eq!(collected[0].room_id, "!room1:localhost");
         assert_eq!(collected[0].session_key.to_base64().len(), 220);
     }
@@ -2182,7 +2420,10 @@ mod tests {
              have the cross-signing keys",
         );
 
-        assert!(bundle.backup.is_none(), "The bundle should not contain a backup key");
+        assert!(
+            bundle.backup.is_none(),
+            "The bundle should not contain a backup key"
+        );
 
         second
             .store()
@@ -2191,11 +2432,23 @@ mod tests {
             .expect("We should be able to import the secrets bundle");
 
         let status = second.cross_signing_status().await;
-        let identity = second.get_identity(user_id, None).await.unwrap().unwrap().own().unwrap();
+        let identity = second
+            .get_identity(user_id, None)
+            .await
+            .unwrap()
+            .unwrap()
+            .own()
+            .unwrap();
 
-        assert!(identity.is_verified(), "The public identity should be marked as verified.");
+        assert!(
+            identity.is_verified(),
+            "The public identity should be marked as verified."
+        );
 
-        assert!(status.is_complete(), "We should have imported all the cross-signing keys");
+        assert!(
+            status.is_complete(),
+            "We should have imported all the cross-signing keys"
+        );
     }
 
     #[async_test]
@@ -2267,7 +2520,10 @@ mod tests {
                 true,
             ),
         ];
-        bob.store().save_inbound_group_sessions(&sessions).await.unwrap();
+        bob.store()
+            .save_inbound_group_sessions(&sessions)
+            .await
+            .unwrap();
 
         // When I build the bundle
         let mut bundle = bob.store().build_room_key_bundle(room1_id).await.unwrap();
@@ -2275,7 +2531,9 @@ mod tests {
         // Then the bundle matches the snapshot.
 
         // We sort the sessions in the bundle, so that the snapshot is stable.
-        bundle.room_keys.sort_by_key(|session| session.session_id.clone());
+        bundle
+            .room_keys
+            .sort_by_key(|session| session.session_id.clone());
 
         // We substitute the algorithm, since this changes based on feature flags.
         let algorithm = if cfg!(feature = "experimental-algorithms") {
@@ -2337,7 +2595,11 @@ mod tests {
             ),
         ];
 
-        alice.store().save_inbound_group_sessions(&sessions).await.unwrap();
+        alice
+            .store()
+            .save_inbound_group_sessions(&sessions)
+            .await
+            .unwrap();
         let bundle = alice.store().build_room_key_bundle(room_id).await.unwrap();
 
         bob.store()
@@ -2369,8 +2631,11 @@ mod tests {
             .unwrap();
 
         // The room key should be imported successfully
-        let imported_sessions =
-            bob.store().get_inbound_group_sessions_by_room_id(room_id).await.unwrap();
+        let imported_sessions = bob
+            .store()
+            .get_inbound_group_sessions_by_room_id(room_id)
+            .await
+            .unwrap();
 
         assert_eq!(imported_sessions.len(), 1);
         assert_eq!(imported_sessions[0].room_id(), room_id);
@@ -2446,7 +2711,10 @@ mod tests {
             withheld_content.sender_key.to_base64(),
             "7hIcOrEroXYdzjtCBvBjUiqvT0Me7g+ymeXqoc65RS0"
         );
-        assert_eq!(withheld_content.from_device, Some(owned_device_id!("ALICE")));
+        assert_eq!(
+            withheld_content.from_device,
+            Some(owned_device_id!("ALICE"))
+        );
     }
 
     /// Create an inbound Megolm session for the given room.

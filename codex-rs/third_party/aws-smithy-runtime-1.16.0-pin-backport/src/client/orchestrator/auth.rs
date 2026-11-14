@@ -6,16 +6,25 @@
 use crate::client::auth::no_auth::NO_AUTH_SCHEME_ID;
 use crate::client::identity::IdentityCache;
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::auth::{
-    AuthScheme, AuthSchemeEndpointConfig, AuthSchemeId, AuthSchemeOption,
-    AuthSchemeOptionResolverParams, AuthSchemePreference, ResolveAuthSchemeOptions,
-};
-use aws_smithy_runtime_api::client::endpoint::{EndpointResolverParams, ResolveEndpoint};
-use aws_smithy_runtime_api::client::identity::{Identity, ResolveIdentity};
-use aws_smithy_runtime_api::client::identity::{IdentityCacheLocation, ResolveCachedIdentity};
+use aws_smithy_runtime_api::client::auth::AuthScheme;
+use aws_smithy_runtime_api::client::auth::AuthSchemeEndpointConfig;
+use aws_smithy_runtime_api::client::auth::AuthSchemeId;
+use aws_smithy_runtime_api::client::auth::AuthSchemeOption;
+use aws_smithy_runtime_api::client::auth::AuthSchemeOptionResolverParams;
+use aws_smithy_runtime_api::client::auth::AuthSchemePreference;
+use aws_smithy_runtime_api::client::auth::ResolveAuthSchemeOptions;
+use aws_smithy_runtime_api::client::endpoint::EndpointResolverParams;
+use aws_smithy_runtime_api::client::endpoint::ResolveEndpoint;
+use aws_smithy_runtime_api::client::identity::Identity;
+use aws_smithy_runtime_api::client::identity::IdentityCacheLocation;
+use aws_smithy_runtime_api::client::identity::ResolveCachedIdentity;
+use aws_smithy_runtime_api::client::identity::ResolveIdentity;
 use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
-use aws_smithy_types::config_bag::{ConfigBag, FrozenLayer, Storable, StoreReplace};
+use aws_smithy_types::config_bag::ConfigBag;
+use aws_smithy_types::config_bag::FrozenLayer;
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreReplace;
 use aws_smithy_types::endpoint::Endpoint;
 use aws_smithy_types::Document;
 use std::borrow::Cow;
@@ -437,23 +446,26 @@ impl fmt::Debug for ExploredList {
 #[cfg(all(test, any(feature = "test-util", feature = "legacy-test-util")))]
 mod tests {
     use super::*;
-    use crate::client::orchestrator::endpoints::{
-        StaticUriEndpointResolver, StaticUriEndpointResolverParams,
-    };
+    use crate::client::orchestrator::endpoints::StaticUriEndpointResolver;
+    use crate::client::orchestrator::endpoints::StaticUriEndpointResolverParams;
     use aws_smithy_runtime_api::client::auth::static_resolver::StaticAuthSchemeOptionResolver;
-    use aws_smithy_runtime_api::client::auth::{
-        AuthScheme, AuthSchemeId, AuthSchemeOptionResolverParams, SharedAuthScheme,
-        SharedAuthSchemeOptionResolver, Sign,
-    };
+    use aws_smithy_runtime_api::client::auth::AuthScheme;
+    use aws_smithy_runtime_api::client::auth::AuthSchemeId;
+    use aws_smithy_runtime_api::client::auth::AuthSchemeOptionResolverParams;
+    use aws_smithy_runtime_api::client::auth::SharedAuthScheme;
+    use aws_smithy_runtime_api::client::auth::SharedAuthSchemeOptionResolver;
+    use aws_smithy_runtime_api::client::auth::Sign;
     use aws_smithy_runtime_api::client::endpoint::SharedEndpointResolver;
-    use aws_smithy_runtime_api::client::identity::{
-        Identity, IdentityFuture, ResolveIdentity, SharedIdentityResolver,
-    };
-    use aws_smithy_runtime_api::client::interceptors::context::{Input, InterceptorContext};
+    use aws_smithy_runtime_api::client::identity::Identity;
+    use aws_smithy_runtime_api::client::identity::IdentityFuture;
+    use aws_smithy_runtime_api::client::identity::ResolveIdentity;
+    use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
+    use aws_smithy_runtime_api::client::interceptors::context::Input;
+    use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
     use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
-    use aws_smithy_runtime_api::client::runtime_components::{
-        GetIdentityResolver, RuntimeComponents, RuntimeComponentsBuilder,
-    };
+    use aws_smithy_runtime_api::client::runtime_components::GetIdentityResolver;
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
     use aws_smithy_types::config_bag::Layer;
     use std::collections::HashMap;
 
@@ -578,11 +590,12 @@ mod tests {
     #[cfg(feature = "http-auth")]
     #[tokio::test]
     async fn select_best_scheme_for_available_identity_resolvers() {
-        use crate::client::auth::http::{BasicAuthScheme, BearerAuthScheme};
-        use aws_smithy_runtime_api::client::auth::http::{
-            HTTP_BASIC_AUTH_SCHEME_ID, HTTP_BEARER_AUTH_SCHEME_ID,
-        };
-        use aws_smithy_runtime_api::client::identity::http::{Login, Token};
+        use crate::client::auth::http::BasicAuthScheme;
+        use crate::client::auth::http::BearerAuthScheme;
+        use aws_smithy_runtime_api::client::auth::http::HTTP_BASIC_AUTH_SCHEME_ID;
+        use aws_smithy_runtime_api::client::auth::http::HTTP_BEARER_AUTH_SCHEME_ID;
+        use aws_smithy_runtime_api::client::identity::http::Login;
+        use aws_smithy_runtime_api::client::identity::http::Token;
 
         async fn run_test(add_more_to_layer: impl Fn(Layer) -> Layer) {
             let mut ctx = InterceptorContext::new(Input::doesnt_matter());
@@ -774,7 +787,8 @@ mod tests {
     #[cfg(feature = "http-auth")]
     #[tokio::test]
     async fn use_identity_cache() {
-        use crate::client::auth::http::{ApiKeyAuthScheme, ApiKeyLocation};
+        use crate::client::auth::http::ApiKeyAuthScheme;
+        use crate::client::auth::http::ApiKeyLocation;
         use aws_smithy_runtime_api::client::auth::http::HTTP_API_KEY_AUTH_SCHEME_ID;
         use aws_smithy_runtime_api::client::identity::http::Token;
         use aws_smithy_types::body::SdkBody;
@@ -956,10 +970,11 @@ mod tests {
     #[cfg(feature = "http-auth")]
     #[tokio::test]
     async fn test_resolve_identity() {
-        use crate::client::auth::http::{ApiKeyAuthScheme, ApiKeyLocation, BasicAuthScheme};
-        use aws_smithy_runtime_api::client::auth::http::{
-            HTTP_API_KEY_AUTH_SCHEME_ID, HTTP_BASIC_AUTH_SCHEME_ID,
-        };
+        use crate::client::auth::http::ApiKeyAuthScheme;
+        use crate::client::auth::http::ApiKeyLocation;
+        use crate::client::auth::http::BasicAuthScheme;
+        use aws_smithy_runtime_api::client::auth::http::HTTP_API_KEY_AUTH_SCHEME_ID;
+        use aws_smithy_runtime_api::client::auth::http::HTTP_BASIC_AUTH_SCHEME_ID;
         use aws_smithy_runtime_api::client::identity::http::Token;
         use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
 
@@ -1070,9 +1085,9 @@ mod tests {
     #[cfg(feature = "http-auth")]
     #[tokio::test]
     async fn auth_scheme_preference() {
-        use aws_smithy_runtime_api::client::auth::http::{
-            HTTP_API_KEY_AUTH_SCHEME_ID, HTTP_BASIC_AUTH_SCHEME_ID, HTTP_BEARER_AUTH_SCHEME_ID,
-        };
+        use aws_smithy_runtime_api::client::auth::http::HTTP_API_KEY_AUTH_SCHEME_ID;
+        use aws_smithy_runtime_api::client::auth::http::HTTP_BASIC_AUTH_SCHEME_ID;
+        use aws_smithy_runtime_api::client::auth::http::HTTP_BEARER_AUTH_SCHEME_ID;
 
         struct TestCase {
             supported: Vec<AuthSchemeOption>,

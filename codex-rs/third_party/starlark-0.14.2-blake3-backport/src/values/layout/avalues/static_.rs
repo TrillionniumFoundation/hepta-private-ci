@@ -135,7 +135,7 @@ mod tests {
             ProvidesStaticType,
             NoSerialize,
             Allocative,
-            StarlarkPagable
+            StarlarkPagable,
         )]
         #[display("MySimpleValue")]
         struct MySimpleValue(u32);

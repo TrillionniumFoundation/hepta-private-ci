@@ -22,8 +22,7 @@ use allocative::Allocative;
 use dupe::Dupe;
 
 /// How to profile starlark code.
-#[derive(Debug, PartialEq, Eq, Hash, Clone, Dupe, Copy, Allocative)]
-#[derive(pagable::Pagable)]
+#[derive(Debug, PartialEq, Eq, Hash, Clone, Dupe, Copy, Allocative, pagable::Pagable)]
 #[non_exhaustive]
 pub enum ProfileMode {
     /// The heap profile mode provides information about the time spent in each function and allocations

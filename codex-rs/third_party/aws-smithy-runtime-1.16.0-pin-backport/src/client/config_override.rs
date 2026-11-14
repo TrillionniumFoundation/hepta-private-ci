@@ -5,9 +5,12 @@
 
 use aws_smithy_async::rt::sleep::SharedAsyncSleep;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
-use aws_smithy_types::config_bag::{
-    CloneableLayer, FrozenLayer, Layer, Storable, Store, StoreReplace,
-};
+use aws_smithy_types::config_bag::CloneableLayer;
+use aws_smithy_types::config_bag::FrozenLayer;
+use aws_smithy_types::config_bag::Layer;
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::Store;
+use aws_smithy_types::config_bag::StoreReplace;
 
 macro_rules! component {
     ($typ:ty, $accessor:ident, $latest_accessor:ident, $doc:tt) => {

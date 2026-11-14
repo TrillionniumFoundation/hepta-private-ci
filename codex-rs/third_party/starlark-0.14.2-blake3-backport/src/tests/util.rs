@@ -44,7 +44,7 @@ use crate::values::ValueLike;
     Allocative,
     ProvidesStaticType,
     NoSerialize,
-    StarlarkPagable
+    StarlarkPagable,
 )]
 #[display("TestComplexValue<{}>", _0)]
 pub(crate) struct TestComplexValue<V: ValueLifetimeless>(pub(crate) V);

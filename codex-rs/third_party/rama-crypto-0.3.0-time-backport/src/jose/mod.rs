@@ -33,14 +33,29 @@ mod jwa;
 pub use jwa::JWA;
 
 mod jwk;
-pub use jwk::{EcdsaKey, JWK, JWKEllipticCurves, JWKType, JWKUse, RsaKey};
+pub use jwk::EcdsaKey;
+pub use jwk::JWK;
+pub use jwk::JWKEllipticCurves;
+pub use jwk::JWKType;
+pub use jwk::JWKUse;
+pub use jwk::RsaKey;
 
 mod constants;
 mod jwk_utils;
 mod jws;
 
-pub use jws::{
-    ChainedJWSBuilder, DecodedJWS, DecodedJWSFlattened, DecodedSignature, EMPTY_PAYLOAD, Empty,
-    Headers, JWS, JWSBuilder, JWSCompact, JWSFlattened, NO_PAYLOAD, Signer, ToVerifySignature,
-    Verifier,
-};
+pub use jws::ChainedJWSBuilder;
+pub use jws::DecodedJWS;
+pub use jws::DecodedJWSFlattened;
+pub use jws::DecodedSignature;
+pub use jws::EMPTY_PAYLOAD;
+pub use jws::Empty;
+pub use jws::Headers;
+pub use jws::JWS;
+pub use jws::JWSBuilder;
+pub use jws::JWSCompact;
+pub use jws::JWSFlattened;
+pub use jws::NO_PAYLOAD;
+pub use jws::Signer;
+pub use jws::ToVerifySignature;
+pub use jws::Verifier;

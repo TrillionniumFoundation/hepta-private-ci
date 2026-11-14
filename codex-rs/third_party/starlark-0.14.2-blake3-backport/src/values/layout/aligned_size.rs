@@ -40,7 +40,7 @@ use crate::values::layout::heap::repr::AValueHeader;
     PartialOrd,
     Hash,
     Allocative,
-    derive_more::Display
+    derive_more::Display,
 )]
 #[repr(transparent)]
 pub(crate) struct AlignedSize {

@@ -9,7 +9,8 @@
 #![allow(dead_code)]
 
 use crate::client::retries::RetryPartition;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::time::Duration;
 use tracing::debug;
 
@@ -426,12 +427,15 @@ impl ClientRateLimiterBuilder {
 
 #[cfg(test)]
 mod tests {
-    use super::{cubic_throttle, ClientRateLimiter, INITIAL_REQUEST_COST};
+    use super::cubic_throttle;
+    use super::ClientRateLimiter;
+    use super::INITIAL_REQUEST_COST;
     use crate::client::retries::client_rate_limiter::RequestReason;
     use approx::assert_relative_eq;
     use aws_smithy_async::rt::sleep::AsyncSleep;
     use aws_smithy_async::test_util::instant_time_and_sleep;
-    use std::time::{Duration, SystemTime};
+    use std::time::Duration;
+    use std::time::SystemTime;
 
     const ONE_SECOND: Duration = Duration::from_secs(1);
     const TWO_HUNDRED_MILLISECONDS: Duration = Duration::from_millis(200);

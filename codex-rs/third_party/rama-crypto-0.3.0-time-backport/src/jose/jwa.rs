@@ -1,20 +1,32 @@
 use rama_core::error::BoxErrorExt as _;
 use std::ops::Deref;
 
-use aws_lc_rs::{
-    hmac,
-    hmac::{HMAC_SHA256, HMAC_SHA384, HMAC_SHA512},
-    signature::{
-        ECDSA_P256_SHA256_FIXED_SIGNING, ECDSA_P384_SHA384_FIXED_SIGNING,
-        ECDSA_P521_SHA512_FIXED_SIGNING, EcdsaSigningAlgorithm, EcdsaVerificationAlgorithm,
-        RSA_PKCS1_2048_8192_SHA256, RSA_PKCS1_2048_8192_SHA384, RSA_PKCS1_2048_8192_SHA512,
-        RSA_PKCS1_SHA256, RSA_PKCS1_SHA384, RSA_PKCS1_SHA512, RSA_PSS_2048_8192_SHA256,
-        RSA_PSS_2048_8192_SHA384, RSA_PSS_2048_8192_SHA512, RSA_PSS_SHA256, RSA_PSS_SHA384,
-        RSA_PSS_SHA512, RsaEncoding, VerificationAlgorithm,
-    },
-};
+use aws_lc_rs::hmac;
+use aws_lc_rs::hmac::HMAC_SHA256;
+use aws_lc_rs::hmac::HMAC_SHA384;
+use aws_lc_rs::hmac::HMAC_SHA512;
+use aws_lc_rs::signature::ECDSA_P256_SHA256_FIXED_SIGNING;
+use aws_lc_rs::signature::ECDSA_P384_SHA384_FIXED_SIGNING;
+use aws_lc_rs::signature::ECDSA_P521_SHA512_FIXED_SIGNING;
+use aws_lc_rs::signature::EcdsaSigningAlgorithm;
+use aws_lc_rs::signature::EcdsaVerificationAlgorithm;
+use aws_lc_rs::signature::RSA_PKCS1_2048_8192_SHA256;
+use aws_lc_rs::signature::RSA_PKCS1_2048_8192_SHA384;
+use aws_lc_rs::signature::RSA_PKCS1_2048_8192_SHA512;
+use aws_lc_rs::signature::RSA_PKCS1_SHA256;
+use aws_lc_rs::signature::RSA_PKCS1_SHA384;
+use aws_lc_rs::signature::RSA_PKCS1_SHA512;
+use aws_lc_rs::signature::RSA_PSS_2048_8192_SHA256;
+use aws_lc_rs::signature::RSA_PSS_2048_8192_SHA384;
+use aws_lc_rs::signature::RSA_PSS_2048_8192_SHA512;
+use aws_lc_rs::signature::RSA_PSS_SHA256;
+use aws_lc_rs::signature::RSA_PSS_SHA384;
+use aws_lc_rs::signature::RSA_PSS_SHA512;
+use aws_lc_rs::signature::RsaEncoding;
+use aws_lc_rs::signature::VerificationAlgorithm;
 use rama_core::error::BoxError;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::jose::JWKEllipticCurves;
 

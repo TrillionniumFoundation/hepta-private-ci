@@ -22,29 +22,31 @@ pub use throughput::Throughput;
 mod throughput;
 
 use crate::client::http::body::minimum_throughput::throughput::ThroughputReport;
+use aws_smithy_async::rt::sleep::AsyncSleep;
+use aws_smithy_async::rt::sleep::SharedAsyncSleep;
 use aws_smithy_async::rt::sleep::Sleep;
-use aws_smithy_async::rt::sleep::{AsyncSleep, SharedAsyncSleep};
-use aws_smithy_async::time::{SharedTimeSource, TimeSource};
-use aws_smithy_runtime_api::{
-    box_error::BoxError,
-    client::{
-        http::HttpConnectorFuture, result::ConnectorError, runtime_components::RuntimeComponents,
-        stalled_stream_protection::StalledStreamProtectionConfig,
-    },
-};
-use aws_smithy_runtime_api::{client::orchestrator::HttpResponse, shared::IntoShared};
-use aws_smithy_types::config_bag::{ConfigBag, Storable, StoreReplace};
+use aws_smithy_async::time::SharedTimeSource;
+use aws_smithy_async::time::TimeSource;
+use aws_smithy_runtime_api::box_error::BoxError;
+use aws_smithy_runtime_api::client::http::HttpConnectorFuture;
+use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+use aws_smithy_runtime_api::client::result::ConnectorError;
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+use aws_smithy_runtime_api::client::stalled_stream_protection::StalledStreamProtectionConfig;
+use aws_smithy_runtime_api::shared::IntoShared;
+use aws_smithy_types::config_bag::ConfigBag;
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreReplace;
 use options::MinimumThroughputBodyOptions;
-use std::{
-    fmt,
-    sync::{Arc, Mutex},
-    task::Poll,
-};
-use std::{future::Future, pin::Pin};
-use std::{
-    task::Context,
-    time::{Duration, SystemTime},
-};
+use std::fmt;
+use std::future::Future;
+use std::pin::Pin;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::task::Context;
+use std::task::Poll;
+use std::time::Duration;
+use std::time::SystemTime;
 use throughput::ThroughputLogs;
 
 /// Use [`MinimumThroughputDownloadBody`] instead.

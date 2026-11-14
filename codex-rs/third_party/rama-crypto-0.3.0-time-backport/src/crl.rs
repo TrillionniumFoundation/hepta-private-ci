@@ -11,11 +11,12 @@
 
 use std::time::SystemTime;
 
-use rama_core::error::{BoxError, ErrorContext};
-use yasna::{
-    Tag,
-    models::{GeneralizedTime, ObjectIdentifier, UTCTime},
-};
+use rama_core::error::BoxError;
+use rama_core::error::ErrorContext;
+use yasna::Tag;
+use yasna::models::GeneralizedTime;
+use yasna::models::ObjectIdentifier;
+use yasna::models::UTCTime;
 
 fn oid_ecdsa_sha256() -> ObjectIdentifier {
     ObjectIdentifier::from_slice(&[1, 2, 840, 10045, 4, 3, 2])

@@ -10,11 +10,15 @@ to the Secret Service. Each store holds the singleton used by its creds.
 use std::collections::HashMap;
 use std::sync::Mutex;
 
-use secret_service::{EncryptionType, blocking::Item, blocking::SecretService};
+use secret_service::EncryptionType;
+use secret_service::blocking::Item;
+use secret_service::blocking::SecretService;
 use zbus::OwnedObjectPath;
 
-use crate::errors::{decode_error, platform_failure};
-use keyring_core::{Error, Result};
+use crate::errors::decode_error;
+use crate::errors::platform_failure;
+use keyring_core::Error;
+use keyring_core::Result;
 
 pub(crate) struct Service<'a> {
     ss: Mutex<SecretService<'a>>,
@@ -195,9 +199,12 @@ impl Service<'_> {
 /// be called except from the methods of the Service struct which has
 /// made the service singleton available.
 mod util {
-    use super::{Error, Result, decode_error};
+    use super::Error;
+    use super::Result;
+    use super::decode_error;
 
-    use secret_service::blocking::{Collection, SecretService};
+    use secret_service::blocking::Collection;
+    use secret_service::blocking::SecretService;
 
     /// Find the secret service collection whose label is the given name.
     ///

@@ -51,13 +51,7 @@ pub enum NumRef<'v> {
     Float(StarlarkFloat),
 }
 
-#[derive(
-    Debug,
-    derive_more::Display,
-    StarlarkTypeRepr,
-    AllocValue,
-    AllocFrozenValue
-)]
+#[derive(Debug, derive_more::Display, StarlarkTypeRepr, AllocValue, AllocFrozenValue)]
 #[doc(hidden)]
 pub enum Num {
     Int(StarlarkInt),

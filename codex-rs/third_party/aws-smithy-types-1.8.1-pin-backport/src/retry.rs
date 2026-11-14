@@ -6,7 +6,10 @@
 //! This module defines types that describe when to retry given a response.
 
 use crate::config_bag::value::Value;
-use crate::config_bag::{ItemIter, Storable, Store, StoreReplace};
+use crate::config_bag::ItemIter;
+use crate::config_bag::Storable;
+use crate::config_bag::Store;
+use crate::config_bag::StoreReplace;
 use std::fmt;
 use std::str::FromStr;
 use std::time::Duration;
@@ -617,7 +620,8 @@ impl Store for MergeRetryConfig {
 
 #[cfg(test)]
 mod tests {
-    use crate::retry::{RetryConfigBuilder, RetryMode};
+    use crate::retry::RetryConfigBuilder;
+    use crate::retry::RetryMode;
     use std::str::FromStr;
 
     #[test]
@@ -700,8 +704,11 @@ mod tests {
 
     #[test]
     fn merge_retry_config_preserves_retry_spec_from_lower_layer() {
-        use crate::config_bag::{ConfigBag, Layer};
-        use crate::retry::{MergeRetryConfig, RetryConfig, RetrySpec};
+        use crate::config_bag::ConfigBag;
+        use crate::config_bag::Layer;
+        use crate::retry::MergeRetryConfig;
+        use crate::retry::RetryConfig;
+        use crate::retry::RetrySpec;
 
         let mut lower = Layer::new("sdk_defaults");
         lower.store_put(RetryConfig::standard().with_retry_spec(RetrySpec::v2_1()));
@@ -716,8 +723,11 @@ mod tests {
 
     #[test]
     fn merge_retry_config_customer_explicit_retry_spec_wins() {
-        use crate::config_bag::{ConfigBag, Layer};
-        use crate::retry::{MergeRetryConfig, RetryConfig, RetrySpec};
+        use crate::config_bag::ConfigBag;
+        use crate::config_bag::Layer;
+        use crate::retry::MergeRetryConfig;
+        use crate::retry::RetryConfig;
+        use crate::retry::RetrySpec;
 
         let mut lower = Layer::new("sdk_defaults");
         lower.store_put(RetryConfig::standard().with_retry_spec(RetrySpec::v2_1()));
@@ -731,8 +741,11 @@ mod tests {
 
     #[test]
     fn merge_retry_config_long_polling_from_operation_layer() {
-        use crate::config_bag::{ConfigBag, Layer};
-        use crate::retry::{MergeRetryConfig, RetryConfig, RetrySpec};
+        use crate::config_bag::ConfigBag;
+        use crate::config_bag::Layer;
+        use crate::retry::MergeRetryConfig;
+        use crate::retry::RetryConfig;
+        use crate::retry::RetrySpec;
 
         let mut lower = Layer::new("sdk_defaults");
         lower.store_put(RetryConfig::standard().with_retry_spec(RetrySpec::v2_1()));

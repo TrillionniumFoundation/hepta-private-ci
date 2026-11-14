@@ -4,11 +4,14 @@
  */
 
 use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::task::Context;
+use std::task::Poll;
 
 use bytes::Bytes;
 
-use crate::body::{convert_headers_1x_0x, Error, SdkBody};
+use crate::body::convert_headers_1x_0x;
+use crate::body::Error;
+use crate::body::SdkBody;
 
 impl SdkBody {
     /// Construct an `SdkBody` from a type that implements [`http_body_0_4::Body<Data = Bytes>`](http_body_0_4::Body).

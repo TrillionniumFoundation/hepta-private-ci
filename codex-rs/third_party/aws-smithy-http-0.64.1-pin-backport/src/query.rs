@@ -9,7 +9,8 @@
 //! [httpQuery](https://smithy.io/2.0/spec/http-bindings.html#httpquery-trait)
 
 use crate::urlencode::BASE_SET;
-use aws_smithy_types::date_time::{DateTimeFormatError, Format};
+use aws_smithy_types::date_time::DateTimeFormatError;
+use aws_smithy_types::date_time::Format;
 use aws_smithy_types::DateTime;
 use percent_encoding::utf8_percent_encode;
 
@@ -64,7 +65,8 @@ impl<'a> Writer<'a> {
 
 #[cfg(test)]
 mod test {
-    use crate::query::{fmt_string, Writer};
+    use crate::query::fmt_string;
+    use crate::query::Writer;
     use http_1x::Uri;
     use proptest::proptest;
 

@@ -28,12 +28,7 @@ use crate::environment::GlobalsBuilder;
 use crate::values::StarlarkValue;
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    ProvidesStaticType,
-    NoSerialize,
-    Allocative,
-    StarlarkPagable
+    Debug, derive_more::Display, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable,
 )]
 #[display("foo")]
 struct Foo;

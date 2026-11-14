@@ -14,29 +14,34 @@
 
 use std::collections::BTreeMap;
 
-use ruma::{
-    DeviceKeyAlgorithm, DeviceKeyId, OwnedDeviceKeyId, UserId,
-    events::{
-        AnyMessageLikeEventContent, AnyToDeviceEventContent,
-        key::verification::{
-            cancel::CancelCode,
-            mac::{KeyVerificationMacEventContent, ToDeviceKeyVerificationMacEventContent},
-        },
-        relation::Reference,
-    },
-    serde::Base64,
-};
-use sha2::{Digest, Sha256};
-use tracing::{trace, warn};
-use vodozemac::{Curve25519PublicKey, sas::EstablishedSas};
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::OwnedDeviceKeyId;
+use ruma::UserId;
+use ruma::events::AnyMessageLikeEventContent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::key::verification::cancel::CancelCode;
+use ruma::events::key::verification::mac::KeyVerificationMacEventContent;
+use ruma::events::key::verification::mac::ToDeviceKeyVerificationMacEventContent;
+use ruma::events::relation::Reference;
+use ruma::serde::Base64;
+use sha2::Digest;
+use sha2::Sha256;
+use tracing::trace;
+use tracing::warn;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::sas::EstablishedSas;
 
-use super::{FlowId, OutgoingContent, sas_state::SupportedMacMethod};
-use crate::{
-    Emoji, OwnUserIdentityData,
-    identities::{DeviceData, UserIdentityData},
-    olm::StaticAccountData,
-    verification::event_enums::{MacContent, StartContent},
-};
+use super::FlowId;
+use super::OutgoingContent;
+use super::sas_state::SupportedMacMethod;
+use crate::Emoji;
+use crate::OwnUserIdentityData;
+use crate::identities::DeviceData;
+use crate::identities::UserIdentityData;
+use crate::olm::StaticAccountData;
+use crate::verification::event_enums::MacContent;
+use crate::verification::event_enums::StartContent;
 
 #[derive(Clone, Debug)]
 pub struct SasIds {
@@ -89,70 +94,262 @@ fn emoji_from_index(index: u8) -> Emoji {
     [1]: https://github.com/matrix-org/matrix-spec/blob/main/data-definitions/sas-emoji.json
     */
     match index {
-        0 => Emoji { symbol: "🐶", description: "Dog" },
-        1 => Emoji { symbol: "🐱", description: "Cat" },
-        2 => Emoji { symbol: "🦁", description: "Lion" },
-        3 => Emoji { symbol: "🐎", description: "Horse" },
-        4 => Emoji { symbol: "🦄", description: "Unicorn" },
-        5 => Emoji { symbol: "🐷", description: "Pig" },
-        6 => Emoji { symbol: "🐘", description: "Elephant" },
-        7 => Emoji { symbol: "🐰", description: "Rabbit" },
-        8 => Emoji { symbol: "🐼", description: "Panda" },
-        9 => Emoji { symbol: "🐓", description: "Rooster" },
-        10 => Emoji { symbol: "🐧", description: "Penguin" },
-        11 => Emoji { symbol: "🐢", description: "Turtle" },
-        12 => Emoji { symbol: "🐟", description: "Fish" },
-        13 => Emoji { symbol: "🐙", description: "Octopus" },
-        14 => Emoji { symbol: "🦋", description: "Butterfly" },
-        15 => Emoji { symbol: "🌷", description: "Flower" },
-        16 => Emoji { symbol: "🌳", description: "Tree" },
-        17 => Emoji { symbol: "🌵", description: "Cactus" },
-        18 => Emoji { symbol: "🍄", description: "Mushroom" },
-        19 => Emoji { symbol: "🌏", description: "Globe" },
-        20 => Emoji { symbol: "🌙", description: "Moon" },
-        21 => Emoji { symbol: "☁️", description: "Cloud" },
-        22 => Emoji { symbol: "🔥", description: "Fire" },
-        23 => Emoji { symbol: "🍌", description: "Banana" },
-        24 => Emoji { symbol: "🍎", description: "Apple" },
-        25 => Emoji { symbol: "🍓", description: "Strawberry" },
-        26 => Emoji { symbol: "🌽", description: "Corn" },
-        27 => Emoji { symbol: "🍕", description: "Pizza" },
-        28 => Emoji { symbol: "🎂", description: "Cake" },
-        29 => Emoji { symbol: "❤️", description: "Heart" },
-        30 => Emoji { symbol: "😀", description: "Smiley" },
-        31 => Emoji { symbol: "🤖", description: "Robot" },
-        32 => Emoji { symbol: "🎩", description: "Hat" },
-        33 => Emoji { symbol: "👓", description: "Glasses" },
-        34 => Emoji { symbol: "🔧", description: "Spanner" },
-        35 => Emoji { symbol: "🎅", description: "Santa" },
-        36 => Emoji { symbol: "👍", description: "Thumbs Up" },
-        37 => Emoji { symbol: "☂️", description: "Umbrella" },
-        38 => Emoji { symbol: "⌛", description: "Hourglass" },
-        39 => Emoji { symbol: "⏰", description: "Clock" },
-        40 => Emoji { symbol: "🎁", description: "Gift" },
-        41 => Emoji { symbol: "💡", description: "Light Bulb" },
-        42 => Emoji { symbol: "📕", description: "Book" },
-        43 => Emoji { symbol: "✏️", description: "Pencil" },
-        44 => Emoji { symbol: "📎", description: "Paperclip" },
-        45 => Emoji { symbol: "✂️", description: "Scissors" },
-        46 => Emoji { symbol: "🔒", description: "Lock" },
-        47 => Emoji { symbol: "🔑", description: "Key" },
-        48 => Emoji { symbol: "🔨", description: "Hammer" },
-        49 => Emoji { symbol: "☎️", description: "Telephone" },
-        50 => Emoji { symbol: "🏁", description: "Flag" },
-        51 => Emoji { symbol: "🚂", description: "Train" },
-        52 => Emoji { symbol: "🚲", description: "Bicycle" },
-        53 => Emoji { symbol: "✈️", description: "Aeroplane" },
-        54 => Emoji { symbol: "🚀", description: "Rocket" },
-        55 => Emoji { symbol: "🏆", description: "Trophy" },
-        56 => Emoji { symbol: "⚽", description: "Ball" },
-        57 => Emoji { symbol: "🎸", description: "Guitar" },
-        58 => Emoji { symbol: "🎺", description: "Trumpet" },
-        59 => Emoji { symbol: "🔔", description: "Bell" },
-        60 => Emoji { symbol: "⚓", description: "Anchor" },
-        61 => Emoji { symbol: "🎧", description: "Headphones" },
-        62 => Emoji { symbol: "📁", description: "Folder" },
-        63 => Emoji { symbol: "📌", description: "Pin" },
+        0 => Emoji {
+            symbol: "🐶",
+            description: "Dog",
+        },
+        1 => Emoji {
+            symbol: "🐱",
+            description: "Cat",
+        },
+        2 => Emoji {
+            symbol: "🦁",
+            description: "Lion",
+        },
+        3 => Emoji {
+            symbol: "🐎",
+            description: "Horse",
+        },
+        4 => Emoji {
+            symbol: "🦄",
+            description: "Unicorn",
+        },
+        5 => Emoji {
+            symbol: "🐷",
+            description: "Pig",
+        },
+        6 => Emoji {
+            symbol: "🐘",
+            description: "Elephant",
+        },
+        7 => Emoji {
+            symbol: "🐰",
+            description: "Rabbit",
+        },
+        8 => Emoji {
+            symbol: "🐼",
+            description: "Panda",
+        },
+        9 => Emoji {
+            symbol: "🐓",
+            description: "Rooster",
+        },
+        10 => Emoji {
+            symbol: "🐧",
+            description: "Penguin",
+        },
+        11 => Emoji {
+            symbol: "🐢",
+            description: "Turtle",
+        },
+        12 => Emoji {
+            symbol: "🐟",
+            description: "Fish",
+        },
+        13 => Emoji {
+            symbol: "🐙",
+            description: "Octopus",
+        },
+        14 => Emoji {
+            symbol: "🦋",
+            description: "Butterfly",
+        },
+        15 => Emoji {
+            symbol: "🌷",
+            description: "Flower",
+        },
+        16 => Emoji {
+            symbol: "🌳",
+            description: "Tree",
+        },
+        17 => Emoji {
+            symbol: "🌵",
+            description: "Cactus",
+        },
+        18 => Emoji {
+            symbol: "🍄",
+            description: "Mushroom",
+        },
+        19 => Emoji {
+            symbol: "🌏",
+            description: "Globe",
+        },
+        20 => Emoji {
+            symbol: "🌙",
+            description: "Moon",
+        },
+        21 => Emoji {
+            symbol: "☁️",
+            description: "Cloud",
+        },
+        22 => Emoji {
+            symbol: "🔥",
+            description: "Fire",
+        },
+        23 => Emoji {
+            symbol: "🍌",
+            description: "Banana",
+        },
+        24 => Emoji {
+            symbol: "🍎",
+            description: "Apple",
+        },
+        25 => Emoji {
+            symbol: "🍓",
+            description: "Strawberry",
+        },
+        26 => Emoji {
+            symbol: "🌽",
+            description: "Corn",
+        },
+        27 => Emoji {
+            symbol: "🍕",
+            description: "Pizza",
+        },
+        28 => Emoji {
+            symbol: "🎂",
+            description: "Cake",
+        },
+        29 => Emoji {
+            symbol: "❤️",
+            description: "Heart",
+        },
+        30 => Emoji {
+            symbol: "😀",
+            description: "Smiley",
+        },
+        31 => Emoji {
+            symbol: "🤖",
+            description: "Robot",
+        },
+        32 => Emoji {
+            symbol: "🎩",
+            description: "Hat",
+        },
+        33 => Emoji {
+            symbol: "👓",
+            description: "Glasses",
+        },
+        34 => Emoji {
+            symbol: "🔧",
+            description: "Spanner",
+        },
+        35 => Emoji {
+            symbol: "🎅",
+            description: "Santa",
+        },
+        36 => Emoji {
+            symbol: "👍",
+            description: "Thumbs Up",
+        },
+        37 => Emoji {
+            symbol: "☂️",
+            description: "Umbrella",
+        },
+        38 => Emoji {
+            symbol: "⌛",
+            description: "Hourglass",
+        },
+        39 => Emoji {
+            symbol: "⏰",
+            description: "Clock",
+        },
+        40 => Emoji {
+            symbol: "🎁",
+            description: "Gift",
+        },
+        41 => Emoji {
+            symbol: "💡",
+            description: "Light Bulb",
+        },
+        42 => Emoji {
+            symbol: "📕",
+            description: "Book",
+        },
+        43 => Emoji {
+            symbol: "✏️",
+            description: "Pencil",
+        },
+        44 => Emoji {
+            symbol: "📎",
+            description: "Paperclip",
+        },
+        45 => Emoji {
+            symbol: "✂️",
+            description: "Scissors",
+        },
+        46 => Emoji {
+            symbol: "🔒",
+            description: "Lock",
+        },
+        47 => Emoji {
+            symbol: "🔑",
+            description: "Key",
+        },
+        48 => Emoji {
+            symbol: "🔨",
+            description: "Hammer",
+        },
+        49 => Emoji {
+            symbol: "☎️",
+            description: "Telephone",
+        },
+        50 => Emoji {
+            symbol: "🏁",
+            description: "Flag",
+        },
+        51 => Emoji {
+            symbol: "🚂",
+            description: "Train",
+        },
+        52 => Emoji {
+            symbol: "🚲",
+            description: "Bicycle",
+        },
+        53 => Emoji {
+            symbol: "✈️",
+            description: "Aeroplane",
+        },
+        54 => Emoji {
+            symbol: "🚀",
+            description: "Rocket",
+        },
+        55 => Emoji {
+            symbol: "🏆",
+            description: "Trophy",
+        },
+        56 => Emoji {
+            symbol: "⚽",
+            description: "Ball",
+        },
+        57 => Emoji {
+            symbol: "🎸",
+            description: "Guitar",
+        },
+        58 => Emoji {
+            symbol: "🎺",
+            description: "Trumpet",
+        },
+        59 => Emoji {
+            symbol: "🔔",
+            description: "Bell",
+        },
+        60 => Emoji {
+            symbol: "⚓",
+            description: "Anchor",
+        },
+        61 => Emoji {
+            symbol: "🎧",
+            description: "Headphones",
+        },
+        62 => Emoji {
+            symbol: "📁",
+            description: "Folder",
+        },
+        63 => Emoji {
+            symbol: "📌",
+            description: "Pin",
+        },
         _ => panic!("Trying to fetch an emoji outside the allowed range"),
     }
 }
@@ -213,7 +410,12 @@ pub fn receive_mac_event(
 
     let mut keys = content.mac().keys().map(|k| k.as_str()).collect::<Vec<_>>();
     keys.sort_unstable();
-    mac_method.verify_mac(sas, &keys.join(","), &format!("{info}KEY_IDS"), content.keys())?;
+    mac_method.verify_mac(
+        sas,
+        &keys.join(","),
+        &format!("{info}KEY_IDS"),
+        content.keys(),
+    )?;
 
     for (key_id, key_mac) in content.mac() {
         trace!(
@@ -298,7 +500,10 @@ pub fn get_mac_content(
     let key = ids.account.identity_keys.ed25519.to_base64();
     let info = extra_mac_info_send(ids, flow_id.as_str());
 
-    mac.insert(key_id.to_string(), mac_method.calculate_mac(sas, &key, &format!("{info}{key_id}")));
+    mac.insert(
+        key_id.to_string(),
+        mac_method.calculate_mac(sas, &key, &format!("{info}{key_id}")),
+    );
 
     if let Some(own_identity) = &ids.own_identity
         && own_identity.is_verified()
@@ -351,8 +556,12 @@ fn extra_info_sas(
     flow_id: &str,
     we_started: bool,
 ) -> String {
-    let our_info =
-        format!("{}|{}|{}", ids.account.user_id, ids.account.device_id, own_pubkey.to_base64());
+    let our_info = format!(
+        "{}|{}|{}",
+        ids.account.user_id,
+        ids.account.device_id,
+        own_pubkey.to_base64()
+    );
     let their_info = format!(
         "{}|{}|{}",
         ids.other_device.user_id(),
@@ -360,8 +569,11 @@ fn extra_info_sas(
         their_pubkey.to_base64()
     );
 
-    let (first_info, second_info) =
-        if we_started { (our_info, their_info) } else { (their_info, our_info) };
+    let (first_info, second_info) = if we_started {
+        (our_info, their_info)
+    } else {
+        (their_info, our_info)
+    };
 
     let info = format!("MATRIX_KEY_VERIFICATION_SAS|{first_info}|{second_info}|{flow_id}");
 
@@ -491,9 +703,8 @@ pub fn get_decimal(
 
 #[cfg(all(test, not(target_family = "wasm")))]
 mod tests {
-    use ruma::{
-        events::key::verification::start::ToDeviceKeyVerificationStartEventContent, serde::Base64,
-    };
+    use ruma::events::key::verification::start::ToDeviceKeyVerificationStartEventContent;
+    use ruma::serde::Base64;
     use serde_json::json;
     use vodozemac::Curve25519PublicKey;
 

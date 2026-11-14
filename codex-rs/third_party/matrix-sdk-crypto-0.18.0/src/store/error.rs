@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{convert::Infallible, fmt::Debug, io::Error as IoError};
+use std::convert::Infallible;
+use std::fmt::Debug;
+use std::io::Error as IoError;
 
-use ruma::{IdParseError, OwnedDeviceId, OwnedUserId};
+use ruma::IdParseError;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
 use serde_json::Error as SerdeError;
 use thiserror::Error;
 

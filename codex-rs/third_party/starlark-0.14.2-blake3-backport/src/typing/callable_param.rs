@@ -38,9 +38,7 @@ use crate::typing::ty::TypeRenderConfig;
 use crate::util::arc_str::ArcStr;
 
 /// Indication whether parameter is required.
-#[derive(
-    Debug, Clone, Dupe, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable
-)]
+#[derive(Debug, Clone, Dupe, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable)]
 pub enum ParamIsRequired {
     /// Parameter is required.
     Yes,
@@ -49,9 +47,7 @@ pub enum ParamIsRequired {
 }
 
 /// The type of a parameter - can be positional, by name, `*args` or `**kwargs`.
-#[derive(
-    Debug, Clone, Dupe, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable
-)]
+#[derive(Debug, Clone, Dupe, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable)]
 pub(crate) enum ParamMode {
     /// Parameter can only be passed by position.
     PosOnly(ParamIsRequired),
@@ -66,9 +62,7 @@ pub(crate) enum ParamMode {
 }
 
 /// A parameter argument to a function
-#[derive(
-    Debug, Clone, Dupe, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable
-)]
+#[derive(Debug, Clone, Dupe, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable)]
 pub(crate) struct Param {
     /// The type of parameter
     pub(crate) mode: ParamMode,
@@ -137,9 +131,7 @@ struct ParamSpecSplit<'a> {
 }
 
 /// Callable parameter specification (e.g. positional only followed by `**kwargs`).
-#[derive(
-    Debug, Eq, PartialEq, Clone, Dupe, Hash, PartialOrd, Ord, Allocative, Pagable
-)]
+#[derive(Debug, Eq, PartialEq, Clone, Dupe, Hash, PartialOrd, Ord, Allocative, Pagable)]
 pub struct ParamSpec {
     params: SmallArcVec1<Param>,
     indices: DefParamIndices,

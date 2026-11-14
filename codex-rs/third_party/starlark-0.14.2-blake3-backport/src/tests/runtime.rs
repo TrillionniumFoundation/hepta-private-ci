@@ -52,7 +52,7 @@ assert_eq(y, str(x))
     Debug,
     Display,
     starlark::any::ProvidesStaticType,
-    starlark_derive::StarlarkPagablePanic
+    starlark_derive::StarlarkPagablePanic,
 )]
 struct Dealloc;
 

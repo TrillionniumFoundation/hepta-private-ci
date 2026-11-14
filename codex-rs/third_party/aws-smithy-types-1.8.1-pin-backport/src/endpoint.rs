@@ -4,7 +4,8 @@
  */
 //! Smithy Endpoint Types
 
-use crate::config_bag::{Storable, StoreReplace};
+use crate::config_bag::Storable;
+use crate::config_bag::StoreReplace;
 use crate::Document;
 use std::borrow::Cow;
 use std::collections::HashMap;

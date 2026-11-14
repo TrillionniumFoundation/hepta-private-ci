@@ -32,16 +32,7 @@ use crate::values::FrozenValue;
 use crate::values::Value;
 
 #[derive(
-    Clone,
-    Copy,
-    Dupe,
-    Debug,
-    PartialEq,
-    Eq,
-    Allocative,
-    Hash,
-    Pagable,
-    StarlarkPagableViaPagable
+    Clone, Copy, Dupe, Debug, PartialEq, Eq, Allocative, Hash, Pagable, StarlarkPagableViaPagable,
 )]
 pub(crate) struct ModuleSlotId(pub(crate) u32);
 

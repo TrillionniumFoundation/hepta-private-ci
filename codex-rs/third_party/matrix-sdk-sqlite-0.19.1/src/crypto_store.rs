@@ -12,55 +12,76 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    collections::HashMap,
-    fmt,
-    ops::Deref,
-    path::{Path, PathBuf},
-    sync::{Arc, RwLock},
-};
+use std::collections::HashMap;
+use std::fmt;
+use std::ops::Deref;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::RwLock;
 
 use async_trait::async_trait;
 use deadpool::managed::PoolConfig;
 use matrix_sdk_base::cross_process_lock::CrossProcessLockGeneration;
-use matrix_sdk_crypto::{
-    Account, DeviceData, GossipRequest, GossippedSecret, SecretInfo, TrackedUser, UserIdentityData,
-    olm::{
-        InboundGroupSession, OutboundGroupSession, PickledInboundGroupSession,
-        PrivateCrossSigningIdentity, SenderDataType, Session, StaticAccountData,
-    },
-    store::{
-        CryptoStore,
-        types::{
-            BackupKeys, Changes, DehydratedDeviceKey, PendingChanges, RoomKeyCounts,
-            RoomKeyWithheldEntry, RoomPendingKeyBundleDetails, RoomSettings,
-            StoredRoomKeyBundleData,
-        },
-    },
-};
+use matrix_sdk_crypto::Account;
+use matrix_sdk_crypto::DeviceData;
+use matrix_sdk_crypto::GossipRequest;
+use matrix_sdk_crypto::GossippedSecret;
+use matrix_sdk_crypto::SecretInfo;
+use matrix_sdk_crypto::TrackedUser;
+use matrix_sdk_crypto::UserIdentityData;
+use matrix_sdk_crypto::olm::InboundGroupSession;
+use matrix_sdk_crypto::olm::OutboundGroupSession;
+use matrix_sdk_crypto::olm::PickledInboundGroupSession;
+use matrix_sdk_crypto::olm::PrivateCrossSigningIdentity;
+use matrix_sdk_crypto::olm::SenderDataType;
+use matrix_sdk_crypto::olm::Session;
+use matrix_sdk_crypto::olm::StaticAccountData;
+use matrix_sdk_crypto::store::CryptoStore;
+use matrix_sdk_crypto::store::types::BackupKeys;
+use matrix_sdk_crypto::store::types::Changes;
+use matrix_sdk_crypto::store::types::DehydratedDeviceKey;
+use matrix_sdk_crypto::store::types::PendingChanges;
+use matrix_sdk_crypto::store::types::RoomKeyCounts;
+use matrix_sdk_crypto::store::types::RoomKeyWithheldEntry;
+use matrix_sdk_crypto::store::types::RoomPendingKeyBundleDetails;
+use matrix_sdk_crypto::store::types::RoomSettings;
+use matrix_sdk_crypto::store::types::StoredRoomKeyBundleData;
 use matrix_sdk_store_encryption::StoreCipher;
-use ruma::{
-    DeviceId, MilliSecondsSinceUnixEpoch, OwnedDeviceId, RoomId, TransactionId, UserId,
-    events::secret::request::SecretName,
-};
-use rusqlite::{OptionalExtension, named_params, params_from_iter};
-use tokio::{
-    fs,
-    sync::{Mutex, OwnedMutexGuard},
-};
-use tracing::{debug, instrument, warn};
+use ruma::DeviceId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedDeviceId;
+use ruma::RoomId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::secret::request::SecretName;
+use rusqlite::OptionalExtension;
+use rusqlite::named_params;
+use rusqlite::params_from_iter;
+use tokio::fs;
+use tokio::sync::Mutex;
+use tokio::sync::OwnedMutexGuard;
+use tracing::debug;
+use tracing::instrument;
+use tracing::warn;
 use vodozemac::Curve25519PublicKey;
 use zeroize::Zeroizing;
 
-use crate::{
-    OpenStoreError, RuntimeConfig, Secret, SqliteStoreConfig,
-    connection::{self, Connection as SqliteAsyncConn, Pool as SqlitePool, SqliteConnections},
-    error::{Error, Result},
-    utils::{
-        EncryptableStore, Key, SqliteAsyncConnExt, SqliteKeyValueStoreAsyncConnExt,
-        SqliteKeyValueStoreConnExt,
-    },
-};
+use crate::OpenStoreError;
+use crate::RuntimeConfig;
+use crate::Secret;
+use crate::SqliteStoreConfig;
+use crate::connection::Connection as SqliteAsyncConn;
+use crate::connection::Pool as SqlitePool;
+use crate::connection::SqliteConnections;
+use crate::connection::{self};
+use crate::error::Error;
+use crate::error::Result;
+use crate::utils::EncryptableStore;
+use crate::utils::Key;
+use crate::utils::SqliteAsyncConnExt;
+use crate::utils::SqliteKeyValueStoreAsyncConnExt;
+use crate::utils::SqliteKeyValueStoreConnExt;
 
 /// The database name.
 const DATABASE_NAME: &str = "matrix-sdk-crypto.sqlite3";
@@ -161,7 +182,9 @@ impl SqliteCryptoStore {
 
     /// Open the SQLite-based crypto store with the config open config.
     pub async fn open_with_config(config: &SqliteStoreConfig) -> Result<Self, OpenStoreError> {
-        fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
+        fs::create_dir_all(&config.path)
+            .await
+            .map_err(OpenStoreError::CreateDir)?;
 
         let pool = config.build_pool_of_connections(DATABASE_NAME)?;
         let pool_config = config.pool_config();
@@ -169,7 +192,10 @@ impl SqliteCryptoStore {
 
         let this =
             Self::open_with_pool(pool, config.secret.clone(), pool_config, runtime_config).await?;
-        this.read().await?.apply_runtime_config(runtime_config).await?;
+        this.read()
+            .await?
+            .apply_runtime_config(runtime_config)
+            .await?;
 
         Ok(this)
     }
@@ -268,7 +294,11 @@ pub(crate) async fn initialize_store(conn: &SqliteAsyncConn, version: u8) -> Res
     if version == 0 {
         debug!("Creating database");
     } else if version < DATABASE_VERSION {
-        debug!(version, new_version = DATABASE_VERSION, "Upgrading database");
+        debug!(
+            version,
+            new_version = DATABASE_VERSION,
+            "Upgrading database"
+        );
     } else {
         return Ok(version);
     }
@@ -310,7 +340,9 @@ pub(crate) async fn run_migrations(
     if version < 2 {
         debug!("Upgrading database to version 2");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/crypto_store/002_reset_olm_hash.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/crypto_store/002_reset_olm_hash.sql"
+            ))?;
             txn.set_db_version(2)
         })
         .await?;
@@ -319,7 +351,9 @@ pub(crate) async fn run_migrations(
     if version < 3 {
         debug!("Upgrading database to version 3");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/crypto_store/003_room_settings.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/crypto_store/003_room_settings.sql"
+            ))?;
             txn.set_db_version(3)
         })
         .await?;
@@ -339,7 +373,9 @@ pub(crate) async fn run_migrations(
     if version < 5 {
         debug!("Upgrading database to version 5");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/crypto_store/005_withheld_code.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/crypto_store/005_withheld_code.sql"
+            ))?;
             txn.set_db_version(5)
         })
         .await?;
@@ -359,7 +395,9 @@ pub(crate) async fn run_migrations(
     if version < 7 {
         debug!("Upgrading database to version 7");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/crypto_store/007_lock_leases.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/crypto_store/007_lock_leases.sql"
+            ))?;
             txn.set_db_version(7)
         })
         .await?;
@@ -368,7 +406,9 @@ pub(crate) async fn run_migrations(
     if version < 8 {
         debug!("Upgrading database to version 8");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/crypto_store/008_secret_inbox.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/crypto_store/008_secret_inbox.sql"
+            ))?;
             txn.set_db_version(8)
         })
         .await?;
@@ -533,11 +573,16 @@ pub(crate) async fn run_migrations(
         // Remove the sliding sync `pos` value stored in the crypto store.
         // There was recently an event cache migration that emptied the cache but never
         // reset the `pos` value, this fixes it.
-        let user_id = store.load_account().await?.map(|account| account.user_id.clone());
+        let user_id = store
+            .load_account()
+            .await?
+            .map(|account| account.user_id.clone());
 
         conn.with_transaction(move |txn| {
             if let Some(user_id) = user_id {
-                txn.clear_kv(&format!("sliding_sync_store::room-list::{user_id}::instance"))?;
+                txn.clear_kv(&format!(
+                    "sliding_sync_store::room-list::{user_id}::instance"
+                ))?;
             }
             txn.set_db_version(19)
         })
@@ -682,7 +727,10 @@ impl SqliteConnectionExt for rusqlite::Connection {
     }
 
     fn add_olm_hash(&self, data: &[u8]) -> rusqlite::Result<()> {
-        self.execute("INSERT INTO olm_hash (data) VALUES (?) ON CONFLICT DO NOTHING", (data,))?;
+        self.execute(
+            "INSERT INTO olm_hash (data) VALUES (?) ON CONFLICT DO NOTHING",
+            (data,),
+        )?;
         Ok(())
     }
 
@@ -771,7 +819,10 @@ impl SqliteConnectionExt for rusqlite::Connection {
                 (room_id, data),
             )?;
         } else {
-            self.execute("DELETE FROM rooms_pending_key_bundle WHERE room_id = ?1", (room_id,))?;
+            self.execute(
+                "DELETE FROM rooms_pending_key_bundle WHERE room_id = ?1",
+                (room_id,),
+            )?;
         }
         Ok(())
     }
@@ -791,9 +842,14 @@ impl SqliteConnectionExt for rusqlite::Connection {
 trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
     async fn get_sessions_for_sender_key(&self, sender_key: Key) -> Result<Vec<Vec<u8>>> {
         Ok(self
-            .prepare("SELECT data FROM session WHERE sender_key = ?", |mut stmt| {
-                stmt.query((sender_key,))?.mapped(|row| row.get(0)).collect()
-            })
+            .prepare(
+                "SELECT data FROM session WHERE sender_key = ?",
+                |mut stmt| {
+                    stmt.query((sender_key,))?
+                        .mapped(|row| row.get(0))
+                        .collect()
+                },
+            )
             .await?)
     }
 
@@ -813,9 +869,14 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
 
     async fn get_inbound_group_sessions(&self) -> Result<Vec<(Vec<u8>, bool)>> {
         Ok(self
-            .prepare("SELECT data, backed_up FROM inbound_group_session", |mut stmt| {
-                stmt.query(())?.mapped(|row| Ok((row.get(0)?, row.get(1)?))).collect()
-            })
+            .prepare(
+                "SELECT data, backed_up FROM inbound_group_session",
+                |mut stmt| {
+                    stmt.query(())?
+                        .mapped(|row| Ok((row.get(0)?, row.get(1)?)))
+                        .collect()
+                },
+            )
             .await?)
     }
 
@@ -824,7 +885,9 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
         _backup_version: Option<&str>,
     ) -> Result<RoomKeyCounts> {
         let total = self
-            .query_one("SELECT count(*) FROM inbound_group_session", (), |row| row.get(0))
+            .query_one("SELECT count(*) FROM inbound_group_session", (), |row| {
+                row.get(0)
+            })
             .await?;
         let backed_up = self
             .query_one(
@@ -915,7 +978,8 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
                 "UPDATE inbound_group_session SET backed_up = TRUE where session_id IN ({})",
                 session_ids.host_parameters()
             );
-            txn.prepare(&query)?.execute(params_from_iter(session_ids))?;
+            txn.prepare(&query)?
+                .execute(params_from_iter(session_ids))?;
             Ok(Vec::<()>::new())
         })
         .await?;
@@ -924,7 +988,8 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
     }
 
     async fn reset_inbound_group_session_backup_state(&self) -> Result<()> {
-        self.execute("UPDATE inbound_group_session SET backed_up = FALSE", ()).await?;
+        self.execute("UPDATE inbound_group_session SET backed_up = FALSE", ())
+            .await?;
         Ok(())
     }
 
@@ -960,16 +1025,22 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
 
     async fn get_user_identity(&self, user_id: Key) -> Result<Option<Vec<u8>>> {
         Ok(self
-            .query_one("SELECT data FROM identity WHERE user_id = ?", (user_id,), |row| row.get(0))
+            .query_one(
+                "SELECT data FROM identity WHERE user_id = ?",
+                (user_id,),
+                |row| row.get(0),
+            )
             .await
             .optional()?)
     }
 
     async fn has_olm_hash(&self, data: Vec<u8>) -> Result<bool> {
         Ok(self
-            .query_one("SELECT count(*) FROM olm_hash WHERE data = ?", (data,), |row| {
-                row.get::<_, i32>(0)
-            })
+            .query_one(
+                "SELECT count(*) FROM olm_hash WHERE data = ?",
+                (data,),
+                |row| row.get::<_, i32>(0),
+            )
             .await?
             > 0)
     }
@@ -1015,36 +1086,52 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
 
     async fn get_secret_request_by_info(&self, info: Key) -> Result<Option<(Vec<u8>, bool)>> {
         Ok(self
-            .query_one("SELECT data, sent_out FROM key_requests WHERE info = ?", (info,), |row| {
-                Ok((row.get(0)?, row.get(1)?))
-            })
+            .query_one(
+                "SELECT data, sent_out FROM key_requests WHERE info = ?",
+                (info,),
+                |row| Ok((row.get(0)?, row.get(1)?)),
+            )
             .await
             .optional()?)
     }
 
     async fn get_unsent_secret_requests(&self) -> Result<Vec<Vec<u8>>> {
         Ok(self
-            .prepare("SELECT data FROM key_requests WHERE sent_out = FALSE", |mut stmt| {
-                stmt.query(())?.mapped(|row| row.get(0)).collect()
-            })
+            .prepare(
+                "SELECT data FROM key_requests WHERE sent_out = FALSE",
+                |mut stmt| stmt.query(())?.mapped(|row| row.get(0)).collect(),
+            )
             .await?)
     }
 
     async fn delete_key_request(&self, request_id: Key) -> Result<()> {
-        self.execute("DELETE FROM key_requests WHERE request_id = ?", (request_id,)).await?;
+        self.execute(
+            "DELETE FROM key_requests WHERE request_id = ?",
+            (request_id,),
+        )
+        .await?;
         Ok(())
     }
 
     async fn get_secrets_from_inbox(&self, secret_name: Key) -> Result<Vec<Vec<u8>>> {
         Ok(self
-            .prepare("SELECT secret FROM secrets_inbox WHERE secret_name = ?", |mut stmt| {
-                stmt.query((secret_name,))?.mapped(|row| row.get(0)).collect()
-            })
+            .prepare(
+                "SELECT secret FROM secrets_inbox WHERE secret_name = ?",
+                |mut stmt| {
+                    stmt.query((secret_name,))?
+                        .mapped(|row| row.get(0))
+                        .collect()
+                },
+            )
             .await?)
     }
 
     async fn delete_secrets_from_inbox(&self, secret_name: Key) -> Result<()> {
-        self.execute("DELETE FROM secrets_inbox WHERE secret_name = ?", (secret_name,)).await?;
+        self.execute(
+            "DELETE FROM secrets_inbox WHERE secret_name = ?",
+            (secret_name,),
+        )
+        .await?;
         Ok(())
     }
 
@@ -1065,17 +1152,20 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
 
     async fn get_withheld_sessions_by_room_id(&self, room_id: Key) -> Result<Vec<Vec<u8>>> {
         Ok(self
-            .prepare("SELECT data FROM direct_withheld_info WHERE room_id = ?1", |mut stmt| {
-                stmt.query((room_id,))?.mapped(|row| row.get(0)).collect()
-            })
+            .prepare(
+                "SELECT data FROM direct_withheld_info WHERE room_id = ?1",
+                |mut stmt| stmt.query((room_id,))?.mapped(|row| row.get(0)).collect(),
+            )
             .await?)
     }
 
     async fn get_room_settings(&self, room_id: Key) -> Result<Option<Vec<u8>>> {
         Ok(self
-            .query_one("SELECT data FROM room_settings WHERE room_id = ?", (room_id,), |row| {
-                row.get(0)
-            })
+            .query_one(
+                "SELECT data FROM room_settings WHERE room_id = ?",
+                (room_id,),
+                |row| row.get(0),
+            )
             .await
             .optional()?)
     }
@@ -1108,7 +1198,9 @@ trait SqliteObjectCryptoStoreExt: SqliteAsyncConnExt {
 
     async fn get_all_rooms_pending_key_bundle(&self) -> Result<Vec<Vec<u8>>> {
         Ok(self
-            .query_many("SELECT data FROM rooms_pending_key_bundle", (), |row| row.get(0))
+            .query_many("SELECT data FROM rooms_pending_key_bundle", (), |row| {
+                row.get(0)
+            })
             .await?)
     }
 
@@ -1149,7 +1241,9 @@ impl CryptoStore for SqliteCryptoStore {
         let conn = self.read().await?;
         if let Some(i) = conn.get_kv("identity").await? {
             let pickle = self.deserialize_value(&i)?;
-            Ok(Some(PrivateCrossSigningIdentity::from_pickle(pickle).map_err(|_| Error::Unpickle)?))
+            Ok(Some(
+                PrivateCrossSigningIdentity::from_pickle(pickle).map_err(|_| Error::Unpickle)?,
+            ))
         } else {
             Ok(None)
         }
@@ -1192,8 +1286,11 @@ impl CryptoStore for SqliteCryptoStore {
         // TODO: #2000 should make this lock go away, or change its shape.
         let _guard = self.save_changes_lock.lock().await;
 
-        let pickled_private_identity =
-            if let Some(i) = changes.private_identity { Some(i.pickle().await) } else { None };
+        let pickled_private_identity = if let Some(i) = changes.private_identity {
+            Some(i.pickle().await)
+        } else {
+            None
+        };
 
         let mut session_changes = Vec::new();
 
@@ -1264,7 +1361,12 @@ impl CryptoStore for SqliteCryptoStore {
                     txn.delete_device(&user_id, &device_id)?;
                 }
 
-                for identity in changes.identities.changed.iter().chain(&changes.identities.new) {
+                for identity in changes
+                    .identities
+                    .changed
+                    .iter()
+                    .chain(&changes.identities.new)
+                {
                     let user_id = this.encode_key("identity", identity.user_id().as_bytes());
                     let data = this.serialize_value(&identity)?;
                     txn.set_identity(&user_id, &data)?;
@@ -1346,7 +1448,10 @@ impl CryptoStore for SqliteCryptoStore {
 
                 for (room, details) in changes.rooms_pending_key_bundle {
                     let room_id = this.encode_key("rooms_pending_key_bundle", &room);
-                    let value = details.as_ref().map(|d| this.serialize_value(d)).transpose()?;
+                    let value = details
+                        .as_ref()
+                        .map(|d| this.serialize_value(d))
+                        .transpose()?;
                     txn.set_room_pending_key_bundle(&room_id, value.as_deref())?;
                 }
 
@@ -1376,7 +1481,11 @@ impl CryptoStore for SqliteCryptoStore {
 
         // Currently, this store doesn't save the backup version separately, so this
         // just delegates to save_changes.
-        self.save_changes(Changes { inbound_group_sessions: sessions, ..Changes::default() }).await
+        self.save_changes(Changes {
+            inbound_group_sessions: sessions,
+            ..Changes::default()
+        })
+        .await
     }
 
     async fn get_sessions(&self, sender_key: &str) -> Result<Option<Vec<Session>>> {
@@ -1394,7 +1503,11 @@ impl CryptoStore for SqliteCryptoStore {
             })
             .collect::<Result<_>>()?;
 
-        if sessions.is_empty() { Ok(None) } else { Ok(Some(sessions)) }
+        if sessions.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(sessions))
+        }
     }
 
     #[instrument(skip(self))]
@@ -1404,8 +1517,11 @@ impl CryptoStore for SqliteCryptoStore {
         session_id: &str,
     ) -> Result<Option<InboundGroupSession>> {
         let session_id = self.encode_key("inbound_group_session", session_id);
-        let Some((room_id_from_db, value, backed_up)) =
-            self.read().await?.get_inbound_group_session(session_id).await?
+        let Some((room_id_from_db, value, backed_up)) = self
+            .read()
+            .await?
+            .get_inbound_group_session(session_id)
+            .await?
         else {
             return Ok(None);
         };
@@ -1416,7 +1532,9 @@ impl CryptoStore for SqliteCryptoStore {
             return Ok(None);
         }
 
-        Ok(Some(self.deserialize_and_unpickle_inbound_group_session(value, backed_up)?))
+        Ok(Some(self.deserialize_and_unpickle_inbound_group_session(
+            value, backed_up,
+        )?))
     }
 
     async fn get_inbound_group_sessions(&self) -> Result<Vec<InboundGroupSession>> {
@@ -1478,7 +1596,11 @@ impl CryptoStore for SqliteCryptoStore {
         &self,
         backup_version: Option<&str>,
     ) -> Result<RoomKeyCounts> {
-        Ok(self.read().await?.get_inbound_group_session_counts(backup_version).await?)
+        Ok(self
+            .read()
+            .await?
+            .get_inbound_group_session_counts(backup_version)
+            .await?)
     }
 
     async fn inbound_group_sessions_for_backup(
@@ -1513,7 +1635,11 @@ impl CryptoStore for SqliteCryptoStore {
     }
 
     async fn reset_backup_state(&self) -> Result<()> {
-        Ok(self.write().await?.reset_inbound_group_session_backup_state().await?)
+        Ok(self
+            .write()
+            .await?
+            .reset_inbound_group_session_backup_state()
+            .await?)
     }
 
     async fn load_backup_keys(&self) -> Result<BackupKeys> {
@@ -1531,7 +1657,10 @@ impl CryptoStore for SqliteCryptoStore {
             .map(|value| self.deserialize_value(&value))
             .transpose()?;
 
-        Ok(BackupKeys { backup_version, decryption_key })
+        Ok(BackupKeys {
+            backup_version,
+            decryption_key,
+        })
     }
 
     async fn load_dehydrated_device_pickle_key(&self) -> Result<Option<DehydratedDeviceKey>> {
@@ -1544,14 +1673,23 @@ impl CryptoStore for SqliteCryptoStore {
     }
 
     async fn delete_dehydrated_device_pickle_key(&self) -> Result<(), Self::Error> {
-        Ok(self.write().await?.clear_kv(DEHYDRATED_DEVICE_PICKLE_KEY).await?)
+        Ok(self
+            .write()
+            .await?
+            .clear_kv(DEHYDRATED_DEVICE_PICKLE_KEY)
+            .await?)
     }
     async fn get_outbound_group_session(
         &self,
         room_id: &RoomId,
     ) -> Result<Option<OutboundGroupSession>> {
         let room_id = self.encode_key("outbound_group_session", room_id.as_bytes());
-        let Some(value) = self.read().await?.get_outbound_group_session(room_id).await? else {
+        let Some(value) = self
+            .read()
+            .await?
+            .get_outbound_group_session(room_id)
+            .await?
+        else {
             return Ok(None);
         };
 
@@ -1583,8 +1721,10 @@ impl CryptoStore for SqliteCryptoStore {
             .iter()
             .map(|(u, d)| {
                 let user_id = self.encode_key("tracked_users", u.as_bytes());
-                let data =
-                    self.serialize_value(&TrackedUser { user_id: (*u).into(), dirty: *d })?;
+                let data = self.serialize_value(&TrackedUser {
+                    user_id: (*u).into(),
+                    dirty: *d,
+                })?;
                 Ok((user_id, data))
             })
             .collect::<Result<_>>()?;
@@ -1710,13 +1850,19 @@ impl CryptoStore for SqliteCryptoStore {
             .get_secrets_from_inbox(secret_name)
             .await?
             .into_iter()
-            .map(|value| self.deserialize_json(value.as_ref()).map(|value: String| value.into()))
+            .map(|value| {
+                self.deserialize_json(value.as_ref())
+                    .map(|value: String| value.into())
+            })
             .collect()
     }
 
     async fn delete_secrets_from_inbox(&self, secret_name: &SecretName) -> Result<()> {
         let secret_name = self.encode_key("secrets_inbox", secret_name.to_string());
-        self.write().await?.delete_secrets_from_inbox(secret_name).await
+        self.write()
+            .await?
+            .delete_secrets_from_inbox(secret_name)
+            .await
     }
 
     async fn get_withheld_info(
@@ -1781,7 +1927,10 @@ impl CryptoStore for SqliteCryptoStore {
 
     async fn has_downloaded_all_room_keys(&self, room_id: &RoomId) -> Result<bool> {
         let room_id = self.encode_key("room_key_backups_fully_downloaded", room_id);
-        self.read().await?.has_downloaded_all_room_keys(room_id).await
+        self.read()
+            .await?
+            .has_downloaded_all_room_keys(room_id)
+            .await
     }
 
     async fn get_pending_key_bundle_details_for_room(
@@ -1789,7 +1938,12 @@ impl CryptoStore for SqliteCryptoStore {
         room_id: &RoomId,
     ) -> Result<Option<RoomPendingKeyBundleDetails>> {
         let room_id = self.encode_key("rooms_pending_key_bundle", room_id.as_bytes());
-        let Some(value) = self.read().await?.get_room_pending_key_bundle(room_id).await? else {
+        let Some(value) = self
+            .read()
+            .await?
+            .get_room_pending_key_bundle(room_id)
+            .await?
+        else {
             return Ok(None);
         };
 
@@ -1798,7 +1952,11 @@ impl CryptoStore for SqliteCryptoStore {
     }
 
     async fn get_all_rooms_pending_key_bundles(&self) -> Result<Vec<RoomPendingKeyBundleDetails>> {
-        let details = self.read().await?.get_all_rooms_pending_key_bundle().await?;
+        let details = self
+            .read()
+            .await?
+            .get_all_rooms_pending_key_bundle()
+            .await?;
         let room_ids = details
             .into_iter()
             .map(|value| self.deserialize_value(&value))
@@ -1921,17 +2079,21 @@ impl CryptoStore for SqliteCryptoStore {
 
 #[cfg(test)]
 mod tests {
-    use std::{path::Path, sync::LazyLock};
+    use std::path::Path;
+    use std::sync::LazyLock;
 
     use matrix_sdk_common::deserialized_responses::WithheldCode;
-    use matrix_sdk_crypto::{
-        cryptostore_integration_tests, cryptostore_integration_tests_time, olm::SenderDataType,
-        store::CryptoStore,
-    };
+    use matrix_sdk_crypto::cryptostore_integration_tests;
+    use matrix_sdk_crypto::cryptostore_integration_tests_time;
+    use matrix_sdk_crypto::olm::SenderDataType;
+    use matrix_sdk_crypto::store::CryptoStore;
     use matrix_sdk_test::async_test;
-    use ruma::{device_id, room_id, user_id};
+    use ruma::device_id;
+    use ruma::room_id;
+    use ruma::user_id;
     use similar_asserts::assert_eq;
-    use tempfile::{TempDir, tempdir};
+    use tempfile::TempDir;
+    use tempfile::tempdir;
     use tokio::fs;
 
     use super::SqliteCryptoStore;
@@ -1968,7 +2130,10 @@ mod tests {
             .await
             .expect("Can't open the test store");
 
-        TestDb { _dir: tmpdir, database }
+        TestDb {
+            _dir: tmpdir,
+            database,
+        }
     }
 
     #[async_test]
@@ -1976,7 +2141,9 @@ mod tests {
         let store_open_config =
             SqliteStoreConfig::new(TMP_DIR.path().join("test_pool_size")).pool_max_size(42);
 
-        let store = SqliteCryptoStore::open_with_config(&store_open_config).await.unwrap();
+        let store = SqliteCryptoStore::open_with_config(&store_open_config)
+            .await
+            .unwrap();
 
         let guard = store.connections.lock().await;
         let conns = guard.as_ref().unwrap();
@@ -2020,12 +2187,18 @@ mod tests {
         assert_eq!(device.user_id(), user_id);
 
         assert_eq!(
-            device.ed25519_key().expect("The device should have a Ed25519 key.").to_base64(),
+            device
+                .ed25519_key()
+                .expect("The device should have a Ed25519 key.")
+                .to_base64(),
             "+cxl1Gl3du5i7UJwfWnoRDdnafFF+xYdAiTYYhYLr8s"
         );
 
         assert_eq!(
-            device.curve25519_key().expect("The device should have a Curve25519 key.").to_base64(),
+            device
+                .curve25519_key()
+                .expect("The device should have a Curve25519 key.")
+                .to_base64(),
             "4SL9eEUlpyWSUvjljC5oMjknHQQJY7WZKo5S1KL/5VU"
         );
 
@@ -2046,7 +2219,10 @@ mod tests {
             .get_first_key()
             .expect("Our own identity should have a master key");
 
-        assert_eq!(master_key.to_base64(), "iCUEtB1RwANeqRa5epDrblLk4mer/36sylwQ5hYY3oE");
+        assert_eq!(
+            master_key.to_base64(),
+            "iCUEtB1RwANeqRa5epDrblLk4mer/36sylwQ5hYY3oE"
+        );
     }
 
     /// Test that we didn't regress in our storage layer by loading data from a
@@ -2086,8 +2262,10 @@ mod tests {
             "The device ID should match to the one we expect."
         );
 
-        let tracked_users =
-            database.load_tracked_users().await.expect("Should be tracking some users");
+        let tracked_users = database
+            .load_tracked_users()
+            .await
+            .expect("Should be tracking some users");
 
         assert_eq!(tracked_users.len(), 6);
 
@@ -2102,23 +2280,41 @@ mod tests {
 
         // load the identities
         for user_id in known_users {
-            database.get_user_identity(user_id).await.expect("Should load this identity").unwrap();
+            database
+                .get_user_identity(user_id)
+                .await
+                .expect("Should load this identity")
+                .unwrap();
         }
 
-        let carl_identity =
-            database.get_user_identity(user_id!("@carl:localhost")).await.unwrap().unwrap();
+        let carl_identity = database
+            .get_user_identity(user_id!("@carl:localhost"))
+            .await
+            .unwrap()
+            .unwrap();
 
         assert_eq!(
-            carl_identity.master_key().get_first_key().unwrap().to_base64(),
+            carl_identity
+                .master_key()
+                .get_first_key()
+                .unwrap()
+                .to_base64(),
             "CdhKYYDeBDQveOioXEGWhTPCyzc63Irpar3CNyfun2Q"
         );
         assert!(!carl_identity.was_previously_verified());
 
-        let bob_identity =
-            database.get_user_identity(user_id!("@bob:localhost")).await.unwrap().unwrap();
+        let bob_identity = database
+            .get_user_identity(user_id!("@bob:localhost"))
+            .await
+            .unwrap()
+            .unwrap();
 
         assert_eq!(
-            bob_identity.master_key().get_first_key().unwrap().to_base64(),
+            bob_identity
+                .master_key()
+                .get_first_key()
+                .unwrap()
+                .to_base64(),
             "COh2GYOJWSjem5QPRCaGp9iWV83IELG1IzLKW2S3pFY"
         );
         // Bob is verified so this flag should be set
@@ -2135,7 +2331,10 @@ mod tests {
             (device_id!("JVVORTHFXY"), user_id!("@alice:localhost")),
             (device_id!("NQUWWSKKHS"), user_id!("@alice:localhost")),
             (device_id!("ORBLPFYCPG"), user_id!("@alice:localhost")),
-            (device_id!("YXOWENSEGM"), user_id!("@dehydration3:localhost")),
+            (
+                device_id!("YXOWENSEGM"),
+                user_id!("@dehydration3:localhost"),
+            ),
             (device_id!("VXLFMYCHXC"), user_id!("@bob:localhost")),
             (device_id!("FDGDQAEWOW"), user_id!("@bob:localhost")),
             (device_id!("VXLFMYCHXC"), user_id!("@bob:localhost")),
@@ -2146,7 +2345,11 @@ mod tests {
         ];
 
         for (device_id, user_id) in known_devices {
-            database.get_device(user_id, device_id).await.expect("Should load the device").unwrap();
+            database
+                .get_device(user_id, device_id)
+                .await
+                .expect("Should load the device")
+                .unwrap();
         }
 
         let known_sender_key_to_session_count = vec![
@@ -2168,8 +2371,10 @@ mod tests {
         ];
 
         for (id, count) in known_sender_key_to_session_count {
-            let olm_sessions =
-                database.get_sessions(id).await.expect("Should have some olm sessions");
+            let olm_sessions = database
+                .get_sessions(id)
+                .await
+                .expect("Should have some olm sessions");
 
             println!("### Session id: {id:?}");
             assert_eq!(olm_sessions.map_or(0, |v| v.len()), count);
@@ -2258,7 +2463,10 @@ mod tests {
             .unwrap()
             .unwrap();
 
-        assert_eq!(bob_sender_verified.sender_data.to_type(), SenderDataType::SenderVerified);
+        assert_eq!(
+            bob_sender_verified.sender_data.to_type(),
+            SenderDataType::SenderVerified
+        );
         assert!(bob_sender_verified.backed_up());
         assert!(!bob_sender_verified.has_been_imported());
 
@@ -2271,7 +2479,10 @@ mod tests {
             .unwrap()
             .unwrap();
 
-        assert_eq!(alice_unknown_device.sender_data.to_type(), SenderDataType::UnknownDevice);
+        assert_eq!(
+            alice_unknown_device.sender_data.to_type(),
+            SenderDataType::UnknownDevice
+        );
         assert!(alice_unknown_device.backed_up());
         assert!(alice_unknown_device.has_been_imported());
 
@@ -2284,7 +2495,10 @@ mod tests {
             .unwrap()
             .unwrap();
 
-        assert_eq!(carl_tofu_session.sender_data.to_type(), SenderDataType::SenderUnverified);
+        assert_eq!(
+            carl_tofu_session.sender_data.to_type(),
+            SenderDataType::SenderUnverified
+        );
         assert!(carl_tofu_session.backed_up());
         assert!(!carl_tofu_session.has_been_imported());
 
@@ -2314,9 +2528,15 @@ mod tests {
             .expect("This session should be withheld")
             .unwrap();
 
-        assert_eq!(withheld_info.content.withheld_code(), WithheldCode::Unverified);
+        assert_eq!(
+            withheld_info.content.withheld_code(),
+            WithheldCode::Unverified
+        );
 
-        let backup_keys = database.load_backup_keys().await.expect("backup key should be cached");
+        let backup_keys = database
+            .load_backup_keys()
+            .await
+            .expect("backup key should be cached");
         assert_eq!(backup_keys.backup_version.unwrap(), "6");
         assert!(backup_keys.decryption_key.is_some());
     }
@@ -2330,22 +2550,26 @@ mod tests {
     async fn test_secrets_inbox_migration() {
         use std::ops::Deref;
 
-        use matrix_sdk_crypto::{
-            GossipRequest, GossippedSecret, SecretInfo,
-            types::events::{
-                olm_v1::{DecryptedSecretSendEvent, OlmV1Keys},
-                secret_send::SecretSendContent,
-            },
-            vodozemac::Ed25519SecretKey,
-        };
-        use ruma::{TransactionId, events::secret::request::SecretName, owned_user_id};
+        use matrix_sdk_crypto::GossipRequest;
+        use matrix_sdk_crypto::GossippedSecret;
+        use matrix_sdk_crypto::SecretInfo;
+        use matrix_sdk_crypto::types::events::olm_v1::DecryptedSecretSendEvent;
+        use matrix_sdk_crypto::types::events::olm_v1::OlmV1Keys;
+        use matrix_sdk_crypto::types::events::secret_send::SecretSendContent;
+        use matrix_sdk_crypto::vodozemac::Ed25519SecretKey;
+        use ruma::TransactionId;
+        use ruma::events::secret::request::SecretName;
+        use ruma::owned_user_id;
 
-        use crate::utils::{EncryptableStore, SqliteAsyncConnExt};
+        use crate::utils::EncryptableStore;
+        use crate::utils::SqliteAsyncConnExt;
 
         // Create a database with version 16
         let tmpdir = tempdir().unwrap();
         let config = SqliteStoreConfig::new(tmpdir.path());
-        let pool = config.build_pool_of_connections(super::DATABASE_NAME).unwrap();
+        let pool = config
+            .build_pool_of_connections(super::DATABASE_NAME)
+            .unwrap();
         let conn = pool.get().await.unwrap();
         let version = super::initialize_store(&conn, 0).await.unwrap();
         let old_data_store = SqliteCryptoStore::create_raw(
@@ -2357,7 +2581,9 @@ mod tests {
         )
         .await
         .unwrap();
-        super::run_migrations(&old_data_store, version, Some(16)).await.unwrap();
+        super::run_migrations(&old_data_store, version, Some(16))
+            .await
+            .unwrap();
         old_data_store.write().await.unwrap().wal_checkpoint().await;
 
         // Store a secret using the old format
@@ -2372,8 +2598,12 @@ mod tests {
             event: DecryptedSecretSendEvent {
                 sender: owned_user_id!("@alice:example.com"),
                 recipient: owned_user_id!("@alice:example.com"),
-                keys: OlmV1Keys { ed25519: Ed25519SecretKey::new().public_key() },
-                recipient_keys: OlmV1Keys { ed25519: Ed25519SecretKey::new().public_key() },
+                keys: OlmV1Keys {
+                    ed25519: Ed25519SecretKey::new().public_key(),
+                },
+                recipient_keys: OlmV1Keys {
+                    ed25519: Ed25519SecretKey::new().public_key(),
+                },
                 sender_device_keys: None,
                 content: SecretSendContent::new(
                     "abc".into(),
@@ -2386,9 +2616,10 @@ mod tests {
             .write()
             .await
             .unwrap()
-            .prepare("INSERT INTO secrets (secret_name, data) VALUES (?1, ?2)", |mut stmt| {
-                stmt.execute((SecretName::CrossSigningMasterKey.to_string(), value))
-            })
+            .prepare(
+                "INSERT INTO secrets (secret_name, data) VALUES (?1, ?2)",
+                |mut stmt| stmt.execute((SecretName::CrossSigningMasterKey.to_string(), value)),
+            )
             .await
             .unwrap();
 
@@ -2396,8 +2627,10 @@ mod tests {
         let store = SqliteCryptoStore::open_with_config(&config).await.unwrap();
 
         // and we should be able to read the secrets from the inbox
-        let secrets =
-            store.get_secrets_from_inbox(&SecretName::CrossSigningMasterKey).await.unwrap();
+        let secrets = store
+            .get_secrets_from_inbox(&SecretName::CrossSigningMasterKey)
+            .await
+            .unwrap();
         assert_eq!(secrets.len(), 1);
         assert_eq!(secrets[0].deref(), "It is a secret to everybody");
     }
@@ -2410,15 +2643,21 @@ mod tests {
     /// requests for the same secret, it only keeps one.
     #[async_test]
     async fn test_key_requests_migration() {
-        use matrix_sdk_crypto::{GossipRequest, SecretInfo};
-        use ruma::{TransactionId, events::secret::request::SecretName, owned_user_id};
+        use matrix_sdk_crypto::GossipRequest;
+        use matrix_sdk_crypto::SecretInfo;
+        use ruma::TransactionId;
+        use ruma::events::secret::request::SecretName;
+        use ruma::owned_user_id;
 
-        use crate::utils::{EncryptableStore, SqliteAsyncConnExt};
+        use crate::utils::EncryptableStore;
+        use crate::utils::SqliteAsyncConnExt;
 
         // Create a database with version 16
         let tmpdir = tempdir().unwrap();
         let config = SqliteStoreConfig::new(tmpdir.path());
-        let pool = config.build_pool_of_connections(super::DATABASE_NAME).unwrap();
+        let pool = config
+            .build_pool_of_connections(super::DATABASE_NAME)
+            .unwrap();
         let conn = pool.get().await.unwrap();
         let version = super::initialize_store(&conn, 0).await.unwrap();
         let old_data_store = SqliteCryptoStore::create_raw(
@@ -2430,7 +2669,9 @@ mod tests {
         )
         .await
         .unwrap();
-        super::run_migrations(&old_data_store, version, Some(16)).await.unwrap();
+        super::run_migrations(&old_data_store, version, Some(16))
+            .await
+            .unwrap();
         old_data_store.write().await.unwrap().wal_checkpoint().await;
 
         // Store a secret using the old format
@@ -2571,8 +2812,10 @@ mod tests {
 mod encrypted_tests {
     use std::sync::LazyLock;
 
-    use matrix_sdk_crypto::{cryptostore_integration_tests, cryptostore_integration_tests_time};
-    use tempfile::{TempDir, tempdir};
+    use matrix_sdk_crypto::cryptostore_integration_tests;
+    use matrix_sdk_crypto::cryptostore_integration_tests_time;
+    use tempfile::TempDir;
+    use tempfile::tempdir;
     use tokio::fs;
 
     use super::SqliteCryptoStore;
@@ -2606,7 +2849,8 @@ mod close_reopen_tests {
 
     use matrix_sdk_crypto::store::CryptoStore;
     use matrix_sdk_test::async_test;
-    use tempfile::{TempDir, tempdir};
+    use tempfile::TempDir;
+    use tempfile::tempdir;
 
     use super::SqliteCryptoStore;
 
@@ -2687,7 +2931,10 @@ mod close_reopen_tests {
         assert!(err.is_err(), "read should fail when closed");
 
         let err_msg = err.unwrap_err().to_string();
-        assert!(err_msg.contains("closed"), "error should mention 'closed', got: {err_msg}");
+        assert!(
+            err_msg.contains("closed"),
+            "error should mention 'closed', got: {err_msg}"
+        );
     }
 
     #[async_test]
@@ -2714,7 +2961,10 @@ mod close_reopen_tests {
 
             // After each cycle, the store should be fully operational.
             let account = store.load_account().await;
-            assert!(account.is_ok(), "store should work after close/reopen cycle");
+            assert!(
+                account.is_ok(),
+                "store should work after close/reopen cycle"
+            );
         }
     }
 
@@ -2730,7 +2980,10 @@ mod close_reopen_tests {
 
         // After close, the connections field should be None.
         let guard = store.connections.lock().await;
-        assert!(guard.is_none(), "all connections should be released after close");
+        assert!(
+            guard.is_none(),
+            "all connections should be released after close"
+        );
     }
 
     #[async_test]
@@ -2751,14 +3004,20 @@ mod close_reopen_tests {
         tokio::time::sleep(std::time::Duration::from_millis(200)).await;
 
         // The close task should still be running because we hold a connection.
-        assert!(!close_handle.is_finished(), "close should be waiting for the held connection");
+        assert!(
+            !close_handle.is_finished(),
+            "close should be waiting for the held connection"
+        );
 
         // Release the held connection — this lets pool.status().size drop to 0.
         drop(held_conn);
 
         // Now close should complete promptly (well within the 5s timeout).
         let timeout = tokio::time::timeout(std::time::Duration::from_secs(3), close_handle).await;
-        assert!(timeout.is_ok(), "close should complete after the held connection is released");
+        assert!(
+            timeout.is_ok(),
+            "close should complete after the held connection is released"
+        );
         timeout.unwrap().unwrap();
 
         // Verify the store is fully closed.

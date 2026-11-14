@@ -4,9 +4,10 @@
  */
 
 use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
-use aws_smithy_runtime_api::client::retries::classifiers::{
-    ClassifyRetry, RetryAction, RetryClassifierPriority, SharedRetryClassifier,
-};
+use aws_smithy_runtime_api::client::retries::classifiers::ClassifyRetry;
+use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
+use aws_smithy_runtime_api::client::retries::classifiers::RetryClassifierPriority;
+use aws_smithy_runtime_api::client::retries::classifiers::SharedRetryClassifier;
 use aws_smithy_types::retry::ProvideErrorKind;
 use std::borrow::Cow;
 use std::error::Error as StdError;
@@ -216,20 +217,24 @@ pub fn run_classifiers_on_ctx(
 
 #[cfg(test)]
 mod test {
-    use crate::client::retries::classifiers::{
-        HttpStatusCodeClassifier, ModeledAsRetryableClassifier,
-    };
-    use aws_smithy_runtime_api::client::interceptors::context::{Error, Input, InterceptorContext};
+    use crate::client::retries::classifiers::HttpStatusCodeClassifier;
+    use crate::client::retries::classifiers::ModeledAsRetryableClassifier;
+    use aws_smithy_runtime_api::client::interceptors::context::Error;
+    use aws_smithy_runtime_api::client::interceptors::context::Input;
+    use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
     use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
-    use aws_smithy_runtime_api::client::retries::classifiers::{
-        ClassifyRetry, RetryAction, RetryReason, SharedRetryClassifier,
-    };
+    use aws_smithy_runtime_api::client::retries::classifiers::ClassifyRetry;
+    use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
+    use aws_smithy_runtime_api::client::retries::classifiers::RetryReason;
+    use aws_smithy_runtime_api::client::retries::classifiers::SharedRetryClassifier;
     use aws_smithy_types::body::SdkBody;
-    use aws_smithy_types::retry::{ErrorKind, ProvideErrorKind};
+    use aws_smithy_types::retry::ErrorKind;
+    use aws_smithy_types::retry::ProvideErrorKind;
     use std::fmt;
     use std::time::Duration;
 
-    use super::{run_classifiers_on_ctx, TransientErrorClassifier};
+    use super::run_classifiers_on_ctx;
+    use super::TransientErrorClassifier;
 
     #[derive(Debug, PartialEq, Eq, Clone)]
     struct UnmodeledError;

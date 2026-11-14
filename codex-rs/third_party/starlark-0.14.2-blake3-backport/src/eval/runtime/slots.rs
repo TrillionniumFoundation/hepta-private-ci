@@ -38,7 +38,7 @@ use crate::values::Freeze;
     Freeze,
     VisitSpanMut,
     Allocative,
-    StarlarkPagable
+    StarlarkPagable,
 )]
 pub(crate) struct LocalSlotId(pub(crate) u32);
 
@@ -70,17 +70,7 @@ impl LocalSlotId {
 /// ```
 ///
 /// `x` slots (in both `f` and `lambda`) are captured.
-#[derive(
-    Clone,
-    Copy,
-    Dupe,
-    Debug,
-    PartialEq,
-    Eq,
-    Trace,
-    VisitSpanMut,
-    StarlarkPagable
-)]
+#[derive(Clone, Copy, Dupe, Debug, PartialEq, Eq, Trace, VisitSpanMut, StarlarkPagable)]
 pub(crate) struct LocalCapturedSlotId(pub(crate) u32);
 
 impl LocalCapturedSlotId {

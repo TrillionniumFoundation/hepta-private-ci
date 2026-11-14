@@ -4,7 +4,8 @@
  */
 
 use std::fmt;
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
+use std::time::SystemTime;
 
 /// Throughput representation for use when configuring [`super::MinimumThroughputBody`]
 #[derive(Debug, Clone, Copy)]

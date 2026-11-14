@@ -203,7 +203,7 @@ mod tests {
             ProvidesStaticType,
             NoSerialize,
             Allocative,
-            StarlarkPagable
+            StarlarkPagable,
         )]
         struct Bool2(bool);
         starlark_simple_value!(Bool2);

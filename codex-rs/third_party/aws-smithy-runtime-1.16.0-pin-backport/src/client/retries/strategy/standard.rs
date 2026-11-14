@@ -3,32 +3,45 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use std::sync::{Mutex, OnceLock};
-use std::time::{Duration, SystemTime};
+use std::sync::Mutex;
+use std::sync::OnceLock;
+use std::time::Duration;
+use std::time::SystemTime;
 
 use tokio::sync::OwnedSemaphorePermit;
-use tracing::{debug, trace};
+use tracing::debug;
+use tracing::trace;
 
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::interceptors::context::{
-    BeforeTransmitInterceptorContextMut, InterceptorContext,
-};
-use aws_smithy_runtime_api::client::interceptors::{dyn_dispatch_hint, Intercept};
-use aws_smithy_runtime_api::client::retries::classifiers::{RetryAction, RetryReason};
-use aws_smithy_runtime_api::client::retries::{RequestAttempts, RetryStrategy, ShouldAttempt};
+use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
+use aws_smithy_runtime_api::client::interceptors::dyn_dispatch_hint;
+use aws_smithy_runtime_api::client::interceptors::Intercept;
+use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
+use aws_smithy_runtime_api::client::retries::classifiers::RetryReason;
+use aws_smithy_runtime_api::client::retries::RequestAttempts;
+use aws_smithy_runtime_api::client::retries::RetryStrategy;
+use aws_smithy_runtime_api::client::retries::ShouldAttempt;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
-use aws_smithy_types::config_bag::{ConfigBag, Layer, Storable, StoreReplace};
-use aws_smithy_types::retry::{ErrorKind, RetryConfig, RetryMode, RetrySpec};
+use aws_smithy_types::config_bag::ConfigBag;
+use aws_smithy_types::config_bag::Layer;
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreReplace;
+use aws_smithy_types::retry::ErrorKind;
+use aws_smithy_types::retry::RetryConfig;
+use aws_smithy_types::retry::RetryMode;
+use aws_smithy_types::retry::RetrySpec;
 
 use crate::client::retries::classifiers::run_classifiers_on_ctx;
-use crate::client::retries::client_rate_limiter::{ClientRateLimiter, RequestReason};
-use crate::client::retries::strategy::standard::ReleaseResult::{
-    APermitWasReleased, NoPermitWasReleased,
-};
+use crate::client::retries::client_rate_limiter::ClientRateLimiter;
+use crate::client::retries::client_rate_limiter::RequestReason;
+use crate::client::retries::strategy::standard::ReleaseResult::APermitWasReleased;
+use crate::client::retries::strategy::standard::ReleaseResult::NoPermitWasReleased;
 use crate::client::retries::token_bucket::TokenBucket;
-use crate::client::retries::{
-    ClientRateLimiterPartition, LongPollingBackoff, RetryPartition, RetryPartitionInner,
-};
+use crate::client::retries::ClientRateLimiterPartition;
+use crate::client::retries::LongPollingBackoff;
+use crate::client::retries::RetryPartition;
+use crate::client::retries::RetryPartitionInner;
 use crate::static_partition_map::StaticPartitionMap;
 
 static CLIENT_RATE_LIMITER: StaticPartitionMap<ClientRateLimiterPartition, ClientRateLimiter> =
@@ -488,33 +501,42 @@ mod tests {
     use std::time::Duration;
 
     use aws_smithy_async::time::SystemTimeSource;
-    use aws_smithy_runtime_api::client::interceptors::context::{
-        Input, InterceptorContext, Output,
-    };
+    use aws_smithy_runtime_api::client::interceptors::context::Input;
+    use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
+    use aws_smithy_runtime_api::client::interceptors::context::Output;
     use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
-    use aws_smithy_runtime_api::client::retries::classifiers::{
-        ClassifyRetry, RetryAction, SharedRetryClassifier,
-    };
-    use aws_smithy_runtime_api::client::retries::{
-        AlwaysRetry, RequestAttempts, RetryStrategy, ShouldAttempt,
-    };
-    use aws_smithy_runtime_api::client::runtime_components::{
-        RuntimeComponents, RuntimeComponentsBuilder,
-    };
-    use aws_smithy_types::config_bag::{ConfigBag, Layer};
-    use aws_smithy_types::retry::{ErrorKind, RetryConfig};
+    use aws_smithy_runtime_api::client::retries::classifiers::ClassifyRetry;
+    use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
+    use aws_smithy_runtime_api::client::retries::classifiers::SharedRetryClassifier;
+    use aws_smithy_runtime_api::client::retries::AlwaysRetry;
+    use aws_smithy_runtime_api::client::retries::RequestAttempts;
+    use aws_smithy_runtime_api::client::retries::RetryStrategy;
+    use aws_smithy_runtime_api::client::retries::ShouldAttempt;
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+    use aws_smithy_types::config_bag::ConfigBag;
+    use aws_smithy_types::config_bag::Layer;
+    use aws_smithy_types::retry::ErrorKind;
+    use aws_smithy_types::retry::RetryConfig;
 
     #[cfg(any(feature = "test-util", feature = "legacy-test-util"))]
     use aws_smithy_types::retry::RetrySpec;
 
-    use super::{calculate_exponential_backoff, StandardRetryStrategy};
+    use super::calculate_exponential_backoff;
+    use super::StandardRetryStrategy;
     #[cfg(any(feature = "test-util", feature = "legacy-test-util"))]
-    use crate::client::retries::token_bucket::{
-        DEFAULT_CAPACITY, DEFAULT_RETRY_COST, DEFAULT_RETRY_TIMEOUT_COST, THROTTLING_RETRY_COST,
-    };
+    use crate::client::retries::token_bucket::DEFAULT_CAPACITY;
+    #[cfg(any(feature = "test-util", feature = "legacy-test-util"))]
+    use crate::client::retries::token_bucket::DEFAULT_RETRY_COST;
+    #[cfg(any(feature = "test-util", feature = "legacy-test-util"))]
+    use crate::client::retries::token_bucket::DEFAULT_RETRY_TIMEOUT_COST;
+    #[cfg(any(feature = "test-util", feature = "legacy-test-util"))]
+    use crate::client::retries::token_bucket::THROTTLING_RETRY_COST;
+    use crate::client::retries::ClientRateLimiter;
     #[cfg(any(feature = "test-util", feature = "legacy-test-util"))]
     use crate::client::retries::LongPollingBackoff;
-    use crate::client::retries::{ClientRateLimiter, RetryPartition, TokenBucket};
+    use crate::client::retries::RetryPartition;
+    use crate::client::retries::TokenBucket;
 
     #[test]
     fn no_retry_necessary_for_ok_result() {

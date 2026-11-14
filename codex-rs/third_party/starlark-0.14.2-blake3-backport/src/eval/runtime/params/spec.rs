@@ -60,9 +60,7 @@ use crate::values::dict::Dict;
 use crate::values::dict::DictRef;
 
 /// Describe parameter for [`ParametersSpec`].
-#[derive(
-    Debug, Clone, Copy, Dupe, PartialEq, Eq, PartialOrd, Ord, Trace, Freeze, Allocative
-)]
+#[derive(Debug, Clone, Copy, Dupe, PartialEq, Eq, PartialOrd, Ord, Trace, Freeze, Allocative)]
 pub enum ParametersSpecParam<V> {
     /// Parameter is required.
     Required,
@@ -84,16 +82,7 @@ impl<V> ParametersSpecParam<V> {
 }
 
 #[derive(
-    Debug,
-    Copy,
-    Clone,
-    Dupe,
-    Coerce,
-    PartialEq,
-    Trace,
-    Freeze,
-    Allocative,
-    StarlarkPagable
+    Debug, Copy, Clone, Dupe, Coerce, PartialEq, Trace, Freeze, Allocative, StarlarkPagable,
 )]
 #[repr(C)]
 #[starlark_pagable(bound = "V: StarlarkPagable")]

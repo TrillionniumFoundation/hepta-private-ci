@@ -10,10 +10,12 @@
 //! When several providers are enabled, `boring` is preferred. With none
 //! enabled, [`self_signed_server_auth`] returns an error.
 
-use crate::pki_types::{CertificateDer, PrivateKeyDer};
+use crate::pki_types::CertificateDer;
+use crate::pki_types::PrivateKeyDer;
 use rama_core::error::BoxError;
 use rama_net::address::Domain;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 #[cfg(feature = "boring")]
 #[cfg_attr(docsrs, doc(cfg(feature = "boring")))]

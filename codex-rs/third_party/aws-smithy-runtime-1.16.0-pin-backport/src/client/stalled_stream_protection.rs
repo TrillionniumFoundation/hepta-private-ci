@@ -3,17 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use crate::client::http::body::minimum_throughput::{
-    options::MinimumThroughputBodyOptions, MinimumThroughputDownloadBody, ThroughputReadingBody,
-    UploadThroughput,
-};
+use crate::client::http::body::minimum_throughput::options::MinimumThroughputBodyOptions;
+use crate::client::http::body::minimum_throughput::MinimumThroughputDownloadBody;
+use crate::client::http::body::minimum_throughput::ThroughputReadingBody;
+use crate::client::http::body::minimum_throughput::UploadThroughput;
 use aws_smithy_async::rt::sleep::SharedAsyncSleep;
 use aws_smithy_async::time::SharedTimeSource;
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::interceptors::context::{
-    BeforeDeserializationInterceptorContextMut, BeforeTransmitInterceptorContextMut,
-};
-use aws_smithy_runtime_api::client::interceptors::{dyn_dispatch_hint, Intercept};
+use aws_smithy_runtime_api::client::interceptors::context::BeforeDeserializationInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::dyn_dispatch_hint;
+use aws_smithy_runtime_api::client::interceptors::Intercept;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_runtime_api::client::stalled_stream_protection::StalledStreamProtectionConfig;
 use aws_smithy_types::body::SdkBody;

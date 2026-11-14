@@ -32,13 +32,7 @@ use crate::values::StarlarkValue;
 #[test]
 fn test_derive_attrs() {
     #[derive(
-        Debug,
-        StarlarkAttrs,
-        Display,
-        ProvidesStaticType,
-        NoSerialize,
-        Allocative,
-        StarlarkPagable
+        Debug, StarlarkAttrs, Display, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable,
     )]
     #[display("{:?}", self)]
     struct Example {
@@ -65,7 +59,7 @@ fn test_derive_attrs() {
         ProvidesStaticType,
         NoSerialize,
         Allocative,
-        StarlarkPagable
+        StarlarkPagable,
     )]
     #[display("{}", foo)]
     struct Nested {

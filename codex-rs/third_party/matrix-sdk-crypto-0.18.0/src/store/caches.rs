@@ -17,24 +17,38 @@
 //! Note: You'll only be interested in these if you are implementing a custom
 //! `CryptoStore`.
 
-use std::{
-    collections::{BTreeMap, BTreeSet, HashMap, HashSet},
-    fmt::Display,
-    ops::Deref,
-    sync::{
-        Arc, Weak,
-        atomic::{AtomicBool, Ordering},
-    },
-};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::fmt::Display;
+use std::ops::Deref;
+use std::sync::Arc;
+use std::sync::Weak;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use matrix_sdk_common::locks::RwLock as StdRwLock;
-use ruma::{DeviceId, OwnedDeviceId, OwnedUserId, UserId};
-use serde::{Deserialize, Serialize};
-use tokio::sync::{Mutex, MutexGuard, OwnedRwLockReadGuard, RwLock};
-use tracing::{Span, field::display, instrument, trace};
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::UserId;
+use serde::Deserialize;
+use serde::Serialize;
+use tokio::sync::Mutex;
+use tokio::sync::MutexGuard;
+use tokio::sync::OwnedRwLockReadGuard;
+use tokio::sync::RwLock;
+use tracing::Span;
+use tracing::field::display;
+use tracing::instrument;
+use tracing::trace;
 
-use super::{CryptoStoreError, CryptoStoreWrapper};
-use crate::{Account, identities::DeviceData, olm::Session};
+use super::CryptoStoreError;
+use super::CryptoStoreWrapper;
+use crate::Account;
+use crate::identities::DeviceData;
+use crate::olm::Session;
 
 /// In-memory store for Olm Sessions.
 #[derive(Debug, Default, Clone)]
@@ -61,8 +75,13 @@ impl SessionStore {
     /// Returns true if the session was added, false if the session was
     /// already in the store.
     pub async fn add(&self, session: Session) -> bool {
-        let sessions_lock =
-            self.entries.write().await.entry(session.sender_key.to_base64()).or_default().clone();
+        let sessions_lock = self
+            .entries
+            .write()
+            .await
+            .entry(session.sender_key.to_base64())
+            .or_default()
+            .clone();
 
         let mut sessions = sessions_lock.lock().await;
 
@@ -81,7 +100,10 @@ impl SessionStore {
 
     /// Add a list of sessions belonging to the sender key.
     pub async fn set_for_sender(&self, sender_key: &str, sessions: Vec<Session>) {
-        self.entries.write().await.insert(sender_key.to_owned(), Arc::new(Mutex::new(sessions)));
+        self.entries
+            .write()
+            .await
+            .insert(sender_key.to_owned(), Arc::new(Mutex::new(sessions)));
     }
 }
 
@@ -405,10 +427,11 @@ mod tests {
     use matrix_sdk_test::async_test;
     use proptest::prelude::*;
 
-    use super::{DeviceStore, SequenceNumber, SessionStore};
-    use crate::{
-        identities::device::testing::get_device, olm::tests::get_account_and_session_test_helper,
-    };
+    use super::DeviceStore;
+    use super::SequenceNumber;
+    use super::SessionStore;
+    use crate::identities::device::testing::get_device;
+    use crate::olm::tests::get_account_and_session_test_helper;
 
     #[async_test]
     async fn test_session_store() {
@@ -432,7 +455,9 @@ mod tests {
         let (_, session) = get_account_and_session_test_helper();
 
         let store = SessionStore::new();
-        store.set_for_sender(&session.sender_key.to_base64(), vec![session.clone()]).await;
+        store
+            .set_for_sender(&session.sender_key.to_base64(), vec![session.clone()])
+            .await;
 
         let sessions = store.get(&session.sender_key.to_base64()).await.unwrap();
         let sessions = sessions.lock().await;

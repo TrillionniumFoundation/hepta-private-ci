@@ -6,35 +6,34 @@
 #![cfg(all(feature = "client", feature = "test-util"))]
 
 use aws_smithy_http_client::test_util::infallible_client_fn;
+pub use aws_smithy_runtime::client::orchestrator::operation::Operation;
 use aws_smithy_runtime::client::retries::classifiers::HttpStatusCodeClassifier;
 use aws_smithy_runtime::client::retries::RetryPartition;
 use aws_smithy_runtime::test_util::capture_test_logs::capture_test_logs;
-pub use aws_smithy_runtime::{
-    client::orchestrator::operation::Operation, test_util::capture_test_logs::show_test_logs,
-};
+pub use aws_smithy_runtime::test_util::capture_test_logs::show_test_logs;
+pub use aws_smithy_runtime_api::box_error::BoxError;
+pub use aws_smithy_runtime_api::client::http::HttpClient;
+pub use aws_smithy_runtime_api::client::http::HttpConnector;
 use aws_smithy_runtime_api::client::http::SharedHttpClient;
 use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextRef;
+pub use aws_smithy_runtime_api::client::interceptors::context::Error;
+pub use aws_smithy_runtime_api::client::interceptors::context::Output;
 use aws_smithy_runtime_api::client::interceptors::Intercept;
+pub use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
+pub use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+pub use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
 use aws_smithy_runtime_api::client::result::ConnectorError;
-pub use aws_smithy_runtime_api::{
-    box_error::BoxError,
-    client::{
-        http::{HttpClient, HttpConnector},
-        interceptors::context::{Error, Output},
-        orchestrator::{HttpRequest, HttpResponse, OrchestratorError},
-        runtime_components::RuntimeComponents,
-        ser_de::DeserializeResponse,
-    },
-    shared::IntoShared,
-};
+pub use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+pub use aws_smithy_runtime_api::client::ser_de::DeserializeResponse;
+pub use aws_smithy_runtime_api::shared::IntoShared;
+pub use aws_smithy_types::body::SdkBody;
 use aws_smithy_types::config_bag::ConfigBag;
 use aws_smithy_types::retry::RetryConfig;
-pub use aws_smithy_types::{body::SdkBody, timeout::TimeoutConfig};
-pub use std::{
-    convert::Infallible,
-    sync::{Arc, Mutex},
-    time::Duration,
-};
+pub use aws_smithy_types::timeout::TimeoutConfig;
+pub use std::convert::Infallible;
+pub use std::sync::Arc;
+pub use std::sync::Mutex;
+pub use std::time::Duration;
 
 #[derive(Debug, Clone)]
 struct OperationState {

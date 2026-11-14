@@ -15,34 +15,37 @@
 use std::collections::BTreeMap;
 
 use as_variant::as_variant;
-use ruma::{
-    CanonicalJsonValue, DeviceId, MilliSecondsSinceUnixEpoch, OwnedRoomId, UserId,
-    events::{
-        AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyToDeviceEventContent, MessageLikeEvent,
-        key::verification::{
-            VerificationMethod,
-            accept::{
-                AcceptMethod, KeyVerificationAcceptEventContent,
-                ToDeviceKeyVerificationAcceptEventContent,
-            },
-            cancel::{
-                CancelCode, KeyVerificationCancelEventContent,
-                ToDeviceKeyVerificationCancelEventContent,
-            },
-            done::{KeyVerificationDoneEventContent, ToDeviceKeyVerificationDoneEventContent},
-            key::{KeyVerificationKeyEventContent, ToDeviceKeyVerificationKeyEventContent},
-            mac::{KeyVerificationMacEventContent, ToDeviceKeyVerificationMacEventContent},
-            ready::{KeyVerificationReadyEventContent, ToDeviceKeyVerificationReadyEventContent},
-            request::ToDeviceKeyVerificationRequestEventContent,
-            start::{
-                KeyVerificationStartEventContent, StartMethod,
-                ToDeviceKeyVerificationStartEventContent,
-            },
-        },
-        room::message::{KeyVerificationRequestEventContent, MessageType},
-    },
-    serde::Base64,
-};
+use ruma::CanonicalJsonValue;
+use ruma::DeviceId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedRoomId;
+use ruma::UserId;
+use ruma::events::AnyMessageLikeEvent;
+use ruma::events::AnyMessageLikeEventContent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::MessageLikeEvent;
+use ruma::events::key::verification::VerificationMethod;
+use ruma::events::key::verification::accept::AcceptMethod;
+use ruma::events::key::verification::accept::KeyVerificationAcceptEventContent;
+use ruma::events::key::verification::accept::ToDeviceKeyVerificationAcceptEventContent;
+use ruma::events::key::verification::cancel::CancelCode;
+use ruma::events::key::verification::cancel::KeyVerificationCancelEventContent;
+use ruma::events::key::verification::cancel::ToDeviceKeyVerificationCancelEventContent;
+use ruma::events::key::verification::done::KeyVerificationDoneEventContent;
+use ruma::events::key::verification::done::ToDeviceKeyVerificationDoneEventContent;
+use ruma::events::key::verification::key::KeyVerificationKeyEventContent;
+use ruma::events::key::verification::key::ToDeviceKeyVerificationKeyEventContent;
+use ruma::events::key::verification::mac::KeyVerificationMacEventContent;
+use ruma::events::key::verification::mac::ToDeviceKeyVerificationMacEventContent;
+use ruma::events::key::verification::ready::KeyVerificationReadyEventContent;
+use ruma::events::key::verification::ready::ToDeviceKeyVerificationReadyEventContent;
+use ruma::events::key::verification::request::ToDeviceKeyVerificationRequestEventContent;
+use ruma::events::key::verification::start::KeyVerificationStartEventContent;
+use ruma::events::key::verification::start::StartMethod;
+use ruma::events::key::verification::start::ToDeviceKeyVerificationStartEventContent;
+use ruma::events::room::message::KeyVerificationRequestEventContent;
+use ruma::events::room::message::MessageType;
+use ruma::serde::Base64;
 
 use super::FlowId;
 
@@ -315,20 +318,40 @@ from_for_enum!(AcceptContent, Accept, AnyVerificationContent);
 from_for_enum!(KeyContent, Key, AnyVerificationContent);
 from_for_enum!(MacContent, Mac, AnyVerificationContent);
 
-from_borrow_for_enum!(ToDeviceKeyVerificationRequestEventContent, ToDevice, RequestContent);
+from_borrow_for_enum!(
+    ToDeviceKeyVerificationRequestEventContent,
+    ToDevice,
+    RequestContent
+);
 from_borrow_for_enum!(KeyVerificationRequestEventContent, Room, RequestContent);
 from_borrow_for_enum!(KeyVerificationReadyEventContent, Room, ReadyContent);
-from_borrow_for_enum!(ToDeviceKeyVerificationReadyEventContent, ToDevice, ReadyContent);
+from_borrow_for_enum!(
+    ToDeviceKeyVerificationReadyEventContent,
+    ToDevice,
+    ReadyContent
+);
 from_borrow_for_enum!(KeyVerificationStartEventContent, Room, StartContent);
-from_borrow_for_enum!(ToDeviceKeyVerificationStartEventContent, ToDevice, StartContent);
+from_borrow_for_enum!(
+    ToDeviceKeyVerificationStartEventContent,
+    ToDevice,
+    StartContent
+);
 from_borrow_for_enum!(KeyVerificationAcceptEventContent, Room, AcceptContent);
-from_borrow_for_enum!(ToDeviceKeyVerificationAcceptEventContent, ToDevice, AcceptContent);
+from_borrow_for_enum!(
+    ToDeviceKeyVerificationAcceptEventContent,
+    ToDevice,
+    AcceptContent
+);
 from_borrow_for_enum!(KeyVerificationKeyEventContent, Room, KeyContent);
 from_borrow_for_enum!(ToDeviceKeyVerificationKeyEventContent, ToDevice, KeyContent);
 from_borrow_for_enum!(KeyVerificationMacEventContent, Room, MacContent);
 from_borrow_for_enum!(ToDeviceKeyVerificationMacEventContent, ToDevice, MacContent);
 from_borrow_for_enum!(KeyVerificationCancelEventContent, Room, CancelContent);
-from_borrow_for_enum!(ToDeviceKeyVerificationCancelEventContent, ToDevice, CancelContent);
+from_borrow_for_enum!(
+    ToDeviceKeyVerificationCancelEventContent,
+    ToDevice,
+    CancelContent
+);
 
 macro_rules! try_from_outgoing_content {
     ($type: ident, $enum_variant: ident) => {
@@ -427,7 +450,10 @@ impl StartContent<'_> {
             Self::Room(c) => serde_json::to_value(c),
         };
 
-        content.expect("Can't serialize content").try_into().expect("Can't canonicalize content")
+        content
+            .expect("Can't serialize content")
+            .try_into()
+            .expect("Can't canonicalize content")
     }
 }
 
@@ -605,7 +631,10 @@ impl OwnedStartContent {
             Self::Room(_, c) => serde_json::to_value(c),
         };
 
-        content.expect("Can't serialize content").try_into().expect("Can't canonicalize content")
+        content
+            .expect("Can't serialize content")
+            .try_into()
+            .expect("Can't canonicalize content")
     }
 }
 
@@ -685,10 +714,11 @@ impl From<(OwnedRoomId, Box<AnyMessageLikeEventContent>)> for OutgoingContent {
     }
 }
 
-use crate::types::{
-    events::ToDeviceEvents,
-    requests::{OutgoingRequest, OutgoingVerificationRequest, RoomMessageRequest, ToDeviceRequest},
-};
+use crate::types::events::ToDeviceEvents;
+use crate::types::requests::OutgoingRequest;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::types::requests::RoomMessageRequest;
+use crate::types::requests::ToDeviceRequest;
 
 impl TryFrom<OutgoingVerificationRequest> for OutgoingContent {
     type Error = String;

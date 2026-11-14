@@ -4,7 +4,9 @@
  */
 
 use aws_smithy_async::future::timeout::Timeout;
-use aws_smithy_async::rt::sleep::{AsyncSleep, SharedAsyncSleep, Sleep};
+use aws_smithy_async::rt::sleep::AsyncSleep;
+use aws_smithy_async::rt::sleep::SharedAsyncSleep;
+use aws_smithy_async::rt::sleep::Sleep;
 use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
 use aws_smithy_runtime_api::client::result::SdkError;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
@@ -13,7 +15,8 @@ use aws_smithy_types::timeout::TimeoutConfig;
 use pin_project_lite::pin_project;
 use std::future::Future;
 use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::task::Context;
+use std::task::Poll;
 use std::time::Duration;
 
 #[derive(Debug)]
@@ -170,11 +173,14 @@ mod tests {
     use super::*;
     use aws_smithy_async::assert_elapsed;
     use aws_smithy_async::future::never::Never;
-    use aws_smithy_async::rt::sleep::{AsyncSleep, SharedAsyncSleep, TokioSleep};
+    use aws_smithy_async::rt::sleep::AsyncSleep;
+    use aws_smithy_async::rt::sleep::SharedAsyncSleep;
+    use aws_smithy_async::rt::sleep::TokioSleep;
     use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
     use aws_smithy_runtime_api::client::result::SdkError;
     use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
-    use aws_smithy_types::config_bag::{CloneableLayer, ConfigBag};
+    use aws_smithy_types::config_bag::CloneableLayer;
+    use aws_smithy_types::config_bag::ConfigBag;
     use aws_smithy_types::timeout::TimeoutConfig;
     use std::time::Duration;
 

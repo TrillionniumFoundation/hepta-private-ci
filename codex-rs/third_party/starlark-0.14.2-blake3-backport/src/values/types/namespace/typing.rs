@@ -58,9 +58,7 @@ impl TypeMatcher for NamespaceMatcher {
     }
 }
 
-#[derive(
-    Allocative, Clone, Copy, Dupe, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Pagable
-)]
+#[derive(Allocative, Clone, Copy, Dupe, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Pagable)]
 pub(super) struct TyNamespaceFunction;
 
 pagable::register_typetag!(TyCustomFunction<TyNamespaceFunction> as dyn TyCustomDyn);
@@ -99,9 +97,7 @@ impl TyCustomFunctionImpl for TyNamespaceFunction {
     }
 }
 
-#[derive(
-    Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable)]
 #[pagable_typetag(TyCustomDyn)]
 pub(super) struct TyNamespace {
     pub(super) fields: SortedMap<ArcStr, Ty>,

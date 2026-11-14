@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    io::{Cursor, Read},
-    str::{self},
-};
+use std::io::Cursor;
+use std::io::Read;
+use std::str::{self};
 
-use byteorder::{BigEndian, ReadBytesExt};
+use byteorder::BigEndian;
+use byteorder::ReadBytesExt;
 use url::Url;
 use vodozemac::Curve25519PublicKey;
 
@@ -174,9 +174,16 @@ impl QrCodeData {
                 }
             };
 
-            Ok(Self { public_key, rendezvous_url, intent_data })
+            Ok(Self {
+                public_key,
+                rendezvous_url,
+                intent_data,
+            })
         } else {
-            Err(LoginQrCodeDecodeError::InvalidType { expected: VERSION, got: version })
+            Err(LoginQrCodeDecodeError::InvalidType {
+                expected: VERSION,
+                got: version,
+            })
         }
     }
 
@@ -200,7 +207,12 @@ impl QrCodeData {
         if let Msc4108IntentData::Reciprocate { server_name } = &self.intent_data {
             let server_name_len = (server_name.as_str().len() as u16).to_be_bytes();
 
-            [encoded.as_slice(), &server_name_len, server_name.as_str().as_bytes()].concat()
+            [
+                encoded.as_slice(),
+                &server_name_len,
+                server_name.as_str().as_bytes(),
+            ]
+            .concat()
         } else {
             encoded
         }

@@ -3,17 +3,19 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use crate::client::waiters::backoff::{Backoff, RandomImpl};
-use aws_smithy_async::{
-    rt::sleep::{AsyncSleep, SharedAsyncSleep},
-    time::SharedTimeSource,
-};
+use crate::client::waiters::backoff::Backoff;
+use crate::client::waiters::backoff::RandomImpl;
+use aws_smithy_async::rt::sleep::AsyncSleep;
+use aws_smithy_async::rt::sleep::SharedAsyncSleep;
+use aws_smithy_async::time::SharedTimeSource;
+use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+use aws_smithy_runtime_api::client::result::CreateUnhandledError;
+use aws_smithy_runtime_api::client::result::SdkError;
+use aws_smithy_runtime_api::client::waiters::error::ExceededMaxWait;
+use aws_smithy_runtime_api::client::waiters::error::FailureState;
+use aws_smithy_runtime_api::client::waiters::error::OperationFailed;
+use aws_smithy_runtime_api::client::waiters::error::WaiterError;
 use aws_smithy_runtime_api::client::waiters::FinalPoll;
-use aws_smithy_runtime_api::client::{orchestrator::HttpResponse, result::SdkError};
-use aws_smithy_runtime_api::client::{
-    result::CreateUnhandledError,
-    waiters::error::{ExceededMaxWait, FailureState, OperationFailed, WaiterError},
-};
 use std::future::Future;
 use std::time::Duration;
 
@@ -285,19 +287,17 @@ pub fn attach_waiter_tracing_span<O, E>(
 mod tests {
     use super::*;
     use crate::test_util::capture_test_logs::show_test_logs;
-    use aws_smithy_async::{
-        test_util::tick_advance_sleep::tick_advance_time_and_sleep, time::TimeSource,
-    };
-    use aws_smithy_runtime_api::{http::StatusCode, shared::IntoShared};
+    use aws_smithy_async::test_util::tick_advance_sleep::tick_advance_time_and_sleep;
+    use aws_smithy_async::time::TimeSource;
+    use aws_smithy_runtime_api::http::StatusCode;
+    use aws_smithy_runtime_api::shared::IntoShared;
     use aws_smithy_types::body::SdkBody;
-    use std::{
-        fmt,
-        sync::{
-            atomic::{AtomicUsize, Ordering},
-            Arc, Mutex,
-        },
-        time::SystemTime,
-    };
+    use std::fmt;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+    use std::sync::Arc;
+    use std::sync::Mutex;
+    use std::time::SystemTime;
 
     #[derive(Debug)]
     struct TestError;

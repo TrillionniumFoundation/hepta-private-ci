@@ -123,12 +123,7 @@ enum RecordTypeError {
 
 /// The result of `record()`, being the type of records.
 #[derive(
-    Debug,
-    Trace,
-    NoSerialize,
-    ProvidesStaticType,
-    Allocative,
-    starlark_derive::StarlarkPagable
+    Debug, Trace, NoSerialize, ProvidesStaticType, Allocative, starlark_derive::StarlarkPagable,
 )]
 #[starlark_pagable(bound = "V: StarlarkPagable, V::TyRecordDataOpt: StarlarkPagable")]
 pub struct RecordTypeGen<V: RecordCell> {

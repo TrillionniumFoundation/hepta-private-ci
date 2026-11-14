@@ -12,25 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    io::{Cursor, Read},
-    ops::DerefMut,
-};
+use std::io::Cursor;
+use std::io::Read;
+use std::ops::DerefMut;
 
 use ruma::api::client::backup::EncryptedSessionData;
 use thiserror::Error;
-use vodozemac::{
-    Curve25519PublicKey, Curve25519SecretKey,
-    pk_encryption::{Message, PkDecryption},
-};
-use zeroize::{Zeroize, Zeroizing};
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Curve25519SecretKey;
+use vodozemac::pk_encryption::Message;
+use vodozemac::pk_encryption::PkDecryption;
+use zeroize::Zeroize;
+use zeroize::Zeroizing;
 
 use super::MegolmV1BackupKey;
-use crate::{
-    olm::BackedUpRoomKey,
-    store::types::BackupDecryptionKey,
-    types::{MegolmV1AuthData, RoomKeyBackupInfo},
-};
+use crate::olm::BackedUpRoomKey;
+use crate::store::types::BackupDecryptionKey;
+use crate::types::MegolmV1AuthData;
+use crate::types::RoomKeyBackupInfo;
 
 /// Error type for the decoding of a [`BackupDecryptionKey`].
 #[derive(Debug, Error)]
@@ -148,7 +147,9 @@ impl BackupDecryptionKey {
         // Remove any whitespace we might have
         let value: String = value.chars().filter(|c| !c.is_whitespace()).collect();
 
-        let decoded = bs58::decode(value).with_alphabet(bs58::Alphabet::BITCOIN).into_vec()?;
+        let decoded = bs58::decode(value)
+            .with_alphabet(bs58::Alphabet::BITCOIN)
+            .into_vec()?;
         let mut decoded = Cursor::new(decoded);
 
         let mut prefix = [0u8; 2];
@@ -184,7 +185,9 @@ impl BackupDecryptionKey {
             .concat(),
         );
 
-        bs58::encode(bytes.as_slice()).with_alphabet(bs58::Alphabet::BITCOIN).into_string()
+        bs58::encode(bytes.as_slice())
+            .with_alphabet(bs58::Alphabet::BITCOIN)
+            .into_string()
     }
 
     fn get_pk_decryption(&self) -> PkDecryption {
@@ -274,8 +277,11 @@ mod tests {
     use ruma::api::client::backup::KeyBackupData;
     use serde_json::json;
 
-    use super::{BackupDecryptionKey, DecodeError};
-    use crate::olm::{BackedUpRoomKey, ExportedRoomKey, InboundGroupSession};
+    use super::BackupDecryptionKey;
+    use super::DecodeError;
+    use crate::olm::BackedUpRoomKey;
+    use crate::olm::ExportedRoomKey;
+    use crate::olm::InboundGroupSession;
 
     const TEST_KEY: [u8; 32] = [
         0x77, 0x07, 0x6D, 0x0A, 0x73, 0x18, 0xA5, 0x7D, 0x3C, 0x16, 0xC1, 0x72, 0x51, 0xB2, 0x66,
@@ -307,7 +313,10 @@ mod tests {
 
         let base64 = key.to_base64();
         let decoded_key = BackupDecryptionKey::from_base64(&base64)?;
-        assert_eq!(key.inner, decoded_key.inner, "The decode key doesn't match the original");
+        assert_eq!(
+            key.inner, decoded_key.inner,
+            "The decode key doesn't match the original"
+        );
 
         BackupDecryptionKey::from_base64("i").expect_err("The recovery key is too short");
 
@@ -320,7 +329,10 @@ mod tests {
 
         let base64 = key.to_base58();
         let decoded_key = BackupDecryptionKey::from_base58(&base64)?;
-        assert_eq!(key.inner, decoded_key.inner, "The decode key doesn't match the original");
+        assert_eq!(
+            key.inner, decoded_key.inner,
+            "The decode key doesn't match the original"
+        );
 
         let test_key =
             BackupDecryptionKey::from_base58("EsTcLW2KPGiFwKEA3As5g5c4BXwkqeeJZJV8Q9fugUMNUE4d")?;

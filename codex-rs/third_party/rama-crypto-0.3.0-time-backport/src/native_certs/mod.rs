@@ -27,15 +27,22 @@
 //! [`rustls-native-certs`]: https://github.com/rustls/rustls-native-certs
 //! [pr228]: https://github.com/rustls/rustls-native-certs/pull/228
 
+use std::env;
 use std::error::Error as StdError;
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, LazyLock};
-use std::{env, fmt, fs, io};
+use std::fmt;
+use std::fs;
+use std::io;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::LazyLock;
 
-use rama_core::telemetry::tracing::{debug, warn};
+use rama_core::telemetry::tracing::debug;
+use rama_core::telemetry::tracing::warn;
 
 use crate::pki_types::CertificateDer;
-use crate::pki_types::pem::{self, PemObject};
+use crate::pki_types::pem::PemObject;
+use crate::pki_types::pem::{self};
 
 #[cfg(all(unix, not(target_os = "macos")))]
 mod unix;

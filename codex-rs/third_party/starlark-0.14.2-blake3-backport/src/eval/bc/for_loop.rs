@@ -27,16 +27,6 @@ use pagable::Pagable;
 ///       pass
 /// ```
 #[derive(
-    Default,
-    Debug,
-    Copy,
-    Clone,
-    Dupe,
-    derive_more::Display,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Pagable
+    Default, Debug, Copy, Clone, Dupe, derive_more::Display, Eq, PartialEq, Ord, PartialOrd, Pagable,
 )]
 pub(crate) struct LoopDepth(pub(crate) u32);

@@ -3,8 +3,10 @@ pub mod item;
 pub mod prompt;
 pub mod service;
 
-use serde::{Deserialize, Serialize};
-use zbus::{OwnedObjectPath, Type};
+use serde::Deserialize;
+use serde::Serialize;
+use zbus::OwnedObjectPath;
+use zbus::Type;
 
 #[derive(Debug, Serialize, Deserialize, Type)]
 pub struct SecretStruct {

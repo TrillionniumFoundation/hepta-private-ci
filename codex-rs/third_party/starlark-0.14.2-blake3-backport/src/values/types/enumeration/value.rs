@@ -48,14 +48,7 @@ use crate::values::types::type_instance_id::TypeInstanceId;
 
 /// A value from an enumeration.
 #[derive(
-    Clone,
-    Derivative,
-    Trace,
-    Coerce,
-    Freeze,
-    ProvidesStaticType,
-    Allocative,
-    StarlarkPagable
+    Clone, Derivative, Trace, Coerce, Freeze, ProvidesStaticType, Allocative, StarlarkPagable,
 )]
 #[repr(C)]
 #[derivative(Debug)]

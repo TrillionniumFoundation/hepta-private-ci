@@ -1,13 +1,18 @@
 use crate::error::Error;
 use crate::proxy::item::ItemProxy;
 use crate::proxy::service::ServiceProxy;
+use crate::session::AesIv;
+use crate::session::Session;
 use crate::session::decrypt;
-use crate::session::{AesIv, Session};
 use crate::ss::SS_DBUS_NAME;
-use crate::util::{LockAction, exec_prompt, format_secret, lock_or_unlock};
+use crate::util::LockAction;
+use crate::util::exec_prompt;
+use crate::util::format_secret;
+use crate::util::lock_or_unlock;
 
 use std::collections::HashMap;
-use zbus::{OwnedObjectPath, proxy::CacheProperties};
+use zbus::OwnedObjectPath;
+use zbus::proxy::CacheProperties;
 
 /// A Secret Service item.
 pub struct Item<'a> {

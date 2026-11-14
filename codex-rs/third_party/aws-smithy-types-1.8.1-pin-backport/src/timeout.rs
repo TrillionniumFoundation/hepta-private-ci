@@ -7,7 +7,10 @@
 //! Smithy networking stack.
 
 use crate::config_bag::value::Value;
-use crate::config_bag::{ItemIter, Storable, Store, StoreReplace};
+use crate::config_bag::ItemIter;
+use crate::config_bag::Storable;
+use crate::config_bag::Store;
+use crate::config_bag::StoreReplace;
 use std::time::Duration;
 
 #[derive(Clone, Debug, Default, PartialEq, Copy)]
@@ -467,8 +470,10 @@ impl From<TimeoutConfig> for OperationTimeoutConfig {
 
 #[cfg(test)]
 mod test {
-    use crate::config_bag::{CloneableLayer, ConfigBag};
-    use crate::timeout::{MergeTimeoutConfig, TimeoutConfig};
+    use crate::config_bag::CloneableLayer;
+    use crate::config_bag::ConfigBag;
+    use crate::timeout::MergeTimeoutConfig;
+    use crate::timeout::TimeoutConfig;
     use std::time::Duration;
 
     #[test]

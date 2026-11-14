@@ -3,11 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_runtime_api::client::interceptors::context::{Error, Output};
-use aws_smithy_runtime_api::client::orchestrator::{HttpResponse, OrchestratorError};
+use aws_smithy_runtime_api::client::interceptors::context::Error;
+use aws_smithy_runtime_api::client::interceptors::context::Output;
+use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
 use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
-use aws_smithy_runtime_api::client::ser_de::{DeserializeResponse, SharedResponseDeserializer};
-use aws_smithy_types::config_bag::{FrozenLayer, Layer};
+use aws_smithy_runtime_api::client::ser_de::DeserializeResponse;
+use aws_smithy_runtime_api::client::ser_de::SharedResponseDeserializer;
+use aws_smithy_types::config_bag::FrozenLayer;
+use aws_smithy_types::config_bag::Layer;
 use std::sync::Mutex;
 
 /// Test response deserializer that always returns the same canned response.

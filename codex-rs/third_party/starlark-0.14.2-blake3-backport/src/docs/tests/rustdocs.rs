@@ -46,22 +46,12 @@ use crate::values::none::NoneType;
 use crate::values::tuple::UnpackTuple;
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    Allocative,
-    NoSerialize,
-    ProvidesStaticType,
-    StarlarkPagable
+    Debug, derive_more::Display, Allocative, NoSerialize, ProvidesStaticType, StarlarkPagable,
 )]
 #[display("input")]
 struct InputTypeRepr;
 #[derive(
-    Debug,
-    derive_more::Display,
-    Allocative,
-    NoSerialize,
-    ProvidesStaticType,
-    StarlarkPagable
+    Debug, derive_more::Display, Allocative, NoSerialize, ProvidesStaticType, StarlarkPagable,
 )]
 #[display("output")]
 struct OutputTypeRepr;
@@ -160,14 +150,7 @@ def with_arguments(*args, **kwargs) -> int: pass
     }
 }
 
-#[derive(
-    ProvidesStaticType,
-    Debug,
-    Display,
-    Allocative,
-    Serialize,
-    StarlarkPagable
-)]
+#[derive(ProvidesStaticType, Debug, Display, Allocative, Serialize, StarlarkPagable)]
 #[display("obj")]
 struct Obj;
 

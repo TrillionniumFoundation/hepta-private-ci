@@ -3,8 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
-use rand::distributions::{Alphanumeric, DistString};
+use criterion::criterion_group;
+use criterion::criterion_main;
+use criterion::BenchmarkId;
+use criterion::Criterion;
+use rand::distributions::Alphanumeric;
+use rand::distributions::DistString;
 
 /// Generates a random string of a given length
 fn random_string(len: usize) -> String {

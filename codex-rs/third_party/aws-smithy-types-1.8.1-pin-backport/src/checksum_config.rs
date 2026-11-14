@@ -15,7 +15,8 @@ use std::error::Error;
 use std::fmt;
 use std::str::FromStr;
 
-use crate::config_bag::{Storable, StoreReplace};
+use crate::config_bag::Storable;
+use crate::config_bag::StoreReplace;
 
 // Valid names for RequestChecksumCalculation and ResponseChecksumValidation
 const WHEN_SUPPORTED: &str = "when_supported";

@@ -56,15 +56,7 @@ use crate::values::starlark_value;
 use crate::values::type_repr::SetType;
 use crate::values::type_repr::StarlarkTypeRepr;
 
-#[derive(
-    Clone,
-    Default,
-    Trace,
-    Debug,
-    ProvidesStaticType,
-    Allocative,
-    StarlarkPagable
-)]
+#[derive(Clone, Default, Trace, Debug, ProvidesStaticType, Allocative, StarlarkPagable)]
 #[repr(transparent)]
 pub(crate) struct SetGen<T>(pub(crate) T);
 
