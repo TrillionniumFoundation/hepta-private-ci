@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T03:50:43.177852+00:00",
+  "method": "Direct standard-library XML parsing of original artifact bytes; no tests executed by this verification. Exact target names are matched without prefix approximation; failure/error/skipped elements are rejected.",
+  "source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "artifacts": [
+    {
+      "lane": "daemon",
+      "xml": "artifacts/daemon/ordinary.xml",
+      "bytes": 275790,
+      "sha256": "c23b02340dc763c38ba7c5bb45d97f2303e726c05338ad3fb4585f1244a1c994",
+      "testcases": 1158,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "target_owner_groups": [
+        {
+          "group": "Model proposal",
+          "passed_names": [
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_pending_and_lost_ack_recover_without_new_commit",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rechecks_original_witness_after_final_receipt_decode",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_host_clock_rejects_request_backdating_and_expired_evidence"
+          ],
+          "distinct_count": 7
+        },
+        {
+          "group": "Original Evaluation receipt",
+          "passed_names": [
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_expired_signature_is_not_renewed"
+          ],
+          "distinct_count": 5
+        },
+        {
+          "group": "Original Training receipt",
+          "passed_names": [
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_refuses_wrong_key_trust_scope_and_changed_dataset_prefix",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_pending_native_job_never_claims_or_signs",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_genesis_witness_ack_stays_blocked"
+          ],
+          "distinct_count": 6
+        }
+      ],
+      "root_parent_names": []
+    },
+    {
+      "lane": "daemon",
+      "xml": "artifacts/daemon/root.xml",
+      "bytes": 2115,
+      "sha256": "98d81ade3deda6435e81e59cc3f0f2f76d9d5c2a00b60ccffa9f36da66bef0f3",
+      "testcases": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "target_owner_groups": [],
+      "root_parent_names": [
+        "authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history",
+        "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+        "authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen",
+        "authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint",
+        "authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client",
+        "learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd",
+        "root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin"
+      ]
+    },
+    {
+      "lane": "shared",
+      "xml": "artifacts/shared/junit.xml",
+      "bytes": 283241,
+      "sha256": "5f8c3815573a5b2c1bcd86aa80c8999a5ed8034cd79bbaf2f729d5ae9457b8cc",
+      "testcases": 1196,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "target_owner_groups": [
+        {
+          "group": "Model proposal",
+          "passed_names": [
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_pending_and_lost_ack_recover_without_new_commit",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rechecks_original_witness_after_final_receipt_decode",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_host_clock_rejects_request_backdating_and_expired_evidence"
+          ],
+          "distinct_count": 7
+        },
+        {
+          "group": "Original Evaluation receipt",
+          "passed_names": [
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit",
+            "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_expired_signature_is_not_renewed"
+          ],
+          "distinct_count": 5
+        },
+        {
+          "group": "Original Training receipt",
+          "passed_names": [
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_refuses_wrong_key_trust_scope_and_changed_dataset_prefix",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_pending_native_job_never_claims_or_signs",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains",
+            "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_genesis_witness_ack_stays_blocked"
+          ],
+          "distinct_count": 6
+        }
+      ],
+      "root_parent_names": []
+    }
+  ],
+  "prior_ordinary_xml_byte_identical_and_not_counted_as_root": true,
+  "suite_counts_overlap_do_not_sum": true,
+  "distinct_target_tests": 18,
+  "independent_second_agent_audit": "Not required for this completed raw-XML verification; may be appended as a separate new record."
+}

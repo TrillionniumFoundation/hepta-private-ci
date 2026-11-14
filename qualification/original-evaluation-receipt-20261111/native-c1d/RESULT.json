@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T03:34:53.745952+00:00",
+  "status": "PASS_HOSTED_LINUX_OWNER_NATIVE",
+  "source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "code_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5896",
+  "daemon": {
+    "run_id": 42946454461,
+    "job_id": 130280341039,
+    "ordinary_passed": 1158,
+    "ordinary_failed": 0,
+    "root_parent_cases_passed": 7,
+    "root_failed": 0,
+    "original_ordinary_record": "artifacts/daemon/ordinary.json",
+    "original_root_record": "artifacts/daemon/root.json",
+    "root_fixture_uid_observed": 0,
+    "root_previous_ordinary_xml_excluded": true,
+    "root_is_component_parent_cases_not_ordinary_two_process_loop": true
+  },
+  "shared": {
+    "run_id": 42946454356,
+    "job_id": 130280341079,
+    "passed": 1196,
+    "failed": 0,
+    "original_execution_record": "artifacts/shared/tests.json"
+  },
+  "suite_totals_overlap_do_not_sum": true,
+  "distinct_target_owner_tests": 18,
+  "target_owner_tests_pass_in_each_suite": true,
+  "target_test_evidence": "TARGET_OWNER_TESTS.json",
+  "maintenance": {
+    "fmt_exit": 0,
+    "fix_exit": 0,
+    "bins_check_exit": 0,
+    "source_changed": false,
+    "patch_bytes": 0,
+    "postimages_bytes": 0,
+    "all_six_inventory_snapshots_identical": true
+  },
+  "original_artifacts": "ARTIFACT_INDEX.json",
+  "source_inventory_equality": "SOURCE_INVENTORY_EQUALITY.json",
+  "historical_30692_failures_retained": true,
+  "old_56_source_checks_and_225_boundary_scan_not_reexecuted_or_relabelled": true,
+  "whole_repository_ci_qualified": false,
+  "architecture_and_blocking_ci_status": "Tracked separately; not implied by these two successful source-head Linux jobs.",
+  "ordinary_production_acceptance": {
+    "ordinary_complete_chain_count": 0,
+    "positive_adoption_chain_count": 0,
+    "no_update_or_rollback_chain_count": 0,
+    "independent_C_FinalUse_accepted": false,
+    "daemon_and_Root_real_restart_loop_accepted": false
+  },
+  "direct_raw_xml_verification": "XML_VERIFICATION.json",
+  "all_18_targets_confirmed_in_each_original_junit": true
+}

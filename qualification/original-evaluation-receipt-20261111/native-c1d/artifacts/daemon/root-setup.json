@@ -1,0 +1,17 @@
+{
+  "command": [
+    "sudo",
+    "-n",
+    "python3",
+    "-c",
+    "import os,subprocess,sys; from pathlib import Path; p=Path(sys.argv[1]); p.mkdir(mode=0o700); [ (p/n).mkdir(mode=0o700) for n in ('source','bind','checkpoints') ]; subprocess.run(['mount','--bind',str(p/'source'),str(p/'bind')],check=True); print('Root fixture uid='+str(os.geteuid())+' path='+str(p),flush=True)",
+    "/run/hepta-daemon-learning-42946454461-1"
+  ],
+  "log_bytes": 65,
+  "log_sha256": "b69a3c8bebd0a1fb3a0eef675c76e3e364460a750ee8927a3ad865cf6a468457",
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "timed_out": false
+}
