@@ -1,9 +1,10 @@
 {
   "schema": "hepta.cell.common-candidate-review.v1",
   "published_base": {
-    "commit": "1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89",
-    "tree": "1f5986c2c27c970a01d49dc4e2547c55861006f8",
-    "pr": 5875
+    "commit": "b5019ee98bc7b7b99eb689378f41e66691c2d257",
+    "tree": "5164d68c23ffa071a80d4aa9a7f033f068a82dfd",
+    "pr": 5875,
+    "review_ref_policy": "pin a separate branch to this exact reviewed base"
   },
   "integrated_changes": [
     {
@@ -60,8 +61,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 7381,
-      "sha256": "c90413906d691f3e9c9dffb4f5e85e2c845de99cf5dbd38d6bd2cf77c9ec1636"
+      "bytes": 8503,
+      "sha256": "adb353b12900087c96e05afe3460f0e2efecfb3c539d8215e4dbfe7030af8331"
     },
     {
       "path": "RMCP_5875_BASE_RECONCILIATION.json",
@@ -99,5 +100,32 @@
     "file": "codex-rs/hepta-agentd/src/neuron_generation_learning_readback.rs",
     "blob": "1064800d8296f1f2efe2ae816af2703b78c49dd2",
     "reason": "exhaustive rejection of TrainingNoUpdateV2 as completed generation use; no new authority"
+  },
+  "initial_base": {
+    "commit": "1e49bd2c95c98eb736595ffed6d5d36cb6d7ae89",
+    "tree": "1f5986c2c27c970a01d49dc4e2547c55861006f8",
+    "pr": 5875
+  },
+  "receipt_owner_scope": {
+    "production_model_proposal_profile": "not established",
+    "new_internal_reader_boundary": "cell_q24_original_training_observation",
+    "reader_product_callers": [
+      "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
+    ],
+    "receipt_create_recover_attest_readback_product_callers": [],
+    "original_stage_assembly_product_callers": [],
+    "new_native_fixture_tests": 7,
+    "new_source_closure_cases": 4,
+    "results_require_final_merged_source": true
+  },
+  "recovery_test_resolution": {
+    "prior_failed_native_source": "1e822b3aeac79d9e9fc169f7fc6a48821baa6654",
+    "prior_native_run": 42937682992,
+    "prior_repair_source": "58b3b3d777f54f3e5b84796643a89616bc65d9e2",
+    "first_claim": true,
+    "duplicate_claim": false,
+    "original_initial_snapshot_reused": true,
+    "complete_original_claimed_vector_preserved": true,
+    "production_retry_authority_added": false
   }
 }
