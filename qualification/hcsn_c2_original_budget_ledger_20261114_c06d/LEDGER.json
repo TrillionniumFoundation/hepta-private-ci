@@ -1,0 +1,181 @@
+{
+  "schema": "hcsn-c2-original-start-budget-ledger-v1",
+  "status": "ORIGINAL_START_LEDGER_CLOSED_CURRENT_REMAINING_UNKNOWN",
+  "all_closed": false,
+  "full_independent_training_replay_completed": 0,
+  "full_independent_training_replay_denominator": 6,
+  "known_completed_diagnostic_optimizer_calls": 52,
+  "lifetime_optimizer_calls": "UNKNOWN",
+  "original_controller_terminal": "UNKNOWN",
+  "execution": {
+    "model": 0,
+    "torch": 0,
+    "optimizer": 0,
+    "native_training": 0,
+    "new_idempotency_keys": 0
+  },
+  "desktop_originals": {
+    "campaign_result": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/RESULT.json",
+      "bytes": 203251,
+      "sha256": "362bc0345635bb5c9438670c13efa5908140527463aa4f373479235686b5683b",
+      "version": "2050:10286549:203251:1794336533943658497:1794336533943658497",
+      "status": "completed_attempt_roster",
+      "attempts": 42,
+      "source_unchanged": true
+    },
+    "locked_plan": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/locked-plan.json",
+      "bytes": 3861,
+      "sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114",
+      "version": "2050:10286386:3861:1794322155879627244:1794322155879627244",
+      "schema": "hcsn-fresh-adapter-campaign-plan-v2"
+    },
+    "commands": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/commands.jsonl",
+      "bytes": 179623,
+      "sha256": "56b99308ea90e86a7bd7c4ba02be0bb3dd298c06725edfacfd799d641dabe424",
+      "version": "2050:10286384:179623:1794336533913062732:1794336533913062732",
+      "hcsn_started_rows": 6,
+      "hcsn_terminal_rows": 6
+    },
+    "campaign_plan": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-plan.json",
+      "bytes": 3861,
+      "sha256": "e13f97aafdaf66548f016f2dcc3a38dd7e641a2ea83d52b8bea89f4c7e0cf114",
+      "byte_equal_to_locked_plan_by_size_and_sha256": true
+    },
+    "training_source": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8/proposals/localization-v3/train.py",
+      "bytes": 22822,
+      "sha256": "06cb85c7a0da85fb8d656526c2b07285979bc6c47c2e00c154e89f43bcfc1a22"
+    }
+  },
+  "contract": {
+    "cumulative_active_wall_seconds_per_fit": 43200.0,
+    "finalization_reserve_seconds_inside_same_cap": 600.0,
+    "parent_partial_work_refund_seconds": 0.0,
+    "budget_scope": "original complete outer whole_process_wall_seconds charged before new work",
+    "reserve_scope": "training worker active ceiling stops 600 seconds before the same 43200-second cap; reserve is not outside or already deducted from the charged remainder",
+    "maximum_new_summed_fit_active_wall_seconds_before_exit_overhead": 172938.8845898183
+  },
+  "fits": [
+    {
+      "fit": "hcsn-s101-lr0.001",
+      "parent_epoch": 46,
+      "parent_sha256": "e0c8c946aa8010bfcf4df5b9e155235d2fb6b12a9832e4eaa5db3d9afb154d78",
+      "parent_bytes": 450552,
+      "plan_sha256": "73d317f53b370307bda2ebf529107b26452bca15c6e39e7fe38c3716cefc3b10",
+      "result_sha256": "ebb51a9ffb60e91ec3aa0d7cc896957765b20fd69a3522aad0a2006d933b96c0",
+      "command_returncode": 2,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400.0,
+      "original_whole_process_wall_seconds": 14376.351586270845,
+      "original_decision_non_refunded_charged_remainder_seconds": 28823.648413729155,
+      "original_decision_worker_active_ceiling_before_finalization_seconds": 28223.648413729155,
+      "current_remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "fit": "hcsn-s101-lr0.003",
+      "parent_epoch": 47,
+      "parent_sha256": "bea446e64571e7cd424411036eff207bb6839af4495a7b60cf0f9df81181ba05",
+      "parent_bytes": 450616,
+      "plan_sha256": "33bb3cebd05a70dfd2e51c69bf134f3bb63fbc86bf0a4b8f0b94bd22b8c61ef0",
+      "result_sha256": "5cd6f329a00a78c9c0b948dd209897bfaa62c1cbaef1c3c0ba76675dc4e6f1bf",
+      "command_returncode": 2,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400.0,
+      "original_whole_process_wall_seconds": 14378.026858798927,
+      "original_decision_non_refunded_charged_remainder_seconds": 28821.973141201073,
+      "original_decision_worker_active_ceiling_before_finalization_seconds": 28221.973141201073,
+      "current_remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "fit": "hcsn-s211-lr0.001",
+      "parent_epoch": 46,
+      "parent_sha256": "cdbca6e633c6aba5f72f08f259ab08b1c5c2c5745d1dbd2f323a78df876e1e79",
+      "parent_bytes": 450552,
+      "plan_sha256": "74a25f964a655a0302440cd431f69a46cd4ea62a056c2282f11547ebbec2d8a7",
+      "result_sha256": "27246c56ac32c62ff375c0c0e170807f01eaa7e108619f7fc6d21c5d49f29033",
+      "command_returncode": 2,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400.0,
+      "original_whole_process_wall_seconds": 14377.272928075166,
+      "original_decision_non_refunded_charged_remainder_seconds": 28822.727071924834,
+      "original_decision_worker_active_ceiling_before_finalization_seconds": 28222.727071924834,
+      "current_remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "fit": "hcsn-s211-lr0.003",
+      "parent_epoch": 47,
+      "parent_sha256": "b7d162101f18628fcfcabb21e9609499d62c8a26ad6d53b9c375ed2e0439d2f4",
+      "parent_bytes": 450488,
+      "plan_sha256": "66db280cced4549900ebab518b327004efb264b3c2d35fcbebf2e449979c49e4",
+      "result_sha256": "66182f0b1f0eae1699c6be05e9d3f1cb5f5c20c484f9af6a8b12f302357dd3c1",
+      "command_returncode": 2,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400.0,
+      "original_whole_process_wall_seconds": 14376.949902404798,
+      "original_decision_non_refunded_charged_remainder_seconds": 28823.0500975952,
+      "original_decision_worker_active_ceiling_before_finalization_seconds": 28223.0500975952,
+      "current_remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "fit": "hcsn-s307-lr0.001",
+      "parent_epoch": 46,
+      "parent_sha256": "17d6ad363d82ba31b006d0a4f55ca9c63453fa2c9c34f7370f022e2ff66a4f5c",
+      "parent_bytes": 450552,
+      "plan_sha256": "359c278aea86b9d748f95c5b91efb5d5281302405f84ee07d4afbd6ce36e379e",
+      "result_sha256": "cae58fc7825505e687e7416516968f65017753d3337183a78a2847d5b0e20dd0",
+      "command_returncode": 2,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400.0,
+      "original_whole_process_wall_seconds": 14375.544506336097,
+      "original_decision_non_refunded_charged_remainder_seconds": 28824.455493663903,
+      "original_decision_worker_active_ceiling_before_finalization_seconds": 28224.455493663903,
+      "current_remaining_wall_seconds": "UNKNOWN"
+    },
+    {
+      "fit": "hcsn-s307-lr0.003",
+      "parent_epoch": 46,
+      "parent_sha256": "736ee7d7afe911a3cf5bb7f7ad97babff4dfb74e28a46ec9c148579160a5075c",
+      "parent_bytes": 450552,
+      "plan_sha256": "482db61c6c7002fa0660672ea30b30268d394073ec459fdbe472b0cbdaf02a3a",
+      "result_sha256": "e1a463fa16677c7122f265f6b8dc362f3adf75f364d8e074bc901cb4c161c443",
+      "command_returncode": 2,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400.0,
+      "original_whole_process_wall_seconds": 14376.969628295861,
+      "original_decision_non_refunded_charged_remainder_seconds": 28823.03037170414,
+      "original_decision_worker_active_ceiling_before_finalization_seconds": 28223.03037170414,
+      "current_remaining_wall_seconds": "UNKNOWN"
+    }
+  ],
+  "arithmetic": {
+    "original_whole_process_wall_seconds_fsum": 86261.1154101817,
+    "original_decision_non_refunded_charged_remainder_seconds_fsum": 172938.8845898183,
+    "original_decision_worker_active_ceiling_before_finalization_seconds_fsum": 169338.8845898183,
+    "matches_frozen_decision_aggregate_before_reserve_deduction_exactly": true
+  },
+  "closed": [
+    "six exact original parent bytes and completed-epoch identities",
+    "exact campaign source, plan, RESULT, commands, six plan/result identities and command terminals",
+    "per-fit original-decision non-refunded charged remainder after charging complete original outer wall",
+    "separate per-fit worker active ceiling after preserving the 600-second finalization reserve inside the same cap",
+    "exact aggregate equality to the frozen original decision before reserve deduction"
+  ],
+  "still_unknown": [
+    "authoritative terminal and finalization state of original replay controller desktop 1a1c74f3308-be2a-75",
+    "per-fit wall charged by that replay after the original-decision start point",
+    "optimizer calls and wall charged by cancelled/unknown later attempts",
+    "exact current per-fit remaining wall after every non-refunded later attempt",
+    "resource allocation, concurrency and calendar admission for any future replay"
+  ],
+  "non_transfer": [
+    "the closed ledger is the original decision start ledger, not a current executable balance",
+    "172938.8845898183 is the charged remainder before preserving six 600-second finalization reserves",
+    "current remaining wall is at most the original-decision charged remainder and remains UNKNOWN",
+    "no historical attempt is refunded",
+    "this evidence does not admit, launch or qualify a replay"
+  ]
+}
