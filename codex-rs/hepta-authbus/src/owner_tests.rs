@@ -8,28 +8,28 @@ use std::sync::Arc;
 use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
-fn private_tempdir() -> TempDir {
-    let directory = tempfile::tempdir().expect("tempdir");
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("private tempdir");
-    directory
+type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+fn private_tempdir() -> TestResult<TempDir> {
+    let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    Ok(directory)
 }
 
-async fn fixture() -> (TempDir, TempDir, PathBuf, PathBuf, AuthBusAuthorityOwner) {
-    let database_root = private_tempdir();
-    let checkpoint_root = private_tempdir();
+async fn fixture() -> TestResult<(TempDir, TempDir, PathBuf, PathBuf, AuthBusAuthorityOwner)> {
+    let database_root = private_tempdir()?;
+    let checkpoint_root = private_tempdir()?;
     let database = database_root.path().join("authority.sqlite");
     let checkpoint = checkpoint_root.path().join("authority-checkpoint.json");
     let owner =
         AuthBusAuthorityOwner::bootstrap_new(&database, checkpoint.clone(), "authbus-owner-test")
-            .await
-            .expect("bootstrap owner");
-    (database_root, checkpoint_root, database, checkpoint, owner)
+            .await?;
+    Ok((database_root, checkpoint_root, database, checkpoint, owner))
 }
 
 #[tokio::test]
-async fn writer_lease_fences_a_second_owner_and_releases_on_drop() {
-    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await;
+async fn writer_lease_fences_a_second_owner_and_releases_on_drop() -> TestResult {
+    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await?;
     let second =
         AuthBusAuthorityOwner::open(&database, checkpoint.clone(), "authbus-owner-test").await;
     assert!(matches!(
@@ -43,11 +43,12 @@ async fn writer_lease_fences_a_second_owner_and_releases_on_drop() {
         reopened.is_ok(),
         "normal owner drop must release the writer lease"
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn stale_writer_lease_fails_closed_until_explicitly_recovered() {
-    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await;
+async fn stale_writer_lease_fails_closed_until_explicitly_recovered() -> TestResult {
+    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await?;
     drop(owner);
 
     let lock_path = writer_lock_path(&checkpoint).expect("writer lock path");
@@ -70,11 +71,12 @@ async fn stale_writer_lease_fails_closed_until_explicitly_recovered() {
     AuthBusAuthorityOwner::open(&database, checkpoint, "authbus-owner-test")
         .await
         .expect("open after explicit stale-lock recovery");
+    Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn concurrent_mutations_are_serialized_through_one_checkpoint_publisher() {
-    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await;
+async fn concurrent_mutations_are_serialized_through_one_checkpoint_publisher() -> TestResult {
+    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await?;
     let owner = Arc::new(owner);
     let mut tasks = Vec::new();
     for index in 0_u8..32 {
@@ -110,11 +112,12 @@ async fn concurrent_mutations_are_serialized_through_one_checkpoint_publisher() 
     AuthBusAuthorityOwner::open(&database, checkpoint, "authbus-owner-test")
         .await
         .expect("concurrent owner state reopens without false rollback");
+    Ok(())
 }
 
 #[tokio::test]
-async fn crash_after_external_publication_is_reconciled_without_replaying_mutation() {
-    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await;
+async fn crash_after_external_publication_is_reconciled_without_replaying_mutation() -> TestResult {
+    let (_database_root, _checkpoint_root, database, checkpoint, owner) = fixture().await?;
     owner.host.fail_after_external_replace_once();
     let key = SigningKey::from_bytes(&[77; 32]);
     let result = owner
@@ -143,10 +146,11 @@ async fn crash_after_external_publication_is_reconciled_without_replaying_mutati
     AuthBusAuthorityOwner::open(&database, checkpoint, "authbus-owner-test")
         .await
         .expect("reconciled crash window reopens");
+    Ok(())
 }
 
 #[tokio::test]
-async fn serialized_mutation_cancellation_preserves_single_operation_slot() {
+async fn serialized_mutation_cancellation_preserves_single_operation_slot() -> TestResult {
     use std::future::Future;
     use std::future::pending;
     use std::sync::atomic::AtomicBool;
@@ -154,7 +158,7 @@ async fn serialized_mutation_cancellation_preserves_single_operation_slot() {
     use std::task::Context;
     use std::task::Waker;
 
-    let (_database_root, _checkpoint_root, _database, _checkpoint, owner) = fixture().await;
+    let (_database_root, _checkpoint_root, _database, _checkpoint, owner) = fixture().await?;
     let port = owner.admin();
     let first_entered = AtomicBool::new(false);
     let waiter_entered = AtomicBool::new(false);
@@ -195,14 +199,15 @@ async fn serialized_mutation_cancellation_preserves_single_operation_slot() {
         .sync_checkpoint()
         .await
         .expect("the original owner remains usable after cancellation");
+    Ok(())
 }
 
 #[tokio::test]
-async fn serialized_mutation_rechecks_lease_and_releases_slot_on_rejection() {
+async fn serialized_mutation_rechecks_lease_and_releases_slot_on_rejection() -> TestResult {
     use std::sync::atomic::AtomicBool;
     use std::sync::atomic::Ordering;
 
-    let (_database_root, _checkpoint_root, _database, checkpoint, owner) = fixture().await;
+    let (_database_root, _checkpoint_root, _database, checkpoint, owner) = fixture().await?;
     let port = owner.admin();
     let first = async {
         serialized_mutation!(port, async {
@@ -224,4 +229,5 @@ async fn serialized_mutation_rechecks_lease_and_releases_slot_on_rejection() {
     .await;
     assert!(matches!(next, Err(AuthBusAuthorityError::WriterLeaseLost)));
     assert!(!entered.load(Ordering::SeqCst));
+    Ok(())
 }
