@@ -1,0 +1,44 @@
+name: hepta-stem-v16-reader-system2-source-only
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v14_reader_sufficiency_gate.py'
+      - 'qualification/stem-cell-v1/v15_system2_split_shadow.py'
+      - 'qualification/stem-cell-v1/v16_reader_system2_bridge.py'
+      - 'qualification/stem-cell-v1/test_v16_reader_system2_bridge.py'
+      - 'qualification/stem-cell-v1/STEM_V16_READER_SYSTEM2_BRIDGE.md'
+      - '.github/workflows/hepta-stem-v16-reader-system2-bridge.yml'
+  push:
+    branches:
+      - 'research/stem-v16-reader-system2-bridge-20261015'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  v16-strict-source-only-bridge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source SHA, syntax, and actual canonical V14/V15/V16 imports
+        run: |
+          git rev-parse HEAD
+          python -m py_compile \
+            qualification/stem-cell-v1/v14_reader_sufficiency_gate.py \
+            qualification/stem-cell-v1/v15_system2_split_shadow.py \
+            qualification/stem-cell-v1/v16_reader_system2_bridge.py \
+            qualification/stem-cell-v1/test_v16_reader_system2_bridge.py
+      - name: Source/answer/utility tamper audit (normal and optimized)
+        run: |
+          export PYTHONPATH=qualification/stem-cell-v1
+          for pattern in test_v14_reader_sufficiency_gate.py test_v15_system2_split_shadow.py test_v16_reader_system2_bridge.py; do
+            python -m unittest discover -s qualification/stem-cell-v1 -p "$pattern" -v
+            python -O -m unittest discover -s qualification/stem-cell-v1 -p "$pattern" -v
+          done
+          git diff --exit-code

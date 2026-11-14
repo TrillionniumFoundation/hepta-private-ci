@@ -1,0 +1,71 @@
+name: MemoryCell actual Git cross-file static integrity (no model)
+on:
+  push:
+    branches:
+      - codex/memory-crossfile-source-trace-20261015
+    paths:
+      - scripts/memory_cell/memory_original_crossfile_trace.py
+      - scripts/memory_cell/test_memory_original_crossfile_trace.py
+      - scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
+      - .github/workflows/hepta-memory-original-crossfile-static.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-original-crossfile-static-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  cross-file-static-integrity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      MEMORY_REAL_SOURCE_ZIP: /tmp/crossfile-static/source.zip
+      MEMORY_REOPEN_ZIP: /tmp/crossfile-static/reopen.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact-source SHA and independent source download
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p /tmp/crossfile-static
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11778273351/zip' \
+            -o "$MEMORY_REAL_SOURCE_ZIP"
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779107585/zip' \
+            -o "$MEMORY_REOPEN_ZIP"
+          echo 'a4c7b9868461c11558546bd582796255cbca682c938a1704d62cd93a556406b4  /tmp/crossfile-static/source.zip' | sha256sum --check
+          echo '59dee0a84099f6fb101dbfd5420c569f10c44a2d8a7b67c984e381edf4db9d36  /tmp/crossfile-static/reopen.zip' | sha256sum --check
+      - name: All 18 negative regression tests on the original bytes
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memory_original_crossfile_trace.py scripts/memory_cell/test_memory_original_crossfile_trace.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_original_crossfile_trace.py -v
+      - name: Independently regenerate exact, unsigned mechanical evidence
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/crossfile-static/review
+          python3 scripts/memory_cell/memory_original_crossfile_trace.py \
+            --source-zip "$MEMORY_REAL_SOURCE_ZIP" \
+            --reopen-zip "$MEMORY_REOPEN_ZIP" \
+            --output /tmp/crossfile-static/review/strict-original-links.json
+          echo '555c85a878e7c6e7c2fa95efaccf4c3c3143e534e8e5a61a84d5b8b352a53ec7  /tmp/crossfile-static/review/strict-original-links.json' | sha256sum --check
+          cmp /tmp/crossfile-static/review/strict-original-links.json \
+            scripts/memory_cell/data/memory-original-crossfile-static-20261015.json
+          git rev-parse HEAD > /tmp/crossfile-static/review/tested-head.txt
+          (cd /tmp/crossfile-static/review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-original-crossfile-static-audit
+          path: /tmp/crossfile-static/review
+          if-no-files-found: warn
