@@ -1,0 +1,148 @@
+name: Hepta Original MultiRC P2 Source Owner (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-replacement-p0/multirc_source_bridge.py"
+      - "qualification/stem-replacement-p0/test_multirc_source_bridge.py"
+      - "qualification/stem-replacement-p0/MULTIRC_SOURCE_P2.md"
+      - ".github/workflows/hepta-stem-multirc-source-p2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-original-multirc-p2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-only-fail-closed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Original-source authority and adversarial leak checks
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python -m py_compile multirc_source_bridge.py test_multirc_source_bridge.py
+          python -m unittest -q test_multirc_source_bridge
+          python -O -m unittest -q test_multirc_source_bridge
+          echo "fixture_tests_only=true original_parquet_not_loaded=true production=false"
+
+  physically-pin-original-human-source:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'research/ettin400-multirc-original-panel-p2-20261017')
+    needs: source-only-fail-closed
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Exact repository commit and immutable upstream author script
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PR_HEAD_SHA"
+          test "$(git status --porcelain)" = ""
+          git fetch --no-tags --depth=1 origin 883b7c107348675153aece3db40a1d00e41c0a09
+          git show 883b7c107348675153aece3db40a1d00e41c0a09:experiments/shared_stem_cell/p0_multirc_semantic_material.py > "$RUNNER_TEMP/original_multirc_owner.py"
+          test "$(git hash-object "$RUNNER_TEMP/original_multirc_owner.py")" = "637a73a8735ff706ac256dca13a0614373255da1"
+          echo "original_multirc_author_source_sha_pinned=true"
+      - name: Fixed original dataset reader versions (no untrusted source code)
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: "huggingface_hub==0.36.0" "pyarrow==21.0.0"
+          python -m pip check
+      - name: Verify exact public Parquet source bytes and split custody
+        env:
+          HF_HUB_DISABLE_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/human-parquet"
+          python - <<'PY'
+          import hashlib, os, pathlib, shutil
+          from huggingface_hub import HfApi, hf_hub_download
+          repo = "aps/super_glue"
+          revision = "4e14482c58d790d467ecfb29b6790e1917bf8756"
+          info = HfApi().dataset_info(repo_id=repo, revision=revision, files_metadata=True)
+          assert info.sha == revision, "original publisher source SHA mismatch"
+          inventory = {entry.rfilename: entry for entry in info.siblings}
+          for split, filename in (("train", "multirc/train-00000-of-00001.parquet"),
+                                  ("validation", "multirc/validation-00000-of-00001.parquet")):
+              assert filename in inventory, "original human dataset file absent"
+              member = inventory[filename]
+              meta = member.lfs
+              published = (meta.get("sha256") if isinstance(meta, dict)
+                           else getattr(meta, "sha256", None))
+              assert isinstance(published, str) and len(published) == 64, "original data has no pinned publisher SHA256"
+              src = pathlib.Path(hf_hub_download(repo_id=repo, repo_type="dataset", revision=revision, filename=filename))
+              digest = hashlib.sha256(src.read_bytes()).hexdigest()
+              assert digest == published, "original full Parquet byte SHA mismatch"
+              dest = pathlib.Path(os.environ["RUNNER_TEMP"]) / "human-parquet" / (split + ".parquet")
+              with dest.open("xb") as output:
+                  with src.open("rb") as original:
+                      shutil.copyfileobj(original, output)
+              assert hashlib.sha256(dest.read_bytes()).hexdigest() == published
+              (dest.parent / (split + ".sha256")).write_text(published)
+              print(f"{split}: original human Parquet SHA256={published}; NO LABEL EXPORT")
+          PY
+      - name: Recreate original P0 source with actual publisher human annotations
+        run: |
+          set -euo pipefail
+          TRAIN_SHA=$(cat "$RUNNER_TEMP/human-parquet/train.sha256")
+          VALID_SHA=$(cat "$RUNNER_TEMP/human-parquet/validation.sha256")
+          python "$RUNNER_TEMP/original_multirc_owner.py" \
+            --train-parquet "$RUNNER_TEMP/human-parquet/train.parquet" \
+            --validation-parquet "$RUNNER_TEMP/human-parquet/validation.parquet" \
+            --train-sha256 "$TRAIN_SHA" --validation-sha256 "$VALID_SHA" \
+            --output "$RUNNER_TEMP/original-p0"
+      - name: Materialize separate label-blind and FIT-only P2 owners
+        run: |
+          set -euo pipefail
+          mkdir -m 0700 "$RUNNER_TEMP/private-fit"
+          cd qualification/stem-replacement-p0
+          python multirc_source_bridge.py \
+            --fit "$RUNNER_TEMP/original-p0/fit.json" \
+            --blind "$RUNNER_TEMP/original-p0/blind.json" \
+            --public-out "$RUNNER_TEMP/label-blind-p2" \
+            --fit-labels-out "$RUNNER_TEMP/private-fit/fit-only.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          import gate, matched_head, physical_feature_bank
+          temp = Path(os.environ["RUNNER_TEMP"])
+          public = temp / "label-blind-p2"
+          panel = gate.strict_load(public / "panel.json")
+          views = gate.strict_load(public / "views.json")
+          private = gate.strict_load(temp / "private-fit" / "fit-only.json")
+          report = gate.strict_load(public / "source-receipt.json")
+          assert len(physical_feature_bank.manifest_views(panel, views)) == 48
+          assert len(matched_head.validate_fit(panel, private)) == 24
+          assert report["fit_count"] == 24 and report["cal_count"] == 8 and report["test_count"] == 16
+          assert report["actual_pretrained_encoder_forward_verified"] is False
+          assert report["cal_or_test_labels_exported"] is False
+          assert report["production_authorized"] is False
+          assert not any("label" in row or "target" in row or "gold" in row for row in views["cases"])
+          print("real_original_human_source=true exact_48_unlabeled_views=true fit_only_private=true production=false")
+          PY
+      - name: Retain only unlabeled source census, never source text or human targets
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-multirc-p2-source-receipt-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/label-blind-p2/source-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 0
