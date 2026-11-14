@@ -90,8 +90,7 @@ pub fn price_verified_factors_v2(
             VerifiedPromptErrorV2::IdentityMismatch("pricing factor is outside candidate set")
         })?;
         if bound.candidate_set_digest != candidates.value.candidates_digest
-            || bound.registry_snapshot_digest
-                != candidates.value.registry_snapshot.snapshot_digest
+            || bound.registry_snapshot_digest != candidates.value.registry_snapshot.snapshot_digest
             || bound.generation_vector_digest != candidates.value.generation_vector_digest
             || bound.realization_id != candidate.realization.realization_id
             || bound.realization_binding_digest != candidate.binding_digest
@@ -202,12 +201,12 @@ pub fn select_verified_portfolio_v2(
     let mut valid_until = priced.valid_until_unix_ms.min(graph_valid_until(graph)?);
 
     for bound in pair_evidence {
-        let left = by_factor.get(&bound.evidence.left_factor_id).ok_or(
-            VerifiedPromptErrorV2::IdentityMismatch("left pair factor"),
-        )?;
-        let right = by_factor.get(&bound.evidence.right_factor_id).ok_or(
-            VerifiedPromptErrorV2::IdentityMismatch("right pair factor"),
-        )?;
+        let left = by_factor
+            .get(&bound.evidence.left_factor_id)
+            .ok_or(VerifiedPromptErrorV2::IdentityMismatch("left pair factor"))?;
+        let right = by_factor
+            .get(&bound.evidence.right_factor_id)
+            .ok_or(VerifiedPromptErrorV2::IdentityMismatch("right pair factor"))?;
         let pair = canonical_pair(
             &bound.evidence.left_factor_id,
             &bound.evidence.right_factor_id,
@@ -257,11 +256,8 @@ pub fn select_verified_portfolio_v2(
         now_unix_ms,
     )?;
     lineage_parts.sort();
-    let evidence_lineage_digest = digest_lineage(
-        priced.trust_digest,
-        priced.authority_epoch,
-        &lineage_parts,
-    );
+    let evidence_lineage_digest =
+        digest_lineage(priced.trust_digest, priced.authority_epoch, &lineage_parts);
     let context = PromptPortfolioVerificationContextV2 {
         candidate_set_digest: priced.value.candidates.candidates_digest,
         pricing_set_digest: priced.value.pricing_set_digest,
@@ -334,4 +330,3 @@ pub fn exercise_verified_portfolio_v2(
         | PromptExerciseActionV1::NoIntervention => Ok(decision),
     }
 }
-

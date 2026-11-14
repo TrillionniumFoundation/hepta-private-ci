@@ -274,10 +274,7 @@ fn digest_receipt(
     Digest32::of_bytes(&bytes)
 }
 
-pub(crate) fn canonical_factor_pair(
-    left: &StableId,
-    right: &StableId,
-) -> (StableId, StableId) {
+pub(crate) fn canonical_factor_pair(left: &StableId, right: &StableId) -> (StableId, StableId) {
     if left <= right {
         (left.clone(), right.clone())
     } else {
