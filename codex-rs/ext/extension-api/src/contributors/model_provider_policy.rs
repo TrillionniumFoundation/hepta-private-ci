@@ -177,10 +177,7 @@ pub trait ModelProviderAttemptLease: Send {
     /// claim, and return only after that claim is durable. They must not retain
     /// plaintext request bytes after the future resolves. This callback is
     /// invoked only when [`Self::requires_final_request_observation`] is true.
-    fn observe_final_request<'a>(
-        &'a self,
-        _body: &'a [u8],
-    ) -> ModelProviderPolicyFuture<'a, ()> {
+    fn observe_final_request<'a>(&'a self, _body: &'a [u8]) -> ModelProviderPolicyFuture<'a, ()> {
         Box::pin(std::future::ready(Ok(())))
     }
 

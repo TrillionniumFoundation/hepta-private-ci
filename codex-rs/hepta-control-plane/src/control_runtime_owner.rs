@@ -414,7 +414,9 @@ where
         );
         let published_journal_head = records
             .last()
-            .map_or_else(crate::PlannerJournalHeadV1::empty, |record| record.journal_head);
+            .map_or_else(crate::PlannerJournalHeadV1::empty, |record| {
+                record.journal_head
+            });
         if published_journal_head != journal.head() {
             return Err(ControlRuntimeOwnerErrorV1::UnpublishedJournalTail);
         }
@@ -521,8 +523,12 @@ where
         let grant_requests =
             request_execution_grants(snapshot.snapshot(), prepared, &receipt, final_use_now)?;
         let deadline = attempt_deadline_micros.min(receipt.expires_at_micros());
-        let mut attempt =
-            ExecutionAttemptV1::new(attempt_id.clone(), receipt.receipt_digest(), final_use_now, deadline)?;
+        let mut attempt = ExecutionAttemptV1::new(
+            attempt_id.clone(),
+            receipt.receipt_digest(),
+            final_use_now,
+            deadline,
+        )?;
         attempt.record_grant_request(grant_requests.request_set_digest(), final_use_now)?;
 
         self.journal.record_decision(&receipt)?;
@@ -627,9 +633,7 @@ where
         Ok(attempt)
     }
 
-    pub fn flush_pending_publication(
-        &mut self,
-    ) -> Result<(), ControlRuntimeOwnerErrorV1> {
+    pub fn flush_pending_publication(&mut self) -> Result<(), ControlRuntimeOwnerErrorV1> {
         let Some(pending) = self.pending_publication.take() else {
             return Ok(());
         };
@@ -779,9 +783,7 @@ pub fn owner_summary_signing_bytes_v1(
     bytes
 }
 
-fn digest_trust_set<'a>(
-    producers: impl Iterator<Item = &'a TrustedOwnerProducerV1>,
-) -> Digest32 {
+fn digest_trust_set<'a>(producers: impl Iterator<Item = &'a TrustedOwnerProducerV1>) -> Digest32 {
     let mut bytes = b"hepta.control.owner-port-trust-set.v1".to_vec();
     for producer in producers {
         push_text(&mut bytes, producer.producer_id.as_str());
@@ -1065,13 +1067,7 @@ mod tests {
         })
         .expect("evaluation");
         let selected = owner
-            .finalize_selected_plan(
-                &snapshot,
-                &prepared,
-                &evaluation,
-                id("attempt-1"),
-                300,
-            )
+            .finalize_selected_plan(&snapshot, &prepared, &evaluation, id("attempt-1"), 300)
             .expect("selected");
         assert_eq!(
             selected.attempt.phase(),
@@ -1082,15 +1078,9 @@ mod tests {
             .expect("authorization");
 
         let (clock, journal, publisher, auth) = owner.into_parts();
-        let recovered = ControlRuntimeOwnerV1::open(
-            id("control.runtime"),
-            1,
-            clock,
-            journal,
-            publisher,
-            auth,
-        )
-        .expect("recover owner");
+        let recovered =
+            ControlRuntimeOwnerV1::open(id("control.runtime"), 1, clock, journal, publisher, auth)
+                .expect("recover owner");
         assert_eq!(
             recovered
                 .attempt(&id("attempt-1"))
@@ -1119,10 +1109,7 @@ mod tests {
         )
         .expect("owner");
         assert!(matches!(
-            owner.collect_authenticated_snapshot(
-                snapshot_request(),
-                vec![signed_summary(&other)]
-            ),
+            owner.collect_authenticated_snapshot(snapshot_request(), vec![signed_summary(&other)]),
             Err(ControlRuntimeOwnerErrorV1::Authentication(
                 OwnerPortAuthenticationErrorV1::InvalidSignature
             ))

@@ -3,8 +3,8 @@ name: Hepta Neuron R8 shadow experiments (no promotion)
 on:
   pull_request:
     paths:
-      - 'qualification/neuron-shared-head-r8/**'
-      - '.github/workflows/hepta-neuron-r8-head-experiments.yml'
+      - "qualification/neuron-shared-head-r8/**"
+      - ".github/workflows/hepta-neuron-r8-head-experiments.yml"
   workflow_dispatch:
 
 permissions:

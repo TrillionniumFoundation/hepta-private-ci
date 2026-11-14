@@ -132,12 +132,12 @@ impl PlannerJournalV1 {
 
     #[must_use]
     pub fn head(&self) -> PlannerJournalHeadV1 {
-        self.entries.last().map_or_else(PlannerJournalHeadV1::empty, |entry| {
-            PlannerJournalHeadV1 {
+        self.entries
+            .last()
+            .map_or_else(PlannerJournalHeadV1::empty, |entry| PlannerJournalHeadV1 {
                 sequence: entry.sequence,
                 entry_digest: entry.entry_digest,
-            }
-        })
+            })
     }
 
     #[must_use]

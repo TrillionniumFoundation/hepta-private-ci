@@ -3,8 +3,8 @@ name: ndu-dmgp-shadow
 on:
   pull_request:
     paths:
-      - 'qualification/ndu-dmgp-reference/**'
-      - '.github/workflows/ndu-dmgp-shadow.yml'
+      - "qualification/ndu-dmgp-reference/**"
+      - ".github/workflows/ndu-dmgp-shadow.yml"
   workflow_dispatch:
 
 permissions:

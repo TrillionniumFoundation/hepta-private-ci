@@ -8,8 +8,13 @@ use std::io;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
 use std::os::windows::fs::OpenOptionsExt;
-use std::os::windows::io::{AsRawHandle, FromRawHandle, OwnedHandle};
-use std::path::{Component, Path, PathBuf, Prefix};
+use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
+use std::path::Component;
+use std::path::Path;
+use std::path::PathBuf;
+use std::path::Prefix;
 
 const READ_ATTRIBUTES: u32 = 0x80;
 const SHARE_ALL: u32 = 7;
@@ -287,7 +292,8 @@ struct Fixture {
 }
 impl Fixture {
     fn new() -> io::Result<Self> {
-        use std::sync::atomic::{AtomicU64, Ordering};
+        use std::sync::atomic::AtomicU64;
+        use std::sync::atomic::Ordering;
         static NEXT: AtomicU64 = AtomicU64::new(0);
         let stamp = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

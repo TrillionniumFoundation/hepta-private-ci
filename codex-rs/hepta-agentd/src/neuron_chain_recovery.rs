@@ -2,10 +2,16 @@
 //! The final acknowledgement is an input from an independent host witness.
 
 use std::collections::BTreeSet;
-use std::fs::{File, OpenOptions};
-use std::path::{Path, PathBuf};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::path::Path;
+use std::path::PathBuf;
 
-use codex_hepta_neuron::{JournalAnchor, JournalError, JournalScope, SparseConfig, SparseJournal};
+use codex_hepta_neuron::JournalAnchor;
+use codex_hepta_neuron::JournalError;
+use codex_hepta_neuron::JournalScope;
+use codex_hepta_neuron::SparseConfig;
+use codex_hepta_neuron::SparseJournal;
 use serde::Deserialize;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

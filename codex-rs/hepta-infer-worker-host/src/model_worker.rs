@@ -5,12 +5,12 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
 
-use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -780,12 +780,12 @@ pub(crate) use gated_cpu::GatedHeadCpuDriverV2;
 
 #[path = "model_worker_shared_v2.rs"]
 mod shared_v2;
-pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
-pub use shared_v2::canonical_shared_neuron_payload_digest_v3;
 pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
 pub use shared_v2::SharedNeuronFeatureRequestV2;
 pub use shared_v2::SharedNeuronFeatureResultV2;
 pub use shared_v2::SharedNeuronFeatureResultV3;
+pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
+pub use shared_v2::canonical_shared_neuron_payload_digest_v3;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]

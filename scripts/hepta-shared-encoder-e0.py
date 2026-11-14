@@ -38,9 +38,9 @@ def parse_stat(raw):
         result = {
             "pid": int(pid),
             "start_time_ticks": int(fields[19]),  # field 22
-            "user_cpu_ticks": int(fields[11]),   # field 14
+            "user_cpu_ticks": int(fields[11]),  # field 14
             "system_cpu_ticks": int(fields[12]),  # field 15
-            "rss_pages": int(fields[21]),       # field 24
+            "rss_pages": int(fields[21]),  # field 24
         }
         if any(value < 0 for value in result.values()) or result["pid"] <= 0:
             raise CaptureError("invalid negative or zero proc counters")
@@ -89,7 +89,18 @@ def read_memory(pid):
     except OSError:
         values["smaps_rollup_available"] = False
     else:
-        detailed = parse_memory_kib(rollup, {"Rss", "Pss", "Private_Clean", "Private_Dirty", "Shared_Clean", "Shared_Dirty", "Swap"})
+        detailed = parse_memory_kib(
+            rollup,
+            {
+                "Rss",
+                "Pss",
+                "Private_Clean",
+                "Private_Dirty",
+                "Shared_Clean",
+                "Shared_Dirty",
+                "Swap",
+            },
+        )
         if "Rss" not in detailed or "Pss" not in detailed:
             raise CaptureError("incomplete smaps_rollup Rss/Pss measurement")
         values.update(detailed)
@@ -98,13 +109,22 @@ def read_memory(pid):
 
 
 def capture_process(pid, samples=8, interval_ms=50, sleep=time.sleep):
-    if type(pid) is not int or pid <= 0 or type(samples) is not int or not 2 <= samples <= 256 or type(interval_ms) is not int or not 1 <= interval_ms <= 1000:
+    if (
+        type(pid) is not int
+        or pid <= 0
+        or type(samples) is not int
+        or not 2 <= samples <= 256
+        or type(interval_ms) is not int
+        or not 1 <= interval_ms <= 1000
+    ):
         raise CaptureError("invalid PID, sample count, or interval")
     initial = read_process_stat(pid)
     if initial["pid"] != pid:
         raise CaptureError("process PID mismatch")
     try:
-        boot_id = Path("/proc/sys/kernel/random/boot_id").read_text(encoding="ascii").strip()
+        boot_id = (
+            Path("/proc/sys/kernel/random/boot_id").read_text(encoding="ascii").strip()
+        )
     except OSError as exc:
         raise CaptureError("cannot bind process to Linux boot identity") from exc
     if not boot_id:
@@ -116,18 +136,29 @@ def capture_process(pid, samples=8, interval_ms=50, sleep=time.sleep):
         before = read_process_stat(pid)
         memory = read_memory(pid)
         after = read_process_stat(pid)
-        if before["start_time_ticks"] != initial["start_time_ticks"] or after["start_time_ticks"] != initial["start_time_ticks"] or before["pid"] != pid or after["pid"] != pid:
-            raise CaptureError("PID was reused or process identity changed during sample")
-        if (after["user_cpu_ticks"] < before["user_cpu_ticks"]
-                or after["system_cpu_ticks"] < before["system_cpu_ticks"]):
+        if (
+            before["start_time_ticks"] != initial["start_time_ticks"]
+            or after["start_time_ticks"] != initial["start_time_ticks"]
+            or before["pid"] != pid
+            or after["pid"] != pid
+        ):
+            raise CaptureError(
+                "PID was reused or process identity changed during sample"
+            )
+        if (
+            after["user_cpu_ticks"] < before["user_cpu_ticks"]
+            or after["system_cpu_ticks"] < before["system_cpu_ticks"]
+        ):
             raise CaptureError("process CPU counters moved backwards")
-        observations.append({
-            "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-            "user_cpu_ticks": after["user_cpu_ticks"],
-            "system_cpu_ticks": after["system_cpu_ticks"],
-            "rss_pages": after["rss_pages"],
-            "memory_kib": memory,
-        })
+        observations.append(
+            {
+                "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                "user_cpu_ticks": after["user_cpu_ticks"],
+                "system_cpu_ticks": after["system_cpu_ticks"],
+                "rss_pages": after["rss_pages"],
+                "memory_kib": memory,
+            }
+        )
     return {
         "pid": pid,
         "boot_identity_sha256": hashlib.sha256(boot_id.encode("ascii")).hexdigest(),
@@ -139,7 +170,11 @@ def capture_process(pid, samples=8, interval_ms=50, sleep=time.sleep):
         "interval_ms": interval_ms,
         "observations": observations,
         "rss_pages_max": max(s["rss_pages"] for s in observations),
-        "pss_kib_max": max((s["memory_kib"].get("Pss", 0) for s in observations), default=0) if all(s["memory_kib"]["smaps_rollup_available"] for s in observations) else None,
+        "pss_kib_max": max(
+            (s["memory_kib"].get("Pss", 0) for s in observations), default=0
+        )
+        if all(s["memory_kib"]["smaps_rollup_available"] for s in observations)
+        else None,
     }
 
 
@@ -180,7 +215,13 @@ def main(argv=None):
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
-        report = capture_baseline(args.pid, args.manifest, args.samples, args.interval_ms, args.runtime_receipts)
+        report = capture_baseline(
+            args.pid,
+            args.manifest,
+            args.samples,
+            args.interval_ms,
+            args.runtime_receipts,
+        )
         with args.out.open("x", encoding="utf-8") as stream:
             json.dump(report, stream, indent=2, sort_keys=True)
             stream.write("\n")

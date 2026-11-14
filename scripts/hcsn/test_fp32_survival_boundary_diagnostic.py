@@ -54,20 +54,29 @@ def diagnostic_report():
     worst = (0.0, None)
     count = 0
     outside_unit = 0
-    for x in (0., 1e-8, 1e-6, 1e-4, .01, .05, .2, .7, 1.2, 5.):
-        for t in (1e-6, 1e-4, .01, .25, 1., 3., 10.):
-            for mu in (-.08, 0., .08):
-                for sigma in (.02, .2, .5):
+    for x in (0.0, 1e-8, 1e-6, 1e-4, 0.01, 0.05, 0.2, 0.7, 1.2, 5.0):
+        for t in (1e-6, 1e-4, 0.01, 0.25, 1.0, 3.0, 10.0):
+            for mu in (-0.08, 0.0, 0.08):
+                for sigma in (0.02, 0.2, 0.5):
                     fp64 = float(first_passage_cdf(x, t, mu, sigma))
                     fp32 = float(naive_fp32_cdf(x, t, mu, sigma))
                     err = abs(fp32 - fp64)
                     count += 1
                     outside_unit += int(not (0.0 <= fp32 <= 1.0))
                     if err > worst[0]:
-                        worst = (err, dict(x=x, horizon=t, mu=mu, sigma=sigma,
-                                           fp64_cdf=fp64, fp32_cdf=fp32))
+                        worst = (
+                            err,
+                            dict(
+                                x=x,
+                                horizon=t,
+                                mu=mu,
+                                sigma=sigma,
+                                fp64_cdf=fp64,
+                                fp32_cdf=fp32,
+                            ),
+                        )
     x, t, sigma = 1e-9, 1.0, 0.2
-    fp32 = naive_fp32_cdf(x, t, 0., sigma)
+    fp32 = naive_fp32_cdf(x, t, 0.0, sigma)
     naive_survival = float(np.float32(np.float32(1) - fp32))
     stable_survival = float(stable_zero_drift_survival_fp32(x, t, sigma))
     return {
@@ -77,7 +86,9 @@ def diagnostic_report():
         "max_abs_cdf_error_fp32_vs_fp64": worst[0],
         "worst_case": worst[1],
         "zero_drift_counterexample": {
-            "x": x, "horizon": t, "sigma": sigma,
+            "x": x,
+            "horizon": t,
+            "sigma": sigma,
             "fp32_naive_cdf": float(fp32),
             "fp32_naive_one_minus_cdf": naive_survival,
             "fp32_erf_survival": stable_survival,
@@ -100,18 +111,18 @@ class FP32SurvivalBoundaryDiagnostic(unittest.TestCase):
 
     def test_zero_drift_survival_formula_matches_fp64_reference(self):
         for x in (1e-10, 1e-9, 1e-8, 1e-5):
-            for horizon in (.1, 1.0, 10.0):
-                stable = float(stable_zero_drift_survival_fp32(x, horizon, .2))
-                reference = float(erf(x / (.2 * math.sqrt(2 * horizon))))
+            for horizon in (0.1, 1.0, 10.0):
+                stable = float(stable_zero_drift_survival_fp32(x, horizon, 0.2))
+                reference = float(erf(x / (0.2 * math.sqrt(2 * horizon))))
                 self.assertGreater(stable, 0)
                 self.assertLess(abs(stable - reference) / reference, 2e-7)
 
     def test_naive_one_minus_cdf_loses_positive_survival(self):
         for x in (1e-10, 1e-9):
-            cdf = naive_fp32_cdf(x, 1., 0., .2)
+            cdf = naive_fp32_cdf(x, 1.0, 0.0, 0.2)
             self.assertEqual(float(cdf), 1.0)
             self.assertEqual(float(np.float32(np.float32(1) - cdf)), 0.0)
-            self.assertGreater(float(stable_zero_drift_survival_fp32(x, 1., .2)), 0.0)
+            self.assertGreater(float(stable_zero_drift_survival_fp32(x, 1.0, 0.2)), 0.0)
 
 
 if __name__ == "__main__":

@@ -39,15 +39,12 @@ pub const MAX_PROVIDER_ID_BYTES_V2: usize = 256;
 pub const MAX_PROVIDER_MODEL_BYTES_V2: usize = 512;
 
 const CANONICAL_CONTEXT_DOMAIN: &[u8] = b"hepta.context-canonical-bundle.v2";
-const CANONICAL_CONTEXT_COVERAGE_DOMAIN: &[u8] =
-    b"hepta.context-canonical-bundle-coverage.v2";
+const CANONICAL_CONTEXT_COVERAGE_DOMAIN: &[u8] = b"hepta.context-canonical-bundle-coverage.v2";
 const TOKENIZER_IDENTITY_DOMAIN: &[u8] = b"hepta.provider-tokenizer-identity.v2";
-const FINAL_REQUEST_TOKENIZATION_DOMAIN: &[u8] =
-    b"hepta.provider-final-request-tokenization.v2";
+const FINAL_REQUEST_TOKENIZATION_DOMAIN: &[u8] = b"hepta.provider-final-request-tokenization.v2";
 const FINAL_REQUEST_SEGMENT_MAP_DOMAIN: &[u8] = b"hepta.provider-request-segment-map.v2";
 const FINAL_REQUEST_PROOF_DOMAIN: &[u8] = b"hepta.provider-final-request-proof.v2";
-const PROVIDER_BOUND_PREPARATION_DOMAIN: &[u8] =
-    b"hepta.context-provider-bound-preparation.v2";
+const PROVIDER_BOUND_PREPARATION_DOMAIN: &[u8] = b"hepta.context-provider-bound-preparation.v2";
 const PROVIDER_BOUND_RECEIPT_DOMAIN: &[u8] = b"hepta.context-provider-bound-receipt.v2";
 const PROVIDER_BOUND_PREPARATION_RECORD_DOMAIN: &[u8] =
     b"hepta.context-provider-bound-preparation-record.v2";
@@ -98,11 +95,7 @@ impl ExactTokenizerIdentityV2 {
     }
 
     fn validate_shape(&self) -> Result<(), ProviderRequestProofErrorV2> {
-        validate_bounded_text(
-            "provider_id",
-            &self.provider_id,
-            MAX_PROVIDER_ID_BYTES_V2,
-        )?;
+        validate_bounded_text("provider_id", &self.provider_id, MAX_PROVIDER_ID_BYTES_V2)?;
         validate_bounded_text("model", &self.model, MAX_PROVIDER_MODEL_BYTES_V2)?;
         validate_bounded_text("tokenizer_version", &self.tokenizer_version, 512)?;
         for (name, digest) in [
@@ -209,10 +202,7 @@ impl ProviderFinalRequestTokenizationV2 {
         Ok(receipt)
     }
 
-    pub fn validate_for(
-        &self,
-        final_request: &[u8],
-    ) -> Result<(), ProviderRequestProofErrorV2> {
+    pub fn validate_for(&self, final_request: &[u8]) -> Result<(), ProviderRequestProofErrorV2> {
         validate_final_request_bytes(final_request)?;
         self.tokenizer_identity.validate()?;
         if self.final_request_digest != Digest32::of_bytes(final_request)
@@ -271,7 +261,9 @@ impl ProviderFinalRequestTokenizationV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CanonicalContextSegmentKindV2 {
-    Framing { framing_type: StableId },
+    Framing {
+        framing_type: StableId,
+    },
     SelectedItem {
         item_id: StableId,
         role: ContextRoleV2,
@@ -473,8 +465,8 @@ fn build_canonical_context_bundle(
                 );
             },
         )?;
-        let offset = u64::try_from(payload.len())
-            .map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?;
+        let offset =
+            u64::try_from(payload.len()).map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?;
         payload.extend_from_slice(&realization.content);
         let length = u64::try_from(realization.content.len())
             .map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?;
@@ -511,8 +503,7 @@ fn append_framing_segment(
     }
     segments.push(CanonicalContextSegmentV2 {
         offset: u64::try_from(start).map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?,
-        length: u64::try_from(bytes.len())
-            .map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?,
+        length: u64::try_from(bytes.len()).map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?,
         encoded_digest: Digest32::of_bytes(bytes),
         kind: CanonicalContextSegmentKindV2::Framing { framing_type },
     });
@@ -540,8 +531,8 @@ fn validate_canonical_segments(
             .offset
             .checked_add(segment.length)
             .ok_or(ProviderRequestProofErrorV2::Arithmetic)?;
-        let start = usize::try_from(segment.offset)
-            .map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?;
+        let start =
+            usize::try_from(segment.offset).map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?;
         let end_usize =
             usize::try_from(end).map_err(|_| ProviderRequestProofErrorV2::Arithmetic)?;
         let bytes = payload
@@ -586,7 +577,10 @@ fn validate_canonical_segments(
 
 fn compute_canonical_coverage_digest(segments: &[CanonicalContextSegmentV2]) -> Digest32 {
     let mut bytes = CANONICAL_CONTEXT_COVERAGE_DOMAIN.to_vec();
-    push_u64(&mut bytes, u64::try_from(segments.len()).unwrap_or(u64::MAX));
+    push_u64(
+        &mut bytes,
+        u64::try_from(segments.len()).unwrap_or(u64::MAX),
+    );
     for segment in segments {
         push_u64(&mut bytes, segment.offset);
         push_u64(&mut bytes, segment.length);
@@ -825,7 +819,10 @@ fn compute_provider_segment_map_digest(
     selected_item_ids: &[StableId],
 ) -> Digest32 {
     let mut bytes = FINAL_REQUEST_SEGMENT_MAP_DOMAIN.to_vec();
-    push_u64(&mut bytes, u64::try_from(segments.len()).unwrap_or(u64::MAX));
+    push_u64(
+        &mut bytes,
+        u64::try_from(segments.len()).unwrap_or(u64::MAX),
+    );
     for segment in segments {
         push_u64(&mut bytes, segment.offset);
         push_u64(&mut bytes, segment.length);
@@ -891,7 +888,10 @@ impl ProviderFinalRequestProofV2 {
     ) -> Result<Self, ProviderRequestProofErrorV2> {
         for (name, digest) in [
             ("context_attachment", context_attachment_digest),
-            ("canonical_context_payload", canonical_context_payload_digest),
+            (
+                "canonical_context_payload",
+                canonical_context_payload_digest,
+            ),
             (
                 "canonical_context_coverage",
                 canonical_context_coverage_digest,
@@ -924,10 +924,7 @@ impl ProviderFinalRequestProofV2 {
         Ok(proof)
     }
 
-    pub fn validate_for(
-        &self,
-        final_request: &[u8],
-    ) -> Result<(), ProviderRequestProofErrorV2> {
+    pub fn validate_for(&self, final_request: &[u8]) -> Result<(), ProviderRequestProofErrorV2> {
         self.tokenization.validate_for(final_request)?;
         for (name, digest) in [
             ("context_attachment", self.context_attachment_digest),
@@ -1038,8 +1035,7 @@ impl ProviderBoundDeliveryPreparationV2 {
         self.context_preparation
             .validate_for(attachment, serialization, profile)
             .map_err(ProviderRequestProofErrorV2::Context)?;
-        if self.final_request_proof.context_attachment_digest
-            != attachment.attachment_digest()
+        if self.final_request_proof.context_attachment_digest != attachment.attachment_digest()
             || self.final_request_proof.canonical_context_payload_digest
                 != serialization.receipt().payload_digest()
             || self.authority.grants_any()
@@ -1168,8 +1164,7 @@ impl ProviderBoundDeliveryPreparationRecordV2 {
             final_request_bytes: tokenization.final_request_bytes(),
             token_count: tokenization.token_count(),
             prepared_at_unix_ms: proof.prepared_at_unix_ms(),
-            snapshot_successor_witness_digest: preparation
-                .snapshot_successor_witness_digest(),
+            snapshot_successor_witness_digest: preparation.snapshot_successor_witness_digest(),
             record_digest: Digest32::ZERO,
         };
         record.record_digest = record.compute_digest();
@@ -1183,7 +1178,10 @@ impl ProviderBoundDeliveryPreparationRecordV2 {
         for (name, digest) in [
             ("provider_bound_preparation", self.preparation_digest),
             ("context_preparation", self.context_preparation_digest),
-            ("provider_final_request_proof", self.final_request_proof_digest),
+            (
+                "provider_final_request_proof",
+                self.final_request_proof_digest,
+            ),
             ("provider_final_request", self.final_request_digest),
             ("provider_wire_semantic", self.wire_semantic_digest),
             ("provider_request_segment_map", self.segment_map_digest),
@@ -1249,12 +1247,16 @@ impl ProviderBoundDeliveryPreparationRecordV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProviderBoundTerminalV2 {
-    Completed { terminal_evidence_digest: Digest32 },
+    Completed {
+        terminal_evidence_digest: Digest32,
+    },
     Rejected {
         reason_digest: Digest32,
         terminal_evidence_digest: Digest32,
     },
-    NotDispatched { reason_digest: Digest32 },
+    NotDispatched {
+        reason_digest: Digest32,
+    },
     Indeterminate {
         reason_digest: Digest32,
         terminal_evidence_digest: Option<Digest32>,
@@ -1298,9 +1300,7 @@ impl ProviderBoundDeliveryReceiptV2 {
         observed_at_unix_ms: u64,
     ) -> Result<Self, ProviderRequestProofErrorV2> {
         preparation.validate()?;
-        if observed_at_unix_ms == 0
-            || observed_at_unix_ms < preparation.prepared_at_unix_ms
-        {
+        if observed_at_unix_ms == 0 || observed_at_unix_ms < preparation.prepared_at_unix_ms {
             return Err(ProviderRequestProofErrorV2::InvalidTime);
         }
         validate_terminal(&terminal)?;
@@ -1428,7 +1428,9 @@ impl ProviderBoundDeliveryReceiptV2 {
     }
 }
 
-fn validate_terminal(terminal: &ProviderBoundTerminalV2) -> Result<(), ProviderRequestProofErrorV2> {
+fn validate_terminal(
+    terminal: &ProviderBoundTerminalV2,
+) -> Result<(), ProviderRequestProofErrorV2> {
     match terminal {
         ProviderBoundTerminalV2::Completed {
             terminal_evidence_digest,
@@ -1515,10 +1517,7 @@ fn validate_bounded_text(
     Ok(())
 }
 
-fn ensure_digest(
-    name: &'static str,
-    digest: Digest32,
-) -> Result<(), ProviderRequestProofErrorV2> {
+fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), ProviderRequestProofErrorV2> {
     if digest.is_zero() {
         return Err(ProviderRequestProofErrorV2::EmptyDigest(name));
     }

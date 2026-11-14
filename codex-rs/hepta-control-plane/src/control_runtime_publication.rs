@@ -363,11 +363,12 @@ impl ControlRuntimeDecisionPublisherV1 for FileControlRuntimeDecisionPublisherV1
             &encoded,
             "write publication log",
         )?;
-        let verified = read_optional(&self.path, "verify publication commit")?
-            .ok_or(ControlRuntimePublicationErrorV1::Io {
+        let verified = read_optional(&self.path, "verify publication commit")?.ok_or(
+            ControlRuntimePublicationErrorV1::Io {
                 operation: "verify publication commit",
                 kind: ErrorKind::NotFound,
-            })?;
+            },
+        )?;
         let reopened = decode_records(&verified)?;
         validate_records(&self.owner_id, &reopened)?;
         if reopened != records {
@@ -396,9 +397,10 @@ fn validate_records(
 }
 
 fn publication_head(records: &[ControlRuntimePublicationV1]) -> ControlRuntimePublicationHeadV1 {
-    records
-        .last()
-        .map_or_else(ControlRuntimePublicationHeadV1::empty, ControlRuntimePublicationV1::head)
+    records.last().map_or_else(
+        ControlRuntimePublicationHeadV1::empty,
+        ControlRuntimePublicationV1::head,
+    )
 }
 
 fn receipt(records: &[ControlRuntimePublicationV1]) -> ControlRuntimePublicationReceiptV1 {
@@ -511,8 +513,9 @@ fn decode_records(
         let policy_epoch = read_u64(bytes, &mut offset)?;
         let kind = ControlRuntimePublicationKindV1::from_tag(read_u8(bytes, &mut offset)?)?;
         let subject_digest = read_digest(bytes, &mut offset)?;
-        let payload_len = usize::try_from(read_u32(bytes, &mut offset)?)
-            .map_err(|_| ControlRuntimePublicationErrorV1::PayloadTooLarge { actual: usize::MAX })?;
+        let payload_len = usize::try_from(read_u32(bytes, &mut offset)?).map_err(|_| {
+            ControlRuntimePublicationErrorV1::PayloadTooLarge { actual: usize::MAX }
+        })?;
         if payload_len > MAX_PUBLICATION_PAYLOAD_BYTES {
             return Err(ControlRuntimePublicationErrorV1::PayloadTooLarge {
                 actual: payload_len,
@@ -557,10 +560,7 @@ fn push_text(bytes: &mut Vec<u8>, value: &str) {
     bytes.extend_from_slice(value.as_bytes());
 }
 
-fn read_u8(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<u8, ControlRuntimePublicationErrorV1> {
+fn read_u8(bytes: &[u8], offset: &mut usize) -> Result<u8, ControlRuntimePublicationErrorV1> {
     let value = *bytes
         .get(*offset)
         .ok_or(ControlRuntimePublicationErrorV1::Truncated)?;
@@ -570,10 +570,7 @@ fn read_u8(
     Ok(value)
 }
 
-fn read_u16(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<u16, ControlRuntimePublicationErrorV1> {
+fn read_u16(bytes: &[u8], offset: &mut usize) -> Result<u16, ControlRuntimePublicationErrorV1> {
     let end = (*offset)
         .checked_add(2)
         .ok_or(ControlRuntimePublicationErrorV1::Truncated)?;
@@ -588,10 +585,7 @@ fn read_u16(
     Ok(value)
 }
 
-fn read_u32(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<u32, ControlRuntimePublicationErrorV1> {
+fn read_u32(bytes: &[u8], offset: &mut usize) -> Result<u32, ControlRuntimePublicationErrorV1> {
     let end = (*offset)
         .checked_add(4)
         .ok_or(ControlRuntimePublicationErrorV1::Truncated)?;
@@ -606,10 +600,7 @@ fn read_u32(
     Ok(value)
 }
 
-fn read_u64(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<u64, ControlRuntimePublicationErrorV1> {
+fn read_u64(bytes: &[u8], offset: &mut usize) -> Result<u64, ControlRuntimePublicationErrorV1> {
     let end = (*offset)
         .checked_add(8)
         .ok_or(ControlRuntimePublicationErrorV1::Truncated)?;

@@ -9,17 +9,31 @@
 //! Digests below are **declarations checked for consistency**. An actual
 //! owner-attested source/feedback proof is an additional, unimplemented gate.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, StableId};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
-use super::{
-    MAX_ELIGIBILITY_DIMENSION, MAX_GROUPS, MAX_HISTORY, MAX_MODULATORS, ParameterGroupMapV1,
-    PlasticityError, PlasticityTrustRegionV1, Q, dot_q24, group_map_digest, mul_q24, push_id,
-    push_q24, scale_toward_zero, validate_projection, validate_trust_region,
-};
+use super::MAX_ELIGIBILITY_DIMENSION;
+use super::MAX_GROUPS;
+use super::MAX_HISTORY;
+use super::MAX_MODULATORS;
+use super::ParameterGroupMapV1;
+use super::PlasticityError;
+use super::PlasticityTrustRegionV1;
+use super::Q;
+use super::dot_q24;
+use super::group_map_digest;
+use super::mul_q24;
+use super::push_id;
+use super::push_q24;
+use super::scale_toward_zero;
+use super::validate_projection;
+use super::validate_trust_region;
 
 /// A distinct evaluated event must never be quietly treated as training data.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

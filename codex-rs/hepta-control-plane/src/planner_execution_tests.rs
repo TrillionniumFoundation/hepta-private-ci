@@ -100,7 +100,11 @@ fn request_set(select_work: bool) -> GrantRequestSetV1 {
         },
     )
     .expect("prepared plan");
-    let selected = if select_work { id("work") } else { id("abstain") };
+    let selected = if select_work {
+        id("work")
+    } else {
+        id("abstain")
+    };
     let disposition = if select_work {
         PlanningEvaluationDispositionV1::UniqueParetoRecommendation
     } else {
@@ -120,8 +124,8 @@ fn request_set(select_work: bool) -> GrantRequestSetV1 {
     })
     .expect("NDU binding");
     let receipt = finalize_plan(&snapshot, &prepared, &evaluation, 1_100).expect("final plan");
-    let requests = request_execution_grants(&snapshot, &prepared, &receipt, 1_150)
-        .expect("grant requests");
+    let requests =
+        request_execution_grants(&snapshot, &prepared, &receipt, 1_150).expect("grant requests");
     assert_eq!(requests.authority(), &AuthorityPosture::DENY_ALL);
     requests
 }

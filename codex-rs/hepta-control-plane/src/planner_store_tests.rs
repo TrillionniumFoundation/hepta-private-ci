@@ -45,8 +45,8 @@ fn full_decision_envelope_round_trips_and_replays_idempotently() {
 fn second_writer_is_rejected_and_stale_lock_is_recovered() {
     let root = tempdir().expect("temporary store root");
     let store_path = path(&root, "planner.store");
-    let first = PlannerStoreV1::open(&store_path, PlannerStoreOptionsV1::default())
-        .expect("first writer");
+    let first =
+        PlannerStoreV1::open(&store_path, PlannerStoreOptionsV1::default()).expect("first writer");
     assert!(matches!(
         PlannerStoreV1::open(&store_path, PlannerStoreOptionsV1::default()),
         Err(PlannerStoreError::WriterBusy)

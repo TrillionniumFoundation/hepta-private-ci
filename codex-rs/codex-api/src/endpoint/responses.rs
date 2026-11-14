@@ -135,11 +135,13 @@ impl<T: HttpTransport> ResponsesClient<T> {
                 })?;
         }
         if let StreamRetryMode::SingleTransportAttempt(dispatch_metadata) = &retry_mode {
-            let observer = dispatch_metadata.final_request_observer().map_err(|error| {
-                ApiError::Stream(format!(
-                    "encoded responses request rejected by provider policy: {error}"
-                ))
-            })?;
+            let observer = dispatch_metadata
+                .final_request_observer()
+                .map_err(|error| {
+                    ApiError::Stream(format!(
+                        "encoded responses request rejected by provider policy: {error}"
+                    ))
+                })?;
             if let Some(observer) = observer {
                 observer
                     .observe_encoded_body(body.as_bytes())

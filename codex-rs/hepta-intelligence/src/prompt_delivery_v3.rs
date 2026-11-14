@@ -52,8 +52,7 @@ const COMPILED_DELIVERY_DOMAIN_V3: &[u8] = b"hepta.prompt-registry.compiled-cont
 const SERIALIZED_PAYLOAD_DOMAIN_V3: &[u8] = b"hepta.prompt-registry.provider-context.v4";
 const CANONICAL_SERIALIZER_REVISION_DOMAIN_V3: &[u8] =
     b"hepta.prompt-registry.canonical-serializer-revision.v3";
-const CANONICAL_ROLE_PROFILE_DOMAIN_V3: &[u8] =
-    b"hepta.prompt-registry.canonical-role-profile.v3";
+const CANONICAL_ROLE_PROFILE_DOMAIN_V3: &[u8] = b"hepta.prompt-registry.canonical-role-profile.v3";
 const SELECTED_PROMPT_GROUP_ID_V3: &str = "prompt:exercise-selected:v3";
 
 /// Trusted host adapters for one concrete product profile.
@@ -148,8 +147,7 @@ impl PromptRegistryCompiledContextV3 {
             || self.exercise_receipt_digest.is_zero()
             || self.portfolio_receipt_digest.is_zero()
             || self.product_profile.digest() != self.model_tuple.context_profile_digest
-            || self.compiled.receipt().prompt_portfolio_digest()
-                != self.portfolio_receipt_digest
+            || self.compiled.receipt().prompt_portfolio_digest() != self.portfolio_receipt_digest
         {
             return Err(PromptRegistryCompilationErrorV3::Integrity);
         }
@@ -335,12 +333,9 @@ pub fn compile_prompt_registry_v3(
         }
         let admission = verify_admission_v2(record, admission_lineage.current(), adapters)
             .map_err(PromptRegistryCompilationErrorV3::Context)?;
-        let tokenization = TokenizationReceiptV2::from_exact_bytes(
-            item_id.clone(),
-            &delivery.payload,
-            adapters,
-        )
-        .map_err(PromptRegistryCompilationErrorV3::Context)?;
+        let tokenization =
+            TokenizationReceiptV2::from_exact_bytes(item_id.clone(), &delivery.payload, adapters)
+                .map_err(PromptRegistryCompilationErrorV3::Context)?;
         candidates.push(ContextCandidateV2 {
             item_id: item_id.clone(),
             role,
@@ -361,7 +356,9 @@ pub fn compile_prompt_registry_v3(
                 },
             )
             .is_some()
-            || prompt_roles.insert(item_id, delivery.binding.role).is_some()
+            || prompt_roles
+                .insert(item_id, delivery.binding.role)
+                .is_some()
         {
             return Err(PromptRegistryCompilationErrorV3::Integrity);
         }
@@ -492,8 +489,7 @@ fn validate_profile(
         || adapters.tokenizer_digest() != profile.tokenizer_digest
         || request.product_profile.serializer_revision_digest
             != canonical_prompt_serializer_revision_digest_v3()
-        || request.product_profile.role_profile_digest
-            != canonical_prompt_role_profile_digest_v3()
+        || request.product_profile.role_profile_digest != canonical_prompt_role_profile_digest_v3()
     {
         return Err(PromptRegistryCompilationErrorV3::ProfileMismatch);
     }
@@ -527,11 +523,7 @@ impl ContextSerializerV2 for CanonicalPromptSerializerV3 {
     ) -> Result<ContextSerializationOutputV2, ContextCompilerV2Error> {
         let mut payload = SERIALIZED_PAYLOAD_DOMAIN_V3.to_vec();
         payload.extend_from_slice(self.product_profile_digest.as_array());
-        payload.extend_from_slice(
-            &u64::try_from(items.len())
-                .unwrap_or(u64::MAX)
-                .to_be_bytes(),
-        );
+        payload.extend_from_slice(&u64::try_from(items.len()).unwrap_or(u64::MAX).to_be_bytes());
         let mut segments = vec![framing_segment(0, payload.len(), &payload)];
         for item in items {
             let prompt_role = self
@@ -568,11 +560,7 @@ impl ContextSerializerV2 for CanonicalPromptSerializerV3 {
     }
 }
 
-fn framing_segment(
-    start: usize,
-    end: usize,
-    bytes: &[u8],
-) -> ContextSerializationSegmentV2 {
+fn framing_segment(start: usize, end: usize, bytes: &[u8]) -> ContextSerializationSegmentV2 {
     ContextSerializationSegmentV2 {
         kind: ContextSerializationSegmentKindV2::Framing,
         item_id: None,

@@ -197,11 +197,7 @@ struct PlannerStoreLockV1 {
 
 impl Drop for PlannerStoreLockV1 {
     fn drop(&mut self) {
-        if std::fs::read_to_string(&self.path)
-            .ok()
-            .as_deref()
-            == Some(self.token.as_str())
-        {
+        if std::fs::read_to_string(&self.path).ok().as_deref() == Some(self.token.as_str()) {
             let _ = std::fs::remove_file(&self.path);
             if let Some(parent) = self.path.parent() {
                 let _ = sync_directory(parent);
@@ -235,8 +231,7 @@ impl PlannerStoreV1 {
             write_header(&mut file)?;
             sync_directory(path.parent().ok_or(PlannerStoreError::MissingParent)?)?;
         }
-        let (records, identities, recovered_tail_bytes) =
-            read_and_recover(&mut file, options)?;
+        let (records, identities, recovered_tail_bytes) = read_and_recover(&mut file, options)?;
         Ok(Self {
             path,
             _lock: lock,
@@ -421,12 +416,7 @@ impl PlannerStoreV1 {
     pub fn compact(&mut self) -> Result<(), PlannerStoreError> {
         self.ensure_usable()?;
         let bytes = encode_store(&self.records)?;
-        atomic_replace(
-            &self.path,
-            &bytes,
-            self.options.failpoint,
-            "compact",
-        )?;
+        atomic_replace(&self.path, &bytes, self.options.failpoint, "compact")?;
         self.file = open_store_file(&self.path)?;
         let (records, identities, recovered_tail_bytes) =
             read_and_recover(&mut self.file, self.options)?;
@@ -444,12 +434,7 @@ impl PlannerStoreV1 {
         self.file.read_to_end(&mut bytes)?;
         validate_store_bytes(&bytes, self.options)?;
         let backup = validate_store_path(backup.as_ref())?;
-        atomic_replace(
-            &backup,
-            &bytes,
-            self.options.failpoint,
-            "backup",
-        )
+        atomic_replace(&backup, &bytes, self.options.failpoint, "backup")
     }
 
     pub fn restore_from_backup(
@@ -465,12 +450,7 @@ impl PlannerStoreV1 {
             .take(MAX_STORE_BYTES.saturating_add(1))
             .read_to_end(&mut bytes)?;
         validate_store_bytes(&bytes, self.options).map_err(|_| PlannerStoreError::InvalidBackup)?;
-        atomic_replace(
-            &self.path,
-            &bytes,
-            self.options.failpoint,
-            "restore",
-        )?;
+        atomic_replace(&self.path, &bytes, self.options.failpoint, "restore")?;
         self.file = open_store_file(&self.path)?;
         let (records, identities, recovered_tail_bytes) =
             read_and_recover(&mut self.file, self.options)?;
@@ -514,12 +494,7 @@ impl PlannerStoreV1 {
             payload,
         };
         let bytes = encode_store(std::slice::from_ref(&anchor))?;
-        atomic_replace(
-            &self.path,
-            &bytes,
-            self.options.failpoint,
-            "rotate",
-        )?;
+        atomic_replace(&self.path, &bytes, self.options.failpoint, "rotate")?;
         self.file = open_store_file(&self.path)?;
         let (records, identities, recovered_tail_bytes) =
             read_and_recover(&mut self.file, self.options)?;
@@ -598,8 +573,8 @@ fn acquire_lock(path: &Path) -> Result<PlannerStoreLockV1, PlannerStoreError> {
                 });
             }
             Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                let existing = std::fs::read_to_string(&path)
-                    .map_err(|_| PlannerStoreError::LockCorrupt)?;
+                let existing =
+                    std::fs::read_to_string(&path).map_err(|_| PlannerStoreError::LockCorrupt)?;
                 let owner = existing
                     .split(':')
                     .next()
@@ -612,9 +587,7 @@ fn acquire_lock(path: &Path) -> Result<PlannerStoreLockV1, PlannerStoreError> {
                 match std::fs::rename(&path, &stale) {
                     Ok(()) => {
                         let _ = std::fs::remove_file(stale);
-                        sync_directory(
-                            path.parent().ok_or(PlannerStoreError::MissingParent)?,
-                        )?;
+                        sync_directory(path.parent().ok_or(PlannerStoreError::MissingParent)?)?;
                     }
                     Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
                     Err(error) => return Err(error.into()),
@@ -888,7 +861,9 @@ fn read_u8(bytes: &[u8], cursor: &mut usize) -> Result<u8, PlannerStoreError> {
 }
 
 fn read_u64(bytes: &[u8], cursor: &mut usize) -> Result<u64, PlannerStoreError> {
-    let end = cursor.checked_add(8).ok_or(PlannerStoreError::CorruptFrame)?;
+    let end = cursor
+        .checked_add(8)
+        .ok_or(PlannerStoreError::CorruptFrame)?;
     let value = u64::from_be_bytes(
         bytes
             .get(*cursor..end)
@@ -901,7 +876,9 @@ fn read_u64(bytes: &[u8], cursor: &mut usize) -> Result<u64, PlannerStoreError> 
 }
 
 fn read_digest(bytes: &[u8], cursor: &mut usize) -> Result<Digest32, PlannerStoreError> {
-    let end = cursor.checked_add(32).ok_or(PlannerStoreError::CorruptFrame)?;
+    let end = cursor
+        .checked_add(32)
+        .ok_or(PlannerStoreError::CorruptFrame)?;
     let value: [u8; 32] = bytes
         .get(*cursor..end)
         .ok_or(PlannerStoreError::CorruptFrame)?

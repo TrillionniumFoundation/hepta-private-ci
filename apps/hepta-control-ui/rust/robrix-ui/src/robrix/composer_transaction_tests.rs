@@ -241,12 +241,25 @@ fn actual_sdk_cancel_preserves_committed_draft_after_ignored_previews() {
 #[cfg(feature = "native-ime-sdk")]
 mod scoped_ime {
     use super::*;
-    use makepad_widgets::text_input::{TextEditOutcome, TextInputAction, TextEditPhase};
-    use std::{cell::RefCell, rc::Rc};
+    use makepad_widgets::text_input::TextEditOutcome;
+    use makepad_widgets::text_input::TextEditPhase;
+    use makepad_widgets::text_input::TextInputAction;
+    use std::cell::RefCell;
+    use std::rc::Rc;
 
     type Pending = Rc<RefCell<Vec<TextEditOutcome>>>;
 
-    fn fixture(text: &str) -> (Cx, TextInputRef, ChatWorkspace, RoomKey, Pending, ComposerTransaction, (DrawPass, DrawList2d)) {
+    fn fixture(
+        text: &str,
+    ) -> (
+        Cx,
+        TextInputRef,
+        ChatWorkspace,
+        RoomKey,
+        Pending,
+        ComposerTransaction,
+        (DrawPass, DrawList2d),
+    ) {
         let pending: Pending = Default::default();
         let sink = pending.clone();
         let mut cx = Cx::new(Box::new(move |_, event| {
@@ -269,7 +282,10 @@ mod scoped_ime {
         input.set_text(&mut cx, text);
         let mut workspace = ChatWorkspace::default();
         workspace.edit(text.into());
-        let room = RoomKey { epoch: workspace.presentation_epoch(), local_id: workspace.active_id() };
+        let room = RoomKey {
+            epoch: workspace.presentation_epoch(),
+            local_id: workspace.active_id(),
+        };
         let surface = focused_surface(&mut cx, &input);
         let mut transaction = ComposerTransaction::default();
         transaction.checkpoint(&input, &workspace, Some(room));
@@ -278,26 +294,49 @@ mod scoped_ime {
 
     // Actual drawn SDK TextInput path, not a substitute editor or platform IME.
     fn event(cx: &mut Cx, input: &TextInputRef, text: &str, preview: bool) {
-        input.borrow_mut().unwrap().handle_event(cx, &Event::TextInput(TextInputEvent {
-            input: text.into(), replace_last: preview, ..Default::default()
-        }), &mut Scope::empty());
+        input.borrow_mut().unwrap().handle_event(
+            cx,
+            &Event::TextInput(TextInputEvent {
+                input: text.into(),
+                replace_last: preview,
+                ..Default::default()
+            }),
+            &mut Scope::empty(),
+        );
     }
 
-    fn deliver(cx: &mut Cx, input: &TextInputRef, workspace: &mut ChatWorkspace,
-        pending: &Pending, transaction: &mut ComposerTransaction) -> Vec<ActionResult>
-    {
+    fn deliver(
+        cx: &mut Cx,
+        input: &TextInputRef,
+        workspace: &mut ChatWorkspace,
+        pending: &Pending,
+        transaction: &mut ComposerTransaction,
+    ) -> Vec<ActionResult> {
         cx.handle_actions();
         let outcomes = std::mem::take(&mut *pending.borrow_mut());
-        outcomes.into_iter().map(|value| transaction.outcome(cx, input, workspace, value)).collect()
+        outcomes
+            .into_iter()
+            .map(|value| transaction.outcome(cx, input, workspace, value))
+            .collect()
     }
 
     #[test]
     fn selected_text_cancel_restores_original_sdk_state_without_model_edit() {
-        let (mut cx, input, mut workspace, room, pending, mut tx, _surface) = fixture("中文 selected");
-        input.set_selection(&mut cx, Selection {
-            anchor: Cursor { index: 0, prefer_next_row: false },
-            cursor: Cursor { index: 6, prefer_next_row: false },
-        });
+        let (mut cx, input, mut workspace, room, pending, mut tx, _surface) =
+            fixture("中文 selected");
+        input.set_selection(
+            &mut cx,
+            Selection {
+                anchor: Cursor {
+                    index: 0,
+                    prefer_next_row: false,
+                },
+                cursor: Cursor {
+                    index: 6,
+                    prefer_next_row: false,
+                },
+            },
+        );
         tx.checkpoint(&input, &workspace, Some(room));
         let original = format!("{:?}", input.save_state());
         let original_title = workspace.draft().title.clone();
@@ -308,8 +347,14 @@ mod scoped_ime {
         assert_eq!(workspace.draft().text, "中文 selected");
         event(&mut cx, &input, "", true);
         assert_eq!(format!("{:?}", input.save_state()), original);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
-            vec![ActionResult::Ignored, ActionResult::Ignored, ActionResult::Ignored]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![
+                ActionResult::Ignored,
+                ActionResult::Ignored,
+                ActionResult::Ignored
+            ]
+        );
         assert_eq!(workspace.draft().text, "中文 selected");
     }
 
@@ -321,12 +366,19 @@ mod scoped_ime {
         assert_eq!(workspace.draft().text, "");
         cx.handle_actions();
         let outcomes = std::mem::take(&mut *pending.borrow_mut());
-        assert_eq!(outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
-            vec![TextEditPhase::Preview, TextEditPhase::Committed]);
+        assert_eq!(
+            outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
+            vec![TextEditPhase::Preview, TextEditPhase::Committed]
+        );
         let duplicate = outcomes[1].clone();
-        for outcome in outcomes { tx.outcome(&mut cx, &input, &mut workspace, outcome); }
+        for outcome in outcomes {
+            tx.outcome(&mut cx, &input, &mut workspace, outcome);
+        }
         assert_eq!(workspace.draft().text, "中文");
-        assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, duplicate), ActionResult::Rejected);
+        assert_eq!(
+            tx.outcome(&mut cx, &input, &mut workspace, duplicate),
+            ActionResult::Rejected
+        );
         assert_eq!(workspace.draft().text, "中文");
     }
 
@@ -336,10 +388,22 @@ mod scoped_ime {
         event(&mut cx, &input, "accepted", false);
         let accepted_state = format!("{:?}", input.save_state());
         event(&mut cx, &input, "preview", true);
-        event(&mut cx, &input, &"界".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES), false);
+        event(
+            &mut cx,
+            &input,
+            &"界".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES),
+            false,
+        );
         event(&mut cx, &input, "tainted successor", false);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
-            vec![ActionResult::Applied, ActionResult::Ignored, ActionResult::Rejected, ActionResult::Stale]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![
+                ActionResult::Applied,
+                ActionResult::Ignored,
+                ActionResult::Rejected,
+                ActionResult::Stale
+            ]
+        );
         assert_eq!(workspace.draft().text, "accepted");
         assert_eq!(format!("{:?}", input.save_state()), accepted_state);
     }
@@ -353,10 +417,16 @@ mod scoped_ime {
         assert!(workspace.new_draft());
         input.restore_checkpoint(&mut cx, TextInputState::default());
         tx.reset();
-        let current = RoomKey { epoch: workspace.presentation_epoch(), local_id: workspace.active_id() };
+        let current = RoomKey {
+            epoch: workspace.presentation_epoch(),
+            local_id: workspace.active_id(),
+        };
         tx.checkpoint(&input, &workspace, Some(current));
         let before = format!("{:?}", input.save_state());
-        assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, old), ActionResult::Stale);
+        assert_eq!(
+            tx.outcome(&mut cx, &input, &mut workspace, old),
+            ActionResult::Stale
+        );
         assert_eq!(workspace.draft().text, "");
         assert_eq!(format!("{:?}", input.save_state()), before);
     }
@@ -365,14 +435,34 @@ mod scoped_ime {
     fn cancel_new_selection_then_reject_in_one_batch_restores_new_selection() {
         let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("中文 original");
         event(&mut cx, &input, "preview", true);
-        input.set_selection(&mut cx, Selection {
-            anchor: Cursor { index: 0, prefer_next_row: false },
-            cursor: Cursor { index: 6, prefer_next_row: false },
-        });
+        input.set_selection(
+            &mut cx,
+            Selection {
+                anchor: Cursor {
+                    index: 0,
+                    prefer_next_row: false,
+                },
+                cursor: Cursor {
+                    index: 6,
+                    prefer_next_row: false,
+                },
+            },
+        );
         let selected = format!("{:?}", input.save_state());
-        event(&mut cx, &input, &"界".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES), false);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
-            vec![ActionResult::Ignored, ActionResult::Ignored, ActionResult::Rejected]);
+        event(
+            &mut cx,
+            &input,
+            &"界".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES),
+            false,
+        );
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![
+                ActionResult::Ignored,
+                ActionResult::Ignored,
+                ActionResult::Rejected
+            ]
+        );
         assert_eq!(format!("{:?}", input.save_state()), selected);
         assert_eq!(workspace.draft().text, "中文 original");
     }
@@ -380,17 +470,34 @@ mod scoped_ime {
     #[test]
     fn external_commit_during_preview_then_cancel_keeps_committed_coordinates() {
         let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("α旧🙂z");
-        input.set_selection(&mut cx, Selection {
-            anchor: Cursor { index: 5, prefer_next_row: true },
-            cursor: Cursor { index: 2, prefer_next_row: false },
-        });
+        input.set_selection(
+            &mut cx,
+            Selection {
+                anchor: Cursor {
+                    index: 5,
+                    prefer_next_row: true,
+                },
+                cursor: Cursor {
+                    index: 2,
+                    prefer_next_row: false,
+                },
+            },
+        );
         event(&mut cx, &input, "ni", true);
-        input.replace_range(&mut cx, 0..0, "界", UndoGroup::New).unwrap();
+        input
+            .replace_range(&mut cx, 0..0, "界", UndoGroup::New)
+            .unwrap();
         assert!(input.is_composing());
         let accepted = format!("{:?}", input.save_state());
         event(&mut cx, &input, "", true);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
-            vec![ActionResult::Ignored, ActionResult::Applied, ActionResult::Ignored]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![
+                ActionResult::Ignored,
+                ActionResult::Applied,
+                ActionResult::Ignored
+            ]
+        );
         assert_eq!(workspace.draft().text, "界α旧🙂z");
         assert_eq!(format!("{:?}", input.save_state()), accepted);
     }
@@ -399,20 +506,31 @@ mod scoped_ime {
     fn batch_external_commit_then_next_preview_accepts_production_snapshots_only() {
         let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("ab");
         event(&mut cx, &input, "ni", true);
-        input.replace_range(&mut cx, 0..0, "界", UndoGroup::New).unwrap();
+        input
+            .replace_range(&mut cx, 0..0, "界", UndoGroup::New)
+            .unwrap();
         event(&mut cx, &input, "你", false);
         let committed = input.text();
         let checkpoint = format!("{:?}", input.save_state());
         event(&mut cx, &input, "hao", true);
         assert!(input.is_composing());
         assert_ne!(input.text(), committed);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
-            vec![ActionResult::Ignored, ActionResult::Applied, ActionResult::Applied, ActionResult::Ignored]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![
+                ActionResult::Ignored,
+                ActionResult::Applied,
+                ActionResult::Applied,
+                ActionResult::Ignored
+            ]
+        );
         assert_eq!(workspace.draft().text, committed);
         assert_eq!(format!("{:?}", tx.saved.as_ref().unwrap().1), checkpoint);
         event(&mut cx, &input, "", true);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
-            vec![ActionResult::Ignored]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![ActionResult::Ignored]
+        );
         assert_eq!(workspace.draft().text, committed);
         assert_eq!(format!("{:?}", input.save_state()), checkpoint);
     }
@@ -422,32 +540,59 @@ mod scoped_ime {
         let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("base");
         let accepted = format!("{:?}", input.save_state());
         event(&mut cx, &input, "ni", true);
-        input.replace_range(&mut cx, 0..0, &"界".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES), UndoGroup::New).unwrap();
+        input
+            .replace_range(
+                &mut cx,
+                0..0,
+                &"界".repeat(hepta_control_core::chat::MAX_DRAFT_BYTES),
+                UndoGroup::New,
+            )
+            .unwrap();
         event(&mut cx, &input, "你好", true);
         event(&mut cx, &input, "好", false);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
-            vec![ActionResult::Ignored, ActionResult::Rejected, ActionResult::Stale, ActionResult::Stale]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![
+                ActionResult::Ignored,
+                ActionResult::Rejected,
+                ActionResult::Stale,
+                ActionResult::Stale
+            ]
+        );
         assert_eq!(workspace.draft().text, "base");
         assert_eq!(format!("{:?}", input.save_state()), accepted);
         assert!(!input.is_composing());
     }
     fn key_event(cx: &mut Cx, input: &TextInputRef, redo: bool) {
-        input.borrow_mut().unwrap().handle_event(cx, &Event::KeyDown(KeyEvent {
-            key_code: KeyCode::KeyZ,
-            modifiers: KeyModifiers { control: true, shift: redo, ..Default::default() },
-            ..Default::default()
-        }), &mut Scope::empty());
+        input.borrow_mut().unwrap().handle_event(
+            cx,
+            &Event::KeyDown(KeyEvent {
+                key_code: KeyCode::KeyZ,
+                modifiers: KeyModifiers {
+                    control: true,
+                    shift: redo,
+                    ..Default::default()
+                },
+                ..Default::default()
+            }),
+            &mut Scope::empty(),
+        );
     }
 
     fn full_state_event(cx: &mut Cx, input: &TextInputRef, text: &str, composing: bool) {
         let end = CharOffset(text.chars().count());
-        input.borrow_mut().unwrap().handle_event(cx, &Event::TextInput(TextInputEvent {
-            full_state_sync: Some(FullTextState {
-                text: text.into(), selection: end..end,
-                composition: composing.then_some(CharOffset(0)..end),
+        input.borrow_mut().unwrap().handle_event(
+            cx,
+            &Event::TextInput(TextInputEvent {
+                full_state_sync: Some(FullTextState {
+                    text: text.into(),
+                    selection: end..end,
+                    composition: composing.then_some(CharOffset(0)..end),
+                }),
+                ..Default::default()
             }),
-            ..Default::default()
-        }), &mut Scope::empty());
+            &mut Scope::empty(),
+        );
     }
 
     #[test]
@@ -461,26 +606,40 @@ mod scoped_ime {
         assert_eq!(workspace.draft().text, "");
         cx.handle_actions();
         let outcomes = std::mem::take(&mut *pending.borrow_mut());
-        assert_eq!(outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
-            vec![TextEditPhase::Preview, TextEditPhase::Committed]);
+        assert_eq!(
+            outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
+            vec![TextEditPhase::Preview, TextEditPhase::Committed]
+        );
         assert_eq!(outcomes[1].before.as_ref().unwrap().text(), "");
         assert_eq!(outcomes[1].state.text(), "中文🚀");
         let replay = outcomes[1].clone();
         let old_owner = replay.clone();
-        let results = outcomes.into_iter().map(|o| tx.outcome(&mut cx, &input, &mut workspace, o)).collect::<Vec<_>>();
+        let results = outcomes
+            .into_iter()
+            .map(|o| tx.outcome(&mut cx, &input, &mut workspace, o))
+            .collect::<Vec<_>>();
         assert_eq!(results, vec![ActionResult::Ignored, ActionResult::Applied]);
         let accepted = workspace.draft().clone();
         let state = format!("{:?}", input.save_state());
-        assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, replay), ActionResult::Rejected);
+        assert_eq!(
+            tx.outcome(&mut cx, &input, &mut workspace, replay),
+            ActionResult::Rejected
+        );
         assert_eq!(workspace.draft(), &accepted);
         assert_eq!(format!("{:?}", input.save_state()), state);
         assert!(workspace.new_draft());
         input.restore_checkpoint(&mut cx, TextInputState::default());
         tx.reset();
-        let room = RoomKey { epoch: workspace.presentation_epoch(), local_id: workspace.active_id() };
+        let room = RoomKey {
+            epoch: workspace.presentation_epoch(),
+            local_id: workspace.active_id(),
+        };
         tx.checkpoint(&input, &workspace, Some(room));
         let next = workspace.draft().clone();
-        assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, old_owner), ActionResult::Stale);
+        assert_eq!(
+            tx.outcome(&mut cx, &input, &mut workspace, old_owner),
+            ActionResult::Stale
+        );
         assert_eq!(workspace.draft(), &next);
         assert_eq!(input.text(), "");
     }
@@ -488,42 +647,84 @@ mod scoped_ime {
     #[test]
     fn net_zero_typed_commit_keeps_redo_and_production_selection_checkpoint() {
         let (mut cx, input, mut workspace, room, pending, mut tx, _surface) = fixture("你好");
-        input.set_selection(&mut cx, Selection {
-            anchor: Cursor { index: 0, prefer_next_row: false },
-            cursor: Cursor { index: 6, prefer_next_row: false },
-        });
-        input.replace_range(&mut cx, 0..6, "old", UndoGroup::New).unwrap();
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        input.set_selection(
+            &mut cx,
+            Selection {
+                anchor: Cursor {
+                    index: 0,
+                    prefer_next_row: false,
+                },
+                cursor: Cursor {
+                    index: 6,
+                    prefer_next_row: false,
+                },
+            },
+        );
+        input
+            .replace_range(&mut cx, 0..6, "old", UndoGroup::New)
+            .unwrap();
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![ActionResult::Applied]
+        );
         key_event(&mut cx, &input, false);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![ActionResult::Applied]
+        );
         assert_eq!(input.text(), "你好");
         // Preserve an actual reversed selection in the production before snapshot.
-        input.set_selection(&mut cx, Selection {
-            anchor: Cursor { index: 6, prefer_next_row: false },
-            cursor: Cursor { index: 0, prefer_next_row: false },
-        });
+        input.set_selection(
+            &mut cx,
+            Selection {
+                anchor: Cursor {
+                    index: 6,
+                    prefer_next_row: false,
+                },
+                cursor: Cursor {
+                    index: 0,
+                    prefer_next_row: false,
+                },
+            },
+        );
         tx.checkpoint(&input, &workspace, Some(room));
         let before = format!("{:?}", input.save_state());
         event(&mut cx, &input, "ni", true);
         event(&mut cx, &input, "你好", false);
         cx.handle_actions();
         let outcomes = std::mem::take(&mut *pending.borrow_mut());
-        assert_eq!(outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
-            vec![TextEditPhase::Preview, TextEditPhase::Committed]);
-        assert_eq!(format!("{:?}", outcomes[1].before.as_ref().unwrap()), before);
-        assert_eq!(outcomes[1].before.as_ref().unwrap().text(), outcomes[1].state.text());
+        assert_eq!(
+            outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
+            vec![TextEditPhase::Preview, TextEditPhase::Committed]
+        );
+        assert_eq!(
+            format!("{:?}", outcomes[1].before.as_ref().unwrap()),
+            before
+        );
+        assert_eq!(
+            outcomes[1].before.as_ref().unwrap().text(),
+            outcomes[1].state.text()
+        );
         let accepted = format!("{:?}", outcomes[1].state);
-        for outcome in outcomes { tx.outcome(&mut cx, &input, &mut workspace, outcome); }
+        for outcome in outcomes {
+            tx.outcome(&mut cx, &input, &mut workspace, outcome);
+        }
         assert_eq!(workspace.draft().text, "你好");
         assert_eq!(format!("{:?}", tx.saved.as_ref().unwrap().1), accepted);
         assert_eq!(input.selection().anchor.index, 6);
         assert_eq!(input.selection().cursor.index, 6);
         // A real key event proves the old redo was not cleared by a net-zero commit.
         key_event(&mut cx, &input, true);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![ActionResult::Applied]
+        );
         assert_eq!(workspace.draft().text, "old");
         key_event(&mut cx, &input, false);
-        assert_eq!(deliver(&mut cx, &input, &mut workspace, &pending, &mut tx), vec![ActionResult::Applied]);
+        assert_eq!(
+            deliver(&mut cx, &input, &mut workspace, &pending, &mut tx),
+            vec![ActionResult::Applied]
+        );
         assert_eq!(workspace.draft().text, "你好");
     }
 
@@ -548,10 +749,19 @@ mod scoped_ime {
     #[test]
     fn full_state_during_native_preview_cancels_once_without_publishing_replacement() {
         let (mut cx, input, mut workspace, _, pending, mut tx, _surface) = fixture("selected 中文");
-        input.set_selection(&mut cx, Selection {
-            anchor: Cursor { index: 0, prefer_next_row: false },
-            cursor: Cursor { index: 8, prefer_next_row: false },
-        });
+        input.set_selection(
+            &mut cx,
+            Selection {
+                anchor: Cursor {
+                    index: 0,
+                    prefer_next_row: false,
+                },
+                cursor: Cursor {
+                    index: 8,
+                    prefer_next_row: false,
+                },
+            },
+        );
         let state = format!("{:?}", input.save_state());
         let draft = workspace.draft().clone();
         event(&mut cx, &input, "native preview", true);
@@ -559,15 +769,19 @@ mod scoped_ime {
         full_state_event(&mut cx, &input, "untrusted full-state replacement", false);
         cx.handle_actions();
         let outcomes = std::mem::take(&mut *pending.borrow_mut());
-        assert_eq!(outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
-            vec![TextEditPhase::Preview, TextEditPhase::Cancelled]);
+        assert_eq!(
+            outcomes.iter().map(|o| o.phase).collect::<Vec<_>>(),
+            vec![TextEditPhase::Preview, TextEditPhase::Cancelled]
+        );
         for outcome in outcomes {
-            assert_eq!(tx.outcome(&mut cx, &input, &mut workspace, outcome), ActionResult::Ignored);
+            assert_eq!(
+                tx.outcome(&mut cx, &input, &mut workspace, outcome),
+                ActionResult::Ignored
+            );
         }
         assert_eq!(workspace.draft(), &draft);
         assert_eq!(format!("{:?}", input.save_state()), state);
         assert_eq!(format!("{:?}", tx.saved.as_ref().unwrap().1), state);
         assert!(!input.is_composing());
     }
-
 }

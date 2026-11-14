@@ -40,8 +40,12 @@ fn admission_fixture(root: &Path) -> AdmissionFixture {
     let external_root = root.join("external-authority");
     std::fs::create_dir_all(&rollback_root).expect("rollback root");
     std::fs::create_dir_all(&external_root).expect("external root");
-    let rollback_root = rollback_root.canonicalize().expect("canonical rollback root");
-    let external_root = external_root.canonicalize().expect("canonical external root");
+    let rollback_root = rollback_root
+        .canonicalize()
+        .expect("canonical rollback root");
+    let external_root = external_root
+        .canonicalize()
+        .expect("canonical external root");
 
     let authority_id = id("authority:context:v3");
     let key_epoch = 7;
@@ -124,13 +128,8 @@ fn admission_fixture(root: &Path) -> AdmissionFixture {
         .as_slice(),
         0o600,
     );
-    let view = load_admission_authority_view(
-        &trust_path,
-        &bundle_path,
-        &rollback_root,
-        None,
-    )
-    .expect("load authority view");
+    let view = load_admission_authority_view(&trust_path, &bundle_path, &rollback_root, None)
+        .expect("load authority view");
     let authority = ExternalContextAdmissionAuthorityV3 {
         trust_path: trust_path.clone(),
         bundle_path,
@@ -155,10 +154,9 @@ fn signed_admission_authority_reloads_and_honors_revocation() {
     assert!(fixture.authority.verify_record(&fixture.record));
     assert!(fixture.authority.verify_snapshot(&fixture.snapshot));
 
-    let mut trust: serde_json::Value = serde_json::from_slice(
-        &std::fs::read(&fixture.trust_path).expect("read trust"),
-    )
-    .expect("parse trust");
+    let mut trust: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&fixture.trust_path).expect("read trust"))
+            .expect("parse trust");
     trust["revoked"] = serde_json::Value::Bool(true);
     write_file(
         &fixture.trust_path,
@@ -180,7 +178,9 @@ fn unsigned_or_wrongly_signed_digest_is_rejected() {
     bundle["records"][0]["signatureHex"] = serde_json::Value::String(hex(&[0; 64]));
     write_file(
         bundle_path,
-        serde_json::to_vec(&bundle).expect("encode bundle").as_slice(),
+        serde_json::to_vec(&bundle)
+            .expect("encode bundle")
+            .as_slice(),
         0o600,
     );
     assert!(!fixture.authority.verify_record(&fixture.record));
@@ -197,8 +197,12 @@ fn tokenizer_fixture(root: &Path, script_body: &str, timeout: Duration) -> Token
     let external_root = root.join("tokenizer-deployment");
     std::fs::create_dir_all(&rollback_root).expect("rollback root");
     std::fs::create_dir_all(&external_root).expect("external root");
-    let rollback_root = rollback_root.canonicalize().expect("canonical rollback root");
-    let external_root = external_root.canonicalize().expect("canonical external root");
+    let rollback_root = rollback_root
+        .canonicalize()
+        .expect("canonical rollback root");
+    let external_root = external_root
+        .canonicalize()
+        .expect("canonical external root");
     let binary_path = external_root.join("tokenizer");
     let vocabulary_path = external_root.join("vocabulary.json");
     let normalization_path = external_root.join("normalization.json");
@@ -228,9 +232,7 @@ fn tokenizer_fixture(root: &Path, script_body: &str, timeout: Duration) -> Token
         model_revision_digest: digest("model-revision:test:v3"),
         tokenizer_binary_digest: Digest32::of_bytes(script_body.as_bytes()),
         tokenizer_vocabulary_digest: Digest32::of_bytes(b"{\"vocabulary\":\"test\"}"),
-        tokenizer_normalization_digest: Digest32::of_bytes(
-            b"{\"normalization\":\"identity\"}",
-        ),
+        tokenizer_normalization_digest: Digest32::of_bytes(b"{\"normalization\":\"identity\"}"),
         serializer_revision_digest: digest("serializer-revision:test:v3"),
         template_revision_digest: digest("template-revision:test:v3"),
         tool_schema_revision_digest: digest("tool-schema-revision:test:v3"),
@@ -309,8 +311,7 @@ fn tokenizer_artifact_drift_is_detected_before_use() {
         .truncate(true)
         .open(&fixture.vocabulary_path)
         .expect("open vocabulary");
-    file.write_all(b"drifted vocabulary")
-        .expect("write drift");
+    file.write_all(b"drifted vocabulary").expect("write drift");
     drop(file);
     assert!(matches!(
         fixture.tokenizer.invoke(b"input"),

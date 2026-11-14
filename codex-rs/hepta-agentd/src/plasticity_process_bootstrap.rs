@@ -64,9 +64,9 @@ use crate::resume_agentd_topology_writer_v1;
 // A descriptor/recovery failure is terminal for this optional organ; callers must never\n// reinterpret it as permission to create a fresh, unanchored proposal history.
 #[path = "neuron_chain_recovery.rs"]
 mod neuron_chain_recovery;
-use neuron_chain_recovery::{
-    NeuronSegmentDescriptorV1, recover_neuron_chain_v1, select_neuron_segments_v1,
-};
+use neuron_chain_recovery::NeuronSegmentDescriptorV1;
+use neuron_chain_recovery::recover_neuron_chain_v1;
+use neuron_chain_recovery::select_neuron_segments_v1;
 
 const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
 const MAX_DESCRIPTOR_BYTES: u64 = 1_048_576;
@@ -771,7 +771,11 @@ fn validate_process_path_separation(
         descriptor.topology_registry.registry_path.as_path(),
         descriptor.topology_registry.anchor_path.as_path(),
     ];
-    paths.extend(neuron_segments.iter().map(|segment| segment.journal_path.as_path()));
+    paths.extend(
+        neuron_segments
+            .iter()
+            .map(|segment| segment.journal_path.as_path()),
+    );
     for (index, left) in paths.iter().enumerate() {
         for right in paths.iter().skip(index + 1) {
             if left == right {

@@ -218,11 +218,12 @@ impl PlannerJournalStoreV1 for FilePlannerJournalStoreV1 {
             &bytes,
             "write journal",
         )?;
-        let verified = read_optional(&self.path, "verify journal commit")?
-            .ok_or(PlannerJournalStoreError::Io {
+        let verified = read_optional(&self.path, "verify journal commit")?.ok_or(
+            PlannerJournalStoreError::Io {
                 operation: "verify journal commit",
                 kind: ErrorKind::NotFound,
-            })?;
+            },
+        )?;
         let reopened = PlannerJournalV1::reopen(&verified)?;
         if reopened.head() != journal.head() {
             return Err(PlannerJournalStoreError::ForkDetected {

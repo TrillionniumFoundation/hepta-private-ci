@@ -52,7 +52,9 @@ class ProcessCaptureTests(unittest.TestCase):
         for kwargs in ({"samples": 1}, {"samples": 257}, {"interval_ms": 0}):
             with self.assertRaises(CaptureError):
                 capture_process(os.getpid(), **kwargs)
-        result = capture_process(os.getpid(), samples=2, interval_ms=1, sleep=lambda _: None)
+        result = capture_process(
+            os.getpid(), samples=2, interval_ms=1, sleep=lambda _: None
+        )
         self.assertEqual(result["sample_count"], 2)
         self.assertEqual(len(result["observations"]), 2)
         self.assertGreater(result["rss_pages_max"], 0)
@@ -68,15 +70,37 @@ class ProcessCaptureTests(unittest.TestCase):
             self.assertFalse(report["production_promotion_permitted"])
             self.assertIsNone(report["receipt_file_sha256_unverified"])
             out = root / "report.json"
-            self.assertEqual(main([
-                "--pid", str(os.getpid()), "--manifest", str(manifest),
-                "--samples", "2", "--interval-ms", "1", "--out", str(out),
-            ]), 0)
+            self.assertEqual(
+                main(
+                    [
+                        "--pid",
+                        str(os.getpid()),
+                        "--manifest",
+                        str(manifest),
+                        "--samples",
+                        "2",
+                        "--interval-ms",
+                        "1",
+                        "--out",
+                        str(out),
+                    ]
+                ),
+                0,
+            )
             self.assertTrue(out.exists())
-            self.assertEqual(main([
-                "--pid", str(os.getpid()), "--manifest", str(manifest),
-                "--out", str(out),
-            ]), 2)
+            self.assertEqual(
+                main(
+                    [
+                        "--pid",
+                        str(os.getpid()),
+                        "--manifest",
+                        str(manifest),
+                        "--out",
+                        str(out),
+                    ]
+                ),
+                2,
+            )
 
 
 if __name__ == "__main__":

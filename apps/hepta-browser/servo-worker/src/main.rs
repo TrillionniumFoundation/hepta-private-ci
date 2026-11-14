@@ -1,20 +1,38 @@
 use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
-use std::io::{self, Read, Write};
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::io::Read;
+use std::io::Write;
+use std::io::{self};
 use std::rc::Rc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, mpsc};
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc;
 use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use std::time::Instant;
 
 use dpi::PhysicalSize;
-use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value, json};
-use servo::{
-    EventLoopWaker, JSValue, LoadStatus, NavigationRequest, PermissionRequest, RenderingContext,
-    Servo, ServoBuilder, SoftwareRenderingContext, WebView, WebViewBuilder, WebViewDelegate,
-};
-use sha2::{Digest, Sha256};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Map;
+use serde_json::Value;
+use serde_json::json;
+use servo::EventLoopWaker;
+use servo::JSValue;
+use servo::LoadStatus;
+use servo::NavigationRequest;
+use servo::PermissionRequest;
+use servo::RenderingContext;
+use servo::Servo;
+use servo::ServoBuilder;
+use servo::SoftwareRenderingContext;
+use servo::WebView;
+use servo::WebViewBuilder;
+use servo::WebViewDelegate;
+use sha2::Digest;
+use sha2::Sha256;
 use url::Url;
 
 const SCHEMA: &str = "hepta.browser.worker-frame.v1";

@@ -52,7 +52,9 @@ class CheckoutIdentityTests(unittest.TestCase):
     def test_another_commit_with_identical_tree_is_rejected(self) -> None:
         identity = self.identity()
         self.git("commit", "--allow-empty", "-qm", "Same tree, different commit")
-        self.assertEqual(self.git("rev-parse", "HEAD^{tree}"), identity["candidateTree"])
+        self.assertEqual(
+            self.git("rev-parse", "HEAD^{tree}"), identity["candidateTree"]
+        )
         with self.assertRaisesRegex(ValueError, "checkout commit"):
             qualification.verify_checkout_identity(identity, self.source)
 

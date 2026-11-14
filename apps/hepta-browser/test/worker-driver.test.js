@@ -24,7 +24,10 @@ function digest(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
-function fakeLauncher({ holdDispatchResponse = null, corruptReconcileIdentity = false } = {}) {
+function fakeLauncher({
+  holdDispatchResponse = null,
+  corruptReconcileIdentity = false,
+} = {}) {
   return {
     posture: {
       inheritedPrivateChannel: true,
@@ -59,7 +62,10 @@ function fakeLauncher({ holdDispatchResponse = null, corruptReconcileIdentity = 
               };
               break;
             case "dispatch":
-              operations.set(request.payload.operationId, workerPayloadDigest(request.payload));
+              operations.set(
+                request.payload.operationId,
+                workerPayloadDigest(request.payload),
+              );
               observation = {
                 terminalObserved: false,
                 operationId: request.payload.operationId,
@@ -71,7 +77,9 @@ function fakeLauncher({ holdDispatchResponse = null, corruptReconcileIdentity = 
             case "reconcile": {
               const expected = operations.get(request.payload.operationId);
               if (expected !== workerPayloadDigest(request.payload)) {
-                throw new Error("fake worker reconciliation payload drifted from dispatch");
+                throw new Error(
+                  "fake worker reconciliation payload drifted from dispatch",
+                );
               }
               observation = {
                 terminalObserved: true,
@@ -212,7 +220,10 @@ test("subprocess driver rejects a terminal receipt for another operation", async
     processId: started.processId,
   };
   await driver.dispatch(operation);
-  await assert.rejects(driver.reconcile(operation), /crossed operation identity/);
+  await assert.rejects(
+    driver.reconcile(operation),
+    /crossed operation identity/,
+  );
 });
 
 test("subprocess driver fails closed on worker artifact digest drift", async () => {
@@ -235,7 +246,9 @@ test(
   "Linux bubblewrap launcher exposes only the explicit runtime closure",
   { skip: process.platform !== "linux" },
   () => {
-    const launcher = new LinuxBubblewrapLauncher({ bwrapPath: "/usr/bin/bwrap" });
+    const launcher = new LinuxBubblewrapLauncher({
+      bwrapPath: "/usr/bin/bwrap",
+    });
     const argv = launcher.argv({
       workerPath: "/opt/hepta/servo-worker",
       profileDir: "/var/lib/hepta/browser/profile-1",
@@ -246,7 +259,9 @@ test(
     assert.deepEqual(argv.slice(4, 6), ["--tmpfs", "/"]);
     for (let index = 0; index < argv.length - 2; index += 1) {
       assert.equal(
-        argv[index] === "--ro-bind" && argv[index + 1] === "/" && argv[index + 2] === "/",
+        argv[index] === "--ro-bind" &&
+          argv[index + 1] === "/" &&
+          argv[index + 2] === "/",
         false,
       );
     }
@@ -257,12 +272,34 @@ test(
       }
     }
     assert.equal(mountedSources.includes("/usr"), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/usr/bin")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/usr/local")), false);
-    assert.equal(mountedSources.some((path) => path === "/home" || path.startsWith("/home/")), false);
-    assert.equal(mountedSources.some((path) => path === "/root" || path.startsWith("/root/")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/var/lib")), false);
-    assert.equal(mountedSources.some((path) => path.startsWith("/var/run")), false);
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/usr/bin")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/usr/local")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some(
+        (path) => path === "/home" || path.startsWith("/home/"),
+      ),
+      false,
+    );
+    assert.equal(
+      mountedSources.some(
+        (path) => path === "/root" || path.startsWith("/root/"),
+      ),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/var/lib")),
+      false,
+    );
+    assert.equal(
+      mountedSources.some((path) => path.startsWith("/var/run")),
+      false,
+    );
     assert.equal(mountedSources.includes("/usr/lib"), true);
     assert.equal(mountedSources.includes("/var/cache/fontconfig"), true);
     assert.equal(argv.at(-1), "/hepta-worker");

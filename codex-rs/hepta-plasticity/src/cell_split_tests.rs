@@ -89,8 +89,15 @@ fn planner_emits_all_operations_and_no_change_competitor() {
         let plan = plan_cell_split_v1(request(operation)).expect("valid plan");
         assert_eq!(plan.candidates.len(), 2);
         assert!(plan.no_change_candidate().is_some());
-        assert_eq!(plan.change_candidate().and_then(|candidate| candidate.operation), Some(operation));
-        assert_eq!(plan.status, CellSplitPlanStatusV1::RequiresIndependentReview);
+        assert_eq!(
+            plan.change_candidate()
+                .and_then(|candidate| candidate.operation),
+            Some(operation)
+        );
+        assert_eq!(
+            plan.status,
+            CellSplitPlanStatusV1::RequiresIndependentReview
+        );
         assert!(!plan.authority.grants_any());
         verify_cell_split_v1(&plan).expect("deterministic verification");
     }
@@ -101,9 +108,11 @@ fn planner_is_deterministic_and_does_not_select() {
     let left = plan_cell_split_v1(request(CellSplitOperationV1::Split)).expect("left");
     let right = plan_cell_split_v1(request(CellSplitOperationV1::Split)).expect("right");
     assert_eq!(left, right);
-    assert!(cell_split_generator_signing_payload_v1(&left)
-        .windows(left.plan_digest.as_array().len())
-        .any(|window| window == &left.plan_digest.as_array()[..]));
+    assert!(
+        cell_split_generator_signing_payload_v1(&left)
+            .windows(left.plan_digest.as_array().len())
+            .any(|window| window == &left.plan_digest.as_array()[..])
+    );
 }
 
 #[test]

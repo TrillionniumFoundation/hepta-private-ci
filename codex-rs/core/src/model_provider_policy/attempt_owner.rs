@@ -52,18 +52,16 @@ impl fmt::Debug for LeaseFinalRequestObserver {
 }
 
 impl EncodedRequestBodyObserver for LeaseFinalRequestObserver {
-    fn observe_encoded_body<'a>(
-        &'a self,
-        body: &'a [u8],
-    ) -> BoxFuture<'a, Result<(), String>> {
+    fn observe_encoded_body<'a>(&'a self, body: &'a [u8]) -> BoxFuture<'a, Result<(), String>> {
         Box::pin(async move {
             let guard = self.lease.lease.lock().await;
             let lease = guard.as_ref().ok_or_else(|| {
                 "provider attempt lease was consumed before final request observation".to_owned()
             })?;
-            lease.observe_final_request(body).await.map_err(|error| {
-                format!("{}: {}", error.reason_code(), error.detail())
-            })
+            lease
+                .observe_final_request(body)
+                .await
+                .map_err(|error| format!("{}: {}", error.reason_code(), error.detail()))
         })
     }
 }

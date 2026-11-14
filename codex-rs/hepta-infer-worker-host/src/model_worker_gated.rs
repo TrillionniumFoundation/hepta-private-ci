@@ -11,7 +11,6 @@ use std::time::Instant;
 
 use codex_hepta_types::Digest32;
 
-use super::validate_manifest;
 use super::DriverModelHandle;
 use super::DriverNeuronFeatureObservation;
 use super::DriverRunObservation;
@@ -25,6 +24,7 @@ use super::NeuronFeatureRequest;
 use super::NeuronSharedFeatureBatchDriverV2;
 use super::SharedNeuronFeatureRequestV2;
 use super::WorkerRequest;
+use super::validate_manifest;
 
 const Q24: i64 = 1 << 24;
 const Q24_BOUND: i64 = 8 * Q24;
@@ -515,10 +515,10 @@ fn dense_q24(input: &[i64], weights: &[i64], bias: &[i64]) -> Result<Vec<i64>, E
 
 #[cfg(test)]
 mod tests {
-    use super::super::canonical_neuron_feature_payload_digest;
     use super::super::InferenceWorker;
     use super::super::ResourceGrant;
     use super::super::WorkerRequest;
+    use super::super::canonical_neuron_feature_payload_digest;
     use super::*;
 
     fn manifest() -> ModelManifest {

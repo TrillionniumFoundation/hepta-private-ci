@@ -15,17 +15,25 @@ SPEC.loader.exec_module(MOD)
 
 
 def now_plus(seconds):
-    return (datetime.now(timezone.utc) + timedelta(
-        seconds=seconds
-    )).isoformat().replace("+00:00", "Z")
+    return (
+        (datetime.now(timezone.utc) + timedelta(seconds=seconds))
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def packet(case, split, label=None, *, group=None, fence=2, width=384):
     row = {
-        "case_id": case, "scope_id": "demo", "task_id": "binary",
-        "encoder_digest": "a" * 64, "model_revision": "b" * 40,
-        "tokenizer_digest": "c" * 64, "normalization_digest": "d" * 64,
-        "quantization_digest": "e" * 64, "generation": 3, "fence": fence,
+        "case_id": case,
+        "scope_id": "demo",
+        "task_id": "binary",
+        "encoder_digest": "a" * 64,
+        "model_revision": "b" * 40,
+        "tokenizer_digest": "c" * 64,
+        "normalization_digest": "d" * 64,
+        "quantization_digest": "e" * 64,
+        "generation": 3,
+        "fence": fence,
         "group_id": group or ("g" + case),
         "feature_q24": [MOD.Q // 2] * width,
         "event_time": now_plus(-120 if split == "train" else -10),
@@ -59,18 +67,26 @@ class HeadTests(unittest.TestCase):
         for budget, count in ((2048, 1923), (8192, 7299), (16384, 13443)):
             with self.subTest(budget=budget):
                 a, ap, af = MOD.train(
-                    train, predict, budget=budget, seed=9, steps=2,
-                    cutoff=self.cutoff, now=self.now,
+                    train,
+                    predict,
+                    budget=budget,
+                    seed=9,
+                    steps=2,
+                    cutoff=self.cutoff,
+                    now=self.now,
                 )
                 b, bp, bf = MOD.train(
-                    train, predict, budget=budget, seed=9, steps=2,
-                    cutoff=self.cutoff, now=self.now,
+                    train,
+                    predict,
+                    budget=budget,
+                    seed=9,
+                    steps=2,
+                    cutoff=self.cutoff,
+                    now=self.now,
                 )
                 self.assertEqual(a["trainable_head_parameters"], count)
                 self.assertEqual(a["head_fp32_parameter_payload_bytes"], count * 4)
-                self.assertGreater(
-                    a["optimizer_tensor_payload_bytes"], count * 8
-                )
+                self.assertGreater(a["optimizer_tensor_payload_bytes"], count * 8)
                 self.assertEqual(
                     a["head_plus_optimizer_tensor_payload_bytes"],
                     a["head_fp32_parameter_payload_bytes"]
@@ -115,12 +131,24 @@ class HeadTests(unittest.TestCase):
     def test_no_momentum_sgd_can_omit_adamw_optimizer_state(self):
         train, predict = cases()
         adam, _, _ = MOD.train(
-            train, predict, budget=8192, seed=3, steps=2,
-            cutoff=self.cutoff, now=self.now, optimizer_kind="adamw",
+            train,
+            predict,
+            budget=8192,
+            seed=3,
+            steps=2,
+            cutoff=self.cutoff,
+            now=self.now,
+            optimizer_kind="adamw",
         )
         sgd, _, _ = MOD.train(
-            train, predict, budget=8192, seed=3, steps=2,
-            cutoff=self.cutoff, now=self.now, optimizer_kind="sgd",
+            train,
+            predict,
+            budget=8192,
+            seed=3,
+            steps=2,
+            cutoff=self.cutoff,
+            now=self.now,
+            optimizer_kind="sgd",
         )
         self.assertGreater(adam["optimizer_tensor_payload_bytes"], 0)
         self.assertEqual(sgd["optimizer_tensor_payload_bytes"], 0)
@@ -135,11 +163,16 @@ class HeadTests(unittest.TestCase):
         train, predict = cases()
         with self.assertRaisesRegex(ValueError, "bounded experimental limit"):
             MOD.validate_packets(
-                train * 4097, predict, self.cutoff, self.now,
+                train * 4097,
+                predict,
+                self.cutoff,
+                self.now,
             )
         with tempfile.TemporaryDirectory() as folder:
             malformed = Path(folder) / "bad.jsonl"
-            malformed.write_text('{"case_id":"one","case_id":"two"}\n', encoding="utf-8")
+            malformed.write_text(
+                '{"case_id":"one","case_id":"two"}\n', encoding="utf-8"
+            )
             with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
                 MOD.read_rows(malformed)
 
@@ -153,10 +186,16 @@ class HeadTests(unittest.TestCase):
                     encoding="utf-8",
                 )
             args = [
-                "--train", str(root / "train.jsonl"),
-                "--predict", str(root / "predict.jsonl"),
-                "--train-cutoff", self.cutoff, "--steps", "2",
-                "--output-prefix", str(root / "exp"),
+                "--train",
+                str(root / "train.jsonl"),
+                "--predict",
+                str(root / "predict.jsonl"),
+                "--train-cutoff",
+                self.cutoff,
+                "--steps",
+                "2",
+                "--output-prefix",
+                str(root / "exp"),
             ]
             self.assertEqual(MOD.main(args), 0)
             self.assertTrue((root / "exp.manifest.json").exists())
@@ -175,16 +214,18 @@ class HeadTests(unittest.TestCase):
                 manifest["prediction_file_hashes_cryptographically_signed"]
             )
             learned = [
-                json.loads(line) for line in
-                (root / "exp.learned.jsonl").read_text().splitlines()
+                json.loads(line)
+                for line in (root / "exp.learned.jsonl").read_text().splitlines()
             ]
             self.assertEqual(len(learned), 2)
-            self.assertTrue(all(
-                row["resident_bytes"] is None
-                and row["transient_bytes"] is None
-                and row["resource_observation"] == "HEAD_ONLY_LATENCY_NO_RSS"
-                for row in learned
-            ))
+            self.assertTrue(
+                all(
+                    row["resident_bytes"] is None
+                    and row["transient_bytes"] is None
+                    and row["resource_observation"] == "HEAD_ONLY_LATENCY_NO_RSS"
+                    for row in learned
+                )
+            )
             self.assertEqual(MOD.main(args), 2)
 
 

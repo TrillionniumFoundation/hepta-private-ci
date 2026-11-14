@@ -7,9 +7,9 @@
 //! pinned executable protocol whose binary, vocabulary and normalization bytes
 //! are digest-checked before and after every invocation.
 
+use std::fmt;
 #[cfg(unix)]
 use std::fs::File;
-use std::fmt;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
@@ -40,8 +40,7 @@ use crate::AgentdIdentity;
 use crate::authbus_trust::hex_bytes;
 
 const ADMISSION_VERIFIER_DOMAIN_V3: &[u8] = b"hepta.context-admission-verifier.v3";
-const ADMISSION_RECORD_SIGNATURE_DOMAIN_V3: &[u8] =
-    b"hepta.context-admission-record-authority.v3";
+const ADMISSION_RECORD_SIGNATURE_DOMAIN_V3: &[u8] = b"hepta.context-admission-record-authority.v3";
 const ADMISSION_SNAPSHOT_SIGNATURE_DOMAIN_V3: &[u8] =
     b"hepta.context-admission-snapshot-authority.v3";
 const ADMISSION_FILE_SCHEMA_V3: u32 = 3;
@@ -141,9 +140,7 @@ impl ExternalContextAdmissionAuthorityV3 {
         })
     }
 
-    fn current_view(
-        &self,
-    ) -> Result<AdmissionAuthorityViewV3, AgentdPromptCompilerAdapterErrorV3> {
+    fn current_view(&self) -> Result<AdmissionAuthorityViewV3, AgentdPromptCompilerAdapterErrorV3> {
         load_admission_authority_view(
             &self.trust_path,
             &self.bundle_path,
@@ -237,10 +234,7 @@ fn load_admission_authority_view(
         /*executable*/ false,
     )?;
     let trust: ContextAdmissionAuthorityTrustV3 = serde_json::from_slice(&trust_bytes)?;
-    if trust.schema_version != ADMISSION_FILE_SCHEMA_V3
-        || trust.key_epoch == 0
-        || trust.revoked
-    {
+    if trust.schema_version != ADMISSION_FILE_SCHEMA_V3 || trust.key_epoch == 0 || trust.revoked {
         return Err(AgentdPromptCompilerAdapterErrorV3::AdmissionTrustRejected);
     }
     let authority_id = StableId::new(trust.authority_id.clone()).map_err(|_| {
@@ -250,11 +244,8 @@ fn load_admission_authority_view(
         .map_err(|_| AgentdPromptCompilerAdapterErrorV3::AdmissionTrustRejected)?;
     let verifying_key = VerifyingKey::from_bytes(&verifying_key_bytes)
         .map_err(|_| AgentdPromptCompilerAdapterErrorV3::AdmissionTrustRejected)?;
-    let verifier_digest = admission_verifier_digest(
-        &authority_id,
-        trust.key_epoch,
-        verifying_key_bytes,
-    );
+    let verifier_digest =
+        admission_verifier_digest(&authority_id, trust.key_epoch, verifying_key_bytes);
     if let Some((expected_id, expected_epoch, expected_key, expected_digest)) = expected
         && (&authority_id != expected_id
             || trust.key_epoch != expected_epoch

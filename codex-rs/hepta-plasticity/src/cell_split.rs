@@ -384,11 +384,16 @@ pub fn verify_cell_split_v1(plan: &CellSplitV1) -> Result<(), CellSplitPlannerEr
         }
         match (candidate.kind, candidate.operation) {
             (CellSplitCandidateKindV1::NoChange, None) => {}
-            (CellSplitCandidateKindV1::Change, Some(operation)) if operation == signal.operation => {}
+            (CellSplitCandidateKindV1::Change, Some(operation))
+                if operation == signal.operation => {}
             _ => return Err(CellSplitPlannerErrorV1::CandidateSetMismatch),
         }
     }
-    if plan.candidates.windows(2).any(|pair| pair[0].candidate_id >= pair[1].candidate_id) {
+    if plan
+        .candidates
+        .windows(2)
+        .any(|pair| pair[0].candidate_id >= pair[1].candidate_id)
+    {
         return Err(CellSplitPlannerErrorV1::CandidateSetMismatch);
     }
     let expected = build_unverified_plan(&CellSplitPlannerRequestV1 {
@@ -421,9 +426,7 @@ pub fn cell_split_generator_signing_payload_v1(plan: &CellSplitV1) -> Vec<u8> {
     bytes
 }
 
-fn validate_request(
-    request: &CellSplitPlannerRequestV1,
-) -> Result<(), CellSplitPlannerErrorV1> {
+fn validate_request(request: &CellSplitPlannerRequestV1) -> Result<(), CellSplitPlannerErrorV1> {
     if request.plan_id.as_str().len() > MAX_CELL_ID_BYTES {
         return Err(CellSplitPlannerErrorV1::InvalidIdentity("plan"));
     }
@@ -491,9 +494,7 @@ fn validate_signal(
             return Err(CellSplitPlannerErrorV1::MissingEvidence("lineage"));
         }
     }
-    if signal.predecessor_digest.is_some()
-        && signal.predecessor_digest == signal.candidate_digest
-    {
+    if signal.predecessor_digest.is_some() && signal.predecessor_digest == signal.candidate_digest {
         return Err(CellSplitPlannerErrorV1::InvalidLineage);
     }
     if signal.budget.compute_micros == 0

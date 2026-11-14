@@ -7,7 +7,9 @@ use crate::presentation::RoomKey;
 use crate::presentation::apply_action;
 use hepta_control_core::chat::ChatWorkspace;
 #[cfg(feature = "native-ime-sdk")]
-use makepad_widgets::text_input::{TextEditOutcome, TextEditPhase};
+use makepad_widgets::text_input::TextEditOutcome;
+#[cfg(feature = "native-ime-sdk")]
+use makepad_widgets::text_input::TextEditPhase;
 use makepad_widgets::*;
 
 #[derive(Default)]
@@ -71,7 +73,9 @@ impl ComposerTransaction {
         text: String,
     ) -> ActionResult {
         // Legacy SDK compatibility; typed outcomes never consult live phase.
-        if input.is_composing() { return ActionResult::Ignored; }
+        if input.is_composing() {
+            return ActionResult::Ignored;
+        }
         let result = apply_action(
             workspace,
             PresentationAction {

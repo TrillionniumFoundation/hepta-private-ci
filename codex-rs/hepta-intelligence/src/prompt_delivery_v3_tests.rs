@@ -378,10 +378,7 @@ fn v3_tokenizes_the_actual_canonical_payload_and_redacts_debug() {
     let output = compile(&fixture, 16_384).expect("compile v3");
 
     assert_eq!(
-        output
-            .serialized_context
-            .receipt()
-            .serialized_token_count(),
+        output.serialized_context.receipt().serialized_token_count(),
         u64::try_from(output.serialized_context.payload().len()).expect("payload length")
     );
     assert!(
@@ -390,12 +387,20 @@ fn v3_tokenizes_the_actual_canonical_payload_and_redacts_debug() {
             .payload()
             .ends_with(&fixture.payload)
     );
-    assert!(output.serialized_context.segments().iter().any(|segment| {
-        segment.kind == ContextSerializationSegmentKindV2::Framing
-    }));
-    assert!(output.serialized_context.segments().iter().any(|segment| {
-        segment.kind == ContextSerializationSegmentKindV2::Item
-    }));
+    assert!(
+        output
+            .serialized_context
+            .segments()
+            .iter()
+            .any(|segment| { segment.kind == ContextSerializationSegmentKindV2::Framing })
+    );
+    assert!(
+        output
+            .serialized_context
+            .segments()
+            .iter()
+            .any(|segment| { segment.kind == ContextSerializationSegmentKindV2::Item })
+    );
     let rendered = format!("{output:?}");
     assert!(!rendered.contains("Do not mutate until evidence is checked."));
     output.validate().expect("valid v3 output");
@@ -406,10 +411,7 @@ fn framing_overhead_cannot_hide_behind_registry_token_cost() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let fixture = fixture(&temporary.path().join("registry"));
     let output = compile(&fixture, 16_384).expect("compile high budget");
-    let actual_tokens = output
-        .serialized_context
-        .receipt()
-        .serialized_token_count();
+    let actual_tokens = output.serialized_context.receipt().serialized_token_count();
     assert!(actual_tokens > u64::from(fixture.portfolio.receipt.total_token_upper_bound));
 
     let error = compile(&fixture, actual_tokens - 1).expect_err("framing overflow must fail");

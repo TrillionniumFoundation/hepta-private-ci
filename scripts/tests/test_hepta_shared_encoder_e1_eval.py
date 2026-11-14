@@ -15,30 +15,42 @@ SPEC.loader.exec_module(LIB)
 
 def packet(split, case, probability, *, committed="2026-09-15T09:00:00Z"):
     return {
-        "case_id": case, "scope_id": "s", "task_id": "t",
-        "split": split, "probability_positive": probability,
-        "prediction_committed_at": committed, "abstain": False,
-        "encoder_digest": "a" * 64, "head_digest": "b" * 64,
-        "weights_digest": "c" * 64, "model_revision": "d" * 40,
-        "runtime_generation": 1, "execution_receipt_id": "unverified:fixture",
-        "latency_micros": 12, "resident_bytes": 4096, "transient_bytes": 128,
+        "case_id": case,
+        "scope_id": "s",
+        "task_id": "t",
+        "split": split,
+        "probability_positive": probability,
+        "prediction_committed_at": committed,
+        "abstain": False,
+        "encoder_digest": "a" * 64,
+        "head_digest": "b" * 64,
+        "weights_digest": "c" * 64,
+        "model_revision": "d" * 40,
+        "runtime_generation": 1,
+        "execution_receipt_id": "unverified:fixture",
+        "latency_micros": 12,
+        "resident_bytes": 4096,
+        "transient_bytes": 128,
     }
 
 
 def fixtures():
     dataset = [
         {
-            "case_id": f"c{i}", "scope_id": "s", "task_id": "t",
+            "case_id": f"c{i}",
+            "scope_id": "s",
+            "task_id": "t",
             "split": "future" if i < 4 else ("old" if i == 4 else "ood"),
             "event_time": "2026-09-15T08:00:00Z",
             "label_available_at": "2026-09-15T10:00:00Z",
-            "group_id": f"g{i}", "label": i % 2,
+            "group_id": f"g{i}",
+            "label": i % 2,
         }
         for i in range(6)
     ]
-    baseline = [packet(r["split"], r["case_id"], .5) for r in dataset]
+    baseline = [packet(r["split"], r["case_id"], 0.5) for r in dataset]
     candidate = [
-        packet(r["split"], r["case_id"], .1 if r["label"] == 0 else .9)
+        packet(r["split"], r["case_id"], 0.1 if r["label"] == 0 else 0.9)
         for r in dataset
     ]
     return dataset, baseline, candidate
@@ -47,8 +59,13 @@ def fixtures():
 class PairedTests(unittest.TestCase):
     def run_compare(self, dataset, baseline, candidate):
         return LIB.compare(
-            dataset, baseline, candidate, scope="s", task="t",
-            cutoff="2026-09-14T00:00:00Z", rounds=100,
+            dataset,
+            baseline,
+            candidate,
+            scope="s",
+            task="t",
+            cutoff="2026-09-14T00:00:00Z",
+            rounds=100,
         )
 
     def test_deterministic_benefit_never_promotes(self):
@@ -64,8 +81,9 @@ class PairedTests(unittest.TestCase):
     def test_duplicate_missing_extra_cases_fail_closed(self):
         dataset, baseline, candidate = fixtures()
         for bad in (
-            candidate[:-1], candidate + [candidate[0]],
-            candidate + [packet("future", "extra", .5)],
+            candidate[:-1],
+            candidate + [candidate[0]],
+            candidate + [packet("future", "extra", 0.5)],
         ):
             with self.subTest(count=len(bad)), self.assertRaises(ValueError):
                 self.run_compare(dataset, baseline, bad)
@@ -101,7 +119,9 @@ class PairedTests(unittest.TestCase):
     def test_training_group_leak_and_split_drift_rejected(self):
         dataset, baseline, candidate = fixtures()
         train = dict(
-            dataset[0], case_id="train-duplicate", split="train",
+            dataset[0],
+            case_id="train-duplicate",
+            split="train",
             event_time="2026-09-13T00:00:00Z",
             label_available_at="2026-09-13T01:00:00Z",
         )
@@ -114,14 +134,19 @@ class PairedTests(unittest.TestCase):
     def test_pre_cutoff_label_and_calibration_group_leak_rejected(self):
         dataset, baseline, candidate = fixtures()
         late_train = dict(
-            dataset[0], case_id="training-future-label", split="train",
-            group_id="train-group", event_time="2026-09-13T00:00:00Z",
+            dataset[0],
+            case_id="training-future-label",
+            split="train",
+            group_id="train-group",
+            event_time="2026-09-13T00:00:00Z",
             label_available_at="2026-09-15T00:00:00Z",
         )
         with self.assertRaisesRegex(ValueError, "label leaked"):
             self.run_compare(dataset + [late_train], baseline, candidate)
         calibration = dict(
-            dataset[0], case_id="calibration-overlap", split="calibration",
+            dataset[0],
+            case_id="calibration-overlap",
+            split="calibration",
             event_time="2026-09-13T00:00:00Z",
             label_available_at="2026-09-13T01:00:00Z",
         )
@@ -149,7 +174,9 @@ class PairedTests(unittest.TestCase):
             report["splits"]["future"]["candidate"]["max_resident_bytes_reported"]
         )
         self.assertFalse(
-            report["splits"]["future"]["candidate"]["resource_memory_measurement_complete"]
+            report["splits"]["future"]["candidate"][
+                "resource_memory_measurement_complete"
+            ]
         )
         self.assertFalse(report["production_promotion_permitted"])
         candidate[0]["transient_bytes"] = 0
@@ -168,18 +195,31 @@ class PairedTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             for name, rows in (
-                ("dataset", dataset), ("baseline", baseline), ("candidate", candidate)
+                ("dataset", dataset),
+                ("baseline", baseline),
+                ("candidate", candidate),
             ):
                 (root / f"{name}.jsonl").write_text(
                     "".join(json.dumps(row) + "\n" for row in rows),
                     encoding="utf-8",
                 )
             arguments = [
-                "--dataset", str(root / "dataset.jsonl"),
-                "--no-change", str(root / "baseline.jsonl"),
-                "--candidate", str(root / "candidate.jsonl"),
-                "--scope", "s", "--task", "t", "--train-cutoff", "2026-09-14T00:00:00Z",
-                "--bootstrap-rounds", "100", "--out", str(root / "report.json"),
+                "--dataset",
+                str(root / "dataset.jsonl"),
+                "--no-change",
+                str(root / "baseline.jsonl"),
+                "--candidate",
+                str(root / "candidate.jsonl"),
+                "--scope",
+                "s",
+                "--task",
+                "t",
+                "--train-cutoff",
+                "2026-09-14T00:00:00Z",
+                "--bootstrap-rounds",
+                "100",
+                "--out",
+                str(root / "report.json"),
             ]
             self.assertEqual(LIB.main(arguments), 0)
             self.assertEqual(LIB.main(arguments), 2)

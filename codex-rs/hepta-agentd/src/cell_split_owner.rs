@@ -127,7 +127,6 @@ impl CellSplitPlanV1 {
         Digest32::of_bytes(&bytes)
     }
 
-
     /// Consume the independently verified, opaque self-evolution selection
     /// token as a binding check only. Selection remains non-authorizing.
     /// The real port still has to verify freshness, signed evidence, and
@@ -435,9 +434,15 @@ impl CellSplitExecutionOwnerV1 {
         let header = encode_header(&plan);
         // The host may hand us a genuinely empty file with an arbitrary
         // cursor. Never durably acknowledge a sparse, misplaced header.
-        file.0.seek(SeekFrom::Start(0)).map_err(|_| CellSplitErrorV1::Indeterminate)?;
-        file.0.write_all(&header).map_err(|_| CellSplitErrorV1::Indeterminate)?;
-        file.0.sync_all().map_err(|_| CellSplitErrorV1::Indeterminate)?;
+        file.0
+            .seek(SeekFrom::Start(0))
+            .map_err(|_| CellSplitErrorV1::Indeterminate)?;
+        file.0
+            .write_all(&header)
+            .map_err(|_| CellSplitErrorV1::Indeterminate)?;
+        file.0
+            .sync_all()
+            .map_err(|_| CellSplitErrorV1::Indeterminate)?;
         Ok(Self {
             file,
             plan,
@@ -473,8 +478,8 @@ impl CellSplitExecutionOwnerV1 {
     ) -> Result<Self, CellSplitErrorV1> {
         plan.validate()?;
         let mut file = LockedFile::acquire(file)?;
-        let length = usize::try_from(file.0.metadata()?.len())
-            .map_err(|_| CellSplitErrorV1::Capacity)?;
+        let length =
+            usize::try_from(file.0.metadata()?.len()).map_err(|_| CellSplitErrorV1::Capacity)?;
         if !(HEADER_SIZE..=MAX_LEDGER_SIZE).contains(&length) {
             return Err(CellSplitErrorV1::Corrupt);
         }
@@ -538,8 +543,16 @@ impl CellSplitExecutionOwnerV1 {
         // Only an incomplete final frame is repairable, never a complete
         // invalid frame. A verified external anchor cannot be truncated.
         if offset != length {
-            owner.file.0.set_len(offset as u64).map_err(|_| CellSplitErrorV1::Indeterminate)?;
-            owner.file.0.sync_all().map_err(|_| CellSplitErrorV1::Indeterminate)?;
+            owner
+                .file
+                .0
+                .set_len(offset as u64)
+                .map_err(|_| CellSplitErrorV1::Indeterminate)?;
+            owner
+                .file
+                .0
+                .sync_all()
+                .map_err(|_| CellSplitErrorV1::Indeterminate)?;
         }
         owner.file.0.seek(SeekFrom::End(0))?;
         Ok(owner)
@@ -620,8 +633,7 @@ impl CellSplitExecutionOwnerV1 {
                         CellSplitStepV1::ArtifactCas => ports.publish_artifact(&self.plan, key)?,
                         CellSplitStepV1::StateMigration => ports.migrate_child(&self.plan, key)?,
                         CellSplitStepV1::ShadowChild => ports.start_shadow(&self.plan, key)?,
-                        CellSplitStepV1::IndependentSelection
-                        | CellSplitStepV1::FinalUseReady => {
+                        CellSplitStepV1::IndependentSelection | CellSplitStepV1::FinalUseReady => {
                             // Evaluator, selector and issuer stay independent.
                             return Err(CellSplitErrorV1::Unapproved);
                         }
@@ -629,15 +641,19 @@ impl CellSplitExecutionOwnerV1 {
                             ports.fence_predecessor(&self.plan, key)?;
                         }
                         CellSplitStepV1::CnsRouteCutover => {
-                            let selection = self.accepted.get(3)
-                                .ok_or(CellSplitErrorV1::Unapproved)?;
-                            let final_use = self.accepted.get(4)
-                                .ok_or(CellSplitErrorV1::Unapproved)?;
+                            let selection =
+                                self.accepted.get(3).ok_or(CellSplitErrorV1::Unapproved)?;
+                            let final_use =
+                                self.accepted.get(4).ok_or(CellSplitErrorV1::Unapproved)?;
                             validate_receipt(
-                                &self.plan, CellSplitStepV1::IndependentSelection, selection,
+                                &self.plan,
+                                CellSplitStepV1::IndependentSelection,
+                                selection,
                             )?;
                             validate_receipt(
-                                &self.plan, CellSplitStepV1::FinalUseReady, final_use,
+                                &self.plan,
+                                CellSplitStepV1::FinalUseReady,
+                                final_use,
                             )?;
                             ports.cutover_with_final_use(&self.plan, key, selection, final_use)?;
                         }
@@ -694,8 +710,8 @@ impl CellSplitExecutionOwnerV1 {
             return Err(CellSplitErrorV1::Poisoned);
         }
         let checked = (|| -> Result<(), CellSplitErrorV1> {
-            let length = usize::try_from(self.durable_bytes)
-                .map_err(|_| CellSplitErrorV1::Capacity)?;
+            let length =
+                usize::try_from(self.durable_bytes).map_err(|_| CellSplitErrorV1::Capacity)?;
             if !(HEADER_SIZE..=MAX_LEDGER_SIZE).contains(&length)
                 || self.file.0.metadata()?.len() != self.durable_bytes
             {
@@ -769,7 +785,8 @@ impl CellSplitExecutionOwnerV1 {
             self.poisoned = true;
             return Err(CellSplitErrorV1::Poisoned);
         }
-        let next_length = self.durable_bytes
+        let next_length = self
+            .durable_bytes
             .checked_add(bytes.len() as u64)
             .ok_or(CellSplitErrorV1::Capacity)?;
         if next_length > MAX_LEDGER_SIZE as u64 {
@@ -796,15 +813,17 @@ fn apply_replayed_state(
     pending: &mut Option<CellSplitStepV1>,
     frame: LedgerFrame,
 ) -> Result<(), CellSplitErrorV1> {
-    let expected = STEPS.get(accepted.len()).copied().ok_or(CellSplitErrorV1::Corrupt)?;
+    let expected = STEPS
+        .get(accepted.len())
+        .copied()
+        .ok_or(CellSplitErrorV1::Corrupt)?;
     if frame.step != expected {
         return Err(CellSplitErrorV1::Corrupt);
     }
     match frame.accepted {
         None if pending.is_none() => *pending = Some(frame.step),
         Some(receipt) if *pending == Some(frame.step) => {
-            validate_receipt(plan, frame.step, &receipt)
-                .map_err(|_| CellSplitErrorV1::Corrupt)?;
+            validate_receipt(plan, frame.step, &receipt).map_err(|_| CellSplitErrorV1::Corrupt)?;
             accepted.push(receipt);
             *pending = None;
         }
@@ -854,7 +873,9 @@ fn encode_frame(
     body.extend_from_slice(predecessor.as_array());
     body.extend_from_slice(plan.operation_key(step).as_array());
     body.extend_from_slice(
-        &accepted.map_or(0, |receipt| receipt.generation.get()).to_be_bytes(),
+        &accepted
+            .map_or(0, |receipt| receipt.generation.get())
+            .to_be_bytes(),
     );
     let evidence = accepted.map_or(&[][..], |receipt| receipt.evidence.as_slice());
     body.extend_from_slice(&(evidence.len() as u32).to_be_bytes());
@@ -876,9 +897,7 @@ fn decode_frame(
         return Err(CellSplitErrorV1::Corrupt);
     }
     let without_checksum = body.len() - 32;
-    if Digest32::of_bytes(&body[..without_checksum]).as_array()
-        != &body[without_checksum..]
-    {
+    if Digest32::of_bytes(&body[..without_checksum]).as_array() != &body[without_checksum..] {
         return Err(CellSplitErrorV1::Corrupt);
     }
     let step = CellSplitStepV1::decode(body[1])?;
@@ -907,10 +926,14 @@ fn decode_frame(
 }
 
 fn read_u32(bytes: &[u8]) -> Result<u32, CellSplitErrorV1> {
-    Ok(u32::from_be_bytes(bytes.try_into().map_err(|_| CellSplitErrorV1::Corrupt)?))
+    Ok(u32::from_be_bytes(
+        bytes.try_into().map_err(|_| CellSplitErrorV1::Corrupt)?,
+    ))
 }
 fn read_u64(bytes: &[u8]) -> Result<u64, CellSplitErrorV1> {
-    Ok(u64::from_be_bytes(bytes.try_into().map_err(|_| CellSplitErrorV1::Corrupt)?))
+    Ok(u64::from_be_bytes(
+        bytes.try_into().map_err(|_| CellSplitErrorV1::Corrupt)?,
+    ))
 }
 
 #[cfg(test)]

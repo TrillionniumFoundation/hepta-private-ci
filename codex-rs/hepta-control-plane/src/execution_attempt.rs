@@ -255,8 +255,7 @@ impl ExecutionAttemptV1 {
                 .ok_or(ExecutionAttemptErrorV1::CorruptEncoding)?,
         )
         .map_err(|_| ExecutionAttemptErrorV1::CorruptEncoding)?;
-        let attempt_id =
-            StableId::new(id).map_err(|_| ExecutionAttemptErrorV1::CorruptEncoding)?;
+        let attempt_id = StableId::new(id).map_err(|_| ExecutionAttemptErrorV1::CorruptEncoding)?;
         offset = id_end;
         let plan_receipt_digest = read_digest(bytes, &mut offset)?;
         let grant_request_set_digest = read_optional_digest(bytes, &mut offset)?;
@@ -347,9 +346,8 @@ impl ExecutionAttemptV1 {
                 self.transition(ExecutionAttemptPhaseV1::TimedOut, now_micros)
             }
             ExecutionAttemptPhaseV1::Authorized | ExecutionAttemptPhaseV1::Dispatched => {
-                let uncertainty = uncertainty_digest.ok_or(
-                    ExecutionAttemptErrorV1::EmptyDigest("timeout uncertainty"),
-                )?;
+                let uncertainty = uncertainty_digest
+                    .ok_or(ExecutionAttemptErrorV1::EmptyDigest("timeout uncertainty"))?;
                 require_digest(uncertainty, "timeout uncertainty")?;
                 self.uncertainty_digest = Some(uncertainty);
                 self.transition(ExecutionAttemptPhaseV1::Indeterminate, now_micros)
@@ -410,8 +408,9 @@ impl ExecutionAttemptV1 {
                 self.transition(ExecutionAttemptPhaseV1::Revoked, now_micros)
             }
             ExecutionAttemptPhaseV1::Authorized | ExecutionAttemptPhaseV1::Dispatched => {
-                let uncertainty = uncertainty_digest
-                    .ok_or(ExecutionAttemptErrorV1::EmptyDigest("revocation uncertainty"))?;
+                let uncertainty = uncertainty_digest.ok_or(
+                    ExecutionAttemptErrorV1::EmptyDigest("revocation uncertainty"),
+                )?;
                 require_digest(uncertainty, "revocation uncertainty")?;
                 self.uncertainty_digest = Some(uncertainty);
                 self.transition(ExecutionAttemptPhaseV1::Indeterminate, now_micros)
@@ -454,8 +453,10 @@ impl ExecutionAttemptV1 {
         if self.terminal_observation_digest.is_some() && self.dispatch_digest.is_none() {
             return Err(ExecutionAttemptErrorV1::CorruptState);
         }
-        if matches!(self.phase, ExecutionAttemptPhaseV1::Succeeded | ExecutionAttemptPhaseV1::Failed)
-            && self.terminal_observation_digest.is_none()
+        if matches!(
+            self.phase,
+            ExecutionAttemptPhaseV1::Succeeded | ExecutionAttemptPhaseV1::Failed
+        ) && self.terminal_observation_digest.is_none()
         {
             return Err(ExecutionAttemptErrorV1::CorruptState);
         }
@@ -508,10 +509,7 @@ impl ExecutionAttemptV1 {
     }
 }
 
-fn require_digest(
-    digest: Digest32,
-    field: &'static str,
-) -> Result<(), ExecutionAttemptErrorV1> {
+fn require_digest(digest: Digest32, field: &'static str) -> Result<(), ExecutionAttemptErrorV1> {
     if digest.is_zero() {
         Err(ExecutionAttemptErrorV1::EmptyDigest(field))
     } else {
@@ -608,10 +606,7 @@ fn read_u64(bytes: &[u8], offset: &mut usize) -> Result<u64, ExecutionAttemptErr
     Ok(value)
 }
 
-fn read_digest(
-    bytes: &[u8],
-    offset: &mut usize,
-) -> Result<Digest32, ExecutionAttemptErrorV1> {
+fn read_digest(bytes: &[u8], offset: &mut usize) -> Result<Digest32, ExecutionAttemptErrorV1> {
     let end = (*offset)
         .checked_add(32)
         .ok_or(ExecutionAttemptErrorV1::CorruptEncoding)?;
@@ -640,8 +635,8 @@ mod tests {
 
     #[test]
     fn exact_attempt_reconciles_a_late_terminal_observation_without_retry() {
-        let mut attempt = ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20)
-            .expect("attempt");
+        let mut attempt =
+            ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20).expect("attempt");
         attempt
             .record_grant_request(digest("requests"), 11)
             .expect("grant request");
@@ -676,8 +671,8 @@ mod tests {
 
     #[test]
     fn pre_dispatch_timeout_requires_a_new_attempt_identity() {
-        let mut attempt = ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20)
-            .expect("attempt");
+        let mut attempt =
+            ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20).expect("attempt");
         attempt
             .record_grant_request(digest("requests"), 11)
             .expect("grant request");
@@ -699,8 +694,8 @@ mod tests {
 
     #[test]
     fn revocation_after_authorization_is_indeterminate_not_success() {
-        let mut attempt = ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20)
-            .expect("attempt");
+        let mut attempt =
+            ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20).expect("attempt");
         attempt
             .record_grant_request(digest("requests"), 11)
             .expect("grant request");
@@ -719,8 +714,8 @@ mod tests {
 
     #[test]
     fn attempt_codec_round_trips_and_rejects_tampering() {
-        let mut attempt = ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20)
-            .expect("attempt");
+        let mut attempt =
+            ExecutionAttemptV1::new(id("attempt-1"), digest("plan"), 10, 20).expect("attempt");
         attempt
             .record_grant_request(digest("requests"), 11)
             .expect("grant request");

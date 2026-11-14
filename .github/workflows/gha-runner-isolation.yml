@@ -183,7 +183,6 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git status --porcelain --untracked-files=no)"
 
-
   slim-rust-ci-changed:
     name: Slim x64 exact PR diff Rust CI selector
     runs-on: ubuntu-slim

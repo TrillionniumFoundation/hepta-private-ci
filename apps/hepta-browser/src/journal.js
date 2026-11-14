@@ -35,7 +35,8 @@ function keyOf(record) {
 }
 
 function deepFreeze(value) {
-  if (value === null || typeof value !== "object" || Object.isFrozen(value)) return value;
+  if (value === null || typeof value !== "object" || Object.isFrozen(value))
+    return value;
   for (const child of Object.values(value)) deepFreeze(child);
   return Object.freeze(value);
 }
@@ -46,7 +47,9 @@ function snapshotRecord(value, name) {
   try {
     snapshot = structuredClone(value);
   } catch (error) {
-    throw new TypeError(`${name} must contain cloneable data`, { cause: error });
+    throw new TypeError(`${name} must contain cloneable data`, {
+      cause: error,
+    });
   }
   return deepFreeze(requireRecord(snapshot, name));
 }
@@ -58,8 +61,12 @@ function immutableProjection(record) {
 }
 
 function assertSameSemantics(prior, next) {
-  if (!isDeepStrictEqual(immutableProjection(prior), immutableProjection(next))) {
-    throw new TypeError("journal operation identity was reused with changed immutable semantics");
+  if (
+    !isDeepStrictEqual(immutableProjection(prior), immutableProjection(next))
+  ) {
+    throw new TypeError(
+      "journal operation identity was reused with changed immutable semantics",
+    );
   }
 }
 
@@ -79,10 +86,18 @@ function applyObservation(records, snapshot) {
   const prior = records.get(key);
   if (!prior) throw new TypeError("journal observation has no dispatch intent");
   assertSameSemantics(prior, snapshot);
-  const merged = snapshotRecord({ ...prior, ...snapshot }, "merged observation record");
+  const merged = snapshotRecord(
+    { ...prior, ...snapshot },
+    "merged observation record",
+  );
   if (prior.terminalObserved === true) {
-    if (snapshot.terminalObserved !== true || !isDeepStrictEqual(prior, merged)) {
-      throw new TypeError("journal terminal observation cannot be changed or rolled back");
+    if (
+      snapshot.terminalObserved !== true ||
+      !isDeepStrictEqual(prior, merged)
+    ) {
+      throw new TypeError(
+        "journal terminal observation cannot be changed or rolled back",
+      );
     }
     return false;
   }
@@ -120,7 +135,8 @@ async function syncDirectory(path) {
   let error = null;
   try {
     const info = await handle.stat();
-    if (!info.isDirectory()) throw new TypeError("browser journal parent is not a directory");
+    if (!info.isDirectory())
+      throw new TypeError("browser journal parent is not a directory");
     await handle.sync();
   } catch (caught) {
     error = caught;
@@ -172,7 +188,11 @@ export class MemoryBrowserOperationJournal {
   }
 
   async getOperation(profileId, generation, operationId) {
-    return this.#records.get(`${profileId}\u0000${generation}\u0000${operationId}`) ?? null;
+    return (
+      this.#records.get(
+        `${profileId}\u0000${generation}\u0000${operationId}`,
+      ) ?? null
+    );
   }
 
   async listOperations(profileId, generation) {
@@ -255,7 +275,9 @@ export class FileBrowserOperationJournal {
     error = await closePreserving(handle, error);
     if (error) throw error;
     if (bytes.length > 0 && !bytes.endsWith("\n")) {
-      throw new TypeError("browser journal contains an incomplete final record");
+      throw new TypeError(
+        "browser journal contains an incomplete final record",
+      );
     }
     const records = new Map();
     const lines = bytes.length === 0 ? [] : bytes.slice(0, -1).split("\n");
@@ -269,7 +291,11 @@ export class FileBrowserOperationJournal {
       } catch {
         throw new TypeError("browser journal contains malformed JSON");
       }
-      if (envelope.schema !== SCHEMA || envelope.version !== 1 || typeof envelope.checksum !== "string") {
+      if (
+        envelope.schema !== SCHEMA ||
+        envelope.version !== 1 ||
+        typeof envelope.checksum !== "string"
+      ) {
         throw new TypeError("browser journal envelope is unsupported");
       }
       const unsigned = {
@@ -295,14 +321,17 @@ export class FileBrowserOperationJournal {
 
   async #append({ type, record }) {
     const unsigned = { schema: SCHEMA, version: 1, type, record };
-    const line = canonical({ ...unsigned, checksum: checksum(unsigned) }) + "\n";
+    const line =
+      canonical({ ...unsigned, checksum: checksum(unsigned) }) + "\n";
     const lineBytes = UTF8.encode(line).byteLength;
     if (lineBytes > MAX_LINE_BYTES) {
       throw new TypeError("browser journal record exceeds line limit");
     }
 
     let mutationStarted = false;
-    const markMutation = () => { mutationStarted = true; };
+    const markMutation = () => {
+      mutationStarted = true;
+    };
     let handle = null;
     let error = null;
     let parent;
@@ -317,16 +346,24 @@ export class FileBrowserOperationJournal {
       try {
         handle = await open(
           this.#path,
-          constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | constants.O_EXCL | noFollow,
+          constants.O_WRONLY |
+            constants.O_APPEND |
+            constants.O_CREAT |
+            constants.O_EXCL |
+            noFollow,
           0o600,
         );
         markMutation();
       } catch (caught) {
         if (caught?.code !== "EEXIST") throw caught;
-        handle = await open(this.#path, constants.O_WRONLY | constants.O_APPEND | noFollow);
+        handle = await open(
+          this.#path,
+          constants.O_WRONLY | constants.O_APPEND | noFollow,
+        );
       }
       const info = await handle.stat();
-      if (!info.isFile()) throw new TypeError("browser journal is not a regular file");
+      if (!info.isFile())
+        throw new TypeError("browser journal is not a regular file");
       if (process.platform !== "win32" && (info.mode & 0o077) !== 0) {
         throw new TypeError("browser journal permissions are too broad");
       }
@@ -355,9 +392,12 @@ export class FileBrowserOperationJournal {
 
   #assertHealthy() {
     if (!this.#recoveryCause) return;
-    throw new Error("browser journal owner recovery is required after an uncertain durable mutation", {
-      cause: this.#recoveryCause,
-    });
+    throw new Error(
+      "browser journal owner recovery is required after an uncertain durable mutation",
+      {
+        cause: this.#recoveryCause,
+      },
+    );
   }
 
   #serialize(operation) {

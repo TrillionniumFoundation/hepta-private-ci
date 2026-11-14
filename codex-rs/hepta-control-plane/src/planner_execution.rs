@@ -261,7 +261,13 @@ impl<'a> DurablePlannerExecutionCoordinatorV1<'a> {
                 request_digest,
                 now_micros,
             )?;
-            validate_grant(request_set.request_set_digest(), request, request_digest, &grant, now_micros)?;
+            validate_grant(
+                request_set.request_set_digest(),
+                request,
+                request_digest,
+                &grant,
+                now_micros,
+            )?;
             let grant_envelope = encode_authority_grant(&grant);
             self.store.append(
                 PlannerStoreRecordKindV1::AuthorityDecisionEnvelope,
@@ -270,12 +276,24 @@ impl<'a> DurablePlannerExecutionCoordinatorV1<'a> {
             )?;
 
             authority.revalidate_immediately_before_dispatch(&grant, request, now_micros)?;
-            validate_grant(request_set.request_set_digest(), request, request_digest, &grant, now_micros)?;
-            let operation_identity_digest = operation_identity(request_digest, grant.grant_digest());
+            validate_grant(
+                request_set.request_set_digest(),
+                request,
+                request_digest,
+                &grant,
+                now_micros,
+            )?;
+            let operation_identity_digest =
+                operation_identity(request_digest, grant.grant_digest());
             let terminal = executor.execute(operation_identity_digest, &grant)?;
             let terminal_envelope = encode_terminal_receipt(&terminal)?;
             let terminal_digest = Digest32::of_bytes(&terminal_envelope);
-            validate_terminal(operation_identity_digest, &grant, &terminal, terminal_digest)?;
+            validate_terminal(
+                operation_identity_digest,
+                &grant,
+                &terminal,
+                terminal_digest,
+            )?;
             self.store
                 .append_effect_terminal_envelope(operation_identity_digest, &terminal_envelope)?;
             terminal_receipt_digests.push(terminal_digest);

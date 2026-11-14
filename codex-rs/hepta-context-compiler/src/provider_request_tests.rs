@@ -114,8 +114,11 @@ fn snapshot(
 }
 
 fn verified_snapshot() -> VerifiedAdmissionSnapshotV2 {
-    verify_admission_snapshot_v2(snapshot("snapshot:1", 10, 1, None, Vec::new()), &AdmissionVerifier)
-        .unwrap_or_else(|error| panic!("verified snapshot: {error}"))
+    verify_admission_snapshot_v2(
+        snapshot("snapshot:1", 10, 1, None, Vec::new()),
+        &AdmissionVerifier,
+    )
+    .unwrap_or_else(|error| panic!("verified snapshot: {error}"))
 }
 
 fn candidate(
@@ -125,12 +128,9 @@ fn candidate(
     snapshot: &VerifiedAdmissionSnapshotV2,
 ) -> (ContextCandidateV2, ContextRealizedItemV2) {
     let item_id = id(item_id);
-    let tokenization = TokenizationReceiptV2::from_exact_bytes(
-        item_id.clone(),
-        content,
-        &ByteTokenizer,
-    )
-    .unwrap_or_else(|error| panic!("tokenization: {error}"));
+    let tokenization =
+        TokenizationReceiptV2::from_exact_bytes(item_id.clone(), content, &ByteTokenizer)
+            .unwrap_or_else(|error| panic!("tokenization: {error}"));
     let admission = ContextAdmissionRecordV2::new(
         id(&format!("admission:{}", item_id.as_str())),
         ContextAdmissionBindingV2 {
@@ -291,7 +291,11 @@ fn exact_request_proof(fixture: &Fixture) -> ProviderFinalRequestProofV2 {
     ProviderFinalRequestProofV2::from_exact_request(
         id("proof:provider-request"),
         fixture.attachment.attachment_digest(),
-        fixture.canonical.serialized_context().receipt().payload_digest(),
+        fixture
+            .canonical
+            .serialized_context()
+            .receipt()
+            .payload_digest(),
         fixture.canonical.coverage_digest(),
         digest("wire-semantic-request"),
         final_request,
@@ -315,12 +319,8 @@ fn compiler_owned_canonical_serializer_is_order_independent_and_fully_covered() 
         b"alpha",
         &predecessor,
     );
-    let (candidate_b, realization_b) = candidate(
-        "item:b",
-        ContextRoleV2::Schema,
-        b"beta",
-        &predecessor,
-    );
+    let (candidate_b, realization_b) =
+        candidate("item:b", ContextRoleV2::Schema, b"beta", &predecessor);
     let compiled = compile_v2(ContextCompilationRequestV2 {
         compilation_id: id("compilation:canonical"),
         objective_digest: digest("objective"),
@@ -364,7 +364,10 @@ fn compiler_owned_canonical_serializer_is_order_independent_and_fully_covered() 
     assert_eq!(
         left.segments()
             .iter()
-            .filter(|segment| matches!(segment.kind(), CanonicalContextSegmentKindV2::SelectedItem { .. }))
+            .filter(|segment| matches!(
+                segment.kind(),
+                CanonicalContextSegmentKindV2::SelectedItem { .. }
+            ))
             .count(),
         2
     );
@@ -392,7 +395,12 @@ fn final_request_segment_map_rejects_gaps_duplicates_and_digest_tampering() {
 
     let gap = vec![
         segment(final_request, 0, selected_start - 1, framing.clone()),
-        segment(final_request, selected_start, selected_len, selected.clone()),
+        segment(
+            final_request,
+            selected_start,
+            selected_len,
+            selected.clone(),
+        ),
         segment(
             final_request,
             suffix_start,
@@ -457,12 +465,8 @@ fn typed_snapshot_successor_rejects_reset_and_revocation_resurrection() {
         Vec::new(),
     );
     assert!(
-        verify_typed_admission_snapshot_successor_v2(
-            resurrection,
-            &revoked,
-            &AdmissionVerifier,
-        )
-        .is_err()
+        verify_typed_admission_snapshot_successor_v2(resurrection, &revoked, &AdmissionVerifier,)
+            .is_err()
     );
 }
 

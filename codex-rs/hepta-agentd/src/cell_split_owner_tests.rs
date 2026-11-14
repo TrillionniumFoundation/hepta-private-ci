@@ -131,22 +131,22 @@ impl CellSplitExecutionPortsV1 for MockOwners {
     }
 
     fn publish_artifact(
-        &mut self, p: &CellSplitPlanV1, k: Digest32,
+        &mut self,
+        p: &CellSplitPlanV1,
+        k: Digest32,
     ) -> Result<(), CellSplitErrorV1> {
         self.execute(p, CellSplitStepV1::ArtifactCas, k)
     }
-    fn migrate_child(
-        &mut self, p: &CellSplitPlanV1, k: Digest32,
-    ) -> Result<(), CellSplitErrorV1> {
+    fn migrate_child(&mut self, p: &CellSplitPlanV1, k: Digest32) -> Result<(), CellSplitErrorV1> {
         self.execute(p, CellSplitStepV1::StateMigration, k)
     }
-    fn start_shadow(
-        &mut self, p: &CellSplitPlanV1, k: Digest32,
-    ) -> Result<(), CellSplitErrorV1> {
+    fn start_shadow(&mut self, p: &CellSplitPlanV1, k: Digest32) -> Result<(), CellSplitErrorV1> {
         self.execute(p, CellSplitStepV1::ShadowChild, k)
     }
     fn fence_predecessor(
-        &mut self, p: &CellSplitPlanV1, k: Digest32,
+        &mut self,
+        p: &CellSplitPlanV1,
+        k: Digest32,
     ) -> Result<(), CellSplitErrorV1> {
         self.execute(p, CellSplitStepV1::SupervisorFence, k)
     }
@@ -178,8 +178,8 @@ fn reopen(file: &NamedTempFile) -> File {
 fn split_requires_independent_selection_and_final_use_before_fence() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let mut ledger =
+        CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let mut owners = MockOwners::default();
 
     assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Unapproved));
@@ -208,8 +208,8 @@ fn split_requires_independent_selection_and_final_use_before_fence() {
     let latest = ledger.anchor();
     drop(ledger);
 
-    let mut restored = CellSplitExecutionOwnerV1::recover(reopen(&file), p, latest)
-        .expect("recover");
+    let mut restored =
+        CellSplitExecutionOwnerV1::recover(reopen(&file), p, latest).expect("recover");
     assert!(restored.drive(&mut owners).expect("revalidate").completed);
     assert_eq!(owners.attempts.len(), 5);
 }
@@ -218,14 +218,17 @@ fn split_requires_independent_selection_and_final_use_before_fence() {
 fn lost_ack_recovers_from_authoritative_readback_without_repeating_effect() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let mut ledger =
+        CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let mut owners = MockOwners {
         fail_observe_once: Some(CellSplitStepV1::ArtifactCas),
         ..Default::default()
     };
 
-    assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Indeterminate));
+    assert_eq!(
+        ledger.drive(&mut owners),
+        Err(CellSplitErrorV1::Indeterminate)
+    );
     assert_eq!(owners.attempts, vec![CellSplitStepV1::ArtifactCas]);
     // The independently retained witness must cover the pending intent
     // BEFORE the external CAS call. No effect is allowed on an unwitnessed intent.
@@ -236,14 +239,18 @@ fn lost_ack_recovers_from_authoritative_readback_without_repeating_effect() {
     );
     drop(ledger);
 
-    let mut recovered = CellSplitExecutionOwnerV1::recover(
-        reopen(&file), p.clone(), independent_witness,
-    ).expect("reconcile unacknowledged effect");
+    let mut recovered =
+        CellSplitExecutionOwnerV1::recover(reopen(&file), p.clone(), independent_witness)
+            .expect("reconcile unacknowledged effect");
     owners.install(&p, CellSplitStepV1::IndependentSelection);
     owners.install(&p, CellSplitStepV1::FinalUseReady);
     assert!(recovered.drive(&mut owners).expect("resume").completed);
     assert_eq!(
-        owners.attempts.iter().filter(|step| **step == CellSplitStepV1::ArtifactCas).count(),
+        owners
+            .attempts
+            .iter()
+            .filter(|step| **step == CellSplitStepV1::ArtifactCas)
+            .count(),
         1
     );
 }
@@ -252,8 +259,8 @@ fn lost_ack_recovers_from_authoritative_readback_without_repeating_effect() {
 fn externally_acknowledged_history_cannot_be_rolled_back() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let mut ledger =
+        CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let mut owners = MockOwners::default();
     assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Unapproved));
     let anchored = ledger.anchor();
@@ -261,7 +268,9 @@ fn externally_acknowledged_history_cannot_be_rolled_back() {
     drop(ledger);
 
     let truncated = reopen(&file);
-    truncated.set_len(HEADER_SIZE as u64).expect("truncate journal");
+    truncated
+        .set_len(HEADER_SIZE as u64)
+        .expect("truncate journal");
     drop(truncated);
     assert!(matches!(
         CellSplitExecutionOwnerV1::recover(reopen(&file), p, anchored),
@@ -273,14 +282,18 @@ fn externally_acknowledged_history_cannot_be_rolled_back() {
 fn complete_invalid_frame_is_never_silently_repaired() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let mut ledger =
+        CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let initial = ledger.anchor();
-    assert_eq!(ledger.drive(&mut MockOwners::default()), Err(CellSplitErrorV1::Unapproved));
+    assert_eq!(
+        ledger.drive(&mut MockOwners::default()),
+        Err(CellSplitErrorV1::Unapproved)
+    );
     drop(ledger);
 
     let mut raw = reopen(&file);
-    raw.seek(SeekFrom::Start((HEADER_SIZE + 12) as u64)).expect("seek");
+    raw.seek(SeekFrom::Start((HEADER_SIZE + 12) as u64))
+        .expect("seek");
     raw.write_all(&[0x8a]).expect("tamper");
     raw.sync_all().expect("sync");
     drop(raw);
@@ -294,8 +307,7 @@ fn complete_invalid_frame_is_never_silently_repaired() {
 fn incomplete_tail_is_repaired_only_beyond_authenticated_anchor() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let anchor = ledger.anchor();
     drop(ledger);
 
@@ -304,24 +316,29 @@ fn incomplete_tail_is_repaired_only_beyond_authenticated_anchor() {
     raw.write_all(&[0, 0]).expect("partial frame length");
     raw.sync_all().expect("sync");
     drop(raw);
-    let recovered = CellSplitExecutionOwnerV1::recover(reopen(&file), p, anchor)
-        .expect("repair partial tail");
+    let recovered =
+        CellSplitExecutionOwnerV1::recover(reopen(&file), p, anchor).expect("repair partial tail");
     assert_eq!(recovered.anchor(), anchor);
     drop(recovered);
-    assert_eq!(reopen(&file).metadata().expect("metadata").len(), HEADER_SIZE as u64);
+    assert_eq!(
+        reopen(&file).metadata().expect("metadata").len(),
+        HEADER_SIZE as u64
+    );
 }
 
 #[test]
 fn stale_observation_blocks_further_mutations() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let mut ledger =
+        CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let mut owners = MockOwners::default();
     owners.install(&p, CellSplitStepV1::IndependentSelection);
     owners.install(&p, CellSplitStepV1::FinalUseReady);
     assert!(ledger.drive(&mut owners).expect("cutover").completed);
-    owners.actual.remove(&(CellSplitStepV1::StateMigration as u8));
+    owners
+        .actual
+        .remove(&(CellSplitStepV1::StateMigration as u8));
     assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Conflict));
     // A historical terminal ledger+observer ACK is not a current-production
     // readiness claim after a failed external re-observation.
@@ -331,7 +348,12 @@ fn stale_observation_blocks_further_mutations() {
     // Reinstating authoritative state allows full readback+observer revalidation,
     // without replaying any of the already committed external effects.
     owners.install(&p, CellSplitStepV1::StateMigration);
-    assert!(ledger.drive(&mut owners).expect("verified recovery").completed);
+    assert!(
+        ledger
+            .drive(&mut owners)
+            .expect("verified recovery")
+            .completed
+    );
     assert_eq!(owners.attempts.len(), 5);
 }
 
@@ -339,8 +361,7 @@ fn stale_observation_blocks_further_mutations() {
 fn owner_locks_are_exclusive_and_scope_bound() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let anchor = ledger.anchor();
     assert!(matches!(
         CellSplitExecutionOwnerV1::recover(reopen(&file), p.clone(), anchor),
@@ -360,8 +381,8 @@ fn owner_locks_are_exclusive_and_scope_bound() {
 fn route_cas_failure_keeps_predecessor_fenced_and_cutover_pending() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let mut ledger =
+        CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let mut owners = MockOwners {
         fail_cutover: true,
         ..Default::default()
@@ -370,14 +391,20 @@ fn route_cas_failure_keeps_predecessor_fenced_and_cutover_pending() {
     owners.install(&p, CellSplitStepV1::FinalUseReady);
     assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Conflict));
     assert_eq!(ledger.progress().accepted_steps, 6);
-    assert_eq!(owners.attempts.last(), Some(&CellSplitStepV1::SupervisorFence));
+    assert_eq!(
+        owners.attempts.last(),
+        Some(&CellSplitStepV1::SupervisorFence)
+    );
     let anchor = ledger.anchor();
     drop(ledger);
 
     let mut recovered = CellSplitExecutionOwnerV1::recover(reopen(&file), p, anchor)
         .expect("recover pending cutover");
     // No automatic rollback, and no route mutation on failed final-use/CAS.
-    assert_eq!(recovered.drive(&mut owners), Err(CellSplitErrorV1::Conflict));
+    assert_eq!(
+        recovered.drive(&mut owners),
+        Err(CellSplitErrorV1::Conflict)
+    );
     assert_eq!(recovered.progress().accepted_steps, 6);
 }
 
@@ -385,13 +412,15 @@ fn route_cas_failure_keeps_predecessor_fenced_and_cutover_pending() {
 fn observer_ack_is_required_before_first_external_mutation() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
-        .expect("bootstrap");
+    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p).expect("bootstrap");
     let mut owners = MockOwners {
         fail_anchor_once: true,
         ..Default::default()
     };
-    assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Indeterminate));
+    assert_eq!(
+        ledger.drive(&mut owners),
+        Err(CellSplitErrorV1::Indeterminate)
+    );
     assert!(owners.attempts.is_empty());
     assert_eq!(ledger.progress().accepted_steps, 0);
     // The intent survived; the next attempt starts with an independently
@@ -400,7 +429,6 @@ fn observer_ack_is_required_before_first_external_mutation() {
     assert_eq!(owners.attempts.len(), 3);
     assert!(owners.anchors.contains_key(&ledger.anchor().sequence));
 }
-
 
 #[test]
 fn canonical_plan_binding_separates_identity_boundaries() {
@@ -414,10 +442,7 @@ fn canonical_plan_binding_separates_identity_boundaries() {
 
     // Both ID triplets concatenate to "sabcd" without length tags.
     assert_eq!(
-        format!(
-            "{}{}{}",
-            left.split_id, left.predecessor_id, left.child_id
-        ),
+        format!("{}{}{}", left.split_id, left.predecessor_id, left.child_id),
         format!(
             "{}{}{}",
             right.split_id, right.predecessor_id, right.child_id
@@ -433,13 +458,18 @@ fn canonical_plan_binding_separates_identity_boundaries() {
 fn bootstrap_repositions_nonzero_cursor_on_an_empty_file() {
     let file = NamedTempFile::new().expect("temp ledger");
     let mut handle = reopen(&file);
-    handle.seek(SeekFrom::Start(4096)).expect("seek empty handle");
+    handle
+        .seek(SeekFrom::Start(4096))
+        .expect("seek empty handle");
     assert_eq!(handle.metadata().expect("metadata").len(), 0);
     let p = plan();
     let owner = CellSplitExecutionOwnerV1::bootstrap(handle, p.clone())
         .expect("bootstrap normalized header");
     let initial = owner.anchor();
-    assert_eq!(reopen(&file).metadata().expect("metadata").len(), HEADER_SIZE as u64);
+    assert_eq!(
+        reopen(&file).metadata().expect("metadata").len(),
+        HEADER_SIZE as u64
+    );
     drop(owner);
     let recovered = CellSplitExecutionOwnerV1::recover(reopen(&file), p, initial)
         .expect("recovery from normalized header");
@@ -468,8 +498,7 @@ impl CellSplitRecoveryObserverV1 for MockRecoveryObserver {
 fn public_recovery_requires_independently_authenticated_observer_anchor() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let anchored = owner.anchor();
     drop(owner);
 
@@ -496,12 +525,9 @@ fn public_recovery_requires_independently_authenticated_observer_anchor() {
         binding: Some(p.binding_digest()),
         acknowledged: Some(anchored),
     };
-    let recovered = CellSplitExecutionOwnerV1::recover_from_observer(
-        reopen(&file),
-        p,
-        &mut acknowledged,
-    )
-    .expect("observer-validated journal");
+    let recovered =
+        CellSplitExecutionOwnerV1::recover_from_observer(reopen(&file), p, &mut acknowledged)
+            .expect("observer-validated journal");
     assert_eq!(recovered.anchor(), anchored);
 }
 
@@ -509,8 +535,8 @@ fn public_recovery_requires_independently_authenticated_observer_anchor() {
 fn terminal_receipt_without_independent_ack_is_not_completed() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let mut owner =
+        CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let mut actors = MockOwners {
         // Seven steps each write a pending frame and accepted frame.
         // The completed cutover receipt is sequence 14, not an approved
@@ -521,13 +547,21 @@ fn terminal_receipt_without_independent_ack_is_not_completed() {
     actors.install(&p, CellSplitStepV1::IndependentSelection);
     actors.install(&p, CellSplitStepV1::FinalUseReady);
 
-    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Indeterminate));
+    assert_eq!(
+        owner.drive(&mut actors),
+        Err(CellSplitErrorV1::Indeterminate)
+    );
     assert_eq!(owner.progress().accepted_steps, 7);
     assert!(!owner.progress().completed);
     assert_eq!(owner.anchor().sequence, 14);
     assert!(!actors.anchors.contains_key(&14));
 
-    assert!(owner.drive(&mut actors).expect("revalidate and retain").completed);
+    assert!(
+        owner
+            .drive(&mut actors)
+            .expect("revalidate and retain")
+            .completed
+    );
     assert_eq!(actors.attempts.len(), 5);
     assert_eq!(actors.anchors.get(&14), Some(&owner.anchor().head_digest));
 }
@@ -563,7 +597,10 @@ fn split_binding_rejects_rebound_baseline_and_future_window() {
     assert_eq!(too_short.validate(), Err(CellSplitErrorV1::InvalidPlan));
     let mut no_change_as_candidate = frozen.clone();
     no_change_as_candidate.no_change_baseline_id = frozen.selected_candidate_id.clone();
-    assert_eq!(no_change_as_candidate.validate(), Err(CellSplitErrorV1::InvalidPlan));
+    assert_eq!(
+        no_change_as_candidate.validate(),
+        Err(CellSplitErrorV1::InvalidPlan)
+    );
 }
 
 #[test]
@@ -586,17 +623,21 @@ fn artifact_identity_is_independent_from_cell_and_candidate_ids() {
     assert_ne!(p.binding_digest(), stale_lineage.binding_digest());
     let mut invalid_lineage = p.clone();
     invalid_lineage.child_artifact_id = invalid_lineage.predecessor_artifact_id.clone();
-    assert_eq!(invalid_lineage.validate(), Err(CellSplitErrorV1::InvalidPlan));
+    assert_eq!(
+        invalid_lineage.validate(),
+        Err(CellSplitErrorV1::InvalidPlan)
+    );
 }
 
 #[test]
 fn live_owner_rejects_a_truncated_ledger_before_any_side_effect() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
-        .expect("bootstrap");
+    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p).expect("bootstrap");
     let truncated = reopen(&file);
-    truncated.set_len(0).expect("simulate out-of-band truncation");
+    truncated
+        .set_len(0)
+        .expect("simulate out-of-band truncation");
     drop(truncated);
 
     let mut actors = MockOwners::default();
@@ -610,8 +651,7 @@ fn live_owner_rejects_a_truncated_ledger_before_any_side_effect() {
 fn live_owner_rejects_same_length_header_tampering_before_any_external_effect() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
-        .expect("bootstrap");
+    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p).expect("bootstrap");
     let original_length = reopen(&file).metadata().expect("metadata").len();
 
     let mut tamper = reopen(&file);
@@ -619,7 +659,10 @@ fn live_owner_rejects_same_length_header_tampering_before_any_external_effect() 
     tamper.write_all(&[0xf5]).expect("change scope bytes");
     tamper.sync_all().expect("sync same-length corruption");
     drop(tamper);
-    assert_eq!(reopen(&file).metadata().expect("metadata").len(), original_length);
+    assert_eq!(
+        reopen(&file).metadata().expect("metadata").len(),
+        original_length
+    );
 
     let mut actors = MockOwners::default();
     assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
@@ -631,8 +674,7 @@ fn live_owner_rejects_same_length_header_tampering_before_any_external_effect() 
 fn live_owner_rejects_same_length_accepted_frame_tampering_before_resume() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
-        .expect("bootstrap");
+    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p).expect("bootstrap");
     let mut actors = MockOwners::default();
     assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Unapproved));
     assert_eq!(actors.attempts.len(), 3);
@@ -640,11 +682,18 @@ fn live_owner_rejects_same_length_accepted_frame_tampering_before_resume() {
     let frame_boundary = HEADER_SIZE as u64 + 4 + FRAME_FIXED_SIZE as u64 - 1;
     let original_length = reopen(&file).metadata().expect("metadata").len();
     let mut tamper = reopen(&file);
-    tamper.seek(SeekFrom::Start(frame_boundary)).expect("seek frame");
-    tamper.write_all(&[0x5a]).expect("corrupt same-size frame checksum");
+    tamper
+        .seek(SeekFrom::Start(frame_boundary))
+        .expect("seek frame");
+    tamper
+        .write_all(&[0x5a])
+        .expect("corrupt same-size frame checksum");
     tamper.sync_all().expect("sync frame corruption");
     drop(tamper);
-    assert_eq!(reopen(&file).metadata().expect("metadata").len(), original_length);
+    assert_eq!(
+        reopen(&file).metadata().expect("metadata").len(),
+        original_length
+    );
 
     actors.install(&owner.plan, CellSplitStepV1::IndependentSelection);
     assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
@@ -656,8 +705,7 @@ fn live_owner_rejects_same_length_accepted_frame_tampering_before_resume() {
 fn recovery_rejects_oversized_journal_without_mutating_it() {
     let file = NamedTempFile::new().expect("temp ledger");
     let p = plan();
-    let owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
-        .expect("bootstrap");
+    let owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone()).expect("bootstrap");
     let anchor = owner.anchor();
     drop(owner);
 

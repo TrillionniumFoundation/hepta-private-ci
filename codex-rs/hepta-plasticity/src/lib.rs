@@ -8,8 +8,8 @@
 
 #![forbid(unsafe_code)]
 
-mod durable_registry;
 mod cell_split;
+mod durable_registry;
 mod generator_v3;
 mod legacy;
 mod parameter_mutation_policy_v1;
@@ -21,14 +21,10 @@ mod topology_registry;
 mod topology_v2;
 mod types;
 
-pub use durable_registry::DurableProposalAppendReceiptV1;
-pub use durable_registry::DurableProposalRegistry;
-pub use durable_registry::DurableProposalRegistryError;
-pub use durable_registry::DurableRegistryAnchorV1;
 pub use cell_split::CellSplitBudgetV1;
+pub use cell_split::CellSplitCanaryV1;
 pub use cell_split::CellSplitCandidateKindV1;
 pub use cell_split::CellSplitCandidateV1;
-pub use cell_split::CellSplitCanaryV1;
 pub use cell_split::CellSplitGuardrailsV1;
 pub use cell_split::CellSplitHoldoutV1;
 pub use cell_split::CellSplitOperationV1;
@@ -44,6 +40,10 @@ pub use cell_split::build_cell_split_plan_v1;
 pub use cell_split::cell_split_generator_signing_payload_v1;
 pub use cell_split::plan_cell_split_v1;
 pub use cell_split::verify_cell_split_v1;
+pub use durable_registry::DurableProposalAppendReceiptV1;
+pub use durable_registry::DurableProposalRegistry;
+pub use durable_registry::DurableProposalRegistryError;
+pub use durable_registry::DurableRegistryAnchorV1;
 pub use generator_v3::GeneratedParameterCandidateSetV3;
 pub use generator_v3::ParameterGeneratorErrorV3;
 pub use generator_v3::ParameterGeneratorProfileV3;

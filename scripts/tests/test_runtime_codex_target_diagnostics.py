@@ -1,4 +1,5 @@
 """Pure synthetic input diagnostics; no provider, target host, or model execution."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,48 +22,98 @@ TREE = "b" * 40
 
 class TargetDiagnosticsTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.temp = tempfile.TemporaryDirectory(prefix="runtime-target-diagnostic-fixture-")
+        self.temp = tempfile.TemporaryDirectory(
+            prefix="runtime-target-diagnostic-fixture-"
+        )
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.plan = {
-            "schema": TARGET.PLAN_SCHEMA, "candidateSha": SHA, "candidateTree": TREE,
-            "profileId": "synthetic-only", "iterations": 3,
-            "cases": [{"case": case, "iteration": i} for case in TARGET.CASES for i in range(1, 4)],
-            "requirements": {"realProvider": True, "independentIssuer": True,
-                             "processInstanceIdentity": True, "trustedClock": True,
-                             "antiRollbackRecovery": True, "blindReplayAttempts": 0},
+            "schema": TARGET.PLAN_SCHEMA,
+            "candidateSha": SHA,
+            "candidateTree": TREE,
+            "profileId": "synthetic-only",
+            "iterations": 3,
+            "cases": [
+                {"case": case, "iteration": i}
+                for case in TARGET.CASES
+                for i in range(1, 4)
+            ],
+            "requirements": {
+                "realProvider": True,
+                "independentIssuer": True,
+                "processInstanceIdentity": True,
+                "trustedClock": True,
+                "antiRollbackRecovery": True,
+                "blindReplayAttempts": 0,
+            },
         }
-        self.thresholds = {"schema": "hepta.runtime-codex.target-thresholds.v1", "metrics": {
-            name: ({"p95": 10, "p99": 10} if name in TARGET.TIMINGS else {"p99": 10})
-            for name in (*TARGET.TIMINGS, "peakRssBytes", "cpuMillis")}}
+        self.thresholds = {
+            "schema": "hepta.runtime-codex.target-thresholds.v1",
+            "metrics": {
+                name: (
+                    {"p95": 10, "p99": 10} if name in TARGET.TIMINGS else {"p99": 10}
+                )
+                for name in (*TARGET.TIMINGS, "peakRssBytes", "cpuMillis")
+            },
+        }
         self.observations = []
         for item in self.plan["cases"]:
             case = item["case"]
-            outcome = ("succeeded" if case == "success" else
-                       "definitely_unsent" if case == "worker_kill_before_effect_entry" else
-                       "revoked_before_effect" if case == "revocation_frontier_race" else "terminal")
-            self.observations.append({
-                "schema": TARGET.OBS_SCHEMA, "candidateSha": SHA, "candidateTree": TREE,
-                "profileId": "synthetic-only", **item,
-                "operationId": f"fixture-{case}-{item['iteration']}",
-                "targetHostId": "fixture-host", "hostBootId": "fixture-boot",
-                "appServerSessionId": "fixture-session", "issuerSignerId": "fixture-issuer",
-                "providerEvidenceSha256": "c" * 64, "processEvidenceSha256": "d" * 64,
-                "agentGeneration": 1, "issuerEpoch": 1, "revocationRevision": 1,
-                "realProvider": True, "independentIssuer": True,
-                "processInstanceIdentityVerified": True, "trustedClockAttested": True,
-                "antiRollbackRecoveryAttested": True, "blindReplayAttempts": 0,
-                "physicalProviderRequests": 0 if outcome in {"definitely_unsent", "revoked_before_effect"} else 1,
-                "terminalObserved": outcome in {"succeeded", "terminal"}, "outcome": outcome,
-                "timings": {key: 1 for key in TARGET.TIMINGS}, "peakRssBytes": 1, "cpuMillis": 1,
-            })
-        self.args = argparse.Namespace(plan=str(self.root/"plan.json"), evidence=str(self.root/"input.jsonl"),
-                                       thresholds=str(self.root/"thresholds.json"), output=str(self.root/"diagnostic.json"))
+            outcome = (
+                "succeeded"
+                if case == "success"
+                else "definitely_unsent"
+                if case == "worker_kill_before_effect_entry"
+                else "revoked_before_effect"
+                if case == "revocation_frontier_race"
+                else "terminal"
+            )
+            self.observations.append(
+                {
+                    "schema": TARGET.OBS_SCHEMA,
+                    "candidateSha": SHA,
+                    "candidateTree": TREE,
+                    "profileId": "synthetic-only",
+                    **item,
+                    "operationId": f"fixture-{case}-{item['iteration']}",
+                    "targetHostId": "fixture-host",
+                    "hostBootId": "fixture-boot",
+                    "appServerSessionId": "fixture-session",
+                    "issuerSignerId": "fixture-issuer",
+                    "providerEvidenceSha256": "c" * 64,
+                    "processEvidenceSha256": "d" * 64,
+                    "agentGeneration": 1,
+                    "issuerEpoch": 1,
+                    "revocationRevision": 1,
+                    "realProvider": True,
+                    "independentIssuer": True,
+                    "processInstanceIdentityVerified": True,
+                    "trustedClockAttested": True,
+                    "antiRollbackRecoveryAttested": True,
+                    "blindReplayAttempts": 0,
+                    "physicalProviderRequests": 0
+                    if outcome in {"definitely_unsent", "revoked_before_effect"}
+                    else 1,
+                    "terminalObserved": outcome in {"succeeded", "terminal"},
+                    "outcome": outcome,
+                    "timings": {key: 1 for key in TARGET.TIMINGS},
+                    "peakRssBytes": 1,
+                    "cpuMillis": 1,
+                }
+            )
+        self.args = argparse.Namespace(
+            plan=str(self.root / "plan.json"),
+            evidence=str(self.root / "input.jsonl"),
+            thresholds=str(self.root / "thresholds.json"),
+            output=str(self.root / "diagnostic.json"),
+        )
 
     def files(self) -> None:
         Path(self.args.plan).write_bytes(TARGET.canonical(self.plan))
         Path(self.args.thresholds).write_bytes(TARGET.canonical(self.thresholds))
-        Path(self.args.evidence).write_bytes(b"".join(TARGET.canonical(x) for x in self.observations))
+        Path(self.args.evidence).write_bytes(
+            b"".join(TARGET.canonical(x) for x in self.observations)
+        )
 
     @staticmethod
     def git_identity(*args: str) -> str:
@@ -86,8 +137,14 @@ class TargetDiagnosticsTests(unittest.TestCase):
         self.assertEqual(receipt["diagnosticStatus"], "INPUT_CONSISTENT")
         self.assertEqual(receipt["observations"], 27)
         self.assertTrue(receipt["claims"]["suppliedInputConsistencyValidated"])
-        for key in ("realProviderFaultMatrixValidated", "targetHostEvidenceValidated",
-                    "independentAcceptance", "activation", "promotion", "release"):
+        for key in (
+            "realProviderFaultMatrixValidated",
+            "targetHostEvidenceValidated",
+            "independentAcceptance",
+            "activation",
+            "promotion",
+            "release",
+        ):
             self.assertIs(receipt["claims"][key], False)
         self.assertIn("not authenticated", receipt["limitations"][1])
 
@@ -127,13 +184,18 @@ class TargetDiagnosticsTests(unittest.TestCase):
         self.rejected()
 
     def test_nan_and_infinite_numbers_rejected(self) -> None:
-        for number in (float("nan"), float("inf"), float("-inf"), 10 ** 400):
+        for number in (float("nan"), float("inf"), float("-inf"), 10**400):
             with self.subTest(number=str(number)[:20]):
                 self.observations[0]["timings"]["terminalMs"] = number
                 self.rejected()
 
     def test_boolean_numbers_rejected(self) -> None:
-        for name in ("agentGeneration", "physicalProviderRequests", "iteration", "blindReplayAttempts"):
+        for name in (
+            "agentGeneration",
+            "physicalProviderRequests",
+            "iteration",
+            "blindReplayAttempts",
+        ):
             with self.subTest(name=name):
                 value = self.observations[0][name]
                 self.observations[0][name] = bool(value)
@@ -163,7 +225,10 @@ class TargetDiagnosticsTests(unittest.TestCase):
 
     def test_checkout_identity_mismatch_rejected(self) -> None:
         self.files()
-        with mock.patch.object(TARGET, "git", return_value="e"*40), self.assertRaises(SystemExit):
+        with (
+            mock.patch.object(TARGET, "git", return_value="e" * 40),
+            self.assertRaises(SystemExit),
+        ):
             TARGET.command_verify(self.args)
 
     def test_duplicate_json_keys_rejected(self) -> None:
@@ -173,19 +238,27 @@ class TargetDiagnosticsTests(unittest.TestCase):
     def test_input_hash_binds_consumed_snapshot(self) -> None:
         self.files()
         expected = Path(self.args.evidence).read_bytes()
+
         def change_after_read(*args: str) -> str:
             Path(self.args.evidence).write_text("changed after read\n")
             return self.git_identity(*args)
+
         with mock.patch.object(TARGET, "git", side_effect=change_after_read):
             TARGET.command_verify(self.args)
         receipt = json.loads(Path(self.args.output).read_bytes())
-        self.assertEqual(receipt["evidenceSha256"], hashlib.sha256(expected).hexdigest())
+        self.assertEqual(
+            receipt["evidenceSha256"], hashlib.sha256(expected).hexdigest()
+        )
         self.assertEqual(receipt["observations"], 27)
 
     def test_git_identity_disables_replace_objects(self) -> None:
-        with mock.patch.object(TARGET.subprocess, "check_output", return_value=SHA+"\n") as run:
+        with mock.patch.object(
+            TARGET.subprocess, "check_output", return_value=SHA + "\n"
+        ) as run:
             self.assertEqual(TARGET.git("rev-parse", "HEAD"), SHA)
-        self.assertEqual(run.call_args.args[0], ["git", "--no-replace-objects", "rev-parse", "HEAD"])
+        self.assertEqual(
+            run.call_args.args[0], ["git", "--no-replace-objects", "rev-parse", "HEAD"]
+        )
 
 
 if __name__ == "__main__":

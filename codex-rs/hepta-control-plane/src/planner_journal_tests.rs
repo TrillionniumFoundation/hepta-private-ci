@@ -141,11 +141,7 @@ fn snapshot_and_receipt() -> (GlobalStateSnapshotV1, FeasiblePlanReceiptV1) {
     (snapshot, receipt)
 }
 
-fn serialized_record(
-    kind: PlannerJournalKindV1,
-    identity: Digest32,
-    payload: Digest32,
-) -> Vec<u8> {
+fn serialized_record(kind: PlannerJournalKindV1, identity: Digest32, payload: Digest32) -> Vec<u8> {
     let sequence = 1;
     let predecessor = Digest32::ZERO;
     let entry = digest_entry(sequence, kind, identity, payload, predecessor);
@@ -185,16 +181,8 @@ fn hash_chain_round_trips_and_preserves_selected_pointer() {
 fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
     let mut journal = PlannerJournalV1::new();
     let identity = digest("identity");
-    let first = must(journal.append(
-        PlannerJournalKindV1::Decision,
-        identity,
-        identity,
-    ));
-    let replay = must(journal.append(
-        PlannerJournalKindV1::Decision,
-        identity,
-        identity,
-    ));
+    let first = must(journal.append(PlannerJournalKindV1::Decision, identity, identity));
+    let replay = must(journal.append(PlannerJournalKindV1::Decision, identity, identity));
     assert_eq!(first, replay);
     assert_eq!(journal.entries().len(), 1);
 
