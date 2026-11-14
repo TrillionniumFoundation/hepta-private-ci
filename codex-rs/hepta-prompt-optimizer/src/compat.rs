@@ -86,7 +86,7 @@ pub enum Error {
     SelectionLimitExceeded,
     BudgetLimitExceeded,
     DuplicateCandidate(String),
-    EmptyDigest(''static str),
+    EmptyDigest(&'static str),
     ZeroCost(String),
     RegistrySnapshotMismatch(String),
     Arithmetic,
