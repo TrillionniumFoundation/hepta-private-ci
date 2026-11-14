@@ -22,7 +22,6 @@ fn head(cell_id: &str, bytes: u64) -> CellHeadManifest {
     }
 }
 
-
 #[derive(Default)]
 struct WorkerDriver {
     loads: usize,
@@ -90,7 +89,6 @@ fn composition_worker_loads_once_and_unloads_after_last_cell() {
     assert_eq!(worker.resident_encoder_count(), 0);
 }
 
-
 fn manifest(cell_id: &str, weights: &str) -> CompositionManifestV1 {
     CompositionManifestV1 {
         cell_id: cell_id.into(),
@@ -115,15 +113,20 @@ fn manifest_bridge_binds_base_weights_and_private_head() {
         SharedEncoderPool::new(2, 8).expect("pool"),
         WorkerDriver::default(),
     );
-    worker.attach_manifest(manifest("cell-a", "weights-v1")).expect("manifest");
-    worker.attach_manifest(manifest("cell-b", "weights-v1")).expect("manifest");
+    worker
+        .attach_manifest(manifest("cell-a", "weights-v1"))
+        .expect("manifest");
+    worker
+        .attach_manifest(manifest("cell-b", "weights-v1"))
+        .expect("manifest");
     assert_eq!(worker.driver.loads, 1);
     assert_eq!(worker.active_cell_count(), 2);
-    worker.attach_manifest(manifest("cell-c", "weights-v2")).expect("new weights");
+    worker
+        .attach_manifest(manifest("cell-c", "weights-v2"))
+        .expect("new weights");
     assert_eq!(worker.driver.loads, 2);
     assert_eq!(worker.resident_encoder_count(), 2);
 }
-
 
 #[test]
 fn legacy_model_manifest_bridge_preserves_runtime_identity() {
@@ -192,13 +195,19 @@ fn worker_legacy_manifest_bridge_requires_explicit_composition_fields() {
 #[test]
 fn shared_encoder_loads_once_and_heads_fan_out() {
     let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
-    let first = pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100).expect("first");
-    let second = pool.attach_cell(key("cuda-0"), head("cell-b", 20), 100).expect("second");
+    let first = pool
+        .attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+        .expect("first");
+    let second = pool
+        .attach_cell(key("cuda-0"), head("cell-b", 20), 100)
+        .expect("second");
     assert!(first.encoder_loaded);
     assert!(!second.encoder_loaded);
     assert_eq!(pool.resident_encoder_count(), 1);
     assert_eq!(pool.total_resident_memory_bytes().expect("memory"), 140);
-    let fanout = pool.fanout(&key("cuda-0"), &["cell-a".into(), "cell-b".into()]).expect("fanout");
+    let fanout = pool
+        .fanout(&key("cuda-0"), &["cell-a".into(), "cell-b".into()])
+        .expect("fanout");
     assert_eq!(fanout.shared_memory_bytes, 100);
     assert_eq!(fanout.private_head_memory_bytes, 40);
 }
@@ -206,8 +215,11 @@ fn shared_encoder_loads_once_and_heads_fan_out() {
 #[test]
 fn encoder_identity_includes_runtime_and_device() {
     let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
-    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100).expect("first");
-    let second = pool.attach_cell(key("cuda-1"), head("cell-b", 20), 100).expect("second");
+    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+        .expect("first");
+    let second = pool
+        .attach_cell(key("cuda-1"), head("cell-b", 20), 100)
+        .expect("second");
     assert!(second.encoder_loaded);
     assert_eq!(pool.resident_encoder_count(), 2);
 }
@@ -215,7 +227,8 @@ fn encoder_identity_includes_runtime_and_device() {
 #[test]
 fn mismatched_shared_bytes_are_rejected() {
     let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
-    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100).expect("first");
+    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+        .expect("first");
     assert_eq!(
         pool.attach_cell(key("cuda-0"), head("cell-b", 20), 101),
         Err(CompositionError::EncoderIdentityMismatch)
@@ -225,8 +238,10 @@ fn mismatched_shared_bytes_are_rejected() {
 #[test]
 fn detached_last_cell_releases_encoder() {
     let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
-    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100).expect("first");
-    pool.attach_cell(key("cuda-0"), head("cell-b", 20), 100).expect("second");
+    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+        .expect("first");
+    pool.attach_cell(key("cuda-0"), head("cell-b", 20), 100)
+        .expect("second");
     pool.detach_cell("cell-a").expect("detach first");
     assert_eq!(pool.resident_encoder_count(), 1);
     pool.detach_cell("cell-b").expect("detach last");
@@ -237,8 +252,10 @@ fn detached_last_cell_releases_encoder() {
 #[test]
 fn fanout_rejects_cross_device_cell() {
     let mut pool = SharedEncoderPool::new(2, 8).expect("pool");
-    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100).expect("first");
-    pool.attach_cell(key("cuda-1"), head("cell-b", 20), 100).expect("second");
+    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+        .expect("first");
+    pool.attach_cell(key("cuda-1"), head("cell-b", 20), 100)
+        .expect("second");
     assert_eq!(
         pool.fanout(&key("cuda-0"), &["cell-a".into(), "cell-b".into()]),
         Err(CompositionError::CellKeyMismatch)
@@ -248,7 +265,8 @@ fn fanout_rejects_cross_device_cell() {
 #[test]
 fn capacity_is_fail_closed() {
     let mut pool = SharedEncoderPool::new(1, 1).expect("pool");
-    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100).expect("first");
+    pool.attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+        .expect("first");
     assert_eq!(
         pool.attach_cell(key("cuda-1"), head("cell-b", 20), 100),
         Err(CompositionError::CellCapacity)
@@ -279,7 +297,8 @@ fn missing_handle_blocks_attach_and_detach_without_dropping_cell() {
         SharedEncoderPool::new(2, 8).expect("pool"),
         WorkerDriver::default(),
     );
-    worker.attach_cell(key("cuda-0"), head("cell-a", 20), 100)
+    worker
+        .attach_cell(key("cuda-0"), head("cell-a", 20), 100)
         .expect("first");
     // Deliberately corrupt the internal driver map to test fail-closed handling.
     worker.handles.clear();
