@@ -30,6 +30,8 @@ def main():
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[2])
     parser.add_argument("--cargo", default=shutil.which("cargo"))
     parser.add_argument("--clippy", action="store_true")
+    parser.add_argument("--binary", choices=("ndu-group-replay", "ndu-group-control"),
+                        default="ndu-group-replay")
     args = parser.parse_args()
     repo, output = args.repo.resolve(strict=True), args.output.resolve()
     if (args.output.is_symlink() or output.exists() or output == repo or repo in output.parents
@@ -105,15 +107,16 @@ def main():
         receipt["rustc"] = run([rustc, "--version", "--verbose"], "rustc-version")
         run([cargo, "generate-lockfile"], "resolve")
         run([cargo, "build", "--locked", "--target-dir", str(output / "target"),
-             "-p", "codex-hepta-ndu", "--bin", "ndu-group-replay"], "build")
+             "-p", "codex-hepta-ndu", "--bin", args.binary], "build")
         if args.clippy:
             run([cargo, "clippy", "--locked", "--target-dir", str(output / "target"),
-                 "-p", "codex-hepta-ndu", "--bin", "ndu-group-replay",
+                 "-p", "codex-hepta-ndu", "--bin", args.binary,
                  "--", "-D", "warnings"], "clippy")
-        binary = output / "target/debug/ndu-group-replay"
+        binary = output / "target/debug" / args.binary
         if not binary.is_file():
             binary = binary.with_suffix(".exe")
-        receipt.update(build_passed=True, binary=str(binary), binary_sha256=sha(binary))
+        receipt.update(build_passed=True, binary=str(binary), binary_name=args.binary,
+                       binary_sha256=sha(binary))
     except (OSError, subprocess.SubprocessError) as error:
         receipt.update(build_passed=False, error_type=type(error).__name__)
         raise
@@ -122,7 +125,7 @@ def main():
         generated += [output / crate / "Cargo.toml" for crate in CRATES]
         receipt["generated_sha256"] = {str(path.relative_to(output)): sha(path) for path in generated if path.is_file()}
         (output / "build-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
-    print(f"Isolated native replay binary: {receipt['binary']}")
+    print(f"Isolated native binary: {receipt['binary']}")
 
 
 if __name__ == "__main__":
