@@ -5,6 +5,3 @@ codex-rs/target
 # Cargo patch dependencies are materialized by @crates, not workspace targets.
 # Vendored BUILD files cannot consume the workspace DEP_DATA table.
 codex-rs/third_party
-
-# Preserve this incomplete source-custody snapshot without loading it as a live package.
-library-recovery/host-source-custody-20261103/contexts/later_supplement/hepta-pq-effect-recovery-20261103/codex-rs

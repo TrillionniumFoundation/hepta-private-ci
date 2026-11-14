@@ -1,9 +1,7 @@
 # Desktop source custody — 2026-11-03 capture
 
-This isolated archive preserves 8 source references and 8 distinct Git blobs for `TrillionniumFoundation/hepta-private-ci`.
+This archive preserves the original desktop source snapshot as `source-custody.tar.gz`. All ten original files, including the original README and source manifest, retain their exact bytes, relative paths, and Git permission modes inside the container.
 
-Source bytes are stored under `contexts/`, separated by capture scope and original worktree context. `SOURCE_MANIFEST.json` maps every archived file to its original path, captured revision, byte count, SHA-256, and Git blob SHA-1. The manifest also records the original frozen snapshot and code-only package hashes.
+`SOURCE_MANIFEST.json` remains available beside the archive with its original eight source references. `ARCHIVE_MANIFEST.json` records the container checksum and all ten original file checksums. To inspect the capture, extract the archive into a separate empty directory; its `contexts/` paths match the original source manifest.
 
-The archive preserves source files, captured source patches, and small explicitly synthetic fixtures. It does not reconstruct the original captured commit history or certify scientific replay, tests, or production readiness. Captured sources were hashed and checked for recognizable credential literals; they were not executed during this recovery.
-
-The archive commit is based on `732e934ba496d90fbe042b8d41d479ef901643e5` and adds only this custody directory. No existing development branch was modified.
+The container keeps these historical, incomplete worktree and patch captures outside automatic build and formatting discovery. It preserves source evidence; it does not recreate missing original commit history or certify scientific replay, tests, or production readiness. No captured source was executed during this packaging.
