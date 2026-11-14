@@ -159,9 +159,10 @@ async fn null_predecessor_cannot_bypass_monotonic_trigger() {
         include_str!("compaction_schema_hardening.sql")
             .contains("NEW.predecessor_checkpoint_digest IS NOT OLD.checkpoint_digest")
     );
-    let mut connection = SqliteConnection::connect("sqlite::memory:")
+    let pool = codex_state::SqliteConfig::open_in_memory_test_pool()
         .await
         .expect("memory database");
+    let mut connection = pool.acquire().await.expect("memory database connection");
     sqlx::raw_sql(
         "CREATE TABLE active_compaction_checkpoint (
             owner_id TEXT NOT NULL,
@@ -185,7 +186,7 @@ async fn null_predecessor_cannot_bypass_monotonic_trigger() {
          VALUES ('owner', 'scope', 'purpose', 1, 'head-one',
                  NULL, 'publication-one', 1);",
     )
-    .execute(&mut connection)
+    .execute(&mut *connection)
     .await
     .expect("trigger fixture");
     let result = sqlx::query(
@@ -196,7 +197,9 @@ async fn null_predecessor_cannot_bypass_monotonic_trigger() {
              updated_at_unix_seconds = 2
          WHERE owner_id = 'owner'",
     )
-    .execute(&mut connection)
+    .execute(&mut *connection)
     .await;
     assert!(result.is_err());
+    drop(connection);
+    pool.close().await;
 }

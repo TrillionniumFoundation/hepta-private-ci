@@ -24,6 +24,7 @@ use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteSynchronous;
 use std::path::Path;
 use std::path::PathBuf;
+use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
@@ -287,6 +288,22 @@ impl SqliteConfig {
                     .in_memory(true)
                     .foreign_keys(true),
             )
+            .await
+    }
+
+    /// Open the compact owner's four-connection durable database from its URL.
+    ///
+    /// Preserve the compact URL parser and WAL/FULL/foreign-key profile. The
+    /// caller still owns migrations, authorization fences, and transactions.
+    pub async fn open_compaction_pool(database_url: &str) -> Result<SqlitePool, Error> {
+        let options = SqliteConnectOptions::from_str(database_url)?
+            .create_if_missing(true)
+            .foreign_keys(true)
+            .journal_mode(SqliteJournalMode::Wal)
+            .synchronous(SqliteSynchronous::Full);
+        SqlitePoolOptions::new()
+            .max_connections(4)
+            .connect_with(options)
             .await
     }
 

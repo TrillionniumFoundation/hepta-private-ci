@@ -1,17 +1,17 @@
 use super::*;
 
 #[test]
-fn history_rows_form_distinct_linked_heads() {
+fn history_rows_form_distinct_linked_heads() -> Result<(), String> {
     let key = SigningKey::from_bytes(&[13; 32]);
     let tokenizer = TrustedTokenizerV1 {
         enrollment: enrollment(
             CompactionTrustRoleV1::Tokenizer,
             "tokenizer:key:capacity",
             &key,
-        ),
+        )?,
         tokenizer_digest: digest("tokenizer:capacity"),
     };
-    let rows = history_inputs(2, 4, &tokenizer, &key);
+    let rows = history_inputs(2, 4, &tokenizer, &key)?;
     assert_eq!(rows.len(), 8);
     for revisions in rows.chunks_exact(4) {
         assert_eq!(revisions[0].record.revision.get(), 1);
@@ -28,7 +28,7 @@ fn history_rows_form_distinct_linked_heads() {
             );
         }
     }
-    let snapshot = memory_snapshot(&rows);
+    let snapshot = memory_snapshot(&rows)?;
     assert_eq!(snapshot.records.len(), 2);
     assert!(
         snapshot
@@ -38,4 +38,5 @@ fn history_rows_form_distinct_linked_heads() {
     );
     assert_eq!(snapshot.records[0], rows[3].record);
     assert_eq!(snapshot.records[1], rows[7].record);
+    Ok(())
 }

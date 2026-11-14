@@ -1,8 +1,6 @@
 //! Durable process fencing, anti-replay admission and source-retention fencing
 //! for the canonical compaction checkpoint coordinator.
 
-use std::str::FromStr;
-
 use codex_hepta_types::Digest32;
 use sqlx::Executor;
 use sqlx::Row;
@@ -10,10 +8,6 @@ use sqlx::Sqlite;
 use sqlx::SqliteConnection;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::owner_fence::OwnerWriteFenceV2;
 
@@ -535,15 +529,7 @@ impl MemoryCheckpointCoordinatorV2 {
 }
 
 async fn open_pool(database_url: &str) -> Result<SqlitePool, CompactionCoordinatorErrorV2> {
-    let options = SqliteConnectOptions::from_str(database_url)
-        .map_err(sql_error)?
-        .create_if_missing(true)
-        .foreign_keys(true)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Full);
-    SqlitePoolOptions::new()
-        .max_connections(4)
-        .connect_with(options)
+    codex_state::SqliteConfig::open_compaction_pool(database_url)
         .await
         .map_err(sql_error)
 }

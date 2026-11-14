@@ -41,7 +41,7 @@ const NOW: u64 = 1_800_000_000;
 
 #[test]
 #[ignore = "production-ceiling profile; run in compact.engine capacity workflow"]
-fn production_ceiling_capacity_profile() {
+fn production_ceiling_capacity_profile() -> Result<(), String> {
     let started = Instant::now();
     let cpu_before = process_cpu_ticks();
     let rss_before = peak_rss_kib();
@@ -54,35 +54,35 @@ fn production_ceiling_capacity_profile() {
             CompactionTrustRoleV1::RetentionSelector,
             "selector:key:capacity",
             &selector_key,
-        ),
+        )?,
     };
     let generator = TrustedSemanticGeneratorV1 {
         enrollment: enrollment(
             CompactionTrustRoleV1::SemanticGenerator,
             "generator:key:capacity",
             &generator_key,
-        ),
+        )?,
     };
     let tokenizer = TrustedTokenizerV1 {
         enrollment: enrollment(
             CompactionTrustRoleV1::Tokenizer,
             "tokenizer:key:capacity",
             &tokenizer_key,
-        ),
+        )?,
         tokenizer_digest: digest("tokenizer:capacity"),
     };
 
-    let source_snapshot = snapshot_key();
+    let source_snapshot = snapshot_key()?;
     let inputs = history_inputs(
         SOURCE_CURRENT_HEADS,
         REVISIONS_PER_HEAD,
         &tokenizer,
         &tokenizer_key,
-    );
+    )?;
     assert_eq!(inputs.len(), SOURCE_RECORDS);
-    let source_memory_snapshot = memory_snapshot(&inputs);
+    let source_memory_snapshot = memory_snapshot(&inputs)?;
     let policy = CompactionPolicyV2 {
-        policy_id: id("policy:capacity"),
+        policy_id: id("policy:capacity")?,
         algorithm_digest: digest("algorithm:deterministic-first-fit:v1"),
         compatibility_digest: digest("compatibility:capacity:v1"),
         tokenizer_digest: tokenizer.tokenizer_digest,
@@ -92,7 +92,7 @@ fn production_ceiling_capacity_profile() {
         maximum_retained_tokens: u64::from(RETAINED_RECORDS) * 8,
         maximum_payload_bytes: PAYLOAD_BYTES as u64,
         maximum_payload_tokens: PAYLOAD_TOKENS,
-        protected_record_ids: vec![id("memory:capacity:00000")],
+        protected_record_ids: vec![id("memory:capacity:00000")?],
     };
 
     let mut selection = SignedRetentionSelectionReceiptV1 {
@@ -160,7 +160,7 @@ fn production_ceiling_capacity_profile() {
     let candidate = build_qualified_candidate(QualifiedCandidateBuildRequestV1 {
         source_snapshot,
         source_memory_snapshot: &source_memory_snapshot,
-        generation: generation(1),
+        generation: generation(1)?,
         predecessor_checkpoint_digest: None,
         policy: &policy,
         semantic_payload: &semantic_payload,
@@ -200,6 +200,7 @@ fn production_ceiling_capacity_profile() {
         rss_before,
         rss_after,
     );
+    Ok(())
 }
 
 // The protocol input ceiling counts revision rows; the shared snapshot
@@ -209,23 +210,24 @@ fn history_inputs(
     revisions: usize,
     tokenizer: &TrustedTokenizerV1,
     tokenizer_key: &SigningKey,
-) -> Vec<CompactionInputRecordV2> {
+) -> Result<Vec<CompactionInputRecordV2>, String> {
     let mut rows = Vec::with_capacity(heads * revisions);
     for index in 0..heads {
         let mut predecessor = None;
         for revision_index in 0..revisions {
             let row = input(
                 index,
-                u64::try_from(revision_index + 1).expect("bounded revision"),
+                u64::try_from(revision_index + 1)
+                    .map_err(|error| format!("bounded revision: {error:?}"))?,
                 predecessor,
                 tokenizer,
                 tokenizer_key,
-            );
+            )?;
             predecessor = Some(row.record.record_digest());
             rows.push(row);
         }
     }
-    rows
+    Ok(rows)
 }
 
 fn input(
@@ -234,18 +236,18 @@ fn input(
     predecessor_digest: Option<Digest32>,
     tokenizer: &TrustedTokenizerV1,
     tokenizer_key: &SigningKey,
-) -> CompactionInputRecordV2 {
+) -> Result<CompactionInputRecordV2, String> {
     let record_id = format!("memory:capacity:{index:05}");
     let record = MemoryRecord {
-        record_id: id(&record_id),
-        revision: revision(revision_value),
+        record_id: id(&record_id)?,
+        revision: revision(revision_value)?,
         kind: MemoryKind::Fact,
         content_digest: digest(&format!("{record_id}:live:{revision_value}")),
         predecessor_digest,
         citations: Vec::new(),
         state: RecordState::Live,
     };
-    CompactionInputRecordV2 {
+    Ok(CompactionInputRecordV2 {
         tokenization_receipt: token_receipt(
             record.record_digest(),
             64,
@@ -255,31 +257,33 @@ fn input(
         ),
         retention_reason_digest: digest(&format!("reason:{record_id}")),
         record,
-        retention_priority: u32::try_from(SOURCE_RECORDS - index).expect("bounded priority"),
+        retention_priority: u32::try_from(SOURCE_RECORDS - index)
+            .map_err(|error| format!("bounded priority: {error:?}"))?,
         encoded_bytes: 64,
         token_count: 8,
-    }
+    })
 }
 
-fn memory_snapshot(inputs: &[CompactionInputRecordV2]) -> CognitiveSnapshot {
+fn memory_snapshot(inputs: &[CompactionInputRecordV2]) -> Result<CognitiveSnapshot, String> {
     let mut heads = BTreeMap::new();
     for input in inputs {
         heads.insert(input.record.record_id.clone(), input.record.clone());
     }
-    build_snapshot(generation(21), heads.into_values().collect()).expect("capacity source snapshot")
+    build_snapshot(generation(21)?, heads.into_values().collect())
+        .map_err(|error| format!("capacity source snapshot: {error:?}"))
 }
 
-fn snapshot_key() -> CognitiveSnapshotKeyV1 {
+fn snapshot_key() -> Result<CognitiveSnapshotKeyV1, String> {
     CognitiveSnapshotKeyV1::new(LaneCGenerationVectorV1 {
-        scope_id: id("scope:compact-capacity"),
-        purpose_id: id("purpose:checkpoint-capacity"),
+        scope_id: id("scope:compact-capacity")?,
+        purpose_id: id("purpose:checkpoint-capacity")?,
         memory_ledger_frontier: 65_536,
         knowledge_fact_frontier: 65_536,
         tombstone_frontier: 0,
         source_ledger_frontier: 65_536,
-        knowledge_graph_generation: generation(3),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(4),
+        knowledge_graph_generation: generation(3)?,
+        compact_checkpoint_generation: generation(1)?,
+        prompt_registry_revision: revision(4)?,
         retrieval_profile_digest: digest("retrieval"),
         encoder_preprocessor_digest: digest("encoder"),
         authority_epoch: 8,
@@ -288,7 +292,7 @@ fn snapshot_key() -> CognitiveSnapshotKeyV1 {
         template_digest: digest("template"),
         tool_schema_digest: digest("tool-schema"),
     })
-    .expect("capacity snapshot key")
+    .map_err(|error| format!("capacity snapshot key: {error:?}"))
 }
 
 fn token_receipt(
@@ -310,11 +314,15 @@ fn token_receipt(
     receipt
 }
 
-fn enrollment(role: CompactionTrustRoleV1, key_id: &str, key: &SigningKey) -> TrustEnrollmentV1 {
-    TrustEnrollmentV1 {
+fn enrollment(
+    role: CompactionTrustRoleV1,
+    key_id: &str,
+    key: &SigningKey,
+) -> Result<TrustEnrollmentV1, String> {
+    Ok(TrustEnrollmentV1 {
         schema_version: COMPACTION_TRUST_SCHEMA_VERSION,
         role,
-        key_id: id(key_id),
+        key_id: id(key_id)?,
         trust_epoch: 1,
         valid_from_unix_seconds: NOW - 1_000,
         valid_until_unix_seconds: NOW + 10_000,
@@ -323,7 +331,7 @@ fn enrollment(role: CompactionTrustRoleV1, key_id: &str, key: &SigningKey) -> Tr
         implementation_digest: digest(&format!("{key_id}:implementation")),
         attestation_digest: digest(&format!("{key_id}:attestation")),
         verifying_key: key.verifying_key().to_bytes(),
-    }
+    })
 }
 
 fn process_cpu_ticks() -> u64 {
@@ -354,20 +362,20 @@ fn peak_rss_kib() -> u64 {
         .unwrap_or(0)
 }
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid stable id")
+fn id(value: &str) -> Result<StableId, String> {
+    StableId::new(value).map_err(|error| format!("valid stable id: {error:?}"))
 }
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn generation(value: u64) -> Generation {
-    Generation::new(value).expect("valid generation")
+fn generation(value: u64) -> Result<Generation, String> {
+    Generation::new(value).map_err(|error| format!("valid generation: {error:?}"))
 }
 
-fn revision(value: u64) -> Revision {
-    Revision::new(value).expect("valid revision")
+fn revision(value: u64) -> Result<Revision, String> {
+    Revision::new(value).map_err(|error| format!("valid revision: {error:?}"))
 }
 
 #[path = "capacity_profile/history_tests.rs"]

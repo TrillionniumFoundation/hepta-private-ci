@@ -67,3 +67,41 @@ async fn refused_commit_keeps_reused_pool_readable_without_reopening_write_gate(
     pool.close().await;
     Ok(())
 }
+
+#[tokio::test]
+async fn compaction_pool_preserves_file_durability_and_four_connection_limit() -> anyhow::Result<()>
+{
+    let home = unique_temp_dir();
+    std::fs::create_dir(&home)?;
+    let home = scopeguard::guard(home, |home| {
+        let _ = std::fs::remove_dir_all(home);
+    });
+    let database_url = format!(
+        "sqlite://{}",
+        home.join("compaction-profile.sqlite3").display()
+    );
+    let pool = SqliteConfig::open_compaction_pool(&database_url).await?;
+
+    let mut held = Vec::new();
+    for _ in 0..4 {
+        let mut connection = pool.acquire().await?;
+        let journal_mode: String = sqlx::query_scalar("PRAGMA journal_mode")
+            .fetch_one(&mut *connection)
+            .await?;
+        let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
+            .fetch_one(&mut *connection)
+            .await?;
+        let foreign_keys: i64 = sqlx::query_scalar("PRAGMA foreign_keys")
+            .fetch_one(&mut *connection)
+            .await?;
+        assert_eq!(journal_mode, "wal");
+        assert_eq!(synchronous, 2);
+        assert_eq!(foreign_keys, 1);
+        held.push(connection);
+    }
+    assert_eq!(pool.size(), 4);
+    assert!(pool.try_acquire().is_none());
+    drop(held);
+    pool.close().await;
+    Ok(())
+}

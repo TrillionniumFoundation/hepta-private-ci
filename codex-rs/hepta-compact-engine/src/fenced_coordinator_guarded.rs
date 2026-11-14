@@ -9,15 +9,9 @@
 #[path = "fenced_coordinator.rs"]
 mod original;
 
-use std::str::FromStr;
-
 use codex_hepta_types::Digest32;
 use sqlx::Row;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::VerifiedCompactionPublicationV1;
 use crate::coordinator::CompactionCoordinatorErrorV2;
@@ -275,15 +269,7 @@ impl MemoryCheckpointCoordinatorV2 {
 }
 
 async fn open_pool(database_url: &str) -> Result<SqlitePool, CompactionCoordinatorErrorV2> {
-    let options = SqliteConnectOptions::from_str(database_url)
-        .map_err(sql_error)?
-        .create_if_missing(true)
-        .foreign_keys(true)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Full);
-    SqlitePoolOptions::new()
-        .max_connections(4)
-        .connect_with(options)
+    codex_state::SqliteConfig::open_compaction_pool(database_url)
         .await
         .map_err(sql_error)
 }

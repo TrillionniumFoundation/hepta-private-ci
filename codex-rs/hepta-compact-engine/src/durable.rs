@@ -5,7 +5,6 @@
 //! a local outbox, trust-enrollment history and restart verification. It never
 //! rewrites source memory facts.
 
-use std::str::FromStr;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -18,10 +17,6 @@ use sqlx::Executor;
 use sqlx::Row;
 use sqlx::SqliteConnection;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::CompactionTrustRoleV1;
 use crate::QualifiedCompactionCandidateV2;
@@ -350,15 +345,7 @@ impl DurableCompactionStoreV1 {
     ) -> Result<Self, DurableCompactionError> {
         let owner_id = owner_id.into();
         validate_text_identity("owner id", &owner_id)?;
-        let options = SqliteConnectOptions::from_str(database_url)?
-            .create_if_missing(true)
-            .foreign_keys(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full);
-        let pool = SqlitePoolOptions::new()
-            .max_connections(4)
-            .connect_with(options)
-            .await?;
+        let pool = codex_state::SqliteConfig::open_compaction_pool(database_url).await?;
         sqlx::raw_sql(include_str!("compaction_schema.sql"))
             .execute(&pool)
             .await?;
