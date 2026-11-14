@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-n256-independent-reference-stream-source-intent-v1",
+  "identity": "hcsn-n256-independent-reference-stream-interface-20261114-c06d-001",
+  "base_commit": "ef301ad9e1ea5baa619b146303b40ce7d37a3762",
+  "parent_draft": 6312,
+  "stream_schema": "hcsn-n256-independent-reference-coordinate-stream/v1",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+  "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+  "comparator_source_sha256": "d20bfd4ae57e783d506a571e9a9ecb1deed836a8abbafa6e870f2879595972cf",
+  "coordinate_denominator": 18225028,
+  "capsules": 14,
+  "lane_capsules": {
+    "warm": 8,
+    "coarse": 3,
+    "cold": 3
+  },
+  "reference_provider_source_sha256": null,
+  "reference_provider_admission_sha256": null,
+  "numerical_execution_allowed": false,
+  "numerical_idempotency_key": null,
+  "scope": "freeze the independent third-stream record and provenance interface with small stdlib fixtures only",
+  "preserved_history": {
+    "red_6295": true,
+    "red_unknown_6302": true,
+    "red_joint_hold_6303": true
+  },
+  "still_open": [
+    "independent reference-provider implementation and source freeze",
+    "independent method review and numerical thresholds",
+    "runtime, host, ancestor-cgroup, allocation, calendar, lane, and joint admissions",
+    "actual 18225028-record N256 reference stream and three-way comparison",
+    "warm, coarse, and cold byte-exact N256 saved-state pairs"
+  ],
+  "forbidden_in_this_source_attempt": [
+    "reference-provider, candidate, oracle, serializer, dynamic, or matrix-exponential numerical call",
+    "numerical idempotency-key allocation or use",
+    "Torch, backward, optimizer, training, production adoption, or threshold change"
+  ],
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}
