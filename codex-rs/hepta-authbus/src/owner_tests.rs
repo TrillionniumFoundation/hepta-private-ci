@@ -163,3 +163,83 @@ async fn crash_after_external_publication_is_reconciled_without_replaying_mutati
         .await
         .expect("reconciled crash window reopens");
 }
+
+#[tokio::test]
+async fn serialized_mutation_cancellation_preserves_single_operation_slot() {
+    use std::future::Future;
+    use std::future::pending;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::Ordering;
+    use std::task::Context;
+    use std::task::Waker;
+
+    let (_database_root, _checkpoint_root, _database, _checkpoint, owner) = fixture().await;
+    let port = owner.admin();
+    let first_entered = AtomicBool::new(false);
+    let waiter_entered = AtomicBool::new(false);
+    let mut first = Box::pin(async {
+        serialized_mutation!(port, async {
+            first_entered.store(true, Ordering::SeqCst);
+            pending::<Result<(), AuthBusAuthorityError>>().await
+        })
+    });
+    let mut context = Context::from_waker(Waker::noop());
+    assert!(first.as_mut().poll(&mut context).is_pending());
+    assert!(first_entered.load(Ordering::SeqCst));
+
+    let mut cancelled_waiter = Box::pin(async {
+        serialized_mutation!(port, async {
+            waiter_entered.store(true, Ordering::SeqCst);
+            Ok::<(), AuthBusAuthorityError>(())
+        })
+    });
+    assert!(cancelled_waiter.as_mut().poll(&mut context).is_pending());
+    drop(cancelled_waiter);
+    assert!(!waiter_entered.load(Ordering::SeqCst));
+
+    let mut next = Box::pin(async {
+        serialized_mutation!(port, async {
+            waiter_entered.store(true, Ordering::SeqCst);
+            Ok::<(), AuthBusAuthorityError>(())
+        })
+    });
+    assert!(next.as_mut().poll(&mut context).is_pending());
+    assert!(!waiter_entered.load(Ordering::SeqCst));
+    drop(first);
+    next.await.expect("cancelling the active operation releases its slot");
+    assert!(waiter_entered.load(Ordering::SeqCst));
+    owner
+        .admin()
+        .sync_checkpoint()
+        .await
+        .expect("the original owner remains usable after cancellation");
+}
+
+#[tokio::test]
+async fn serialized_mutation_rechecks_lease_and_releases_slot_on_rejection() {
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::Ordering;
+
+    let (_database_root, _checkpoint_root, _database, checkpoint, owner) = fixture().await;
+    let port = owner.admin();
+    let first = async {
+        serialized_mutation!(port, async {
+            std::fs::remove_file(writer_lock_path(&checkpoint)?)
+                .expect("remove the original writer lease during the operation");
+            Ok::<(), AuthBusAuthorityError>(())
+        })
+    }
+    .await;
+    assert!(matches!(first, Err(AuthBusAuthorityError::WriterLeaseLost)));
+
+    let entered = AtomicBool::new(false);
+    let next = async {
+        serialized_mutation!(port, async {
+            entered.store(true, Ordering::SeqCst);
+            Ok::<(), AuthBusAuthorityError>(())
+        })
+    }
+    .await;
+    assert!(matches!(next, Err(AuthBusAuthorityError::WriterLeaseLost)));
+    assert!(!entered.load(Ordering::SeqCst));
+}

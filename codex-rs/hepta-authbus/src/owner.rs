@@ -14,7 +14,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use serde::Serialize;
-use tokio::sync::Mutex;
+use tokio::sync::Semaphore;
 
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityHost;
@@ -42,7 +42,12 @@ const MAX_CONTROL_FILE_BYTES: u64 = 4096;
 
 macro_rules! serialized_mutation {
     ($port:expr, $call:expr) => {{
-        let _guard = $port.owner.writer.lock().await;
+        let _permit = $port
+            .owner
+            .writer
+            .acquire()
+            .await
+            .map_err(|_| AuthBusAuthorityError::WriterLeaseLost)?;
         $port.owner.lease.assert_current()?;
         let result = $call.await;
         $port.owner.lease.assert_current()?;
@@ -57,7 +62,9 @@ macro_rules! serialized_mutation {
 /// lease, and completes checkpoint publication before returning.
 pub struct AuthBusAuthorityOwner {
     pub(crate) host: AuthBusAuthorityHost,
-    writer: Mutex<()>,
+    // One operation slot, held through mutation and checkpoint publication.
+    // It carries no data; no code changes its capacity or detaches a permit.
+    writer: Semaphore,
     lease: AuthorityWriterLease,
 }
 
@@ -83,7 +90,7 @@ impl AuthBusAuthorityOwner {
         }
         Ok(Self {
             host,
-            writer: Mutex::new(()),
+            writer: Semaphore::new(/*permits*/ 1),
             lease,
         })
     }
