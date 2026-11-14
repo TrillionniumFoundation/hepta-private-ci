@@ -1,0 +1,82 @@
+{
+  "execution_scope": "isolated ChatGPT container, not dot or full repository CI",
+  "fresh_encoder_forwards": 0,
+  "full_online_service_cost_verified": false,
+  "hosted_current_head_verified": false,
+  "independent_evaluator_signer": false,
+  "model_promoted": false,
+  "ndu_extra_updates_per_pair": 120,
+  "ndu_more_cpu_all_pairs": true,
+  "ndu_same_probabilities_as_fixed8_all_pairs": true,
+  "net_utility_outside_declared_tariffs_established": false,
+  "new_future_windows": 0,
+  "new_source_groups": 0,
+  "observed_ndu_dominated_on_two_dimensions": true,
+  "observed_pairs": 6,
+  "original_arms": [
+    {
+      "actual_sgd_steps_each": 0,
+      "arm": "zero",
+      "median_cached_cpu_ns_six_repeats": 79758.0,
+      "observed_correct_per_32": 8
+    },
+    {
+      "actual_sgd_steps_each": 0,
+      "arm": "train_majority",
+      "median_cached_cpu_ns_six_repeats": 37415.5,
+      "observed_correct_per_32": 8
+    },
+    {
+      "actual_sgd_steps_each": 8,
+      "arm": "fixed8",
+      "median_cached_cpu_ns_six_repeats": 480111.0,
+      "observed_correct_per_32": 26
+    },
+    {
+      "actual_sgd_steps_each": 32,
+      "arm": "fixed32",
+      "median_cached_cpu_ns_six_repeats": 1459420.5,
+      "observed_correct_per_32": 25
+    },
+    {
+      "actual_sgd_steps_each": 128,
+      "arm": "fixed128",
+      "median_cached_cpu_ns_six_repeats": 5444384.5,
+      "observed_correct_per_32": 25
+    },
+    {
+      "actual_sgd_steps_each": 128,
+      "arm": "neutral",
+      "median_cached_cpu_ns_six_repeats": 5501304.0,
+      "observed_correct_per_32": 26
+    },
+    {
+      "actual_sgd_steps_each": 128,
+      "arm": "fixed_risk",
+      "median_cached_cpu_ns_six_repeats": 5485455.5,
+      "observed_correct_per_32": 26
+    },
+    {
+      "actual_sgd_steps_each": 128,
+      "arm": "ndu_discrete",
+      "median_cached_cpu_ns_six_repeats": 5536821.5,
+      "observed_correct_per_32": 26
+    },
+    {
+      "actual_sgd_steps_each": 128,
+      "arm": "augmented_same_profile",
+      "median_cached_cpu_ns_six_repeats": 5836780.5,
+      "observed_correct_per_32": 26
+    }
+  ],
+  "original_completed_trials_sha256": "c78cfe148e6d9544450836202f4da0f9bc5d93f980c96362238945b20a67898f",
+  "original_public_sha256": "195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7",
+  "parent_sha": "6fb9bacb9e70687ddf90e2a72887f50fbbf7854d",
+  "posture": "RESEARCH_ONLY_DENY_ALL",
+  "production_accepted": false,
+  "raw_replay_sha256": "7915e6fbf9b9d733fd87abee7e790ae193a6b60e974b7f4d4307afb97b19f003",
+  "raw_rows": 54,
+  "schema": "hepta.ndu-merton.original-pareto-local-observation.v1",
+  "unique_historical_task_cases": 32,
+  "verified_independent_story_families": 0
+}

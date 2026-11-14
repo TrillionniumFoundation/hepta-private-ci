@@ -1,0 +1,64 @@
+name: Hepta Merton ambiguity-bound research (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/robustness/**'
+      - '.github/workflows/hepta-ndu-ambiguity-guard.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Bind historical nested source and exact candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer/local_observation.json
+          test "$(git hash-object "$SOURCE")" = c9d7ff7319f1945e3e91e857754e8363daef2117
+          git rev-parse HEAD HEAD^{tree}
+          python --version
+      - name: Execute exact finite-stress, negative and source-refusal tests
+        shell: bash
+        env:
+          NESTED_SUMMARY: experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer/local_observation.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/ambiguity"
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/robustness
+          python -W error::ResourceWarning -m unittest discover -s "$D" -p test_robust.py -v 2>&1 | tee "$RUNNER_TEMP/ambiguity/tests-normal.log"
+          python -O -W error::ResourceWarning -m unittest discover -s "$D" -p test_robust.py -v 2>&1 | tee "$RUNNER_TEMP/ambiguity/tests-optimized.log"
+          grep -q 'Ran 20 tests' "$RUNNER_TEMP/ambiguity/tests-normal.log"
+          grep -q 'Ran 20 tests' "$RUNNER_TEMP/ambiguity/tests-optimized.log"
+          python "$D/robust.py" --nested "$NESTED_SUMMARY" --output "$RUNNER_TEMP/ambiguity/replay.json"
+          cmp "$D/local_observation.json" "$RUNNER_TEMP/ambiguity/replay.json"
+          python - "$RUNNER_TEMP/ambiguity/replay.json" <<'PY'
+          import json,sys
+          j=json.load(open(sys.argv[1]))
+          assert j['posture']=='RESEARCH_ONLY_DENY_ALL'
+          assert j['toy_shift']['nominal']['decision']=='continue'
+          assert j['toy_shift']['robust']['decision']=='stop'
+          assert j['retrospective_nested']['fixed8_correct']==j['retrospective_nested']['ndu_correct']==49
+          assert j['new_independent_source_groups']==0
+          assert not j['production_accepted'] and not j['real_task_superiority_established']
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-merton-ambiguity-${{ matrix.candidate }}
+          path: ${{ runner.temp }}/ambiguity/
+          retention-days: 7
+          if-no-files-found: warn

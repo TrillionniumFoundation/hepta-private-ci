@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.merton.sequential-protocol.v1",
+  "parent_sha": "9f4bd1f333ebb64a4d8bd524590ad0bb22e90d4d",
+  "archive_sha256": "195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7",
+  "checkpoints": [0, 8, 32, 128],
+  "repeats": 3,
+  "arms": ["no_update", "fixed8", "fixed32", "full_search", "sequential_neutral", "sequential_fixed", "sequential_ndu", "reference_rule"],
+  "scenarios": [
+    {"name": "unit_low", "horizon": 1, "step_fee": "1/256", "calibration_fee": "1/1024", "budget": 128},
+    {"name": "unit_high", "horizon": 1, "step_fee": "1/8", "calibration_fee": "1/1024", "budget": 128},
+    {"name": "reuse8", "horizon": 8, "step_fee": "1/256", "calibration_fee": "1/1024", "budget": 128},
+    {"name": "budget7", "horizon": 1, "step_fee": "1/256", "calibration_fee": "1/1024", "budget": 7}
+  ],
+  "control": "before every block: budget check, perfect-calibration-payoff ceiling, then bounded first pilot or capped previous empirical slope",
+  "preference": "alpha starts at 1/4; after each available checkpoint alpha=clip(alpha+(1-2*mean_correct)/8,0,1/2)",
+  "final_selection": "best available calibration utility at terminal alpha, ties prefer earlier checkpoint; all executed updates paid",
+  "scoring": "horizon*holdout_accuracy - step_fee*actual_updates - calibration_fee*actual_calibration_calls",
+  "tariff_scope": "declared utility-unit scenarios; not dollar or measured CPU prices; horizons are not new tasks",
+  "evidence_scope": "retrospective mechanism study on repeatedly inspected archived AG News; no prospective efficacy",
+  "stopping_guarantee": "perfect-payoff ceiling is algebraic on the empirical utility scale; slope extrapolation has no future-optimality guarantee",
+  "posture": "RESEARCH_ONLY_DENY_ALL"
+}
