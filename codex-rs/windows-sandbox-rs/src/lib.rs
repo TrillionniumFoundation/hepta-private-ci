@@ -65,11 +65,15 @@ mod dpapi;
 #[cfg(target_os = "windows")]
 mod env;
 #[cfg(target_os = "windows")]
+mod filesystem_backend;
+#[cfg(target_os = "windows")]
 mod helper_materialization;
 #[cfg(target_os = "windows")]
 mod hide_users;
 #[cfg(target_os = "windows")]
 mod identity;
+#[cfg(target_os = "windows")]
+mod legacy_compat;
 #[cfg(target_os = "windows")]
 mod logging;
 #[cfg(target_os = "windows")]
@@ -78,6 +82,8 @@ mod path_normalization;
 mod process;
 #[cfg(target_os = "windows")]
 mod resolved_permissions;
+#[cfg(all(target_os = "windows", test))]
+mod restricted_token_fixture;
 #[cfg(target_os = "windows")]
 mod token;
 #[cfg(target_os = "windows")]
@@ -227,6 +233,12 @@ pub use ipc_framed::read_frame;
 #[cfg(target_os = "windows")]
 pub use ipc_framed::write_frame;
 #[cfg(target_os = "windows")]
+pub use legacy_compat::run_windows_sandbox_capture;
+#[cfg(target_os = "windows")]
+pub use legacy_compat::run_windows_sandbox_capture_with_filesystem_overrides;
+#[cfg(target_os = "windows")]
+pub use legacy_compat::run_windows_sandbox_legacy_preflight;
+#[cfg(target_os = "windows")]
 pub use logging::current_log_file_path;
 #[cfg(target_os = "windows")]
 pub use logging::current_log_file_path_for_codex_home;
@@ -332,12 +344,6 @@ pub use wfp_setup::install_wfp_filters;
 #[cfg(target_os = "windows")]
 pub use windows_impl::CaptureResult;
 #[cfg(target_os = "windows")]
-pub use windows_impl::run_windows_sandbox_capture;
-#[cfg(target_os = "windows")]
-pub use windows_impl::run_windows_sandbox_capture_with_filesystem_overrides;
-#[cfg(target_os = "windows")]
-pub use windows_impl::run_windows_sandbox_legacy_preflight;
-#[cfg(target_os = "windows")]
 pub use winutil::quote_windows_arg;
 #[cfg(target_os = "windows")]
 pub use winutil::string_from_sid_bytes;
@@ -367,15 +373,12 @@ mod windows_impl {
     use super::logging::log_success;
     use super::process::ConsoleMode;
     use super::process::create_process_as_user;
-    use super::sandbox_utils::ensure_codex_home_exists;
     use super::spawn_prep::LegacyAclSids;
     use super::spawn_prep::SpawnPrepOptions;
     use super::spawn_prep::allow_null_device_for_workspace_write;
     use super::spawn_prep::apply_legacy_session_acl_rules;
-    use super::spawn_prep::legacy_session_capability_roots;
     use super::spawn_prep::prepare_legacy_session_security;
     use super::spawn_prep::prepare_legacy_spawn_context;
-    use super::spawn_prep::root_capability_sids;
     use anyhow::Result;
     use codex_protocol::models::PermissionProfile;
     use codex_utils_absolute_path::AbsolutePathBuf;
@@ -478,34 +481,7 @@ mod windows_impl {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub fn run_windows_sandbox_capture(
-        permission_profile: &PermissionProfile,
-        workspace_roots: &[AbsolutePathBuf],
-        codex_home: &Path,
-        command: Vec<String>,
-        cwd: &Path,
-        env_map: HashMap<String, String>,
-        timeout_ms: Option<u64>,
-        cancellation: Option<WindowsSandboxCancellationToken>,
-        use_private_desktop: bool,
-    ) -> Result<CaptureResult> {
-        run_windows_sandbox_capture_with_filesystem_overrides(
-            permission_profile,
-            workspace_roots,
-            codex_home,
-            command,
-            cwd,
-            env_map,
-            timeout_ms,
-            cancellation,
-            &[],
-            &[],
-            use_private_desktop,
-        )
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    pub fn run_windows_sandbox_capture_with_filesystem_overrides(
+    pub(super) fn run_windows_sandbox_capture_legacy(
         permission_profile: &PermissionProfile,
         workspace_roots: &[AbsolutePathBuf],
         codex_home: &Path,
@@ -518,6 +494,21 @@ mod windows_impl {
         additional_deny_write_paths: &[AbsolutePathBuf],
         use_private_desktop: bool,
     ) -> Result<CaptureResult> {
+        let permissions =
+            crate::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
+                permission_profile,
+                workspace_roots,
+            )?;
+        crate::filesystem_backend::require_legacy_filesystem(
+            &permissions,
+            cwd,
+            &env_map,
+            &crate::filesystem_backend::FilesystemOverrides {
+                deny_read_paths: additional_deny_read_paths,
+                deny_write_paths: additional_deny_write_paths,
+                ..crate::filesystem_backend::FilesystemOverrides::default()
+            },
+        )?;
         let additional_deny_read_paths = additional_deny_read_paths
             .iter()
             .map(AbsolutePathBuf::to_path_buf)
@@ -542,24 +533,7 @@ mod windows_impl {
         let current_dir = common.current_dir;
         let logs_base_dir = common.logs_base_dir.as_deref();
         let uses_write_capabilities = common.uses_write_capabilities;
-        if !permissions.has_full_disk_read_access() {
-            anyhow::bail!(
-                "Restricted read-only access requires the elevated Windows sandbox backend"
-            );
-        }
-        // WRITE_RESTRICTED tokens consult restricting SIDs only for writes, so this
-        // backend cannot make capability-SID deny-read ACLs authoritative.
-        if !additional_deny_read_paths.is_empty() {
-            anyhow::bail!("deny-read overrides require the elevated Windows sandbox backend");
-        }
-        let capability_roots =
-            legacy_session_capability_roots(&permissions, &current_dir, &env_map, codex_home);
-        let security = prepare_legacy_session_security(
-            uses_write_capabilities,
-            codex_home,
-            cwd,
-            capability_roots,
-        )?;
+        let security = prepare_legacy_session_security(uses_write_capabilities, codex_home)?;
         allow_null_device_for_workspace_write(uses_write_capabilities);
         if let Err(err) = apply_legacy_session_acl_rules(
             &permissions,
@@ -732,45 +706,6 @@ mod windows_impl {
         })
     }
 
-    pub fn run_windows_sandbox_legacy_preflight(
-        permission_profile: &PermissionProfile,
-        workspace_roots: &[AbsolutePathBuf],
-        codex_home: &Path,
-        cwd: &Path,
-        env_map: &HashMap<String, String>,
-    ) -> Result<()> {
-        let Ok(permissions) = super::resolved_permissions::ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
-            permission_profile,
-            workspace_roots,
-        ) else {
-            return Ok(());
-        };
-        if !permissions.uses_write_capabilities_for_cwd(cwd, env_map) {
-            return Ok(());
-        }
-
-        ensure_codex_home_exists(codex_home)?;
-        let current_dir = cwd.to_path_buf();
-        let capability_roots =
-            legacy_session_capability_roots(&permissions, &current_dir, env_map, codex_home);
-        let write_root_sids = root_capability_sids(codex_home, cwd, capability_roots)?;
-        apply_legacy_session_acl_rules(
-            &permissions,
-            codex_home,
-            &current_dir,
-            env_map,
-            &[],
-            &[],
-            LegacyAclSids {
-                readonly_sid: None,
-                readonly_sid_str: None,
-                write_root_sids: &write_root_sids,
-            },
-        )?;
-
-        Ok(())
-    }
-
     #[cfg(test)]
     mod tests {
         use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
@@ -824,7 +759,7 @@ mod windows_impl {
                     network: NetworkSandboxPolicy::Restricted,
                 },
             ] {
-                super::run_windows_sandbox_legacy_preflight(
+                crate::run_windows_sandbox_legacy_preflight(
                     &permission_profile,
                     &[],
                     Path::new("."),

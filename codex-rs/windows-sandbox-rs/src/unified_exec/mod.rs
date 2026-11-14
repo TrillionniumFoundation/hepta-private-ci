@@ -9,6 +9,8 @@
 
 mod backends;
 
+use crate::filesystem_backend::FilesystemOverrides;
+use crate::filesystem_backend::requires_elevated_filesystem;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
 use anyhow::Result;
 use anyhow::bail;
@@ -84,12 +86,17 @@ fn select_windows_sandbox_backend(
             request.permission_profile,
             request.workspace_roots,
         )?;
-    let requires_elevated_filesystem = !permissions.has_full_disk_read_access()
-        || permissions.uses_write_capabilities_for_cwd(request.cwd, &request.env_map)
-        || request.read_roots_override.is_some()
-        || request.write_roots_override.is_some()
-        || !request.deny_read_paths_override.is_empty()
-        || !request.deny_write_paths_override.is_empty();
+    let requires_elevated_filesystem = requires_elevated_filesystem(
+        &permissions,
+        request.cwd,
+        &request.env_map,
+        &FilesystemOverrides {
+            read_roots: request.read_roots_override,
+            write_roots: request.write_roots_override,
+            deny_read_paths: request.deny_read_paths_override,
+            deny_write_paths: request.deny_write_paths_override,
+        },
+    );
 
     Ok(if requires_elevated_filesystem {
         WindowsSandboxBackend::Elevated
@@ -126,7 +133,7 @@ pub async fn spawn_windows_sandbox_session_for_level(
             .await
         }
         WindowsSandboxBackend::RestrictedToken => {
-            spawn_windows_sandbox_session_legacy(
+            backends::legacy::spawn_windows_sandbox_session_legacy(
                 request.permission_profile,
                 request.workspace_roots,
                 request.codex_home,
@@ -160,20 +167,27 @@ pub async fn spawn_windows_sandbox_session_legacy(
     stdin_open: bool,
     use_private_desktop: bool,
 ) -> Result<SpawnedProcess> {
-    backends::legacy::spawn_windows_sandbox_session_legacy(
+    spawn_windows_sandbox_session_for_level(WindowsSandboxSessionRequest {
         permission_profile,
         workspace_roots,
         codex_home,
         command,
         cwd,
         env_map,
+        windows_sandbox_level: WindowsSandboxLevel::RestrictedToken,
+        proxy_enforced: false,
+        network_proxy_restricting_sid: None,
+        proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Reconcile,
         timeout_ms,
-        additional_deny_read_paths,
-        additional_deny_write_paths,
+        read_roots_override: None,
+        read_roots_include_platform_defaults: true,
+        write_roots_override: None,
+        deny_read_paths_override: additional_deny_read_paths,
+        deny_write_paths_override: additional_deny_write_paths,
         tty,
         stdin_open,
         use_private_desktop,
-    )
+    })
     .await
 }
 

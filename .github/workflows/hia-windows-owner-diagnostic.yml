@@ -1,0 +1,104 @@
+name: HIA Windows owner diagnostic
+
+# This branch-only diagnostic supplies native evidence for the sandbox repair.
+# It does not replace the repository's required platform or release workflows.
+on:
+  push:
+    branches:
+      - codex/hia-windows-owner-20261114-a90d
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hia-windows-owner-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-owner:
+    name: Native Windows sandbox owner
+    runs-on: windows-2025
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+    defaults:
+      run:
+        shell: bash
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - uses: dtolnay/rust-toolchain@3f2778ee6a28c53e512b95bbcf7b2120993da70d # 1.96.1
+        with:
+          components: clippy,rustfmt
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: nextest@0.9.103
+
+      - name: Verify native administrator and source identity
+        shell: pwsh
+        run: |
+          $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+          $principal = [Security.Principal.WindowsPrincipal]::new($identity)
+          if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+            throw "The native broker diagnostic requires an administrator runner."
+          }
+          $head = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $head -ne $env:GITHUB_SHA) { throw "Source identity mismatch" }
+          whoami /all | Out-File "$env:RUNNER_TEMP/windows-owner-runner.txt"
+          git rev-parse HEAD 'HEAD^{tree}' | Out-File -Append "$env:RUNNER_TEMP/windows-owner-runner.txt"
+
+      - name: Build actual setup and command-runner binaries
+        id: build
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-windows-sandbox --bins \
+            2>&1 | tee "$RUNNER_TEMP/windows-owner-build.log"
+
+      - name: Capture read-only ACL diagnostics
+        shell: pwsh
+        run: |
+          $paths = @("$env:SystemRoot\System32", "$env:CARGO_TARGET_DIR\debug", "$env:GITHUB_WORKSPACE\codex-rs")
+          foreach ($path in $paths) {
+            $acl = Get-Acl -LiteralPath $path
+            "$path`n$($acl.Sddl)" | Out-File -Append "$env:RUNNER_TEMP/windows-owner-acls.txt"
+          }
+
+      - name: Run every native Windows sandbox owner test
+        id: tests
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-windows-sandbox --retries 0 \
+            2>&1 | tee "$RUNNER_TEMP/windows-owner-tests.log"
+
+      - name: Check native owner with warnings denied
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-windows-sandbox --all-targets -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/windows-owner-clippy.log"
+
+      - name: Check source remains clean
+        if: always()
+        uses: ./.github/actions/check-clean-worktree
+
+      - name: Preserve native evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hia-windows-owner-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/windows-owner-*.log
+            ${{ runner.temp }}/windows-owner-*.txt
+            ${{ env.CARGO_TARGET_DIR }}/nextest/**/junit.xml

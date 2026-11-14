@@ -1024,12 +1024,13 @@ fn run_setup_full(payload: &Payload, log: &mut dyn Write, sbx_dir: &Path) -> Res
             LocalFree(sandbox_group_psid as HLOCAL);
         }
     }
-    if refresh_only && !refresh_errors.is_empty() {
+    if !refresh_errors.is_empty() {
         log_line(
             log,
             &format!("setup refresh completed with errors: {refresh_errors:?}"),
         )?;
-        anyhow::bail!("setup refresh had errors");
+        let message = refresh_errors.join("\n");
+        anyhow::bail!("sandbox filesystem ACL setup failed:\n{message}");
     }
     log_note("setup binary completed", Some(sbx_dir));
     Ok(())

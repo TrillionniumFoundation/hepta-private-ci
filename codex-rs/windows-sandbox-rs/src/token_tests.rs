@@ -3,6 +3,7 @@ use crate::acl::add_deny_write_ace;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_write_aces;
 use crate::acl::fetch_dacl_handle;
+use crate::restricted_token_fixture::capability_acl_fixture_token;
 use pretty_assertions::assert_eq;
 use windows_sys::Win32::Security::Authorization::DENY_ACCESS;
 use windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT;
@@ -176,9 +177,8 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
     // SAFETY: the owned base token and validated capability SID are live; the
     // resulting token is immediately owned and closed after both impersonations.
-    let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?
-    });
+    let token =
+        OwnedToken(unsafe { capability_acl_fixture_token(base.0, &[capability.as_ptr()])? });
     {
         // SAFETY: token remains owned throughout this impersonation scope.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
@@ -257,26 +257,97 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     std::fs::write(outside.join("keep.txt"), "outside")?;
     std::fs::create_dir(outside.join("keep-dir"))?;
-    let token = OwnedToken(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[cap_a.as_ptr(), cap_b.as_ptr()])?
-    });
-    let (outside_read, refused) = {
-        let _impersonation = unsafe { Impersonation::enter(token.0)? };
-        for path in &allowed {
-            std::fs::write(path.join("created.txt"), "allowed")?;
-            std::fs::remove_file(path.join("delete.txt"))?;
-            std::fs::remove_dir(path.join("delete-dir"))?;
-        }
-        let outside_read = std::fs::read_to_string(outside.join("keep.txt"))?;
-        let refused = [
-            std::fs::write(outside.join("keep.txt"), "overwritten"),
-            std::fs::write(outside.join("created.txt"), "outside"),
-            std::fs::remove_file(outside.join("keep.txt")),
-            std::fs::remove_dir(outside.join("keep-dir")),
-        ]
-        .map(|result| result.err().map(|error| error.kind()));
-        (outside_read, refused)
-    };
+    // Exercise the public production entry point. Filesystem confinement is a
+    // broker contract, not a property this test may infer from a raw token.
+    let codex_home = tempfile::tempdir()?;
+    let workspace_roots =
+        [codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(&allowed[0])?];
+    let extra_write_roots =
+        [codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(&allowed[1])?];
+    let permission_profile = codex_protocol::models::PermissionProfile::workspace_write_with(
+        &extra_write_roots,
+        codex_protocol::permissions::NetworkSandboxPolicy::Restricted,
+        /*exclude_tmpdir_env_var*/ true,
+        /*exclude_slash_tmp*/ true,
+    );
+    let script = r#"
+$ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding $false
+foreach ($root in @($env:BOUNDARY_WORKSPACE, $env:BOUNDARY_TEMP)) {
+    [IO.File]::WriteAllText((Join-Path $root 'created.txt'), 'allowed')
+    [IO.File]::Delete((Join-Path $root 'delete.txt'))
+    [IO.Directory]::Delete((Join-Path $root 'delete-dir'))
+}
+$outsideRead = [IO.File]::ReadAllText((Join-Path $env:BOUNDARY_OUTSIDE 'keep.txt'))
+$operations = @(
+    { [IO.File]::WriteAllText((Join-Path $env:BOUNDARY_OUTSIDE 'keep.txt'), 'overwritten') },
+    { [IO.File]::WriteAllText((Join-Path $env:BOUNDARY_OUTSIDE 'created.txt'), 'outside') },
+    { [IO.File]::Delete((Join-Path $env:BOUNDARY_OUTSIDE 'keep.txt')) },
+    { [IO.Directory]::Delete((Join-Path $env:BOUNDARY_OUTSIDE 'keep-dir')) }
+)
+$refused = New-Object 'Object[]' 4
+for ($index = 0; $index -lt $operations.Length; $index++) {
+    try { & $operations[$index] }
+    catch {
+        $cause = $_.Exception
+        while ($cause.InnerException) { $cause = $cause.InnerException }
+        $refused[$index] = $cause.HResult -band 0xFFFF
+    }
+}
+@{ outside_read = $outsideRead; refused = $refused } | ConvertTo-Json -Compress
+"#;
+    let mut env_map = std::collections::HashMap::from([
+        (
+            "BOUNDARY_WORKSPACE".to_owned(),
+            allowed[0].display().to_string(),
+        ),
+        ("BOUNDARY_TEMP".to_owned(), allowed[1].display().to_string()),
+        ("BOUNDARY_OUTSIDE".to_owned(), outside.display().to_string()),
+        ("TEMP".to_owned(), allowed[1].display().to_string()),
+        ("TMP".to_owned(), allowed[1].display().to_string()),
+    ]);
+    let system_root = std::env::var("SystemRoot")?;
+    env_map.insert("SystemRoot".to_owned(), system_root.clone());
+    let powershell = std::path::Path::new(&system_root)
+        .join("System32")
+        .join("WindowsPowerShell")
+        .join("v1.0")
+        .join("powershell.exe");
+    let output = crate::run_windows_sandbox_capture(
+        &permission_profile,
+        &workspace_roots,
+        codex_home.path(),
+        vec![
+            powershell.display().to_string(),
+            "-NoLogo".to_owned(),
+            "-NoProfile".to_owned(),
+            "-NonInteractive".to_owned(),
+            "-Command".to_owned(),
+            script.to_owned(),
+        ],
+        &allowed[0],
+        env_map,
+        Some(5_000),
+        /*cancellation*/ None,
+        /*use_private_desktop*/ true,
+    )?;
+    anyhow::ensure!(
+        !output.timed_out && output.exit_code == 0,
+        "broker fixture failed (exit {}, timeout {}): {}",
+        output.exit_code,
+        output.timed_out,
+        String::from_utf8_lossy(&output.stderr),
+    );
+    #[derive(serde::Deserialize)]
+    struct BoundaryObservation {
+        outside_read: String,
+        refused: [Option<i32>; 4],
+    }
+    let observation: BoundaryObservation = serde_json::from_slice(&output.stdout)?;
+    let outside_read = observation.outside_read;
+    let refused = observation
+        .refused
+        .map(|code| code.map(|code| std::io::Error::from_raw_os_error(code).kind()));
     assert_eq!(refused, [Some(std::io::ErrorKind::PermissionDenied); 4]);
     assert_eq!(outside_read, "outside");
     assert_eq!(
@@ -297,5 +368,19 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
             ("allowed".to_owned(), false, false)
         );
     }
+    Ok(())
+}
+
+#[test]
+fn same_user_workspace_token_requires_the_dedicated_account_backend() -> Result<()> {
+    let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let capability = LocalSid::from_string("S-1-5-21-141-252-363-474")?;
+    let error =
+        unsafe { create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()]) }
+            .expect_err("same-user workspace-write construction must fail closed");
+    assert_eq!(
+        error.to_string(),
+        crate::filesystem_backend::ELEVATED_FILESYSTEM_REQUIRED,
+    );
     Ok(())
 }

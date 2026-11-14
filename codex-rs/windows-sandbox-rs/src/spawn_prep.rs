@@ -24,7 +24,6 @@ use crate::sandbox_utils::inject_git_safe_directory;
 use crate::setup::effective_write_roots_for_permissions;
 use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_cap;
-use crate::token::create_workspace_write_token_with_caps_from;
 use crate::token::get_current_token_for_restriction;
 use crate::token::get_logon_sid_bytes;
 use crate::workspace_acl::is_command_cwd_root;
@@ -147,61 +146,19 @@ pub(crate) fn prepare_legacy_spawn_context(
 pub(crate) fn prepare_legacy_session_security(
     uses_write_capabilities: bool,
     codex_home: &Path,
-    cwd: &Path,
-    capability_roots: impl IntoIterator<Item = PathBuf>,
 ) -> Result<LegacySessionSecurity> {
+    if uses_write_capabilities {
+        anyhow::bail!(crate::filesystem_backend::ELEVATED_FILESYSTEM_REQUIRED);
+    }
     let caps = load_or_create_cap_sids(codex_home)?;
-    let (h_token, readonly_sid, readonly_sid_str, write_root_sids) = unsafe {
-        if uses_write_capabilities {
-            let write_root_sids = root_capability_sids(codex_home, cwd, capability_roots)?;
-            if write_root_sids.is_empty() {
-                anyhow::bail!("workspace-write sandbox has no writable root capability SIDs");
-            }
-            let base = get_current_token_for_restriction()?;
-            let cap_ptrs: Vec<*mut c_void> = write_root_sids
-                .iter()
-                .map(|root| root.sid.as_ptr())
-                .collect();
-            let h_token = create_workspace_write_token_with_caps_from(base, cap_ptrs.as_slice());
-            CloseHandle(base);
-            let h_token = h_token?;
-            (h_token, None, None, write_root_sids)
-        } else {
-            let psid = LocalSid::from_string(&caps.readonly)?;
-            let (h_token, _psid) = create_readonly_token_with_cap(psid.as_ptr())?;
-            (h_token, Some(psid), Some(caps.readonly), Vec::new())
-        }
-    };
-
+    let readonly_sid = LocalSid::from_string(&caps.readonly)?;
+    let (h_token, _) = unsafe { create_readonly_token_with_cap(readonly_sid.as_ptr())? };
     Ok(LegacySessionSecurity {
         h_token,
-        readonly_sid,
-        readonly_sid_str,
-        write_root_sids,
+        readonly_sid: Some(readonly_sid),
+        readonly_sid_str: Some(caps.readonly),
+        write_root_sids: Vec::new(),
     })
-}
-
-pub(crate) fn legacy_session_capability_roots(
-    permissions: &ResolvedWindowsSandboxPermissions,
-    current_dir: &Path,
-    env_map: &HashMap<String, String>,
-    codex_home: &Path,
-) -> Vec<PathBuf> {
-    let allow_paths = compute_allow_paths_for_permissions(permissions, current_dir, env_map)
-        .allow
-        .into_iter()
-        .collect::<Vec<_>>();
-    if permissions.uses_write_capabilities_for_cwd(current_dir, env_map) {
-        effective_write_roots_for_permissions(
-            permissions,
-            current_dir,
-            env_map,
-            codex_home,
-            Some(allow_paths.as_slice()),
-        )
-    } else {
-        allow_paths
-    }
 }
 
 pub(crate) fn root_capability_sids(
@@ -465,13 +422,13 @@ pub(crate) fn prepare_elevated_spawn_context_for_permissions(
 mod tests {
     use super::SpawnPrepOptions;
     use super::deny_root_capabilities_for_path;
-    use super::legacy_session_capability_roots;
     use super::prepare_legacy_spawn_context;
     use super::prepare_spawn_context_common;
     use super::root_capability_sids;
     use crate::cap::load_or_create_cap_sids;
     use crate::cap::workspace_write_cap_sid_for_root;
     use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
+    use crate::setup::effective_write_roots_for_permissions;
     use codex_protocol::models::PermissionProfile;
     use codex_protocol::permissions::NetworkSandboxPolicy;
     use codex_utils_absolute_path::AbsolutePathBuf;
@@ -585,7 +542,7 @@ mod tests {
     }
 
     #[test]
-    fn legacy_session_capability_roots_use_runtime_workspace_roots_for_workspace_root() {
+    fn capability_roots_use_runtime_workspace_roots_for_workspace_root() {
         let tmp = TempDir::new().expect("tempdir");
         let codex_home = tmp.path().join("codex-home");
         let workspace_root = tmp.path().join("workspace");
@@ -607,11 +564,12 @@ mod tests {
             )
             .expect("managed permission profile");
 
-        let roots = legacy_session_capability_roots(
+        let roots = effective_write_roots_for_permissions(
             &permissions,
             &command_cwd,
             &HashMap::new(),
             &codex_home,
+            /*write_roots_override*/ None,
         );
 
         assert_eq!(
@@ -724,8 +682,13 @@ mod tests {
             )
             .expect("managed permission profile");
 
-        let roots =
-            legacy_session_capability_roots(&permissions, &workspace, &HashMap::new(), &codex_home);
+        let roots = effective_write_roots_for_permissions(
+            &permissions,
+            &workspace,
+            &HashMap::new(),
+            &codex_home,
+            /*write_roots_override*/ None,
+        );
 
         assert!(roots.contains(&dunce::canonicalize(&workspace).expect("workspace")));
         assert!(roots.contains(&dunce::canonicalize(&active_root).expect("active root")));

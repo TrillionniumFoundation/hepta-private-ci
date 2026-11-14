@@ -1,7 +1,7 @@
 use super::LaunchDesktop;
+use crate::restricted_token_fixture::capability_acl_fixture_token;
 use crate::token::LocalSid;
 use crate::token::create_readonly_token_with_caps_from;
-use crate::token::create_workspace_write_token_with_caps_from;
 use crate::token::get_current_token_for_restriction;
 use crate::winutil::to_wide;
 use anyhow::Result;
@@ -77,12 +77,10 @@ fn workspace_private_desktop_checks_the_exact_capability() -> Result<()> {
     let base = TokenHandle(unsafe { get_current_token_for_restriction()? });
     let capability = LocalSid::from_string("S-1-5-21-101-202-303-404")?;
     let other_capability = LocalSid::from_string("S-1-5-21-101-202-303-405")?;
-    let workspace = TokenHandle(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[capability.as_ptr()])?
-    });
-    let other_workspace = TokenHandle(unsafe {
-        create_workspace_write_token_with_caps_from(base.0, &[other_capability.as_ptr()])?
-    });
+    let workspace =
+        TokenHandle(unsafe { capability_acl_fixture_token(base.0, &[capability.as_ptr()])? });
+    let other_workspace =
+        TokenHandle(unsafe { capability_acl_fixture_token(base.0, &[other_capability.as_ptr()])? });
     let desktop = LaunchDesktop::prepare(
         workspace.0,
         /*use_private_desktop*/ true,

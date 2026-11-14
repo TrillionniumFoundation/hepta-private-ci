@@ -366,29 +366,23 @@ pub unsafe fn create_readonly_token_with_cap_from(
     base_token: HANDLE,
     psid_capability: *mut c_void,
 ) -> Result<(HANDLE, *mut c_void)> {
-    let new_token = create_token_with_caps_from(
-        base_token,
-        &[psid_capability],
-        &[],
-        RestrictingIdentity::Include,
-    )?;
+    let new_token = create_token_with_caps_from(base_token, &[psid_capability], &[])?;
     Ok((new_token, psid_capability))
 }
 
-/// Restrict legacy workspace writes to the provided capability SIDs alone.
+/// Same-user workspace-write tokens cannot enforce Windows deletion containment.
+///
+/// Use the elevated sandbox session or capture entry point, which provisions and
+/// launches the dedicated sandbox account. This compatibility entry point always
+/// returns an error before creating a token.
 ///
 /// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
+/// The caller must provide a valid base token and live SID pointers.
 pub unsafe fn create_workspace_write_token_with_caps_from(
-    base_token: HANDLE,
-    psid_capabilities: &[*mut c_void],
+    _base_token: HANDLE,
+    _psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
-    create_token_with_caps_from(
-        base_token,
-        psid_capabilities,
-        &[],
-        RestrictingIdentity::Exclude,
-    )
+    anyhow::bail!(crate::filesystem_backend::ELEVATED_FILESYSTEM_REQUIRED)
 }
 
 /// Create a restricted token that includes all provided capability SIDs, the token user SID, and
@@ -419,12 +413,7 @@ pub unsafe fn create_readonly_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
-    create_token_with_caps_from(
-        base_token,
-        psid_capabilities,
-        &[],
-        RestrictingIdentity::Include,
-    )
+    create_token_with_caps_from(base_token, psid_capabilities, &[])
 }
 
 /// Create a restricted token that includes all provided capability SIDs, the token user SID, and
@@ -457,24 +446,13 @@ unsafe fn create_token_with_caps_user_and_additional_restrictions_from(
     let mut extra_restricting_sids = Vec::with_capacity(additional_restricting_sids.len() + 1);
     extra_restricting_sids.push(psid_user);
     extra_restricting_sids.extend_from_slice(additional_restricting_sids);
-    create_token_with_caps_from(
-        base_token,
-        psid_capabilities,
-        &extra_restricting_sids,
-        RestrictingIdentity::Include,
-    )
-}
-
-enum RestrictingIdentity {
-    Include,
-    Exclude,
+    create_token_with_caps_from(base_token, psid_capabilities, &extra_restricting_sids)
 }
 
 unsafe fn create_token_with_caps_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
     extra_restricting_sids: &[*mut c_void],
-    restricting_identity: RestrictingIdentity,
 ) -> Result<HANDLE> {
     if psid_capabilities.is_empty() {
         return Err(anyhow!("no capability SIDs provided"));
@@ -492,19 +470,14 @@ unsafe fn create_token_with_caps_from(
             Attributes: 0,
         })
         .collect();
-    // A restricting SID is an alternative ACE match, not an additional requirement.
-    // Legacy workspace writes must not pass via a broad parent Logon/Everyone ACE.
-    // Readonly and dedicated elevated-account tokens retain their existing policy.
-    if matches!(restricting_identity, RestrictingIdentity::Include) {
-        entries.push(SID_AND_ATTRIBUTES {
-            Sid: psid_logon,
-            Attributes: 0,
-        });
-        entries.push(SID_AND_ATTRIBUTES {
-            Sid: psid_everyone,
-            Attributes: 0,
-        });
-    }
+    entries.push(SID_AND_ATTRIBUTES {
+        Sid: psid_logon,
+        Attributes: 0,
+    });
+    entries.push(SID_AND_ATTRIBUTES {
+        Sid: psid_everyone,
+        Attributes: 0,
+    });
 
     let mut new_token: HANDLE = 0;
     let flags = DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED;

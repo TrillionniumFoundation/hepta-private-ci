@@ -343,23 +343,25 @@ impl AclSetupFailureFixture {
     }
 
     fn assert_rejected(&self, error: anyhow::Error) {
+        let failure = crate::extract_setup_failure(&error)
+            .map(|failure| (failure.code, failure.message.clone()));
         assert_eq!(
             (
-                error.to_string(),
-                error.root_cause().to_string(),
+                failure,
                 self.marker.try_exists().expect("inspect process marker"),
             ),
             (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
+                Some((
+                    crate::SetupErrorCode::HelperUnknownError,
+                    format!(
+                        "sandbox filesystem ACL setup failed:\ndeny ACE failed on {}: SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
+                        self.protected_file.display(),
+                        self.protected_file.display(),
+                    ),
+                )),
                 false,
             ),
+            "unexpected broker setup error: {error:#}",
         );
     }
 }
