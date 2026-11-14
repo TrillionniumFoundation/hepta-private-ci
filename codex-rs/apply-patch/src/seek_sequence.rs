@@ -28,6 +28,7 @@ pub(crate) fn seek_sequence_checked(
 ///  • Empty `pattern` → returns `Some(start)` (no-op match)
 ///  • `pattern.len() > lines.len()` → returns `None` (cannot match, avoids
 ///    out‑of‑bounds panic that occurred pre‑2025‑04‑12)
+#[cfg(any(not(feature = "hia-native"), test))]
 pub(crate) fn seek_sequence(
     lines: &[String],
     pattern: &[String],

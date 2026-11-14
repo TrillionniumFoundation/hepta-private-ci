@@ -2,7 +2,6 @@
 use crate::ApplyPatchError;
 use crate::ApplyPatchFileUpdateMode;
 
-const BUFFER_LIMIT: usize = 1_048_576;
 const OUTPUT_SIZE: usize = 16;
 
 unsafe extern "C" {
@@ -16,8 +15,9 @@ unsafe extern "C" {
     ) -> u64;
 }
 
-/// Encode the wire frame; propagate native errors rather than returning
-/// a false "not found", particularly on exceeding the locked buffer bound.
+/// Encode the wire frame and propagate allocation or native ABI errors.
+/// The selfhost ELF accepts the live buffer length. The compiler's 1 MiB
+/// bootstrap workspace is not a limit on the file being patched.
 pub(super) fn seek_sequence_checked(
     lines: &[String],
     pattern: &[String],
@@ -37,19 +37,19 @@ pub(super) fn seek_sequence_checked(
         .checked_add(1)
         .and_then(|n| n.checked_mul(8))
         .ok_or_else(|| frame_error("offset table overflow"))?;
-    let initial_size = 32usize
+    let header_size = 32usize
         .checked_add(offset_bytes)
-        .ok_or_else(|| frame_error("input length overflow"))?;
+        .ok_or_else(|| frame_error("header length overflow"))?;
     let total = lines
         .iter()
         .chain(pattern)
-        .try_fold(initial_size, |size, line| size.checked_add(line.len()))
+        .try_fold(header_size, |size, line| size.checked_add(line.len()))
         .ok_or_else(|| frame_error("input length overflow"))?;
-    if total > BUFFER_LIMIT {
-        return Err(frame_error("input exceeds locked 1 MiB source buffer"));
-    }
 
-    let mut frame = Vec::with_capacity(total);
+    let mut frame = Vec::new();
+    frame
+        .try_reserve_exact(total)
+        .map_err(|_| frame_error("cannot allocate input frame"))?;
     frame.extend_from_slice(&(lines.len() as u64).to_le_bytes());
     frame.extend_from_slice(&(pattern.len() as u64).to_le_bytes());
     frame.extend_from_slice(&(start as u64).to_le_bytes());
@@ -83,8 +83,9 @@ pub(super) fn seek_sequence_checked(
     // disjoint and live throughout the synchronous call.
     let mut workspace = [0_u8; 1];
     // SAFETY: frame, result and workspace are independent owned buffers;
-    // capacities are valid and at most 1 MiB; workspace length is zero.
-    // This native f0 implementation does not retain pointers.
+    // capacities are valid; checked arithmetic and try_reserve_exact keep
+    // the frame addressable. Workspace length is zero. The pinned selfhost
+    // implementation does not retain pointers or assume a fixed input size.
     let status = unsafe {
         codex_hia_seek_sequence(
             frame.as_ptr(),
@@ -108,11 +109,26 @@ pub(super) fn seek_sequence_checked(
             .try_into()
             .map_err(|_| frame_error("invalid index length"))?,
     );
-    match found {
-        0 => Ok(None),
-        1 => usize::try_from(index)
-            .map(Some)
-            .map_err(|_| frame_error("native match index overflow")),
-        _ => Err(frame_error("invalid native found flag")),
+    match (found, index) {
+        (0, 0) => Ok(None),
+        (1, index) => {
+            let index =
+                usize::try_from(index).map_err(|_| frame_error("native match index overflow"))?;
+            let valid = if pattern.is_empty() {
+                index == start
+            } else {
+                let ignores_start =
+                    eof && matches!(update_file_mode, ApplyPatchFileUpdateMode::NormalizeToLf);
+                index
+                    .checked_add(pattern.len())
+                    .is_some_and(|end| end <= lines.len())
+                    && (ignores_start || index >= start)
+            };
+            if !valid {
+                return Err(frame_error("native match index outside the input range"));
+            }
+            Ok(Some(index))
+        }
+        _ => Err(frame_error("invalid native result frame")),
     }
 }
