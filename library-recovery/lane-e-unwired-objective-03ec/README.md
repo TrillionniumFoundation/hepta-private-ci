@@ -22,3 +22,19 @@ review, normal source integration, and owning validation. The Lane E guard
 rejects direct source imports from this custody location and unproved
 non-literal source includes. It is a bounded source check, not a Rust macro
 expander, runtime attestation, or proof about arbitrary build-script output.
+
+## Original formatting context
+
+The four configuration files listed in FORMAT_CONTEXT.json retain their exact
+bytes and modes from the same source commit. The package manifest inherits the
+workspace's Rust 2024 edition, rustfmt.toml preserves the original formatting
+settings, and rust-toolchain.toml preserves the Rust 1.96.0 pin. Normal scoped
+formatting can therefore inspect the custody sources in their original context
+without rewriting those sources or exempting them from formatting checks.
+
+These configuration copies do not constitute a complete Cargo workspace. The
+workspace members, dependencies and product entry points they name are not
+restored here. They are formatting provenance only: the restrictions above on
+compiling, including, generating from or registering the custody sources still
+apply. No build, execution or qualification is claimed. MANIFEST.json and the
+two source files remain unchanged.
