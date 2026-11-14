@@ -365,7 +365,6 @@ crate.annotation(
         "//patches:zstd-sys_windows_msvc_include_dirs.patch",
     ],
 )
-
 crate.annotation(
     # The Windows lint toolchain cannot reliably materialize blake3's native x86 assembly archives.
     crate = "blake3",
