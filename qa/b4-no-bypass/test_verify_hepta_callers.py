@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 import tempfile
 import textwrap
@@ -1110,6 +1111,332 @@ class OriginalNotesSourceGuardTests(unittest.TestCase):
                     "crate::app_runtime::AppServerModelToolProfile::Standard",
                 ),
             )
+
+
+class DurableOperationsFinalUseBoundaryTests(unittest.TestCase):
+    def test_durable_operations_claim_and_dispatch_are_separate_closed_boundaries(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        rows = {row["id"]: row for row in manifest["boundary"]}
+        store_path = "codex-rs/hepta-operations/src/durable_store.rs"
+        dispatch_path = "codex-rs/hepta-operations/src/durable_dispatch.rs"
+        self.assertIn(store_path, rows["final_use_claim_raw"]["product_callers"])
+        self.assertNotIn(store_path, rows["final_use_delivery_raw"]["product_callers"])
+        self.assertEqual(
+            rows["final_use_dispatch_raw"]["product_callers"], [dispatch_path]
+        )
+        store = (ROOT / store_path).read_text(encoding="utf-8")
+        dispatch = (ROOT / dispatch_path).read_text(encoding="utf-8")
+        self.assertIn("authority.claim(signed, &binding)", store)
+        self.assertNotIn("with_verified_use", store)
+        self.assertIn(
+            "let authority: &FinalUseAuthority = &authorized.authority;", dispatch
+        )
+        self.assertIn(
+            "authority.with_dispatch_boundary(token, &authorized.binding, || {",
+            dispatch,
+        )
+        self.assertIn("authorized.binding", dispatch)
+        registry = json.loads(
+            (ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        json_rows = {row["id"]: row for row in registry["boundaries"]}
+        self.assertNotIn(
+            store_path, json_rows["final_use_delivery_raw"]["allowedCallers"]
+        )
+        self.assertEqual(
+            json_rows["final_use_dispatch_raw"]["allowedCallers"], [dispatch_path]
+        )
+
+
+class DeploymentIssuerLeaseCallerBoundaryTests(unittest.TestCase):
+    def test_deployment_issuer_lease_tokens_are_consumed_at_pinned_boundaries(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        rows = {row["id"]: row for row in manifest["boundary"]}
+        path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+        self.assertIn(path, rows["authority_lease_verify_use"]["product_callers"])
+        source = (ROOT / path).read_text(encoding="utf-8")
+        self.assertEqual(source.count(".verify_use("), 4)
+        self.assertIn("with_pinned_issuer_readback_boundary", source)
+        self.assertIn("with_pinned_issuer_dispatch_boundary", source)
+        self.assertIn("with_pinned_issuer_joint_dispatch_boundary", source)
+        self.assertIn("(writer_token, &writer.binding)", source)
+        self.assertIn("(effect_token, &effect.binding)", source)
+        registry = json.loads(
+            (ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        json_rows = {row["id"]: row for row in registry["boundaries"]}
+        self.assertIn(path, json_rows["authority_lease_verify_use"]["allowedCallers"])
+
+
+class RegisteredHumanTextReadbackBoundaryTests(unittest.TestCase):
+    def test_registered_human_text_requires_pinned_issuer_readback(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_registered_human_text_admission"
+        )
+        self.assertIn(
+            "self.with_issuer_writer_readback(registration, leases",
+            boundary["definition_markers"],
+        )
+
+        human = (ROOT / "codex-rs/hepta-agentd/src/deployment_text_human.rs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "self.with_issuer_writer_readback(registration, leases, |parent|",
+            human,
+        )
+        self.assertNotIn("registration.with_live(leases", human)
+
+        cas_boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_human_text_same_issuer_cas"
+        )
+        self.assertEqual(
+            cas_boundary["symbol"],
+            "DeploymentFinalUseIssuer::text_until_checked",
+        )
+        self.assertIn("parent: Some(parent)", cas_boundary["caller_markers"])
+
+        human_protected = next(
+            row
+            for row in manifest["protected_file"]
+            if row["path"] == "codex-rs/hepta-agentd/src/deployment_text_human.rs"
+        )
+        self.assertIn("parent: Some(parent)", human_protected["required"])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "human.rs").write_text(
+                human.replace("parent: Some(parent)", "parent: None", 1),
+                encoding="utf-8",
+            )
+            adversarial = {"protected_file": [dict(human_protected, path="human.rs")]}
+            with self.assertRaises(MODULE.VerificationFailure):
+                MODULE._verify_protected_files(root, adversarial)
+
+        helper_path = "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
+        helper = (ROOT / helper_path).read_text(encoding="utf-8")
+        protected = next(
+            row for row in manifest["protected_file"] if row["path"] == helper_path
+        )
+        required = protected["required"]
+        readback_order = next(
+            sequence
+            for sequence in protected["required_order"]
+            if sequence[0] == "fn with_issuer_writer_readback<T>("
+        )
+        self.assertEqual(
+            readback_order,
+            [
+                "fn with_issuer_writer_readback<T>(",
+                "registration.validate()?",
+                "let pinned = self",
+                "let writer = &registration.authority_lease",
+                ".verify_use(&writer.lease_id, writer.revision, &writer.binding)",
+                ".with_pinned_issuer_readback_boundary(",
+                "pinned.identity()",
+                "token,",
+                "&writer.binding,",
+                "if actual_writer != writer",
+                "readback_or_dispatch(issuer)",
+            ],
+        )
+        for marker in required:
+            self.assertIn(marker, helper)
+
+        mutations = (
+            (
+                ".with_pinned_issuer_readback_boundary(",
+                ".with_pinned_issuer_dispatch_boundary(",
+            ),
+            ("registration.validate()?", "let _registration = registration;"),
+        )
+        for old, new in mutations:
+            with self.subTest(marker=old), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "helper.rs").write_text(
+                    helper.replace(old, new, 1), encoding="utf-8"
+                )
+                adversarial = {"protected_file": [dict(protected, path="helper.rs")]}
+                with self.assertRaises(MODULE.VerificationFailure):
+                    MODULE._verify_protected_files(root, adversarial)
+
+
+class RetainedHumanTextLookupCallerPatternTests(unittest.TestCase):
+    def test_lookup_pattern_remains_bound_to_the_host_verifier(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_retained_human_text_lookup"
+        )
+        host_path = "codex-rs/hepta-agentd/src/authority_host_human_text.rs"
+        host = (ROOT / host_path).read_text(encoding="utf-8")
+
+        def consistent(row):
+            return (
+                row["symbol"] == "DeploymentFinalUseIssuer::verify_retained_human_text"
+                and row["definition_path"]
+                == "codex-rs/hepta-agentd/src/deployment_text_human.rs"
+                and row["product_callers"] == [host_path]
+                and "verify_retained_human_text" in row["call_pattern"]
+                and "text_until_checked" not in row["call_pattern"]
+                and ".verify_retained_human_text(" in host
+            )
+
+        self.assertTrue(consistent(boundary))
+
+        wrong_pattern = dict(
+            boundary,
+            call_pattern=boundary["call_pattern"].replace(
+                "verify_retained_human_text", "text_until_checked"
+            ),
+        )
+        self.assertFalse(consistent(wrong_pattern))
+
+        wrong_caller = dict(
+            boundary,
+            product_callers=["codex-rs/hepta-agentd/src/deployment_text.rs"],
+        )
+        self.assertFalse(consistent(wrong_caller))
+
+
+class OriginalWriterRotationBoundaryMarkerTests(unittest.TestCase):
+    def test_rotation_manifest_marker_matches_the_pinned_predecessor_call(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_original_issuer_writer_rotation"
+        )
+        source_path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
+        source = (ROOT / source_path).read_text(encoding="utf-8")
+        marker = ".with_retired_predecessor_for_pinned_issuer_boundary("
+
+        def consistent(row):
+            return (
+                row["symbol"] == "DeploymentFinalUseIssuer::rotate_writer_authorization"
+                and row["definition_path"] == source_path
+                and marker in row["definition_markers"]
+                and ".with_retired_predecessor_boundary("
+                not in row["definition_markers"]
+                and marker in source
+            )
+
+        self.assertTrue(consistent(boundary))
+        wrong_marker = dict(
+            boundary,
+            definition_markers=[
+                item.replace(marker, ".with_retired_predecessor_boundary(")
+                for item in boundary["definition_markers"]
+            ],
+        )
+        self.assertFalse(consistent(wrong_marker))
+
+
+class PhysicalCurrentRetiredAdoptionBoundaryMarkerTests(unittest.TestCase):
+    def test_adoption_manifest_and_protected_file_match_boxed_profile(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_physical_current_retired_adoption"
+        )
+        source_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
+        source = (ROOT / source_path).read_text(encoding="utf-8")
+        protected = next(
+            row for row in manifest["protected_file"] if row["path"] == source_path
+        )
+        marker = "AdoptMaterial::Physical(Box::new(profile))"
+
+        def consistent(row):
+            return (
+                row["symbol"]
+                == "HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material"
+                and row["definition_path"] == source_path
+                and marker in row["definition_markers"]
+                and "AdoptMaterial::Physical(profile)" not in row["definition_markers"]
+                and marker in source
+                and marker in protected["required"]
+                and "AdoptMaterial::Physical(profile)" not in protected["required"]
+            )
+
+        self.assertTrue(consistent(boundary))
+        wrong_boundary = dict(
+            boundary,
+            definition_markers=[
+                item.replace(marker, "AdoptMaterial::Physical(profile)")
+                for item in boundary["definition_markers"]
+            ],
+        )
+        self.assertFalse(consistent(wrong_boundary))
+
+        wrong_protected = dict(
+            protected,
+            required=[
+                item.replace(marker, "AdoptMaterial::Physical(profile)")
+                for item in protected["required"]
+            ],
+        )
+        original_protected = protected
+        protected = wrong_protected
+        try:
+            self.assertFalse(consistent(boundary))
+        finally:
+            protected = original_protected
+
+
+class PhysicalCurrentBackendGenesisBoundaryMarkerTests(unittest.TestCase):
+    def test_backend_genesis_marker_matches_boxed_profile_in_both_manifests(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_physical_current_backend_genesis"
+        )
+        source_path = (
+            "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
+        )
+        source = (ROOT / source_path).read_text(encoding="utf-8")
+        protected = next(
+            row for row in manifest["protected_file"] if row["path"] == source_path
+        )
+        marker = "FreshMaterial::Physical(Box::new(profile))"
+        stale = "FreshMaterial::Physical(profile)"
+
+        def consistent(row, protected_row):
+            return (
+                row["symbol"]
+                == "HostCognitiveCheckpoint::initialize_fresh_with_material"
+                and row["definition_path"] == source_path
+                and marker in row["definition_markers"]
+                and stale not in row["definition_markers"]
+                and marker in source
+                and marker in protected_row["required"]
+                and stale not in protected_row["required"]
+            )
+
+        self.assertTrue(consistent(boundary, protected))
+        wrong_boundary = dict(
+            boundary,
+            definition_markers=[
+                item.replace(marker, stale) for item in boundary["definition_markers"]
+            ],
+        )
+        self.assertFalse(consistent(wrong_boundary, protected))
+
+        wrong_protected = dict(
+            protected,
+            required=[item.replace(marker, stale) for item in protected["required"]],
+        )
+        self.assertFalse(consistent(boundary, wrong_protected))
 
 
 if __name__ == "__main__":
