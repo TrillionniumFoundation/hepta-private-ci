@@ -1,0 +1,247 @@
+name: Read existing HPCA and HCSN evidence
+
+on:
+  push:
+    branches:
+      - research/hpca-frozen-base-output-20261112-e901
+    paths:
+      - .github/workflows/hpca-evidence-readback.yml
+
+permissions:
+  actions: read
+
+jobs:
+  read-existing-artifacts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Verify and emit the two frozen CI archives
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 -I - <<'PY'
+          import base64
+          import hashlib
+          import io
+          import json
+          import math
+          import os
+          import sys
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          import zipfile
+          
+          REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
+          MAX_OUTPUT_BYTES = 850_000
+          MAX_MEMBER_BYTES = 512 * 1024
+          CHUNK_BYTES = 8192
+          ARTIFACTS = (
+              ("hpca-base", 13905243024,
+               "86063f817ca7bbbd6ecab307fa563e795e2448cf560c43bcc52feb6fabfaf1bc", 22204,
+               ("identity.json", "RESULT.json", "PREEXECUTION.json", "ROWS.jsonl", "ATTEMPTS.jsonl")),
+              ("hcsn-projected", 13905662105,
+               "c632d49e4fe62b656ce6ea6557b25750dd153d3fddb2e0160404b4d07921b89d", 181888,
+               ("identity.json", "projected-gradient-tests.json", "projected-gradient-fixture-trace.jsonl")),
+          )
+          output_bytes = 0
+          
+          
+          class ReadbackError(Exception):
+              pass
+          
+          
+          def emit(kind, payload):
+              global output_bytes
+              line = kind + "=" + json.dumps(payload, sort_keys=True, allow_nan=False, separators=(",", ":"))
+              size = len(line.encode("utf-8")) + 1
+              if output_bytes + size > MAX_OUTPUT_BYTES:
+                  raise ReadbackError("output budget exceeded")
+              print(line, flush=True)
+              output_bytes += size
+          
+          
+          class NoAPIRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          
+          
+          def require_https(url):
+              parsed = urllib.parse.urlparse(url)
+              if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
+                  raise ReadbackError("invalid download location")
+          
+          
+          class PublicDownloadRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  require_https(newurl)
+                  return urllib.request.Request(newurl, headers={"User-Agent": "hepta-evidence-readback"})
+          
+          
+          def download_artifact(artifact_id, expected_size, expected_sha):
+              api = f"https://api.github.com/repos/{REPOSITORY}/actions/artifacts/{artifact_id}/zip"
+              request = urllib.request.Request(api, headers={
+                  "Authorization": "Bearer " + os.environ["GITHUB_TOKEN"],
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "hepta-evidence-readback",
+              })
+              try:
+                  with urllib.request.build_opener(NoAPIRedirect()).open(request, timeout=30):
+                      raise ReadbackError("artifact API did not return its expected redirect")
+              except urllib.error.HTTPError as error:
+                  if error.code != 302:
+                      raise ReadbackError(f"artifact API HTTP status {error.code}") from None
+                  location = error.headers.get("Location", "")
+                  error.close()
+              require_https(location)
+              # This independent request and every subsequent redirect contain no auth header.
+              public_request = urllib.request.Request(location, headers={"User-Agent": "hepta-evidence-readback"})
+              try:
+                  with urllib.request.build_opener(PublicDownloadRedirect()).open(public_request, timeout=30) as response:
+                      require_https(response.geturl())
+                      raw = response.read(expected_size + 1)
+              except urllib.error.HTTPError as error:
+                  raise ReadbackError(f"public artifact download HTTP status {error.code}") from None
+              if len(raw) != expected_size or hashlib.sha256(raw).hexdigest() != expected_sha:
+                  raise ReadbackError("artifact byte length or SHA256 mismatch")
+              return raw
+          
+          
+          def chunk_records(artifact_id, raw, member=None):
+              total = (len(raw) + CHUNK_BYTES - 1) // CHUNK_BYTES
+              digest = hashlib.sha256(raw).hexdigest()
+              for index in range(total):
+                  yield {
+                      "artifact_id": artifact_id, "member": member, "part": index, "parts": total,
+                      "bytes": len(raw), "sha256": digest,
+                      "base64": base64.b64encode(raw[index * CHUNK_BYTES:(index + 1) * CHUNK_BYTES]).decode("ascii"),
+                  }
+          
+          
+          def emit_chunks(kind, artifact_id, raw, member=None):
+              records = list(chunk_records(artifact_id, raw, member))
+              needed = sum(len((kind + "=" + json.dumps(r, sort_keys=True, allow_nan=False,
+                                                        separators=(",", ":")) + "\n").encode("utf-8"))
+                           for r in records)
+              if output_bytes + needed + 4096 > MAX_OUTPUT_BYTES:
+                  emit("READBACK_MEMBER_OMITTED", {
+                      "artifact_id": artifact_id, "member": member, "bytes": len(raw),
+                      "sha256": hashlib.sha256(raw).hexdigest(),
+                      "reason": "output budget; complete bytes retained in verified ZIP chunks",
+                  })
+                  return
+              for record in records:
+                  emit(kind, record)
+          
+          
+          def reject_constant(value):
+              raise ReadbackError("nonfinite JSON constant")
+          
+          
+          def unique_object(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ReadbackError("duplicate JSON key")
+                  result[key] = value
+              return result
+          
+          
+          def checked_json(raw):
+              obj = json.loads(raw, parse_constant=reject_constant, object_pairs_hook=unique_object)
+              def finite(value):
+                  if isinstance(value, float) and not math.isfinite(value):
+                      raise ReadbackError("nonfinite JSON number")
+                  if isinstance(value, dict):
+                      for item in value.values():
+                          finite(item)
+                  elif isinstance(value, list):
+                      for item in value:
+                          finite(item)
+              finite(obj)
+              return obj
+          
+          
+          def read_member(archive, name):
+              matches = [info for info in archive.infolist() if info.filename.split("/")[-1] == name]
+              if len(matches) != 1:
+                  raise ReadbackError("missing or ambiguous required member: " + name)
+              info = matches[0]
+              if (info.is_dir() or info.file_size > MAX_MEMBER_BYTES or
+                      info.compress_type not in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED)):
+                  raise ReadbackError("unsupported or oversized required member: " + name)
+              return info.filename, archive.read(info)  # zipfile checks the member CRC.
+          
+          
+          def member_summary(name, raw):
+              if name.endswith(".jsonl"):
+                  records = [checked_json(line) for line in raw.decode("utf-8").splitlines()]
+                  counts = {}
+                  for record in records:
+                      kind = record.get("kind", record.get("schema", "untyped"))
+                      counts[kind] = counts.get(kind, 0) + 1
+                  return {"records": len(records), "record_kinds": counts,
+                          "first": records[0] if records else None, "last": records[-1] if records else None}
+              obj = checked_json(raw)
+              if name == "RESULT.json":
+                  rows = obj.get("rows", [])
+                  return {"schema": obj.get("schema"), "source_head": obj.get("source_head"),
+                          "status": obj.get("status"), "summary": obj.get("summary"),
+                          "rows": len(rows), "unique_ids": len({r["id"] for r in rows}),
+                          "emitted_tokens": sum(len(r["emitted_token_ids"]) for r in rows),
+                          "valid": sum(r["parsed"] is not None for r in rows),
+                          "correct_including_invalid": sum(r["parsed"] == r["truth"] for r in rows)}
+              if name == "PREEXECUTION.json":
+                  return {"schema": obj.get("schema"), "source_head": obj.get("source_head"),
+                          "runtime": obj.get("runtime"), "sources": obj.get("sources"),
+                          "population": obj.get("population"),
+                          "effective_generation_config": obj.get("effective_generation_config")}
+              if name == "projected-gradient-tests.json":
+                  return {"keys": sorted(obj), "schema": obj.get("schema"), "tests_run": obj.get("tests_run"),
+                          "successful": obj.get("successful"),
+                          "raw_member_chunks": "complete file emitted separately when within output budget"}
+              return obj
+          
+          
+          def main():
+              if os.environ.get("GITHUB_REPOSITORY") != REPOSITORY:
+                  raise ReadbackError("repository identity mismatch")
+              emit("READBACK_IDENTITY", {
+                  "schema": "hepta-existing-ci-artifact-readback-v1",
+                  "workflow_source_head": os.environ["GITHUB_SHA"], "run_id": os.environ["GITHUB_RUN_ID"],
+                  "repository": REPOSITORY, "model_executions": 0, "test_executions": 0,
+                  "max_output_bytes": MAX_OUTPUT_BYTES,
+              })
+              verified = []
+              for label, artifact_id, digest, size, names in ARTIFACTS:
+                  raw = download_artifact(artifact_id, size, digest)
+                  verified.append((label, artifact_id, raw, names))
+                  emit("READBACK_ZIP", {"label": label, "artifact_id": artifact_id,
+                                        "bytes": len(raw), "sha256": digest, "verified": True})
+                  emit_chunks("READBACK_ZIP_CHUNK", artifact_id, raw)
+              # Emit original archive bytes first; full member bytes preserve formatting and hashes.
+              for label, artifact_id, raw, names in reversed(verified):
+                  with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+                      for name in names:
+                          path, content = read_member(archive, name)
+                          emit("READBACK_MEMBER", {
+                              "label": label, "artifact_id": artifact_id, "path": path,
+                              "bytes": len(content), "sha256": hashlib.sha256(content).hexdigest(),
+                              "summary": member_summary(name, content),
+                          })
+                          emit_chunks("READBACK_MEMBER_CHUNK", artifact_id, content, path)
+              emit("READBACK_COMPLETE", {"artifacts": len(verified), "model_executions": 0,
+                                         "test_executions": 0, "emitted_bytes_before_footer": output_bytes})
+          
+          
+          try:
+              main()
+          except ReadbackError as error:
+              print("READBACK_FAILURE=" + json.dumps({"type": type(error).__name__, "reason": str(error)}), flush=True)
+              sys.exit(1)
+          except Exception as error:
+              # Do not expose signed download URLs, request objects, or authentication headers.
+              print("READBACK_FAILURE=" + json.dumps({"type": type(error).__name__}), flush=True)
+              sys.exit(1)
+          PY

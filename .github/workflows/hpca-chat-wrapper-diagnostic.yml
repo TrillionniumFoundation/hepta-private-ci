@@ -1,0 +1,67 @@
+name: HPCA public chat wrapper real-model diagnostic
+
+on:
+  push:
+    branches:
+      - research/hpca-public-chat-wrapper-20261112-t5
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hpca-chat-wrapper-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  public-real-model:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "4"
+      MKL_NUM_THREADS: "4"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: qualification/hpca-neuroscience-20261110
+      - name: Setup frozen Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.14.4"
+      - name: Test prospective contract
+        run: |
+          mkdir -p "$RUNNER_TEMP/hpca-chat"
+          python -m unittest discover -s qualification/hpca-neuroscience-20261110 -p test_chat_wrapper_probe.py -v 2>&1 | tee "$RUNNER_TEMP/hpca-chat/tests.log"
+      - name: Install frozen CPU model runtime
+        run: |
+          python -m pip install --disable-pip-version-check --progress-bar off 'torch==2.9.1+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check --progress-bar off 'transformers==4.57.3' 'numpy==2.3.5' 'tokenizers==0.22.2' 'safetensors==0.7.0'
+          python -m pip freeze --all > "$RUNNER_TEMP/hpca-chat/pip-freeze.txt"
+      - name: Native inference on frozen public cohort
+        run: |
+          /usr/bin/time -v -o "$RUNNER_TEMP/hpca-chat/process-resource.log" python qualification/hpca-neuroscience-20261110/chat_wrapper_probe.py --out "$RUNNER_TEMP/hpca-chat/execution" 2>&1 | tee "$RUNNER_TEMP/hpca-chat/execution.log"
+      - name: Immutable source assertion
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - name: Retain terminal or partial originals
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hpca-chat-wrapper-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hpca-chat/*.log
+            ${{ runner.temp }}/hpca-chat/*.txt
+            ${{ runner.temp }}/hpca-chat/execution/*.json
+            ${{ runner.temp }}/hpca-chat/execution/*.jsonl
+          if-no-files-found: error
+          retention-days: 30
