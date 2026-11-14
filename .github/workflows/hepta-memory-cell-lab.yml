@@ -1,0 +1,207 @@
+name: Memory Cell experimental evidence
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab*'
+      - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/**'
+      - 'codex-rs/hepta-intelligence-eval/tests/memory_cell_*'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_LAB.md'
+      - 'codex-rs/hepta-intelligence-eval/BUILD.bazel'
+      - '.github/workflows/hepta-memory-cell-lab.yml'
+permissions:
+  contents: read
+concurrency:
+  group: memory-cell-lab-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  source-candidate:
+    if: github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Use repository formatting and scoped lint-fix entry points
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          set +e
+          just fix -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport > /tmp/mcell-clippy.log 2>&1
+          result=$?
+          set -e
+          cat /tmp/mcell-clippy.log
+          echo "scoped_clippy_exit=$result"
+          just fmt --base "$BASE"
+          if git diff --quiet; then echo 'No source candidate changes'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/hepta-intelligence-eval/examples/ codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs codex-rs/hepta-intelligence-eval/BUILD.bazel
+          if git diff --cached --quiet; then echo 'No in-scope source changes'; exit 0; fi
+          git commit -m 'style(learning.eval): apply repository formatting and scoped MemoryCell lint fixes'
+          git push origin "HEAD:refs/heads/codex/memory-cell-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-scoped-clippy-log
+          path: /tmp/mcell-clippy.log
+          if-no-files-found: warn
+  workspace-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Run the existing learning.eval owner through just test
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport
+  native-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Compile the exact dependency-free lab and test targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version
+          mkdir -p /tmp/hepta-memory-cell-bin /tmp/hepta-memory-cell-evidence
+          rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/hepta-memory-cell-bin/lab
+          for source in codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs; do
+            rustc --edition=2024 --test "$source" -o "/tmp/hepta-memory-cell-bin/$(basename "$source" .rs)"
+          done
+      - name: Execute native tests, synthetic fixture and observed compiler experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in /tmp/hepta-memory-cell-bin/memory_cell_*; do "$test" --nocapture; done | tee /tmp/hepta-memory-cell-evidence/tests.log
+          /usr/bin/time -v -o /tmp/hepta-memory-cell-evidence/synthetic-resource.txt /tmp/hepta-memory-cell-bin/lab smoke /tmp/hepta-memory-cell-evidence/synthetic
+          /usr/bin/time -v -o /tmp/hepta-memory-cell-evidence/compiler-resource.txt /tmp/hepta-memory-cell-bin/lab build-smoke "$(git rev-parse HEAD)" /tmp/hepta-memory-cell-evidence/compiler
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in Path('/tmp/hepta-memory-cell-evidence').rglob('report.json'):
+              r = json.loads(p.read_text())
+              assert r['production_qualified'] is False
+              assert r['superiority_claim'] is False
+              assert len(r['arms']) == 7
+          PY
+          git rev-parse HEAD > /tmp/hepta-memory-cell-evidence/source-head.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-memory-cell-evidence/source-tree.txt
+          rustc --version --verbose > /tmp/hepta-memory-cell-evidence/toolchain.txt
+          find /tmp/hepta-memory-cell-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/hepta-memory-cell-evidence/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-lab-evidence
+          path: /tmp/hepta-memory-cell-evidence
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/hepta-memory-cell-evidence/synthetic/transfer-input
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-transfer-expected
+          path: /tmp/hepta-memory-cell-evidence/synthetic/transfer-expected.tsv
+          if-no-files-found: error
+  clean-node:
+    needs: native-experiment
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [a, b]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/memory-input
+      - name: Recall on a fresh runner without replay corpus or expected labels
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/memory-input -type f | wc -l)" -eq 2
+          rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/mcell-lab
+          /tmp/mcell-lab infer-transfer /tmp/memory-input /tmp/observed-${{ matrix.node }}.tsv
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-node-${{ matrix.node }}
+          path: /tmp/observed-${{ matrix.node }}.tsv
+  revoke-after-delivery:
+    needs: clean-node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/memory-input
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-cell-node-*
+          path: /tmp/node-results
+          merge-multiple: true
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-expected
+          path: /tmp/expected
+      - name: Verify parity independently and publish a newer revocation frontier
+        run: |
+          set -euo pipefail
+          diff -u /tmp/expected/transfer-expected.tsv /tmp/node-results/observed-a.tsv
+          diff -u /tmp/expected/transfer-expected.tsv /tmp/node-results/observed-b.tsv
+          python3 - <<'PY'
+          from pathlib import Path
+          lines = Path('/tmp/memory-input/model.bundle').read_text().splitlines()
+          assert lines[0] == 'MCELL-LAB-1' and int(lines[4]) > 0
+          Path('/tmp/current-revocations.txt').write_text('MCELL-REVOCATIONS-LAB-1\n' + lines[5] + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-current-revocations
+          path: /tmp/current-revocations.txt
+  restore-old-artifact:
+    needs: revoke-after-delivery
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [a, b]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/old-memory-input
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-current-revocations
+          path: /tmp/current-control
+      - name: An old model copy cannot resurrect a revoked source
+        run: |
+          set -euo pipefail
+          rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/mcell-lab
+          if /tmp/mcell-lab infer-transfer /tmp/old-memory-input /tmp/resurrected.tsv /tmp/current-control/current-revocations.txt 2>/tmp/rejection.txt; then
+            echo 'Revoked artifact unexpectedly usable'; exit 1
+          fi
+          grep -F 'revoked training root' /tmp/rejection.txt
+          test ! -e /tmp/resurrected.tsv
