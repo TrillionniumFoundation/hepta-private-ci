@@ -5,8 +5,8 @@ on:
     branches: [research/ndu-mgp-p1-paired-actual-output-20261022]
   pull_request:
     paths:
-      - 'experiments/ndu_mgp_gates/**'
-      - '.github/workflows/ndu-mgp-paired-observed-shadow.yml'
+      - experiments/ndu_mgp_gates/**
+      - .github/workflows/ndu-mgp-paired-observed-shadow.yml
   workflow_dispatch:
 
 permissions:
