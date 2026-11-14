@@ -206,7 +206,8 @@ fn receive_packet(socket: &UnixDatagram, expected: libc::ucred) -> io::Result<St
     let credential = unsafe {
         if (*header).cmsg_level != libc::SOL_SOCKET
             || (*header).cmsg_type != libc::SCM_CREDENTIALS
-            || (*header).cmsg_len != libc::CMSG_LEN(mem::size_of::<libc::ucred>() as u32) as _
+            || (*header).cmsg_len as u64
+                != u64::from(libc::CMSG_LEN(mem::size_of::<libc::ucred>() as u32))
             || (*header).cmsg_len > message.msg_controllen
             || !libc::CMSG_NXTHDR(&message, header).is_null()
         {
