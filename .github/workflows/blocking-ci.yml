@@ -171,6 +171,7 @@ jobs:
               /usr/share/dotnet \
               /opt/ghc \
               /usr/local/.ghcup \
+              /opt/hostedtoolcache/CodeQL \
               /usr/local/share/powershell
             do
               if [[ -d "$unused" && ! -L "$unused" ]]; then
@@ -179,6 +180,7 @@ jobs:
                 sudo rm -rf -- "$unused"
               fi
             done
+            sudo apt-get clean
           fi
           printf '%s\n' 'Runner disk after reclaiming unused tools:'
           df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-reclaim.txt"
@@ -253,6 +255,9 @@ jobs:
         run: |
           set -euo pipefail
           df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP" | tee "$RUNNER_TEMP/scoped-disk-after-tests.txt"
+          if [[ -d codex-rs/target ]]; then
+            du -sh codex-rs/target | tee "$RUNNER_TEMP/scoped-disk-target.txt" || true
+          fi
 
       - name: Retain dependency plan and real command output
         if: always()
