@@ -59,19 +59,32 @@ create_openai_url(None, 3);
 Install the required tooling once:
 
 ```bash
-cargo install --locked cargo-dylint dylint-link
-rustup toolchain install nightly-2025-09-18 \
+rustup toolchain install nightly-2026-05-13 \
   --component llvm-tools-preview \
   --component rustc-dev \
   --component rust-src
+cargo +nightly-2026-05-13 install --locked cargo-dylint --version 6.3.2
+cargo +nightly-2026-05-13 install --locked dylint-link --version 6.3.2
 ```
 
 Run the lint crate tests:
 
 ```bash
 cd tools/argument-comment-lint
-cargo test
+python3 prepare-clippy-source.py target/clippy-source
+export DYLINT_CLIPPY_REPO="$PWD/target/clippy-source"
+RUSTUP_TOOLCHAIN=nightly-2026-05-13 just test \
+  --manifest-path "$PWD/Cargo.toml" \
+  --config-file "$PWD/.config/nextest.toml" --locked
 ```
+
+The lint crate, its Clippy source commit, the driver tooling, and the nightly
+compiler are pinned together. `prepare-clippy-source.py` reads the full Clippy
+revision from the crate manifest and verifies that it selects the same nightly.
+It also fetches the preceding toolchain revision, which Dylint needs while
+collecting compiler symbols. CI exports this exact checkout through
+`DYLINT_CLIPPY_REPO`, so driver builds do not depend on an upstream default branch.
+The lint tooling uses Rust 1.97 nightly; the product toolchain remains Rust 1.96.1.
 
 GitHub releases also publish a DotSlash file named
 `argument-comment-lint` for macOS arm64, Linux arm64, Linux x64, and Windows
@@ -82,7 +95,7 @@ The package is not a full Rust toolchain. Running the prebuilt path still
 requires the pinned nightly toolchain to be installed via `rustup`:
 
 ```bash
-rustup toolchain install nightly-2025-09-18 \
+rustup toolchain install nightly-2026-05-13 \
   --component llvm-tools-preview \
   --component rustc-dev \
   --component rust-src
@@ -104,7 +117,7 @@ argument-comment-lint/
     argument-comment-lint
     cargo-dylint
   lib/
-    libargument_comment_lint@nightly-2025-09-18-<target>.dylib|so
+    libargument_comment_lint@nightly-2026-05-13-<target>.dylib|so
 ```
 
 On Windows the same layout is published as a `.zip`, with `.exe` and `.dll`
@@ -113,7 +126,7 @@ filenames instead.
 DotSlash resolves the package entrypoint to `argument-comment-lint/bin/argument-comment-lint`
 (or `.exe` on Windows). That runner finds the sibling bundled `cargo-dylint`
 binary and the single packaged Dylint library under `lib/`, normalizes the
-host-qualified nightly filename to the plain `nightly-2025-09-18` channel when
+host-qualified nightly filename to the plain `nightly-2026-05-13` channel when
 needed, and then invokes `cargo-dylint dylint --lib-path <that-library>` with
 the repo's default `DYLINT_RUSTFLAGS` and `CARGO_INCREMENTAL=0` settings.
 

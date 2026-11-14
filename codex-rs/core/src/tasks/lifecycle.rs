@@ -1,3 +1,5 @@
+use std::sync::atomic::Ordering;
+
 use codex_extension_api::ExtensionData;
 use codex_extension_api::ThreadIdleCause;
 use codex_protocol::protocol::CodexErrorInfo;
@@ -6,6 +8,10 @@ use codex_protocol::protocol::TurnAbortReason;
 
 use crate::session::session::Session;
 use crate::session::turn_context::TurnContext;
+
+#[cfg(test)]
+#[path = "idle_ready_tests.rs"]
+mod tests;
 
 impl Session {
     pub(super) async fn emit_turn_start_lifecycle(
@@ -43,11 +49,16 @@ impl Session {
     }
 
     pub(crate) async fn emit_thread_idle_lifecycle_if_idle(&self, cause: ThreadIdleCause) {
-        self.emit_thread_idle_lifecycle_if_idle_inner(
-            cause, /*terminalization_owner*/ None, /*start_transition_owner*/ None,
-            /*allow_shutdown*/ false,
-        )
-        .await;
+        if let Some((cause, attach_epoch)) = self
+            .emit_thread_idle_lifecycle_if_idle_inner(
+                cause, /*terminalization_owner*/ None, /*start_transition_owner*/ None,
+                /*allow_shutdown*/ false,
+            )
+            .await
+        {
+            self.emit_thread_idle_ready_lifecycle_if_idle(cause, attach_epoch)
+                .await;
+        }
     }
 
     /// A detached start-transition terminalizer may be the last owner of the
@@ -59,13 +70,14 @@ impl Session {
         cause: ThreadIdleCause,
         start_transition_owner: &std::sync::Arc<()>,
     ) {
-        self.emit_thread_idle_lifecycle_if_idle_inner(
-            cause,
-            /*terminalization_owner*/ None,
-            Some(start_transition_owner),
-            /*allow_shutdown*/ true,
-        )
-        .await;
+        let _ = self
+            .emit_thread_idle_lifecycle_if_idle_inner(
+                cause,
+                /*terminalization_owner*/ None,
+                Some(start_transition_owner),
+                /*allow_shutdown*/ true,
+            )
+            .await;
     }
 
     /// Emits idle lifecycle while retaining the caller's own terminalization
@@ -76,13 +88,14 @@ impl Session {
         cause: ThreadIdleCause,
         terminalization_owner: Option<&std::sync::Arc<()>>,
     ) {
-        self.emit_thread_idle_lifecycle_if_idle_inner(
-            cause,
-            terminalization_owner,
-            /*start_transition_owner*/ None,
-            /*allow_shutdown*/ false,
-        )
-        .await;
+        let _ = self
+            .emit_thread_idle_lifecycle_if_idle_inner(
+                cause,
+                terminalization_owner,
+                /*start_transition_owner*/ None,
+                /*allow_shutdown*/ false,
+            )
+            .await;
     }
 
     async fn emit_thread_idle_lifecycle_if_idle_inner(
@@ -91,42 +104,78 @@ impl Session {
         terminalization_owner: Option<&std::sync::Arc<()>>,
         start_transition_owner: Option<&std::sync::Arc<()>>,
         allow_shutdown: bool,
-    ) {
+    ) -> Option<(ThreadIdleCause, u64)> {
         if (!allow_shutdown && self.shutdown_started())
             || self.has_pending_task_terminalization_except(terminalization_owner)
             || self.has_pending_start_transition_except(start_transition_owner)
         {
-            return;
+            return None;
         }
-        let cause = {
+        let (cause, attach_epoch) = {
             let active_turn = self.active_turn.lock().await;
             if (!allow_shutdown && self.shutdown_started())
                 || self.has_pending_task_terminalization_except(terminalization_owner)
                 || self.has_pending_start_transition_except(start_transition_owner)
                 || active_turn.is_some()
             {
-                return;
+                return None;
             }
-            if self.is_interrupted() {
+            let cause = if self.is_interrupted() {
                 ThreadIdleCause::Interrupted
             } else {
                 cause
-            }
+            };
+            (cause, self.turn_epoch.load(Ordering::Acquire))
         };
         if self.input_queue.has_trigger_turn_mailbox_items().await {
-            return;
+            return None;
         }
 
         if (!allow_shutdown && self.shutdown_started())
             || self.has_pending_task_terminalization_except(terminalization_owner)
             || self.has_pending_start_transition_except(start_transition_owner)
         {
-            return;
+            return None;
         }
 
         for contributor in self.services.extensions.thread_lifecycle_contributors() {
             contributor
                 .on_thread_idle(codex_extension_api::ThreadIdleInput {
+                    cause,
+                    session_store: &self.services.session_extension_data,
+                    thread_store: &self.services.thread_extension_data,
+                })
+                .await;
+        }
+        Some((cause, attach_epoch))
+    }
+
+    /// Re-evaluate extension work only after the exact finishing generation
+    /// has released its fence. Each contributor still uses ordinary atomic
+    /// admission; a concurrent input is allowed to win that race.
+    pub(super) async fn emit_thread_idle_ready_lifecycle_if_idle(
+        &self,
+        cause: ThreadIdleCause,
+        attach_epoch: u64,
+    ) {
+        for contributor in self.services.extensions.thread_lifecycle_contributors() {
+            if self.input_queue.has_trigger_turn_mailbox_items().await {
+                return;
+            }
+            {
+                let active_turn = self.active_turn.lock().await;
+                if self.shutdown_started()
+                    || self.is_interrupted()
+                    || cause == ThreadIdleCause::Interrupted
+                    || self.has_pending_admission_fence()
+                    || active_turn.is_some()
+                    || self.turn_epoch.load(Ordering::Acquire) != attach_epoch
+                {
+                    return;
+                }
+            }
+            contributor
+                .on_thread_idle_ready(codex_extension_api::ThreadIdleInput {
                     cause,
                     session_store: &self.services.session_extension_data,
                     thread_store: &self.services.thread_extension_data,

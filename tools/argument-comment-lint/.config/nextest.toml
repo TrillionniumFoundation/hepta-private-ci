@@ -1,0 +1,11 @@
+# This is an independent Cargo workspace. Keep the product test policy without
+# importing package-specific overrides for crates outside this workspace.
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 2 }
+retries = 1
+
+[profile.default.junit]
+path = "junit.xml"
+
+[profile.local]
+inherits = "default"

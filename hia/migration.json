@@ -1,0 +1,2165 @@
+{
+  "schema": "codex.hia.migration.v1",
+  "objective": "Replace the integrated Codex implementation with HIA-native owners, verify its existing behavior, then retire superseded implementations.",
+  "whole_codex_rewritten": false,
+  "production_dispatch_migrated": false,
+  "baseline": {
+    "repository": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+    "revision": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "tree": "75dc1c1f65375c97da259d947c465a04f030461d",
+    "inventory_command": "git ls-tree -r -z 732e934ba496d90fbe042b8d41d479ef901643e5",
+    "inventory_sha256": "9df5ab92ad68f36293bba6b1198c9074689f0acb09f7717f5554bb41f169dfd8",
+    "tracked_blob_count": 8665,
+    "codex_rs_rust_file_count": 4404,
+    "codex_rs_cargo_manifest_count": 198,
+    "repository_rust_file_count": 4429,
+    "hia_or_hepta_file_count": 0,
+    "inventory_scope": "Git tree paths and blob identities. The counts include production, tests, fixtures, examples and support code; they are not per-file source review or qualification results.",
+    "crate_count_rule": "Every Cargo.toml under codex-rs, including the workspace manifest and nested fixture manifests. This is not the Cargo workspace member count.",
+    "crate_rust_assignment": "Assign each codex-rs .rs path to its nearest ancestor Cargo.toml; each Rust file is counted exactly once.",
+    "top_level_file_counts": {
+      ".bazelignore": 1,
+      ".bazelrc": 1,
+      ".bazelversion": 1,
+      ".codespellignore": 1,
+      ".codespellrc": 1,
+      ".codex": 18,
+      ".devcontainer": 11,
+      ".g1": 6,
+      ".gitattributes": 1,
+      ".github": 150,
+      ".gitignore": 1,
+      ".markdownlint-cli2.yaml": 1,
+      ".npmrc": 1,
+      ".prettierignore": 1,
+      ".prettierrc.toml": 1,
+      ".vscode": 3,
+      ".worktreeinclude": 1,
+      "AGENTS.md": 1,
+      "BUILD.bazel": 1,
+      "CALLERS.toml": 1,
+      "CHANGELOG.md": 1,
+      "LICENSE": 1,
+      "MODULE.bazel": 1,
+      "MODULE.bazel.lock": 1,
+      "NOTICE": 1,
+      "README.md": 1,
+      "SECURITY.md": 1,
+      "announcement_tip.toml": 1,
+      "apps": 43,
+      "bazel": 16,
+      "codex-cli": 7,
+      "codex-rs": 7531,
+      "defs.bzl": 1,
+      "docs": 234,
+      "external": 2,
+      "flake.lock": 1,
+      "flake.nix": 1,
+      "justfile": 1,
+      "package.json": 1,
+      "patches": 26,
+      "pnpm-lock.yaml": 1,
+      "pnpm-workspace.yaml": 1,
+      "qa": 9,
+      "qualification": 138,
+      "rbe.bzl": 1,
+      "scratch": 1,
+      "scripts": 182,
+      "sdk": 117,
+      "third_party": 15,
+      "tools": 123,
+      "workspace_root_test_launcher.bat.tpl": 1,
+      "workspace_root_test_launcher.sh.tpl": 1
+    }
+  },
+  "toolchain": {
+    "lock": "hia/toolchain.json",
+    "repository": "https://github.com/TrillionniumFoundation/Hepta",
+    "revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "implemented_target": "x86_64-unknown-linux-gnu",
+    "borrowed_buffer_capacity": 1048576,
+    "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
+    "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
+    "qualification_status": "three_generation_fixed_point_6_modules_and_5_opt_in_algorithms_passed",
+    "remaining_work": [
+      "native host interfaces required by the capability matrix",
+      "platform and architecture coverage required by Codex",
+      "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
+    ],
+    "native_compiler_generations_reproduced": true,
+    "qualification_scope": "B1/B2/B3 byte equality; 6 native modules; original-Rust and ABI comparisons; 5 opt-in production algorithms; listed Linux GNU caller/consumer gates and relocated full CLI symbol/startup/patch checks. Whole capability owners, default releases and other platforms remain pending.",
+    "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+    "complete_compiler_runtime_qualified": false,
+    "report": "hia/verification.json",
+    "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
+  },
+  "candidate_modules": [
+    {
+      "id": "seek_sequence",
+      "hia_source": "hia/seek_sequence.hepta",
+      "source_path": "codex-rs/apply-patch/src/seek_sequence.rs",
+      "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
+      "source_function": "seek_sequence",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_selfhost_component_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "f0",
+        "source_wire": "u64 line_count, pattern_count, start, flags; u64 offsets[line_count+pattern_count+1]; concatenated UTF-8 strings; all integers little-endian",
+        "output_wire": "u64 found, u64 index; little-endian",
+        "success_return": 16,
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "workspace": "reserved; not modified"
+      },
+      "behavior": [
+        "exact, trailing-whitespace, trim and Unicode punctuation matching passes",
+        "original pass precedence and first matching line",
+        "empty patterns, out-of-range starts, EOF and both line-ending modes"
+      ],
+      "tests": [
+        "hia/tests/test_seek_sequence.py",
+        "hia/tests/seek_sequence_oracle.rs",
+        "hia/tests/native_patch_caller.rs",
+        "codex-rs/apply-patch/tests/suite/hia_native.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "valid_cases": 2327,
+          "invalid_cases": 86,
+          "buffer_boundary_calls": 135,
+          "original_rust_comparison": true,
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
+          "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+          "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1"
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-apply-patch/hia-native",
+          "link": "static=codex_hia_seek_sequence",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "utf8_boundaries",
+      "hia_source": "hia/utf8_boundaries.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_blob": "2d081f79e29d1d7d9a351c92700262e4ed98b87f",
+      "source_function": "take_bytes_at_char_boundary",
+      "implementation_status": "native_candidate",
+      "qualification_status": "native_selfhost_component_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "f0",
+        "source_wire": "u64 max_bytes little-endian, then UTF-8 bytes",
+        "output_wire": "u64 prefix_end little-endian",
+        "success_return": 8,
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "workspace": "reserved; not modified"
+      },
+      "behavior": [
+        "largest complete UTF-8 prefix within the byte budget",
+        "original Rust behavior for every valid string input",
+        "full UTF-8 validation before output publication"
+      ],
+      "tests": [
+        "hia/tests/test_utf8_boundaries.py"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "tests": 6,
+          "skipped": 0,
+          "native_calls": 75109,
+          "rust_oracle_calls": 2093,
+          "core_vm_calls": 56,
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
+          "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+          "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17"
+        },
+        "production_dispatch": {
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "id": "utf8_prefix",
+      "hia_source": "hia/utf8_prefix.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "take_bytes_at_char_boundary",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_utf8_prefix",
+        "source_wire": "u64 length, budget, window_start; at most four bytes; little-endian",
+        "source_contract": "Valid original UTF-8 string (&str)",
+        "maximum_frame_bytes": 28,
+        "output_wire": "u64 prefix_end little-endian",
+        "success_return": 8
+      },
+      "tests": [
+        "hia/tests/test_native_string_caller.py",
+        "hia/tests/native_string_caller.rs",
+        "codex-rs/utils/string/src/hia_native_tests.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+          "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
+          "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
+          "tests": 5,
+          "skipped": 0,
+          "original_rust_comparisons": 18559
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_utf8_prefix",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "metric_tag",
+      "hia_source": "hia/metric_tag.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "sanitize_metric_tag_value",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_metric_tag",
+        "source_contract": "Successive chunks of a complete valid UTF-8 string; chunks may split a scalar.",
+        "maximum_chunk_bytes": 1048576,
+        "output_capacity": 256,
+        "workspace_bytes": 32,
+        "workspace": "Initially zero. u64 count and last-non-underscore position saturate at 257; u64 alphanumeric flag; final flag byte 24; finalized byte 25; reserved bytes 26..31 preserved.",
+        "nonfinal_success_return": 0,
+        "final_success_return": "1..256",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_effect": "Output and workspace unchanged."
+      },
+      "behavior": [
+        "Retain ASCII alphanumeric characters and ._-/; replace each other Unicode scalar with one underscore.",
+        "Trim leading and trailing underscores; select unspecified when the entire input contains no ASCII alphanumeric character.",
+        "Otherwise retain the first 256 bytes of the trimmed result, including when the alphanumeric character occurs after byte 256.",
+        "Bounded streaming buffers preserve behavior for arbitrary valid string lengths."
+      ],
+      "tests": [
+        "hia/tests/test_native_metric_caller.py",
+        "hia/tests/native_metric_caller.rs",
+        "hia/tests/test_metric_tag_abi.py",
+        "codex-rs/utils/string/src/hia_native_metric_tests.rs"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "tests": 6,
+          "skipped": 0,
+          "original_rust_comparisons": 40992,
+          "abi_native_calls": 10535,
+          "report": "hia/verification.json",
+          "source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+          "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
+          "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae"
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_metric_tag",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "markdown_location",
+      "hia_source": "hia/markdown_location.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "source_function": "normalize_markdown_hash_location_suffix",
+      "interface": {
+        "entry": "codex_hia_markdown_location",
+        "source_contract": "Successive byte windows of a valid UTF-8 string; windows may split scalars.",
+        "maximum_frame_bytes": 4096,
+        "output_capacity": "at least the current source length",
+        "workspace_bytes": 2,
+        "workspace": "Byte 0 holds the grammar phase 0..6 or finalized phase 7; byte 1 is the final-frame flag 0 or 1.",
+        "success_return": "current-frame output bytes, including zero",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "invalid_format_return": 4294967293,
+        "error_effect": "The current call leaves output and workspace unchanged; prior successful frames remain committed."
+      },
+      "behavior": [
+        "Require # and an initial L; the optional range starts at the first hyphen and requires another L.",
+        "Replace the initial # with a colon and omit each endpoint's initial L.",
+        "Replace the first C in each endpoint with a colon; preserve later C and hyphen bytes exactly.",
+        "Preserve the original acceptance of empty and nonnumeric endpoint bodies; retain Unicode bytes unchanged."
+      ],
+      "tests": [
+        "hia/tests/test_native_markdown_caller.py",
+        "hia/tests/native_markdown_caller.rs",
+        "hia/tests/test_markdown_location_abi.py",
+        "codex-rs/utils/string/src/hia_native_markdown_tests.rs"
+      ],
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+          "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
+          "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
+          "tests": 7,
+          "skipped": 0,
+          "original_rust_comparisons": 164791,
+          "abi_native_calls": 1289
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_markdown_location",
+          "default_release_migrated": false
+        }
+      }
+    },
+    {
+      "id": "ascii_json_fragment",
+      "hia_source": "hia/ascii_json_fragment.hepta",
+      "source_path": "codex-rs/utils/string/src/json.rs",
+      "source_function": "AsciiJsonFormatter::write_string_fragment",
+      "interface": {
+        "entry": "codex_hia_ascii_json_fragment",
+        "source_contract": "Borrowed UTF-8 windows; re-present an unconsumed partial scalar with the next window.",
+        "maximum_frame_bytes": 4096,
+        "output_capacity": "8 + 3 * current source length",
+        "output_wire": "u64 consumed-source-prefix length little-endian followed by escaped bytes",
+        "workspace_bytes": 2,
+        "workspace": "Byte 0 is open (0) or finalized (1); byte 1 is the final-frame flag 0 or 1.",
+        "success_return": "total output bytes including the eight-byte header",
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "invalid_utf8_return": 4294967293,
+        "error_effect": "The current call leaves output and workspace unchanged; prior writer effects are not rolled back."
+      },
+      "behavior": [
+        "Preserve ASCII fragment bytes and encode other Unicode scalars as lowercase JSON Unicode escapes, including surrogate pairs.",
+        "Validate canonical UTF-8; a nonfinal incomplete scalar remains unconsumed, while a final incomplete scalar is rejected.",
+        "Keep Serde's surrounding JSON serialization, control-character escaping and writer-error propagation unchanged."
+      ],
+      "tests": [
+        "hia/tests/test_native_ascii_json_caller.py",
+        "hia/tests/native_ascii_json_caller.rs",
+        "hia/tests/test_ascii_json_abi.py",
+        "codex-rs/utils/string/src/ascii_json_tests.rs"
+      ],
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "rust_version": "1.96.1",
+          "host": "ai395",
+          "artifact_generation": "B3",
+          "report": "hia/verification.json",
+          "source_sha256": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+          "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
+          "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
+          "tests": 7,
+          "skipped": 0,
+          "original_rust_comparisons": 27075,
+          "abi_native_calls": 957
+        },
+        "production_dispatch": {
+          "status": "native_linux_crate_tests_passed",
+          "feature": "codex-utils-string/hia-native",
+          "link": "static=codex_hia_ascii_json_fragment",
+          "default_release_migrated": false
+        }
+      }
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "model_transport",
+      "source_roots": [
+        "codex-rs/codex-api",
+        "codex-rs/codex-client",
+        "codex-rs/http-client",
+        "codex-rs/websocket-client",
+        "codex-rs/model-provider",
+        "codex-rs/model-provider-info",
+        "codex-rs/backend-client"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "HTTP/TLS certificate and hostname verification",
+        "streaming SSE and WebSocket response events",
+        "provider requests, cancellation, reconnect and retry behavior"
+      ],
+      "next_implementation": "Implement the transport state machines and provider wire formats in HIA; run the existing mocked-provider and real transport integration cases."
+    },
+    {
+      "id": "authentication_identity",
+      "source_roots": [
+        "codex-rs/login",
+        "codex-rs/keyring-store",
+        "codex-rs/secrets",
+        "codex-rs/aws-auth",
+        "codex-rs/workload-identity",
+        "codex-rs/agent-identity"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "API key and account login flows",
+        "credential storage, refresh, redaction and logout",
+        "workload identity and platform keyring behavior"
+      ],
+      "next_implementation": "Add native credential and identity interfaces with the same permission boundaries and platform-specific storage tests."
+    },
+    {
+      "id": "thread_turn_execution",
+      "source_roots": [
+        "codex-rs/core",
+        "codex-rs/core-api",
+        "codex-rs/protocol",
+        "codex-rs/thread-store",
+        "codex-rs/thread-manager-sample"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "thread creation, turn state and event ordering",
+        "incremental model context and tool-result association",
+        "interrupt, cancellation and concurrent thread ownership"
+      ],
+      "next_implementation": "Translate the thread and turn state machines, then exercise them through the existing public protocol integration harness."
+    },
+    {
+      "id": "history_storage_recovery",
+      "source_roots": [
+        "codex-rs/state",
+        "codex-rs/history",
+        "codex-rs/message-history",
+        "codex-rs/rollout",
+        "codex-rs/rollout-trace",
+        "codex-rs/thread-store"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "existing rollout and database compatibility",
+        "atomic persistence, resume and recovery after interruption",
+        "migration, compaction and retained identifiers"
+      ],
+      "next_implementation": "Implement native durable storage and replay against existing session fixtures before replacing any persistence owner."
+    },
+    {
+      "id": "tools_processes_files",
+      "source_roots": [
+        "codex-rs/tools",
+        "codex-rs/exec",
+        "codex-rs/exec-server",
+        "codex-rs/exec-server-protocol",
+        "codex-rs/shell-command",
+        "codex-rs/file-system",
+        "codex-rs/code-mode-host",
+        "codex-rs/code-mode-runtime"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "tool argument and result formats",
+        "process groups, PTY and pipe lifecycle",
+        "timeouts, cancellation and bounded output",
+        "file effects, error propagation and code-mode host behavior"
+      ],
+      "next_implementation": "Add HIA host-operation interfaces and owned asynchronous execution, then run the original process and tool integration cases."
+    },
+    {
+      "id": "permissions_sandbox",
+      "source_roots": [
+        "codex-rs/execpolicy",
+        "codex-rs/sandboxing",
+        "codex-rs/linux-sandbox",
+        "codex-rs/windows-sandbox-rs",
+        "codex-rs/process-hardening",
+        "codex-rs/network-proxy",
+        "codex-rs/bwrap",
+        "codex-rs/shell-escalation"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "existing approval and execution policies",
+        "filesystem and network isolation",
+        "platform sandbox setup and denial behavior"
+      ],
+      "next_implementation": "Port policy evaluation and platform integration while preserving the existing sandbox environment contracts and denial tests."
+    },
+    {
+      "id": "mcp",
+      "source_roots": [
+        "codex-rs/codex-mcp",
+        "codex-rs/rmcp-client",
+        "codex-rs/mcp-server"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "client and server initialization",
+        "tool discovery, invocation and result envelopes",
+        "notifications, cancellation, sessions and transports"
+      ],
+      "next_implementation": "Implement native MCP protocol/session handling and qualify against the existing stdio and HTTP fixtures."
+    },
+    {
+      "id": "app_server_v2",
+      "source_roots": [
+        "codex-rs/app-server",
+        "codex-rs/app-server-protocol",
+        "codex-rs/app-server-transport",
+        "codex-rs/app-server-daemon",
+        "codex-rs/app-server-client"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "v2 JSON-RPC request and event compatibility",
+        "generated schema and TypeScript compatibility",
+        "connection lifecycle and mixed app/exec operating systems"
+      ],
+      "next_implementation": "Preserve the v2 schema and wire names while replacing the actual app-server owner; run its public API integration suite."
+    },
+    {
+      "id": "cli_tui",
+      "source_roots": [
+        "codex-rs/cli",
+        "codex-rs/tui",
+        "codex-rs/arg0",
+        "codex-rs/ansi-escape",
+        "codex-rs/terminal-detection",
+        "codex-rs/install-context"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "CLI flags, exit status and configuration discovery",
+        "terminal input, rendering, resizing and accessibility",
+        "user-visible snapshots and interactive session behavior"
+      ],
+      "next_implementation": "Implement native CLI and terminal event/rendering paths and compare the existing CLI tests and TUI snapshots."
+    },
+    {
+      "id": "sdk_frontends",
+      "source_roots": [
+        "sdk",
+        "codex-cli",
+        "apps"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "SDK request and response interfaces",
+        "frontend lifecycle and packaging",
+        "existing TypeScript and JavaScript callers"
+      ],
+      "next_implementation": "Map each public SDK/frontend API to the native protocol and retain compatibility fixtures during the implementation."
+    },
+    {
+      "id": "patch_application",
+      "source_roots": [
+        "codex-rs/apply-patch",
+        "codex-rs/file-search"
+      ],
+      "migration_status": "partial_opt_in_caller",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "patch parsing, matching, updates and error behavior",
+        "line ending modes and file effects",
+        "Unicode context matching and search ordering"
+      ],
+      "next_implementation": "Complete platform/default release gates and HIA parser/file-update owners.",
+      "candidate_modules": [
+        "seek_sequence"
+      ]
+    },
+    {
+      "id": "string_utilities",
+      "source_roots": [
+        "codex-rs/utils/string"
+      ],
+      "migration_status": "partial_opt_in_caller",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "UTF-8 boundaries",
+        "middle truncation and budget accounting",
+        "metric tag, UUID, JSON and location helpers"
+      ],
+      "next_implementation": "Complete middle truncation, budget accounting and UUID helpers, plus the remaining owner/default-release/platform gates. JSON serialization outside the fragment encoder remains Rust.",
+      "candidate_modules": [
+        "utf8_boundaries",
+        "utf8_prefix",
+        "metric_tag",
+        "markdown_location",
+        "ascii_json_fragment"
+      ]
+    },
+    {
+      "id": "hepta_cells_and_adapters",
+      "source_roots": [
+        "codex-rs/hepta-agent-protocol",
+        "codex-rs/hepta-agentd",
+        "codex-rs/hepta-authbus",
+        "codex-rs/hepta-authbus-p1-3-qualification",
+        "codex-rs/hepta-automation",
+        "codex-rs/hepta-bao-adapter",
+        "codex-rs/hepta-bellman-operator",
+        "codex-rs/hepta-codex-adapter",
+        "codex-rs/hepta-cognitive-read",
+        "codex-rs/hepta-cognitive-store",
+        "codex-rs/hepta-cognitive-types",
+        "codex-rs/hepta-compact-engine",
+        "codex-rs/hepta-context-compiler",
+        "codex-rs/hepta-contracts",
+        "codex-rs/hepta-control-plane",
+        "codex-rs/hepta-evidence",
+        "codex-rs/hepta-fleet",
+        "codex-rs/hepta-infer-core",
+        "codex-rs/hepta-infer-worker-host",
+        "codex-rs/hepta-inferd",
+        "codex-rs/hepta-intelligence",
+        "codex-rs/hepta-intelligence-eval",
+        "codex-rs/hepta-intuition",
+        "codex-rs/hepta-kg",
+        "codex-rs/hepta-learning-artifacts",
+        "codex-rs/hepta-learning-ledger",
+        "codex-rs/hepta-matrix-protocol",
+        "codex-rs/hepta-matrix-sdk",
+        "codex-rs/hepta-matrix-store",
+        "codex-rs/hepta-matrixd",
+        "codex-rs/hepta-memory",
+        "codex-rs/hepta-memory-federation",
+        "codex-rs/hepta-memory-retrieval",
+        "codex-rs/hepta-native-gateway",
+        "codex-rs/hepta-ndu",
+        "codex-rs/hepta-neuron",
+        "codex-rs/hepta-objective",
+        "codex-rs/hepta-operations",
+        "codex-rs/hepta-operator-acceptance",
+        "codex-rs/hepta-paths",
+        "codex-rs/hepta-plasticity",
+        "codex-rs/hepta-prompt-optimizer",
+        "codex-rs/hepta-prompt-registry",
+        "codex-rs/hepta-runtime",
+        "codex-rs/hepta-shadow-qualification",
+        "codex-rs/hepta-supervisor",
+        "codex-rs/hepta-types",
+        "codex-rs/hepta-wire"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "existing Cell, Agentd and Codex adapter boundaries",
+        "principal, agent, cell and run identity",
+        "recovery, budgets, receipts and learning/adoption controls"
+      ],
+      "next_implementation": "Migrate the actual Hepta adapter and cell owners by subsystem, preserving existing integration and recovery behavior."
+    },
+    {
+      "id": "platforms_build_release",
+      "source_roots": [
+        ".github",
+        "codex-rs/linux-sandbox",
+        "codex-rs/windows-sandbox-rs",
+        "codex-rs/cli",
+        "codex-rs/tui",
+        "codex-cli",
+        "sdk",
+        "bazel"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "Linux, macOS and Windows behavior",
+        "supported architecture and app/exec host combinations",
+        "reproducible packages and clean installation"
+      ],
+      "next_implementation": "Extend the native target/host support and run each required platform and end-to-end release lane before replacing its shipped artifacts."
+    },
+    {
+      "id": "hia_toolchain",
+      "source_repositories": [
+        {
+          "repository": "https://github.com/TrillionniumFoundation/Hepta",
+          "revision": "f33d8da316de8fdf27b504371f1a5310997ff548"
+        }
+      ],
+      "source_paths": [
+        "hia/build.py",
+        "hia/toolchain.json"
+      ],
+      "migration_status": "pending",
+      "production_dispatch_migrated": false,
+      "required_behavior": [
+        "native compilation and runtime ownership for the required Codex language surface",
+        "native host operations for network, storage, processes and terminal interfaces",
+        "required target/platform and clean-build support"
+      ],
+      "next_implementation": "Complete the pinned compiler/runtime capability and host-operation dependencies as each Codex owner is implemented."
+    }
+  ],
+  "rust_components": [
+    {
+      "manifest": "codex-rs/Cargo.toml",
+      "manifest_blob": "d2703b590935ab17316e6c258657c0ce5ab7412a",
+      "rust_file_count": 0,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/agent-graph-store/Cargo.toml",
+      "manifest_blob": "15d116823b73afa82021f3ca55a28ce25e9044aa",
+      "rust_file_count": 5,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/agent-identity/Cargo.toml",
+      "manifest_blob": "36d5eb41fd694a9eb283cbd6af4bc0977fa36c80",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/analytics/Cargo.toml",
+      "manifest_blob": "8546427469212f824055765ffe79dd174aab3f7f",
+      "rust_file_count": 9,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ansi-escape/Cargo.toml",
+      "manifest_blob": "edb5b6e514cc2d36596a5dce7e9f6963cc2def8d",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server-client/Cargo.toml",
+      "manifest_blob": "cfe7a3d47f690470979c4386d5a89e640a4270d0",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server-daemon/Cargo.toml",
+      "manifest_blob": "fee57321978f8033232071940d85e5a1b8942b51",
+      "rust_file_count": 11,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server-protocol-noop-macros/Cargo.toml",
+      "manifest_blob": "93a24b070beffa187ab27f331e35cdcefe21c4b8",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server-protocol/Cargo.toml",
+      "manifest_blob": "da3876496ae9b90bdf3cea620b5a2eac6324e239",
+      "rust_file_count": 58,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server-test-client/Cargo.toml",
+      "manifest_blob": "901afb70d00f16e004913c764337d92afc82808b",
+      "rust_file_count": 9,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server-transport/Cargo.toml",
+      "manifest_blob": "7beaa4e42b225d14975aa6cc3368d66b13a03470",
+      "rust_file_count": 26,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server/Cargo.toml",
+      "manifest_blob": "7008939cb5c05ba76d39d76e063108f2dc0e449c",
+      "rust_file_count": 230,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/app-server/tests/common/Cargo.toml",
+      "manifest_blob": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
+      "rust_file_count": 14,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/apply-patch/Cargo.toml",
+      "manifest_blob": "8e1d7f651f47a76de2a6ed6226aa2ec1a55cf5d6",
+      "rust_file_count": 16,
+      "migration_status": "partial_opt_in_caller",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/arg0/Cargo.toml",
+      "manifest_blob": "bb45db45521a60e80088f9032431d28ff4e717ed",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/async-utils/Cargo.toml",
+      "manifest_blob": "093bbe0972b4a4fce1f8a7ef87b3c1f04f5b9ca0",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/aws-auth/Cargo.toml",
+      "manifest_blob": "6bb5a69ae9dbf82efcf6b637e30d521e19a8ecfe",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/backend-client/Cargo.toml",
+      "manifest_blob": "512d9606170bd8fcdc12c98d82dda43e47910a65",
+      "rust_file_count": 9,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/build-info/Cargo.toml",
+      "manifest_blob": "f9cc3d040fb872382d7801e7720f41447f62e1f9",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/bwrap/Cargo.toml",
+      "manifest_blob": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/chatgpt/Cargo.toml",
+      "manifest_blob": "04b9cb7df6786401aa2c2cbad225cc40a26d277d",
+      "rust_file_count": 8,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/cli/Cargo.toml",
+      "manifest_blob": "d2360ef42c5a8c8a9ffe3231f85220597847f0ab",
+      "rust_file_count": 77,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/cloud-config/Cargo.toml",
+      "manifest_blob": "ecb33d34beb89a3112cbd316e6bcf672b089a833",
+      "rust_file_count": 9,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/cloud-tasks-client/Cargo.toml",
+      "manifest_blob": "8efd78cb22d0b6458e9ec9138f0df03590f75d75",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/cloud-tasks-mock-client/Cargo.toml",
+      "manifest_blob": "b249b654e02f36360389a12ccc14bffb787b9726",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/cloud-tasks/Cargo.toml",
+      "manifest_blob": "12bd6fdf7fd03e8b9c16de911f4ca69d625fba90",
+      "rust_file_count": 11,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/code-mode-host/Cargo.toml",
+      "manifest_blob": "685397aadfa0a681dcad1b2f84f3b9ae8964186a",
+      "rust_file_count": 28,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/code-mode-protocol/Cargo.toml",
+      "manifest_blob": "cad10b47ebf4e577d9d9278703424f266ba6cc71",
+      "rust_file_count": 18,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/code-mode-runtime/Cargo.toml",
+      "manifest_blob": "e3708b657ebd5e05a289acffea1dccb2061db4fd",
+      "rust_file_count": 21,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/code-mode/Cargo.toml",
+      "manifest_blob": "0ef5079bebb7f523b4b5557ec07e46d3c5230465",
+      "rust_file_count": 31,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/codex-api/Cargo.toml",
+      "manifest_blob": "01cacbe2b4608ab8ea0853ce21e1b11768f9eb80",
+      "rust_file_count": 48,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/codex-backend-openapi-models/Cargo.toml",
+      "manifest_blob": "7baf01935d36ad701d79d0c6e7e9ece0b056142f",
+      "rust_file_count": 21,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/codex-client/Cargo.toml",
+      "manifest_blob": "bc67e383a83d13d9a841ef3017ff4fc58284d4c3",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/codex-experimental-api-macros/Cargo.toml",
+      "manifest_blob": "2e148a21d782b2ca20f5c81fc4ea896523d4d80d",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/codex-home/Cargo.toml",
+      "manifest_blob": "a8fa625dcfc1a38ebfc0bbdd18ec57ce7c1e625b",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/codex-mcp/Cargo.toml",
+      "manifest_blob": "6134f2126db203999727d05f61921836dfed06b7",
+      "rust_file_count": 41,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/collaboration-mode-templates/Cargo.toml",
+      "manifest_blob": "2c17b1fd2ad989bda8a38e80dee1c5380f887c03",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/config/Cargo.toml",
+      "manifest_blob": "37a1c32439b633761727924dc9e762ae0781658d",
+      "rust_file_count": 72,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/connectors/Cargo.toml",
+      "manifest_blob": "ac3ce9241c2d6f4deb3ac09ced64087fd51b29b3",
+      "rust_file_count": 20,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/context-fragments/Cargo.toml",
+      "manifest_blob": "ca84916ce99b61eef9f5b02cf7dd102c399e5732",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/core-api/Cargo.toml",
+      "manifest_blob": "b82d5ee4802d68b29f574bc8ebee1334cf751caa",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/core-plugins/Cargo.toml",
+      "manifest_blob": "0899163accb0edc3e98b27b9b9fdfd86adab46ae",
+      "rust_file_count": 73,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/core/Cargo.toml",
+      "manifest_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+      "rust_file_count": 601,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/core/tests/common/Cargo.toml",
+      "manifest_blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93",
+      "rust_file_count": 13,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/diagnostics/Cargo.toml",
+      "manifest_blob": "2eb2125a102e121ed5a51d8dad3013c7cc258cf0",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/exec-server-protocol/Cargo.toml",
+      "manifest_blob": "9dac711e1a0f404be080113747997690e9cf4a49",
+      "rust_file_count": 8,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/exec-server/Cargo.toml",
+      "manifest_blob": "746bfb231d61c1a67163ff55c46cd7e92964457a",
+      "rust_file_count": 131,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/exec-server/tests/support/Cargo.toml",
+      "manifest_blob": "85ad347b6c5494746f3f017096c7c6a8f4392435",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/exec/Cargo.toml",
+      "manifest_blob": "9c3a236bf7c5d678bdf03aaa140fe40f2e7a807e",
+      "rust_file_count": 31,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/execpolicy/Cargo.toml",
+      "manifest_blob": "42040222336513132da0b6a274bcd3fc80589f99",
+      "rust_file_count": 13,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/agent/Cargo.toml",
+      "manifest_blob": "6c3f10a43319a122e2da129e31ba34aa4f1df49a",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/connectors/Cargo.toml",
+      "manifest_blob": "1aead727731475bc9590ac90efb37c2ae7adef64",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/extension-api/Cargo.toml",
+      "manifest_blob": "c6eb90ec97d6fae953e8899edca318c492d5138c",
+      "rust_file_count": 33,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/git-attribution/Cargo.toml",
+      "manifest_blob": "e96d0dbcd577bcc0645f3f6175bbe31429f87159",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/goal/Cargo.toml",
+      "manifest_blob": "22ee1794fdf1341819bb8041882b84124ef2362e",
+      "rust_file_count": 13,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/guardian-v2/Cargo.toml",
+      "manifest_blob": "ebe48e99b3927ba3d4f407a21e662dbe93bdbce8",
+      "rust_file_count": 13,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/hepta-governance/Cargo.toml",
+      "manifest_blob": "229991524ea3a5219054f2b36b87c7708a2d93a6",
+      "rust_file_count": 13,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/hepta-memory/Cargo.toml",
+      "manifest_blob": "2d17c6481dbe0d75bd057e2edc9e3ee46de88c73",
+      "rust_file_count": 22,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/hepta-prompt/Cargo.toml",
+      "manifest_blob": "152fea264155931b3994e98e3c754b8f79c57718",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/history-notes/Cargo.toml",
+      "manifest_blob": "08fb92dd74557893eb7cf6fa989e798d72a92660",
+      "rust_file_count": 7,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/image-generation/Cargo.toml",
+      "manifest_blob": "ad10b2b0a640744ce3986a22990cc46aa24b89b3",
+      "rust_file_count": 6,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/items/Cargo.toml",
+      "manifest_blob": "4d58b29bc7004171361e4828e1dda712815ad8d1",
+      "rust_file_count": 5,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/mcp/Cargo.toml",
+      "manifest_blob": "e639081358ca76910ed744f5abc426f60a65a74e",
+      "rust_file_count": 8,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/memories/Cargo.toml",
+      "manifest_blob": "e283140b15ef1547c642310138fc8b04c4ce7607",
+      "rust_file_count": 19,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/queue/Cargo.toml",
+      "manifest_blob": "007cbbbde0e7cdd4c067d70e5b3d40f40f1d6187",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/skills/Cargo.toml",
+      "manifest_blob": "256d0aaa8710fff8d7a9d5c8eba242cd282b868e",
+      "rust_file_count": 81,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ext/web-search/Cargo.toml",
+      "manifest_blob": "84d5a8cad1ec4749e3cea6aa6a9a86eb7178523b",
+      "rust_file_count": 6,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/external-agent-migration/Cargo.toml",
+      "manifest_blob": "3db739977ce9e94f66a3c4c9f22ce869610fa910",
+      "rust_file_count": 64,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/features/Cargo.toml",
+      "manifest_blob": "95be6c400dd0d22ca7304146714a2678164fb38b",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/feedback/Cargo.toml",
+      "manifest_blob": "8a01696952358c792d622afe675b609b8b315138",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/file-search/Cargo.toml",
+      "manifest_blob": "e235898982f6eba908c5c0751eae91a5b25cdb1a",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/file-system/Cargo.toml",
+      "manifest_blob": "382eacb43d3353b2046806f91ba0f976866c9282",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/file-watcher/Cargo.toml",
+      "manifest_blob": "afb14fcde634f5478f4d6f981c52bf982b03b0f0",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/git-utils/Cargo.toml",
+      "manifest_blob": "a0bd7872854cffa38dd559805a1dea2d06db85ae",
+      "rust_file_count": 15,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-agent-protocol/Cargo.toml",
+      "manifest_blob": "ca7afd5c2905cdc02666b0cb20c1f6238a84dbba",
+      "rust_file_count": 5,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-agentd/Cargo.toml",
+      "manifest_blob": "5d13cd8f355bab3ecb95f8c068517de200dd143f",
+      "rust_file_count": 104,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-authbus-p1-3-qualification/Cargo.toml",
+      "manifest_blob": "49874f52adebb338f8fd7038ac84fb13d3be8157",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-authbus/Cargo.toml",
+      "manifest_blob": "5b14273ea4ff6ff2e71dda151560ae6ba7f90dba",
+      "rust_file_count": 22,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-automation/Cargo.toml",
+      "manifest_blob": "4a5f0fa0db6a0f27d685012c89f87d0406f2f41b",
+      "rust_file_count": 32,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-bao-adapter/Cargo.toml",
+      "manifest_blob": "fc8435728a0eeae5c1a2292b8ef33d2ae5c55e90",
+      "rust_file_count": 10,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-bellman-operator/Cargo.toml",
+      "manifest_blob": "5231fed894f15b6e5ba6255523709067ea656e3d",
+      "rust_file_count": 16,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-codex-adapter/Cargo.toml",
+      "manifest_blob": "0af5dc81a2488f2b273f79c13ef281db2be048c2",
+      "rust_file_count": 5,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-cognitive-read/Cargo.toml",
+      "manifest_blob": "9804ca394a12c4bf31f01031853d7e52c73dbb75",
+      "rust_file_count": 9,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-cognitive-store/Cargo.toml",
+      "manifest_blob": "34598e61d6aaff043e048907b48967086d6ecc83",
+      "rust_file_count": 7,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-cognitive-types/Cargo.toml",
+      "manifest_blob": "c836b15097ff4812e735e3feff1d552a87c2cae8",
+      "rust_file_count": 8,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+      "manifest_blob": "83047ff105ece6cf2aaa92324558729f37589a9c",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-compact-engine/Cargo.toml",
+      "manifest_blob": "60bc6fb1ee73f31eac3a152db40be10b52b495e3",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-context-compiler/Cargo.toml",
+      "manifest_blob": "2ce0fb9520b8440a9b20a441d2c7bcbc4529dba0",
+      "rust_file_count": 10,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-contracts/Cargo.toml",
+      "manifest_blob": "cab373fecdfb7eba529753ecbb4943bc46ceec32",
+      "rust_file_count": 35,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-control-plane/Cargo.toml",
+      "manifest_blob": "37cd75393a4ef4164d96ba827a3531f37d668d15",
+      "rust_file_count": 32,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-evidence/Cargo.toml",
+      "manifest_blob": "7d5a851797a8c8fdc9c14382418158f9c9789dad",
+      "rust_file_count": 33,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-fleet/Cargo.toml",
+      "manifest_blob": "a271fa91b84d9ea0100703ff491c6826b0aabc6e",
+      "rust_file_count": 19,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-infer-core/Cargo.toml",
+      "manifest_blob": "d89bf7c4764cdaaa4b040a447a295965ea0142c5",
+      "rust_file_count": 10,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "manifest_blob": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df",
+      "rust_file_count": 11,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-inferd/Cargo.toml",
+      "manifest_blob": "4b7d6a9e0a775e3da69a873d3d92ff643662731a",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-intelligence-eval/Cargo.toml",
+      "manifest_blob": "c9096b1f1c77b27b7b94d7be86e4679212960295",
+      "rust_file_count": 37,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-intelligence/Cargo.toml",
+      "manifest_blob": "162205d6bc62834e1b04fed33dd67f5955f218d1",
+      "rust_file_count": 35,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-intuition/Cargo.toml",
+      "manifest_blob": "26e2f53c1c2a33d5ab30e56ff504d2c52779bfc5",
+      "rust_file_count": 9,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-kg/Cargo.toml",
+      "manifest_blob": "892dbf28b9bc2ecdf0fe72c79eff19294140c198",
+      "rust_file_count": 6,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-learning-artifacts/Cargo.toml",
+      "manifest_blob": "725a63c9f2475ad632c7c189fd9ca271702a8899",
+      "rust_file_count": 29,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-learning-ledger/Cargo.toml",
+      "manifest_blob": "1d76cad44498e9538cefff1e20202482520257ff",
+      "rust_file_count": 38,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-matrix-protocol/Cargo.toml",
+      "manifest_blob": "8312e8b0a739d033976c0058a25e5850e3af66a9",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "manifest_blob": "1a8864fd643349c4db345b0e2dfbcb4a4d53719a",
+      "rust_file_count": 11,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-matrix-store/Cargo.toml",
+      "manifest_blob": "211f8fb711d2c91d1421da930c067c28b61315b0",
+      "rust_file_count": 9,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-matrixd/Cargo.toml",
+      "manifest_blob": "c7b4306766955aafb24d1f66c55803a35c2aee96",
+      "rust_file_count": 14,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-memory-federation/Cargo.toml",
+      "manifest_blob": "49113a3bccd7a2f56b18459924d3ec9151cbf980",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-memory-retrieval/Cargo.toml",
+      "manifest_blob": "913ad075e730da2b3bbff7fcfa153c457141a944",
+      "rust_file_count": 12,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-memory/Cargo.toml",
+      "manifest_blob": "6ba04f39f78e7d6295c9922d279e37e0492180f2",
+      "rust_file_count": 73,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-native-gateway/Cargo.toml",
+      "manifest_blob": "ecad366f0c5bcedb8d37cb32250a0eb94b9ff4f0",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-ndu/Cargo.toml",
+      "manifest_blob": "d92d388b0c5bd29552ed0b2719551af973b5cfc4",
+      "rust_file_count": 32,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-neuron/Cargo.toml",
+      "manifest_blob": "dbd650a75e7ebe47d2642bc653468355d42cd2e3",
+      "rust_file_count": 27,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-objective/Cargo.toml",
+      "manifest_blob": "39085cf5d2edb3766cd1c17cd721d17389ed93cc",
+      "rust_file_count": 23,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-operations/Cargo.toml",
+      "manifest_blob": "af2e656fcacea8db6ea84d8bdc8715f3aa62e739",
+      "rust_file_count": 19,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-operator-acceptance/Cargo.toml",
+      "manifest_blob": "5f54bdf40f505adec2e5b0681bc4d7a48ad097af",
+      "rust_file_count": 21,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-paths/Cargo.toml",
+      "manifest_blob": "2c16f5b19d830d4370d9d1b294fd97eae6b8d1af",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-plasticity/Cargo.toml",
+      "manifest_blob": "07cb9e40d44990874991620f89af8c0078575de1",
+      "rust_file_count": 14,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
+      "manifest_blob": "f463e790c182452434287c7ccba68dd78a7c69ca",
+      "rust_file_count": 17,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-prompt-registry/Cargo.toml",
+      "manifest_blob": "61676abe534702cd1c665197212065ec2d267f3f",
+      "rust_file_count": 10,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-runtime/Cargo.toml",
+      "manifest_blob": "83f681ba2fc42402c78aa8ef33889b2b7191bf33",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-shadow-qualification/Cargo.toml",
+      "manifest_blob": "91b8dfb7204a5244374b81ee3ce12b5d08af8e0d",
+      "rust_file_count": 47,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-supervisor/Cargo.toml",
+      "manifest_blob": "3ed96436070a4e0d5a06aca8f247c25f28a798f1",
+      "rust_file_count": 57,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-types/Cargo.toml",
+      "manifest_blob": "753e54835f933be4bf647417b2fb4c90a5e55181",
+      "rust_file_count": 21,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-wire/Cargo.toml",
+      "manifest_blob": "ab9372f8287d8596794c1ea63d49217b45fd6759",
+      "rust_file_count": 14,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hepta-wire/fuzz/Cargo.toml",
+      "manifest_blob": "1afca1ef1eb80fe9eeb6e0c94eefa2f8069f6244",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/history/Cargo.toml",
+      "manifest_blob": "bd938d2c2ea45333b8f040f41399674a28e54644",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/hooks/Cargo.toml",
+      "manifest_blob": "0cdf84418a713110811febd88c5ec8c4e3a0cbfa",
+      "rust_file_count": 32,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/http-client/Cargo.toml",
+      "manifest_blob": "2d54ca7158900eda362091c71e8d1bd742459d4c",
+      "rust_file_count": 28,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/install-context/Cargo.toml",
+      "manifest_blob": "ee84ad2962acf57a698e399b38dbc0a03c51bd11",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/keyring-store/Cargo.toml",
+      "manifest_blob": "7a4499687b45059ecc1617760ff541c79ccb5a2c",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/linux-sandbox/Cargo.toml",
+      "manifest_blob": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2",
+      "rust_file_count": 21,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/lmstudio/Cargo.toml",
+      "manifest_blob": "e84bcfed51c3683e87ea7ae2e0a7809aade43a76",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/login/Cargo.toml",
+      "manifest_blob": "2971dec6c1a81cb80379477333371bba6e8fbece",
+      "rust_file_count": 42,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/mcp-server/Cargo.toml",
+      "manifest_blob": "e32d5c6c9cc8e569a49396e085191811835cfdb7",
+      "rust_file_count": 16,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/mcp-server/tests/common/Cargo.toml",
+      "manifest_blob": "515aa01b5a4a098a6f49cad9d5e4ad3cbbe54f77",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/memories/read/Cargo.toml",
+      "manifest_blob": "2c0c5f2c954ceb8b986057bdd929badca4ecd64d",
+      "rust_file_count": 5,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/memories/write/Cargo.toml",
+      "manifest_blob": "bf031a6a164f5a098757efdb6c791d9e2705ca50",
+      "rust_file_count": 23,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/message-history/Cargo.toml",
+      "manifest_blob": "176b9579097499b050e24823217eec93502c004b",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/model-provider-info/Cargo.toml",
+      "manifest_blob": "827dd8744b54ffcaa98673c0c262f5265b717ebf",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/model-provider/Cargo.toml",
+      "manifest_blob": "377dc7a5c258538df7c52e0f821169fbfc1fa09a",
+      "rust_file_count": 18,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/models-manager/Cargo.toml",
+      "manifest_blob": "2655bb2e7fd80fc1737549d6b5b4a78f607643a9",
+      "rust_file_count": 12,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/network-proxy/Cargo.toml",
+      "manifest_blob": "82407b00d104568250c63f87be6aea8113199e44",
+      "rust_file_count": 39,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/ollama/Cargo.toml",
+      "manifest_blob": "29c0852092c0ebdb9846f50f91384e4720f15d71",
+      "rust_file_count": 7,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/otel/Cargo.toml",
+      "manifest_blob": "6efa93043db5e52f6ec45212435b377ca847d9ad",
+      "rust_file_count": 33,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/plugin/Cargo.toml",
+      "manifest_blob": "3e55f55c332a06a99a9f6415f2235c3d18cd4fb1",
+      "rust_file_count": 7,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/process-hardening/Cargo.toml",
+      "manifest_blob": "60a5729ff57a961dd9ccc145f8ae7171fe0b3176",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/prompts/Cargo.toml",
+      "manifest_blob": "6302d49e2ff3e1e67722a3fc891a7e6e90a72362",
+      "rust_file_count": 11,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/protocol/Cargo.toml",
+      "manifest_blob": "221275fe73543cc9cd5d882514855204d673353e",
+      "rust_file_count": 52,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/response-debug-context/Cargo.toml",
+      "manifest_blob": "fcdb6c9630c4d04da55b9c64318e4c111afce441",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/responses-api-proxy/Cargo.toml",
+      "manifest_blob": "05d638843f64eacad298a79011798f3a2ef924f7",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/rmcp-client/Cargo.toml",
+      "manifest_blob": "a24df4a4a2c094b2b7a8efc949553dd2e5ba1cd9",
+      "rust_file_count": 63,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/rollout-trace/Cargo.toml",
+      "manifest_blob": "b368c9acc5ffc3a0ba3a27ae7ea1ab48e38baa31",
+      "rust_file_count": 34,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/rollout/Cargo.toml",
+      "manifest_blob": "1bb4b54f146488e737a3d5bdaeef9dc1510d0b03",
+      "rust_file_count": 28,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/sandboxing/Cargo.toml",
+      "manifest_blob": "2c0885729b4ea05f0b597b37823f4758839ecb62",
+      "rust_file_count": 16,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/secrets/Cargo.toml",
+      "manifest_blob": "2a294ee39134e0a4d4160ed7b422d5fe3c2ba6da",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/shell-command/Cargo.toml",
+      "manifest_blob": "999295ec314a37a523f65bd050e8b95453cc7c77",
+      "rust_file_count": 13,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/shell-escalation/Cargo.toml",
+      "manifest_blob": "92ae8b033f3c38edb1609e6347084be6dd9fdc47",
+      "rust_file_count": 10,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/skills/Cargo.toml",
+      "manifest_blob": "7342975aaea0e3ecc61da41f145674cd154a12c9",
+      "rust_file_count": 17,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/state/Cargo.toml",
+      "manifest_blob": "334f8c7a98199777a025abfa91aa18f0b7bbb008",
+      "rust_file_count": 45,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/stdio-to-uds/Cargo.toml",
+      "manifest_blob": "6b5c037d755d4dc8006424aa836b29036cea8185",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/terminal-detection/Cargo.toml",
+      "manifest_blob": "9b1bf3a51663289c68b61f566201df8d05e385cf",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/test-binary-support/Cargo.toml",
+      "manifest_blob": "12d995b9720b942daf802ce30c2976b3f36e7371",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/third_party/imbl-6.1.0/Cargo.toml",
+      "manifest_blob": "5a3f10354681eb382046da6e29bc272803405610",
+      "rust_file_count": 36,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/third_party/matrix-sdk-sqlite-0.18.0/Cargo.toml",
+      "manifest_blob": "7088dc696477279578bcb853e43400dd196a1a26",
+      "rust_file_count": 8,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/thread-manager-sample/Cargo.toml",
+      "manifest_blob": "9e857ad0bc7fa670089008eeddf7d593a4a6f45f",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/thread-store/Cargo.toml",
+      "manifest_blob": "f79e8d6c81eb4eac00149b45121fa052cdecef64",
+      "rust_file_count": 61,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/tools/Cargo.toml",
+      "manifest_blob": "e621bb830bb4d564c772f5e558c57919de8b32db",
+      "rust_file_count": 32,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/tui/Cargo.toml",
+      "manifest_blob": "95db9bee4158d69882f480f6b0842c47a510ca59",
+      "rust_file_count": 501,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/uds/Cargo.toml",
+      "manifest_blob": "66ba1d9d2d915dae795b2cda4eef7d2d4bd91539",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/absolute-path/Cargo.toml",
+      "manifest_blob": "7c5b4840d15d81deed1d1ea30c0b269d399772bc",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/approval-presets/Cargo.toml",
+      "manifest_blob": "6efd2c482b4386b505a15d96bf60504050633e61",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/audio/Cargo.toml",
+      "manifest_blob": "90540228a6bf5608329d2f2773225271229b9813",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/build-identity/Cargo.toml",
+      "manifest_blob": "d21f6b0fff86daef23570d5c583edbf18eeecafb",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/cache/Cargo.toml",
+      "manifest_blob": "3c120c032e8d595a7675f0474ab6d91b0b52a59e",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/cargo-bin/Cargo.toml",
+      "manifest_blob": "a56e5758306799cc5962eaf57e8ad3a26b73033f",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/cli/Cargo.toml",
+      "manifest_blob": "9d330c5ce6badd0d15e6c401cd777fb3d13c8d08",
+      "rust_file_count": 7,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/elapsed/Cargo.toml",
+      "manifest_blob": "7ba5e6ae6614fddadaa1ba1e1f8299ffc251d78f",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/fuzzy-match/Cargo.toml",
+      "manifest_blob": "704386e74f6924a016c30bfbaa6447b093f70be0",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/home-dir/Cargo.toml",
+      "manifest_blob": "2d2de0230e38004d562b8ab5546888cd5da74851",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/image/Cargo.toml",
+      "manifest_blob": "7ba28f49962a5ec0e35aad82ce2b93cfeffbfa09",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/json-to-toml/Cargo.toml",
+      "manifest_blob": "57a28696c8fc2148525480511551b256b35d8b02",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/oss/Cargo.toml",
+      "manifest_blob": "78cc0cb2f8ed60f3d4b8a3bb007b348d700024ac",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/output-truncation/Cargo.toml",
+      "manifest_blob": "17176c9f5643b3a4f1d5a678a25076094cb7441d",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/path-uri/Cargo.toml",
+      "manifest_blob": "5bb6328139c7fe2f7759e7edf34be0de9e2f0371",
+      "rust_file_count": 6,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/path-utils/Cargo.toml",
+      "manifest_blob": "d1503fd060c960845b2f514cbe69f824291eff07",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/plugins/Cargo.toml",
+      "manifest_blob": "1a4576d59d0fcf04a54236f57976e42683c266a6",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/pty/Cargo.toml",
+      "manifest_blob": "2a27ab72ea290862887abfc857c86efe6fad12c1",
+      "rust_file_count": 18,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/readiness/Cargo.toml",
+      "manifest_blob": "076651d5227baa047d95a42e9e8795c65dc0bc52",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/redacted-string/Cargo.toml",
+      "manifest_blob": "39f60d8eb109312fba4b052e69649b1c9382a1a4",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/rustls-provider/Cargo.toml",
+      "manifest_blob": "af79eff69252fc01244e2ae721b5a263c1d2fc4c",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/sandbox-summary/Cargo.toml",
+      "manifest_blob": "ab6df005dac274f638a16c387779458950525728",
+      "rust_file_count": 2,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/sleep-inhibitor/Cargo.toml",
+      "manifest_blob": "f2abb6df2110e7f3de215cb34a0cd627c0345649",
+      "rust_file_count": 6,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/stream-parser/Cargo.toml",
+      "manifest_blob": "6eb5fb9a8747b95cb3dbd113f4ebfcda53b8fed5",
+      "rust_file_count": 8,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/string/Cargo.toml",
+      "manifest_blob": "8710cffe4697ae4cce6e97d6bac35566db426672",
+      "rust_file_count": 4,
+      "migration_status": "partial_opt_in_caller",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/utils/template/Cargo.toml",
+      "manifest_blob": "f24caec190455f3ac685004fc1f6e474ee8f8ed9",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/v8-poc/Cargo.toml",
+      "manifest_blob": "9615ab977f9dfdb35467d1eadaf0bc6dfa641625",
+      "rust_file_count": 1,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/websocket-client/Cargo.toml",
+      "manifest_blob": "19baf9842b591c6aba15d5253f124a737d0d1cdf",
+      "rust_file_count": 3,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "manifest_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "rust_file_count": 67,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    },
+    {
+      "manifest": "codex-rs/workload-identity/Cargo.toml",
+      "manifest_blob": "b64177282accbb1975aa7adbe2411ace4da52662",
+      "rust_file_count": 4,
+      "migration_status": "pending",
+      "production_dispatch_migrated": false
+    }
+  ],
+  "retirement": {
+    "ready": false,
+    "approved_paths": [],
+    "requirements": [
+      "HIA owns the actual production dispatch and effects for the replaced scope",
+      "original Rust behavior and malformed-input cases pass without skipped or substituted oracles",
+      "existing protocol, CLI, configuration, persisted-session and SDK interfaces remain compatible",
+      "required platforms and app/exec host combinations pass",
+      "clean build, package installation and end-to-end use pass on the resulting source tree",
+      "regression fixtures, licensing and required release assets remain available"
+    ],
+    "cleanup_rule": "Remove superseded source and process artifacts only after the corresponding replacement satisfies these requirements. Build outputs and transient test files remain outside the repository."
+  },
+  "native_link_gate": {
+    "helper": "hia/cargo_build.rs",
+    "builder": "hia/build.py",
+    "tests": "hia/tests/test_build_receipt.py",
+    "feature_off_requires_artifacts": false,
+    "unsupported_native_targets": "build_error",
+    "runtime_shared_library_requirement": false,
+    "status": "current_source_and_artifact_mutation_tests_passed",
+    "accepted_modules": [
+      "seek_sequence",
+      "utf8_boundaries",
+      "utf8_prefix",
+      "metric_tag",
+      "markdown_location",
+      "ascii_json_fragment"
+    ],
+    "checks_passed": 52
+  }
+}

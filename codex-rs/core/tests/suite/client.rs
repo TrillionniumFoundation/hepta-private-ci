@@ -59,6 +59,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
 use core_test_support::TestCodexResponsesRequestKind;
 use core_test_support::apps_test_server::AppsTestServer;
+use core_test_support::history_annotations;
 use core_test_support::load_default_config_for_test;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
@@ -198,7 +199,7 @@ fn assert_codex_client_metadata(
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_turns() {
+async fn responses_history_preserves_item_turn_metadata_across_turns() {
     let server = MockServer::start().await;
     let assistant_create_time = 1_785_276_138.422709;
     let mut assistant_message = ev_assistant_message("msg-1", "first answer");
@@ -220,10 +221,15 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     let test = test_codex().build(&server).await.unwrap();
 
     test.submit_turn("turn one").await.unwrap();
+    let first_history = history_annotations::response_items(&test.codex).await;
     test.submit_turn("turn two").await.unwrap();
+    let second_history = history_annotations::response_items(&test.codex).await;
 
     let requests = response_mock.requests();
     assert_eq!(requests.len(), 2);
+    for request in &requests {
+        history_annotations::assert_metadata_is_private(request);
+    }
     let first = requests[0].body_json();
     let second = requests[1].body_json();
     let first_turn_id = first["client_metadata"]["turn_id"]
@@ -237,14 +243,18 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     let first_input = first["input"].as_array().expect("first input");
     let second_input = second["input"].as_array().expect("second input");
     assert_eq!(&second_input[..first_input.len()], first_input.as_slice());
-    for item in first_input {
+    assert_eq!(
+        &second_history[..first_history.len()],
+        first_history.as_slice()
+    );
+    for item in &first_history {
         assert_eq!(
             item["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
             Some(first_turn_id)
         );
     }
     for role in ["user", "developer"] {
-        assert!(first_input.iter().any(|item| {
+        assert!(first_history.iter().any(|item| {
             item["role"].as_str() == Some(role)
                 && item["internal_chat_message_metadata_passthrough"]["create_time"]
                     .as_f64()
@@ -253,7 +263,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     }
 
     let item_turn_id = |text: &str| {
-        second_input
+        second_history
             .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
@@ -269,7 +279,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     assert_eq!(item_turn_id("turn two"), Some(second_turn_id));
 
     let item_create_time = |text: &str| {
-        second_input
+        second_history
             .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
@@ -385,7 +395,12 @@ async fn sends_audio_urls_to_responses() {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.audio"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["user.audio"]
+    ));
     let user_message = request
         .input()
         .into_iter()
@@ -430,7 +445,12 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.audio", "user.text"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["user.text", "user.audio", "user.text"]
+    ));
     let user_message = request
         .input()
         .into_iter()

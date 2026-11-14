@@ -118,6 +118,15 @@ impl McpBinding {
             .cloned()
     }
 
+    /// Binds a configured hook to a permitted catalog call, including app-only
+    /// tools. Server filters, captured client authority, and catalog revision
+    /// checks remain the same as for model-visible calls.
+    pub fn prepare_hook_call(&self, server: &str, tool: &str) -> Option<PreparedMcpCall> {
+        self.calls
+            .get(&(server.to_string(), tool.to_string()))
+            .cloned()
+    }
+
     pub fn has_servers(&self) -> bool {
         self.connections.has_servers()
     }

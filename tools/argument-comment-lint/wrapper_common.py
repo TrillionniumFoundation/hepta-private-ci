@@ -18,7 +18,7 @@ STRICT_LINTS = [
     "uncommented-anonymous-literal-argument",
 ]
 NOISE_LINT = "unknown_lints"
-TOOLCHAIN_CHANNEL = "nightly-2025-09-18"
+TOOLCHAIN_CHANNEL = "nightly-2026-05-13"
 
 _TARGET_SELECTION_ARGS = {
     "--all-targets",

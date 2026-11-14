@@ -13,6 +13,7 @@ use codex_protocol::protocol::GuardianAssessmentEvent;
 use codex_protocol::protocol::GuardianAssessmentStatus;
 use codex_protocol::protocol::Op;
 use codex_protocol::user_input::UserInput;
+use core_test_support::history_annotations;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
@@ -140,9 +141,14 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
     .await;
 
     let request = response.single_request();
-    assert!(request.has_content_kinds(&["guardian.approved_action"]));
-    let mut guardian_item = request
-        .input()
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["guardian.approved_action"]
+    ));
+    let mut guardian_item = history
+        .clone()
         .into_iter()
         .next()
         .expect("guardian approval should be the first context item");
@@ -187,8 +193,7 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
         })
     );
 
-    let items = request
-        .input()
+    let items = history
         .into_iter()
         .map(|item| {
             let item_type = item["type"].as_str().expect("response item type");
@@ -239,12 +244,15 @@ async fn content_item_kinds_are_omitted_when_feature_disabled() -> Result<()> {
 
     test.submit_text_turn("inspect request metadata").await?;
 
-    let input = response.single_request().input();
+    let request = response.single_request();
+    history_annotations::assert_metadata_is_private(&request);
+    let input = request.input();
     assert!(input.iter().all(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
             .is_none()
     }));
-    assert!(input.iter().any(|item| {
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history.iter().any(|item| {
         item.pointer("/internal_chat_message_metadata_passthrough/turn_id")
             .is_some()
     }));

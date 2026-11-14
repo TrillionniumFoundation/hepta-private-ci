@@ -6125,7 +6125,7 @@ async fn open_thread_persistence(session: &mut Session) -> PathBuf {
         .expect("thread should have rollout path")
 }
 
-async fn attach_thread_persistence(session: &mut Session) -> PathBuf {
+pub(super) async fn attach_thread_persistence(session: &mut Session) -> PathBuf {
     let rollout_path = open_thread_persistence(session).await;
     session
         .ensure_rollout_materialized(PersistContext::Standard)
@@ -6883,6 +6883,10 @@ pub(crate) async fn make_session_and_context() -> (Session, TurnContext) {
         rollout_persistence_faults: Mutex::new(std::collections::VecDeque::new()),
         async_hook_results,
         input_queue: super::input_queue::InputQueue::new(),
+        pending_turn_input_retries: Default::default(),
+        pending_thread_settings_retries: Default::default(),
+        pending_mailbox_retries: Default::default(),
+        pending_history_mutation_retries: Default::default(),
         pending_user_message_admissions: Default::default(),
         guardian_review_session: crate::guardian::GuardianReviewSessionManager::default(),
         services,
@@ -9106,6 +9110,10 @@ where
         rollout_persistence_faults: Mutex::new(std::collections::VecDeque::new()),
         async_hook_results,
         input_queue: super::input_queue::InputQueue::new(),
+        pending_turn_input_retries: Default::default(),
+        pending_thread_settings_retries: Default::default(),
+        pending_mailbox_retries: Default::default(),
+        pending_history_mutation_retries: Default::default(),
         pending_user_message_admissions: Default::default(),
         guardian_review_session: crate::guardian::GuardianReviewSessionManager::default(),
         services,

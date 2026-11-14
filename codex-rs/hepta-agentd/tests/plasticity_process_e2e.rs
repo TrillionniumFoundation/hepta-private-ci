@@ -2,10 +2,12 @@
 
 mod support;
 
+use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::{self};
 use std::path::Path;
 
+use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_learning_artifacts::ArtifactEvent;
 use codex_hepta_learning_artifacts::ArtifactKind;
@@ -14,11 +16,23 @@ use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
+use codex_hepta_learning_ledger::CandidateSetCompletenessReceiptV1;
 use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
 use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::EpisodeDecision;
-use codex_hepta_learning_ledger::LedgerEvent;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningTrustDistributionV1;
+use codex_hepta_learning_ledger::LearningTrustRootV1;
+use codex_hepta_learning_ledger::LedgerWitnessStore;
+use codex_hepta_learning_ledger::LedgerWriter;
+use codex_hepta_learning_ledger::ProductionDecisionV2;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::SignedLearningTrustDistributionV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::activate_learning_trust;
+use codex_hepta_learning_ledger::candidate_ids_digest_v2;
+use codex_hepta_learning_ledger::candidate_order_digest_v2;
+use codex_hepta_learning_ledger::decision_signing_payload_v2;
 use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
 use codex_hepta_ndu::NduProjectionJournalV1;
 use codex_hepta_ndu::NduProjectionKindV1;
@@ -31,6 +45,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
 
@@ -41,25 +56,24 @@ use support::fleet::FleetHarness;
 
 const Q24: i64 = 1_i64 << 24;
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("stable id")
+fn id(value: &str) -> Result<StableId> {
+    Ok(StableId::new(value)?)
 }
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn generation(value: u64) -> Generation {
-    Generation::new(value).expect("generation")
+fn generation(value: u64) -> Result<Generation> {
+    Ok(Generation::new(value)?)
 }
 
-fn new_rw(path: &Path) -> std::fs::File {
+fn new_rw(path: &Path) -> std::io::Result<File> {
     OpenOptions::new()
         .create_new(true)
         .read(true)
         .write(true)
         .open(path)
-        .expect("create owner file")
 }
 
 fn policy_manifest(
@@ -67,19 +81,19 @@ fn policy_manifest(
     producer: &str,
     content_digest: Digest32,
     objective_digest: Digest32,
-) -> ArtifactManifest {
-    ArtifactManifest {
-        artifact_id: id(artifact_id),
+) -> Result<ArtifactManifest> {
+    Ok(ArtifactManifest {
+        artifact_id: id(artifact_id)?,
         kind: ArtifactKind::Policy,
-        generation: generation(1),
+        generation: generation(1)?,
         predecessor_id: None,
         content_digest,
         objective_digest,
         support_digest: digest(&format!("{artifact_id}:support")),
-        producer_id: id(producer),
+        producer_id: id(producer)?,
         compatibility_digest: digest(&format!("{artifact_id}:compatibility")),
         encoded_size_bytes: 64,
-    }
+    })
 }
 
 fn principal_json(principal: &AuthenticatedPrincipalV1) -> serde_json::Value {
@@ -109,29 +123,127 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let objective_digest = digest("plasticity-process-objective");
     let selected_artifact_digest = digest("plasticity-process-selected-artifact");
 
+    let trust_scope = digest("plasticity-process-trust-scope");
+    let keys = [
+        SigningKey::from_bytes(&[11; 32]),
+        SigningKey::from_bytes(&[22; 32]),
+        SigningKey::from_bytes(&[33; 32]),
+    ];
+    let trust = LearningEvidenceTrustV1 {
+        scope_digest: trust_scope,
+        objective_digest,
+        authority_epoch: 7,
+        signers: keys
+            .iter()
+            .zip([
+                LearningEvidenceRoleV1::Generator,
+                LearningEvidenceRoleV1::Observer,
+                LearningEvidenceRoleV1::Evaluator,
+            ])
+            .enumerate()
+            .map(|(index, (key, role))| {
+                Ok(TrustedLearningSignerV1 {
+                    principal: AuthenticatedPrincipalV1 {
+                        principal_id: id(&format!("plasticity-process-signer-{index}"))?,
+                        credential_chain_digest: digest(&format!(
+                            "plasticity-process-credential-{index}"
+                        )),
+                        signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+                        scope_digest: trust_scope,
+                        authority_epoch: 7,
+                        authenticated_at: 10,
+                        expires_at: 100,
+                    },
+                    controller_id: id(&format!("plasticity-process-controller-{index}"))?,
+                    verifying_key: key.verifying_key().to_bytes(),
+                    roles: vec![role],
+                    revoked_at: None,
+                })
+            })
+            .collect::<Result<Vec<_>>>()?,
+    };
+    let root_key = SigningKey::from_bytes(&[44; 32]);
+    let trust_root = LearningTrustRootV1 {
+        root_id: id("plasticity-process-trust-root")?,
+        scope_digest: trust_scope,
+        verifying_key: root_key.verifying_key().to_bytes(),
+        valid_from: 1,
+        expires_at: 200,
+        revoked_at: None,
+    };
+    let mut signed_trust = SignedLearningTrustDistributionV1 {
+        distribution: LearningTrustDistributionV1 {
+            distribution_id: id("plasticity-process-trust-distribution")?,
+            generation: 1,
+            effective_at: 20,
+            trust: trust.clone(),
+        },
+        root_id: trust_root.root_id.clone(),
+        issued_at: 15,
+        expires_at: 90,
+        signature: [0; 64],
+    };
+    signed_trust.signature = root_key.sign(&signed_trust.signing_bytes()?).to_bytes();
+    let activated_trust =
+        activate_learning_trust(&trust_root, signed_trust, /*previous*/ None, 50)?;
+
     let ledger_path = root.join("learning-ledger");
     let ledger_binding = digest("plasticity-process-ledger-binding");
-    let mut ledger = DurableLedger::create(new_rw(&ledger_path), ledger_binding, 32)?;
-    ledger.append_qualification(
-        Digest32::ZERO,
-        LedgerEvent::Decision(EpisodeDecision {
-            record_id: id("decision:plasticity-process"),
-            episode_id: id("episode:plasticity-process"),
-            objective_digest,
-            policy_id: id("policy:plasticity-process"),
-            candidate_ids: vec![id("candidate:update"), id("abstain")],
-            selected_candidate_id: id("candidate:update"),
-            selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)?,
-            completeness: CandidateSetCompleteness::Complete,
-            support_digest: digest("plasticity-process-decision-support"),
-        }),
+    let durable = DurableLedger::create(new_rw(&ledger_path)?, ledger_binding, 32)?;
+    let witness = LedgerWitnessStore::create(
+        new_rw(&root.join("learning-ledger-witness"))?,
+        ledger_binding,
     )?;
+    let directory = File::open(&root)?;
+    let mut ledger =
+        LedgerWriter::from_durable(durable, witness, activated_trust, &directory, &directory)?;
+    let candidates = vec![id("candidate:update")?, id("abstain")?];
+    let decision = ProductionDecisionV2 {
+        record_id: id("decision:plasticity-process")?,
+        episode_id: id("episode:plasticity-process")?,
+        run_snapshot_digest: digest("plasticity-process-run-snapshot"),
+        objective_digest,
+        policy_digest: digest("policy:plasticity-process"),
+        candidate_ids: candidates.clone(),
+        selected_candidate_id: id("candidate:update")?,
+        selected_propensity: ProbabilityQ32::from_raw(1_u64 << 31)?,
+        completeness: CandidateSetCompletenessReceiptV1 {
+            set_id: id("plasticity-process-candidate-set")?,
+            state_digest: digest("plasticity-process-state"),
+            generator_id: trust.signers[0].principal.principal_id.clone(),
+            generator_code_digest: digest("plasticity-process-generator-code"),
+            grammar_digest: digest("plasticity-process-grammar"),
+            hard_filter_digest: digest("plasticity-process-hard-filter"),
+            truncation_digest: digest("plasticity-process-truncation"),
+            candidates_digest: candidate_ids_digest_v2(&candidates),
+            candidate_count: 2,
+            omitted_count_bound: 0,
+            canonical_order_digest: candidate_order_digest_v2(&candidates),
+            complete_for_generator: true,
+        },
+        support_digest: digest("plasticity-process-decision-support"),
+    };
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id("plasticity-process-decision-evidence")?,
+        principal_id: trust.signers[0].principal.principal_id.clone(),
+        role: LearningEvidenceRoleV1::Generator,
+        trust_digest: ledger.verifier().trust_digest(),
+        scope_digest: trust_scope,
+        objective_digest,
+        authority_epoch: 7,
+        issued_at: 20,
+        expires_at: 90,
+        payload_digest: Digest32::of_bytes(&decision_signing_payload_v2(&decision)?),
+        signature: [0; 64],
+    };
+    evidence.signature = keys[0].sign(&evidence.signing_bytes()).to_bytes();
+    ledger.append_decision(Digest32::ZERO, decision, &evidence, 50)?;
     let ledger_snapshot = ledger.snapshot()?;
     let ledger_head = ledger_snapshot.head_digest;
     let ledger_records = u64::try_from(ledger_snapshot.records().len())?;
 
     let dataset_principal = AuthenticatedPrincipalV1 {
-        principal_id: id("owner:dataset"),
+        principal_id: id("owner:dataset")?,
         credential_chain_digest: digest("dataset:credential"),
         signing_key_digest: digest("dataset:key"),
         scope_digest: digest("dataset:scope"),
@@ -141,7 +253,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     };
     let dataset = freeze_dataset_receipt_v3(
         DatasetFreezeRequestV1 {
-            snapshot_id: id("dataset:plasticity-process"),
+            snapshot_id: id("dataset:plasticity-process")?,
             producer: dataset_principal.clone(),
             ledger_head_digest: ledger_head,
             objective_digest,
@@ -158,8 +270,8 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     )?;
 
     let signal_binding = PlasticityDynamicSignalBindingV1 {
-        layer_id: id("layer:plasticity-process"),
-        parameter_id: id("parameter:plasticity-process"),
+        layer_id: id("layer:plasticity-process")?,
+        parameter_id: id("parameter:plasticity-process")?,
         eligibility_index: 0,
         modulator_weights: vec![FixedQ32::ONE],
     };
@@ -173,14 +285,14 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         (
             "event:baseline",
             ArtifactManifest {
-                artifact_id: id("artifact:baseline"),
+                artifact_id: id("artifact:baseline")?,
                 kind: ArtifactKind::Model,
-                generation: generation(1),
+                generation: generation(1)?,
                 predecessor_id: None,
                 content_digest: selected_artifact_digest,
                 objective_digest,
                 support_digest: digest("baseline:support"),
-                producer_id: id("owner:model"),
+                producer_id: id("owner:model")?,
                 compatibility_digest: digest("baseline:compatibility"),
                 encoded_size_bytes: 128,
             },
@@ -192,7 +304,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "owner:update-rule",
                 update_rule_digest,
                 objective_digest,
-            ),
+            )?,
         ),
         (
             "event:mutation-policy",
@@ -201,7 +313,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "owner:mutation-policy",
                 mutation_policy_digest,
                 objective_digest,
-            ),
+            )?,
         ),
         (
             "event:broadcast",
@@ -210,11 +322,11 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
                 "owner:broadcast",
                 broadcast_digest,
                 objective_digest,
-            ),
+            )?,
         ),
     ] {
         artifacts.append(ArtifactEvent::Register {
-            event_id: id(event_id),
+            event_id: id(event_id)?,
             manifest,
         })?;
     }
@@ -252,7 +364,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
     let neuron_config = SparseConfig {
         model_digest: selected_artifact_digest,
         normalization_digest: digest("plasticity-process-normalization"),
-        generation: generation(1),
+        generation: generation(1)?,
         width: 5,
         top_k: 1,
         temporal_decay_q24: Q24 / 2,
@@ -266,7 +378,7 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
         eligibility_decay_q24: Q24 / 2,
     };
     let mut neuron = SparseJournal::open(
-        new_rw(&neuron_path),
+        new_rw(&neuron_path)?,
         neuron_config.clone(),
         JournalScope {
             scope_digest: neuron_scope_digest,
@@ -288,36 +400,22 @@ async fn supervisor_exec_reconstructs_named_plasticity_owner_from_durable_descri
             prediction_q24: vec![0; 5],
         },
     )?;
-    let neuron_anchor = neuron.current_anchor()?.expect("neuron anchor");
+    let neuron_anchor = neuron.current_anchor()?.context("neuron anchor")?;
 
-    let trust_scope = digest("plasticity-process-trust-scope");
-    let keys = [
-        SigningKey::from_bytes(&[11; 32]),
-        SigningKey::from_bytes(&[22; 32]),
-        SigningKey::from_bytes(&[33; 32]),
-    ];
-    let trust_signers = keys
+    let trust_signers = trust
+        .signers
         .iter()
         .enumerate()
-        .map(|(index, key)| {
-            let principal = AuthenticatedPrincipalV1 {
-                principal_id: id(&format!("plasticity-process-signer-{index}")),
-                credential_chain_digest: digest(&format!("plasticity-process-credential-{index}")),
-                signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-                scope_digest: trust_scope,
-                authority_epoch: 7,
-                authenticated_at: 10,
-                expires_at: 100,
-            };
+        .map(|(index, signer)| {
             let role = match index {
                 0 => "generator",
                 1 => "observer",
                 _ => "evaluator",
             };
             json!({
-                "principal": principal_json(&principal),
-                "controller_id": format!("plasticity-process-controller-{index}"),
-                "verifying_key_hex": hex32(key.verifying_key().to_bytes()),
+                "principal": principal_json(&signer.principal),
+                "controller_id": signer.controller_id.as_str(),
+                "verifying_key_hex": hex32(signer.verifying_key),
                 "roles": [role],
                 "revoked_at": null,
             })

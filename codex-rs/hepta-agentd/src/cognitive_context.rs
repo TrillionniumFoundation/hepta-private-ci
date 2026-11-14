@@ -9,6 +9,7 @@ use codex_hepta_cognitive_read::ReadFieldV1;
 use codex_hepta_cognitive_read::ReadIdsError;
 use codex_hepta_cognitive_read::ReadIdsRequestV1;
 use codex_hepta_cognitive_read::ReadIdsResultV1;
+#[cfg(test)]
 use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_cognitive_store::DurableCognitiveStoreError as CognitiveStoreError;
 use codex_hepta_contracts::AgentId;
@@ -32,6 +33,12 @@ use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
+
+#[path = "cognitive_context_request.rs"]
+mod request;
+
+pub(crate) use request::CognitiveContextReadRequest;
+pub(crate) use request::CognitiveContextRevalidationRequest;
 
 const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
@@ -64,17 +71,17 @@ pub(crate) async fn read(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
-    read_with_retrieval_context_and_learning(
+    read_with_retrieval_context_and_learning(CognitiveContextReadRequest {
         store,
         owner,
         body_generation,
         query,
         limit,
         ranker,
-        None,
-        None,
-        None,
-    )
+        current_retrieval: None,
+        learning_sink: None,
+        request_id: None,
+    })
     .await
 }
 
@@ -88,7 +95,7 @@ pub(crate) async fn read_with_retrieval_context(
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
-    read_with_retrieval_context_and_learning(
+    read_with_retrieval_context_and_learning(CognitiveContextReadRequest {
         store,
         owner,
         body_generation,
@@ -96,23 +103,26 @@ pub(crate) async fn read_with_retrieval_context(
         limit,
         ranker,
         current_retrieval,
-        None,
-        None,
-    )
+        learning_sink: None,
+        request_id: None,
+    })
     .await
 }
 
 pub(crate) async fn read_with_retrieval_context_and_learning(
-    store: &CognitiveStore,
-    owner: &AgentId,
-    body_generation: u64,
-    query: &str,
-    limit: u16,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
-    request_id: Option<u64>,
+    request: CognitiveContextReadRequest<'_>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    let CognitiveContextReadRequest {
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        current_retrieval,
+        learning_sink,
+        request_id,
+    } = request;
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -459,16 +469,18 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
         tokio::task::spawn_blocking(move || {
-            sink.append_with_delivery_policy(
-                &owner,
-                body_generation,
-                request_id,
-                &assignment,
-                &delivered_candidates,
-                context_exposed,
-                published_context_digest,
-                downstream_policy_digest,
-                delivery_propensity,
+            sink.append(
+                crate::cognitive_retrieval_learning::RetrievalLearningAppend {
+                    owner: &owner,
+                    body_generation,
+                    request_id,
+                    observation: &assignment,
+                    delivered_candidates: &delivered_candidates,
+                    context_exposed,
+                    published_context_digest,
+                    downstream_policy_digest,
+                    delivery_propensity,
+                },
             )
         })
         .await
@@ -478,18 +490,10 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     Ok(response)
 }
 
-#[cfg(test)]
-pub(crate) async fn revalidate(
-    store: &CognitiveStore,
-    owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+pub(crate) async fn revalidate_with_retrieval_context(
+    request: CognitiveContextRevalidationRequest<'_>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
-    revalidate_with_retrieval_context(
+    let CognitiveContextRevalidationRequest {
         store,
         owner,
         snapshot_digest,
@@ -498,24 +502,9 @@ pub(crate) async fn revalidate(
         items,
         plan,
         ranker,
-        1,
-        None,
-    )
-    .await
-}
-
-pub(crate) async fn revalidate_with_retrieval_context(
-    store: &CognitiveStore,
-    owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    body_generation: u64,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+        body_generation,
+        current_retrieval,
+    } = request;
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),

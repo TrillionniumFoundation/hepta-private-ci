@@ -29,6 +29,7 @@ use core_test_support::PathBufExt;
 use core_test_support::assert_regex_match;
 use core_test_support::context_snapshot;
 use core_test_support::context_snapshot::ContextSnapshotOptions;
+use core_test_support::history_annotations;
 use core_test_support::hooks::trust_discovered_hooks;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
@@ -267,11 +268,19 @@ async fn token_budget_guidance_precedes_standalone_context_window() -> Result<()
     test.submit_turn("inspect context guidance").await?;
 
     let request = response.single_request();
-    assert!(request.has_content_kinds(&[
-        "token_budget.context_window_guidance",
-        "permissions.instructions",
-    ]));
-    assert!(request.has_content_kinds(&["token_budget.context_window"]));
+    history_annotations::assert_metadata_is_private(&request);
+    let history = history_annotations::response_items(&test.codex).await;
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &[
+            "token_budget.context_window_guidance",
+            "permissions.instructions",
+        ]
+    ));
+    assert!(history_annotations::has_content_kinds(
+        &history,
+        &["token_budget.context_window"]
+    ));
     let developer_texts = request.message_input_texts("developer");
     let context_window_index = developer_texts
         .iter()

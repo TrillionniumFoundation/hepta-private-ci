@@ -10,6 +10,8 @@ use tracing::Instrument;
 use tracing::debug_span;
 use tracing::info_span;
 
+use crate::session::history_mutation_retry::HistoryMutationHandling;
+use crate::session::history_mutation_retry::HistoryMutationReservation;
 use crate::session::session::Session;
 use crate::session::thread_settings;
 use crate::session::turn_input;
@@ -21,6 +23,7 @@ use crate::context::NodeReplReviewEvidence;
 use crate::review_prompts::resolve_review_request;
 use crate::session::spawn_review_thread;
 use crate::tasks::CompactTask;
+use crate::tasks::TaskSpawnOutcome;
 use crate::tasks::UserShellCommandMode;
 use crate::tasks::UserShellCommandTask;
 use crate::tasks::execute_user_shell_command;
@@ -86,25 +89,36 @@ pub async fn inter_agent_communication(
     root_turn_id: Option<String>,
 ) {
     let trigger_turn = communication.trigger_turn;
-    if let Err(err) = sess
-        .enqueue_mailbox_communication(
+    let outcome = sess
+        .enqueue_mailbox_communication_for_submission(
+            &sub_id,
             communication,
             parent_turn_id.filter(|_| trigger_turn),
             root_turn_id.filter(|_| trigger_turn),
         )
-        .await
-    {
+        .await;
+    if matches!(
+        outcome,
+        Ok(super::mailbox_retry::MailboxEnqueueOutcome::Deferred)
+    ) {
+        return;
+    }
+    if let Err(err) = outcome {
         warn!(%err, "failed to accept inter-agent communication");
         sess.send_event_raw(Event {
-            id: sub_id,
+            id: sub_id.clone(),
             msg: EventMsg::Error(ErrorEvent {
                 message: format!("failed to accept inter-agent communication: {err}"),
                 codex_error_info: None,
             }),
         })
         .await;
+        sess.pending_mailbox_retries.complete(&sub_id);
         return;
     }
+    // Acknowledgement means accepted exactly once, not that the triggered
+    // task has finished. Wake the outside waiter before pending-work startup.
+    sess.pending_mailbox_retries.complete(&sub_id);
     crate::agent_communication::emit_agent_communication_receive(&sub_id);
     if trigger_turn || sess.has_outstanding_durable_sleep() {
         sess.maybe_start_turn_for_pending_work_with_sub_id(sub_id)
@@ -263,25 +277,40 @@ pub async fn reload_user_config(sess: &Arc<Session>) {
     sess.reload_user_config_layer().await;
 }
 
-pub async fn compact(sess: &Arc<Session>, sub_id: String) {
+pub async fn compact(sess: &Arc<Session>, sub_id: String) -> HistoryMutationHandling {
     let turn_context = sess.new_default_turn_with_sub_id(sub_id).await;
-
-    if let Err(err) = sess
-        .spawn_task(Arc::clone(&turn_context), Vec::new(), CompactTask)
+    let error = match sess
+        .spawn_task_with_finish_retry(Arc::clone(&turn_context), Vec::new(), CompactTask)
         .await
     {
-        sess.send_event_raw(Event {
-            id: turn_context.sub_id.clone(),
-            msg: EventMsg::Error(ErrorEvent {
-                message: format!("failed to start compaction: {err}"),
-                codex_error_info: Some(CodexErrorInfo::Other),
-            }),
-        })
-        .await;
-    }
+        Ok(TaskSpawnOutcome::Started) => return HistoryMutationHandling::Complete,
+        Ok(TaskSpawnOutcome::RetryAfterFinish { fences, rejection }) => {
+            if sess
+                .pending_history_mutation_retries
+                .retry_after_finish(&turn_context.sub_id, fences)
+            {
+                return HistoryMutationHandling::Deferred;
+            }
+            *rejection
+        }
+        Err(error) => error,
+    };
+    sess.send_event_raw(Event {
+        id: turn_context.sub_id.clone(),
+        msg: EventMsg::Error(ErrorEvent {
+            message: format!("failed to start compaction: {error}"),
+            codex_error_info: Some(CodexErrorInfo::Other),
+        }),
+    })
+    .await;
+    HistoryMutationHandling::Complete
 }
 
-pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32) {
+pub async fn thread_rollback(
+    sess: &Arc<Session>,
+    sub_id: String,
+    num_turns: u32,
+) -> HistoryMutationHandling {
     if num_turns == 0 {
         sess.send_event_raw(Event {
             id: sub_id,
@@ -291,12 +320,19 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
             }),
         })
         .await;
-        return;
+        return HistoryMutationHandling::Complete;
     }
 
-    let rollback_reservation = match sess.reserve_history_mutation_if_idle().await {
-        Ok(Some(reservation)) => reservation,
-        Ok(None) => {
+    let reservation = sess.reserve_history_mutation_or_finish().await;
+    let rollback_reservation = match reservation {
+        Ok(HistoryMutationReservation::Reserved(reservation)) => reservation,
+        Ok(HistoryMutationReservation::Finishing(fences)) => {
+            if sess
+                .pending_history_mutation_retries
+                .retry_after_finish(&sub_id, fences)
+            {
+                return HistoryMutationHandling::Deferred;
+            }
             sess.send_event_raw(Event {
                 id: sub_id,
                 msg: EventMsg::Error(ErrorEvent {
@@ -305,7 +341,18 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
                 }),
             })
             .await;
-            return;
+            return HistoryMutationHandling::Complete;
+        }
+        Ok(HistoryMutationReservation::Busy) => {
+            sess.send_event_raw(Event {
+                id: sub_id,
+                msg: EventMsg::Error(ErrorEvent {
+                    message: "Cannot rollback while a turn is in progress.".to_string(),
+                    codex_error_info: Some(CodexErrorInfo::ThreadRollbackFailed),
+                }),
+            })
+            .await;
+            return HistoryMutationHandling::Complete;
         }
         Err(err) => {
             sess.send_event_raw(Event {
@@ -318,7 +365,7 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
                 }),
             })
             .await;
-            return;
+            return HistoryMutationHandling::Complete;
         }
     };
 
@@ -336,7 +383,7 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
             .await;
             sess.settle_and_clear_reserved_idle_turn(&rollback_reservation)
                 .await;
-            return;
+            return HistoryMutationHandling::Complete;
         }
     };
     if let Err(err) = sess.flush_rollout().await {
@@ -350,7 +397,7 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
         .await;
         sess.settle_and_clear_reserved_idle_turn(&rollback_reservation)
             .await;
-        return;
+        return HistoryMutationHandling::Complete;
     }
 
     let stored_history = match live_thread.load_history(/*include_archived*/ false).await {
@@ -366,7 +413,7 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
             .await;
             sess.settle_and_clear_reserved_idle_turn(&rollback_reservation)
                 .await;
-            return;
+            return HistoryMutationHandling::Complete;
         }
     };
 
@@ -387,7 +434,7 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
         .await;
         sess.settle_and_clear_reserved_idle_turn(&rollback_reservation)
             .await;
-        return;
+        return HistoryMutationHandling::Complete;
     }
     let replay_items = stored_history
         .items
@@ -419,6 +466,7 @@ pub async fn thread_rollback(sess: &Arc<Session>, sub_id: String, num_turns: u32
         msg: rollback_msg,
     })
     .await;
+    HistoryMutationHandling::Complete
 }
 
 #[expect(
@@ -772,11 +820,18 @@ pub(super) async fn submission_loop(
                     false
                 }
                 Op::Compact => {
-                    compact(&sess, sub.id.clone()).await;
+                    if let HistoryMutationHandling::Complete = compact(&sess, sub.id.clone()).await
+                    {
+                        sess.pending_history_mutation_retries.complete(&sub.id);
+                    }
                     false
                 }
                 Op::ThreadRollback { num_turns } => {
-                    thread_rollback(&sess, sub.id.clone(), num_turns).await;
+                    if let HistoryMutationHandling::Complete =
+                        thread_rollback(&sess, sub.id.clone(), num_turns).await
+                    {
+                        sess.pending_history_mutation_retries.complete(&sub.id);
+                    }
                     false
                 }
                 Op::SetThreadMemoryMode { mode } => {

@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -205,6 +207,7 @@ struct PairFleet {
 
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
+        let started = Instant::now();
         // The child fixtures bind the same compact control sockets as the
         // product.  Keep the synthetic fleet under a short root so Darwin's
         // SUN_LEN limit is exercised against production geometry, not the
@@ -226,8 +229,37 @@ impl PairFleet {
             )?)?;
             agents.push(agent_id);
         }
+        eprintln!(
+            "paired-stage registered count={count} elapsed={:?}",
+            started.elapsed()
+        );
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
         let fixture_binary = std::env::current_exe()?;
+        // Linux embeds the full integration harness's DWARF in this file.
+        // Catalog installation and each real release resolution still verify
+        // every executable byte; debug metadata is irrelevant to the fixture.
+        // Keep the authoritative checks bounded by installing a private copy
+        // with only that metadata removed, as for an ordinary release binary.
+        #[cfg(target_os = "linux")]
+        let fixture_binary = {
+            let copy = temp.path().join("paired-process-fixture");
+            let original_bytes = std::fs::copy(&fixture_binary, &copy)?;
+            let output = std::process::Command::new("strip")
+                .arg("-S")
+                .arg(&copy)
+                .output()
+                .context("strip Linux fixture debug metadata")?;
+            anyhow::ensure!(
+                output.status.success(),
+                "fixture strip failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            eprintln!(
+                "paired-stage executable_bytes before={original_bytes} after={}",
+                std::fs::metadata(&copy)?.len()
+            );
+            copy
+        };
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
@@ -241,6 +273,10 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        eprintln!(
+            "paired-stage release_installed elapsed={:?}",
+            started.elapsed()
+        );
         for agent_id in &agents {
             registry.allow_release(agent_id, &release_id)?;
             write_binding(&registry, agent_id)?;
@@ -252,6 +288,7 @@ impl PairFleet {
             Instant::now(),
         )?;
         assert!(report.faults.is_empty());
+        eprintln!("paired-stage initialized elapsed={:?}", started.elapsed());
         Ok(Self {
             _temp: temp,
             registry,
@@ -537,6 +574,11 @@ fn run_agent_child() -> Result<()> {
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes)?;
         let request: AgentdRequest = serde_json::from_slice(&bytes)?;
+        anyhow::ensure!(
+            request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+                && request.spawn_generation == spawn_generation,
+            "fixture request does not bind this Agentd incarnation"
+        );
         let run_root = PathBuf::from(
             std::env::var_os("HEPTA_AGENT_RUN_ROOT").context("HEPTA_AGENT_RUN_ROOT")?,
         );
@@ -545,13 +587,8 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        let payload = match request.method {
+            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -561,6 +598,28 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
+            AgentdMethod::Drain => {
+                // This control-only child admits no assistant turns. It may
+                // acknowledge zero work only at the actual persisted drain
+                // generation; the production driver validates that envelope.
+                let draining = lifecycle.lifecycle == AgentLifecycle::Draining;
+                AgentdPayload::Drain(DrainSnapshot {
+                    admission_closed: draining,
+                    running_turns: 0,
+                    drained: draining,
+                    lifecycle: lifecycle.lifecycle,
+                    fenced: false,
+                })
+            }
+            method => anyhow::bail!("unsupported fixture Agentd method: {method:?}"),
+        };
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

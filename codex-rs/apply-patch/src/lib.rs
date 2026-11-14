@@ -1,4 +1,6 @@
 mod file_update;
+#[cfg(feature = "hia-native")]
+mod hia_native;
 mod invocation;
 mod parser;
 mod seek_sequence;

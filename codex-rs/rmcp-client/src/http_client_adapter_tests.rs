@@ -1,13 +1,30 @@
+use std::collections::HashMap;
 use std::io::ErrorKind;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::time::Duration;
 
+use axum::Router;
+use axum::body::Body;
+use axum::routing::any;
+use bytes::Bytes;
+use codex_exec_server::Environment;
 use codex_exec_server::HttpRedirectPolicy;
+use futures::StreamExt;
 use http::HeaderMap;
+use http::HeaderName;
 use http::HeaderValue;
+use http::Method;
 use http::header::AUTHORIZATION;
+use http::header::CONTENT_TYPE;
 use pretty_assertions::assert_eq;
+use rmcp::transport::streamable_http_client::StreamableHttpClient;
+use rmcp::transport::streamable_http_client::StreamableHttpPostResponse;
+use serde_json::json;
 
 use super::HttpHeader;
 use super::SseEventSizeLimit;
+use super::StreamableHttpClientAdapter;
 use super::StreamableHttpRedirectMode;
 use super::mcp_redirect_policy;
 use super::protocol_headers;
@@ -28,6 +45,85 @@ fn protocol_headers_preserve_utf8_values() {
             value_env_var: None,
         }]
     );
+}
+
+#[tokio::test]
+async fn configured_sse_limit_applies_to_legacy_post_and_get() -> anyhow::Result<()> {
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+    let address = listener.local_addr()?;
+    let app = Router::new().route(
+        "/mcp",
+        any(|| async {
+            let body = futures::stream::once(async {
+                Ok::<_, std::io::Error>(Bytes::from_static(
+                    b"data: this event is longer than the configured limit\n\n",
+                ))
+            })
+            .chain(futures::stream::pending());
+            (
+                [(CONTENT_TYPE, "text/event-stream")],
+                Body::from_stream(body),
+            )
+        }),
+    );
+    let server = tokio::spawn(async move { axum::serve(listener, app).await });
+    let adapter = StreamableHttpClientAdapter::new(
+        Environment::default_for_tests().get_http_client(),
+        HeaderMap::new(),
+        /*auth_provider*/ None,
+        /*has_configured_headers*/ false,
+        StreamableHttpRedirectMode::Legacy,
+        Arc::new(Mutex::new(None)),
+    );
+
+    for method in [Method::POST, Method::GET] {
+        let uri: Arc<str> = format!("http://{address}/mcp").into();
+        let headers = HashMap::from([(
+            HeaderName::from_static("mcp-protocol-version"),
+            HeaderValue::from_static("2025-06-18"),
+        )]);
+        let mut events = if method == Method::POST {
+            let message = serde_json::from_value(json!({
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/list",
+            }))?;
+            let response = adapter
+                .post_message_with_max_sse_event_size(
+                    uri, message, /*session_id*/ None, /*auth_token*/ None, headers,
+                    /*max_sse_event_size*/ 32,
+                )
+                .await?;
+            let StreamableHttpPostResponse::Sse(events, _) = response else {
+                anyhow::bail!("expected an SSE response");
+            };
+            events
+        } else {
+            adapter
+                .get_stream_with_max_sse_event_size(
+                    uri, /*session_id*/ None, /*last_event_id*/ None,
+                    /*auth_token*/ None, headers, /*max_sse_event_size*/ 32,
+                )
+                .await?
+        };
+        let error = events
+            .next()
+            .await
+            .expect("oversized SSE event must produce an error")
+            .expect_err("configured limit must apply before parsing the legacy SSE event");
+        assert!(
+            error.to_string().contains("32 bytes"),
+            "unexpected {method} SSE error: {error}"
+        );
+        assert!(
+            tokio::time::timeout(Duration::from_secs(1), events.next())
+                .await?
+                .is_none(),
+            "failed {method} SSE stream must terminate after its error"
+        );
+    }
+    server.abort();
+    Ok(())
 }
 
 #[test]
@@ -90,7 +186,7 @@ fn authorization_redirects_depend_on_mode() {
 
 #[test]
 fn lf_terminators_reset_the_event_limit() {
-    let mut limit = SseEventSizeLimit::new(Some(8));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 8);
 
     limit
         .observe(b"data: a\n\ndata: b\n\n")
@@ -101,7 +197,7 @@ fn lf_terminators_reset_the_event_limit() {
 
 #[test]
 fn carriage_return_terminators_reset_the_event_limit() {
-    let mut limit = SseEventSizeLimit::new(Some(8));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 8);
 
     limit
         .observe(b"data: a\r\rdata: b\r\r")
@@ -112,7 +208,7 @@ fn carriage_return_terminators_reset_the_event_limit() {
 
 #[test]
 fn crlf_terminators_split_across_chunks_reset_the_event_limit() {
-    let mut limit = SseEventSizeLimit::new(Some(8));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 8);
 
     limit
         .observe(b"data: a\r")
@@ -132,7 +228,7 @@ fn crlf_terminators_split_across_chunks_reset_the_event_limit() {
 
 #[test]
 fn event_at_the_exact_size_limit_is_accepted() {
-    let mut limit = SseEventSizeLimit::new(Some(9));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 9);
 
     limit
         .observe(b"data: ab\n\n")
@@ -143,7 +239,7 @@ fn event_at_the_exact_size_limit_is_accepted() {
 
 #[test]
 fn completed_keepalive_comments_do_not_accumulate() {
-    let mut limit = SseEventSizeLimit::new(Some(6));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 6);
 
     limit
         .observe(&b": ping\n".repeat(/*n*/ 64))
@@ -154,7 +250,7 @@ fn completed_keepalive_comments_do_not_accumulate() {
 
 #[test]
 fn split_keepalive_comments_are_discarded_only_when_complete() {
-    let mut limit = SseEventSizeLimit::new(Some(6));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 6);
 
     limit
         .observe(b": pi")
@@ -170,7 +266,7 @@ fn split_keepalive_comments_are_discarded_only_when_complete() {
 
 #[test]
 fn comments_do_not_reset_accumulated_event_data() {
-    let mut limit = SseEventSizeLimit::new(Some(14));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 14);
 
     limit
         .observe(b"data: a\n")
@@ -194,7 +290,7 @@ fn comments_do_not_reset_accumulated_event_data() {
 
 #[test]
 fn an_unterminated_comment_remains_size_limited() {
-    let mut limit = SseEventSizeLimit::new(Some(6));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 6);
 
     limit
         .observe(b": ping")
@@ -215,7 +311,7 @@ fn an_unterminated_comment_remains_size_limited() {
 
 #[test]
 fn multiline_data_counts_parser_inserted_newlines() {
-    let mut limit = SseEventSizeLimit::new(Some(18));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 18);
 
     let error = limit
         .observe(b"data: aaa\ndata: bbb\n\n")
@@ -231,12 +327,12 @@ fn multiline_data_counts_parser_inserted_newlines() {
 }
 
 #[test]
-fn legacy_sse_streams_remain_unlimited() {
-    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ None);
+fn total_stream_size_does_not_accumulate_across_complete_events() {
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 16);
 
     limit
-        .observe(&[b'x'; 128])
-        .expect("legacy SSE streams must not gain a message limit");
+        .observe(&b"data: x\n\n".repeat(/*n*/ 128))
+        .expect("individually bounded events must not share a cumulative stream limit");
 
     assert_eq!(
         (
@@ -252,7 +348,7 @@ fn legacy_sse_streams_remain_unlimited() {
 
 #[test]
 fn rejected_events_remain_rejected() {
-    let mut limit = SseEventSizeLimit::new(Some(8));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ 8);
 
     limit
         .observe(b"data: abc")
@@ -273,7 +369,7 @@ fn rejected_events_remain_rejected() {
 
 #[test]
 fn size_accounting_saturates_without_overflow() {
-    let mut limit = SseEventSizeLimit::new(Some(usize::MAX - 1));
+    let mut limit = SseEventSizeLimit::new(/*maximum_bytes*/ usize::MAX - 1);
     limit.retained_bytes = usize::MAX - 2;
     limit.line_bytes = 1;
 

@@ -683,10 +683,12 @@ async fn authbus_product_path_reserves_fences_final_use_and_settles_observed_cos
 
     let receipt = client
         .consume_kv_v2_with_authbus(
-            &authbus,
-            &admission,
-            &authority,
-            &grant,
+            BaoAuthBusReadContext {
+                authbus: &authbus,
+                admission: &admission,
+                authority: &authority,
+                grant: &grant,
+            },
             &request,
             &mut evidence,
             |bytes| {
@@ -727,10 +729,12 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
 
     let result = client
         .consume_kv_v2_with_authbus(
-            &authbus,
-            &admission,
-            &authority,
-            &grant,
+            BaoAuthBusReadContext {
+                authbus: &authbus,
+                admission: &admission,
+                authority: &authority,
+                grant: &grant,
+            },
             &request,
             &mut evidence,
             |_| Ok(()),

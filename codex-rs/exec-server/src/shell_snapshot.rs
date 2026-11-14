@@ -200,6 +200,15 @@ impl ShellSnapshotCache {
             params.argv[2]
         );
 
+        if shell_type == ShellType::Bash {
+            // `-p` suppresses BASH_ENV, but Bash may still read .bashrc when
+            // it detects a remote invocation. Snapshot replay must not rerun
+            // profiles or reintroduce exports removed by the environment policy.
+            prepared
+                .command
+                .insert(shell_start + 1, "--norc".to_string());
+        }
+
         Ok(())
     }
 }

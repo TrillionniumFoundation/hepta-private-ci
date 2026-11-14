@@ -510,6 +510,20 @@ fn unsupported_authorized_read() -> io::Error {
 
 fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
     match error {
+        // Preserve the bounded-read contract using only fixed, redacted server
+        // errors. Arbitrary peer error text is never returned to the caller.
+        ExecServerError::Server {
+            code: -32603,
+            message,
+        } if message == "authorized file read exceeds bound" => {
+            invalid_authorized_read_data("authorized file read exceeds bound")
+        }
+        ExecServerError::Server {
+            code: INVALID_REQUEST_ERROR_CODE,
+            message,
+        } if message == "Permission denied" => {
+            io::Error::new(io::ErrorKind::PermissionDenied, "Permission denied")
+        }
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
@@ -520,10 +534,9 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
             io::ErrorKind::InvalidInput,
             "remote authorized file read was rejected",
         ),
-        ExecServerError::Server { code, .. } if code == NOT_FOUND_ERROR_CODE => io::Error::new(
-            io::ErrorKind::NotFound,
-            "remote authorized file is unavailable",
-        ),
+        ExecServerError::Server { code, .. } if code == NOT_FOUND_ERROR_CODE => {
+            io::Error::new(io::ErrorKind::NotFound, "No such file or directory")
+        }
         ExecServerError::Closed | ExecServerError::Disconnected(_) => {
             io::Error::new(io::ErrorKind::BrokenPipe, "exec-server transport closed")
         }
@@ -632,6 +645,57 @@ mod tests {
             let error = map_authorized_read_remote_error(error);
             assert_eq!(error.kind(), io::ErrorKind::BrokenPipe);
             assert_eq!(error.to_string(), "exec-server transport closed");
+        }
+    }
+
+    #[test]
+    fn authorized_read_preserves_only_known_redacted_errors() {
+        for (code, message, expected_kind, expected_message) in [
+            (
+                -32603,
+                "authorized file read exceeds bound",
+                io::ErrorKind::InvalidData,
+                "authorized file read exceeds bound",
+            ),
+            (
+                -32600,
+                "Permission denied",
+                io::ErrorKind::PermissionDenied,
+                "Permission denied",
+            ),
+            (
+                -32004,
+                "SECRET missing path",
+                io::ErrorKind::NotFound,
+                "No such file or directory",
+            ),
+            (
+                -32603,
+                "authorized file read exceeds bound: SECRET",
+                io::ErrorKind::Other,
+                "remote authorized file read failed",
+            ),
+            (
+                -32600,
+                "Permission denied: SECRET",
+                io::ErrorKind::InvalidInput,
+                "remote authorized file read was rejected",
+            ),
+            (
+                -32603,
+                "Permission denied",
+                io::ErrorKind::Other,
+                "remote authorized file read failed",
+            ),
+        ] {
+            let mapped = map_authorized_read_remote_error(ExecServerError::Server {
+                code,
+                message: message.to_string(),
+            });
+            assert_eq!(
+                (mapped.kind(), mapped.to_string()),
+                (expected_kind, expected_message.to_string())
+            );
         }
     }
 

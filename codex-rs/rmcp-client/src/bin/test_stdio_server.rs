@@ -28,7 +28,7 @@ use rmcp::model::Resource;
 use rmcp::model::ResourceContents;
 use rmcp::model::ResourceTemplate;
 use rmcp::model::ServerCapabilities;
-use rmcp::model::ServerInfo;
+use rmcp::model::ServerConfig;
 use rmcp::model::Tool;
 use rmcp::model::ToolAnnotations;
 use serde::Deserialize;
@@ -505,7 +505,7 @@ impl ServerHandler for TestToolServer {
         Ok(self.get_info())
     }
 
-    fn get_info(&self) -> ServerInfo {
+    fn get_info(&self) -> ServerConfig {
         let mut capabilities = ServerCapabilities::builder()
             .enable_tools()
             .enable_tool_list_changed()
@@ -516,7 +516,7 @@ impl ServerHandler for TestToolServer {
             JsonObject::new(),
         )]));
 
-        let server_info = ServerInfo::new(capabilities);
+        let server_info = ServerConfig::new(capabilities);
         let server_info = match dynamic_server_process_label() {
             Some(process_label) => server_info
                 .with_server_info(
@@ -677,13 +677,20 @@ impl ServerHandler for TestToolServer {
                     std::fs::write(marker_file, b"called")
                         .map_err(|err| McpError::internal_error(err.to_string(), None))?;
                 }
-                let thread_id = context
-                    .meta
-                    .0
-                    .get("threadId")
+                let thread_id = request
+                    .arguments
+                    .as_ref()
+                    .and_then(|arguments| arguments.get("threadId"))
+                    .or_else(|| {
+                        request
+                            .meta
+                            .as_ref()
+                            .and_then(|meta| meta.0.get("threadId"))
+                    })
+                    .or_else(|| context.meta.0.get("threadId"))
                     .and_then(serde_json::Value::as_str)
                     .ok_or_else(|| {
-                        McpError::invalid_params("missing threadId metadata".to_string(), None)
+                        McpError::invalid_params("missing threadId argument".to_string(), None)
                     })?;
                 Ok(CallToolResult::success(vec![
                     rmcp::model::ContentBlock::text(format!(

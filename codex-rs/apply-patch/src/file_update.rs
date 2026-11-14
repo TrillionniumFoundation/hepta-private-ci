@@ -97,13 +97,13 @@ fn compute_replacements(
         // If a chunk has a `change_context`, we use seek_sequence to find it, then
         // adjust our `line_index` to continue from there.
         if let Some(ctx_line) = &chunk.change_context {
-            if let Some(idx) = seek_sequence::seek_sequence(
+            if let Some(idx) = seek_sequence::seek_sequence_checked(
                 original_lines,
                 std::slice::from_ref(ctx_line),
                 line_index,
                 /*eof*/ false,
                 update_file_mode,
-            ) {
+            )? {
                 line_index = idx + 1;
             } else {
                 return Err(ApplyPatchError::ComputeReplacements(format!(
@@ -142,13 +142,13 @@ fn compute_replacements(
         // touching the end‑of‑file can be located reliably.
 
         let mut pattern: &[String] = &chunk.old_lines;
-        let mut found = seek_sequence::seek_sequence(
+        let mut found = seek_sequence::seek_sequence_checked(
             original_lines,
             pattern,
             line_index,
             chunk.is_end_of_file,
             update_file_mode,
-        );
+        )?;
 
         let mut new_slice: &[String] = &chunk.new_lines;
 
@@ -160,13 +160,13 @@ fn compute_replacements(
                 new_slice = &new_slice[..new_slice.len() - 1];
             }
 
-            found = seek_sequence::seek_sequence(
+            found = seek_sequence::seek_sequence_checked(
                 original_lines,
                 pattern,
                 line_index,
                 chunk.is_end_of_file,
                 update_file_mode,
-            );
+            )?;
         }
 
         if let Some(start_idx) = found {

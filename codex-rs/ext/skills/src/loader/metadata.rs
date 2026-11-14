@@ -127,7 +127,7 @@ pub(super) async fn load_host_skill_metadata(
         }
     };
 
-    let parsed: SkillMetadataFile = match serde_yaml::from_str(&contents) {
+    let parsed: SkillMetadataFile = match yaml_serde::from_str(&contents) {
         Ok(parsed) => parsed,
         Err(error) => {
             tracing::warn!(
@@ -266,3 +266,7 @@ fn resolve_required_str(
     };
     resolve_str(Some(value), max_len, field)
 }
+
+#[cfg(test)]
+#[path = "metadata_yaml_tests.rs"]
+mod yaml_tests;

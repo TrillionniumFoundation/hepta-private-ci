@@ -5184,6 +5184,38 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
 -> Result<()> {
     skip_if_no_network!(Ok(()));
 
+    // Inspect the actual restored history through the normal tool lifecycle seam.
+    // Custom provider requests intentionally omit its private annotations.
+    #[derive(Default)]
+    struct HistoryRecorder {
+        items: std::sync::Mutex<Option<Vec<Value>>>,
+    }
+
+    impl codex_extension_api::ToolLifecycleContributor for HistoryRecorder {
+        fn on_tool_start<'a>(
+            &'a self,
+            input: codex_extension_api::ToolStartInput<'a>,
+        ) -> codex_extension_api::ToolLifecycleFuture<'a> {
+            Box::pin(async move {
+                assert_eq!(input.call_id, "capture-restored-history");
+                let items = input
+                    .conversation_history
+                    .items()
+                    .map(|item| serde_json::to_value(item).expect("serialize restored history"))
+                    .collect();
+                let previous = self
+                    .items
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
+                    .replace(items);
+                assert!(
+                    previous.is_none(),
+                    "record the restored history exactly once"
+                );
+            })
+        }
+    }
+
     // Set up an ordinary turn, a remote-v2 compact response, and a post-compaction turn.
     let server = responses::start_mock_server().await;
     let response_mock = responses::mount_sse_sequence(
@@ -5200,7 +5232,19 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
             ]),
             responses::sse(vec![
                 responses::ev_response_created("remote-v2-resumed-response"),
+                responses::ev_function_call(
+                    "capture-restored-history",
+                    "update_plan",
+                    &json!({
+                        "plan": [{ "step": "Check restored context", "status": "completed" }]
+                    })
+                    .to_string(),
+                ),
                 responses::ev_completed("remote-v2-resumed-response"),
+            ]),
+            responses::sse(vec![
+                responses::ev_response_created("remote-v2-resumed-final-response"),
+                responses::ev_completed("remote-v2-resumed-final-response"),
             ]),
         ],
     )
@@ -5273,9 +5317,13 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     })
     .await;
     let resumed_cwd = test.config.cwd.clone();
+    let history_recorder = Arc::new(HistoryRecorder::default());
+    let mut extensions = codex_extension_api::ExtensionRegistryBuilder::<Config>::new();
+    extensions.tool_lifecycle_contributor(history_recorder.clone());
     let mut resume_builder = test_codex()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
+        .with_extensions(Arc::new(extensions.build()))
         .with_config(move |config| {
             config.cwd = resumed_cwd;
             let _ = config.features.enable(Feature::RemoteCompactionV2);
@@ -5290,19 +5338,39 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     // Cold resume replays the persisted old context, then appends the newly loaded instructions as
     // an explicit replacement.
     let requests = response_mock.requests();
-    assert_eq!(requests.len(), 4);
+    assert_eq!(requests.len(), 5);
+    for request in &requests {
+        core_test_support::history_annotations::assert_metadata_is_private(request);
+    }
     let replacement_fragment = expected_instruction_fragment(&format!(
         "These AGENTS.md instructions replace all previously provided AGENTS.md instructions.\n\n{NEW_GLOBAL_INSTRUCTIONS}"
     ));
+    for request in &requests[3..] {
+        assert_eq!(
+            instruction_fragments(request),
+            vec![old_fragment.clone(), replacement_fragment.clone()]
+        );
+    }
+    let restored_history = history_recorder
+        .items
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .take()
+        .expect("the resumed turn should expose its actual restored history");
     assert_eq!(
-        instruction_fragments(&requests[3]),
-        vec![old_fragment.clone(), replacement_fragment]
+        restored_history.get(..replacement_history.len()),
+        Some(replacement_history.as_slice()),
+        "remote-v2 cold resume should restore the full persisted prefix, including annotations"
     );
+    let expected_wire_prefix = replacement_history
+        .into_iter()
+        .map(responses::strip_metadata_from_json)
+        .collect::<Vec<_>>();
     let resumed_input = requests[3].input();
     assert_eq!(
-        resumed_input.get(..replacement_history.len()),
-        Some(replacement_history.as_slice()),
-        "remote-v2 cold resume should replay persisted replacement history verbatim"
+        resumed_input.get(..expected_wire_prefix.len()),
+        Some(expected_wire_prefix.as_slice()),
+        "remote-v2 cold resume should send the exact public projection of its persisted prefix"
     );
     let post_compact_input = requests[2].input();
     assert_eq!(

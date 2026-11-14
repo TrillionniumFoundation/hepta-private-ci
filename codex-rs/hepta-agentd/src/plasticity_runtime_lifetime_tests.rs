@@ -80,6 +80,7 @@ use crate::PlasticityDynamicSignalBindingV1;
 use crate::PlasticityOwnerEvidenceKindV1;
 use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityRuntimeBootstrapV1;
+use crate::PlasticityRuntimeCallErrorV1;
 use crate::bootstrap_agentd_plasticity_writer_v1;
 use crate::bootstrap_agentd_topology_writer_v1;
 use crate::plasticity_eligibility_digest_v1;
@@ -933,17 +934,21 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     )
     .expect("runtime bootstrap");
     let state = daemon.state();
-    let owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, Some(bootstrap))
+    let (handle, owner) = bootstrap
+        .into_channel()
         .expect("compose daemon plasticity owner");
+    state
+        .attach_plasticity_runtime(handle.clone())
+        .expect("retain generation handle");
     let cancellation = CancellationToken::new();
     let owner_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&state),
-        owner,
+        Some(owner),
         cancellation.clone(),
     );
 
-    let first = state
-        .submit_parameter_plasticity_v1(request.clone(), 50)
+    let first = handle
+        .propose_parameter(request.clone(), 50)
         .await
         .expect("first product proposal");
     assert_eq!(
@@ -953,8 +958,8 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     assert_eq!(first.registry.sequence, 1);
     assert_eq!(first.registry.disposition, AppendDisposition::Inserted);
 
-    let first_topology = state
-        .submit_topology_plasticity_v1(topology_request.clone(), 50)
+    let first_topology = handle
+        .propose_topology(topology_request.clone(), 50)
         .await
         .expect("first topology product proposal");
     assert_eq!(first_topology.durable.sequence, 1);
@@ -968,6 +973,14 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("owner task join")
         .expect("owner task shutdown");
+    assert!(matches!(
+        handle.propose_parameter(request.clone(), 50).await,
+        Err(PlasticityRuntimeCallErrorV1::Closed)
+    ));
+    assert!(matches!(
+        handle.propose_topology(topology_request.clone(), 50).await,
+        Err(PlasticityRuntimeCallErrorV1::Closed)
+    ));
     drop(state);
 
     let recovered_ledger = DurableLedger::recover(
@@ -1006,20 +1019,21 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         topology_anchor_store,
     )
     .expect("restart bootstrap");
-    let restarted_owner = crate::plasticity_runtime::compose_plasticity_runtime_v1(
-        &restarted_state,
-        Some(restarted_bootstrap),
-    )
-    .expect("compose restarted daemon plasticity owner");
+    let (restarted_handle, restarted_owner) = restarted_bootstrap
+        .into_channel()
+        .expect("compose restarted daemon plasticity owner");
+    restarted_state
+        .attach_plasticity_runtime(restarted_handle.clone())
+        .expect("retain restarted generation handle");
     let restarted_cancellation = CancellationToken::new();
     let restarted_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
         Arc::clone(&restarted_state),
-        restarted_owner,
+        Some(restarted_owner),
         restarted_cancellation.clone(),
     );
 
-    let second = restarted_state
-        .submit_parameter_plasticity_v1(request, 50)
+    let second = restarted_handle
+        .propose_parameter(request, 50)
         .await
         .expect("idempotent replay after restart");
     assert_eq!(second.registry.sequence, 1);
@@ -1029,8 +1043,8 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         first.committed_registry_anchor
     );
 
-    let second_topology = restarted_state
-        .submit_topology_plasticity_v1(topology_request, 50)
+    let second_topology = restarted_handle
+        .propose_topology(topology_request, 50)
         .await
         .expect("idempotent topology replay after restart");
     assert_eq!(second_topology.durable.sequence, 1);

@@ -73,51 +73,58 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_output.rs"]
+mod output_observation;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use output_observation::MAX_OUTPUT_BYTES;
+use output_observation::ObservedMessages;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
-const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 struct FinalRevalidationTestHook {
     reached: tokio::sync::Notify,
     release: tokio::sync::Notify,
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 static FINAL_REVALIDATION_TEST_HOOK: std::sync::OnceLock<
     std::sync::Mutex<Option<std::sync::Arc<FinalRevalidationTestHook>>>,
 > = std::sync::OnceLock::new();
 
-#[cfg(test)]
-fn install_final_revalidation_test_hook(hook: std::sync::Arc<FinalRevalidationTestHook>) {
+#[cfg(all(test, unix))]
+fn install_final_revalidation_test_hook(
+    hook: std::sync::Arc<FinalRevalidationTestHook>,
+) -> Result<()> {
     *FINAL_REVALIDATION_TEST_HOOK
         .get_or_init(|| std::sync::Mutex::new(None))
         .lock()
-        .expect("final revalidation test hook lock") = Some(hook);
+        .map_err(|_| "final revalidation test hook lock poisoned")? = Some(hook);
+    Ok(())
 }
 
-#[cfg(test)]
-async fn pause_before_final_revalidation_for_test() {
+#[cfg(all(test, unix))]
+async fn pause_before_final_revalidation_for_test() -> Result<()> {
     let hook = FINAL_REVALIDATION_TEST_HOOK
         .get_or_init(|| std::sync::Mutex::new(None))
         .lock()
-        .expect("final revalidation test hook lock")
+        .map_err(|_| "final revalidation test hook lock poisoned")?
         .take();
     if let Some(hook) = hook {
         hook.reached.notify_one();
         hook.release.notified().await;
     }
+    Ok(())
 }
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
@@ -152,6 +159,15 @@ pub struct AppServerModelDriver {
 struct CodexTurnBinding {
     intent: CodexOperationIntent,
     turn_id: StableId,
+}
+
+struct ObservationRequest<'a> {
+    output: &'a mut NativeRunOutput,
+    messages: &'a mut ObservedMessages,
+    deadline: Instant,
+    cancellation: &'a CancellationToken,
+    owner: Option<&'a AgentdClient>,
+    binding: &'a CodexTurnBinding,
 }
 
 impl AppServerModelDriver {
@@ -642,19 +658,21 @@ impl AppServerModelDriver {
         )?;
         verify_persisted_dispatch_binding(
             control,
-            request_id,
-            payload_digest,
-            request_receipt.request_digest,
-            source_admission_digest,
-            codex_home_digest,
-            connection_id,
-            &started.thread.session_id,
-            adapter_intent.deadline_ms,
-            authority_epoch,
-            revocation_revision,
-            &revocation_head_digest,
-            &authority_witness,
-            &app_server_version,
+            PersistedDispatchBinding {
+                request_id,
+                payload_digest,
+                request_digest: request_receipt.request_digest,
+                source_admission_digest,
+                codex_home_digest,
+                connection_id,
+                session_id: &started.thread.session_id,
+                deadline_ms: adapter_intent.deadline_ms,
+                authority_epoch,
+                revocation_revision,
+                revocation_head_digest: &revocation_head_digest,
+                authority_witness: &authority_witness,
+                app_server_version: &app_server_version,
+            },
         )?;
 
         if let Some(binding) = intelligence {
@@ -725,9 +743,9 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(reason.into());
         }
-        #[cfg(test)]
+        #[cfg(all(test, unix))]
         if context.is_some() {
-            pause_before_final_revalidation_for_test().await;
+            pause_before_final_revalidation_for_test().await?;
         }
         if let Some(snapshot) = context.as_ref() {
             let revalidated = match owner.revalidate_cognitive_context(snapshot).await {
@@ -900,30 +918,33 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut messages = ObservedMessages::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
-                deadline,
-                cancellation,
-                Some(&owner),
-                &binding,
+                ObservationRequest {
+                    output: &mut output,
+                    messages: &mut messages,
+                    deadline,
+                    cancellation,
+                    owner: Some(&owner),
+                    binding: &binding,
+                },
             )
             .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -943,11 +964,14 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
-                    Instant::now() + INTERRUPT_GRACE,
-                    &grace,
-                    /*owner*/ None,
-                    &binding,
+                    ObservationRequest {
+                        output: &mut output,
+                        messages: &mut messages,
+                        deadline: Instant::now() + INTERRUPT_GRACE,
+                        cancellation: &grace,
+                        owner: None,
+                        binding: &binding,
+                    },
                 )
                 .await;
             loss_recorded?;
@@ -1007,12 +1031,16 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
-        deadline: Instant,
-        cancellation: &CancellationToken,
-        owner: Option<&AgentdClient>,
-        binding: &CodexTurnBinding,
+        request: ObservationRequest<'_>,
     ) -> std::result::Result<(), String> {
+        let ObservationRequest {
+            output,
+            messages,
+            deadline,
+            cancellation,
+            owner,
+            binding,
+        } = request;
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             let event = tokio::select! {
@@ -1029,7 +1057,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1146,22 +1174,41 @@ async fn send_authorized_turn_start(
         .await
 }
 
-fn verify_persisted_dispatch_binding(
-    control: &DurableInferenceControl,
-    request_id: &str,
+struct PersistedDispatchBinding<'a> {
+    request_id: &'a str,
     payload_digest: Digest32,
     request_digest: Digest32,
     source_admission_digest: Digest32,
     codex_home_digest: Digest32,
     connection_id: u64,
-    session_id: &str,
+    session_id: &'a str,
     deadline_ms: u64,
     authority_epoch: u64,
     revocation_revision: u64,
-    revocation_head_digest: &str,
-    authority_witness: &str,
-    app_server_version: &str,
+    revocation_head_digest: &'a str,
+    authority_witness: &'a str,
+    app_server_version: &'a str,
+}
+
+fn verify_persisted_dispatch_binding(
+    control: &DurableInferenceControl,
+    binding: PersistedDispatchBinding<'_>,
 ) -> Result<()> {
+    let PersistedDispatchBinding {
+        request_id,
+        payload_digest,
+        request_digest,
+        source_admission_digest,
+        codex_home_digest,
+        connection_id,
+        session_id,
+        deadline_ms,
+        authority_epoch,
+        revocation_revision,
+        revocation_head_digest,
+        authority_witness,
+        app_server_version,
+    } = binding;
     let dispatch = control
         .native_record(request_id)
         .and_then(|record| record.dispatch.as_ref())
@@ -1419,21 +1466,15 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut ObservedMessages,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
     let AppServerEvent::ServerNotification(notification) = observed.event() else {
         return Ok(false);
     };
+    messages.observe(output, notification)?;
     match notification.as_ref() {
-        ServerNotification::AgentMessageDelta(delta)
-            if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
-        {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
-            }
-            output.output.push_str(&delta.delta);
-        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {

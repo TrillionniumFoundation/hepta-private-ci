@@ -1,0 +1,333 @@
+name: Codex HIA native components
+
+on:
+  push:
+    paths:
+      - hia/**
+      - codex-rs/apply-patch/**
+      - codex-rs/arg0/**
+      - codex-rs/cli/**
+      - codex-rs/tui/**
+      - codex-rs/utils/string/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
+      - .github/workflows/codex-hia-native.yml
+  pull_request:
+    paths:
+      - hia/**
+      - codex-rs/apply-patch/**
+      - codex-rs/arg0/**
+      - codex-rs/cli/**
+      - codex-rs/tui/**
+      - codex-rs/utils/string/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
+      - .github/workflows/codex-hia-native.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-components:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      HEPTA_SOURCE: ${{ github.workspace }}/Hepta
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out Codex
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: codex
+          persist-credentials: false
+
+      - name: Check out pinned HIA compiler
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: TrillionniumFoundation/Hepta
+          ref: f33d8da316de8fdf27b504371f1a5310997ff548
+          path: Hepta
+          persist-credentials: false
+
+      - name: Prepare Rust oracle and production caller compiler
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          rustc_path="$(rustup which --toolchain 1.96.1 rustc)"
+          test -x "$rustc_path"
+          echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
+          echo "RUSTUP_TOOLCHAIN=1.96.1" >> "$GITHUB_ENV"
+          echo "CODEX_HIA_NATIVE_LIB_DIR=$RUNNER_TEMP/hia-native" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hia-cargo-target" >> "$GITHUB_ENV"
+          {
+            "$rustc_path" --version
+            python3 --version
+            ld --version
+            git -C codex rev-parse HEAD
+            git -C Hepta rev-parse HEAD
+          } > "$RUNNER_TEMP/hia-toolchain.log"
+          cat "$RUNNER_TEMP/hia-toolchain.log"
+
+      - name: Rebuild compiler generations and native components
+        id: build
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/build.py \
+            --hepta-root "$HEPTA_SOURCE" \
+            --output "$RUNNER_TEMP/hia-native" \
+            2>&1 | tee "$RUNNER_TEMP/hia-build.log"
+
+      - name: Verify Cargo build receipts and reject stale artifacts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-build-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-build-receipt.log"
+
+      - name: Compare HIA search with original Rust implementation
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_seek_sequence.py \
+            --library "$RUNNER_TEMP/hia-native/seek_sequence.so" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-seek-sequence.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-seek-sequence.log"
+
+      - name: Compare HIA UTF-8 boundaries with Rust and Core VM
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        env:
+          CODEX_HIA_UTF8_SHARED: ${{ runner.temp }}/hia-native/utf8_boundaries.so
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          status=0
+          python3 -B codex/hia/tests/test_utf8_boundaries.py \
+            > "$RUNNER_TEMP/hia-utf8-boundaries.json" \
+            2> "$RUNNER_TEMP/hia-utf8-boundaries.log" || status=$?
+          cat "$RUNNER_TEMP/hia-utf8-boundaries.log"
+          cat "$RUNNER_TEMP/hia-utf8-boundaries.json"
+          if [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
+          python3 -B - "$RUNNER_TEMP/hia-utf8-boundaries.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          report = json.loads(Path(sys.argv[1]).read_text())
+          for field in ("rust_oracle_calls", "native_calls", "vm_calls"):
+              if report.get(field, 0) <= 0:
+                  raise SystemExit(f"required verification was skipped: {field}")
+          PY
+
+      - name: Test statically linked native patch caller and large inputs
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          libdir="$RUNNER_TEMP/hia-native"
+          test -f "$libdir/libcodex_hia_seek_sequence.a"
+          {
+            "$RUSTC" --edition=2024 --test --cfg 'feature="hia-native"' \
+              codex/hia/tests/native_patch_caller.rs \
+              -L "native=$libdir" -l static=codex_hia_seek_sequence \
+              -o "$RUNNER_TEMP/hia-patch-caller-tests"
+            "$RUNNER_TEMP/hia-patch-caller-tests" --nocapture
+          } 2>&1 | tee "$RUNNER_TEMP/hia-patch-caller.log"
+
+      - name: Test statically linked native string caller and allocation behavior
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_native_string_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-string-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-string-caller.log"
+
+      - name: Compare native metric sanitizer with the original Rust caller
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_native_metric_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-metric-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-metric-caller.log"
+
+      - name: Verify metric sanitizer streaming state and buffer contract
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_metric_tag_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-metric-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-metric-abi.log"
+
+      - name: Compare native markdown location formatting with original Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_native_markdown_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-markdown-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-markdown-caller.log"
+
+      - name: Verify markdown location streaming and error contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_markdown_location_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-markdown-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-markdown-abi.log"
+
+      - name: Install pinned repository test runners
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Test both production crates with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-apply-patch -p codex-utils-string --features hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-native-crates.log"
+
+      - name: Compare actual native and original ASCII JSON callers
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_ascii_json_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-ascii-json-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-caller.log"
+
+      - name: Verify ASCII JSON window and error contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_ascii_json_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-ascii-json-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-abi.log"
+
+      - name: Verify installed HIA apply_patch executable
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-apply-patch --features hia-native --bin apply_patch \
+            2>&1 | tee "$RUNNER_TEMP/hia-installed-patch-build.log"
+          cp "$CARGO_TARGET_DIR/debug/apply_patch" "$RUNNER_TEMP/hia-apply_patch"
+          cargo build --locked -p codex-apply-patch --bin apply_patch \
+            2>&1 | tee "$RUNNER_TEMP/hia-original-patch-build.log"
+          python3 -B ../hia/tests/test_installed_patch.py \
+            --binary "$RUNNER_TEMP/hia-apply_patch" \
+            --reference-binary "$CARGO_TARGET_DIR/debug/apply_patch" \
+            --report "$RUNNER_TEMP/hia-installed-patch.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-installed-patch.log"
+
+      - name: Test full Codex owners with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-cli -p codex-arg0 -p codex-tui --features hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-codex-owners.log"
+
+      - name: Verify installed full Codex executable
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-cli --features hia-native --bin codex \
+            2>&1 | tee "$RUNNER_TEMP/hia-installed-codex-build.log"
+          cp "$CARGO_TARGET_DIR/debug/codex" "$RUNNER_TEMP/hia-codex"
+          env -u CODEX_HIA_NATIVE_LIB_DIR cargo build --locked -p codex-cli --bin codex \
+            2>&1 | tee "$RUNNER_TEMP/hia-original-codex-build.log"
+          python3 -B ../hia/tests/test_installed_codex.py \
+            --binary "$RUNNER_TEMP/hia-codex" \
+            --reference-binary "$CARGO_TARGET_DIR/debug/codex" \
+            --report "$RUNNER_TEMP/hia-installed-codex.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-installed-codex.log"
+
+      - name: Verify default callers require no HIA artifacts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
+
+      - name: Upload original build and test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codex-hia-native-results
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hia-native/build.json
+            ${{ runner.temp }}/hia-toolchain.log
+            ${{ runner.temp }}/hia-patch-caller.log
+            ${{ runner.temp }}/hia-string-caller.json
+            ${{ runner.temp }}/hia-string-caller.log
+            ${{ runner.temp }}/hia-metric-caller.json
+            ${{ runner.temp }}/hia-metric-caller.log
+            ${{ runner.temp }}/hia-metric-abi.json
+            ${{ runner.temp }}/hia-metric-abi.log
+            ${{ runner.temp }}/hia-markdown-caller.json
+            ${{ runner.temp }}/hia-markdown-caller.log
+            ${{ runner.temp }}/hia-markdown-abi.json
+            ${{ runner.temp }}/hia-markdown-abi.log
+            ${{ runner.temp }}/hia-ascii-json-caller.json
+            ${{ runner.temp }}/hia-ascii-json-caller.log
+            ${{ runner.temp }}/hia-ascii-json-abi.json
+            ${{ runner.temp }}/hia-ascii-json-abi.log
+            ${{ runner.temp }}/hia-native-crates.log
+            ${{ runner.temp }}/hia-installed-patch-build.log
+            ${{ runner.temp }}/hia-original-patch-build.log
+            ${{ runner.temp }}/hia-installed-patch.json
+            ${{ runner.temp }}/hia-installed-patch.log
+            ${{ runner.temp }}/hia-default-crates.log
+            ${{ runner.temp }}/hia-codex-owners.log
+            ${{ runner.temp }}/hia-installed-codex-build.log
+            ${{ runner.temp }}/hia-original-codex-build.log
+            ${{ runner.temp }}/hia-installed-codex.json
+            ${{ runner.temp }}/hia-installed-codex.log
+            ${{ runner.temp }}/hia-build.log
+            ${{ runner.temp }}/hia-build-receipt.json
+            ${{ runner.temp }}/hia-build-receipt.log
+            ${{ runner.temp }}/hia-seek-sequence.json
+            ${{ runner.temp }}/hia-seek-sequence.log
+            ${{ runner.temp }}/hia-utf8-boundaries.json
+            ${{ runner.temp }}/hia-utf8-boundaries.log

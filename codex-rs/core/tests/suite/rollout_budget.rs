@@ -7,6 +7,7 @@ use codex_protocol::protocol::CodexErrorInfo;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::Op;
 use codex_protocol::user_input::UserInput;
+use core_test_support::history_annotations;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -100,10 +101,17 @@ async fn adds_weighted_initial_and_threshold_reminders(
         .await?;
 
     test.submit_turn("first turn").await?;
+    let first_history = history_annotations::response_items(&test.codex).await;
     test.submit_turn("second turn").await?;
 
     let requests = responses.requests();
-    assert!(requests[0].has_content_kinds(&["rollout_budget.remaining_tokens"]));
+    for request in &requests {
+        history_annotations::assert_metadata_is_private(request);
+    }
+    assert!(history_annotations::has_content_kinds(
+        &first_history,
+        &["rollout_budget.remaining_tokens"]
+    ));
     assert_eq!(
         rollout_budget_texts(&requests[0]),
         vec![rollout_budget_message(/*remaining_tokens*/ 100)]

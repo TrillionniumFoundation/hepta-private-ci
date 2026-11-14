@@ -49,6 +49,9 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use sqlx::Row;
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -173,6 +176,32 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    // A different retained cut must fail before a new writer lease is created.
+    // Rejecting that candidate must leave the original exact cut intact.
+    let mut different_cut = expected.clone();
+    different_cut.state_digest = Sha256Digest::for_bytes(b"different retained cognitive cut");
+    let rejected = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&different_cut),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await
+    .expect_err("recovery must reject a different exact current cut");
+    assert!(
+        rejected
+            .to_string()
+            .contains("recovery candidate differs from independently retained current cut"),
+        "unexpected recovery rejection: {rejected}"
+    );
+    let unchanged = DurableCognitiveStore::open(&config.identity().layout).await?;
+    assert_eq!(unchanged.recovery_anchor().await?, expected);
+    drop(unchanged);
+
+    let expected_fence = authority.fencing_token_digest()?;
+    let expected_expiry = i64::try_from(authority.lease_expires_at_unix_seconds)?;
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -183,7 +212,59 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_ne!(
+        recovered_anchor.state_digest, expected.state_digest,
+        "fresh writer acquisition appends an authenticated lease to the exact owner cut"
+    );
+
+    // The recovery admission compared the complete pre-lease cut. Check the
+    // actual durable mutation that legitimately advances it: exactly one
+    // active lease, bound to the same owner, generation and external authority.
+    let recovered = SqliteConfig::from_sqlite_home(AbsolutePathBuf::try_from(root.clone())?)
+        .open_read_only_pool(host.writer().database_path())
+        .await?;
+    let leases = sqlx::query(
+        "SELECT lease_id, lease_sequence, owner_agent_id, generation, fencing_token,
+                state, authority_epoch, owner_epoch, lease_expires_at_unix_seconds
+         FROM cognitive_local_leases",
+    )
+    .fetch_all(&recovered)
+    .await?;
+    recovered.close().await;
+    assert_eq!(leases.len(), 1);
+    let lease = &leases[0];
+    assert_eq!(
+        lease.try_get::<String, _>("lease_id")?,
+        host.writer().lease_id()
+    );
+    assert_eq!(lease.try_get::<i64, _>("lease_sequence")?, 1);
+    assert_eq!(
+        lease.try_get::<String, _>("owner_agent_id")?,
+        owner.as_str()
+    );
+    assert_eq!(lease.try_get::<i64, _>("generation")?, 1);
+    assert_eq!(host.writer().generation(), 1);
+    assert_eq!(
+        lease.try_get::<String, _>("fencing_token")?,
+        expected_fence.as_str()
+    );
+    assert_eq!(lease.try_get::<String, _>("state")?, "active");
+    assert_eq!(lease.try_get::<i64, _>("authority_epoch")?, 13);
+    assert_eq!(lease.try_get::<i64, _>("owner_epoch")?, 17);
+    assert_eq!(
+        lease.try_get::<i64, _>("lease_expires_at_unix_seconds")?,
+        expected_expiry
+    );
+    assert_eq!(host.writer().recovery_anchor().await?, recovered_anchor);
+    assert!(
+        DurableCognitiveStore::open(&config.identity().layout)
+            .await
+            .is_err(),
+        "the recovered writer must retain its exclusive owner fence"
+    );
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());

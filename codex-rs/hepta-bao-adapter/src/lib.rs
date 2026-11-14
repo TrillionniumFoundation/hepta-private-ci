@@ -26,6 +26,7 @@ pub use final_use_host::RegisteredBaoConsumer;
 pub use https_consumer::BaoAuthBusAdmission;
 pub use https_consumer::BaoAuthBusError;
 pub use https_consumer::BaoAuthBusEvidenceProvider;
+pub use https_consumer::BaoAuthBusReadContext;
 pub use https_consumer::BaoClient;
 pub use https_consumer::BaoClientError;
 pub use https_consumer::BaoReadRequest;

@@ -339,6 +339,62 @@ def formatting_configuration_changed(path: str, base: str | None = None) -> bool
     return previous != current
 
 
+def excluded_vendored_rust_roots(paths: list[str]) -> set[Path]:
+    """Preserve dependency sources outside the product's Cargo workspace."""
+    workspace = REPO_ROOT / "codex-rs"
+    vendor_root = workspace / "third_party"
+    candidates = [
+        REPO_ROOT / path
+        for path in paths
+        if (REPO_ROOT / path).is_relative_to(vendor_root)
+    ]
+    manifest = workspace / "Cargo.toml"
+    if not candidates or not manifest.is_file():
+        return set()
+
+    if tomllib is not None:
+        exclusions = (
+            tomllib.loads(manifest.read_text()).get("workspace", {}).get("exclude", [])
+        )
+        if not isinstance(exclusions, list) or not all(
+            isinstance(value, str) for value in exclusions
+        ):
+            raise ValueError(f"invalid workspace exclude list in {manifest}")
+        return {
+            directory
+            for pattern in exclusions
+            for directory in workspace.glob(pattern)
+            if directory.resolve().is_relative_to(vendor_root.resolve())
+            and (directory / "Cargo.toml").is_file()
+        }
+
+    # Python 3.10 already uses Cargo for manifest metadata. Ask Cargo to resolve
+    # the same workspace boundary instead of partially parsing TOML ourselves.
+    roots = {
+        parent
+        for candidate in candidates
+        for parent in candidate.parents
+        if parent.is_relative_to(vendor_root) and (parent / "Cargo.toml").is_file()
+    }
+    excluded = set()
+    for directory in roots:
+        owner = subprocess.check_output(
+            [
+                "cargo",
+                "locate-project",
+                "--workspace",
+                "--message-format=plain",
+                "--manifest-path",
+                str(directory / "Cargo.toml"),
+            ],
+            cwd=workspace,
+            text=True,
+        ).strip()
+        if Path(owner).resolve() != manifest.resolve():
+            excluded.add(directory)
+    return excluded
+
+
 def rust_configuration_scope(paths: list[str]) -> list[str]:
     """Expand changed Rust configuration to its subtree, never unrelated crates.
 
@@ -369,7 +425,12 @@ def rust_configuration_scope(paths: list[str]) -> list[str]:
                 raise ValueError(f"Rust format input escapes repository: {value!r}")
             if target.is_file():
                 selected.add(value)
-    return sorted(selected)
+    excluded = excluded_vendored_rust_roots(sorted(selected))
+    return sorted(
+        path
+        for path in selected
+        if not any((REPO_ROOT / path).is_relative_to(root) for root in excluded)
+    )
 
 
 def scoped_formatter_groups(

@@ -264,7 +264,13 @@ fn unexpected_agent_crashes_back_off_and_stop_after_three_restarts() -> Result<(
 
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    let exhausted = supervisor.tick(now);
+    assert_eq!(exhausted.faults.len(), 1);
+    assert_eq!(exhausted.faults[0].agent_id, agent_id);
+    assert_eq!(
+        exhausted.faults[0].message,
+        SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string()
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);

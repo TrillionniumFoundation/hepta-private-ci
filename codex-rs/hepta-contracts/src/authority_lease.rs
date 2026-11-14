@@ -20,6 +20,22 @@ use sha2::Sha256;
 use std::collections::BTreeMap;
 use std::fmt;
 use std::fs::File;
+
+#[cfg(windows)]
+#[path = "authority_lease_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::StateDirectory;
+#[cfg(windows)]
+use windows::entry_exists;
+#[cfg(windows)]
+use windows::open_private;
+#[cfg(windows)]
+use windows::prepare_directory;
+#[cfg(windows)]
+use windows::replace_state;
+#[cfg(not(windows))]
+type StateDirectory = File;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
@@ -170,7 +186,7 @@ struct Stored {
 }
 
 struct Store {
-    root: File,
+    root: StateDirectory,
     owner_id: String,
     _lock: File,
 }
@@ -1150,11 +1166,11 @@ fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
     .map_err(|_| AuthorityLeaseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1162,11 +1178,11 @@ fn open_private(
 ) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
@@ -1708,3 +1724,7 @@ mod tests {
         assert_eq!(registry.capacity().unwrap().leases, 0);
     }
 }
+
+#[cfg(all(test, windows))]
+#[path = "authority_lease_windows_tests.rs"]
+mod windows_tests;

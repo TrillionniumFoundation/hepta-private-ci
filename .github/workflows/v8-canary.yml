@@ -190,21 +190,21 @@ jobs:
           python-version: "3.12"
 
       - name: Set up Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3f2778ee6a28c53e512b95bbcf7b2120993da70d # 1.96.1
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.1"
 
       - name: Pin installed Cargo binary
         shell: bash
         run: |
           set -euo pipefail
           rustup_home="${RUSTUP_HOME:-${HOME}/.rustup}"
-          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.95.0-*/bin/cargo' -type f -print -quit)"
+          cargo_bin="$(find "${rustup_home}/toolchains" -path '*/1.96.1-*/bin/cargo' -type f -print -quit)"
           if [[ -z "${cargo_bin}" || ! -x "${cargo_bin}" ]]; then
-            echo "Rust 1.95.0 Cargo binary is not installed under ${rustup_home}." >&2
+            echo "Rust 1.96.1 Cargo binary is not installed under ${rustup_home}." >&2
             exit 1
           fi
-          echo "CARGO_1_95=${cargo_bin}" >> "${GITHUB_ENV}"
+          echo "CARGO_1_96=${cargo_bin}" >> "${GITHUB_ENV}"
 
       - name: Build Bazel V8 release pair
         env:
@@ -289,6 +289,9 @@ jobs:
 
       - name: Smoke test staged artifact with Cargo
         env:
+          # An absolute Cargo executable does not pin rustc when a dependency
+          # has its own rust-toolchain.toml; bind the compiler as well.
+          RUSTUP_TOOLCHAIN: "1.96.1"
           SANDBOX: ${{ matrix.sandbox }}
           TARGET: ${{ matrix.target }}
         shell: bash
@@ -322,7 +325,7 @@ jobs:
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            "${CARGO_1_95}" "${cargo_args[@]}"
+            "${CARGO_1_96}" "${cargo_args[@]}"
           )
 
       - name: Upload staged artifacts
@@ -336,7 +339,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    # The cold ARM64 cross build reached the two-hour job limit before linking.
+    # Keep its source-build budget separate from the x64 job and runtime gates.
+    timeout-minutes: ${{ matrix.target == 'aarch64-pc-windows-msvc' && 240 || 120 }}
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
@@ -380,9 +385,9 @@ jobs:
           architecture: x64
 
       - name: Set up Codex Rust toolchain for Cargo smoke
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        uses: dtolnay/rust-toolchain@3f2778ee6a28c53e512b95bbcf7b2120993da70d # 1.96.1
         with:
-          toolchain: "1.95.0"
+          toolchain: "1.96.1"
           targets: ${{ matrix.target }}
 
       - name: Install rusty_v8 Rust toolchain
@@ -439,7 +444,19 @@ jobs:
           V8_FROM_SOURCE: "1"
         shell: bash
         working-directory: upstream-rusty-v8
-        run: cargo +1.91.0 build --locked --release --target "${TARGET}" --features v8_enable_sandbox
+        run: |
+          set -euo pipefail
+          cargo +1.91.0 build --verbose --verbose --locked --release \
+            --target "${TARGET}" --features v8_enable_sandbox \
+            2>&1 | tee "$RUNNER_TEMP/v8-source-build.log"
+
+      - name: Upload source-build diagnostics
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        with:
+          name: v8-source-build-log-${{ matrix.target }}
+          path: ${{ runner.temp }}/v8-source-build.log
+          if-no-files-found: warn
 
       - name: Stage upstream sandbox release pair
         env:
@@ -471,7 +488,7 @@ jobs:
             cd codex-rs
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
-            cargo +1.95.0 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
+            cargo +1.96.1 test -p codex-v8-poc --target "${TARGET}" --features sandbox --no-run
           )
 
       - name: Upload staged artifacts
