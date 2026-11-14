@@ -1,0 +1,321 @@
+{
+  "schema": "hcsn-desktop-followup-snapshot-v1",
+  "publication_status": "evidence snapshot; not completed CUDA qualification",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4873,
+  "branch": "research/hcsn-hx-20261105",
+  "baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "baseline_executable_source_commit": "06052c42c6075f888d953397546b75b4ddf247f3",
+  "full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "frozen_experiment": {
+    "requested_runs": 170,
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "model_count": 17,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_validation_test_counts": [
+      4096,
+      512,
+      1024
+    ],
+    "batch_size": 64,
+    "sequence_length": 64,
+    "input_channels": 2,
+    "hidden_size": 64,
+    "population_bins": 32,
+    "optimizer_steps_per_run": 400,
+    "examples_per_run": 25600,
+    "tokens_per_run": 1638400,
+    "learning_rate": 0.001,
+    "dt": 0.1
+  },
+  "hardware": {
+    "status": "physical_cuda_capable_device_observed; tensor execution not yet qualified",
+    "host_alias": "desktop",
+    "name": "NVIDIA GeForce RTX 4060",
+    "uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+    "driver": "580.178.04",
+    "vram_total_mib": 8188,
+    "vram_used_mib": 1713,
+    "vram_free_mib": 6093,
+    "utilization_percent": 37,
+    "power_draw": "N/A",
+    "power_limit_w": 115,
+    "vram_observation_scope": "availability snapshot only; not benchmark peak or a reservation"
+  },
+  "physical_energy": {
+    "nvml_init_return_code": 0,
+    "nvml_device_count": 1,
+    "nvml_handle_return_code": 0,
+    "nvml_power_return_code": 3,
+    "nvml_total_energy_return_code": 3,
+    "nvml_status": "NOT_SUPPORTED",
+    "valid_gpu_energy_joules": null,
+    "valid_gpu_power_watts": null,
+    "error_associated_zero_fields_are_samples": false,
+    "tdp_or_power_limit_estimation_used": false,
+    "cpu_rapl_read_status": "permission_denied",
+    "cpu_rapl_measures_gpu": false,
+    "field_values_probe": {
+      "path": "nvml-field-values.json",
+      "sha256": "848977ad65af0f8fe31a0f1a6dd68a0a21246f4e92ef05f2f8bcf8eabcf4ffc7",
+      "samples": 2,
+      "fields": [
+        186,
+        185,
+        83,
+        191
+      ],
+      "all_individual_field_statuses": 3,
+      "aggregate_success_is_not_field_success": true,
+      "task_energy_measured": false
+    }
+  },
+  "runtime_preparation": {
+    "status": "official pinned artifacts downloading; no torch-ready or Mamba-ready result yet",
+    "numeric_base_versions_checked": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "ncps": "1.0.1",
+      "nvidia-ml-py": "13.610.43"
+    },
+    "target_torch": "2.8.0+cu128",
+    "target_triton": "3.4.0",
+    "target_mamba": "2.3.1",
+    "target_causal_conv1d": "1.5.4",
+    "target_transformers": "4.57.1",
+    "torch_artifacts": {
+      "count": 25,
+      "bytes": 3918339031,
+      "manifest_sha256": "5b8df3b8ff4583f10f43a1ecfb05f35574a3f95a16a458d107e36e8a89175701"
+    },
+    "mamba_artifacts": {
+      "count": 17,
+      "bytes": 706688727,
+      "manifest_sha256": "86f88c5d54c74e5baccdd99cace8f056a6ed6acc11f4bd8f633e122c951d5501"
+    },
+    "active_jobs_at_last_observation": {
+      "torch": "1a1ac6bec2d-fc05-5429",
+      "mamba_download_only": "1a1ac5e358c-fc05-53de"
+    },
+    "installation_history": [
+      {
+        "job": "1a1ac326e0a-fc05-52cd",
+        "outcome": "numeric phase succeeded; original pip download cancelled with confirmed exit -15 before CUDA installation"
+      },
+      {
+        "job": "1a1ac4cc58e-fc05-5376",
+        "outcome": "failed on premature HTTP EOF; complete parts retained"
+      },
+      {
+        "job": "1a1ac572873-fc05-53b5",
+        "outcome": "confirmed cancelled exit -15; prefixes retained for bounded-read version"
+      }
+    ],
+    "download_scope": "HTTP ranges and parts are preparation; full artifact hash, wheel metadata, offline install and actual runtime checks still required",
+    "no_eta_claimed": true,
+    "model_computation_performed": false,
+    "source_build_scope": "same-version official source fallback inspected only; no compilation or installation performed",
+    "source_archive_sha256": "c46a6f47911adcf12298a5059bbde74ee096c49b3946d8ee10f4710719d3521c",
+    "active_jobs_observation_scope": "Last received observations before publication; subsequent state must be read from durable process status."
+  },
+  "cuda_preflight": {
+    "status": "prepared; no completed CUDA execution receipt at draft cut",
+    "models": [
+      "hx_dual",
+      "population_flux",
+      "mamba2"
+    ],
+    "shape": [
+      64,
+      64,
+      2
+    ],
+    "counts_toward_registered_runs": false,
+    "scope": "one training first-batch forward/loss/backward/clip/Adam step; no held-out evaluation",
+    "probe_sha256": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285",
+    "independent_cpu_only_negative_controls": {
+      "passed": 4,
+      "failed": 0,
+      "scope": "non-torch admission/replay negative controls on independent copies; no CUDA execution"
+    },
+    "gpu_peak_allocated_bytes": null,
+    "gpu_peak_reserved_bytes": null
+  },
+  "registered_cuda_experiment": {
+    "status": "pending_compatible_runtime_and_fullshape_admission",
+    "completed_runs": 0,
+    "fresh_matrix_execution_claimed": false,
+    "previous_cloud_accounting": {
+      "requested": 170,
+      "completed": 0,
+      "failed": 0,
+      "unavailable": 170,
+      "reason": "original cloud instance exposed no CUDA; preserved original receipt, not relabeled as a new desktop run"
+    }
+  },
+  "runner": {
+    "status": "blocked_on_current_operator_configuration_and_credentials",
+    "local_search_scope": "bounded known runner installation locations and system/user service metadata",
+    "reusable_local_runner_configuration_found": false,
+    "runner_process_observed": false,
+    "installed_actions_runner_service_found": false,
+    "remote_registered_runner_count": null,
+    "remote_registration_count_reason": "configured operator CLI runner-list request returned HTTP403 instead of a list",
+    "operator_cli_request": "GET /repos/TrillionniumFoundation/hepta-private-ci/actions/runners",
+    "operator_cli_http_status": 403,
+    "operator_cli_error_message": "Sorry. Your account was suspended",
+    "operator_cli_observation_source": "root agent actual tool output; sanitized here",
+    "credential_or_account_switch_attempted": false,
+    "runner_registration_or_group_change_attempted": false,
+    "github_plugin_repo_operations": "remain available in current linked connection; does not establish runner administration capability",
+    "trusted_probe": {
+      "run_id": 39526325715,
+      "attempt": 5,
+      "job_id": 127299267982,
+      "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "runner_group": "trillionnium-android-gpu",
+      "runner_name_guard": "desktop",
+      "required_ref": "refs/heads/main",
+      "required_event": "workflow_dispatch",
+      "checkout": false
+    }
+  },
+  "artifact_retention_fix": {
+    "status": "implemented_locally; awaiting bundled push and final-candidate CI",
+    "workflow": ".github/workflows/hepta-hcsn-research.yml",
+    "retained_existing_pattern": "${{ runner.temp }}/hcsn-*.json",
+    "added_path": "${{ runner.temp }}/hcsn-training-smoke.runs/",
+    "reason": "aggregate JSON alone omits validation-selected weights and immutable start/terminal attempt journals, preventing self-contained replay/recovery",
+    "local_workflow_sha256": "1fd67f477363ff126f8a8e0adc3340604e44d93d77cb0def39d8713148ad4bd2",
+    "algorithm_or_budget_change": false
+  },
+  "original_adverse_b_results": {
+    "evidence_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/28a61d14ea7d4c3b3c515ab57b29c98de22e5673/qualification/hcsn/evidence/cloud-20261105/attempt-safe/population-audit.json",
+    "scope": "historical trained smoke weights on the frozen baseline; unchanged conclusions",
+    "trained_grid_max_mass_error": 3.5763e-07,
+    "all_refinements_max_mass_error": 6.5566e-07,
+    "observed_escape": 0,
+    "filtered_hidden_output_rms_change_range": [
+      0.166,
+      0.1977
+    ],
+    "trained_grid_mean_test_mse": 0.3702743,
+    "constant_predictor_test_mse": 0.36800548,
+    "resolution_independence": "not established",
+    "task_advantage": "not established",
+    "full_budget_b_audited_runs": 0,
+    "full_budget_b_requested_runs": 20
+  },
+  "fresh_numerical_diagnostic": {
+    "scope": "untrained NumPy FP64 constant-drive operator test; not trained-model, CUDA or full-budget qualification",
+    "physical_setup": {
+      "drive": 3,
+      "sigma": 0.15,
+      "horizon": 6.4,
+      "effective_refractory": 0.3,
+      "leak": 3,
+      "recovery_strength": 0.2
+    },
+    "spatial_only_trace_rms_32_to_128_bins_at_dt_point1": 0.0124939655,
+    "temporal_only_trace_rms_dt_point1_to_point025_at_32_bins": 0.1512030165,
+    "successive_joint_refinement_trace_rms": [
+      0.0835744432,
+      0.0421370731,
+      0.0218662664
+    ],
+    "maximum_mass_error": 5.5511e-15,
+    "interpretation": "conservation and a converging constant-drive example coexist with material discretization error; no trained resolution-independence claim",
+    "portability_records_compared": 16,
+    "portability_values_equal": true,
+    "operator_result_sha256": "b6cee2a127c25d8b6267286f6fa744742c06aa9e808cd09e3bd384727a89bf0c"
+  },
+  "trained_checkpoint_followup": {
+    "status": "prepared-not-numerically-executed",
+    "restored_b_checkpoints": 3,
+    "checkpoint_bytes_verified": true,
+    "source_files_verified": 23,
+    "new_numerical_trace_execution_completed": false,
+    "new_training_performed": false
+  },
+  "source_evidence_hashes": {
+    "gpu-audit/gpu-availability.json": "d9bfeee6a4659b073e230e3b61dbdb2b1092abab6528d56e5557acebd977c193",
+    "gpu-audit/runtime-energy-runner.json": "ff2c2a6fb1101da138ae7bf7b9e0547d5f8b1af084c4b5f548ed90218542e620",
+    "numeric-audit/numpy-separable-grid.json": "b6cee2a127c25d8b6267286f6fa744742c06aa9e808cd09e3bd384727a89bf0c",
+    "numeric-audit/PORTABILITY-CHECK.json": "62aac8a8615c10895954665f96b7e91fbac204d4aa3cf0156df4f8a5396ce6bf",
+    "numeric-audit/SMOKE-REPLAY-PREPARED.json": "128a0dc559491729234a79308bc502a88d010b201c0f2610ff9e7c39086d626b",
+    "numeric-audit/preflight-v2-negatives/REVIEW-NEGATIVE-RESULT.json": "eb57c7e43aaa376ac9876d47b8a4c0e4d467366d0254f629b4ea1978ec195501",
+    "ci-audit/nvml-field-values-20261105-v1.json": "848977ad65af0f8fe31a0f1a6dd68a0a21246f4e92ef05f2f8bcf8eabcf4ffc7"
+  },
+  "privacy_scope": "No local home paths, process lists, credential contents or unrelated application details are published.",
+  "ci_observation": {
+    "schema": "hcsn-ci-readonly-observation-v1",
+    "checked_at": "2026-11-05 16:08:56 UTC",
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42043926869",
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 127301677224,
+        "run_id": 42043926869,
+        "workflow_name": "Hepta HCSN research",
+        "head_branch": "research/hcsn-hx-20261105",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42043926869",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAdo8VwqA",
+        "head_sha": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127301677224",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42043926869/job/127301677224",
+        "status": "queued",
+        "conclusion": null,
+        "created_at": "2026-11-05T14:19:42Z",
+        "started_at": "2026-11-05T14:19:42Z",
+        "completed_at": null,
+        "name": "kernel-and-mechanisms",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127301677224",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 0,
+        "runner_name": "",
+        "runner_group_id": 0,
+        "runner_group_name": ""
+      }
+    ],
+    "interpretation": "No runner assigned and no steps reported; queued started_at is not proof of actual execution."
+  },
+  "prepared_at_utc": "2026-11-05T16:20:44.055842+00:00",
+  "candidate_preparation": {
+    "status": "isolated local preparation only; original OOM/parity/fullshape gates still unmet",
+    "source_sha256": "abff34d45fe5829f59c28fc324e6a5c25dc5c04e533ae52b8d2048740ac1e72a",
+    "canonical_source_map_sha256": "1c49f03c3525adde66be08a6be0779dccb2ed803c497bf74daba66ad6e5c2087",
+    "manifest_sha256": "ee1068a36159db68a4e5b08c2046c2ef520fe175d7a0c19b63e29de72cac47d8",
+    "available_tests": {
+      "status": "partial",
+      "methods": 104,
+      "passed": 47,
+      "skipped": 57,
+      "failed": 0,
+      "errors": 0
+    },
+    "strict_tests": {
+      "status": "unavailable",
+      "exit_code": 2,
+      "tests_run": 0,
+      "reason": "PyTorch absent from preparation executor"
+    },
+    "original_package_files_unchanged": 28,
+    "original_python_source_files_unchanged": 23,
+    "original_full_config_unchanged": true,
+    "runtime_qualified": false
+  }
+}
