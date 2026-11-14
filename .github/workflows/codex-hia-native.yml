@@ -1,0 +1,122 @@
+name: Codex HIA native components
+
+on:
+  push:
+    paths:
+      - hia/**
+      - codex-rs/apply-patch/src/seek_sequence.rs
+      - codex-rs/utils/string/src/lib.rs
+      - .github/workflows/codex-hia-native.yml
+  pull_request:
+    paths:
+      - hia/**
+      - codex-rs/apply-patch/src/seek_sequence.rs
+      - codex-rs/utils/string/src/lib.rs
+      - .github/workflows/codex-hia-native.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-components:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      HEPTA_SOURCE: ${{ github.workspace }}/Hepta
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out Codex
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: codex
+          persist-credentials: false
+
+      - name: Check out pinned HIA compiler
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: TrillionniumFoundation/Hepta
+          ref: f33d8da316de8fdf27b504371f1a5310997ff548
+          path: Hepta
+          persist-credentials: false
+
+      - name: Prepare independent Rust oracle compiler
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --no-self-update
+          rustc_path="$(rustup which --toolchain 1.95.0 rustc)"
+          test -x "$rustc_path"
+          echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
+          {
+            "$rustc_path" --version
+            python3 --version
+            ld --version
+            git -C codex rev-parse HEAD
+            git -C Hepta rev-parse HEAD
+          } > "$RUNNER_TEMP/hia-toolchain.log"
+          cat "$RUNNER_TEMP/hia-toolchain.log"
+
+      - name: Rebuild compiler generations and native components
+        id: build
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/build.py \
+            --hepta-root "$HEPTA_SOURCE" \
+            --output "$RUNNER_TEMP/hia-native" \
+            2>&1 | tee "$RUNNER_TEMP/hia-build.log"
+
+      - name: Compare HIA search with original Rust implementation
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          python3 -B codex/hia/tests/test_seek_sequence.py \
+            --library "$RUNNER_TEMP/hia-native/seek_sequence.so" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-seek-sequence.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-seek-sequence.log"
+
+      - name: Compare HIA UTF-8 boundaries with Rust and Core VM
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        env:
+          CODEX_HIA_UTF8_SHARED: ${{ runner.temp }}/hia-native/utf8_boundaries.so
+        run: |
+          set -euo pipefail
+          test -x "$RUSTC"
+          status=0
+          python3 -B codex/hia/tests/test_utf8_boundaries.py \
+            > "$RUNNER_TEMP/hia-utf8-boundaries.json" \
+            2> "$RUNNER_TEMP/hia-utf8-boundaries.log" || status=$?
+          cat "$RUNNER_TEMP/hia-utf8-boundaries.log"
+          cat "$RUNNER_TEMP/hia-utf8-boundaries.json"
+          if [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
+          python3 -B - "$RUNNER_TEMP/hia-utf8-boundaries.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          report = json.loads(Path(sys.argv[1]).read_text())
+          for field in ("rust_oracle_calls", "native_calls", "vm_calls"):
+              if report.get(field, 0) <= 0:
+                  raise SystemExit(f"required verification was skipped: {field}")
+          PY
+
+      - name: Upload original build and test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: codex-hia-native-results
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hia-native/build.json
+            ${{ runner.temp }}/hia-toolchain.log
+            ${{ runner.temp }}/hia-build.log
+            ${{ runner.temp }}/hia-seek-sequence.json
+            ${{ runner.temp }}/hia-seek-sequence.log
+            ${{ runner.temp }}/hia-utf8-boundaries.json
+            ${{ runner.temp }}/hia-utf8-boundaries.log

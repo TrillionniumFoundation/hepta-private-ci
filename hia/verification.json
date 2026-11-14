@@ -1,0 +1,71 @@
+{
+  "schema": "codex.hia.component-verification.v1",
+  "codex_baseline": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "hepta_revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+  "target": "x86_64-unknown-linux-gnu",
+  "build_mode": "native-selfhost",
+  "build_status": "built",
+  "compiler_fixed_point": true,
+  "compiler_generations": [
+    {
+      "generation": "B1",
+      "sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+      "host_compiler_modules_loaded": []
+    },
+    {
+      "generation": "B2",
+      "sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+      "host_compiler_modules_loaded": []
+    },
+    {
+      "generation": "B3",
+      "sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+      "host_compiler_modules_loaded": []
+    }
+  ],
+  "sources": {
+    "seek_sequence": {
+      "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+      "core_sha256": "b7503d955cefee04d2cecff7c6679c8e485c9e95c13cd36384180f12faa998a1",
+      "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d",
+      "library_bytes": 33640,
+      "object_sha256": "1ccdec825cd1bc16a9ea5f814774b277aca483056f75d2e61c96f98d83471850"
+    },
+    "utf8_boundaries": {
+      "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+      "core_sha256": "60769338473242d4b88c290eb6413c972a7d6e9927c9d989ce3adee5645de0b5",
+      "library_sha256": "311fe6b2755189304992ce0fd95e934edffac39565c258029e3737a3c71f4e36",
+      "library_bytes": 17256,
+      "object_sha256": "cb24cf8223d172d155d2300c0b4abea59415470317170a064a068a096a310264"
+    }
+  },
+  "seek_sequence": {
+    "schema": "codex.hia.seek-sequence-differential.v1",
+    "status": "passed",
+    "seed": 20261114,
+    "valid_cases": 2327,
+    "invalid_cases": 86,
+    "boundary_calls": 135,
+    "corpus_sha256": "2819d227a041cc572555f41c42846d03014fe4fc2708603cca78932cf0552cb0",
+    "oracle_output_sha256": "390ac047a58805e3541740db91d3d212f7e8fd3e5e46df5e4dbcb0f4176f52f3",
+    "rust_source_sha256": "5eced89191977d6b53b1b770ccaad6cafa2fb3ecbcd4839a88318f75e4a620e4",
+    "hia_source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+    "library_sha256": "64a869bf51a2f0101a8a1b462fe17a5c9cef7f64bb2a6fc9c14cdbfadbbba04d",
+    "symbol": "f0",
+    "whole_codex_rewritten": false
+  },
+  "utf8_boundaries": {
+    "core_sha256": "60769338473242d4b88c290eb6413c972a7d6e9927c9d989ce3adee5645de0b5",
+    "hia_source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+    "native_calls": 75109,
+    "native_sha256": "311fe6b2755189304992ce0fd95e934edffac39565c258029e3737a3c71f4e36",
+    "rust_oracle_calls": 2093,
+    "rust_source_sha256": "8cce3b8b9e583b9ea7f8d49acff074707d517f6b9cbf294aefd135df5d02017c",
+    "suite": "codex_hia_utf8_boundaries",
+    "vm_calls": 56
+  },
+  "production_dispatch_migrated": false,
+  "whole_codex_rewritten": false,
+  "legacy_source_retired": false,
+  "scope": "Linux x86-64 component behavior; compiler rebuild fixed point; no full Codex acceptance"
+}
