@@ -20,15 +20,16 @@ use aws_smithy_runtime_api::box_error::BoxError;
 use aws_smithy_runtime_api::client::behavior_version::BehaviorVersion;
 use aws_smithy_runtime_api::client::http::SharedHttpClient;
 use aws_smithy_runtime_api::client::interceptors::SharedInterceptor;
-use aws_smithy_runtime_api::client::runtime_components::{
-    RuntimeComponentsBuilder, SharedConfigValidator,
-};
-use aws_smithy_runtime_api::client::runtime_plugin::{
-    Order, SharedRuntimePlugin, StaticRuntimePlugin,
-};
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+use aws_smithy_runtime_api::client::runtime_components::SharedConfigValidator;
+use aws_smithy_runtime_api::client::runtime_plugin::Order;
+use aws_smithy_runtime_api::client::runtime_plugin::SharedRuntimePlugin;
+use aws_smithy_runtime_api::client::runtime_plugin::StaticRuntimePlugin;
 use aws_smithy_runtime_api::client::stalled_stream_protection::StalledStreamProtectionConfig;
 use aws_smithy_runtime_api::shared::IntoShared;
-use aws_smithy_types::config_bag::{ConfigBag, FrozenLayer, Layer};
+use aws_smithy_types::config_bag::ConfigBag;
+use aws_smithy_types::config_bag::FrozenLayer;
+use aws_smithy_types::config_bag::Layer;
 use aws_smithy_types::retry::RetryConfig;
 use aws_smithy_types::timeout::TimeoutConfig;
 use std::borrow::Cow;
@@ -506,7 +507,8 @@ pub fn default_plugins(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use aws_smithy_runtime_api::client::runtime_plugin::{RuntimePlugin, RuntimePlugins};
+    use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
+    use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugins;
     #[cfg(any(feature = "default-https-client", feature = "tls-rustls"))]
     use tracing_test::traced_test;
 

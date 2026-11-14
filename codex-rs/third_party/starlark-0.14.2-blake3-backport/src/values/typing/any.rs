@@ -30,12 +30,7 @@ use crate::values::StarlarkValue;
 use crate::values::starlark_value;
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
+    Debug, derive_more::Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable,
 )]
 #[display("{}", Self::TYPE)]
 pub(crate) struct TypingAny;

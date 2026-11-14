@@ -70,12 +70,7 @@ struct TypeCheck {
 
 /// A simple custom type for testing `StarlarkValueAsType` parameterization errors.
 #[derive(
-    derive_more::Display,
-    Debug,
-    NoSerialize,
-    Allocative,
-    ProvidesStaticType,
-    StarlarkPagable
+    derive_more::Display, Debug, NoSerialize, Allocative, ProvidesStaticType, StarlarkPagable,
 )]
 #[display("MyType")]
 struct MyCustomType;

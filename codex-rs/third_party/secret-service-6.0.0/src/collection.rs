@@ -3,11 +3,20 @@ use crate::Item;
 use crate::proxy::collection::CollectionProxy;
 use crate::proxy::service::ServiceProxy;
 use crate::session::Session;
-use crate::ss::{SS_DBUS_NAME, SS_ITEM_ATTRIBUTES, SS_ITEM_LABEL};
-use crate::util::{LockAction, exec_prompt, format_secret, lock_or_unlock};
+use crate::ss::SS_DBUS_NAME;
+use crate::ss::SS_ITEM_ATTRIBUTES;
+use crate::ss::SS_ITEM_LABEL;
+use crate::util::LockAction;
+use crate::util::exec_prompt;
+use crate::util::format_secret;
+use crate::util::lock_or_unlock;
 
 use std::collections::HashMap;
-use zbus::{Dict, ObjectPath, OwnedObjectPath, Variant, proxy::CacheProperties};
+use zbus::Dict;
+use zbus::ObjectPath;
+use zbus::OwnedObjectPath;
+use zbus::Variant;
+use zbus::proxy::CacheProperties;
 
 /// Collection struct.
 /// Should always be created from the [`SecretService`](crate::SecretService) entry point,

@@ -8,17 +8,24 @@
 use crate::client::identity::no_auth::NoAuthIdentityResolver;
 use aws_smithy_runtime_api::box_error::BoxError;
 use aws_smithy_runtime_api::client::auth::static_resolver::StaticAuthSchemeOptionResolver;
-use aws_smithy_runtime_api::client::auth::{
-    AuthScheme, AuthSchemeEndpointConfig, AuthSchemeId, AuthSchemeOption,
-    AuthSchemeOptionResolverParams, AuthSchemeOptionsFuture, ResolveAuthSchemeOptions,
-    SharedAuthScheme, SharedAuthSchemeOptionResolver, Sign,
-};
-use aws_smithy_runtime_api::client::identity::{Identity, SharedIdentityResolver};
+use aws_smithy_runtime_api::client::auth::AuthScheme;
+use aws_smithy_runtime_api::client::auth::AuthSchemeEndpointConfig;
+use aws_smithy_runtime_api::client::auth::AuthSchemeId;
+use aws_smithy_runtime_api::client::auth::AuthSchemeOption;
+use aws_smithy_runtime_api::client::auth::AuthSchemeOptionResolverParams;
+use aws_smithy_runtime_api::client::auth::AuthSchemeOptionsFuture;
+use aws_smithy_runtime_api::client::auth::ResolveAuthSchemeOptions;
+use aws_smithy_runtime_api::client::auth::SharedAuthScheme;
+use aws_smithy_runtime_api::client::auth::SharedAuthSchemeOptionResolver;
+use aws_smithy_runtime_api::client::auth::Sign;
+use aws_smithy_runtime_api::client::identity::Identity;
+use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
 use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
-use aws_smithy_runtime_api::client::runtime_components::{
-    GetIdentityResolver, RuntimeComponents, RuntimeComponentsBuilder,
-};
-use aws_smithy_runtime_api::client::runtime_plugin::{Order, RuntimePlugin};
+use aws_smithy_runtime_api::client::runtime_components::GetIdentityResolver;
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+use aws_smithy_runtime_api::client::runtime_plugin::Order;
+use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
 use aws_smithy_runtime_api::shared::IntoShared;
 use aws_smithy_types::config_bag::ConfigBag;
 use std::borrow::Cow;

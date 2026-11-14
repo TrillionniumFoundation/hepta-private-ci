@@ -4,14 +4,17 @@
  */
 
 use aws_smithy_async::time::TimeSource;
-use aws_smithy_types::config_bag::{Storable, StoreReplace};
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreReplace;
 use aws_smithy_types::retry::ErrorKind;
 use std::fmt;
 use std::sync::atomic::AtomicU32;
 use std::sync::atomic::Ordering;
 use std::sync::Arc;
-use std::time::{Duration, SystemTime};
-use tokio::sync::{OwnedSemaphorePermit, Semaphore};
+use std::time::Duration;
+use std::time::SystemTime;
+use tokio::sync::OwnedSemaphorePermit;
+use tokio::sync::Semaphore;
 
 pub(crate) const DEFAULT_CAPACITY: usize = 500;
 // On a 32 bit architecture, the value of Semaphore::MAX_PERMITS is 536,870,911.
@@ -404,7 +407,8 @@ mod tests {
 
     use super::*;
     use aws_smithy_async::test_util::ManualTimeSource;
-    use std::{sync::LazyLock, time::UNIX_EPOCH};
+    use std::sync::LazyLock;
+    use std::time::UNIX_EPOCH;
 
     static TIME_SOURCE: LazyLock<ManualTimeSource> =
         LazyLock::new(|| ManualTimeSource::new(UNIX_EPOCH + Duration::from_secs(12344321)));
@@ -715,7 +719,8 @@ mod tests {
     #[cfg(any(feature = "test-util", feature = "legacy-test-util"))]
     #[test]
     fn test_atomicf32_stress_concurrent_access() {
-        use std::sync::{Arc, Barrier};
+        use std::sync::Arc;
+        use std::sync::Barrier;
         use std::thread;
 
         let expected_values = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
@@ -939,7 +944,8 @@ mod tests {
     #[test]
     fn test_concurrent_time_based_refill_no_over_generation() {
         use aws_smithy_async::test_util::ManualTimeSource;
-        use std::sync::{Arc, Barrier};
+        use std::sync::Arc;
+        use std::sync::Barrier;
         use std::thread;
         use std::time::UNIX_EPOCH;
 

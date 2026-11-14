@@ -259,7 +259,8 @@ mod float {
 
 #[cfg(test)]
 mod test {
-    use crate::primitive::{Encoder, Parse};
+    use crate::primitive::Encoder;
+    use crate::primitive::Parse;
 
     #[test]
     fn bool_format() {

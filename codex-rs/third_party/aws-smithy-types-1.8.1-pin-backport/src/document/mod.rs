@@ -268,9 +268,12 @@ where
     feature = "serde-deserialize"
 ))]
 mod test {
-    use super::{from_document, to_document, Document};
+    use super::from_document;
+    use super::to_document;
+    use super::Document;
     use crate::Number;
-    use serde::{Deserialize, Serialize};
+    use serde::Deserialize;
+    use serde::Serialize;
     use std::collections::HashMap;
 
     /// Helper: serialize a value to Document and verify the result.

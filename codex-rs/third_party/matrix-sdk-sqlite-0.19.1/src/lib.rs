@@ -33,14 +33,15 @@ mod media_store;
 #[cfg(feature = "state-store")]
 mod state_store;
 mod utils;
-use std::{
-    cmp::max,
-    fmt,
-    path::{Path, PathBuf},
-};
+use std::cmp::max;
+use std::fmt;
+use std::path::Path;
+use std::path::PathBuf;
 
 use deadpool::managed::PoolConfig;
-use zeroize::{Zeroize, ZeroizeOnDrop, Zeroizing};
+use zeroize::Zeroize;
+use zeroize::ZeroizeOnDrop;
+use zeroize::Zeroizing;
 
 #[cfg(feature = "crypto-store")]
 pub use self::crypto_store::SqliteCryptoStore;
@@ -50,7 +51,9 @@ pub use self::event_cache_store::SqliteEventCacheStore;
 #[cfg(feature = "media-store")]
 pub use self::media_store::SqliteMediaStore;
 #[cfg(feature = "state-store")]
-pub use self::state_store::{DATABASE_NAME as STATE_STORE_DATABASE_NAME, SqliteStateStore};
+pub use self::state_store::DATABASE_NAME as STATE_STORE_DATABASE_NAME;
+#[cfg(feature = "state-store")]
+pub use self::state_store::SqliteStateStore;
 
 #[cfg(feature = "uniffi")]
 uniffi::setup_scaffolding!();
@@ -196,7 +199,10 @@ impl SqliteStoreConfig {
     ) -> Self {
         if let Some(passphrase) = passphrase {
             let key = Zeroizing::new(passphrase.to_vec());
-            self.secret = Some(Secret::HighEntropyPassPhrase { key, base64_variant });
+            self.secret = Some(Secret::HighEntropyPassPhrase {
+                key,
+                base64_variant,
+            });
         }
 
         self
@@ -334,20 +340,24 @@ impl Default for RuntimeConfig {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        ops::Not,
-        path::{Path, PathBuf},
-    };
+    use std::ops::Not;
+    use std::path::Path;
+    use std::path::PathBuf;
 
     use zeroize::Zeroizing;
 
-    use super::{POOL_MINIMUM_SIZE, Secret, SqliteStoreConfig};
+    use super::POOL_MINIMUM_SIZE;
+    use super::Secret;
+    use super::SqliteStoreConfig;
 
     #[test]
     fn test_new() {
         let store_config = SqliteStoreConfig::new(Path::new("foo"));
 
-        assert_eq!(store_config.pool_config.max_size, num_cpus::get_physical() * 4);
+        assert_eq!(
+            store_config.pool_config.max_size,
+            num_cpus::get_physical() * 4
+        );
         assert!(store_config.runtime_config.optimize);
         assert_eq!(store_config.runtime_config.cache_size, 2_000_000);
         assert_eq!(store_config.runtime_config.journal_size_limit, 10_000_000);
@@ -373,7 +383,10 @@ mod tests {
             .journal_size_limit(44);
 
         assert_eq!(store_config.path, PathBuf::from("foo"));
-        assert_eq!(store_config.secret, Some(Secret::PassPhrase("bar".to_owned().into())));
+        assert_eq!(
+            store_config.secret,
+            Some(Secret::PassPhrase("bar".to_owned().into()))
+        );
         assert_eq!(store_config.pool_config.max_size, 42);
         assert!(store_config.runtime_config.optimize.not());
         assert_eq!(store_config.runtime_config.cache_size, 43);

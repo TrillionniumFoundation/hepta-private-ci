@@ -43,15 +43,7 @@ use crate::values::UnpackValue;
 use crate::values::Value;
 
 /// Define the None type, use [`NoneType`] in Rust.
-#[derive(
-    Debug,
-    Clone,
-    Dupe,
-    ProvidesStaticType,
-    Display,
-    Allocative,
-    StarlarkPagable
-)]
+#[derive(Debug, Clone, Dupe, ProvidesStaticType, Display, Allocative, StarlarkPagable)]
 #[display("None")]
 pub struct NoneType;
 

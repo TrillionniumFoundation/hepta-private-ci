@@ -5,13 +5,18 @@
 
 use crate::expiring_cache::ExpiringCache;
 use aws_smithy_async::future::timeout::Timeout;
-use aws_smithy_async::rt::sleep::{AsyncSleep, SharedAsyncSleep};
-use aws_smithy_async::time::{SharedTimeSource, TimeSource};
+use aws_smithy_async::rt::sleep::AsyncSleep;
+use aws_smithy_async::rt::sleep::SharedAsyncSleep;
+use aws_smithy_async::time::SharedTimeSource;
+use aws_smithy_async::time::TimeSource;
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::identity::{
-    Identity, IdentityCachePartition, IdentityFuture, ResolveCachedIdentity, ResolveIdentity,
-    SharedIdentityCache, SharedIdentityResolver,
-};
+use aws_smithy_runtime_api::client::identity::Identity;
+use aws_smithy_runtime_api::client::identity::IdentityCachePartition;
+use aws_smithy_runtime_api::client::identity::IdentityFuture;
+use aws_smithy_runtime_api::client::identity::ResolveCachedIdentity;
+use aws_smithy_runtime_api::client::identity::ResolveIdentity;
+use aws_smithy_runtime_api::client::identity::SharedIdentityCache;
+use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_runtime_api::shared::IntoShared;
 use aws_smithy_types::config_bag::ConfigBag;
@@ -524,13 +529,18 @@ impl fmt::Display for TimedOutError {
 mod tests {
     use super::*;
     use aws_smithy_async::rt::sleep::TokioSleep;
-    use aws_smithy_async::test_util::{instant_time_and_sleep, ManualTimeSource};
+    use aws_smithy_async::test_util::instant_time_and_sleep;
+    use aws_smithy_async::test_util::ManualTimeSource;
     use aws_smithy_async::time::TimeSource;
     use aws_smithy_runtime_api::client::identity::http::Token;
     use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
-    use std::sync::atomic::{AtomicUsize, Ordering};
-    use std::sync::{Arc, Mutex};
-    use std::time::{Duration, SystemTime, UNIX_EPOCH};
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+    use std::sync::Arc;
+    use std::sync::Mutex;
+    use std::time::Duration;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
     use tracing::info;
 
     const LOAD_TIMEOUT_FOR_TESTS: Duration = Duration::from_secs(5);

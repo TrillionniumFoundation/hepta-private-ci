@@ -28,9 +28,7 @@ use pagable::Pagable;
 use crate::typing::Ty;
 use crate::typing::ty::TypeRenderConfig;
 
-#[derive(
-    Dupe, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Allocative, Pagable
-)]
+#[derive(Dupe, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug, Allocative, Pagable)]
 enum ArcTyInner {
     // These are shortcuts to avoid allocations for common cases.
     Any,
@@ -68,9 +66,9 @@ impl Display for ArcTyInner {
     Hash,
     derive_more::Display,
     Debug,
-    Allocative
+    Allocative,
+    Pagable,
 )]
-#[derive(Pagable)]
 pub struct ArcTy(ArcTyInner);
 
 impl ArcTy {

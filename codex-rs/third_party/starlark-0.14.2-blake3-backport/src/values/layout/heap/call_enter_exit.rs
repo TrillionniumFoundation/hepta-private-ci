@@ -53,14 +53,7 @@ pub(crate) struct NoDrop;
 impl MaybeDrop for NeedsDrop {}
 impl MaybeDrop for NoDrop {}
 
-#[derive(
-    Trace,
-    Debug,
-    derive_more::Display,
-    ProvidesStaticType,
-    NoSerialize,
-    Allocative
-)]
+#[derive(Trace, Debug, derive_more::Display, ProvidesStaticType, NoSerialize, Allocative)]
 #[display("CallEnter")]
 pub(crate) struct CallEnter<'v, D: MaybeDrop + 'static> {
     pub(crate) function: Value<'v>,
@@ -82,12 +75,7 @@ crate::register_ty_starlark_value!(CallEnter<'_, NeedsDrop>);
 crate::register_ty_starlark_value!(CallEnter<'_, NoDrop>);
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    ProvidesStaticType,
-    NoSerialize,
-    Allocative,
-    StarlarkPagablePanic
+    Debug, derive_more::Display, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagablePanic,
 )]
 #[display("CallExit")]
 pub(crate) struct CallExit<D: MaybeDrop + 'static> {

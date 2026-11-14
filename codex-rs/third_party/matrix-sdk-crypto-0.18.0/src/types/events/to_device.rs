@@ -12,39 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::BTreeMap, fmt::Debug};
+use std::collections::BTreeMap;
+use std::fmt::Debug;
 
-use ruma::{
-    OwnedUserId, UserId,
-    events::{
-        ToDeviceEventContent, ToDeviceEventType,
-        key::verification::{
-            accept::ToDeviceKeyVerificationAcceptEvent, cancel::ToDeviceKeyVerificationCancelEvent,
-            done::ToDeviceKeyVerificationDoneEvent, key::ToDeviceKeyVerificationKeyEvent,
-            mac::ToDeviceKeyVerificationMacEvent, ready::ToDeviceKeyVerificationReadyEvent,
-            request::ToDeviceKeyVerificationRequestEvent, start::ToDeviceKeyVerificationStartEvent,
-        },
-        secret::request::{SecretName, ToDeviceSecretRequestEvent},
-    },
-    serde::{JsonCastable, Raw},
-};
-use serde::{Deserialize, Serialize};
-use serde_json::{
-    Value,
-    value::{RawValue, to_raw_value},
-};
+use ruma::OwnedUserId;
+use ruma::UserId;
+use ruma::events::ToDeviceEventContent;
+use ruma::events::ToDeviceEventType;
+use ruma::events::key::verification::accept::ToDeviceKeyVerificationAcceptEvent;
+use ruma::events::key::verification::cancel::ToDeviceKeyVerificationCancelEvent;
+use ruma::events::key::verification::done::ToDeviceKeyVerificationDoneEvent;
+use ruma::events::key::verification::key::ToDeviceKeyVerificationKeyEvent;
+use ruma::events::key::verification::mac::ToDeviceKeyVerificationMacEvent;
+use ruma::events::key::verification::ready::ToDeviceKeyVerificationReadyEvent;
+use ruma::events::key::verification::request::ToDeviceKeyVerificationRequestEvent;
+use ruma::events::key::verification::start::ToDeviceKeyVerificationStartEvent;
+use ruma::events::secret::request::SecretName;
+use ruma::events::secret::request::ToDeviceSecretRequestEvent;
+use ruma::serde::JsonCastable;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Value;
+use serde_json::value::RawValue;
+use serde_json::value::to_raw_value;
 use zeroize::Zeroize;
 
-use super::{
-    EventType,
-    dummy::DummyEvent,
-    forwarded_room_key::{ForwardedRoomKeyContent, ForwardedRoomKeyEvent},
-    room::encrypted::EncryptedToDeviceEvent,
-    room_key::RoomKeyEvent,
-    room_key_request::RoomKeyRequestEvent,
-    room_key_withheld::RoomKeyWithheldEvent,
-    secret_send::SecretSendEvent,
-};
+use super::EventType;
+use super::dummy::DummyEvent;
+use super::forwarded_room_key::ForwardedRoomKeyContent;
+use super::forwarded_room_key::ForwardedRoomKeyEvent;
+use super::room::encrypted::EncryptedToDeviceEvent;
+use super::room_key::RoomKeyEvent;
+use super::room_key_request::RoomKeyRequestEvent;
+use super::room_key_withheld::RoomKeyWithheldEvent;
+use super::secret_send::SecretSendEvent;
 use crate::types::events::from_str;
 
 /// An enum over the various to-device events we support.
@@ -201,7 +203,11 @@ impl ToDeviceEvents {
                     event_type: &'a str,
                 }
 
-                let helper = Helper { sender: &e.sender, content: &content, event_type };
+                let helper = Helper {
+                    sender: &e.sender,
+                    content: &content,
+                    event_type,
+                };
 
                 let raw_value = to_raw_value(&helper)?;
 
@@ -270,7 +276,11 @@ where
 impl<C: EventType + Debug + Sized + Serialize> ToDeviceEvent<C> {
     /// Create a new `ToDeviceEvent`.
     pub fn new(sender: OwnedUserId, content: C) -> ToDeviceEvent<C> {
-        ToDeviceEvent { sender, content, other: Default::default() }
+        ToDeviceEvent {
+            sender,
+            content,
+            other: Default::default(),
+        }
     }
 }
 
@@ -294,8 +304,12 @@ where
 
         let event_type = self.content.event_type();
 
-        let helper =
-            Helper { sender: &self.sender, content: &self.content, event_type, other: &self.other };
+        let helper = Helper {
+            sender: &self.sender,
+            content: &self.content,
+            event_type,
+            other: &self.other,
+        };
 
         helper.serialize(serializer)
     }
@@ -324,7 +338,11 @@ where
         let helper: Helper<C> = Helper::deserialize(deserializer)?;
 
         if helper.event_type == helper.content.event_type() {
-            Ok(Self { sender: helper.sender, content: helper.content, other: helper.other })
+            Ok(Self {
+                sender: helper.sender,
+                content: helper.content,
+                other: helper.other,
+            })
         } else {
             Err(serde::de::Error::custom(format!(
                 "Mismatched event type, got {}, expected {}",
@@ -411,7 +429,8 @@ impl Serialize for ToDeviceEvents {
 #[cfg(test)]
 mod tests {
     use assert_matches::assert_matches;
-    use serde_json::{Value, json};
+    use serde_json::Value;
+    use serde_json::json;
     use similar_asserts::assert_eq;
 
     use super::ToDeviceEvents;

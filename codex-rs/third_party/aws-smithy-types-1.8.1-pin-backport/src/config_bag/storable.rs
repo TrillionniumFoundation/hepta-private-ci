@@ -5,7 +5,8 @@
 
 use crate::config_bag::value::Value;
 use crate::config_bag::ItemIter;
-use std::fmt::{Debug, Formatter};
+use std::fmt::Debug;
+use std::fmt::Formatter;
 use std::iter::Rev;
 use std::marker::PhantomData;
 use std::slice;

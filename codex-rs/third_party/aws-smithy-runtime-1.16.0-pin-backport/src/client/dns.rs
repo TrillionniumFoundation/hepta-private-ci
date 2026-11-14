@@ -7,7 +7,9 @@
 
 #[cfg(all(feature = "rt-tokio", not(target_family = "wasm")))]
 mod tokio {
-    use aws_smithy_runtime_api::client::dns::{DnsFuture, ResolveDns, ResolveDnsError};
+    use aws_smithy_runtime_api::client::dns::DnsFuture;
+    use aws_smithy_runtime_api::client::dns::ResolveDns;
+    use aws_smithy_runtime_api::client::dns::ResolveDnsError;
     use std::io::Error as IoError;
     use std::net::ToSocketAddrs;
 

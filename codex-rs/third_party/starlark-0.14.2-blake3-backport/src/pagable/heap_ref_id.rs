@@ -49,17 +49,7 @@ use crate::values::FrozenHeapName;
 /// `FrozenHeapName`. The hash is computed with blake3 via [`StrongHash`] so
 /// the same heap name produces the same ID across processes (unlike
 /// `DefaultHasher`, which uses a per-process random seed).
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    Dupe,
-    PartialEq,
-    Eq,
-    Hash,
-    PagableSerialize,
-    PagableDeserialize
-)]
+#[derive(Debug, Clone, Copy, Dupe, PartialEq, Eq, Hash, PagableSerialize, PagableDeserialize)]
 pub struct HeapRefId(u64);
 
 impl HeapRefId {

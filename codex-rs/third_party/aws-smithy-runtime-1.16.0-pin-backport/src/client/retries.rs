@@ -12,9 +12,11 @@ pub mod strategy;
 mod client_rate_limiter;
 pub(crate) mod token_bucket;
 
-use aws_smithy_types::config_bag::{Storable, StoreReplace};
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreReplace;
 use std::fmt;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::time::Duration;
 
 // Shared slot for the retry strategy to communicate a backoff delay to the
@@ -44,10 +46,12 @@ impl Storable for LongPollingBackoff {
     type Storer = StoreReplace<Self>;
 }
 
-pub use client_rate_limiter::{
-    ClientRateLimiter, ClientRateLimiterBuilder, ClientRateLimiterPartition,
-};
-pub use token_bucket::{TokenBucket, TokenBucketBuilder, MAXIMUM_CAPACITY};
+pub use client_rate_limiter::ClientRateLimiter;
+pub use client_rate_limiter::ClientRateLimiterBuilder;
+pub use client_rate_limiter::ClientRateLimiterPartition;
+pub use token_bucket::TokenBucket;
+pub use token_bucket::TokenBucketBuilder;
+pub use token_bucket::MAXIMUM_CAPACITY;
 
 use std::borrow::Cow;
 
@@ -187,7 +191,8 @@ impl RetryPartitionBuilder {
 mod tests {
     use super::*;
     use std::collections::hash_map::DefaultHasher;
-    use std::hash::{Hash, Hasher};
+    use std::hash::Hash;
+    use std::hash::Hasher;
 
     fn hash_value<T: Hash>(t: &T) -> u64 {
         let mut hasher = DefaultHasher::new();

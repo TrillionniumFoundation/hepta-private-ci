@@ -5,12 +5,14 @@
 
 //! Types relevant to event stream serialization/deserialization
 
-use crate::config_bag::{Storable, StoreReplace};
+use crate::config_bag::Storable;
+use crate::config_bag::StoreReplace;
 use crate::str_bytes::StrBytes;
 use bytes::Bytes;
 use std::any::Any;
 use std::fmt;
-use std::sync::{mpsc, Mutex};
+use std::sync::mpsc;
+use std::sync::Mutex;
 
 mod value {
     use crate::str_bytes::StrBytes;

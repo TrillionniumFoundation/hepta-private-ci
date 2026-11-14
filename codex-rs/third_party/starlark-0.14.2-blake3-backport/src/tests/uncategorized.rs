@@ -290,13 +290,7 @@ fn test_radd() {
     // We want select append to always produce a select, much like the
     // Bazel/Buck `select` function.
     #[derive(
-        Debug,
-        Display,
-        Clone,
-        ProvidesStaticType,
-        NoSerialize,
-        Allocative,
-        StarlarkPagable
+        Debug, Display, Clone, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable,
     )]
     #[display("${:?}", _0)]
     struct Select(Vec<i32>);
@@ -778,14 +772,7 @@ fn test_label_assign() {
         }
     }
 
-    #[derive(
-        Debug,
-        ProvidesStaticType,
-        Display,
-        NoSerialize,
-        Allocative,
-        StarlarkPagable
-    )]
+    #[derive(Debug, ProvidesStaticType, Display, NoSerialize, Allocative, StarlarkPagable)]
     #[display("FrozenWrapper")]
     struct FrozenWrapper;
 

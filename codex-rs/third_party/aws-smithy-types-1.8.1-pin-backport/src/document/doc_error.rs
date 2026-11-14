@@ -5,7 +5,9 @@
 
 //! Error types for [`Document`](super::Document) serialization and deserialization.
 
-use std::fmt::{self, Debug, Display};
+use std::fmt::Debug;
+use std::fmt::Display;
+use std::fmt::{self};
 
 /// An error that occurred during [`Document`](super::Document) serialization
 /// or deserialization.

@@ -56,15 +56,7 @@ pub(crate) struct MaybeDocHiddenValue<'v, V: ValueLike<'v>> {
 }
 
 /// The return value of `namespace()`
-#[derive(
-    Clone,
-    Debug,
-    Trace,
-    Freeze,
-    ProvidesStaticType,
-    Allocative,
-    StarlarkPagable
-)]
+#[derive(Clone, Debug, Trace, Freeze, ProvidesStaticType, Allocative, StarlarkPagable)]
 #[starlark_pagable(
     bound = "V: StarlarkPagable, V::String: StarlarkPagable + SmallMapKeyDeserialize"
 )]

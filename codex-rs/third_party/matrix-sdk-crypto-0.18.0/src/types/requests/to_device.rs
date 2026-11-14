@@ -12,15 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{collections::BTreeMap, iter};
+use std::collections::BTreeMap;
+use std::iter;
 
-use ruma::{
-    OwnedDeviceId, OwnedTransactionId, OwnedUserId, TransactionId, UserId,
-    events::{AnyToDeviceEventContent, ToDeviceEventContent, ToDeviceEventType},
-    serde::Raw,
-    to_device::DeviceIdOrAllDevices,
-};
-use serde::{Deserialize, Serialize};
+use ruma::OwnedDeviceId;
+use ruma::OwnedTransactionId;
+use ruma::OwnedUserId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::ToDeviceEventContent;
+use ruma::events::ToDeviceEventType;
+use ruma::serde::Raw;
+use ruma::to_device::DeviceIdOrAllDevices;
+use serde::Deserialize;
+use serde::Serialize;
 
 /// Customized version of
 /// `ruma_client_api::to_device::send_event_to_device::v3::Request`
@@ -67,7 +73,11 @@ impl ToDeviceRequest {
         let user_messages = iter::once((recipient_device.into(), content)).collect();
         let messages = iter::once((recipient.to_owned(), user_messages)).collect();
 
-        ToDeviceRequest { event_type, txn_id: TransactionId::new(), messages }
+        ToDeviceRequest {
+            event_type,
+            txn_id: TransactionId::new(),
+            messages,
+        }
     }
 
     pub(crate) fn for_recipients(
@@ -94,7 +104,11 @@ impl ToDeviceRequest {
 
             let messages = iter::once((recipient.to_owned(), device_messages)).collect();
 
-            ToDeviceRequest { event_type, txn_id, messages }
+            ToDeviceRequest {
+                event_type,
+                txn_id,
+                messages,
+            }
         }
     }
 
@@ -108,7 +122,11 @@ impl ToDeviceRequest {
         let user_messages = iter::once((recipient_device.into(), content)).collect();
         let messages = iter::once((recipient.to_owned(), user_messages)).collect();
 
-        ToDeviceRequest { event_type, txn_id, messages }
+        ToDeviceRequest {
+            event_type,
+            txn_id,
+            messages,
+        }
     }
 
     pub(crate) fn with_id(
@@ -123,7 +141,11 @@ impl ToDeviceRequest {
         let user_messages = iter::once((recipient_device.into(), raw_content)).collect();
         let messages = iter::once((recipient.to_owned(), user_messages)).collect();
 
-        ToDeviceRequest { event_type, txn_id, messages }
+        ToDeviceRequest {
+            event_type,
+            txn_id,
+            messages,
+        }
     }
 
     /// Get the number of unique messages this request contains.

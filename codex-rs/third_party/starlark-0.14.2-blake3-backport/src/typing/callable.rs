@@ -38,9 +38,7 @@ struct TyCallableInner {
 }
 
 /// `typing.Callable`.
-#[derive(
-    Debug, Dupe, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Allocative, Pagable
-)]
+#[derive(Debug, Dupe, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Allocative, Pagable)]
 pub struct TyCallable {
     inner: Arc<TyCallableInner>,
 }

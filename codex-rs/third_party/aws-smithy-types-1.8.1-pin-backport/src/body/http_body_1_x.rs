@@ -6,14 +6,17 @@
 //! Adapters to use http-body 1.0 bodies with SdkBody & ByteStream
 
 use std::pin::Pin;
-use std::task::{ready, Context, Poll};
+use std::task::ready;
+use std::task::Context;
+use std::task::Poll;
 
 use bytes::Bytes;
 use http_body_util::BodyExt;
 #[cfg(feature = "http-body-0-4-x")]
 use pin_project_lite::pin_project;
 
-use crate::body::{Error, SdkBody};
+use crate::body::Error;
+use crate::body::SdkBody;
 
 impl SdkBody {
     /// Construct an `SdkBody` from a type that implements [`http_body_1_0::Body<Data = Bytes>`](http_body_1_0::Body).
@@ -167,14 +170,21 @@ where
 mod test {
     use std::collections::VecDeque;
     use std::pin::Pin;
-    use std::task::{Context, Poll};
+    use std::task::Context;
+    use std::task::Poll;
 
     use bytes::Bytes;
     #[cfg(feature = "http-body-0-4-x")]
-    use http::header::{CONTENT_LENGTH as CL0, CONTENT_TYPE as CT0};
+    use http::header::CONTENT_LENGTH as CL0;
     #[cfg(feature = "http-body-0-4-x")]
-    use http_1x::header::{CONTENT_LENGTH as CL1, CONTENT_TYPE as CT1};
-    use http_1x::{HeaderMap, HeaderName, HeaderValue};
+    use http::header::CONTENT_TYPE as CT0;
+    #[cfg(feature = "http-body-0-4-x")]
+    use http_1x::header::CONTENT_LENGTH as CL1;
+    #[cfg(feature = "http-body-0-4-x")]
+    use http_1x::header::CONTENT_TYPE as CT1;
+    use http_1x::HeaderMap;
+    use http_1x::HeaderName;
+    use http_1x::HeaderValue;
     use http_body_1_0::Frame;
     use http_body_util::BodyExt;
 
@@ -182,7 +192,8 @@ mod test {
     use crate::body::convert_headers_1x_0x;
     #[cfg(feature = "http-body-0-4-x")]
     use crate::body::http_body_1_x::Http1toHttp04;
-    use crate::body::{Error, SdkBody};
+    use crate::body::Error;
+    use crate::body::SdkBody;
     use crate::byte_stream::ByteStream;
 
     struct TestBody {

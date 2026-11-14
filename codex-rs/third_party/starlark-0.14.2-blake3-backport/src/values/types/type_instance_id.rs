@@ -41,7 +41,7 @@ use crate as starlark;
     Allocative,
     Freeze,
     Pagable,
-    StarlarkPagableViaPagable
+    StarlarkPagableViaPagable,
 )]
 pub struct TypeInstanceId(pub(crate) u64);
 

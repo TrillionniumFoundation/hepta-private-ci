@@ -44,7 +44,8 @@ pub mod document;
 mod number;
 pub mod str_bytes;
 
-pub use big_number::{BigDecimal, BigInteger};
+pub use big_number::BigDecimal;
+pub use big_number::BigInteger;
 pub use blob::Blob;
 pub use date_time::DateTime;
 pub use document::Document;

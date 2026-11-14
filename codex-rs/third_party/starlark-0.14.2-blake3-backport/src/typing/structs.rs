@@ -55,9 +55,7 @@ impl TypeMatcher for StructMatcher {
 }
 
 /// Struct type.
-#[derive(
-    Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable)]
 #[pagable_typetag(TyCustomDyn)]
 pub struct TyStruct {
     /// The fields that are definitely present in the struct, with their types.

@@ -5,15 +5,18 @@
 
 use crate::client::retries::classifiers::run_classifiers_on_ctx;
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::interceptors::context::{
-    AfterDeserializationInterceptorContextRef, BeforeTransmitInterceptorContextMut,
-};
-use aws_smithy_runtime_api::client::interceptors::{dyn_dispatch_hint, Intercept};
+use aws_smithy_runtime_api::client::interceptors::context::AfterDeserializationInterceptorContextRef;
+use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::dyn_dispatch_hint;
+use aws_smithy_runtime_api::client::interceptors::Intercept;
 use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_types::config_bag::ConfigBag;
-use aws_smithy_types::retry::{ReconnectMode, RetryConfig, RetrySpec};
-use tracing::{debug, error};
+use aws_smithy_types::retry::ReconnectMode;
+use aws_smithy_types::retry::RetryConfig;
+use aws_smithy_types::retry::RetrySpec;
+use tracing::debug;
+use tracing::error;
 
 // re-export relocated struct that used to live here
 pub use aws_smithy_runtime_api::client::connection::CaptureSmithyConnection;

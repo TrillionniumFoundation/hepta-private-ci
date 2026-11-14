@@ -6,26 +6,31 @@
 //! RuntimePlugin to ensure that the amount of data received matches the `Content-Length` header
 
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::interceptors::context::{
-    BeforeDeserializationInterceptorContextMut, BeforeTransmitInterceptorContextRef,
-};
+use aws_smithy_runtime_api::client::interceptors::context::BeforeDeserializationInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextRef;
+use aws_smithy_runtime_api::client::interceptors::dyn_dispatch_hint;
+use aws_smithy_runtime_api::client::interceptors::Intercept;
 use aws_smithy_runtime_api::client::interceptors::SharedInterceptor;
-use aws_smithy_runtime_api::client::interceptors::{dyn_dispatch_hint, Intercept};
-use aws_smithy_runtime_api::client::runtime_components::{
-    RuntimeComponents, RuntimeComponentsBuilder,
-};
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
 use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
 use aws_smithy_runtime_api::http::Response;
 use aws_smithy_types::body::SdkBody;
-use aws_smithy_types::config_bag::{ConfigBag, Storable, StoreReplace};
+use aws_smithy_types::config_bag::ConfigBag;
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreReplace;
 use bytes::Buf;
-use http_body_1x::{Frame, SizeHint};
+use http_body_1x::Frame;
+use http_body_1x::SizeHint;
 use pin_project_lite::pin_project;
 use std::borrow::Cow;
 use std::error::Error;
-use std::fmt::{Display, Formatter};
+use std::fmt::Display;
+use std::fmt::Formatter;
 use std::pin::Pin;
-use std::task::{ready, Context, Poll};
+use std::task::ready;
+use std::task::Context;
+use std::task::Poll;
 pin_project! {
     /// A body-wrapper that will calculate the `InnerBody`'s checksum and emit it as a trailer.
     struct ContentLengthEnforcingBody<InnerBody> {
@@ -212,9 +217,8 @@ impl RuntimePlugin for EnforceContentLengthRuntimePlugin {
 #[cfg(all(test, any(feature = "test-util", feature = "legacy-test-util")))]
 mod test {
     use crate::assert_str_contains;
-    use crate::client::http::body::content_length_enforcement::{
-        extract_content_length, ContentLengthEnforcingBody,
-    };
+    use crate::client::http::body::content_length_enforcement::extract_content_length;
+    use crate::client::http::body::content_length_enforcement::ContentLengthEnforcingBody;
     use aws_smithy_runtime_api::http::Response;
     use aws_smithy_types::body::SdkBody;
     use aws_smithy_types::byte_stream::ByteStream;
@@ -224,7 +228,8 @@ mod test {
     use http_body_1x::Frame;
     use std::error::Error;
     use std::pin::Pin;
-    use std::task::{Context, Poll};
+    use std::task::Context;
+    use std::task::Poll;
 
     /// Body for tests so we ensure our code works on a body split across multiple frames
     struct ManyFrameBody {

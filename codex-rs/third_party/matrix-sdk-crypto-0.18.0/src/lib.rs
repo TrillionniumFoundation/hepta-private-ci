@@ -37,20 +37,20 @@ mod verification;
 #[cfg(any(test, feature = "testing"))]
 /// Testing facilities and helpers for crypto tests
 pub mod testing {
-    pub use crate::identities::{
-        device::testing::get_device,
-        user::testing::{
-            get_other_identity, get_own_identity, simulate_key_query_response_for_verification,
-        },
-    };
+    pub use crate::identities::device::testing::get_device;
+    pub use crate::identities::user::testing::get_other_identity;
+    pub use crate::identities::user::testing::get_own_identity;
+    pub use crate::identities::user::testing::simulate_key_query_response_for_verification;
 }
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
-pub use identities::room_identity_state::{
-    IdentityState, IdentityStatusChange, RoomIdentityChange, RoomIdentityProvider,
-    RoomIdentityState,
-};
+pub use identities::room_identity_state::IdentityState;
+pub use identities::room_identity_state::IdentityStatusChange;
+pub use identities::room_identity_state::RoomIdentityChange;
+pub use identities::room_identity_state::RoomIdentityProvider;
+pub use identities::room_identity_state::RoomIdentityState;
 use ruma::OwnedRoomId;
 
 /// Return type for the room key importing.
@@ -73,40 +73,76 @@ impl RoomKeyImportResult {
         total_count: usize,
         keys: BTreeMap<OwnedRoomId, BTreeMap<String, BTreeSet<String>>>,
     ) -> Self {
-        Self { imported_count, total_count, keys }
+        Self {
+            imported_count,
+            total_count,
+            keys,
+        }
     }
 }
 
-pub use error::{
-    EventError, MegolmError, OlmError, SessionCreationError, SessionRecipientCollectionError,
-    SetRoomSettingsError, SignatureError,
-};
-pub use file_encryption::{
-    AttachmentDecryptor, AttachmentEncryptor, DecryptorError, KeyExportError, MediaEncryptionInfo,
-    decrypt_room_key_export, encrypt_room_key_export,
-};
-pub use gossiping::{GossipRequest, GossippedSecret};
-pub use identities::{
-    Device, DeviceData, LocalTrust, OtherUserIdentity, OtherUserIdentityData, OwnUserIdentity,
-    OwnUserIdentityData, UserDevices, UserIdentity, UserIdentityData,
-};
-pub use machine::{CrossSigningBootstrapRequests, EncryptionSyncChanges, OlmMachine};
-use matrix_sdk_common::deserialized_responses::{DecryptedRoomEvent, UnableToDecryptInfo};
+pub use error::EventError;
+pub use error::MegolmError;
+pub use error::OlmError;
+pub use error::SessionCreationError;
+pub use error::SessionRecipientCollectionError;
+pub use error::SetRoomSettingsError;
+pub use error::SignatureError;
+pub use file_encryption::AttachmentDecryptor;
+pub use file_encryption::AttachmentEncryptor;
+pub use file_encryption::DecryptorError;
+pub use file_encryption::KeyExportError;
+pub use file_encryption::MediaEncryptionInfo;
+pub use file_encryption::decrypt_room_key_export;
+pub use file_encryption::encrypt_room_key_export;
+pub use gossiping::GossipRequest;
+pub use gossiping::GossippedSecret;
+pub use identities::Device;
+pub use identities::DeviceData;
+pub use identities::LocalTrust;
+pub use identities::OtherUserIdentity;
+pub use identities::OtherUserIdentityData;
+pub use identities::OwnUserIdentity;
+pub use identities::OwnUserIdentityData;
+pub use identities::UserDevices;
+pub use identities::UserIdentity;
+pub use identities::UserIdentityData;
+pub use machine::CrossSigningBootstrapRequests;
+pub use machine::EncryptionSyncChanges;
+pub use machine::OlmMachine;
+use matrix_sdk_common::deserialized_responses::DecryptedRoomEvent;
+use matrix_sdk_common::deserialized_responses::UnableToDecryptInfo;
 #[cfg(feature = "qrcode")]
 pub use matrix_sdk_qrcode;
-pub use olm::{Account, CrossSigningStatus, EncryptionSettings, Session};
-use serde::{Deserialize, Serialize};
+pub use olm::Account;
+pub use olm::CrossSigningStatus;
+pub use olm::EncryptionSettings;
+pub use olm::Session;
+use serde::Deserialize;
+use serde::Serialize;
 pub use session_manager::CollectStrategy;
-pub use store::{
-    CryptoStoreError, SecretImportError, SecretInfo,
-    types::{CrossSigningKeyExport, TrackedUser},
-};
-pub use verification::{
-    AcceptSettings, AcceptedProtocols, CancelInfo, Emoji, EmojiShortAuthString, Sas, SasState,
-    Verification, VerificationRequest, VerificationRequestState, format_emojis,
-};
+pub use store::CryptoStoreError;
+pub use store::SecretImportError;
+pub use store::SecretInfo;
+pub use store::types::CrossSigningKeyExport;
+pub use store::types::TrackedUser;
+pub use verification::AcceptSettings;
+pub use verification::AcceptedProtocols;
+pub use verification::CancelInfo;
+pub use verification::Emoji;
+pub use verification::EmojiShortAuthString;
 #[cfg(feature = "qrcode")]
-pub use verification::{QrVerification, QrVerificationState, ScanError};
+pub use verification::QrVerification;
+#[cfg(feature = "qrcode")]
+pub use verification::QrVerificationState;
+pub use verification::Sas;
+pub use verification::SasState;
+#[cfg(feature = "qrcode")]
+pub use verification::ScanError;
+pub use verification::Verification;
+pub use verification::VerificationRequest;
+pub use verification::VerificationRequestState;
+pub use verification::format_emojis;
 #[doc(no_inline)]
 pub use vodozemac;
 
@@ -1119,7 +1155,8 @@ pub mod tutorial {}
 mod test {
     use insta::assert_json_snapshot;
 
-    use crate::{DecryptionSettings, TrustRequirement};
+    use crate::DecryptionSettings;
+    use crate::TrustRequirement;
 
     #[test]
     fn snapshot_trust_requirement() {

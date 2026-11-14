@@ -29,12 +29,7 @@ use crate::values::StarlarkValue;
 /// Type of type.
 #[doc(hidden)]
 #[derive(
-    Debug,
-    derive_more::Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagablePanic
+    Debug, derive_more::Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagablePanic,
 )]
 #[display("type")]
 pub enum AbstractType {}

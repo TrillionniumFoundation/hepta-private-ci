@@ -108,12 +108,7 @@ impl NativeFunc {
 ///
 /// Almost always created with [`#[starlark_module]`](macro@crate::starlark_module).
 #[derive(
-    Derivative,
-    ProvidesStaticType,
-    Display,
-    NoSerialize,
-    Allocative,
-    crate::StarlarkPagable
+    Derivative, ProvidesStaticType, Display, NoSerialize, Allocative, crate::StarlarkPagable,
 )]
 #[derivative(Debug)]
 #[display("{}", name)]
@@ -270,12 +265,7 @@ impl NativeMeth {
 }
 
 #[derive(
-    Derivative,
-    Display,
-    NoSerialize,
-    ProvidesStaticType,
-    Allocative,
-    crate::StarlarkPagable
+    Derivative, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
 )]
 #[derivative(Debug)]
 #[display("{}", name)]
@@ -308,12 +298,7 @@ impl<'v> StarlarkValue<'v> for NativeMethod {
 /// Used by the `#[starlark(attribute)]` tag of [`#[starlark_module]`](macro@starlark_module)
 /// to define a function that pretends to be an attribute.
 #[derive(
-    Derivative,
-    Display,
-    NoSerialize,
-    ProvidesStaticType,
-    Allocative,
-    crate::StarlarkPagable
+    Derivative, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
 )]
 #[display("Attribute")]
 #[derivative(Debug)]
@@ -367,7 +352,7 @@ impl<'v> StarlarkValue<'v> for NativeAttribute {
     NoSerialize,
     ProvidesStaticType,
     Allocative,
-    crate::StarlarkPagable
+    crate::StarlarkPagable,
 )]
 #[repr(C)]
 #[display("{}", method)]

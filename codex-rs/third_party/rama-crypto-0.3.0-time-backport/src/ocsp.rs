@@ -15,13 +15,14 @@
 //! re-signed leaf, so revocation-strict clients (e.g. cargo / schannel on
 //! Windows) accept it inline without an external responder.
 
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
+use std::time::SystemTime;
 
-use rama_core::error::{BoxError, ErrorContext};
-use yasna::{
-    Tag,
-    models::{GeneralizedTime, ObjectIdentifier},
-};
+use rama_core::error::BoxError;
+use rama_core::error::ErrorContext;
+use yasna::Tag;
+use yasna::models::GeneralizedTime;
+use yasna::models::ObjectIdentifier;
 
 fn oid_sha1() -> ObjectIdentifier {
     ObjectIdentifier::from_slice(&[1, 3, 14, 3, 2, 26])

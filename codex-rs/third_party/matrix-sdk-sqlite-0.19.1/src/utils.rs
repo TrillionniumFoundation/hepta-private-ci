@@ -13,30 +13,42 @@
 // limitations under the License.
 
 use core::fmt;
-use std::{
-    borrow::{Borrow, Cow},
-    cmp::min,
-    iter,
-    ops::Deref,
-};
+use std::borrow::Borrow;
+use std::borrow::Cow;
+use std::cmp::min;
+use std::iter;
+use std::ops::Deref;
 
 use async_trait::async_trait;
 use base64::Engine as _;
 use deadpool_sync::InteractError;
 use itertools::Itertools;
-use matrix_sdk_store_encryption::{EncryptableValue, StoreCipher};
-use ruma::{OwnedEventId, OwnedRoomId, serde::Raw, time::SystemTime};
-use rusqlite::{OptionalExtension, Params, Row, Statement, Transaction, limits::Limit};
-use serde::{Serialize, de::DeserializeOwned};
-use tracing::{error, trace, warn};
+use matrix_sdk_store_encryption::EncryptableValue;
+use matrix_sdk_store_encryption::StoreCipher;
+use ruma::OwnedEventId;
+use ruma::OwnedRoomId;
+use ruma::serde::Raw;
+use ruma::time::SystemTime;
+use rusqlite::OptionalExtension;
+use rusqlite::Params;
+use rusqlite::Row;
+use rusqlite::Statement;
+use rusqlite::Transaction;
+use rusqlite::limits::Limit;
+use serde::Serialize;
+use serde::de::DeserializeOwned;
+use tracing::error;
+use tracing::trace;
+use tracing::warn;
 use vodozemac::base64_encode;
 use zeroize::Zeroize;
 
-use crate::{
-    OpenStoreError, RuntimeConfig, Secret,
-    connection::Connection as SqliteAsyncConn,
-    error::{Error, Result},
-};
+use crate::OpenStoreError;
+use crate::RuntimeConfig;
+use crate::Secret;
+use crate::connection::Connection as SqliteAsyncConn;
+use crate::error::Error;
+use crate::error::Result;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Key {
@@ -152,7 +164,11 @@ pub(crate) trait SqliteAsyncConnExt {
     /// It is possible to call these methods individually though. This
     /// `apply_runtime_config` method allows to automate this process.
     async fn apply_runtime_config(&self, runtime_config: RuntimeConfig) -> Result<()> {
-        let RuntimeConfig { optimize, cache_size, journal_size_limit } = runtime_config;
+        let RuntimeConfig {
+            optimize,
+            cache_size,
+            journal_size_limit,
+        } = runtime_config;
 
         if optimize {
             self.optimize().await?;
@@ -188,7 +204,8 @@ pub(crate) trait SqliteAsyncConnExt {
         // `cache_size` is expressed in bytes. Let's convert.
         let n = cache_size / 1024;
 
-        self.execute_batch(format!("PRAGMA cache_size = -{n};")).await?;
+        self.execute_batch(format!("PRAGMA cache_size = -{n};"))
+            .await?;
         Ok(())
     }
 
@@ -210,7 +227,8 @@ pub(crate) trait SqliteAsyncConnExt {
     /// [size_wal_file]: https://www.sqlite.org/wal.html#avoiding_excessively_large_wal_files
     /// [`PRAGMA journal_size_limit`]: https://www.sqlite.org/pragma.html#pragma_journal_size_limit
     async fn journal_size_limit(&self, limit: u32) -> Result<()> {
-        self.execute_batch(format!("PRAGMA journal_size_limit = {limit};")).await?;
+        self.execute_batch(format!("PRAGMA journal_size_limit = {limit};"))
+            .await?;
         Ok(())
     }
 
@@ -250,10 +268,12 @@ pub(crate) trait SqliteAsyncConnExt {
     }
 
     async fn get_db_size(&self) -> Result<usize> {
-        let page_size =
-            self.query_row("PRAGMA page_size;", (), |row| row.get::<_, usize>(0)).await?;
-        let total_pages =
-            self.query_row("PRAGMA page_count;", (), |row| row.get::<_, usize>(0)).await?;
+        let page_size = self
+            .query_row("PRAGMA page_size;", (), |row| row.get::<_, usize>(0))
+            .await?;
+        let total_pages = self
+            .query_row("PRAGMA page_count;", (), |row| row.get::<_, usize>(0))
+            .await?;
 
         Ok(total_pages * page_size)
     }
@@ -289,7 +309,9 @@ impl SqliteAsyncConnExt for SqliteAsyncConn {
         T: Send + 'static,
         F: FnOnce(Statement<'_>) -> rusqlite::Result<T> + Send + 'static,
     {
-        self.interact(move |conn| f(conn.prepare(sql.as_ref())?)).await.map_err(map_interact_err)?
+        self.interact(move |conn| f(conn.prepare(sql.as_ref())?))
+            .await
+            .map_err(map_interact_err)?
     }
 
     async fn query_row<T, P, F>(
@@ -552,9 +574,11 @@ pub(crate) trait SqliteKeyValueStoreAsyncConnExt: SqliteAsyncConnExt {
     /// Get the stored value for the given key.
     async fn get_kv(&self, key: &str) -> rusqlite::Result<Option<Vec<u8>>> {
         let key = key.to_owned();
-        self.query_row("SELECT value FROM kv WHERE key = ?", (key,), |row| row.get(0))
-            .await
-            .optional()
+        self.query_row("SELECT value FROM kv WHERE key = ?", (key,), |row| {
+            row.get(0)
+        })
+        .await
+        .optional()
     }
 
     /// Get the stored serialized value for the given key.
@@ -581,10 +605,18 @@ pub(crate) trait SqliteKeyValueStoreAsyncConnExt: SqliteAsyncConnExt {
 
     /// Get the version of the database.
     async fn db_version(&self) -> Result<u8, OpenStoreError> {
-        let kv_exists = self.kv_table_exists().await.map_err(OpenStoreError::LoadVersion)?;
+        let kv_exists = self
+            .kv_table_exists()
+            .await
+            .map_err(OpenStoreError::LoadVersion)?;
 
         if kv_exists {
-            match self.get_kv("version").await.map_err(OpenStoreError::LoadVersion)?.as_deref() {
+            match self
+                .get_kv("version")
+                .await
+                .map_err(OpenStoreError::LoadVersion)?
+                .as_deref()
+            {
                 Some([v]) => Ok(*v),
                 Some(_) => Err(OpenStoreError::InvalidVersion),
                 None => Err(OpenStoreError::MissingVersion),
@@ -601,14 +633,19 @@ pub(crate) trait SqliteKeyValueStoreAsyncConnExt: SqliteAsyncConnExt {
     ) -> Result<StoreCipher, OpenStoreError> {
         const STORAGE_KEY: &str = "cipher";
 
-        let encrypted_cipher =
-            self.get_kv(STORAGE_KEY).await.map_err(OpenStoreError::LoadCipher)?;
+        let encrypted_cipher = self
+            .get_kv(STORAGE_KEY)
+            .await
+            .map_err(OpenStoreError::LoadCipher)?;
 
         let cipher = if let Some(encrypted) = encrypted_cipher {
             match &secret {
                 Secret::PassPhrase(passphrase) => StoreCipher::import(passphrase, &encrypted)?,
                 Secret::Key(key) => StoreCipher::import_with_key(key.as_slice(), &encrypted)?,
-                Secret::HighEntropyPassPhrase { key, base64_variant } => {
+                Secret::HighEntropyPassPhrase {
+                    key,
+                    base64_variant,
+                } => {
                     // Element X apps used the passphrase-based secret variant even though the
                     // underlying secret was a randomly generated key.
                     //
@@ -671,7 +708,9 @@ pub(crate) trait SqliteKeyValueStoreAsyncConnExt: SqliteAsyncConnExt {
                 Secret::HighEntropyPassPhrase { key, .. } => cipher.export_with_key(key.as_slice()),
             }?;
 
-            self.set_kv(STORAGE_KEY, export).await.map_err(OpenStoreError::SaveCipher)?;
+            self.set_kv(STORAGE_KEY, export)
+                .await
+                .map_err(OpenStoreError::SaveCipher)?;
 
             cipher
         };
@@ -684,7 +723,9 @@ pub(crate) trait SqliteKeyValueStoreAsyncConnExt: SqliteAsyncConnExt {
 impl SqliteKeyValueStoreAsyncConnExt for SqliteAsyncConn {
     async fn set_kv(&self, key: &str, value: Vec<u8>) -> rusqlite::Result<()> {
         let key = key.to_owned();
-        self.interact(move |conn| conn.set_kv(&key, &value)).await.unwrap()?;
+        self.interact(move |conn| conn.set_kv(&key, &value))
+            .await
+            .unwrap()?;
 
         Ok(())
     }
@@ -695,14 +736,18 @@ impl SqliteKeyValueStoreAsyncConnExt for SqliteAsyncConn {
         value: T,
     ) -> Result<()> {
         let key = key.to_owned();
-        self.interact(move |conn| conn.set_serialized_kv(&key, value)).await.unwrap()?;
+        self.interact(move |conn| conn.set_serialized_kv(&key, value))
+            .await
+            .unwrap()?;
 
         Ok(())
     }
 
     async fn clear_kv(&self, key: &str) -> rusqlite::Result<()> {
         let key = key.to_owned();
-        self.interact(move |conn| conn.clear_kv(&key)).await.unwrap()?;
+        self.interact(move |conn| conn.clear_kv(&key))
+            .await
+            .unwrap()?;
 
         Ok(())
     }
@@ -842,9 +887,15 @@ mod unit_tests {
     #[test]
     fn test_time_to_timestamp() {
         assert_eq!(time_to_timestamp(SystemTime::UNIX_EPOCH), 0);
-        assert_eq!(time_to_timestamp(SystemTime::UNIX_EPOCH + Duration::from_secs(60)), 60);
+        assert_eq!(
+            time_to_timestamp(SystemTime::UNIX_EPOCH + Duration::from_secs(60)),
+            60
+        );
 
         // Fallback value on overflow.
-        assert_eq!(time_to_timestamp(SystemTime::UNIX_EPOCH - Duration::from_secs(60)), 0);
+        assert_eq!(
+            time_to_timestamp(SystemTime::UNIX_EPOCH - Duration::from_secs(60)),
+            0
+        );
     }
 }

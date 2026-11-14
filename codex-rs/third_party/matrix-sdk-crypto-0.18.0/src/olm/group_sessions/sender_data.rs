@@ -12,17 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{cmp::Ordering, fmt};
+use std::cmp::Ordering;
+use std::fmt;
 
-use ruma::{DeviceId, OwnedDeviceId, OwnedUserId, UserId};
-use serde::{Deserialize, Deserializer, Serialize, de, de::Visitor};
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::UserId;
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::de;
+use serde::de::Visitor;
 use tracing::error;
 use vodozemac::Ed25519PublicKey;
 
-use crate::{
-    Device,
-    types::{DeviceKeys, serialize_ed25519_key},
-};
+use crate::Device;
+use crate::types::DeviceKeys;
+use crate::types::serialize_ed25519_key;
 
 /// Information about the sender of a megolm session where we know the
 /// cross-signing identity of the sender.
@@ -77,7 +84,9 @@ where
             let mut buf = [0u8; Ed25519PublicKey::LENGTH];
 
             for (i, item) in buf.iter_mut().enumerate() {
-                *item = seq.next_element()?.ok_or_else(|| de::Error::invalid_length(i, &self))?;
+                *item = seq
+                    .next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(i, &self))?;
             }
 
             let key = Ed25519PublicKey::from_slice(&buf).map_err(|e| de::Error::custom(&e))?;
@@ -182,12 +191,18 @@ impl SenderData {
 
     /// Create a [`SenderData`] which contains no device info.
     pub fn unknown() -> Self {
-        Self::UnknownDevice { legacy_session: false, owner_check_failed: false }
+        Self::UnknownDevice {
+            legacy_session: false,
+            owner_check_failed: false,
+        }
     }
 
     /// Create a [`SenderData`] which contains device info.
     pub fn device_info(device_keys: DeviceKeys) -> Self {
-        Self::DeviceInfo { device_keys, legacy_session: false }
+        Self::DeviceInfo {
+            device_keys,
+            legacy_session: false,
+        }
     }
 
     /// Create a [`SenderData`] with a known but unverified sender, where the
@@ -236,7 +251,10 @@ impl SenderData {
     ///
     /// The returned struct contains no device info.
     pub fn legacy() -> Self {
-        Self::UnknownDevice { legacy_session: true, owner_check_failed: false }
+        Self::UnknownDevice {
+            legacy_session: true,
+            owner_check_failed: false,
+        }
     }
 
     /// Create a [`SenderData`] representing the current verification state of
@@ -271,7 +289,11 @@ impl SenderData {
             (Some(device_owner), Some(master_key)) => {
                 // We have user_id and master_key for the user sending the to-device message.
                 let master_key = Box::new(master_key);
-                let known_sender_data = KnownSenderData { user_id, device_id, master_key };
+                let known_sender_data = KnownSenderData {
+                    user_id,
+                    device_id,
+                    master_key,
+                };
                 if sender_device.is_cross_signing_trusted() {
                     Self::SenderVerified(known_sender_data)
                 } else if device_owner.was_previously_verified() {
@@ -394,12 +416,20 @@ enum SenderDataReader {
 impl From<SenderDataReader> for SenderData {
     fn from(data: SenderDataReader) -> Self {
         match data {
-            SenderDataReader::UnknownDevice { legacy_session, owner_check_failed } => {
-                Self::UnknownDevice { legacy_session, owner_check_failed }
-            }
-            SenderDataReader::DeviceInfo { device_keys, legacy_session } => {
-                Self::DeviceInfo { device_keys, legacy_session }
-            }
+            SenderDataReader::UnknownDevice {
+                legacy_session,
+                owner_check_failed,
+            } => Self::UnknownDevice {
+                legacy_session,
+                owner_check_failed,
+            },
+            SenderDataReader::DeviceInfo {
+                device_keys,
+                legacy_session,
+            } => Self::DeviceInfo {
+                device_keys,
+                legacy_session,
+            },
             SenderDataReader::VerificationViolation(data) => Self::VerificationViolation(data),
             SenderDataReader::SenderUnverified(data) => Self::SenderUnverified(data),
             SenderDataReader::SenderVerified(data) => Self::SenderVerified(data),
@@ -409,7 +439,11 @@ impl From<SenderDataReader> for SenderData {
                 master_key,
                 master_key_verified,
             } => {
-                let known_sender_data = KnownSenderData { user_id, device_id, master_key };
+                let known_sender_data = KnownSenderData {
+                    user_id,
+                    device_id,
+                    master_key,
+                };
                 if master_key_verified {
                     Self::SenderVerified(known_sender_data)
                 } else {
@@ -439,39 +473,56 @@ pub enum SenderDataType {
 
 #[cfg(test)]
 mod tests {
-    use std::{cmp::Ordering, collections::BTreeMap, ops::Deref};
+    use std::cmp::Ordering;
+    use std::collections::BTreeMap;
+    use std::ops::Deref;
 
     use assert_matches2::assert_let;
     use insta::assert_json_snapshot;
     use matrix_sdk_test::async_test;
-    use ruma::{
-        DeviceKeyAlgorithm, DeviceKeyId, device_id, owned_device_id, owned_user_id, user_id,
-    };
+    use ruma::DeviceKeyAlgorithm;
+    use ruma::DeviceKeyId;
+    use ruma::device_id;
+    use ruma::owned_device_id;
+    use ruma::owned_user_id;
+    use ruma::user_id;
     use serde_json::json;
-    use vodozemac::{Curve25519PublicKey, Ed25519PublicKey, base64_decode};
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519PublicKey;
+    use vodozemac::base64_decode;
 
     use super::SenderData;
-    use crate::{
-        Account,
-        machine::test_helpers::{
-            create_signed_device_of_unverified_user, create_signed_device_of_verified_user,
-            create_unsigned_device,
-        },
-        olm::{KnownSenderData, PickledInboundGroupSession, PrivateCrossSigningIdentity},
-        types::{DeviceKey, DeviceKeys, EventEncryptionAlgorithm, Signatures},
-    };
+    use crate::Account;
+    use crate::machine::test_helpers::create_signed_device_of_unverified_user;
+    use crate::machine::test_helpers::create_signed_device_of_verified_user;
+    use crate::machine::test_helpers::create_unsigned_device;
+    use crate::olm::KnownSenderData;
+    use crate::olm::PickledInboundGroupSession;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::types::DeviceKey;
+    use crate::types::DeviceKeys;
+    use crate::types::EventEncryptionAlgorithm;
+    use crate::types::Signatures;
 
     #[test]
     fn serializing_unknown_device_correctly_preserves_owner_check_failed_if_true() {
         // Given an unknown device SenderData with failed owner check
-        let start = SenderData::UnknownDevice { legacy_session: false, owner_check_failed: true };
+        let start = SenderData::UnknownDevice {
+            legacy_session: false,
+            owner_check_failed: true,
+        };
 
         // When we round-trip it to JSON and back
         let json = serde_json::to_string(&start).unwrap();
         let end: SenderData = serde_json::from_str(&json).unwrap();
 
         // Then the failed owner check flag is preserved
-        assert_let!(SenderData::UnknownDevice { owner_check_failed, .. } = &end);
+        assert_let!(
+            SenderData::UnknownDevice {
+                owner_check_failed,
+                ..
+            } = &end
+        );
         assert!(owner_check_failed);
 
         // And for good measure, everything is preserved
@@ -481,13 +532,19 @@ mod tests {
     #[test]
     fn serializing_unknown_device_without_failed_owner_check_excludes_it() {
         // Given an unknown device SenderData with owner_check_failed==false
-        let start = SenderData::UnknownDevice { legacy_session: false, owner_check_failed: false };
+        let start = SenderData::UnknownDevice {
+            legacy_session: false,
+            owner_check_failed: false,
+        };
 
         // When we write it to JSON
         let json = serde_json::to_string(&start).unwrap();
 
         // Then the JSON does not mention `owner_check_failed`
-        assert!(!json.contains("owner_check_failed"), "JSON contains 'owner_check_failed'!");
+        assert!(
+            !json.contains("owner_check_failed"),
+            "JSON contains 'owner_check_failed'!"
+        );
 
         // And for good measure, it round-trips fully
         let end: SenderData = serde_json::from_str(&json).unwrap();
@@ -592,9 +649,18 @@ mod tests {
             SenderData::sender_verified(user_id!("@u:s.co"), device_id!("DEV"), master_key);
 
         assert_eq!(unknown.compare_trust_level(&unknown), Ordering::Equal);
-        assert_eq!(device_keys.compare_trust_level(&device_keys), Ordering::Equal);
-        assert_eq!(sender_unverified.compare_trust_level(&sender_unverified), Ordering::Equal);
-        assert_eq!(sender_verified.compare_trust_level(&sender_verified), Ordering::Equal);
+        assert_eq!(
+            device_keys.compare_trust_level(&device_keys),
+            Ordering::Equal
+        );
+        assert_eq!(
+            sender_unverified.compare_trust_level(&sender_unverified),
+            Ordering::Equal
+        );
+        assert_eq!(
+            sender_verified.compare_trust_level(&sender_verified),
+            Ordering::Equal
+        );
     }
 
     #[test]
@@ -620,22 +686,52 @@ mod tests {
             SenderData::sender_verified(user_id!("@u:s.co"), device_id!("DEV"), master_key);
 
         assert_eq!(unknown.compare_trust_level(&device_keys), Ordering::Less);
-        assert_eq!(unknown.compare_trust_level(&sender_verification_violation), Ordering::Less);
-        assert_eq!(unknown.compare_trust_level(&sender_unverified), Ordering::Less);
-        assert_eq!(unknown.compare_trust_level(&sender_verified), Ordering::Less);
+        assert_eq!(
+            unknown.compare_trust_level(&sender_verification_violation),
+            Ordering::Less
+        );
+        assert_eq!(
+            unknown.compare_trust_level(&sender_unverified),
+            Ordering::Less
+        );
+        assert_eq!(
+            unknown.compare_trust_level(&sender_verified),
+            Ordering::Less
+        );
         assert_eq!(device_keys.compare_trust_level(&unknown), Ordering::Greater);
-        assert_eq!(sender_verification_violation.compare_trust_level(&unknown), Ordering::Greater);
-        assert_eq!(sender_unverified.compare_trust_level(&unknown), Ordering::Greater);
-        assert_eq!(sender_verified.compare_trust_level(&unknown), Ordering::Greater);
+        assert_eq!(
+            sender_verification_violation.compare_trust_level(&unknown),
+            Ordering::Greater
+        );
+        assert_eq!(
+            sender_unverified.compare_trust_level(&unknown),
+            Ordering::Greater
+        );
+        assert_eq!(
+            sender_verified.compare_trust_level(&unknown),
+            Ordering::Greater
+        );
 
-        assert_eq!(device_keys.compare_trust_level(&sender_unverified), Ordering::Less);
-        assert_eq!(device_keys.compare_trust_level(&sender_verified), Ordering::Less);
+        assert_eq!(
+            device_keys.compare_trust_level(&sender_unverified),
+            Ordering::Less
+        );
+        assert_eq!(
+            device_keys.compare_trust_level(&sender_verified),
+            Ordering::Less
+        );
         assert_eq!(
             sender_verification_violation.compare_trust_level(&device_keys),
             Ordering::Greater
         );
-        assert_eq!(sender_unverified.compare_trust_level(&device_keys), Ordering::Greater);
-        assert_eq!(sender_verified.compare_trust_level(&device_keys), Ordering::Greater);
+        assert_eq!(
+            sender_unverified.compare_trust_level(&device_keys),
+            Ordering::Greater
+        );
+        assert_eq!(
+            sender_verified.compare_trust_level(&device_keys),
+            Ordering::Greater
+        );
 
         assert_eq!(
             sender_verification_violation.compare_trust_level(&sender_verified),
@@ -645,8 +741,14 @@ mod tests {
             sender_verification_violation.compare_trust_level(&sender_unverified),
             Ordering::Less
         );
-        assert_eq!(sender_unverified.compare_trust_level(&sender_verified), Ordering::Less);
-        assert_eq!(sender_verified.compare_trust_level(&sender_unverified), Ordering::Greater);
+        assert_eq!(
+            sender_unverified.compare_trust_level(&sender_verified),
+            Ordering::Less
+        );
+        assert_eq!(
+            sender_verified.compare_trust_level(&sender_unverified),
+            Ordering::Greater
+        );
     }
 
     #[test]
@@ -714,7 +816,9 @@ mod tests {
 
         assert_eq!(
             master_key.to_base64(),
-            Ed25519PublicKey::from_slice(&[0u8; 32]).unwrap().to_base64()
+            Ed25519PublicKey::from_slice(&[0u8; 32])
+                .unwrap()
+                .to_base64()
         );
     }
 
@@ -747,7 +851,10 @@ mod tests {
                 sender_data.sender_data
         );
 
-        assert_eq!(master_key.to_base64(), "kOp9s4ClyQujYD7rRZA8xgE6kvYlqKSNnMrQNmSrcuE");
+        assert_eq!(
+            master_key.to_base64(),
+            "kOp9s4ClyQujYD7rRZA8xgE6kvYlqKSNnMrQNmSrcuE"
+        );
     }
 
     #[async_test]
@@ -786,7 +893,12 @@ mod tests {
                 user_id: bob_account.user_id().to_owned(),
                 device_id: Some(bob_account.device_id().to_owned()),
                 master_key: Box::new(
-                    bob_identity.master_public_key().await.unwrap().get_first_key().unwrap()
+                    bob_identity
+                        .master_public_key()
+                        .await
+                        .unwrap()
+                        .get_first_key()
+                        .unwrap()
                 ),
             })
         );
@@ -816,7 +928,12 @@ mod tests {
                 user_id: bob_account.user_id().to_owned(),
                 device_id: Some(bob_account.device_id().to_owned()),
                 master_key: Box::new(
-                    bob_identity.master_public_key().await.unwrap().get_first_key().unwrap()
+                    bob_identity
+                        .master_public_key()
+                        .await
+                        .unwrap()
+                        .get_first_key()
+                        .unwrap()
                 ),
             })
         );
@@ -845,7 +962,12 @@ mod tests {
                 user_id: bob_account.user_id().to_owned(),
                 device_id: Some(bob_account.device_id().to_owned()),
                 master_key: Box::new(
-                    bob_identity.master_public_key().await.unwrap().get_first_key().unwrap()
+                    bob_identity
+                        .master_public_key()
+                        .await
+                        .unwrap()
+                        .get_first_key()
+                        .unwrap()
                 ),
             })
         );

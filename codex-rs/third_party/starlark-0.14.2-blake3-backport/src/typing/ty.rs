@@ -82,9 +82,8 @@ impl Display for Approximation {
 
 /// A Starlark type.
 #[derive(
-    Debug, Clone, Dupe, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Trace
+    Debug, Clone, Dupe, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Trace, pagable::Pagable,
 )]
-#[derive(pagable::Pagable)]
 pub struct Ty {
     /// A series of alternative types.
     ///

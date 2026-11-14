@@ -16,7 +16,8 @@
 
 use std::sync::Arc;
 
-use ruma::{OwnedTransactionId, TransactionId};
+use ruma::OwnedTransactionId;
+use ruma::TransactionId;
 
 mod enums;
 mod keys_backup;

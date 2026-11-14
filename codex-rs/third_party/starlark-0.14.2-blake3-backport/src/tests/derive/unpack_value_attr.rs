@@ -27,22 +27,11 @@ use crate as starlark;
 use crate::values::StarlarkValue;
 use crate::values::Value;
 
-#[derive(
-    Debug,
-    derive_more::Display,
-    NoSerialize,
-    ProvidesStaticType,
-    Allocative
-)]
+#[derive(Debug, derive_more::Display, NoSerialize, ProvidesStaticType, Allocative)]
 #[display("ValueWithLifetimeParam")]
 struct ValueWithLifetimeParam<'v>(Value<'v>);
 #[derive(
-    Debug,
-    derive_more::Display,
-    NoSerialize,
-    ProvidesStaticType,
-    Allocative,
-    StarlarkPagable
+    Debug, derive_more::Display, NoSerialize, ProvidesStaticType, Allocative, StarlarkPagable,
 )]
 #[display("ValueWithoutParam")]
 struct ValueWithoutParam(String);

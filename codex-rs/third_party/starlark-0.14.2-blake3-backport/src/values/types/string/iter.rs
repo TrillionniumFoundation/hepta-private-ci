@@ -47,7 +47,7 @@ use crate::values::typing::iter::StarlarkIter;
     NoSerialize,
     ProvidesStaticType,
     Allocative,
-    StarlarkPagable
+    StarlarkPagable,
 )]
 #[display("iterator")]
 #[repr(C)]

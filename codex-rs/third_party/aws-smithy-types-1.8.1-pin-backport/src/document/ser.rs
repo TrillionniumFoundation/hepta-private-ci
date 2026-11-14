@@ -8,7 +8,9 @@
 use super::doc_error::DocError;
 use super::Document;
 use crate::Number;
-use serde::ser::{self, Impossible, Serialize};
+use serde::ser::Impossible;
+use serde::ser::Serialize;
+use serde::ser::{self};
 use std::collections::HashMap;
 use std::fmt::Display;
 

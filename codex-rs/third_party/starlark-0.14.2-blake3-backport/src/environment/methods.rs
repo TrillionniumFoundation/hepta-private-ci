@@ -369,14 +369,7 @@ mod tests {
 
     #[test]
     fn test_set_attribute() {
-        #[derive(
-            Debug,
-            Display,
-            ProvidesStaticType,
-            NoSerialize,
-            Allocative,
-            StarlarkPagable
-        )]
+        #[derive(Debug, Display, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable)]
         #[display("Magic")]
         struct Magic;
         starlark_simple_value!(Magic);

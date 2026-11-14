@@ -44,16 +44,7 @@ use crate::values::types::int::int_or_big::StarlarkInt;
 
 /// Integer which is stored inline in `RawPointer`.
 #[derive(
-    Clone,
-    Copy,
-    Dupe,
-    derive_more::Display,
-    Eq,
-    PartialEq,
-    Hash,
-    Ord,
-    PartialOrd,
-    Serialize
+    Clone, Copy, Dupe, derive_more::Display, Eq, PartialEq, Hash, Ord, PartialOrd, Serialize,
 )]
 #[serde(transparent)]
 #[doc(hidden)]

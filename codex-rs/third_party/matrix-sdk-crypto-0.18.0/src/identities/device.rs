@@ -12,52 +12,71 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    collections::{BTreeMap, HashMap},
-    ops::Deref,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-    },
-};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::ops::Deref;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use matrix_sdk_common::locks::RwLock;
-use ruma::{
-    DeviceId, DeviceKeyAlgorithm, DeviceKeyId, MilliSecondsSinceUnixEpoch, OwnedDeviceId,
-    OwnedDeviceKeyId, UInt, UserId,
-    api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest,
-    events::{AnyToDeviceEventContent, key::verification::VerificationMethod},
-    serde::Raw,
-};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceId;
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedDeviceId;
+use ruma::OwnedDeviceKeyId;
+use ruma::UInt;
+use ruma::UserId;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::key::verification::VerificationMethod;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
-use tracing::{instrument, trace};
-use vodozemac::{Curve25519PublicKey, Ed25519PublicKey, olm::SessionConfig};
+use tracing::instrument;
+use tracing::trace;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Ed25519PublicKey;
+use vodozemac::olm::SessionConfig;
 
-use super::{atomic_bool_deserializer, atomic_bool_serializer};
+use super::atomic_bool_deserializer;
+use super::atomic_bool_serializer;
+use crate::Account;
 #[cfg(any(test, feature = "testing", doc))]
 use crate::OlmMachine;
-use crate::{
-    Account, Sas, VerificationRequest,
-    error::{MismatchedIdentityKeysError, OlmError, OlmResult, SignatureError},
-    identities::{OwnUserIdentityData, UserIdentityData},
-    olm::{InboundGroupSession, OutboundGroupSession, Session, ShareInfo, VerifyJson},
-    session_manager::{CollectStrategy, withheld_code_for_device_for_share_strategy},
-    store::{
-        CryptoStoreWrapper, Result as StoreResult,
-        caches::SequenceNumber,
-        types::{Changes, DeviceChanges},
-    },
-    types::{
-        DeviceKey, DeviceKeys, EventEncryptionAlgorithm, Signatures, SignedKey,
-        events::{
-            EventType, forwarded_room_key::ForwardedRoomKeyContent,
-            room::encrypted::ToDeviceEncryptedEventContent,
-        },
-        requests::{OutgoingVerificationRequest, ToDeviceRequest},
-    },
-    verification::VerificationMachine,
-};
+use crate::Sas;
+use crate::VerificationRequest;
+use crate::error::MismatchedIdentityKeysError;
+use crate::error::OlmError;
+use crate::error::OlmResult;
+use crate::error::SignatureError;
+use crate::identities::OwnUserIdentityData;
+use crate::identities::UserIdentityData;
+use crate::olm::InboundGroupSession;
+use crate::olm::OutboundGroupSession;
+use crate::olm::Session;
+use crate::olm::ShareInfo;
+use crate::olm::VerifyJson;
+use crate::session_manager::CollectStrategy;
+use crate::session_manager::withheld_code_for_device_for_share_strategy;
+use crate::store::CryptoStoreWrapper;
+use crate::store::Result as StoreResult;
+use crate::store::caches::SequenceNumber;
+use crate::store::types::Changes;
+use crate::store::types::DeviceChanges;
+use crate::types::DeviceKey;
+use crate::types::DeviceKeys;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::Signatures;
+use crate::types::SignedKey;
+use crate::types::events::EventType;
+use crate::types::events::forwarded_room_key::ForwardedRoomKeyContent;
+use crate::types::events::room::encrypted::ToDeviceEncryptedEventContent;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::types::requests::ToDeviceRequest;
+use crate::verification::VerificationMachine;
 
 pub enum MaybeEncryptedRoomKey {
     Encrypted {
@@ -132,7 +151,9 @@ pub struct Device {
 #[cfg(not(tarpaulin_include))]
 impl std::fmt::Debug for Device {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Device").field("device", &self.inner).finish()
+        f.debug_struct("Device")
+            .field("device", &self.inner)
+            .finish()
     }
 }
 
@@ -155,7 +176,10 @@ impl Device {
     ///
     /// [`request_verification()`]: #method.request_verification
     pub async fn start_verification(&self) -> StoreResult<(Sas, ToDeviceRequest)> {
-        let (sas, request) = self.verification_machine.start_sas(self.inner.clone()).await?;
+        let (sas, request) = self
+            .verification_machine
+            .start_sas(self.inner.clone())
+            .await?;
 
         if let OutgoingVerificationRequest::ToDevice(r) = request {
             Ok((sas, r))
@@ -166,13 +190,25 @@ impl Device {
 
     /// Is this our own device?
     pub fn is_our_own_device(&self) -> bool {
-        let own_ed25519_key = self.verification_machine.store.account.identity_keys.ed25519;
-        let own_curve25519_key = self.verification_machine.store.account.identity_keys.curve25519;
+        let own_ed25519_key = self
+            .verification_machine
+            .store
+            .account
+            .identity_keys
+            .ed25519;
+        let own_curve25519_key = self
+            .verification_machine
+            .store
+            .account
+            .identity_keys
+            .curve25519;
 
         self.user_id() == self.verification_machine.own_user_id()
             && self.device_id() == self.verification_machine.own_device_id()
             && self.ed25519_key().is_some_and(|k| k == own_ed25519_key)
-            && self.curve25519_key().is_some_and(|k| k == own_curve25519_key)
+            && self
+                .curve25519_key()
+                .is_some_and(|k| k == own_curve25519_key)
     }
 
     /// Does the given `InboundGroupSession` belong to this device?
@@ -205,8 +241,10 @@ impl Device {
             // Since there's no way to verify that the claim is true, we say that we don't
             // know that the room key belongs to this device.
             Ok(false)
-        } else if let Some(key) =
-            session.signing_keys().get(&DeviceKeyAlgorithm::Ed25519).and_then(|k| k.ed25519())
+        } else if let Some(key) = session
+            .signing_keys()
+            .get(&DeviceKeyAlgorithm::Ed25519)
+            .and_then(|k| k.ed25519())
         {
             // Room keys are received as an `m.room.encrypted` to-device message using the
             // `m.olm` algorithm. Upon decryption of the `m.room.encrypted` to-device
@@ -298,12 +336,15 @@ impl Device {
 
     /// Is the device owner verified by us?
     pub fn is_device_owner_verified(&self) -> bool {
-        self.device_owner_identity.as_ref().is_some_and(|id| match id {
-            UserIdentityData::Own(own_identity) => own_identity.is_verified(),
-            UserIdentityData::Other(other_identity) => {
-                self.own_identity.as_ref().is_some_and(|oi| oi.is_identity_verified(other_identity))
-            }
-        })
+        self.device_owner_identity
+            .as_ref()
+            .is_some_and(|id| match id {
+                UserIdentityData::Own(own_identity) => own_identity.is_verified(),
+                UserIdentityData::Other(other_identity) => self
+                    .own_identity
+                    .as_ref()
+                    .is_some_and(|oi| oi.is_identity_verified(other_identity)),
+            })
     }
 
     /// Request an interactive verification with this `Device`.
@@ -342,7 +383,9 @@ impl Device {
 
     /// Get the most recently created session that belongs to this device.
     pub(crate) async fn get_most_recent_session(&self) -> OlmResult<Option<Session>> {
-        self.inner.get_most_recent_session(self.verification_machine.store.inner()).await
+        self.inner
+            .get_most_recent_session(self.verification_machine.store.inner())
+            .await
     }
 
     /// Is this device considered to be verified.
@@ -353,12 +396,14 @@ impl Device {
     /// [`is_locally_trusted()`]: #method.is_locally_trusted
     /// [`is_cross_signing_trusted()`]: #method.is_cross_signing_trusted
     pub fn is_verified(&self) -> bool {
-        self.inner.is_verified(&self.own_identity, &self.device_owner_identity)
+        self.inner
+            .is_verified(&self.own_identity, &self.device_owner_identity)
     }
 
     /// Is this device considered to be verified using cross signing.
     pub fn is_cross_signing_trusted(&self) -> bool {
-        self.inner.is_cross_signing_trusted(&self.own_identity, &self.device_owner_identity)
+        self.inner
+            .is_cross_signing_trusted(&self.own_identity, &self.device_owner_identity)
     }
 
     /// Manually verify this device.
@@ -401,7 +446,10 @@ impl Device {
         self.inner.set_trust_state(trust_state);
 
         let changes = Changes {
-            devices: DeviceChanges { changed: vec![self.inner.clone()], ..Default::default() },
+            devices: DeviceChanges {
+                changed: vec![self.inner.clone()],
+                ..Default::default()
+            },
             ..Default::default()
         };
 
@@ -429,7 +477,9 @@ impl Device {
         event_type: &str,
         content: impl Serialize,
     ) -> OlmResult<(Session, Raw<ToDeviceEncryptedEventContent>, String)> {
-        self.inner.encrypt(self.verification_machine.store.inner(), event_type, content).await
+        self.inner
+            .encrypt(self.verification_machine.store.inner(), event_type, content)
+            .await
     }
 
     /// Encrypt the given inbound group session as a forwarded room key for this
@@ -504,7 +554,10 @@ impl Device {
         // Persist the used session
         self.verification_machine
             .store
-            .save_changes(Changes { sessions: vec![used_session], ..Default::default() })
+            .save_changes(Changes {
+                sessions: vec![used_session],
+                ..Default::default()
+            })
             .await?;
 
         Ok(raw_encrypted)
@@ -699,13 +752,17 @@ impl DeviceData {
     pub fn supports_olm(&self) -> bool {
         #[cfg(feature = "experimental-algorithms")]
         {
-            self.algorithms().contains(&EventEncryptionAlgorithm::OlmV1Curve25519AesSha2)
-                || self.algorithms().contains(&EventEncryptionAlgorithm::OlmV2Curve25519AesSha2)
+            self.algorithms()
+                .contains(&EventEncryptionAlgorithm::OlmV1Curve25519AesSha2)
+                || self
+                    .algorithms()
+                    .contains(&EventEncryptionAlgorithm::OlmV2Curve25519AesSha2)
         }
 
         #[cfg(not(feature = "experimental-algorithms"))]
         {
-            self.algorithms().contains(&EventEncryptionAlgorithm::OlmV1Curve25519AesSha2)
+            self.algorithms()
+                .contains(&EventEncryptionAlgorithm::OlmV1Curve25519AesSha2)
         }
     }
 
@@ -733,7 +790,8 @@ impl DeviceData {
     /// algorithm.
     #[cfg(feature = "experimental-algorithms")]
     pub fn supports_olm_v2(&self) -> bool {
-        self.algorithms().contains(&EventEncryptionAlgorithm::OlmV2Curve25519AesSha2)
+        self.algorithms()
+            .contains(&EventEncryptionAlgorithm::OlmV2Curve25519AesSha2)
     }
 
     /// Get the optimal `SessionConfig` for this device.
@@ -767,8 +825,10 @@ impl DeviceData {
         own_identity: &Option<OwnUserIdentityData>,
         device_owner: &Option<UserIdentityData>,
     ) -> bool {
-        own_identity.as_ref().zip(device_owner.as_ref()).is_some_and(
-            |(own_identity, device_identity)| {
+        own_identity
+            .as_ref()
+            .zip(device_owner.as_ref())
+            .is_some_and(|(own_identity, device_identity)| {
                 match device_identity {
                     UserIdentityData::Own(_) => {
                         own_identity.is_verified() && own_identity.is_device_signed(self)
@@ -782,8 +842,7 @@ impl DeviceData {
                             && device_identity.is_device_signed(self)
                     }
                 }
-            },
-        )
+            })
     }
 
     pub(crate) fn is_cross_signed_by_owner(
@@ -844,8 +903,9 @@ impl DeviceData {
         let session = self.get_most_recent_session(store).await?;
 
         if let Some(mut session) = session {
-            let message =
-                session.encrypt(self, event_type, content, Some(message_id.clone())).await?;
+            let message = session
+                .encrypt(self, event_type, content, Some(message_id.clone()))
+                .await?;
 
             Ok((session, message, message_id))
         } else {
@@ -931,7 +991,9 @@ impl DeviceData {
         signatures: &Signatures,
         canonical_json: &str,
     ) -> Result<(), SignatureError> {
-        let key = self.ed25519_key().ok_or(SignatureError::MissingSigningKey)?;
+        let key = self
+            .ed25519_key()
+            .ok_or(SignatureError::MissingSigningKey)?;
         let user_id = self.user_id();
         let key_id = &DeviceKeyId::from_parts(DeviceKeyAlgorithm::Ed25519, self.device_id());
 
@@ -956,7 +1018,9 @@ impl DeviceData {
     pub async fn from_machine_test_helper(
         machine: &OlmMachine,
     ) -> Result<DeviceData, crate::CryptoStoreError> {
-        Ok(DeviceData::from_account(&*machine.store().cache().await?.account().await?))
+        Ok(DeviceData::from_account(
+            &*machine.store().cache().await?.account().await?,
+        ))
     }
 
     /// Create [`DeviceData`] from an [`Account`].
@@ -1020,7 +1084,8 @@ impl PartialEq for DeviceData {
 pub(crate) mod testing {
     use serde_json::json;
 
-    use crate::{identities::DeviceData, types::DeviceKeys};
+    use crate::identities::DeviceData;
+    use crate::types::DeviceKeys;
 
     /// Generate default DeviceKeys for tests
     pub fn device_keys() -> DeviceKeys {
@@ -1057,12 +1122,16 @@ pub(crate) mod testing {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use ruma::{MilliSecondsSinceUnixEpoch, user_id};
+    use ruma::MilliSecondsSinceUnixEpoch;
+    use ruma::user_id;
     use serde_json::json;
-    use vodozemac::{Curve25519PublicKey, Ed25519PublicKey};
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519PublicKey;
 
-    use super::testing::{device_keys, get_device};
-    use crate::{DeviceData, identities::LocalTrust};
+    use super::testing::device_keys;
+    use super::testing::get_device;
+    use crate::DeviceData;
+    use crate::identities::LocalTrust;
 
     #[test]
     fn create_a_device() {

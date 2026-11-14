@@ -4,9 +4,8 @@
  */
 
 use super::Throughput;
-use aws_smithy_runtime_api::client::stalled_stream_protection::{
-    StalledStreamProtectionConfig, DEFAULT_GRACE_PERIOD,
-};
+use aws_smithy_runtime_api::client::stalled_stream_protection::StalledStreamProtectionConfig;
+use aws_smithy_runtime_api::client::stalled_stream_protection::DEFAULT_GRACE_PERIOD;
 use std::time::Duration;
 
 /// A collection of options for configuring a [`MinimumThroughputBody`](super::MinimumThroughputDownloadBody).

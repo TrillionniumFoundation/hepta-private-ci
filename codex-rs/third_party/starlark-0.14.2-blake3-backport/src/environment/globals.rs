@@ -61,8 +61,9 @@ use crate::values::namespace::value::MaybeDocHiddenValue;
 use crate::values::types::function::NativeFunction;
 
 /// The global values available during execution.
-#[derive(Clone, Dupe, Debug, Allocative)]
-#[derive(pagable::Pagable, starlark_derive::StarlarkPagableViaPagable)]
+#[derive(
+    Clone, Dupe, Debug, Allocative, pagable::Pagable, starlark_derive::StarlarkPagableViaPagable,
+)]
 pub struct Globals(Arc<GlobalsData>);
 
 type GlobalValue = MaybeDocHiddenValue<'static, FrozenValue>;

@@ -58,12 +58,7 @@ use crate::values::typing::callable::param::StarlarkCallableParamAny;
 use crate::values::typing::callable::param::StarlarkCallableParamSpec;
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
+    Debug, derive_more::Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable,
 )]
 #[display("{}", Self::TYPE)]
 pub(crate) struct TypingCallable;
@@ -104,12 +99,7 @@ impl AllocFrozenValue for TypingCallable {
 }
 
 #[derive(
-    Allocative,
-    Debug,
-    ProvidesStaticType,
-    NoSerialize,
-    derive_more::Display,
-    StarlarkPagable
+    Allocative, Debug, ProvidesStaticType, NoSerialize, derive_more::Display, StarlarkPagable,
 )]
 #[display("{}", callable)]
 pub(crate) struct TypingCallableAt2 {

@@ -36,8 +36,131 @@
       "path": "Cargo.toml.orig",
       "before_sha256": "7fad26d991fd99dd21474755c97784f6a4c3c2996d50eeca8ee306ba15ac67ce",
       "after_sha256": "ab0dd2143055af9a63df8c63bfa0f1dd2b530d58c54de4135be8d368d6968151"
+    },
+    {
+      "path": "src/cert/boring.rs",
+      "before_sha256": "d0a12bf58665de5485c350107ff50ff86afdfa2ea2ccefa78556cad4a0314652",
+      "after_sha256": "2ce663d245d18c596d3e757ef9b0ed60e57151474f34bd90ff4e641eb879d322",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/cert/boring_tests.rs",
+      "before_sha256": "5bfd4c8616ca234a5157a3df806c66801358359aa3b6f56280072ddf19cb4cda",
+      "after_sha256": "6031ef1d3002a4d181e92e7b2e70e9bafaee70206008326431baf854708065bf",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/cert/mod.rs",
+      "before_sha256": "9f5be8444b27e95d779ed8dd1fcc45b7a33414ffb84b2a257dd9f9181b5f0123",
+      "after_sha256": "48fe14d34c31605e71736174bff7603f9260ec302ac96b6eede50d82ac309f39",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/cert/rcgen.rs",
+      "before_sha256": "8ff9d95f9eedbf122821386529f5a54d164fca0d8cc673eeb56764e23d2334eb",
+      "after_sha256": "2fe65201524cc4014ba9c587bee3811388b273e0258f8dab0e089f58fe824372",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/crl.rs",
+      "before_sha256": "a3471c402778106c97ec5925b27b4283dfa0d5c09d743930d42894b1e7286301",
+      "after_sha256": "fe9c2616e71b13a0ed6d8296235abee294e3594222aa312404782994a9ff6e27",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/jose/jwa.rs",
+      "before_sha256": "0b774d43ed75b00387fb9cce05b9c11b74ec81939b904c4da0e2306ba71d3cc9",
+      "after_sha256": "f15989f7f1582ef02b0282a8e937d6d964efb657bd5f14938b8059489cf16441",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/jose/jwk.rs",
+      "before_sha256": "4cf9d2aa14948ab3bd2c14797d694025a6ecd1f85f15215715d83e0f7498931c",
+      "after_sha256": "f2cd7098443d8e08bda7edb714e4203b0f6786ff5e32fe1186aa3da471a2c7ec",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/jose/jwk_utils.rs",
+      "before_sha256": "c30734c326b31a5784b7d2778902617bad793128e8995e9aa451638aeebf06c3",
+      "after_sha256": "609c0d0be9d58871fce114856ee27498819ba303dcfd0dd392dd2927df06f000",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/jose/jws.rs",
+      "before_sha256": "3e3388bff375032c6d67dde5d492a72a48fac0c0150fb42cb8fcf0719a43b540",
+      "after_sha256": "ce3e7aac2f78cba5dc64c0744d85111530dc4472b2cf3b94e03e6b2339fe96a9",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/jose/mod.rs",
+      "before_sha256": "9aa9f16c3784ca3d3de134d1ed438175dc254b2c94815ca993eabd9ecfb4189f",
+      "after_sha256": "fb76f0581d1a44db350a2639345953899cd9986a1fb1dd93b008d866aa96ea3e",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/native_certs/macos.rs",
+      "before_sha256": "b28e63c7d13b530ecf9404f6eb1944445758d945f42955b1ffc548599fb6d726",
+      "after_sha256": "9fbe55275904a3f78f8374914289ef3591b9de77468d6eb80cb9a41afb347ec1",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/native_certs/mod.rs",
+      "before_sha256": "ed1f7a4ba3bba3311f40ee7c6f86637a16babf61fb6520ff5dac2b23627f66dc",
+      "after_sha256": "dd8d47d0ef34b75f69f488844f631d6c67cdce0efde8066e51f51c63e969853f",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/native_certs/unix.rs",
+      "before_sha256": "81f21d7721289420daa11d594032cd4853f27f86633cdf997284e44826efa982",
+      "after_sha256": "99143e4abc8e64f253fd5e08a6abc6f8d4be39afb1499a5adc90e9205f7955c4",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/ocsp.rs",
+      "before_sha256": "9175f57e760fcc96878de50b32b8b428bc4586b3abaa1e8a9059158fe3114adc",
+      "after_sha256": "78438037cdc4e63666f399060f8bdd2c3d68214f1c1398ab6ba43f3c2a96a671",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
     }
   ],
   "minimal_patch_sha256": "44856e8c8ff7020412cc6b197661901c46f78433316d6a204a1dc769c2244bcc",
-  "all_other_archive_files_unchanged": true
+  "all_other_archive_files_unchanged": false,
+  "previous_provenance_record": {
+    "commit": "c2130629037b342e6e48154867b65acc8fc82434",
+    "git_blob": "7d4fa99007b850db38e086eced864777b1e1864e",
+    "sha256": "900b1d0be4469bc17164093088505707993bb294464920700eb3b35b3b0af2db",
+    "recorded_edits": [
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "ce6dce0e52814c4194168ad690b01086997ccf9d69c40828b70e04288a2fe6fc",
+        "after_sha256": "54065e1196e32ef7889af6467b500372cf7ddc055d1071a9d9d49961b0000551"
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "7fad26d991fd99dd21474755c97784f6a4c3c2996d50eeca8ee306ba15ac67ce",
+        "after_sha256": "ab0dd2143055af9a63df8c63bfa0f1dd2b530d58c54de4135be8d368d6968151"
+      }
+    ],
+    "all_other_archive_files_unchanged_at_that_record": true
+  },
+  "current_followup_scope": "Current source identities include the explicitly listed repository-formatting changes. Original minimal patches retain their original bytes and original dependency-change scope.",
+  "formatting_provenance": {
+    "path": "HEPTA-FORMATTING-PROVENANCE.json",
+    "sha256": "7adf8f5b8879a93d94a431b4abcf515736def84af31c31d72d7721f82677b32a",
+    "base": "c2130629037b342e6e48154867b65acc8fc82434",
+    "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2"
+  }
 }

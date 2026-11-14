@@ -14,16 +14,21 @@
 
 use std::collections::btree_map::Iter;
 
-use ruma::{DeviceKeyId, OwnedDeviceKeyId, UserId, encryption::KeyUsage};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceKeyId;
+use ruma::OwnedDeviceKeyId;
+use ruma::UserId;
+use ruma::encryption::KeyUsage;
+use serde::Deserialize;
+use serde::Serialize;
 use vodozemac::Ed25519PublicKey;
 
-use super::{CrossSigningKey, CrossSigningSubKeys, SigningKey};
-use crate::{
-    SignatureError,
-    olm::VerifyJson,
-    types::{Signatures, SigningKeys},
-};
+use super::CrossSigningKey;
+use super::CrossSigningSubKeys;
+use super::SigningKey;
+use crate::SignatureError;
+use crate::olm::VerifyJson;
+use crate::types::Signatures;
+use crate::types::SigningKeys;
 
 /// Wrapper for a cross signing key marking it as the master key.
 ///

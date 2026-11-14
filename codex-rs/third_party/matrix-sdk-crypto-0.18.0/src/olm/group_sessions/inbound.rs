@@ -12,54 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    cmp::Ordering,
-    fmt,
-    ops::Deref,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering::SeqCst},
-    },
-};
+use std::cmp::Ordering;
+use std::fmt;
+use std::ops::Deref;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering::SeqCst;
 
-use ruma::{
-    DeviceKeyAlgorithm, OwnedRoomId, RoomId, events::room::history_visibility::HistoryVisibility,
-    serde::JsonObject,
-};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceKeyAlgorithm;
+use ruma::OwnedRoomId;
+use ruma::RoomId;
+use ruma::events::room::history_visibility::HistoryVisibility;
+use ruma::serde::JsonObject;
+use serde::Deserialize;
+use serde::Serialize;
 use tokio::sync::Mutex;
-use vodozemac::{
-    Curve25519PublicKey, Ed25519PublicKey, PickleError,
-    megolm::{
-        DecryptedMessage, DecryptionError, InboundGroupSession as InnerSession,
-        InboundGroupSessionPickle, MegolmMessage, SessionConfig, SessionOrdering,
-    },
-};
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Ed25519PublicKey;
+use vodozemac::PickleError;
+use vodozemac::megolm::DecryptedMessage;
+use vodozemac::megolm::DecryptionError;
+use vodozemac::megolm::InboundGroupSession as InnerSession;
+use vodozemac::megolm::InboundGroupSessionPickle;
+use vodozemac::megolm::MegolmMessage;
+use vodozemac::megolm::SessionConfig;
+use vodozemac::megolm::SessionOrdering;
 
-use super::{
-    BackedUpRoomKey, ExportedRoomKey, OutboundGroupSession, SenderData, SenderDataType,
-    SessionCreationError, SessionKey,
-};
+use super::BackedUpRoomKey;
+use super::ExportedRoomKey;
+use super::OutboundGroupSession;
+use super::SenderData;
+use super::SenderDataType;
+use super::SessionCreationError;
+use super::SessionKey;
+use crate::error::EventError;
+use crate::error::MegolmResult;
+use crate::olm::group_sessions::forwarder_data::ForwarderData;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::SigningKeys;
+use crate::types::deserialize_curve_key;
+use crate::types::events::forwarded_room_key::ForwardedMegolmV1AesSha2Content;
+use crate::types::events::forwarded_room_key::ForwardedMegolmV2AesSha2Content;
+use crate::types::events::forwarded_room_key::ForwardedRoomKeyContent;
+use crate::types::events::olm_v1::DecryptedForwardedRoomKeyEvent;
+use crate::types::events::room::encrypted::EncryptedEvent;
+use crate::types::events::room::encrypted::RoomEventEncryptionScheme;
+use crate::types::events::room_key;
 #[cfg(doc)]
 use crate::types::events::room_key::RoomKeyContent;
-use crate::{
-    error::{EventError, MegolmResult},
-    olm::group_sessions::forwarder_data::ForwarderData,
-    types::{
-        EventEncryptionAlgorithm, SigningKeys, deserialize_curve_key,
-        events::{
-            forwarded_room_key::{
-                ForwardedMegolmV1AesSha2Content, ForwardedMegolmV2AesSha2Content,
-                ForwardedRoomKeyContent,
-            },
-            olm_v1::DecryptedForwardedRoomKeyEvent,
-            room::encrypted::{EncryptedEvent, RoomEventEncryptionScheme},
-            room_key,
-        },
-        room_history::HistoricRoomKey,
-        serialize_curve_key,
-    },
-};
+use crate::types::room_history::HistoricRoomKey;
+use crate::types::serialize_curve_key;
 // TODO: add creation times to the inbound group sessions so we can export
 // sessions that were created between some time period, this should only be set
 // for non-imported sessions.
@@ -444,8 +446,12 @@ impl InboundGroupSession {
     pub async fn export_at_index(&self, message_index: u32) -> ExportedRoomKey {
         let message_index = std::cmp::max(self.first_known_index(), message_index);
 
-        let session_key =
-            self.inner.lock().await.export_at(message_index).expect("Can't export session");
+        let session_key = self
+            .inner
+            .lock()
+            .await
+            .export_at(message_index)
+            .expect("Can't export session");
 
         ExportedRoomKey {
             algorithm: self.algorithm().to_owned(),
@@ -646,8 +652,9 @@ impl InboundGroupSession {
             serde_json::to_value(&event.unsigned).unwrap_or_default(),
         );
 
-        if let Some(decrypted_content) =
-            decrypted_object.get_mut("content").and_then(|c| c.as_object_mut())
+        if let Some(decrypted_content) = decrypted_object
+            .get_mut("content")
+            .and_then(|c| c.as_object_mut())
             && !decrypted_content.contains_key("m.relates_to")
             && let Some(relation) = &event.content.relates_to
         {
@@ -683,7 +690,9 @@ impl InboundGroupSession {
 #[cfg(not(tarpaulin_include))]
 impl fmt::Debug for InboundGroupSession {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("InboundGroupSession").field("session_id", &self.session_id()).finish()
+        f.debug_struct("InboundGroupSession")
+            .field("session_id", &self.session_id())
+            .finish()
     }
 }
 
@@ -703,7 +712,10 @@ pub struct PickledInboundGroupSession {
     /// The pickle string holding the InboundGroupSession.
     pub pickle: InboundGroupSessionPickle,
     /// The public Curve25519 key of the account that sent us the session
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub sender_key: Curve25519PublicKey,
     /// The public ed25519 key of the account that sent us the session.
     pub signing_key: SigningKeys<DeviceKeyAlgorithm>,
@@ -920,24 +932,31 @@ impl TryFrom<&DecryptedForwardedRoomKeyEvent> for InboundGroupSession {
 #[cfg(test)]
 mod tests {
     use assert_matches2::assert_let;
-    use insta::{assert_json_snapshot, with_settings};
+    use insta::assert_json_snapshot;
+    use insta::with_settings;
     use matrix_sdk_test::async_test;
-    use ruma::{
-        DeviceId, UserId, device_id, events::room::history_visibility::HistoryVisibility,
-        owned_room_id, room_id, user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::events::room::history_visibility::HistoryVisibility;
+    use ruma::owned_room_id;
+    use ruma::room_id;
+    use ruma::user_id;
     use serde_json::json;
     use similar_asserts::assert_eq;
-    use vodozemac::{
-        Curve25519PublicKey, Ed25519PublicKey,
-        megolm::{SessionKey, SessionOrdering},
-    };
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519PublicKey;
+    use vodozemac::megolm::SessionKey;
+    use vodozemac::megolm::SessionOrdering;
 
-    use crate::{
-        Account,
-        olm::{BackedUpRoomKey, ExportedRoomKey, InboundGroupSession, KnownSenderData, SenderData},
-        types::{EventEncryptionAlgorithm, events::room_key},
-    };
+    use crate::Account;
+    use crate::olm::BackedUpRoomKey;
+    use crate::olm::ExportedRoomKey;
+    use crate::olm::InboundGroupSession;
+    use crate::olm::KnownSenderData;
+    use crate::olm::SenderData;
+    use crate::types::EventEncryptionAlgorithm;
+    use crate::types::events::room_key;
 
     fn alice_id() -> &'static UserId {
         user_id!("@alice:example.org")
@@ -951,7 +970,9 @@ mod tests {
     async fn test_pickle_snapshot() {
         let account = Account::new(alice_id());
         let room_id = room_id!("!test:localhost");
-        let (_, session) = account.create_group_session_pair_with_defaults(room_id).await;
+        let (_, session) = account
+            .create_group_session_pair_with_defaults(room_id)
+            .await;
 
         let pickle = session.pickle().await;
 
@@ -1015,13 +1036,18 @@ mod tests {
         let unpickled = InboundGroupSession::from_pickle(deserialized).unwrap();
 
         // Then it was parsed correctly
-        assert_eq!(unpickled.session_id(), "XbmrPa1kMwmdtNYng1B2gsfoo8UtF+NklzsTZiaVKyY");
+        assert_eq!(
+            unpickled.session_id(),
+            "XbmrPa1kMwmdtNYng1B2gsfoo8UtF+NklzsTZiaVKyY"
+        );
 
         // And we populated the InboundGroupSession's sender_data with a default value,
         // with legacy_session set to true.
         assert_let!(
-            SenderData::UnknownDevice { legacy_session, owner_check_failed } =
-                unpickled.sender_data
+            SenderData::UnknownDevice {
+                legacy_session,
+                owner_check_failed
+            } = unpickled.sender_data
         );
         assert!(legacy_session);
         assert!(!owner_check_failed);
@@ -1146,13 +1172,18 @@ mod tests {
         let unpickled = InboundGroupSession::from_pickle(deserialized).unwrap();
 
         // Then it was parsed correctly
-        assert_eq!(unpickled.session_id(), "XbmrPa1kMwmdtNYng1B2gsfoo8UtF+NklzsTZiaVKyY");
+        assert_eq!(
+            unpickled.session_id(),
+            "XbmrPa1kMwmdtNYng1B2gsfoo8UtF+NklzsTZiaVKyY"
+        );
 
         // And we populated the InboundGroupSession's sender_data with the provided
         // values
         assert_let!(
-            SenderData::UnknownDevice { legacy_session, owner_check_failed } =
-                unpickled.sender_data
+            SenderData::UnknownDevice {
+                legacy_session,
+                owner_check_failed
+            } = unpickled.sender_data
         );
         assert!(!legacy_session);
         assert!(!owner_check_failed);
@@ -1170,11 +1201,20 @@ mod tests {
         let mut copy = InboundGroupSession::from_pickle(inbound.pickle().await).unwrap();
 
         assert_eq!(inbound.compare(&worse).await, SessionOrdering::Better);
-        assert_eq!(inbound.compare_ratchet(&worse).await, SessionOrdering::Better);
+        assert_eq!(
+            inbound.compare_ratchet(&worse).await,
+            SessionOrdering::Better
+        );
         assert_eq!(worse.compare(&inbound).await, SessionOrdering::Worse);
-        assert_eq!(worse.compare_ratchet(&inbound).await, SessionOrdering::Worse);
+        assert_eq!(
+            worse.compare_ratchet(&inbound).await,
+            SessionOrdering::Worse
+        );
         assert_eq!(inbound.compare(&inbound).await, SessionOrdering::Equal);
-        assert_eq!(inbound.compare_ratchet(&inbound).await, SessionOrdering::Equal);
+        assert_eq!(
+            inbound.compare_ratchet(&inbound).await,
+            SessionOrdering::Equal
+        );
         assert_eq!(inbound.compare(&copy).await, SessionOrdering::Equal);
         assert_eq!(inbound.compare_ratchet(&copy).await, SessionOrdering::Equal);
 
@@ -1183,7 +1223,10 @@ mod tests {
                 .unwrap();
 
         assert_eq!(inbound.compare(&copy).await, SessionOrdering::Unconnected);
-        assert_eq!(inbound.compare_ratchet(&copy).await, SessionOrdering::Unconnected);
+        assert_eq!(
+            inbound.compare_ratchet(&copy).await,
+            SessionOrdering::Unconnected
+        );
     }
 
     #[async_test]
@@ -1224,8 +1267,11 @@ mod tests {
     }
 
     fn key_json(stable: bool) -> serde_json::Value {
-        let shared_history =
-            if stable { "m.shared_history" } else { "org.matrix.msc3061.shared_history" };
+        let shared_history = if stable {
+            "m.shared_history"
+        } else {
+            "org.matrix.msc3061.shared_history"
+        };
 
         json!({
             "algorithm": "m.megolm.v1.aes-sha2",
@@ -1305,8 +1351,11 @@ mod tests {
     }
 
     fn exported_key_json(stable: bool) -> serde_json::Value {
-        let shared_history =
-            if stable { "m.shared_history" } else { "org.matrix.msc3061.shared_history" };
+        let shared_history = if stable {
+            "m.shared_history"
+        } else {
+            "org.matrix.msc3061.shared_history"
+        };
 
         json!({
             "algorithm": "m.megolm.v1.aes-sha2",
@@ -1375,8 +1424,11 @@ mod tests {
     }
 
     fn backed_up_room_key(stable: bool) -> serde_json::Value {
-        let shared_history =
-            if stable { "m.shared_history" } else { "org.matrix.msc3061.shared_history" };
+        let shared_history = if stable {
+            "m.shared_history"
+        } else {
+            "org.matrix.msc3061.shared_history"
+        };
 
         json!({
                 "algorithm": "m.megolm.v1.aes-sha2",

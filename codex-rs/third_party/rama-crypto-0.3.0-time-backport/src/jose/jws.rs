@@ -1,9 +1,13 @@
-use base64::{Engine as _, prelude::BASE64_URL_SAFE_NO_PAD};
+use base64::Engine as _;
+use base64::prelude::BASE64_URL_SAFE_NO_PAD;
+use rama_core::error::BoxError;
 use rama_core::error::BoxErrorExt as _;
-use rama_core::error::{BoxError, ErrorContext as _};
+use rama_core::error::ErrorContext as _;
 use rama_utils::macros::generate_set_and_with;
-use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Map;
+use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 /// When used with serde this will serialize to an empty JSON object (`{}`)

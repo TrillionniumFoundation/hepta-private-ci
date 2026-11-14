@@ -8,14 +8,14 @@ mod gettext;
 pub use fluent::FluentConfig;
 pub use gettext::GettextConfig;
 
+use std::fmt::Display;
 use std::fs::read_to_string;
 use std::io;
-use std::{
-    fmt::Display,
-    path::{Path, PathBuf},
-};
+use std::path::Path;
+use std::path::PathBuf;
 
-use log::{debug, error};
+use log::debug;
+use log::error;
 use serde_derive::Deserialize;
 use thiserror::Error;
 use unic_langid::LanguageIdentifier;

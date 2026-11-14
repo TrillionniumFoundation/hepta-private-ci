@@ -12,63 +12,66 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    cmp::max,
-    collections::{BTreeMap, BTreeSet},
-    fmt,
-    ops::Bound,
-    sync::{
-        Arc, RwLockReadGuard,
-        atomic::{AtomicBool, AtomicU64, Ordering},
-    },
-    time::Duration,
-};
+use std::cmp::max;
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::fmt;
+use std::ops::Bound;
+use std::sync::Arc;
+use std::sync::RwLockReadGuard;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
 
-use matrix_sdk_common::{deserialized_responses::WithheldCode, locks::RwLock as StdRwLock};
+use matrix_sdk_common::deserialized_responses::WithheldCode;
+use matrix_sdk_common::locks::RwLock as StdRwLock;
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedRoomId;
+use ruma::OwnedTransactionId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::SecondsSinceUnixEpoch;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::AnyMessageLikeEventContent;
 #[cfg(feature = "experimental-encrypted-state-events")]
 use ruma::events::AnyStateEventContent;
-use ruma::{
-    DeviceId, OwnedDeviceId, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomId,
-    SecondsSinceUnixEpoch, TransactionId, UserId,
-    events::{
-        AnyMessageLikeEventContent,
-        room::{
-            encryption::{PossiblyRedactedRoomEncryptionEventContent, RoomEncryptionEventContent},
-            history_visibility::HistoryVisibility,
-        },
-    },
-    serde::Raw,
-};
-use serde::{Deserialize, Serialize};
+use ruma::events::room::encryption::PossiblyRedactedRoomEncryptionEventContent;
+use ruma::events::room::encryption::RoomEncryptionEventContent;
+use ruma::events::room::history_visibility::HistoryVisibility;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
 use tokio::sync::RwLock;
-use tracing::{debug, error, info};
-use vodozemac::{Curve25519PublicKey, megolm::SessionConfig};
-pub use vodozemac::{
-    PickleError,
-    megolm::{GroupSession, GroupSessionPickle, MegolmMessage, SessionKey},
-    olm::IdentityKeys,
-};
+use tracing::debug;
+use tracing::error;
+use tracing::info;
+use vodozemac::Curve25519PublicKey;
+pub use vodozemac::PickleError;
+pub use vodozemac::megolm::GroupSession;
+pub use vodozemac::megolm::GroupSessionPickle;
+pub use vodozemac::megolm::MegolmMessage;
+use vodozemac::megolm::SessionConfig;
+pub use vodozemac::megolm::SessionKey;
+pub use vodozemac::olm::IdentityKeys;
 
 use super::SessionCreationError;
+use crate::DeviceData;
+use crate::olm::account::shared_history_from_history_visibility;
+use crate::session_manager::CollectStrategy;
+use crate::store::caches::SequenceNumber;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::events::room::encrypted::MegolmV1AesSha2Content;
 #[cfg(feature = "experimental-algorithms")]
 use crate::types::events::room::encrypted::MegolmV2AesSha2Content;
-use crate::{
-    DeviceData,
-    olm::account::shared_history_from_history_visibility,
-    session_manager::CollectStrategy,
-    store::caches::SequenceNumber,
-    types::{
-        EventEncryptionAlgorithm,
-        events::{
-            room::encrypted::{
-                MegolmV1AesSha2Content, RoomEncryptedEventContent, RoomEventEncryptionScheme,
-            },
-            room_key::{MegolmV1AesSha2Content as MegolmV1AesSha2RoomKeyContent, RoomKeyContent},
-            room_key_withheld::RoomKeyWithheldContent,
-        },
-        requests::ToDeviceRequest,
-    },
-};
+use crate::types::events::room::encrypted::RoomEncryptedEventContent;
+use crate::types::events::room::encrypted::RoomEventEncryptionScheme;
+use crate::types::events::room_key::MegolmV1AesSha2Content as MegolmV1AesSha2RoomKeyContent;
+use crate::types::events::room_key::RoomKeyContent;
+use crate::types::events::room_key_withheld::RoomKeyWithheldContent;
+use crate::types::requests::ToDeviceRequest;
 
 const ONE_HOUR: Duration = Duration::from_secs(60 * 60);
 const ONE_WEEK: Duration = Duration::from_secs(60 * 60 * 24 * 7);
@@ -89,7 +92,10 @@ pub(crate) enum ShareState {
     /// [`DeviceData`] at the time that we last shared the session with the
     /// device, and indicates whether we need to re-share the session with the
     /// device.
-    Shared { message_index: u32, olm_wedging_index: SequenceNumber },
+    Shared {
+        message_index: u32,
+        olm_wedging_index: SequenceNumber,
+    },
 }
 
 /// Settings for an encrypted room.
@@ -137,10 +143,12 @@ impl EncryptionSettings {
         history_visibility: HistoryVisibility,
         sharing_strategy: CollectStrategy,
     ) -> Self {
-        let rotation_period: Duration =
-            content.rotation_period_ms.map_or(ROTATION_PERIOD, |r| Duration::from_millis(r.into()));
-        let rotation_period_msgs: u64 =
-            content.rotation_period_msgs.map_or(ROTATION_MESSAGES, Into::into);
+        let rotation_period: Duration = content
+            .rotation_period_ms
+            .map_or(ROTATION_PERIOD, |r| Duration::from_millis(r.into()));
+        let rotation_period_msgs: u64 = content
+            .rotation_period_msgs
+            .map_or(ROTATION_MESSAGES, Into::into);
 
         Self {
             algorithm: EventEncryptionAlgorithm::from(content.algorithm.as_str()),
@@ -163,10 +171,12 @@ impl EncryptionSettings {
         history_visibility: HistoryVisibility,
         sharing_strategy: CollectStrategy,
     ) -> Option<Self> {
-        let rotation_period: Duration =
-            content.rotation_period_ms.map_or(ROTATION_PERIOD, |r| Duration::from_millis(r.into()));
-        let rotation_period_msgs: u64 =
-            content.rotation_period_msgs.map_or(ROTATION_MESSAGES, Into::into);
+        let rotation_period: Duration = content
+            .rotation_period_ms
+            .map_or(ROTATION_PERIOD, |r| Duration::from_millis(r.into()));
+        let rotation_period_msgs: u64 = content
+            .rotation_period_msgs
+            .map_or(ROTATION_MESSAGES, Into::into);
 
         Some(Self {
             algorithm: EventEncryptionAlgorithm::from(content.algorithm?.as_str()),
@@ -238,7 +248,11 @@ impl ShareInfo {
         message_index: u32,
         olm_wedging_index: SequenceNumber,
     ) -> Self {
-        ShareInfo::Shared(SharedWith { sender_key, message_index, olm_wedging_index })
+        ShareInfo::Shared(SharedWith {
+            sender_key,
+            message_index,
+            olm_wedging_index,
+        })
     }
 
     /// Helper to create a Withheld info
@@ -335,10 +349,11 @@ impl SharingView<'_> {
     /// requests to receive it.  This can yield the same user multiple times,
     /// so you may want to `collect()` the result into a `BTreeSet`.
     pub(crate) fn shared_with_users(&self) -> impl Iterator<Item = &UserId> {
-        self.iter_shares(None, None).filter_map(|(u, _, info)| match info {
-            ShareInfo::Shared(_) => Some(u),
-            ShareInfo::Withheld(_) => None,
-        })
+        self.iter_shares(None, None)
+            .filter_map(|(u, _, info)| match info {
+                ShareInfo::Shared(_) => Some(u),
+                ShareInfo::Withheld(_) => None,
+            })
     }
 }
 
@@ -411,7 +426,9 @@ impl OutboundGroupSession {
         request: Arc<ToDeviceRequest>,
         share_infos: ShareInfoSet,
     ) {
-        self.to_share_with_set.write().insert(request_id, (request, share_infos));
+        self.to_share_with_set
+            .write()
+            .insert(request_id, (request, share_infos));
     }
 
     /// Create a new `m.room_key.withheld` event content with the given code for
@@ -469,7 +486,11 @@ impl OutboundGroupSession {
                     .collect();
                 no_olm_devices.insert(user_id.to_owned(), no_olms);
 
-                self.shared_with_set.write().entry(user_id).or_default().extend(info);
+                self.shared_with_set
+                    .write()
+                    .entry(user_id)
+                    .or_default()
+                    .extend(info);
             }
 
             if self.to_share_with_set.read().is_empty() {
@@ -483,8 +504,12 @@ impl OutboundGroupSession {
                 self.mark_as_shared();
             }
         } else {
-            let request_ids: Vec<String> =
-                self.to_share_with_set.read().keys().map(|k| k.to_string()).collect();
+            let request_ids: Vec<String> = self
+                .to_share_with_set
+                .read()
+                .keys()
+                .map(|k| k.to_string())
+                .collect();
 
             error!(
                 all_request_ids = ?request_ids,
@@ -542,15 +567,20 @@ impl OutboundGroupSession {
             }
             .into(),
             #[cfg(feature = "experimental-algorithms")]
-            EventEncryptionAlgorithm::MegolmV2AesSha2 => {
-                MegolmV2AesSha2Content { ciphertext, session_id: self.session_id().to_owned() }
-                    .into()
+            EventEncryptionAlgorithm::MegolmV2AesSha2 => MegolmV2AesSha2Content {
+                ciphertext,
+                session_id: self.session_id().to_owned(),
             }
+            .into(),
             _ => unreachable!(
                 "An outbound group session is always using one of the supported algorithms"
             ),
         };
-        let content = RoomEncryptedEventContent { scheme, relates_to, other: Default::default() };
+        let content = RoomEncryptedEventContent {
+            scheme,
+            relates_to,
+            other: Default::default(),
+        };
 
         OutboundGroupSessionEncryptionResult {
             content: Raw::new(&content)
@@ -589,7 +619,11 @@ impl OutboundGroupSession {
             room_id: &'a RoomId,
         }
 
-        let payload = Payload { event_type, content, room_id: &self.room_id };
+        let payload = Payload {
+            event_type,
+            content,
+            room_id: &self.room_id,
+        };
 
         let relates_to = content
             .get_field::<serde_json::Value>("m.relates_to")
@@ -633,7 +667,12 @@ impl OutboundGroupSession {
             room_id: &'a RoomId,
         }
 
-        let payload = Payload { event_type, state_key, content, room_id: &self.room_id };
+        let payload = Payload {
+            event_type,
+            state_key,
+            content,
+            room_id: &self.room_id,
+        };
         self.encrypt_inner(&payload, None).await.content
     }
 
@@ -763,10 +802,14 @@ impl OutboundGroupSession {
         sender_key: Curve25519PublicKey,
         index: u32,
     ) {
-        self.shared_with_set.write().entry(user_id.to_owned()).or_default().insert(
-            device_id.to_owned(),
-            ShareInfo::new_shared(sender_key, index, Default::default()),
-        );
+        self.shared_with_set
+            .write()
+            .entry(user_id.to_owned())
+            .or_default()
+            .insert(
+                device_id.to_owned(),
+                ShareInfo::new_shared(sender_key, index, Default::default()),
+            );
     }
 
     /// Mark the session as shared with the given user/device pair, starting
@@ -790,7 +833,11 @@ impl OutboundGroupSession {
     /// Get the list of requests that need to be sent out for this session to be
     /// marked as shared.
     pub(crate) fn pending_requests(&self) -> Vec<Arc<ToDeviceRequest>> {
-        self.to_share_with_set.read().values().map(|(req, _)| req.clone()).collect()
+        self.to_share_with_set
+            .read()
+            .values()
+            .map(|(req, _)| req.clone())
+            .collect()
     }
 
     /// Get the list of request ids this session is waiting for to be sent out.
@@ -906,15 +953,15 @@ pub struct PickledOutboundGroupSession {
 mod tests {
     use std::time::Duration;
 
-    use ruma::{
-        EventEncryptionAlgorithm,
-        events::room::{
-            encryption::RoomEncryptionEventContent, history_visibility::HistoryVisibility,
-        },
-        uint,
-    };
+    use ruma::EventEncryptionAlgorithm;
+    use ruma::events::room::encryption::RoomEncryptionEventContent;
+    use ruma::events::room::history_visibility::HistoryVisibility;
+    use ruma::uint;
 
-    use super::{EncryptionSettings, ROTATION_MESSAGES, ROTATION_PERIOD, ShareState};
+    use super::EncryptionSettings;
+    use super::ROTATION_MESSAGES;
+    use super::ROTATION_PERIOD;
+    use super::ShareState;
     use crate::CollectStrategy;
 
     #[test]
@@ -950,7 +997,10 @@ mod tests {
         let values = [
             ShareState::NotShared,
             ShareState::SharedButChangedSenderKey,
-            ShareState::Shared { message_index: 1, olm_wedging_index: Default::default() },
+            ShareState::Shared {
+                message_index: 1,
+                olm_wedging_index: Default::default(),
+            },
         ];
         // Make sure our test case of possible variants is exhaustive
         match values[0] {
@@ -963,18 +1013,23 @@ mod tests {
 
     #[cfg(any(target_os = "linux", target_os = "macos", target_family = "wasm"))]
     mod expiration {
-        use std::{sync::atomic::Ordering, time::Duration};
+        use std::sync::atomic::Ordering;
+        use std::time::Duration;
 
         use matrix_sdk_test::async_test;
-        use ruma::{
-            SecondsSinceUnixEpoch, device_id, events::room::message::RoomMessageEventContent,
-            room_id, serde::Raw, uint, user_id,
-        };
+        use ruma::SecondsSinceUnixEpoch;
+        use ruma::device_id;
+        use ruma::events::room::message::RoomMessageEventContent;
+        use ruma::room_id;
+        use ruma::serde::Raw;
+        use ruma::uint;
+        use ruma::user_id;
 
-        use crate::{
-            Account, EncryptionSettings, MegolmError,
-            olm::{OutboundGroupSession, SenderData},
-        };
+        use crate::Account;
+        use crate::EncryptionSettings;
+        use crate::MegolmError;
+        use crate::olm::OutboundGroupSession;
+        use crate::olm::SenderData;
 
         const TWO_HOURS: Duration = Duration::from_secs(60 * 60 * 2);
 

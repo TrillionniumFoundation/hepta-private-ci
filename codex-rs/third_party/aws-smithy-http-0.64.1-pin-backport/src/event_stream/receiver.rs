@@ -3,12 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_eventstream::frame::{
-    DecodedFrame, MessageFrameDecoder, UnmarshallMessage, UnmarshalledMessage,
-};
-use aws_smithy_runtime_api::client::result::{ConnectorError, ResponseError, SdkError};
+use aws_smithy_eventstream::frame::DecodedFrame;
+use aws_smithy_eventstream::frame::MessageFrameDecoder;
+use aws_smithy_eventstream::frame::UnmarshallMessage;
+use aws_smithy_eventstream::frame::UnmarshalledMessage;
+use aws_smithy_runtime_api::client::result::ConnectorError;
+use aws_smithy_runtime_api::client::result::ResponseError;
+use aws_smithy_runtime_api::client::result::SdkError;
 use aws_smithy_types::body::SdkBody;
-use aws_smithy_types::event_stream::{Message, RawMessage};
+use aws_smithy_types::event_stream::Message;
+use aws_smithy_types::event_stream::RawMessage;
 use bytes::Buf;
 use bytes::Bytes;
 use bytes_utils::SegmentedBuf;
@@ -306,16 +310,22 @@ impl<T, E> Receiver<T, E> {
 
 #[cfg(test)]
 mod tests {
-    use super::{InitialMessageType, Receiver, UnmarshallMessage};
+    use super::InitialMessageType;
+    use super::Receiver;
+    use super::UnmarshallMessage;
     use aws_smithy_eventstream::error::Error as EventStreamError;
-    use aws_smithy_eventstream::frame::{write_message_to, UnmarshalledMessage};
+    use aws_smithy_eventstream::frame::write_message_to;
+    use aws_smithy_eventstream::frame::UnmarshalledMessage;
     use aws_smithy_runtime_api::client::result::SdkError;
     use aws_smithy_types::body::SdkBody;
-    use aws_smithy_types::event_stream::{Header, HeaderValue, Message};
+    use aws_smithy_types::event_stream::Header;
+    use aws_smithy_types::event_stream::HeaderValue;
+    use aws_smithy_types::event_stream::Message;
     use bytes::Bytes;
     use http_body_1x::Frame;
     use std::error::Error as StdError;
-    use std::io::{Error as IOError, ErrorKind};
+    use std::io::Error as IOError;
+    use std::io::ErrorKind;
 
     fn encode_initial_response() -> Bytes {
         let mut buffer = Vec::new();

@@ -135,16 +135,22 @@ mod typeid_map;
 
 use crate::config_bag::typeid_map::TypeIdMap;
 use crate::type_erasure::TypeErasedBox;
-use std::any::{type_name, TypeId};
+use std::any::type_name;
+use std::any::TypeId;
 use std::borrow::Cow;
-use std::fmt::{Debug, Formatter};
+use std::fmt::Debug;
+use std::fmt::Formatter;
 use std::iter::Rev;
 use std::marker::PhantomData;
 use std::ops::Deref;
 use std::slice::Iter;
 use std::sync::Arc;
 
-pub use storable::{AppendItemIter, Storable, Store, StoreAppend, StoreReplace};
+pub use storable::AppendItemIter;
+pub use storable::Storable;
+pub use storable::Store;
+pub use storable::StoreAppend;
+pub use storable::StoreReplace;
 
 /// [`FrozenLayer`] is the immutable and shareable form of [`Layer`].
 ///
@@ -781,7 +787,11 @@ impl<'a> Iterator for BagIter<'a> {
 #[cfg(test)]
 mod test {
     use super::ConfigBag;
-    use crate::config_bag::{CloneableLayer, Layer, Storable, StoreAppend, StoreReplace};
+    use crate::config_bag::CloneableLayer;
+    use crate::config_bag::Layer;
+    use crate::config_bag::Storable;
+    use crate::config_bag::StoreAppend;
+    use crate::config_bag::StoreReplace;
 
     #[test]
     fn layered_property_bag() {

@@ -7,17 +7,21 @@
 
 use aws_smithy_http::query_writer::QueryWriter;
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::auth::http::{
-    HTTP_API_KEY_AUTH_SCHEME_ID, HTTP_BASIC_AUTH_SCHEME_ID, HTTP_BEARER_AUTH_SCHEME_ID,
-    HTTP_DIGEST_AUTH_SCHEME_ID,
-};
-use aws_smithy_runtime_api::client::auth::{
-    AuthScheme, AuthSchemeEndpointConfig, AuthSchemeId, Sign,
-};
-use aws_smithy_runtime_api::client::identity::http::{Login, Token};
-use aws_smithy_runtime_api::client::identity::{Identity, SharedIdentityResolver};
+use aws_smithy_runtime_api::client::auth::http::HTTP_API_KEY_AUTH_SCHEME_ID;
+use aws_smithy_runtime_api::client::auth::http::HTTP_BASIC_AUTH_SCHEME_ID;
+use aws_smithy_runtime_api::client::auth::http::HTTP_BEARER_AUTH_SCHEME_ID;
+use aws_smithy_runtime_api::client::auth::http::HTTP_DIGEST_AUTH_SCHEME_ID;
+use aws_smithy_runtime_api::client::auth::AuthScheme;
+use aws_smithy_runtime_api::client::auth::AuthSchemeEndpointConfig;
+use aws_smithy_runtime_api::client::auth::AuthSchemeId;
+use aws_smithy_runtime_api::client::auth::Sign;
+use aws_smithy_runtime_api::client::identity::http::Login;
+use aws_smithy_runtime_api::client::identity::http::Token;
+use aws_smithy_runtime_api::client::identity::Identity;
+use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
 use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
-use aws_smithy_runtime_api::client::runtime_components::{GetIdentityResolver, RuntimeComponents};
+use aws_smithy_runtime_api::client::runtime_components::GetIdentityResolver;
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_types::base64::encode;
 use aws_smithy_types::config_bag::ConfigBag;
 

@@ -5,7 +5,8 @@
 
 //! Error metadata
 
-use crate::retry::{ErrorKind, ProvideErrorKind};
+use crate::retry::ErrorKind;
+use crate::retry::ProvideErrorKind;
 use std::collections::HashMap;
 use std::fmt;
 

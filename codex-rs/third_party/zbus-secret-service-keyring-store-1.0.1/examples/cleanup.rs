@@ -6,7 +6,10 @@ use std::collections::HashMap;
 use regex::Regex;
 use sscanf::sscanf;
 
-use keyring_core::{Entry, Error, Result, set_default_store};
+use keyring_core::Entry;
+use keyring_core::Error;
+use keyring_core::Result;
+use keyring_core::set_default_store;
 use zbus_secret_service_keyring_store::Store;
 
 fn main() -> Result<()> {

@@ -12,20 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use aes::{
-    Aes256,
-    cipher::{IvSizeUser, KeyIvInit, KeySizeUser, StreamCipher, generic_array::GenericArray},
-};
+use aes::Aes256;
+use aes::cipher::IvSizeUser;
+use aes::cipher::KeyIvInit;
+use aes::cipher::KeySizeUser;
+use aes::cipher::StreamCipher;
+use aes::cipher::generic_array::GenericArray;
 use ctr::Ctr128BE;
 use hkdf::Hkdf;
-use hmac::{
-    Hmac, Mac as _,
-    digest::{FixedOutput, MacError},
-};
+use hmac::Hmac;
+use hmac::Mac as _;
+use hmac::digest::FixedOutput;
+use hmac::digest::MacError;
 use pbkdf2::pbkdf2;
-use rand::{Rng, rng};
-use sha2::{Sha256, Sha512};
-use zeroize::{Zeroize, ZeroizeOnDrop};
+use rand::Rng;
+use rand::rng;
+use sha2::Sha256;
+use sha2::Sha512;
+use zeroize::Zeroize;
+use zeroize::ZeroizeOnDrop;
 
 // We could use the `keysize()` method Aes256Ctr as KeySize exposes, but it's
 // not const (yet?), same for the IV size.
@@ -126,11 +131,16 @@ impl AesHmacSha2Key {
     ) -> Self {
         let mut expanded_keys = [0u8; KEY_SIZE * 2];
 
-        pbkdf2::<Hmac<Sha512>>(passphrase.as_bytes(), salt, pbkdf_rounds, &mut expanded_keys)
-            .expect(
-                "We should be able to expand a passphrase of any length due to \
+        pbkdf2::<Hmac<Sha512>>(
+            passphrase.as_bytes(),
+            salt,
+            pbkdf_rounds,
+            &mut expanded_keys,
+        )
+        .expect(
+            "We should be able to expand a passphrase of any length due to \
                  HMAC being able to be initialized with any input size",
-            );
+        );
 
         let (aes_key, mac_key) = Self::split_keys(&expanded_keys);
 

@@ -332,7 +332,7 @@ mod tests {
         ProvidesStaticType,
         Allocative,
         NoSerialize,
-        StarlarkPagablePanic
+        StarlarkPagablePanic,
     )]
     #[display("plant")]
     enum AbstractPlant {}
@@ -345,12 +345,7 @@ mod tests {
     }
 
     #[derive(
-        Debug,
-        derive_more::Display,
-        ProvidesStaticType,
-        Allocative,
-        NoSerialize,
-        StarlarkPagable
+        Debug, derive_more::Display, ProvidesStaticType, Allocative, NoSerialize, StarlarkPagable,
     )]
     #[display("fruit_callable")]
     struct FruitCallable {
@@ -392,12 +387,7 @@ mod tests {
     }
 
     #[derive(
-        Debug,
-        derive_more::Display,
-        ProvidesStaticType,
-        Allocative,
-        NoSerialize,
-        StarlarkPagable
+        Debug, derive_more::Display, ProvidesStaticType, Allocative, NoSerialize, StarlarkPagable,
     )]
     struct Fruit {
         name: String,

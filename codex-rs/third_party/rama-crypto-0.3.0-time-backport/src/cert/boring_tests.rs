@@ -1,16 +1,16 @@
 use super::*;
 
-use crate::dep::boring::{
-    asn1::Asn1Time,
-    ec::{EcGroup, EcKey},
-    hash::MessageDigest,
-    nid::Nid,
-    pkey::Id,
-    x509::{
-        X509Extension, X509NameBuilder,
-        extension::{BasicConstraints, KeyUsage, SubjectAlternativeName},
-    },
-};
+use crate::dep::boring::asn1::Asn1Time;
+use crate::dep::boring::ec::EcGroup;
+use crate::dep::boring::ec::EcKey;
+use crate::dep::boring::hash::MessageDigest;
+use crate::dep::boring::nid::Nid;
+use crate::dep::boring::pkey::Id;
+use crate::dep::boring::x509::X509Extension;
+use crate::dep::boring::x509::X509NameBuilder;
+use crate::dep::boring::x509::extension::BasicConstraints;
+use crate::dep::boring::x509::extension::KeyUsage;
+use crate::dep::boring::x509::extension::SubjectAlternativeName;
 
 fn sample_data(common_name: &'static str) -> SelfSignedData {
     SelfSignedData {

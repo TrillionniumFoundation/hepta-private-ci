@@ -12,38 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    collections::HashMap,
-    ops::{Deref, DerefMut},
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-    },
-};
+use std::collections::HashMap;
+use std::ops::Deref;
+use std::ops::DerefMut;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use as_variant::as_variant;
 use matrix_sdk_common::locks::RwLock;
-use ruma::{
-    DeviceId, EventId, OwnedDeviceId, OwnedUserId, RoomId, UserId,
-    api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest,
-    events::{key::verification::VerificationMethod, room::message::MessageType},
-};
-use serde::{Deserialize, Deserializer, Serialize};
+use ruma::DeviceId;
+use ruma::EventId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::UserId;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::events::key::verification::VerificationMethod;
+use ruma::events::room::message::MessageType;
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
 use serde_json::Value;
-use tracing::{error, info};
+use tracing::error;
+use tracing::info;
 
-use crate::{
-    CryptoStoreError, DeviceData, VerificationRequest,
-    error::SignatureError,
-    store::{
-        Store,
-        types::{Changes, IdentityChanges},
-    },
-    types::{
-        MasterPubkey, SelfSigningPubkey, UserSigningPubkey, requests::OutgoingVerificationRequest,
-    },
-    verification::VerificationMachine,
-};
+use crate::CryptoStoreError;
+use crate::DeviceData;
+use crate::VerificationRequest;
+use crate::error::SignatureError;
+use crate::store::Store;
+use crate::store::types::Changes;
+use crate::store::types::IdentityChanges;
+use crate::types::MasterPubkey;
+use crate::types::SelfSigningPubkey;
+use crate::types::UserSigningPubkey;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::verification::VerificationMachine;
 
 /// Enum over the different user identity types we can have.
 #[derive(Debug, Clone)]
@@ -82,12 +87,16 @@ impl UserIdentity {
         own_identity: Option<OwnUserIdentityData>,
     ) -> Self {
         match identity {
-            UserIdentityData::Own(i) => {
-                Self::Own(OwnUserIdentity { inner: i, verification_machine, store })
-            }
-            UserIdentityData::Other(i) => {
-                Self::Other(OtherUserIdentity { inner: i, own_identity, verification_machine })
-            }
+            UserIdentityData::Own(i) => Self::Own(OwnUserIdentity {
+                inner: i,
+                verification_machine,
+                store,
+            }),
+            UserIdentityData::Other(i) => Self::Other(OtherUserIdentity {
+                inner: i,
+                own_identity,
+                verification_machine,
+            }),
         }
     }
 
@@ -256,21 +265,30 @@ impl OwnUserIdentity {
     /// Does our user identity trust our own device, i.e. have we signed our
     /// own device keys with our self-signing key.
     pub async fn trusts_our_own_device(&self) -> Result<bool, CryptoStoreError> {
-        Ok(if let Some(signatures) = self.verification_machine.store.device_signatures().await? {
-            let mut device_keys = self.store.cache().await?.account().await?.device_keys();
-            device_keys.signatures = signatures;
+        Ok(
+            if let Some(signatures) = self.verification_machine.store.device_signatures().await? {
+                let mut device_keys = self.store.cache().await?.account().await?.device_keys();
+                device_keys.signatures = signatures;
 
-            self.inner.self_signing_key().verify_device_keys(&device_keys).is_ok()
-        } else {
-            false
-        })
+                self.inner
+                    .self_signing_key()
+                    .verify_device_keys(&device_keys)
+                    .is_ok()
+            } else {
+                false
+            },
+        )
     }
 
     async fn request_verification_helper(
         &self,
         methods: Option<Vec<VerificationMethod>>,
     ) -> Result<(VerificationRequest, OutgoingVerificationRequest), CryptoStoreError> {
-        let all_devices = self.verification_machine.store.get_user_devices(self.user_id()).await?;
+        let all_devices = self
+            .verification_machine
+            .store
+            .get_user_devices(self.user_id())
+            .await?;
         let devices = self
             .inner
             .filter_devices_to_request(all_devices, self.verification_machine.own_device_id());
@@ -287,10 +305,17 @@ impl OwnUserIdentity {
         self.inner.withdraw_verification();
         let to_save = UserIdentityData::Own(self.inner.clone());
         let changes = Changes {
-            identities: IdentityChanges { changed: vec![to_save], ..Default::default() },
+            identities: IdentityChanges {
+                changed: vec![to_save],
+                ..Default::default()
+            },
             ..Default::default()
         };
-        self.verification_machine.store.inner().save_changes(changes).await?;
+        self.verification_machine
+            .store
+            .inner()
+            .save_changes(changes)
+            .await?;
         Ok(())
     }
 }
@@ -398,10 +423,17 @@ impl OtherUserIdentity {
         self.inner.pin();
         let to_save = UserIdentityData::Other(self.inner.clone());
         let changes = Changes {
-            identities: IdentityChanges { changed: vec![to_save], ..Default::default() },
+            identities: IdentityChanges {
+                changed: vec![to_save],
+                ..Default::default()
+            },
             ..Default::default()
         };
-        self.verification_machine.store.inner().save_changes(changes).await?;
+        self.verification_machine
+            .store
+            .inner()
+            .save_changes(changes)
+            .await?;
         Ok(())
     }
 
@@ -438,10 +470,17 @@ impl OtherUserIdentity {
         self.inner.withdraw_verification();
         let to_save = UserIdentityData::Other(self.inner.clone());
         let changes = Changes {
-            identities: IdentityChanges { changed: vec![to_save], ..Default::default() },
+            identities: IdentityChanges {
+                changed: vec![to_save],
+                ..Default::default()
+            },
             ..Default::default()
         };
-        self.verification_machine.store.inner().save_changes(changes).await?;
+        self.verification_machine
+            .store
+            .inner()
+            .save_changes(changes)
+            .await?;
         Ok(())
     }
 
@@ -453,11 +492,18 @@ impl OtherUserIdentity {
 
         let to_save = UserIdentityData::Other(self.inner.clone());
         let changes = Changes {
-            identities: IdentityChanges { changed: vec![to_save], ..Default::default() },
+            identities: IdentityChanges {
+                changed: vec![to_save],
+                ..Default::default()
+            },
             ..Default::default()
         };
 
-        self.verification_machine.store.inner().save_changes(changes).await?;
+        self.verification_machine
+            .store
+            .inner()
+            .save_changes(changes)
+            .await?;
 
         Ok(())
     }
@@ -590,7 +636,10 @@ impl UserIdentityData {
 /// violation the user should be notified with a blocking warning when sending a
 /// message.
 #[derive(Debug, Clone, Deserialize, Serialize)]
-#[serde(try_from = "OtherUserIdentityDataSerializer", into = "OtherUserIdentityDataSerializer")]
+#[serde(
+    try_from = "OtherUserIdentityDataSerializer",
+    into = "OtherUserIdentityDataSerializer"
+)]
 pub struct OtherUserIdentityData {
     user_id: OwnedUserId,
     pub(crate) master_key: Arc<MasterPubkey>,
@@ -679,7 +728,10 @@ impl TryFrom<OtherUserIdentityDataSerializer> for OtherUserIdentityData {
                     previously_verified: Arc::new(v2.previously_verified.into()),
                 })
             }
-            _ => Err(serde::de::Error::custom(format!("Unsupported Version {:?}", value.version))),
+            _ => Err(serde::de::Error::custom(format!(
+                "Unsupported Version {:?}",
+                value.version
+            ))),
         }
     }
 }
@@ -749,9 +801,23 @@ impl OtherUserIdentityData {
 
     #[cfg(test)]
     pub(crate) async fn from_private(identity: &crate::olm::PrivateCrossSigningIdentity) -> Self {
-        let master_key = identity.master_key.lock().await.as_ref().unwrap().public_key().clone();
-        let self_signing_key =
-            identity.self_signing_key.lock().await.as_ref().unwrap().public_key().clone().into();
+        let master_key = identity
+            .master_key
+            .lock()
+            .await
+            .as_ref()
+            .unwrap()
+            .public_key()
+            .clone();
+        let self_signing_key = identity
+            .self_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .unwrap()
+            .public_key()
+            .clone()
+            .into();
 
         Self {
             user_id: identity.user_id().into(),
@@ -991,11 +1057,30 @@ impl OwnUserIdentityData {
 
     #[cfg(test)]
     pub(crate) async fn from_private(identity: &crate::olm::PrivateCrossSigningIdentity) -> Self {
-        let master_key = identity.master_key.lock().await.as_ref().unwrap().public_key().clone();
-        let self_signing_key =
-            identity.self_signing_key.lock().await.as_ref().unwrap().public_key().clone();
-        let user_signing_key =
-            identity.user_signing_key.lock().await.as_ref().unwrap().public_key().clone();
+        let master_key = identity
+            .master_key
+            .lock()
+            .await
+            .as_ref()
+            .unwrap()
+            .public_key()
+            .clone();
+        let self_signing_key = identity
+            .self_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .unwrap()
+            .public_key()
+            .clone();
+        let user_signing_key = identity
+            .user_signing_key
+            .lock()
+            .await
+            .as_ref()
+            .unwrap()
+            .public_key()
+            .clone();
 
         Self {
             user_id: identity.user_id().into(),
@@ -1053,7 +1138,9 @@ impl OwnUserIdentityData {
     ///
     /// Returns `true` if the signature check succeeded, otherwise `false`.
     pub(crate) fn is_identity_signed(&self, identity: &OtherUserIdentityData) -> bool {
-        self.user_signing_key.verify_master_key(&identity.master_key).is_ok()
+        self.user_signing_key
+            .verify_master_key(&identity.master_key)
+            .is_ok()
     }
 
     /// Check if the given device has been signed by this identity.
@@ -1208,28 +1295,25 @@ where
 #[allow(dead_code)]
 pub(crate) mod testing {
     use matrix_sdk_test::ruma_response_from_json;
-    use ruma::{
-        UserId,
-        api::client::keys::{
-            get_keys::v3::Response as KeyQueryResponse,
-            upload_signatures::v3::Request as SignatureUploadRequest,
-        },
-        user_id,
-    };
+    use ruma::UserId;
+    use ruma::api::client::keys::get_keys::v3::Response as KeyQueryResponse;
+    use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+    use ruma::user_id;
     use serde_json::json;
 
-    use super::{OtherUserIdentityData, OwnUserIdentity, OwnUserIdentityData};
+    use super::OtherUserIdentityData;
+    use super::OwnUserIdentity;
+    use super::OwnUserIdentityData;
+    use crate::identities::DeviceData;
+    use crate::identities::manager::testing::other_key_query;
     #[cfg(test)]
-    use crate::{identities::manager::testing::other_user_id, olm::PrivateCrossSigningIdentity};
-    use crate::{
-        identities::{
-            DeviceData,
-            manager::testing::{other_key_query, own_key_query},
-        },
-        store::Store,
-        types::CrossSigningKey,
-        verification::VerificationMachine,
-    };
+    use crate::identities::manager::testing::other_user_id;
+    use crate::identities::manager::testing::own_key_query;
+    #[cfg(test)]
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::Store;
+    use crate::types::CrossSigningKey;
+    use crate::verification::VerificationMachine;
 
     /// Generate test devices from KeyQueryResponse
     pub fn device(response: &KeyQueryResponse) -> (DeviceData, DeviceData) {
@@ -1245,12 +1329,24 @@ pub(crate) mod testing {
     pub fn own_identity(response: &KeyQueryResponse) -> OwnUserIdentityData {
         let user_id = user_id!("@example:localhost");
 
-        let master_key: CrossSigningKey =
-            response.master_keys.get(user_id).unwrap().deserialize_as().unwrap();
-        let user_signing: CrossSigningKey =
-            response.user_signing_keys.get(user_id).unwrap().deserialize_as().unwrap();
-        let self_signing: CrossSigningKey =
-            response.self_signing_keys.get(user_id).unwrap().deserialize_as().unwrap();
+        let master_key: CrossSigningKey = response
+            .master_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
+        let user_signing: CrossSigningKey = response
+            .user_signing_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
+        let self_signing: CrossSigningKey = response
+            .self_signing_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
 
         OwnUserIdentityData::new(
             master_key.try_into().unwrap(),
@@ -1270,7 +1366,11 @@ pub(crate) mod testing {
         verification_machine: VerificationMachine,
         store: Store,
     ) -> OwnUserIdentity {
-        OwnUserIdentity { inner, verification_machine, store }
+        OwnUserIdentity {
+            inner,
+            verification_machine,
+            store,
+        }
     }
 
     /// Generate default other "own" identity for tests
@@ -1285,13 +1385,24 @@ pub(crate) mod testing {
         let user_id = user_id!("@example2:localhost");
         let response = other_key_query();
 
-        let master_key: CrossSigningKey =
-            response.master_keys.get(user_id).unwrap().deserialize_as().unwrap();
-        let self_signing: CrossSigningKey =
-            response.self_signing_keys.get(user_id).unwrap().deserialize_as().unwrap();
-
-        OtherUserIdentityData::new(master_key.try_into().unwrap(), self_signing.try_into().unwrap())
+        let master_key: CrossSigningKey = response
+            .master_keys
+            .get(user_id)
             .unwrap()
+            .deserialize_as()
+            .unwrap();
+        let self_signing: CrossSigningKey = response
+            .self_signing_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
+
+        OtherUserIdentityData::new(
+            master_key.try_into().unwrap(),
+            self_signing.try_into().unwrap(),
+        )
+        .unwrap()
     }
 
     /// When we want to test identities that are verified, we need to simulate
@@ -1370,7 +1481,10 @@ pub(crate) mod testing {
 
         // Find their master key that we want to update inside their msk JSON
         let mut their_msk: CrossSigningKey = serde_json::from_value(
-            msk_json.get(their_user_id.as_str()).expect("msk should contain their user ID").clone(),
+            msk_json
+                .get(their_user_id.as_str())
+                .expect("msk should contain their user ID")
+                .clone(),
         )
         .expect("Should not fail to deserialize msk");
 
@@ -1408,46 +1522,68 @@ pub(crate) mod testing {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use std::{collections::HashMap, sync::Arc};
+    use std::collections::HashMap;
+    use std::sync::Arc;
 
     use assert_matches::assert_matches;
-    use matrix_sdk_test::{async_test, test_json};
-    use ruma::{TransactionId, device_id, user_id};
-    use serde_json::{Value, json};
+    use matrix_sdk_test::async_test;
+    use matrix_sdk_test::test_json;
+    use ruma::TransactionId;
+    use ruma::device_id;
+    use ruma::user_id;
+    use serde_json::Value;
+    use serde_json::json;
     use tokio::sync::Mutex;
 
-    use super::{
-        OtherUserIdentityDataSerializerV2, OwnUserIdentityData, OwnUserIdentityVerifiedState,
-        UserIdentityData,
-        testing::{device, get_other_identity, get_own_identity},
-    };
-    use crate::{
-        CrossSigningKeyExport, OlmMachine, OtherUserIdentity, OtherUserIdentityData,
-        identities::{
-            Device,
-            manager::testing::own_key_query,
-            user::{
-                OtherUserIdentityDataSerializer,
-                testing::simulate_key_query_response_for_verification,
-            },
-        },
-        olm::{Account, PrivateCrossSigningIdentity},
-        store::{CryptoStoreWrapper, MemoryStore},
-        types::{CrossSigningKey, MasterPubkey, SelfSigningPubkey, Signatures, UserSigningPubkey},
-        verification::VerificationMachine,
-    };
+    use super::OtherUserIdentityDataSerializerV2;
+    use super::OwnUserIdentityData;
+    use super::OwnUserIdentityVerifiedState;
+    use super::UserIdentityData;
+    use super::testing::device;
+    use super::testing::get_other_identity;
+    use super::testing::get_own_identity;
+    use crate::CrossSigningKeyExport;
+    use crate::OlmMachine;
+    use crate::OtherUserIdentity;
+    use crate::OtherUserIdentityData;
+    use crate::identities::Device;
+    use crate::identities::manager::testing::own_key_query;
+    use crate::identities::user::OtherUserIdentityDataSerializer;
+    use crate::identities::user::testing::simulate_key_query_response_for_verification;
+    use crate::olm::Account;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::CryptoStoreWrapper;
+    use crate::store::MemoryStore;
+    use crate::types::CrossSigningKey;
+    use crate::types::MasterPubkey;
+    use crate::types::SelfSigningPubkey;
+    use crate::types::Signatures;
+    use crate::types::UserSigningPubkey;
+    use crate::verification::VerificationMachine;
 
     #[test]
     fn own_identity_create() {
         let user_id = user_id!("@example:localhost");
         let response = own_key_query();
 
-        let master_key: CrossSigningKey =
-            response.master_keys.get(user_id).unwrap().deserialize_as().unwrap();
-        let user_signing: CrossSigningKey =
-            response.user_signing_keys.get(user_id).unwrap().deserialize_as().unwrap();
-        let self_signing: CrossSigningKey =
-            response.self_signing_keys.get(user_id).unwrap().deserialize_as().unwrap();
+        let master_key: CrossSigningKey = response
+            .master_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
+        let user_signing: CrossSigningKey = response
+            .user_signing_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
+        let self_signing: CrossSigningKey = response
+            .self_signing_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
 
         OwnUserIdentityData::new(
             master_key.try_into().unwrap(),
@@ -1462,12 +1598,24 @@ pub(crate) mod tests {
         let user_id = user_id!("@example:localhost");
         let response = own_key_query();
 
-        let master_key: CrossSigningKey =
-            response.master_keys.get(user_id).unwrap().deserialize_as().unwrap();
-        let user_signing: CrossSigningKey =
-            response.user_signing_keys.get(user_id).unwrap().deserialize_as().unwrap();
-        let self_signing: CrossSigningKey =
-            response.self_signing_keys.get(user_id).unwrap().deserialize_as().unwrap();
+        let master_key: CrossSigningKey = response
+            .master_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
+        let user_signing: CrossSigningKey = response
+            .user_signing_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
+        let self_signing: CrossSigningKey = response
+            .self_signing_keys
+            .get(user_id)
+            .unwrap()
+            .deserialize_as()
+            .unwrap();
 
         let identity = OwnUserIdentityData::new(
             master_key.clone().try_into().unwrap(),
@@ -1554,7 +1702,10 @@ pub(crate) mod tests {
         // Set `"verified": false`
         *json.get_mut("verified").unwrap() = false.into();
         let id: OwnUserIdentityData = serde_json::from_value(json.clone()).unwrap();
-        assert_eq!(*id.verified.read(), OwnUserIdentityVerifiedState::NeverVerified);
+        assert_eq!(
+            *id.verified.read(),
+            OwnUserIdentityVerifiedState::NeverVerified
+        );
 
         // Tweak the json to have `"verified": true`, and repeat
         *json.get_mut("verified").unwrap() = true.into();
@@ -1572,7 +1723,10 @@ pub(crate) mod tests {
         let id: OwnUserIdentityData = serde_json::from_value(json.clone()).unwrap();
 
         // Then the value is correctly populated
-        assert_eq!(*id.verified.read(), OwnUserIdentityVerifiedState::VerificationViolation);
+        assert_eq!(
+            *id.verified.read(),
+            OwnUserIdentityVerifiedState::VerificationViolation
+        );
     }
 
     #[test]
@@ -1585,7 +1739,10 @@ pub(crate) mod tests {
         let id: OwnUserIdentityData = serde_json::from_value(json.clone()).unwrap();
 
         // Then the old value is re-interpreted as VerificationViolation
-        assert_eq!(*id.verified.read(), OwnUserIdentityVerifiedState::VerificationViolation);
+        assert_eq!(
+            *id.verified.read(),
+            OwnUserIdentityVerifiedState::VerificationViolation
+        );
     }
 
     #[test]
@@ -1632,7 +1789,10 @@ pub(crate) mod tests {
 
         let account = Account::with_device_id(device.user_id(), device.device_id());
         let verification_machine = get_verification_machine(&account);
-        let public_identity = verification_machine.get_own_user_identity_data().await.unwrap();
+        let public_identity = verification_machine
+            .get_own_user_identity_data()
+            .await
+            .unwrap();
 
         let mut device = Device {
             inner: device,
@@ -1647,7 +1807,10 @@ pub(crate) mod tests {
 
         let identity = verification_machine.store.private_identity.lock().await;
         identity.sign_device_keys(&mut device_keys).await.unwrap();
-        device.inner.update_device(&device_keys).expect("Couldn't update newly signed device keys");
+        device
+            .inner
+            .update_device(&device_keys)
+            .expect("Couldn't update newly signed device keys");
         assert!(device.is_verified());
     }
 
@@ -1676,7 +1839,10 @@ pub(crate) mod tests {
 
         // It should now be impossible to deserialize the keys into their corresponding
         // high-level cross-signing key structs.
-        assert_matches!(serde_json::from_value::<MasterPubkey>(master_key_json.clone()), Err(_));
+        assert_matches!(
+            serde_json::from_value::<MasterPubkey>(master_key_json.clone()),
+            Err(_)
+        );
         assert_matches!(
             serde_json::from_value::<SelfSigningPubkey>(self_signing_key_json.clone()),
             Err(_)
@@ -1696,7 +1862,10 @@ pub(crate) mod tests {
 
         // It should still be impossible to deserialize the keys into their
         // corresponding high-level cross-signing key structs.
-        assert_matches!(serde_json::from_value::<MasterPubkey>(master_key_json.clone()), Err(_));
+        assert_matches!(
+            serde_json::from_value::<MasterPubkey>(master_key_json.clone()),
+            Err(_)
+        );
         assert_matches!(
             serde_json::from_value::<SelfSigningPubkey>(self_signing_key_json.clone()),
             Err(_)
@@ -1722,7 +1891,12 @@ pub(crate) mod tests {
         ]);
 
         // Own device and devices not verified are filtered out.
-        assert_eq!(identity.filter_devices_to_request(devices.clone(), &second_device_id).len(), 0);
+        assert_eq!(
+            identity
+                .filter_devices_to_request(devices.clone(), &second_device_id)
+                .len(),
+            0
+        );
         // Signed devices that are not our own are kept.
         assert_eq!(
             identity.filter_devices_to_request(devices, unknown_device_id),
@@ -1738,21 +1912,38 @@ pub(crate) mod tests {
         let machine = OlmMachine::new(my_user_id, device_id!("ABCDEFGH")).await;
         machine.bootstrap_cross_signing(false).await.unwrap();
 
-        let my_id = machine.get_identity(my_user_id, None).await.unwrap().unwrap().own().unwrap();
+        let my_id = machine
+            .get_identity(my_user_id, None)
+            .await
+            .unwrap()
+            .unwrap()
+            .own()
+            .unwrap();
 
         let keys_query = DataSet::key_query_with_identity_a();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         // Simulate an identity change
         let keys_query = DataSet::key_query_with_identity_b();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         let other_user_id = DataSet::user_id();
 
-        let other_identity =
-            machine.get_identity(other_user_id, None).await.unwrap().unwrap().other().unwrap();
+        let other_identity = machine
+            .get_identity(other_user_id, None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
 
         // The identity should need user approval now
         assert!(other_identity.identity_needs_user_approval());
@@ -1768,11 +1959,19 @@ pub(crate) mod tests {
             DataSet::master_signing_keys_b(),
             DataSet::self_signing_keys_b(),
         );
-        machine.mark_request_as_sent(&TransactionId::new(), &kq_response).await.unwrap();
+        machine
+            .mark_request_as_sent(&TransactionId::new(), &kq_response)
+            .await
+            .unwrap();
 
         // The identity should not need any user approval now
-        let other_identity =
-            machine.get_identity(other_user_id, None).await.unwrap().unwrap().other().unwrap();
+        let other_identity = machine
+            .get_identity(other_user_id, None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
         assert!(!other_identity.identity_needs_user_approval());
         // But there is still a pin violation
         assert!(other_identity.inner.has_pin_violation());
@@ -1788,17 +1987,28 @@ pub(crate) mod tests {
 
         let keys_query = DataSet::key_query_with_identity_a();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         // Simulate an identity change
         let keys_query = DataSet::key_query_with_identity_b();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         let other_user_id = DataSet::user_id();
 
-        let other_identity =
-            machine.get_identity(other_user_id, None).await.unwrap().unwrap().other().unwrap();
+        let other_identity = machine
+            .get_identity(other_user_id, None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
 
         // For testing purpose mark it as previously verified
         other_identity.mark_as_previously_verified().await.unwrap();
@@ -1810,8 +2020,13 @@ pub(crate) mod tests {
         other_identity.withdraw_verification().await.unwrap();
 
         // The identity should not need any user approval now
-        let other_identity =
-            machine.get_identity(other_user_id, None).await.unwrap().unwrap().other().unwrap();
+        let other_identity = machine
+            .get_identity(other_user_id, None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
         assert!(!other_identity.identity_needs_user_approval());
         // And should not have a pin violation
         assert!(!other_identity.inner.has_pin_violation());
@@ -1825,7 +2040,10 @@ pub(crate) mod tests {
 
         let keys_query = DataSet::own_keys_query_response_1();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         machine
             .import_cross_signing_keys(CrossSigningKeyExport {
@@ -1838,10 +2056,18 @@ pub(crate) mod tests {
 
         let keys_query = DataSet::bob_keys_query_response_rotated();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
-        let bob_identity =
-            machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap().other().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
 
         // For testing purpose mark it as previously verified
         bob_identity.mark_as_previously_verified().await.unwrap();
@@ -1851,8 +2077,13 @@ pub(crate) mod tests {
         // withdraw
         bob_identity.withdraw_verification().await.unwrap();
 
-        let bob_identity =
-            machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap().other().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
 
         assert!(!bob_identity.has_verification_violation());
     }
@@ -1865,7 +2096,10 @@ pub(crate) mod tests {
 
         let keys_query = DataSet::own_keys_query_response_1();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
         machine
             .import_cross_signing_keys(CrossSigningKeyExport {
@@ -1878,10 +2112,18 @@ pub(crate) mod tests {
 
         let keys_query = DataSet::bob_keys_query_response_signed();
         let txn_id = TransactionId::new();
-        machine.mark_request_as_sent(&txn_id, &keys_query).await.unwrap();
+        machine
+            .mark_request_as_sent(&txn_id, &keys_query)
+            .await
+            .unwrap();
 
-        let bob_identity =
-            machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap().other().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
 
         // For testing purpose mark it as previously verified
         bob_identity.mark_as_previously_verified().await.unwrap();
@@ -1890,8 +2132,13 @@ pub(crate) mod tests {
 
         let _ = machine.bootstrap_cross_signing(true).await.unwrap();
 
-        let bob_identity =
-            machine.get_identity(DataSet::bob_id(), None).await.unwrap().unwrap().other().unwrap();
+        let bob_identity = machine
+            .get_identity(DataSet::bob_id(), None)
+            .await
+            .unwrap()
+            .unwrap()
+            .other()
+            .unwrap();
 
         assert!(bob_identity.has_verification_violation());
     }
@@ -1906,7 +2153,10 @@ pub(crate) mod tests {
 
         // Start with our own identity verified
         let own_keys = DataSet::own_keys_query_response_1();
-        machine.mark_request_as_sent(&TransactionId::new(), &own_keys).await.unwrap();
+        machine
+            .mark_request_as_sent(&TransactionId::new(), &own_keys)
+            .await
+            .unwrap();
 
         machine
             .import_cross_signing_keys(CrossSigningKeyExport {
@@ -1918,18 +2168,29 @@ pub(crate) mod tests {
             .unwrap();
 
         // Double-check that we have a verified identity
-        let own_identity = machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(own_identity.is_verified());
         assert!(own_identity.was_previously_verified());
         assert!(!own_identity.has_verification_violation());
 
         // Now, we receive a *different* set of public keys
         let own_keys = DataSet::own_keys_query_response_2();
-        machine.mark_request_as_sent(&TransactionId::new(), &own_keys).await.unwrap();
+        machine
+            .mark_request_as_sent(&TransactionId::new(), &own_keys)
+            .await
+            .unwrap();
 
         // That should give an identity that is no longer verified, with a verification
         // violation.
-        let own_identity = machine.get_identity(DataSet::own_id(), None).await.unwrap().unwrap();
+        let own_identity = machine
+            .get_identity(DataSet::own_id(), None)
+            .await
+            .unwrap()
+            .unwrap();
         assert!(!own_identity.is_verified());
         assert!(own_identity.was_previously_verified());
         assert!(own_identity.has_verification_violation());
@@ -1977,7 +2238,9 @@ pub(crate) mod tests {
         let verification_request_content_object = verification_request_content_json
             .as_object_mut()
             .expect("serialized verification request was not an object");
-        verification_request_content_object.remove("body").expect("No `body` in message content");
+        verification_request_content_object
+            .remove("body")
+            .expect("No `body` in message content");
 
         // The methods are variable too
         let methods = verification_request_content_object
@@ -2007,7 +2270,10 @@ pub(crate) mod tests {
             Account::with_device_id(user_id!("@own_user:localhost"), &owned_device_id!("DEV123"));
 
         let verification_machine = get_verification_machine(&account);
-        let own_identity_data = verification_machine.get_own_user_identity_data().await.unwrap();
+        let own_identity_data = verification_machine
+            .get_own_user_identity_data()
+            .await
+            .unwrap();
 
         OtherUserIdentity {
             inner: other_user_identity_data,

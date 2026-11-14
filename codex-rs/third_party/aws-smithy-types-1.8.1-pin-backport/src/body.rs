@@ -9,11 +9,14 @@ use bytes::Bytes;
 use pin_project_lite::pin_project;
 use std::collections::VecDeque;
 use std::error::Error as StdError;
-use std::fmt::{self, Debug, Formatter};
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::fmt::{self};
 use std::future::poll_fn;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::task::{Context, Poll};
+use std::task::Context;
+use std::task::Poll;
 
 /// This module is named after the `http-body` version number since we anticipate
 /// needing to provide equivalent functionality for 1.x of that crate in the future.

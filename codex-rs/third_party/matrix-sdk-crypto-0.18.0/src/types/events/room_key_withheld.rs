@@ -17,15 +17,21 @@
 use std::collections::BTreeMap;
 
 use matrix_sdk_common::deserialized_responses::WithheldCode;
-use ruma::{
-    OwnedDeviceId, OwnedRoomId, RoomId, events::AnyToDeviceEventContent, serde::JsonCastable,
-};
-use serde::{Deserialize, Serialize};
+use ruma::OwnedDeviceId;
+use ruma::OwnedRoomId;
+use ruma::RoomId;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::serde::JsonCastable;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 use vodozemac::Curve25519PublicKey;
 
-use super::{EventType, ToDeviceEvent};
-use crate::types::{EventEncryptionAlgorithm, deserialize_curve_key, serialize_curve_key};
+use super::EventType;
+use super::ToDeviceEvent;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::deserialize_curve_key;
+use crate::types::serialize_curve_key;
 
 /// The `m.room_key_request` to-device event.
 pub type RoomKeyWithheldEvent = ToDeviceEvent<RoomKeyWithheldContent>;
@@ -81,8 +87,12 @@ macro_rules! construct_withheld_content {
             }
             WithheldCode::NoOlm => {
                 RoomKeyWithheldContent::$algorithm(MegolmV1AesSha2WithheldContent::NoOlm(
-                    NoOlmWithheldContent { $sender_key, $from_device, other: Default::default() }
-                        .into(),
+                    NoOlmWithheldContent {
+                        $sender_key,
+                        $from_device,
+                        other: Default::default(),
+                    }
+                    .into(),
                 ))
             }
             WithheldCode::_Custom(_) => {
@@ -221,7 +231,10 @@ pub struct CommonWithheldCodeContent {
     pub session_id: String,
 
     /// The device curve25519 key of the session creator.
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     pub sender_key: Curve25519PublicKey,
 
     /// The device ID of the device sending the m.room_key.withheld message
@@ -309,7 +322,10 @@ impl MegolmV1AesSha2WithheldContent {
 /// No olm content (no room_id nor session_id)
 #[derive(Clone, Deserialize, Serialize)]
 pub struct NoOlmWithheldContent {
-    #[serde(deserialize_with = "deserialize_curve_key", serialize_with = "serialize_curve_key")]
+    #[serde(
+        deserialize_with = "deserialize_curve_key",
+        serialize_with = "serialize_curve_key"
+    )]
     /// The device curve25519 key of the session creator.
     pub sender_key: Curve25519PublicKey,
 
@@ -492,15 +508,19 @@ pub(super) mod tests {
     use assert_matches::assert_matches;
     use assert_matches2::assert_let;
     use matrix_sdk_common::deserialized_responses::WithheldCode;
-    use ruma::{device_id, room_id, serde::Raw, to_device::DeviceIdOrAllDevices, user_id};
-    use serde_json::{Value, json};
+    use ruma::device_id;
+    use ruma::room_id;
+    use ruma::serde::Raw;
+    use ruma::to_device::DeviceIdOrAllDevices;
+    use ruma::user_id;
+    use serde_json::Value;
+    use serde_json::json;
     use vodozemac::Curve25519PublicKey;
 
     use super::RoomKeyWithheldEvent;
-    use crate::types::{
-        EventEncryptionAlgorithm,
-        events::room_key_withheld::{MegolmV1AesSha2WithheldContent, RoomKeyWithheldContent},
-    };
+    use crate::types::EventEncryptionAlgorithm;
+    use crate::types::events::room_key_withheld::MegolmV1AesSha2WithheldContent;
+    use crate::types::events::room_key_withheld::RoomKeyWithheldContent;
 
     pub fn json(code: &WithheldCode) -> Value {
         json!({
@@ -582,7 +602,10 @@ pub(super) mod tests {
             assert_let!(RoomKeyWithheldContent::MegolmV1AesSha2(content) = &event.content);
             assert_eq!(code, content.withheld_code());
 
-            assert_eq!(event.content.algorithm(), EventEncryptionAlgorithm::MegolmV1AesSha2);
+            assert_eq!(
+                event.content.algorithm(),
+                EventEncryptionAlgorithm::MegolmV1AesSha2
+            );
             let serialized = serde_json::to_value(event)?;
             assert_eq!(json, serialized);
         }
@@ -656,7 +679,10 @@ pub(super) mod tests {
         messages
             .entry(user_id.to_owned())
             .or_insert_with(BTreeMap::new)
-            .insert(DeviceIdOrAllDevices::DeviceId(device_id.to_owned()), content);
+            .insert(
+                DeviceIdOrAllDevices::DeviceId(device_id.to_owned()),
+                content,
+            );
 
         let serialized = serde_json::to_value(messages).unwrap();
 
@@ -714,6 +740,9 @@ pub(super) mod tests {
                 content
             )) = content
         );
-        assert_eq!(content.session_id, "0ZcULv8j1nqVWx6orFjD6OW9JQHydDPXfaanA+uRyfs");
+        assert_eq!(
+            content.session_id,
+            "0ZcULv8j1nqVWx6orFjD6OW9JQHydDPXfaanA+uRyfs"
+        );
     }
 }

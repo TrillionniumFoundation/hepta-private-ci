@@ -3,13 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use super::{BoxError, Error, MinimumThroughputDownloadBody};
+use super::BoxError;
+use super::Error;
+use super::MinimumThroughputDownloadBody;
 use crate::client::http::body::minimum_throughput::throughput::DownloadReport;
 use crate::client::http::body::minimum_throughput::ThroughputReadingBody;
 use aws_smithy_async::rt::sleep::AsyncSleep;
 use std::future::Future;
-use std::pin::{pin, Pin};
-use std::task::{Context, Poll};
+use std::pin::pin;
+use std::pin::Pin;
+use std::task::Context;
+use std::task::Poll;
 
 impl<B> http_body_04x::Body for MinimumThroughputDownloadBody<B>
 where

@@ -69,10 +69,10 @@ unsafe impl<T> AsTypeStaticRegistered for T {}
     NoSerialize,
     Allocative,
     ProvidesStaticType,
-// Instances are allocated via `AllocStaticSimple` and pagable round-trip is
-// handled by the static-value registry, so a real `StarlarkPagable` impl is
-// not needed.
-    StarlarkPagablePanic
+    // Instances are allocated via `AllocStaticSimple` and pagable round-trip is
+    // handled by the static-value registry, so a real `StarlarkPagable` impl is
+    // not needed.
+    StarlarkPagablePanic,
 )]
 struct StarlarkValueAsTypeStarlarkValue(fn() -> Ty, fn() -> DocItem);
 
@@ -307,12 +307,7 @@ mod tests {
     use crate::values::types::starlark_value_as_type::tests;
 
     #[derive(
-        derive_more::Display,
-        Debug,
-        NoSerialize,
-        Allocative,
-        ProvidesStaticType,
-        StarlarkPagable
+        derive_more::Display, Debug, NoSerialize, Allocative, ProvidesStaticType, StarlarkPagable,
     )]
     struct StarlarkCompilerArgs(#[starlark_pagable(pagable)] String);
 

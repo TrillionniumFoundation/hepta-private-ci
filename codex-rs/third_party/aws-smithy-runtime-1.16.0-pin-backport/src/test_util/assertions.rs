@@ -27,7 +27,8 @@ macro_rules! assert_str_contains {
 
 #[cfg(test)]
 mod tests {
-    use std::panic::{catch_unwind, UnwindSafe};
+    use std::panic::catch_unwind;
+    use std::panic::UnwindSafe;
 
     fn expect_panic(f: impl FnOnce() + UnwindSafe) -> String {
         *catch_unwind(f)

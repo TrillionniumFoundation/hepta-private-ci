@@ -14,53 +14,70 @@
 
 //! An SQLite-based backend for the [`EventCacheStore`].
 
-use std::{
-    collections::HashMap,
-    fmt,
-    iter::once,
-    ops::{Deref, Not},
-    path::{Path, PathBuf},
-    sync::Arc,
-};
+use std::collections::HashMap;
+use std::fmt;
+use std::iter::once;
+use std::ops::Deref;
+use std::ops::Not;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use deadpool::managed::PoolConfig;
-use matrix_sdk_base::{
-    cross_process_lock::CrossProcessLockGeneration,
-    deserialized_responses::TimelineEvent,
-    event_cache::{
-        Event, Gap,
-        store::{EventCacheStore, extract_event_relation},
-        thread::ThreadInfo,
-    },
-    linked_chunk::{
-        ChunkContent, ChunkIdentifier, ChunkIdentifierGenerator, ChunkMetadata, LinkedChunkId,
-        Position, RawChunk, Update,
-    },
-    timer,
-};
+use matrix_sdk_base::cross_process_lock::CrossProcessLockGeneration;
+use matrix_sdk_base::deserialized_responses::TimelineEvent;
+use matrix_sdk_base::event_cache::Event;
+use matrix_sdk_base::event_cache::Gap;
+use matrix_sdk_base::event_cache::store::EventCacheStore;
+use matrix_sdk_base::event_cache::store::extract_event_relation;
+use matrix_sdk_base::event_cache::thread::ThreadInfo;
+use matrix_sdk_base::linked_chunk::ChunkContent;
+use matrix_sdk_base::linked_chunk::ChunkIdentifier;
+use matrix_sdk_base::linked_chunk::ChunkIdentifierGenerator;
+use matrix_sdk_base::linked_chunk::ChunkMetadata;
+use matrix_sdk_base::linked_chunk::LinkedChunkId;
+use matrix_sdk_base::linked_chunk::Position;
+use matrix_sdk_base::linked_chunk::RawChunk;
+use matrix_sdk_base::linked_chunk::Update;
+use matrix_sdk_base::timer;
 use matrix_sdk_store_encryption::StoreCipher;
-use ruma::{
-    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, RoomId, events::relation::RelationType,
-};
-use rusqlite::{
-    OptionalExtension, ToSql, Transaction, TransactionBehavior, params, params_from_iter,
-};
-use tokio::{
-    fs,
-    sync::{Mutex, OwnedMutexGuard},
-};
-use tracing::{debug, error, instrument, trace};
+use ruma::EventId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OwnedEventId;
+use ruma::RoomId;
+use ruma::events::relation::RelationType;
+use rusqlite::OptionalExtension;
+use rusqlite::ToSql;
+use rusqlite::Transaction;
+use rusqlite::TransactionBehavior;
+use rusqlite::params;
+use rusqlite::params_from_iter;
+use tokio::fs;
+use tokio::sync::Mutex;
+use tokio::sync::OwnedMutexGuard;
+use tracing::debug;
+use tracing::error;
+use tracing::instrument;
+use tracing::trace;
 
-use crate::{
-    OpenStoreError, RuntimeConfig, Secret, SqliteStoreConfig,
-    connection::{self, Connection as SqliteAsyncConn, Pool as SqlitePool, SqliteConnections},
-    error::{Error, Result},
-    utils::{
-        EncryptableStore, Key, SqliteAsyncConnExt, SqliteKeyValueStoreAsyncConnExt,
-        SqliteKeyValueStoreConnExt, SqliteTransactionExt, host_parameters,
-    },
-};
+use crate::OpenStoreError;
+use crate::RuntimeConfig;
+use crate::Secret;
+use crate::SqliteStoreConfig;
+use crate::connection::Connection as SqliteAsyncConn;
+use crate::connection::Pool as SqlitePool;
+use crate::connection::SqliteConnections;
+use crate::connection::{self};
+use crate::error::Error;
+use crate::error::Result;
+use crate::utils::EncryptableStore;
+use crate::utils::Key;
+use crate::utils::SqliteAsyncConnExt;
+use crate::utils::SqliteKeyValueStoreAsyncConnExt;
+use crate::utils::SqliteKeyValueStoreConnExt;
+use crate::utils::SqliteTransactionExt;
+use crate::utils::host_parameters;
 
 mod keys {
     // Tables
@@ -106,7 +123,9 @@ impl Encryption {
     }
 
     fn decode_event(&self, raw_encoded_event: &[u8]) -> Result<Event> {
-        Ok(serde_json::from_slice(&self.decode_value(raw_encoded_event)?)?)
+        Ok(serde_json::from_slice(
+            &self.decode_value(raw_encoded_event)?,
+        )?)
     }
 
     /// Encode the event ID as a _key_: it cannot be decoded, but this is
@@ -147,7 +166,9 @@ impl Encryption {
 
     /// Decode a [`ThreadInfo`].
     fn decode_thread_info(&self, encoded_thread_info: &[u8]) -> Result<ThreadInfo> {
-        Ok(serde_json::from_slice(&self.decode_value(encoded_thread_info)?)?)
+        Ok(serde_json::from_slice(
+            &self.decode_value(encoded_thread_info)?,
+        )?)
     }
 }
 
@@ -179,7 +200,8 @@ pub struct SqliteEventCacheStore {
 #[cfg(not(tarpaulin_include))]
 impl fmt::Debug for SqliteEventCacheStore {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("SqliteEventCacheStore").finish_non_exhaustive()
+        f.debug_struct("SqliteEventCacheStore")
+            .finish_non_exhaustive()
     }
 }
 
@@ -209,7 +231,9 @@ impl SqliteEventCacheStore {
 
         let _timer = timer!("open_with_config");
 
-        fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
+        fs::create_dir_all(&config.path)
+            .await
+            .map_err(OpenStoreError::CreateDir)?;
 
         let db_path = config.path.join(DATABASE_NAME);
         let pool_config = config.pool_config();
@@ -217,12 +241,20 @@ impl SqliteEventCacheStore {
 
         let pool = config.build_pool_of_connections(DATABASE_NAME)?;
 
-        let this =
-            Self::open_with_pool(pool, db_path, pool_config, runtime_config, config.secret.clone())
-                .await?;
+        let this = Self::open_with_pool(
+            pool,
+            db_path,
+            pool_config,
+            runtime_config,
+            config.secret.clone(),
+        )
+        .await?;
 
         // Apply runtime config on the write connection.
-        this.write().await?.apply_runtime_config(runtime_config).await?;
+        this.write()
+            .await?
+            .apply_runtime_config(runtime_config)
+            .await?;
 
         Ok(this)
     }
@@ -279,7 +311,9 @@ impl SqliteEventCacheStore {
         // support must be enabled on a per-connection basis. Execute it every
         // time we try to get a connection, since we can't guarantee a previous
         // connection did enable it before.
-        connection.execute_batch("PRAGMA foreign_keys = ON;").await?;
+        connection
+            .execute_batch("PRAGMA foreign_keys = ON;")
+            .await?;
 
         Ok(connection)
     }
@@ -299,7 +333,9 @@ impl SqliteEventCacheStore {
         // support must be enabled on a per-connection basis. Execute it every
         // time we try to get a connection, since we can't guarantee a previous
         // connection did enable it before.
-        connection.execute_batch("PRAGMA foreign_keys = ON;").await?;
+        connection
+            .execute_batch("PRAGMA foreign_keys = ON;")
+            .await?;
 
         Ok(connection)
     }
@@ -407,7 +443,12 @@ impl TransactionExtForLinkedChunks for Transaction<'_> {
             CHUNK_TYPE_GAP_TYPE_STRING => {
                 // It's a gap!
                 let gap = self.load_gap_content(encryption, linked_chunk_id, id)?;
-                Ok(RawChunk { content: ChunkContent::Gap(gap), previous, identifier: id, next })
+                Ok(RawChunk {
+                    content: ChunkContent::Gap(gap),
+                    previous,
+                    identifier: id,
+                    next,
+                })
             }
 
             CHUNK_TYPE_EVENT_TYPE_STRING => {
@@ -493,7 +534,9 @@ async fn run_migrations(conn: &SqliteAsyncConn, version: u8) -> Result<()> {
     if version < 2 {
         debug!("Upgrading database to version 2");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/event_cache_store/002_lease_locks.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/event_cache_store/002_lease_locks.sql"
+            ))?;
             txn.set_db_version(2)
         })
         .await?;
@@ -502,7 +545,9 @@ async fn run_migrations(conn: &SqliteAsyncConn, version: u8) -> Result<()> {
     if version < 3 {
         debug!("Upgrading database to version 3");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/event_cache_store/003_events.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/event_cache_store/003_events.sql"
+            ))?;
             txn.set_db_version(3)
         })
         .await?;
@@ -533,7 +578,9 @@ async fn run_migrations(conn: &SqliteAsyncConn, version: u8) -> Result<()> {
     if version < 6 {
         debug!("Upgrading database to version 6");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/event_cache_store/006_events.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/event_cache_store/006_events.sql"
+            ))?;
             txn.set_db_version(6)
         })
         .await?;
@@ -575,7 +622,9 @@ async fn run_migrations(conn: &SqliteAsyncConn, version: u8) -> Result<()> {
     if version < 10 {
         debug!("Upgrading database to version 10");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/event_cache_store/010_drop_media.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/event_cache_store/010_drop_media.sql"
+            ))?;
             txn.set_db_version(10)
         })
         .await?;
@@ -645,7 +694,9 @@ async fn run_migrations(conn: &SqliteAsyncConn, version: u8) -> Result<()> {
     if version < 16 {
         debug!("Upgrading database to version 16");
         conn.with_transaction(|txn| {
-            txn.execute_batch(include_str!("../migrations/event_cache_store/016_threads.sql"))?;
+            txn.execute_batch(include_str!(
+                "../migrations/event_cache_store/016_threads.sql"
+            ))?;
             txn.set_db_version(16)
         })
         .await?;
@@ -731,10 +782,12 @@ impl EventCacheStore for SqliteEventCacheStore {
     ) -> Result<(), Self::Error> {
         let _timer = timer!("method");
 
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
-        let hashed_room_id =
-            self.encryption.encode_room_id(keys::EVENTS, linked_chunk_id.room_id());
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_room_id = self
+            .encryption
+            .encode_room_id(keys::EVENTS, linked_chunk_id.room_id());
         let encryption = self.encryption.clone();
 
         // Use a single transaction throughout this function, so that either all updates
@@ -1115,8 +1168,9 @@ impl EventCacheStore for SqliteEventCacheStore {
     ) -> Result<Vec<RawChunk<Event, Gap>>, Self::Error> {
         let _timer = timer!("method");
 
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
         let encryption = self.encryption.clone();
 
         let result = self
@@ -1158,8 +1212,9 @@ impl EventCacheStore for SqliteEventCacheStore {
     ) -> Result<Vec<ChunkMetadata>, Self::Error> {
         let _timer = timer!("method");
 
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
 
         self.read()
             .await?
@@ -1253,8 +1308,9 @@ impl EventCacheStore for SqliteEventCacheStore {
     ) -> Result<(Option<RawChunk<Event, Gap>>, ChunkIdentifierGenerator), Self::Error> {
         let _timer = timer!("method");
 
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
         let encryption = self.encryption.clone();
 
         self
@@ -1348,8 +1404,9 @@ impl EventCacheStore for SqliteEventCacheStore {
     ) -> Result<Option<RawChunk<Event, Gap>>, Self::Error> {
         let _timer = timer!("method");
 
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
         let encryption = self.encryption.clone();
 
         self
@@ -1399,8 +1456,9 @@ impl EventCacheStore for SqliteEventCacheStore {
         thread_id: &EventId,
     ) -> Result<ThreadInfo, Self::Error> {
         let linked_chunk_id = LinkedChunkId::Thread(room_id, thread_id);
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
         let encryption = self.encryption.clone();
 
         // First off, try by selecting the thread info. It's the most common case. If it
@@ -1434,8 +1492,9 @@ impl EventCacheStore for SqliteEventCacheStore {
         // The thread doesn't exist, let's create it.
 
         let thread_info = ThreadInfo::new();
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
         let hashed_room_id = self.encryption.encode_room_id(keys::EVENTS, room_id);
         let hashed_thread_id = self.encryption.encode_thread_id(thread_id)?;
         let encoded_thread_id = self.encryption.encode_thread_info(&thread_info)?;
@@ -1445,7 +1504,12 @@ impl EventCacheStore for SqliteEventCacheStore {
             .with_transaction(move |txn| {
                 txn.execute(
                     "INSERT INTO threads VALUES (?, ?, ?, ?)",
-                    (hashed_linked_chunk_id, hashed_room_id, hashed_thread_id, encoded_thread_id),
+                    (
+                        hashed_linked_chunk_id,
+                        hashed_room_id,
+                        hashed_thread_id,
+                        encoded_thread_id,
+                    ),
                 )?;
 
                 Ok::<(), Self::Error>(())
@@ -1461,9 +1525,10 @@ impl EventCacheStore for SqliteEventCacheStore {
         thread_id: &EventId,
         thread_info: &ThreadInfo,
     ) -> Result<(), Self::Error> {
-        let hashed_linked_chunk_id = self
-            .encryption
-            .encode_linked_chunk(keys::LINKED_CHUNKS, &LinkedChunkId::Thread(room_id, thread_id));
+        let hashed_linked_chunk_id = self.encryption.encode_linked_chunk(
+            keys::LINKED_CHUNKS,
+            &LinkedChunkId::Thread(room_id, thread_id),
+        );
         let encoded_thread_info = self.encryption.encode_thread_info(thread_info)?;
 
         self.write()
@@ -1563,8 +1628,9 @@ impl EventCacheStore for SqliteEventCacheStore {
         }
 
         // Select all events that exist in the store, i.e. the duplicates.
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &linked_chunk_id);
         let event_ids_and_hashed_event_ids = event_ids
             .into_iter()
             .map(|event_id| {
@@ -1679,7 +1745,9 @@ impl EventCacheStore for SqliteEventCacheStore {
             .with_transaction(move |txn| -> Result<_> {
                 let Some(event) = txn
                     .prepare("SELECT content FROM events WHERE event_id = ? AND room_id = ?")?
-                    .query_one((hashed_event_id, hashed_room_id), |row| row.get::<_, Vec<u8>>(0))
+                    .query_one((hashed_event_id, hashed_room_id), |row| {
+                        row.get::<_, Vec<u8>>(0)
+                    })
                     .optional()?
                 else {
                     // Event is not found.
@@ -1701,8 +1769,9 @@ impl EventCacheStore for SqliteEventCacheStore {
         let _timer = timer!("method");
 
         let hashed_room_id = self.encryption.encode_room_id(keys::EVENTS, room_id);
-        let hashed_linked_chunk_id =
-            self.encryption.encode_linked_chunk(keys::LINKED_CHUNKS, &LinkedChunkId::Room(room_id));
+        let hashed_linked_chunk_id = self
+            .encryption
+            .encode_linked_chunk(keys::LINKED_CHUNKS, &LinkedChunkId::Room(room_id));
         let hashed_event_id = self.encryption.encode_event_id(keys::EVENTS, event_id);
 
         let filters = filters.map(ToOwned::to_owned);
@@ -1790,8 +1859,10 @@ impl EventCacheStore for SqliteEventCacheStore {
         };
 
         let hashed_event_type = self.encryption.encode_key(keys::EVENTS, event_type);
-        let hashed_session_id =
-            event.kind.session_id().map(|s| self.encryption.encode_key(keys::EVENTS, s));
+        let hashed_session_id = event
+            .kind
+            .session_id()
+            .map(|s| self.encryption.encode_key(keys::EVENTS, s));
 
         let hashed_room_id = self.encryption.encode_room_id(keys::EVENTS, room_id);
         let hashed_event_id = self.encryption.encode_event_id(keys::EVENTS, event_id);
@@ -2023,29 +2094,32 @@ fn insert_chunk(
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        path::PathBuf,
-        sync::{
-            LazyLock,
-            atomic::{AtomicU32, Ordering::SeqCst},
-        },
-    };
+    use std::path::PathBuf;
+    use std::sync::LazyLock;
+    use std::sync::atomic::AtomicU32;
+    use std::sync::atomic::Ordering::SeqCst;
 
     use assert_matches::assert_matches;
-    use matrix_sdk_base::{
-        event_cache::store::{
-            EventCacheStore, EventCacheStoreError, IntoEventCacheStore,
-            integration_tests::EventCacheStoreIntegrationTests,
-        },
-        event_cache_store_integration_tests, event_cache_store_integration_tests_time,
-        linked_chunk::{ChunkIdentifier, LinkedChunkId, Update},
-    };
-    use matrix_sdk_test::{DEFAULT_TEST_ROOM_ID, async_test};
-    use ruma::{OwnedEventId, event_id};
-    use tempfile::{TempDir, tempdir};
+    use matrix_sdk_base::event_cache::store::EventCacheStore;
+    use matrix_sdk_base::event_cache::store::EventCacheStoreError;
+    use matrix_sdk_base::event_cache::store::IntoEventCacheStore;
+    use matrix_sdk_base::event_cache::store::integration_tests::EventCacheStoreIntegrationTests;
+    use matrix_sdk_base::event_cache_store_integration_tests;
+    use matrix_sdk_base::event_cache_store_integration_tests_time;
+    use matrix_sdk_base::linked_chunk::ChunkIdentifier;
+    use matrix_sdk_base::linked_chunk::LinkedChunkId;
+    use matrix_sdk_base::linked_chunk::Update;
+    use matrix_sdk_test::DEFAULT_TEST_ROOM_ID;
+    use matrix_sdk_test::async_test;
+    use ruma::OwnedEventId;
+    use ruma::event_id;
+    use tempfile::TempDir;
+    use tempfile::tempdir;
 
-    use super::{SqliteEventCacheStore, keys};
-    use crate::{SqliteStoreConfig, utils::SqliteAsyncConnExt};
+    use super::SqliteEventCacheStore;
+    use super::keys;
+    use crate::SqliteStoreConfig;
+    use crate::utils::SqliteAsyncConnExt;
 
     static TMP_DIR: LazyLock<TempDir> = LazyLock::new(|| tempdir().unwrap());
     static NUM: AtomicU32 = AtomicU32::new(0);
@@ -2058,9 +2132,16 @@ mod tests {
     async fn get_event_cache_store() -> Result<SqliteEventCacheStore, EventCacheStoreError> {
         let tmpdir_path = new_event_cache_store_workspace();
 
-        tracing::info!("using event cache store @ {}", tmpdir_path.to_str().unwrap());
+        tracing::info!(
+            "using event cache store @ {}",
+            tmpdir_path.to_str().unwrap()
+        );
 
-        Ok(SqliteEventCacheStore::open(tmpdir_path.to_str().unwrap(), None).await.unwrap())
+        Ok(
+            SqliteEventCacheStore::open(tmpdir_path.to_str().unwrap(), None)
+                .await
+                .unwrap(),
+        )
     }
 
     event_cache_store_integration_tests!();
@@ -2068,12 +2149,16 @@ mod tests {
 
     #[async_test]
     async fn test_encryption_encode_decode_thread_id_roundtrip() {
-        let store = get_event_cache_store().await.expect("creating cache store failed");
+        let store = get_event_cache_store()
+            .await
+            .expect("creating cache store failed");
         let thread_id: OwnedEventId = event_id!("$event").to_owned();
 
         let encoded_thread_id = store.encryption.encode_thread_id(&thread_id).unwrap();
-        let decoded_thread_id: OwnedEventId =
-            store.encryption.decode_thread_id(&encoded_thread_id).unwrap();
+        let decoded_thread_id: OwnedEventId = store
+            .encryption
+            .decode_thread_id(&encoded_thread_id)
+            .unwrap();
 
         assert_eq!(thread_id, decoded_thread_id);
     }
@@ -2083,17 +2168,25 @@ mod tests {
         let tmpdir_path = new_event_cache_store_workspace();
         let store_open_config = SqliteStoreConfig::new(tmpdir_path).pool_max_size(42);
 
-        let store = SqliteEventCacheStore::open_with_config(&store_open_config).await.unwrap();
+        let store = SqliteEventCacheStore::open_with_config(&store_open_config)
+            .await
+            .unwrap();
 
         assert_eq!(store.pool_max_size().await, Some(42));
     }
 
     #[async_test]
     async fn test_linked_chunk_remove_chunk() {
-        let store = get_event_cache_store().await.expect("creating cache store failed");
+        let store = get_event_cache_store()
+            .await
+            .expect("creating cache store failed");
 
         // Run corresponding integration test
-        store.clone().into_event_cache_store().test_linked_chunk_remove_chunk().await;
+        store
+            .clone()
+            .into_event_cache_store()
+            .test_linked_chunk_remove_chunk()
+            .await;
 
         // Check that cascading worked. Yes, SQLite, I doubt you.
         let gaps = store
@@ -2120,10 +2213,16 @@ mod tests {
 
     #[async_test]
     async fn test_linked_chunk_remove_item() {
-        let store = get_event_cache_store().await.expect("creating cache store failed");
+        let store = get_event_cache_store()
+            .await
+            .expect("creating cache store failed");
 
         // Run corresponding integration test
-        store.clone().into_event_cache_store().test_linked_chunk_remove_item().await;
+        store
+            .clone()
+            .into_event_cache_store()
+            .test_linked_chunk_remove_item()
+            .await;
 
         let room_id = *DEFAULT_TEST_ROOM_ID;
         let hashed_linked_chunk_id = store
@@ -2149,10 +2248,16 @@ mod tests {
 
     #[async_test]
     async fn test_linked_chunk_clear() {
-        let store = get_event_cache_store().await.expect("creating cache store failed");
+        let store = get_event_cache_store()
+            .await
+            .expect("creating cache store failed");
 
         // Run corresponding integration test
-        store.clone().into_event_cache_store().test_linked_chunk_clear().await;
+        store
+            .clone()
+            .into_event_cache_store()
+            .test_linked_chunk_clear()
+            .await;
 
         // Check that cascading worked. Yes, SQLite, I doubt you.
         store
@@ -2178,7 +2283,9 @@ mod tests {
 
     #[async_test]
     async fn test_linked_chunk_update_is_a_transaction() {
-        let store = get_event_cache_store().await.expect("creating cache store failed");
+        let store = get_event_cache_store()
+            .await
+            .expect("creating cache store failed");
 
         let room_id = *DEFAULT_TEST_ROOM_ID;
         let linked_chunk_id = LinkedChunkId::Room(room_id);
@@ -2219,22 +2326,23 @@ mod tests {
 
 #[cfg(test)]
 mod encrypted_tests {
-    use std::sync::{
-        LazyLock,
-        atomic::{AtomicU32, Ordering::SeqCst},
-    };
+    use std::sync::LazyLock;
+    use std::sync::atomic::AtomicU32;
+    use std::sync::atomic::Ordering::SeqCst;
 
-    use matrix_sdk_base::{
-        event_cache::store::{EventCacheStore, EventCacheStoreError},
-        event_cache_store_integration_tests, event_cache_store_integration_tests_time,
-    };
-    use matrix_sdk_test::{async_test, event_factory::EventFactory};
-    use ruma::{
-        event_id,
-        events::{relation::RelationType, room::message::RoomMessageEventContentWithoutRelation},
-        room_id, user_id,
-    };
-    use tempfile::{TempDir, tempdir};
+    use matrix_sdk_base::event_cache::store::EventCacheStore;
+    use matrix_sdk_base::event_cache::store::EventCacheStoreError;
+    use matrix_sdk_base::event_cache_store_integration_tests;
+    use matrix_sdk_base::event_cache_store_integration_tests_time;
+    use matrix_sdk_test::async_test;
+    use matrix_sdk_test::event_factory::EventFactory;
+    use ruma::event_id;
+    use ruma::events::relation::RelationType;
+    use ruma::events::room::message::RoomMessageEventContentWithoutRelation;
+    use ruma::room_id;
+    use ruma::user_id;
+    use tempfile::TempDir;
+    use tempfile::tempdir;
 
     use super::SqliteEventCacheStore;
 
@@ -2245,7 +2353,10 @@ mod encrypted_tests {
         let name = NUM.fetch_add(1, SeqCst).to_string();
         let tmpdir_path = TMP_DIR.path().join(name);
 
-        tracing::info!("using event cache store @ {}", tmpdir_path.to_str().unwrap());
+        tracing::info!(
+            "using event cache store @ {}",
+            tmpdir_path.to_str().unwrap()
+        );
 
         Ok(SqliteEventCacheStore::open(
             tmpdir_path.to_str().unwrap(),
@@ -2279,20 +2390,28 @@ mod encrypted_tests {
         let edit = f
             .text_msg("Find me")
             .event_id(edit_id)
-            .edit(event_id, RoomMessageEventContentWithoutRelation::text_plain("jebote"))
+            .edit(
+                event_id,
+                RoomMessageEventContentWithoutRelation::text_plain("jebote"),
+            )
             .into_event();
 
         // Create an event for the second room.
         let f = f.room(another_room_id);
 
         let another_event_id = event_id!("$DO_NOT_FIND_ME_EITHER:matrix.org");
-        let another_event =
-            f.text_msg("DO NOT FIND ME EITHER").event_id(another_event_id).into_event();
+        let another_event = f
+            .text_msg("DO NOT FIND ME EITHER")
+            .event_id(another_event_id)
+            .into_event();
 
         // Save the events in the DB.
         store.save_event(room_id, event).await.unwrap();
         store.save_event(room_id, edit).await.unwrap();
-        store.save_event(another_room_id, another_event).await.unwrap();
+        store
+            .save_event(another_room_id, another_event)
+            .await
+            .unwrap();
 
         // Craft a `RelationType` that will inject some SQL to be executed. The
         // `OR 1=1` ensures that all the previous parameters, the room
@@ -2324,14 +2443,16 @@ mod encrypted_tests {
 
 #[cfg(test)]
 mod close_reopen_tests {
-    use std::sync::{
-        LazyLock,
-        atomic::{AtomicU32, Ordering::SeqCst},
-    };
+    use std::sync::LazyLock;
+    use std::sync::atomic::AtomicU32;
+    use std::sync::atomic::Ordering::SeqCst;
 
-    use matrix_sdk_base::{event_cache::store::EventCacheStore, linked_chunk::LinkedChunkId};
-    use matrix_sdk_test::{DEFAULT_TEST_ROOM_ID, async_test};
-    use tempfile::{TempDir, tempdir};
+    use matrix_sdk_base::event_cache::store::EventCacheStore;
+    use matrix_sdk_base::linked_chunk::LinkedChunkId;
+    use matrix_sdk_test::DEFAULT_TEST_ROOM_ID;
+    use matrix_sdk_test::async_test;
+    use tempfile::TempDir;
+    use tempfile::tempdir;
 
     use super::SqliteEventCacheStore;
 
@@ -2341,7 +2462,9 @@ mod close_reopen_tests {
     async fn new_store() -> SqliteEventCacheStore {
         let name = NUM.fetch_add(1, SeqCst).to_string();
         let tmpdir_path = TMP_DIR.path().join(name);
-        SqliteEventCacheStore::open(tmpdir_path, None).await.unwrap()
+        SqliteEventCacheStore::open(tmpdir_path, None)
+            .await
+            .unwrap()
     }
 
     #[async_test]
@@ -2410,11 +2533,16 @@ mod close_reopen_tests {
         let store = new_store().await;
         store.close().await.unwrap();
 
-        let err = store.load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID)).await;
+        let err = store
+            .load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID))
+            .await;
         assert!(err.is_err(), "read should fail when closed");
 
         let err_msg = err.unwrap_err().to_string();
-        assert!(err_msg.contains("closed"), "error should mention 'closed', got: {err_msg}");
+        assert!(
+            err_msg.contains("closed"),
+            "error should mention 'closed', got: {err_msg}"
+        );
     }
 
     #[async_test]
@@ -2422,11 +2550,16 @@ mod close_reopen_tests {
         let store = new_store().await;
         store.close().await.unwrap();
 
-        let err = store.try_take_leased_lock(1000, "test_lock", "holder").await;
+        let err = store
+            .try_take_leased_lock(1000, "test_lock", "holder")
+            .await;
         assert!(err.is_err(), "write should fail when closed");
 
         let err_msg = err.unwrap_err().to_string();
-        assert!(err_msg.contains("closed"), "error should mention 'closed', got: {err_msg}");
+        assert!(
+            err_msg.contains("closed"),
+            "error should mention 'closed', got: {err_msg}"
+        );
     }
 
     #[async_test]
@@ -2434,7 +2567,10 @@ mod close_reopen_tests {
         let store = new_store().await;
 
         // Take a lease lock — this is persisted in the database.
-        let result = store.try_take_leased_lock(60_000, "test_lock", "holder").await.unwrap();
+        let result = store
+            .try_take_leased_lock(60_000, "test_lock", "holder")
+            .await
+            .unwrap();
         assert!(result.is_some(), "should have acquired the lock");
 
         // Close and reopen.
@@ -2442,8 +2578,14 @@ mod close_reopen_tests {
         store.reopen().await.unwrap();
 
         // The lock should still be held by the original holder after reopen.
-        let result = store.try_take_leased_lock(60_000, "test_lock", "other_holder").await.unwrap();
-        assert!(result.is_none(), "lock should still be held by the original holder after reopen");
+        let result = store
+            .try_take_leased_lock(60_000, "test_lock", "other_holder")
+            .await
+            .unwrap();
+        assert!(
+            result.is_none(),
+            "lock should still be held by the original holder after reopen"
+        );
     }
 
     #[async_test]
@@ -2455,7 +2597,9 @@ mod close_reopen_tests {
             store.reopen().await.unwrap();
 
             // After each cycle, the store should be fully operational.
-            let result = store.load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID)).await;
+            let result = store
+                .load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID))
+                .await;
             assert!(result.is_ok(), "store should work after close/reopen cycle");
         }
     }
@@ -2465,15 +2609,22 @@ mod close_reopen_tests {
         let store = new_store().await;
 
         // Do a few reads to exercise the pool.
-        let _ = store.load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID)).await;
-        let _ = store.load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID)).await;
+        let _ = store
+            .load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID))
+            .await;
+        let _ = store
+            .load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID))
+            .await;
 
         store.close().await.unwrap();
 
         // After close, the connections field should be None (pool and write
         // connection have been fully torn down).
         let guard = store.connections.lock().await;
-        assert!(guard.is_none(), "all connections should be released after close");
+        assert!(
+            guard.is_none(),
+            "all connections should be released after close"
+        );
     }
 
     #[async_test]
@@ -2484,12 +2635,22 @@ mod close_reopen_tests {
         store.reopen().await.unwrap();
 
         // Read should work immediately after reopen.
-        let result = store.load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID)).await;
-        assert!(result.is_ok(), "read should succeed immediately after reopen");
+        let result = store
+            .load_all_chunks(LinkedChunkId::Room(*DEFAULT_TEST_ROOM_ID))
+            .await;
+        assert!(
+            result.is_ok(),
+            "read should succeed immediately after reopen"
+        );
 
         // Write should work immediately after reopen.
-        let result = store.try_take_leased_lock(1000, "test_lock", "holder").await;
-        assert!(result.is_ok(), "write should succeed immediately after reopen");
+        let result = store
+            .try_take_leased_lock(1000, "test_lock", "holder")
+            .await;
+        assert!(
+            result.is_ok(),
+            "write should succeed immediately after reopen"
+        );
     }
 
     #[async_test]
@@ -2510,14 +2671,20 @@ mod close_reopen_tests {
         tokio::time::sleep(std::time::Duration::from_millis(200)).await;
 
         // The close task should still be running because we hold a connection.
-        assert!(!close_handle.is_finished(), "close should be waiting for the held connection");
+        assert!(
+            !close_handle.is_finished(),
+            "close should be waiting for the held connection"
+        );
 
         // Release the held connection — this lets pool.status().size drop to 0.
         drop(held_conn);
 
         // Now close should complete promptly (well within the 5s timeout).
         let timeout = tokio::time::timeout(std::time::Duration::from_secs(3), close_handle).await;
-        assert!(timeout.is_ok(), "close should complete after the held connection is released");
+        assert!(
+            timeout.is_ok(),
+            "close should complete after the held connection is released"
+        );
         timeout.unwrap().unwrap();
 
         // Verify the store is fully closed.

@@ -40,15 +40,7 @@ use crate::values::typing::type_compiled::compiled::TypeCompiled;
 
 /// The result of `field()`.
 #[derive(
-    Clone,
-    Debug,
-    Dupe,
-    Trace,
-    Freeze,
-    NoSerialize,
-    ProvidesStaticType,
-    Allocative,
-    StarlarkPagable
+    Clone, Debug, Dupe, Trace, Freeze, NoSerialize, ProvidesStaticType, Allocative, StarlarkPagable,
 )]
 pub struct FieldGen<V: ValueLifetimeless> {
     pub(crate) typ: TypeCompiled<V>,

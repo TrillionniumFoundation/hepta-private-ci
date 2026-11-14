@@ -5,14 +5,17 @@
 
 use crate::error::Error;
 use crate::proxy::SecretStruct;
-use crate::proxy::prompt::{Completed, PromptProxy};
+use crate::proxy::prompt::Completed;
+use crate::proxy::prompt::PromptProxy;
 use crate::proxy::service::ServiceProxy;
 use crate::session::Session;
 use crate::session::encrypt;
 use crate::ss::SS_DBUS_NAME;
 
 use futures_util::StreamExt;
-use zbus::{ObjectPath, OwnedVariant, proxy::CacheProperties};
+use zbus::ObjectPath;
+use zbus::OwnedVariant;
+use zbus::proxy::CacheProperties;
 
 // Helper enum for locking
 pub(crate) enum LockAction {

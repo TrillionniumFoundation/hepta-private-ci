@@ -66,7 +66,7 @@ use crate::values::types::num::value::NumRef;
     Eq,
     PartialEq,
     Hash,
-    Allocative
+    Allocative,
 )]
 #[display("{}", value)]
 pub struct StarlarkBigInt {

@@ -5,7 +5,8 @@
 
 use std::any::TypeId;
 use std::collections::HashMap;
-use std::hash::{BuildHasherDefault, Hasher};
+use std::hash::BuildHasherDefault;
+use std::hash::Hasher;
 
 pub(super) type TypeIdMap<T> = HashMap<TypeId, T, BuildHasherDefault<IdHasher>>;
 

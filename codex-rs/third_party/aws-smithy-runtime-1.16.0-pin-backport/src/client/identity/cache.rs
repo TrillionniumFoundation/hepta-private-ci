@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_runtime_api::client::identity::{
-    IdentityFuture, ResolveCachedIdentity, ResolveIdentity, SharedIdentityCache,
-    SharedIdentityResolver,
-};
+use aws_smithy_runtime_api::client::identity::IdentityFuture;
+use aws_smithy_runtime_api::client::identity::ResolveCachedIdentity;
+use aws_smithy_runtime_api::client::identity::ResolveIdentity;
+use aws_smithy_runtime_api::client::identity::SharedIdentityCache;
+use aws_smithy_runtime_api::client::identity::SharedIdentityResolver;
 use aws_smithy_runtime_api::shared::IntoShared;
 use aws_smithy_types::config_bag::ConfigBag;
 

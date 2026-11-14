@@ -80,7 +80,8 @@ fn remove_trailing_zeros(string: &mut String) {
 
 pub(crate) mod epoch_seconds {
     use super::remove_trailing_zeros;
-    use super::{DateTimeParseError, DateTimeParseErrorKind};
+    use super::DateTimeParseError;
+    use super::DateTimeParseErrorKind;
     use crate::DateTime;
     use std::str::FromStr;
 
@@ -128,13 +129,20 @@ pub(crate) mod epoch_seconds {
 }
 
 pub(crate) mod http_date {
-    use crate::date_time::format::{
-        DateTimeFormatError, DateTimeFormatErrorKind, DateTimeParseError, DateTimeParseErrorKind,
-        NANOS_PER_SECOND,
-    };
+    use crate::date_time::format::DateTimeFormatError;
+    use crate::date_time::format::DateTimeFormatErrorKind;
+    use crate::date_time::format::DateTimeParseError;
+    use crate::date_time::format::DateTimeParseErrorKind;
+    use crate::date_time::format::NANOS_PER_SECOND;
     use crate::DateTime;
     use std::str::FromStr;
-    use time::{Date, Month, OffsetDateTime, PrimitiveDateTime, Time, UtcOffset, Weekday};
+    use time::Date;
+    use time::Month;
+    use time::OffsetDateTime;
+    use time::PrimitiveDateTime;
+    use time::Time;
+    use time::UtcOffset;
+    use time::Weekday;
 
     // This code is taken from https://github.com/pyfisch/httpdate and modified under an
     // Apache 2.0 License. Modifications:
@@ -376,9 +384,10 @@ pub(crate) mod http_date {
 }
 
 pub(crate) mod rfc3339 {
-    use crate::date_time::format::{
-        DateTimeFormatError, DateTimeFormatErrorKind, DateTimeParseError, DateTimeParseErrorKind,
-    };
+    use crate::date_time::format::DateTimeFormatError;
+    use crate::date_time::format::DateTimeFormatErrorKind;
+    use crate::date_time::format::DateTimeParseError;
+    use crate::date_time::format::DateTimeParseErrorKind;
     use crate::DateTime;
     use time::format_description::well_known::Rfc3339;
     use time::OffsetDateTime;

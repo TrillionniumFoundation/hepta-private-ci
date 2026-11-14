@@ -15,45 +15,60 @@
 use std::sync::Arc;
 
 use as_variant::as_variant;
-use eyeball::{ObservableWriteGuard, SharedObservable};
+use eyeball::ObservableWriteGuard;
+use eyeball::SharedObservable;
 use futures_core::Stream;
 use futures_util::StreamExt;
-use matrix_sdk_qrcode::{
-    EncodingError, QrVerificationData, SelfVerificationData, SelfVerificationNoMasterKey,
-    VerificationData, qrcode::QrCode,
-};
-use rand::{Rng, rng};
-use ruma::{
-    DeviceId, OwnedDeviceId, OwnedUserId, RoomId, TransactionId, UserId,
-    api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest,
-    events::{
-        AnyMessageLikeEventContent, AnyToDeviceEventContent,
-        key::verification::{
-            cancel::CancelCode,
-            done::{KeyVerificationDoneEventContent, ToDeviceKeyVerificationDoneEventContent},
-            start::{
-                KeyVerificationStartEventContent, ReciprocateV1Content, StartMethod,
-                ToDeviceKeyVerificationStartEventContent,
-            },
-        },
-        relation::Reference,
-    },
-    serde::Base64,
-};
+use matrix_sdk_qrcode::EncodingError;
+use matrix_sdk_qrcode::QrVerificationData;
+use matrix_sdk_qrcode::SelfVerificationData;
+use matrix_sdk_qrcode::SelfVerificationNoMasterKey;
+use matrix_sdk_qrcode::VerificationData;
+use matrix_sdk_qrcode::qrcode::QrCode;
+use rand::Rng;
+use rand::rng;
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::events::AnyMessageLikeEventContent;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::key::verification::cancel::CancelCode;
+use ruma::events::key::verification::done::KeyVerificationDoneEventContent;
+use ruma::events::key::verification::done::ToDeviceKeyVerificationDoneEventContent;
+use ruma::events::key::verification::start::KeyVerificationStartEventContent;
+use ruma::events::key::verification::start::ReciprocateV1Content;
+use ruma::events::key::verification::start::StartMethod;
+use ruma::events::key::verification::start::ToDeviceKeyVerificationStartEventContent;
+use ruma::events::relation::Reference;
+use ruma::serde::Base64;
 use thiserror::Error;
-use tracing::{debug, trace};
+use tracing::debug;
+use tracing::trace;
 use vodozemac::Ed25519PublicKey;
 
-use super::{
-    CancelInfo, Cancelled, Done, FlowId, IdentitiesBeingVerified, VerificationResult,
-    VerificationStore,
-    event_enums::{CancelContent, DoneContent, OutgoingContent, OwnedStartContent, StartContent},
-    requests::RequestHandle,
-};
-use crate::{
-    CryptoStoreError, DeviceData, UserIdentityData,
-    types::requests::{OutgoingVerificationRequest, RoomMessageRequest, ToDeviceRequest},
-};
+use super::CancelInfo;
+use super::Cancelled;
+use super::Done;
+use super::FlowId;
+use super::IdentitiesBeingVerified;
+use super::VerificationResult;
+use super::VerificationStore;
+use super::event_enums::CancelContent;
+use super::event_enums::DoneContent;
+use super::event_enums::OutgoingContent;
+use super::event_enums::OwnedStartContent;
+use super::event_enums::StartContent;
+use super::requests::RequestHandle;
+use crate::CryptoStoreError;
+use crate::DeviceData;
+use crate::UserIdentityData;
+use crate::types::requests::OutgoingVerificationRequest;
+use crate::types::requests::RoomMessageRequest;
+use crate::types::requests::ToDeviceRequest;
 
 const SECRET_SIZE: usize = 16;
 
@@ -349,9 +364,12 @@ impl QrVerification {
 
     fn content_to_request(&self, content: OutgoingContent) -> OutgoingVerificationRequest {
         match content {
-            OutgoingContent::Room(room_id, content) => {
-                RoomMessageRequest { room_id, txn_id: TransactionId::new(), content }.into()
+            OutgoingContent::Room(room_id, content) => RoomMessageRequest {
+                room_id,
+                txn_id: TransactionId::new(),
+                content,
             }
+            .into(),
             OutgoingContent::ToDevice(c) => ToDeviceRequest::with_id(
                 self.identities.other_user_id(),
                 self.identities.other_device_id().to_owned(),
@@ -366,24 +384,30 @@ impl QrVerification {
         &self,
         new_state: QrState<Done>,
     ) -> Result<
-        (Option<OutgoingVerificationRequest>, Option<SignatureUploadRequest>),
+        (
+            Option<OutgoingVerificationRequest>,
+            Option<SignatureUploadRequest>,
+        ),
         CryptoStoreError,
     > {
         let (devices, identities) = new_state.verified_identities();
 
         let mut new_state = InnerState::Done(new_state);
 
-        let (content, request) =
-            match self.identities.mark_as_done(Some(&devices), Some(&identities)).await? {
-                VerificationResult::Ok => (None, None),
-                VerificationResult::Cancel(c) => {
-                    let canceled = QrState::<Cancelled>::new(false, c);
-                    let content = canceled.as_content(self.flow_id());
-                    new_state = InnerState::Cancelled(canceled);
-                    (Some(content), None)
-                }
-                VerificationResult::SignatureUpload(s) => (None, Some(s)),
-            };
+        let (content, request) = match self
+            .identities
+            .mark_as_done(Some(&devices), Some(&identities))
+            .await?
+        {
+            VerificationResult::Ok => (None, None),
+            VerificationResult::Cancel(c) => {
+                let canceled = QrState::<Cancelled>::new(false, c);
+                let content = canceled.as_content(self.flow_id());
+                new_state = InnerState::Cancelled(canceled);
+                (Some(content), None)
+            }
+            VerificationResult::SignatureUpload(s) => (None, Some(s)),
+        };
 
         self.state.set(new_state);
         Ok((content.map(|c| self.content_to_request(c)), request))
@@ -393,7 +417,10 @@ impl QrVerification {
         &self,
         content: &DoneContent<'_>,
     ) -> Result<
-        (Option<OutgoingVerificationRequest>, Option<SignatureUploadRequest>),
+        (
+            Option<OutgoingVerificationRequest>,
+            Option<SignatureUploadRequest>,
+        ),
         CryptoStoreError,
     > {
         let state = self.state.get();
@@ -412,7 +439,9 @@ impl QrVerification {
                     }
                 };
 
-                let new_state = s.clone().into_done(content, verified_device, verified_identity);
+                let new_state = s
+                    .clone()
+                    .into_done(content, verified_device, verified_identity);
                 self.mark_as_done(new_state).await?
             }
             InnerState::Reciprocated(s) => {
@@ -428,7 +457,9 @@ impl QrVerification {
                     }
                 };
 
-                let new_state = s.clone().into_done(content, verified_device, verified_identity);
+                let new_state = s
+                    .clone()
+                    .into_done(content, verified_device, verified_identity);
                 let content = Some(new_state.as_content(self.flow_id()));
                 let (cancel_content, request) = self.mark_as_done(new_state).await?;
 
@@ -580,8 +611,10 @@ impl QrVerification {
             });
         }
 
-        let other_device =
-            store.get_device(&other_user_id, &other_device_id).await?.ok_or_else(|| {
+        let other_device = store
+            .get_device(&other_user_id, &other_device_id)
+            .await?
+            .ok_or_else(|| {
                 ScanError::MissingDeviceKeys(other_user_id.clone(), other_device_id.clone())
             })?;
 
@@ -628,9 +661,15 @@ impl QrVerification {
             }
             QrVerificationData::SelfVerificationNoMasterKey(_) => {
                 let device_key =
-                    identities.device_being_verified.ed25519_key().ok_or_else(|| {
-                        ScanError::MissingDeviceKeys(other_user_id.clone(), other_device_id.clone())
-                    })?;
+                    identities
+                        .device_being_verified
+                        .ed25519_key()
+                        .ok_or_else(|| {
+                            ScanError::MissingDeviceKeys(
+                                other_user_id.clone(),
+                                other_device_id.clone(),
+                            )
+                        })?;
 
                 if qr_code.first_key() != device_key {
                     return Err(ScanError::KeyMismatch {
@@ -649,7 +688,10 @@ impl QrVerification {
             flow_id,
             inner: qr_code.into(),
             state: SharedObservable::new(InnerState::Reciprocated(QrState {
-                state: Reciprocated { secret, own_device_id },
+                state: Reciprocated {
+                    secret,
+                    own_device_id,
+                },
             })),
             identities,
             we_started,
@@ -735,7 +777,9 @@ struct QrState<S: Clone> {
 
 impl<S: Clone> QrState<S> {
     pub fn into_cancelled(self, content: &CancelContent<'_>) -> QrState<Cancelled> {
-        QrState { state: Cancelled::new(false, content.cancel_code().to_owned()) }
+        QrState {
+            state: Cancelled::new(false, content.cancel_code().to_owned()),
+        }
     }
 }
 
@@ -785,13 +829,17 @@ impl Reciprocated {
 
 impl QrState<Scanned> {
     fn confirm_scanning(self) -> QrState<Confirmed> {
-        QrState { state: Confirmed {} }
+        QrState {
+            state: Confirmed {},
+        }
     }
 }
 
 impl QrState<Cancelled> {
     fn new(cancelled_by_us: bool, cancel_code: CancelCode) -> Self {
-        QrState { state: Cancelled::new(cancelled_by_us, cancel_code) }
+        QrState {
+            state: Cancelled::new(cancelled_by_us, cancel_code),
+        }
     }
 
     fn as_content(&self, flow_id: &FlowId) -> OutgoingContent {
@@ -824,7 +872,10 @@ impl QrState<Done> {
     }
 
     fn verified_identities(&self) -> (Arc<[DeviceData]>, Arc<[UserIdentityData]>) {
-        (self.state.verified_devices.clone(), self.state.verified_master_keys.clone())
+        (
+            self.state.verified_devices.clone(),
+            self.state.verified_master_keys.clone(),
+        )
     }
 }
 
@@ -893,27 +944,39 @@ mod tests {
     use assert_matches::assert_matches;
     use matrix_sdk_qrcode::QrVerificationData;
     use matrix_sdk_test::async_test;
-    use ruma::{
-        DeviceId, UserId, device_id, owned_event_id, owned_room_id, owned_user_id, user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::owned_event_id;
+    use ruma::owned_room_id;
+    use ruma::owned_user_id;
+    use ruma::user_id;
     use tokio::sync::Mutex;
 
-    use crate::{
-        DeviceData, QrVerification, QrVerificationState,
-        olm::{Account, PrivateCrossSigningIdentity},
-        store::{CryptoStoreWrapper, MemoryStore, types::Changes},
-        verification::{
-            FlowId, VerificationStore,
-            event_enums::{DoneContent, OutgoingContent, StartContent},
-        },
-    };
+    use crate::DeviceData;
+    use crate::QrVerification;
+    use crate::QrVerificationState;
+    use crate::olm::Account;
+    use crate::olm::PrivateCrossSigningIdentity;
+    use crate::store::CryptoStoreWrapper;
+    use crate::store::MemoryStore;
+    use crate::store::types::Changes;
+    use crate::verification::FlowId;
+    use crate::verification::VerificationStore;
+    use crate::verification::event_enums::DoneContent;
+    use crate::verification::event_enums::OutgoingContent;
+    use crate::verification::event_enums::StartContent;
 
     fn user_id() -> &'static UserId {
         user_id!("@example:localhost")
     }
 
     fn memory_store(user_id: &UserId, device_id: &DeviceId) -> Arc<CryptoStoreWrapper> {
-        Arc::new(CryptoStoreWrapper::new(user_id, device_id, MemoryStore::new()))
+        Arc::new(CryptoStoreWrapper::new(
+            user_id,
+            device_id,
+            MemoryStore::new(),
+        ))
     }
 
     fn device_id() -> &'static DeviceId {

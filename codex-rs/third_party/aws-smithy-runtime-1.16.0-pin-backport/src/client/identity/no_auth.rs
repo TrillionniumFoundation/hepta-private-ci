@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_runtime_api::client::identity::{Identity, IdentityFuture, ResolveIdentity};
+use aws_smithy_runtime_api::client::identity::Identity;
+use aws_smithy_runtime_api::client::identity::IdentityFuture;
+use aws_smithy_runtime_api::client::identity::ResolveIdentity;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_types::config_bag::ConfigBag;
 

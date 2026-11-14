@@ -1,12 +1,16 @@
 use std::collections::HashMap;
 use std::sync::Arc;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
+use keyring_core::Entry;
+use keyring_core::Error;
+use keyring_core::Result;
 use keyring_core::api::CredentialStoreApi;
 use keyring_core::attributes::parse_attributes;
-use keyring_core::{Entry, Error, Result};
 
-use crate::cred::{Specifier, Wrapper};
+use crate::cred::Specifier;
+use crate::cred::Wrapper;
 use crate::service::Service;
 
 /// Secret service credential store

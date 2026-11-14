@@ -3,26 +3,32 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_async::time::{SharedTimeSource, TimeSource};
-use aws_smithy_observability::{
-    global::get_telemetry_provider, instruments::Histogram, AttributeValue, Attributes,
-    ObservabilityError,
-};
-use aws_smithy_runtime_api::client::http::telemetry::{
-    CaptureHttpAttemptTelemetry, ConnectionAcquisitionTelemetry, HttpAttemptTelemetry,
-};
-use aws_smithy_runtime_api::client::{
-    interceptors::{
-        context::BeforeTransmitInterceptorContextMut, dyn_dispatch_hint, Intercept,
-        SharedInterceptor,
-    },
-    orchestrator::Metadata,
-    runtime_components::RuntimeComponentsBuilder,
-    runtime_plugin::RuntimePlugin,
-};
-use aws_smithy_types::config_bag::{FrozenLayer, Layer, Storable, StoreReplace};
-use aws_smithy_types::telemetry::{CapturedTelemetryAttributes, RequestedTelemetryAttributes};
-use std::{borrow::Cow, sync::Arc, time::SystemTime};
+use aws_smithy_async::time::SharedTimeSource;
+use aws_smithy_async::time::TimeSource;
+use aws_smithy_observability::global::get_telemetry_provider;
+use aws_smithy_observability::instruments::Histogram;
+use aws_smithy_observability::AttributeValue;
+use aws_smithy_observability::Attributes;
+use aws_smithy_observability::ObservabilityError;
+use aws_smithy_runtime_api::client::http::telemetry::CaptureHttpAttemptTelemetry;
+use aws_smithy_runtime_api::client::http::telemetry::ConnectionAcquisitionTelemetry;
+use aws_smithy_runtime_api::client::http::telemetry::HttpAttemptTelemetry;
+use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::dyn_dispatch_hint;
+use aws_smithy_runtime_api::client::interceptors::Intercept;
+use aws_smithy_runtime_api::client::interceptors::SharedInterceptor;
+use aws_smithy_runtime_api::client::orchestrator::Metadata;
+use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
+use aws_smithy_types::config_bag::FrozenLayer;
+use aws_smithy_types::config_bag::Layer;
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreReplace;
+use aws_smithy_types::telemetry::CapturedTelemetryAttributes;
+use aws_smithy_types::telemetry::RequestedTelemetryAttributes;
+use std::borrow::Cow;
+use std::sync::Arc;
+use std::time::SystemTime;
 
 /// Sets the outcome attributes (`error.type` and `http.status_code`) on `attrs` from a
 /// finalizer-phase context.
@@ -442,10 +448,10 @@ mod test {
     use super::*;
     use aws_smithy_async::time::SystemTimeSource;
     use aws_smithy_runtime_api::client::connection::ConnectionMetadata;
-    use aws_smithy_runtime_api::client::http::telemetry::{
-        ConnectionAcquisitionTelemetry, ConnectionUsage,
-    };
-    use aws_smithy_runtime_api::client::interceptors::context::{Input, InterceptorContext};
+    use aws_smithy_runtime_api::client::http::telemetry::ConnectionAcquisitionTelemetry;
+    use aws_smithy_runtime_api::client::http::telemetry::ConnectionUsage;
+    use aws_smithy_runtime_api::client::interceptors::context::Input;
+    use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
     use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
     use aws_smithy_types::config_bag::ConfigBag;
     use std::sync::Mutex;
@@ -749,10 +755,12 @@ mod test {
 
     // --- add_outcome_attrs (the `status` dimension) ---
 
-    use aws_smithy_runtime_api::client::interceptors::context::{Error, Output};
+    use aws_smithy_runtime_api::client::interceptors::context::Error;
+    use aws_smithy_runtime_api::client::interceptors::context::Output;
     use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
     use aws_smithy_runtime_api::client::result::ConnectorError;
-    use aws_smithy_runtime_api::http::{Response, StatusCode};
+    use aws_smithy_runtime_api::http::Response;
+    use aws_smithy_runtime_api::http::StatusCode;
     use aws_smithy_types::body::SdkBody;
 
     fn i64_attr(attrs: &Attributes, key: &str) -> Option<i64> {

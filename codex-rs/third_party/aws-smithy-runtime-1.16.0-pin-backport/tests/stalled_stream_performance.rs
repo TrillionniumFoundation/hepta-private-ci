@@ -8,14 +8,19 @@
 #![cfg(all(feature = "client", feature = "legacy-test-util"))]
 
 use aws_smithy_async::rt::sleep::TokioSleep;
-use aws_smithy_async::time::{SystemTimeSource, TimeSource};
+use aws_smithy_async::time::SystemTimeSource;
+use aws_smithy_async::time::TimeSource;
 use aws_smithy_runtime::client::http::body::minimum_throughput::MinimumThroughputDownloadBody;
 use aws_smithy_runtime_api::client::stalled_stream_protection::StalledStreamProtectionConfig;
 use aws_smithy_types::body::SdkBody;
 use aws_smithy_types::byte_stream::ByteStream;
-use bytes::{BufMut, Bytes, BytesMut};
+use bytes::BufMut;
+use bytes::Bytes;
+use bytes::BytesMut;
 use hyper_0_14::server::conn::AddrStream;
-use hyper_0_14::service::{make_service_fn, service_fn, Service};
+use hyper_0_14::service::make_service_fn;
+use hyper_0_14::service::service_fn;
+use hyper_0_14::service::Service;
 use hyper_0_14::Server;
 use std::convert::Infallible;
 use std::net::TcpListener;

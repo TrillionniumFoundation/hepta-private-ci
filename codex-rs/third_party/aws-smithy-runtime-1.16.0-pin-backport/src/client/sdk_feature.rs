@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_types::config_bag::{Storable, StoreAppend};
+use aws_smithy_types::config_bag::Storable;
+use aws_smithy_types::config_bag::StoreAppend;
 
 #[non_exhaustive]
 #[derive(Clone, Debug, Eq, PartialEq)]

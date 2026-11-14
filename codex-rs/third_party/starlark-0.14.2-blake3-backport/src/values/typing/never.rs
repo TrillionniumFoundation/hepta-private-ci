@@ -49,12 +49,7 @@ use crate::values::starlark_value;
 use crate::values::type_repr::StarlarkTypeRepr;
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
+    Debug, derive_more::Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable,
 )]
 #[display("{}", Self::TYPE)]
 pub(crate) struct TypingNever;

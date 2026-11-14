@@ -39,9 +39,7 @@ use crate::values::typing::type_compiled::matchers::IsTupleElems2;
 use crate::values::typing::type_compiled::matchers::IsTupleOf;
 use crate::values::typing::type_compiled::matchers::StarlarkTypeIdMatcher;
 
-#[derive(
-    Eq, PartialEq, Hash, Clone, Dupe, Debug, Ord, PartialOrd, Allocative, Pagable
-)]
+#[derive(Eq, PartialEq, Hash, Clone, Dupe, Debug, Ord, PartialOrd, Allocative, Pagable)]
 pub enum TyTuple {
     /// `tuple[T0, T1, T2]`.
     Elems(Arc<[Ty]>),

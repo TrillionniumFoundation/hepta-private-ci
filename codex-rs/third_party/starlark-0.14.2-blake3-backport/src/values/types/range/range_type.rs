@@ -39,14 +39,7 @@ use crate::values::index::convert_slice_indices;
 
 /// Representation of `range()` type.
 #[derive(
-    Clone,
-    Copy,
-    Dupe,
-    Debug,
-    ProvidesStaticType,
-    NoSerialize,
-    Allocative,
-    StarlarkPagable
+    Clone, Copy, Dupe, Debug, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable,
 )]
 pub struct Range {
     start: i32,

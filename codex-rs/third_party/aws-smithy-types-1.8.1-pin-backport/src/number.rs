@@ -5,7 +5,8 @@
 
 //! A number type that implements Javascript / JSON semantics.
 
-use crate::error::{TryFromNumberError, TryFromNumberErrorKind};
+use crate::error::TryFromNumberError;
+use crate::error::TryFromNumberErrorKind;
 #[cfg(all(
     aws_sdk_unstable,
     any(feature = "serde-serialize", feature = "serde-deserialize")
@@ -211,7 +212,8 @@ impl TryFrom<Number> for f32 {
 #[cfg(test)]
 mod test {
     use super::Number;
-    use crate::error::{TryFromNumberError, TryFromNumberErrorKind};
+    use crate::error::TryFromNumberError;
+    use crate::error::TryFromNumberErrorKind;
 
     macro_rules! to_unsigned_converter_tests {
         ($typ:ident) => {
