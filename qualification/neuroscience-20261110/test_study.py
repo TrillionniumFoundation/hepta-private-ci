@@ -81,6 +81,56 @@ class CreditTests(unittest.TestCase):
         self.assertEqual(receipt.matched, 0)
         self.assertEqual(receipt.deltas, (0.0, 0.0))
 
+    def test_owner_visible_zero_feedback_is_valid_no_update(self):
+        # Owner-side causal filtering must not need any future outcome.
+        blind = credit(cutoff_sequence=2, feedback_list=[])
+        withheld = credit(cutoff_sequence=2)
+        self.assertEqual(blind.deltas, (0.0, 0.0))
+        self.assertEqual((blind.matched, blind.expired, blind.future_withheld),
+                         (0, 0, 0))
+        self.assertEqual(blind.causal_training_digest,
+                         withheld.causal_training_digest)
+        self.assertNotEqual(blind.transcript_digest,
+                            withheld.transcript_digest)
+        self.assertEqual(blind.authority, "DENY_ALL")
+        self.assertEqual(credit(feedback_list=[]).deltas, (0.0, 0.0))
+
+    def test_zero_feedback_does_not_permit_empty_actions(self):
+        with self.assertRaises(ContractError):
+            credit(action_list=[], feedback_list=[])
+
+    def test_frozen_prefix_ignores_future_receipt_count_and_labels(self):
+        initial = credit(cutoff_sequence=2, feedback_list=[outcomes()[0]])
+        altered = replace(outcomes()[0], receipt_digest=digest("future-alt"),
+                          modulator=(-1.0, 1.0))
+        changed = credit(cutoff_sequence=2, feedback_list=[altered])
+        appended = credit(cutoff_sequence=2, feedback_list=outcomes())
+        self.assertEqual(initial.causal_training_digest,
+                         changed.causal_training_digest)
+        self.assertEqual(initial.causal_training_digest,
+                         appended.causal_training_digest)
+        self.assertNotEqual(initial.transcript_digest,
+                            changed.transcript_digest)
+        self.assertNotEqual(initial.transcript_digest,
+                            appended.transcript_digest)
+        self.assertEqual(initial.future_withheld, 1)
+        self.assertEqual(appended.future_withheld, 2)
+        self.assertEqual(initial.deltas, appended.deltas)
+
+    def test_frozen_prefix_changes_only_when_feedback_becomes_available(self):
+        first = credit(cutoff_sequence=4, feedback_list=[outcomes()[0]])
+        appended = credit(cutoff_sequence=4, feedback_list=outcomes())
+        edited_past = replace(outcomes()[0],
+                              receipt_digest=digest("past-alt"),
+                              modulator=(-1.0, 0.0))
+        changed = credit(cutoff_sequence=4, feedback_list=[edited_past])
+        self.assertEqual(first.causal_training_digest,
+                         appended.causal_training_digest)
+        self.assertNotEqual(first.causal_training_digest,
+                            changed.causal_training_digest)
+        self.assertNotEqual(credit(cutoff_sequence=2).causal_training_digest,
+                            first.causal_training_digest)
+
     def test_action_order_does_not_change_identity_or_result(self):
         a = credit()
         b = credit(action_list=list(reversed(actions())),
