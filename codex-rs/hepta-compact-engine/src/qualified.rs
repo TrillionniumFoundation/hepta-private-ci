@@ -907,11 +907,11 @@ pub fn build_qualified_candidate(
         .collect::<Vec<_>>();
     let retained_input_digests = retained_inputs
         .iter()
-        .map(|input| input.digest())
+        .map(CompactionInputRecordV2::digest)
         .collect::<Vec<_>>();
     let omitted_input_digests = omitted_inputs
         .iter()
-        .map(|input| input.digest())
+        .map(CompactionInputRecordV2::digest)
         .collect::<Vec<_>>();
 
     let retained_count = u64::try_from(retained_records.len()).unwrap_or(u64::MAX);

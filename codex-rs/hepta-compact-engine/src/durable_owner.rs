@@ -1,8 +1,10 @@
 //! Fenced product access to the original private storage implementation.
 use super::*;
-use crate::archive_codec::{Decoder, Wire};
+use crate::archive_codec::Decoder;
+use crate::archive_codec::Wire;
 use crate::owner_fence::OwnerWriteFenceV2;
-use sqlx::{Sqlite, Transaction};
+use sqlx::Sqlite;
+use sqlx::Transaction;
 
 const COMPACT_ARCHIVE_DOMAIN: &[u8] = b"hepta.compaction.durable-publication-archive.v2\0";
 

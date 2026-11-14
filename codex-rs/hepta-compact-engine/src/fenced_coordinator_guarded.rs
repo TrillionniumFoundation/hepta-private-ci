@@ -12,17 +12,19 @@ mod original;
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
-use sqlx::sqlite::{
-    SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous,
-};
-use sqlx::{Row, SqlitePool};
+use sqlx::Row;
+use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
 
-use crate::coordinator::{
-    CompactionCoordinatorErrorV2, CompactionPublicationReceiptV2,
-    VerifiedCompactionSelectionV2,
-};
-use crate::durable::{DurableCompactionError, DurableCompactionOutboxEventV1};
 use crate::VerifiedCompactionPublicationV1;
+use crate::coordinator::CompactionCoordinatorErrorV2;
+use crate::coordinator::CompactionPublicationReceiptV2;
+use crate::coordinator::VerifiedCompactionSelectionV2;
+use crate::durable::DurableCompactionError;
+use crate::durable::DurableCompactionOutboxEventV1;
 
 pub const MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2: &str =
     original::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
@@ -180,11 +182,7 @@ impl MemoryCheckpointCoordinatorV2 {
         self.verify_expected_active_manifest(self.active_registry_digest())
             .await?;
         self.inner
-            .revoke_checkpoint(
-                checkpoint_digest,
-                reason_digest,
-                revoked_at_unix_seconds,
-            )
+            .revoke_checkpoint(checkpoint_digest, reason_digest, revoked_at_unix_seconds)
             .await
     }
 
@@ -276,9 +274,7 @@ impl MemoryCheckpointCoordinatorV2 {
     }
 }
 
-async fn open_pool(
-    database_url: &str,
-) -> Result<SqlitePool, CompactionCoordinatorErrorV2> {
+async fn open_pool(database_url: &str) -> Result<SqlitePool, CompactionCoordinatorErrorV2> {
     let options = SqliteConnectOptions::from_str(database_url)
         .map_err(sql_error)?
         .create_if_missing(true)
@@ -297,7 +293,5 @@ fn sql_error(error: sqlx::Error) -> CompactionCoordinatorErrorV2 {
 }
 
 fn manifest_conflict(message: impl Into<String>) -> CompactionCoordinatorErrorV2 {
-    CompactionCoordinatorErrorV2::Durable(DurableCompactionError::Conflict(
-        message.into(),
-    ))
+    CompactionCoordinatorErrorV2::Durable(DurableCompactionError::Conflict(message.into()))
 }

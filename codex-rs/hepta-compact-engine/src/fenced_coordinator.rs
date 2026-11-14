@@ -4,19 +4,28 @@
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
-use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
-use sqlx::{Executor, Row, Sqlite, SqliteConnection, SqlitePool, Transaction};
+use sqlx::Executor;
+use sqlx::Row;
+use sqlx::Sqlite;
+use sqlx::SqliteConnection;
+use sqlx::SqlitePool;
+use sqlx::Transaction;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
 
 use crate::owner_fence::OwnerWriteFenceV2;
 
-use crate::coordinator::{
-    CompactionCoordinatorErrorV2, CompactionPublicationReceiptV2,
-    MemoryCheckpointCoordinatorV2 as CoreCoordinator, VerifiedCompactionSelectionV2,
-};
-use crate::durable::{DurableCompactionError, DurableCompactionOutboxEventV1};
-use crate::{
-    CompactionTrustRoleV1, VerifiedCompactionPublicationV1, VerifiedCompactionTrustRegistryV1,
-};
+use crate::CompactionTrustRoleV1;
+use crate::VerifiedCompactionPublicationV1;
+use crate::VerifiedCompactionTrustRegistryV1;
+use crate::coordinator::CompactionCoordinatorErrorV2;
+use crate::coordinator::CompactionPublicationReceiptV2;
+use crate::coordinator::MemoryCheckpointCoordinatorV2 as CoreCoordinator;
+use crate::coordinator::VerifiedCompactionSelectionV2;
+use crate::durable::DurableCompactionError;
+use crate::durable::DurableCompactionOutboxEventV1;
 
 pub const MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2: &str = "memory.checkpoint-coordinator.v2";
 

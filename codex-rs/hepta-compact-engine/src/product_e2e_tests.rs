@@ -1,11 +1,17 @@
 use std::collections::BTreeMap;
 
+use codex_hepta_cognitive_types::CognitiveSnapshot;
+use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
-use codex_hepta_cognitive_types::{
-    CognitiveSnapshot, MemoryKind, MemoryRecord, RecordState, build_snapshot,
-};
-use codex_hepta_types::{Digest32, Generation, Revision, StableId};
-use ed25519_dalek::{Signer, SigningKey};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
 
 use crate::*;

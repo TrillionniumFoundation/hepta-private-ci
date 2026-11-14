@@ -6,18 +6,27 @@
 //! rewrites source memory facts.
 
 use std::str::FromStr;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
-use codex_hepta_cognitive_types::lane_c::{CompactionProofV2, CompactionProofWitnessV1};
-use codex_hepta_types::{Digest32, StableId};
-use sha2::{Digest, Sha256};
-use sqlx::sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous};
-use sqlx::{Connection, Executor, Row, SqliteConnection, SqlitePool};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
+use sha2::Digest;
+use sha2::Sha256;
+use sqlx::Connection;
+use sqlx::Executor;
+use sqlx::Row;
+use sqlx::SqliteConnection;
+use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
 
-use crate::{
-    CompactionTrustRoleV1, QualifiedCompactionCandidateV2, TrustEnrollmentV1,
-    TrustedCompactionProofV1,
-};
+use crate::CompactionTrustRoleV1;
+use crate::QualifiedCompactionCandidateV2;
+use crate::TrustEnrollmentV1;
+use crate::TrustedCompactionProofV1;
 
 pub const DURABLE_COMPACTION_SCHEMA_VERSION: u32 = 1;
 pub const MEMORY_CHECKPOINT_COORDINATOR_CALLER: &str = "memory.checkpoint-coordinator.v1";

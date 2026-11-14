@@ -2,19 +2,34 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::time::Instant;
 
-use codex_hepta_cognitive_types::lane_c::{CognitiveSnapshotKeyV1, LaneCGenerationVectorV1};
-use codex_hepta_cognitive_types::{
-    CognitiveSnapshot, MemoryKind, MemoryRecord, RecordState, build_snapshot,
-};
-use codex_hepta_compact_engine::{
-    COMPACTION_TRUST_SCHEMA_VERSION, CompactionInputRecordV2, CompactionPolicyV2,
-    CompactionSemanticPayloadV2, CompactionTrustRoleV1, QualifiedCandidateBuildRequestV1,
-    SignedRetentionSelectionReceiptV1, SignedSemanticGenerationReceiptV1, TokenizationReceiptV1,
-    TrustEnrollmentV1, TrustedRetentionSelectorV1, TrustedSemanticGeneratorV1, TrustedTokenizerV1,
-    build_qualified_candidate, compaction_input_manifest_digest,
-};
-use codex_hepta_types::{Digest32, Generation, Revision, StableId};
-use ed25519_dalek::{Signer, SigningKey};
+use codex_hepta_cognitive_types::CognitiveSnapshot;
+use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::RecordState;
+use codex_hepta_cognitive_types::build_snapshot;
+use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
+use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
+use codex_hepta_compact_engine::COMPACTION_TRUST_SCHEMA_VERSION;
+use codex_hepta_compact_engine::CompactionInputRecordV2;
+use codex_hepta_compact_engine::CompactionPolicyV2;
+use codex_hepta_compact_engine::CompactionSemanticPayloadV2;
+use codex_hepta_compact_engine::CompactionTrustRoleV1;
+use codex_hepta_compact_engine::QualifiedCandidateBuildRequestV1;
+use codex_hepta_compact_engine::SignedRetentionSelectionReceiptV1;
+use codex_hepta_compact_engine::SignedSemanticGenerationReceiptV1;
+use codex_hepta_compact_engine::TokenizationReceiptV1;
+use codex_hepta_compact_engine::TrustEnrollmentV1;
+use codex_hepta_compact_engine::TrustedRetentionSelectorV1;
+use codex_hepta_compact_engine::TrustedSemanticGeneratorV1;
+use codex_hepta_compact_engine::TrustedTokenizerV1;
+use codex_hepta_compact_engine::build_qualified_candidate;
+use codex_hepta_compact_engine::compaction_input_manifest_digest;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 const SOURCE_RECORDS: usize = 65_536;
 const SOURCE_CURRENT_HEADS: usize = 16_384;

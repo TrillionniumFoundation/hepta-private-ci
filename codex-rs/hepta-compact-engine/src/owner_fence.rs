@@ -1,6 +1,10 @@
 //! Private identity check shared by every owned compaction write transaction.
 use codex_hepta_types::Digest32;
-use sqlx::{Row, Sqlite, SqliteConnection, SqlitePool, Transaction};
+use sqlx::Row;
+use sqlx::Sqlite;
+use sqlx::SqliteConnection;
+use sqlx::SqlitePool;
+use sqlx::Transaction;
 
 use crate::durable::DurableCompactionError;
 

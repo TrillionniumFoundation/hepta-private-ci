@@ -74,9 +74,7 @@ impl TrustEnrollmentV1 {
         if self.schema_version != COMPACTION_TRUST_SCHEMA_VERSION {
             return Err(TrustedCompactionError::InvalidSchemaVersion);
         }
-        if self.trust_epoch == 0
-            || self.valid_until_unix_seconds <= self.valid_from_unix_seconds
-        {
+        if self.trust_epoch == 0 || self.valid_until_unix_seconds <= self.valid_from_unix_seconds {
             return Err(TrustedCompactionError::InvalidTrustInterval);
         }
         ensure_digest("trust implementation", self.implementation_digest)?;
@@ -150,17 +148,11 @@ impl TrustEnrollmentV1 {
         Ok(())
     }
 
-    pub fn validate_historical_at(
-        &self,
-        accepted_at: u64,
-    ) -> Result<(), TrustedCompactionError> {
+    pub fn validate_historical_at(&self, accepted_at: u64) -> Result<(), TrustedCompactionError> {
         self.validate_current_at(accepted_at)
     }
 
-    pub fn validate_rotation_from(
-        &self,
-        predecessor: &Self,
-    ) -> Result<(), TrustedCompactionError> {
+    pub fn validate_rotation_from(&self, predecessor: &Self) -> Result<(), TrustedCompactionError> {
         self.validate()?;
         predecessor.validate()?;
         if self.role != predecessor.role
@@ -173,10 +165,7 @@ impl TrustEnrollmentV1 {
         Ok(())
     }
 
-    fn validate_role(
-        &self,
-        expected: CompactionTrustRoleV1,
-    ) -> Result<(), TrustedCompactionError> {
+    fn validate_role(&self, expected: CompactionTrustRoleV1) -> Result<(), TrustedCompactionError> {
         self.validate()?;
         if self.role != expected {
             return Err(TrustedCompactionError::WrongTrustRole);
@@ -279,10 +268,7 @@ impl TrustedTokenizerV1 {
         self.enrollment.validate_current_at(now)
     }
 
-    pub fn validate_historical_at(
-        &self,
-        accepted_at: u64,
-    ) -> Result<(), TrustedCompactionError> {
+    pub fn validate_historical_at(&self, accepted_at: u64) -> Result<(), TrustedCompactionError> {
         self.validate()?;
         self.enrollment.validate_historical_at(accepted_at)
     }
@@ -398,11 +384,7 @@ impl SignedRetentionSelectionReceiptV1 {
             policy,
             inputs,
         )?;
-        verify_signature(
-            &selector.enrollment,
-            &self.signing_bytes(),
-            &self.signature,
-        )
+        verify_signature(&selector.enrollment, &self.signing_bytes(), &self.signature)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -436,11 +418,7 @@ impl SignedRetentionSelectionReceiptV1 {
             policy,
             inputs,
         )?;
-        verify_signature(
-            &selector.enrollment,
-            &self.signing_bytes(),
-            &self.signature,
-        )
+        verify_signature(&selector.enrollment, &self.signing_bytes(), &self.signature)
     }
 
     fn verify_subject(
@@ -823,12 +801,8 @@ pub fn prove_compaction(
         qualification_signature: request.qualification.signature,
     };
     let evaluator = request.evaluator.kernel();
-    let proof = qualified::prove_compaction(
-        request.candidate,
-        &evaluator,
-        request.qualification,
-    )
-    .map_err(TrustedCompactionError::Kernel)?;
+    let proof = qualified::prove_compaction(request.candidate, &evaluator, request.qualification)
+        .map_err(TrustedCompactionError::Kernel)?;
     witness
         .verify_proof(&proof)
         .map_err(|_| TrustedCompactionError::BindingMismatch("proof witness"))?;
@@ -931,11 +905,7 @@ fn verify_receipt_header(
             verification_or_acceptance_time,
         )
     } else {
-        enrollment.validate_current_receipt(
-            issued_at,
-            expires_at,
-            verification_or_acceptance_time,
-        )
+        enrollment.validate_current_receipt(issued_at, expires_at, verification_or_acceptance_time)
     }
 }
 
@@ -957,10 +927,7 @@ fn signed_digest(message: &[u8], signature: &[u8; 64]) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn ensure_digest(
-    label: &'static str,
-    digest: Digest32,
-) -> Result<(), TrustedCompactionError> {
+fn ensure_digest(label: &'static str, digest: Digest32) -> Result<(), TrustedCompactionError> {
     if digest.is_zero() {
         return Err(TrustedCompactionError::EmptyDigest(label));
     }

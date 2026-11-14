@@ -242,13 +242,8 @@ fn fixture() -> Fixture {
 
     let payload = vec![0x5a; 256];
     let payload_digest = Digest32::of_bytes(&payload);
-    let payload_tokenization_receipt = tokenization_receipt(
-        &tokenizer,
-        &tokenizer_signing_key,
-        payload_digest,
-        256,
-        32,
-    );
+    let payload_tokenization_receipt =
+        tokenization_receipt(&tokenizer, &tokenizer_signing_key, payload_digest, 256, 32);
     let mut semantic_payload = CompactionSemanticPayloadV2 {
         source_snapshot_digest: source_snapshot.vector_digest,
         source_memory_snapshot_digest: source_memory_snapshot.snapshot_digest,
@@ -276,9 +271,7 @@ fn fixture() -> Fixture {
         tokenizer_key_id: tokenizer.enrollment.key_id.clone(),
         tokenizer_trust_epoch: tokenizer.enrollment.trust_epoch,
         tokenizer_key_digest: tokenizer.enrollment.key_digest(),
-        tokenization_receipt_digest: semantic_payload
-            .tokenization_receipt
-            .receipt_digest(),
+        tokenization_receipt_digest: semantic_payload.tokenization_receipt.receipt_digest(),
         signature: [0_u8; 64],
     };
     generation_receipt.signature = generator_signing_key
@@ -390,14 +383,8 @@ fn canonical_public_path_requires_all_four_trusted_roles() {
     .expect("trusted proof");
 
     assert_eq!(output.proof.candidate_digest, candidate.candidate_digest());
-    assert_eq!(
-        output.evaluation_receipt_digest,
-        receipt.receipt_digest()
-    );
-    assert_eq!(
-        output.evaluator_key_id,
-        fixture.evaluator.enrollment.key_id
-    );
+    assert_eq!(output.evaluation_receipt_digest, receipt.receipt_digest());
+    assert_eq!(output.evaluator_key_id, fixture.evaluator.enrollment.key_id);
     output
         .witness
         .verify_proof(&output.proof)
@@ -464,10 +451,7 @@ fn evaluator_admission_tampering_is_rejected() {
 fn revoked_key_is_denied_for_current_use_but_preserves_prior_historical_acceptance() {
     let mut fixture = fixture();
     fixture.selector.enrollment.revoked_at_unix_seconds = Some(NOW - 1);
-    assert_eq!(
-        build(&fixture),
-        Err(TrustedCompactionError::TrustRevoked)
-    );
+    assert_eq!(build(&fixture), Err(TrustedCompactionError::TrustRevoked));
 
     fixture
         .selection_receipt
@@ -500,8 +484,7 @@ fn rotation_requires_monotonic_epoch_and_predecessor_key_digest() {
         &new_key,
     );
     new.predecessor_key_digest = Some(old.key_digest());
-    new.validate_rotation_from(&old)
-        .expect("valid rotation");
+    new.validate_rotation_from(&old).expect("valid rotation");
 
     new.predecessor_key_digest = Some(digest("wrong-predecessor"));
     assert_eq!(

@@ -11,19 +11,27 @@ use crate::owner_fence::OwnerWriteFenceV2;
 use std::collections::BTreeMap;
 use std::time::Instant;
 
-use codex_hepta_types::{Digest32, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
-use crate::archive_codec::{Decoder, Encoder, Wire, WireError};
-use crate::durable::{
-    CompactionArtifactImagesV1, DurableCompactionBundleV1, DurableCompactionDisposition,
-    DurableCompactionError, DurableCompactionOutboxEventV1, DurableCompactionPublicationReceiptV1,
-    DurableCompactionTrustSetV1,
-};
-use crate::{
-    CompactionAdmissionErrorV1, CompactionNonceBindingV1, CompactionPublicationRequestV1,
-    CompactionTrustRoleV1, CompactionTrustedPrincipalV1, VerifiedCompactionPublicationV1,
-    VerifiedCompactionTrustRegistryV1,
-};
+use crate::CompactionAdmissionErrorV1;
+use crate::CompactionNonceBindingV1;
+use crate::CompactionPublicationRequestV1;
+use crate::CompactionTrustRoleV1;
+use crate::CompactionTrustedPrincipalV1;
+use crate::VerifiedCompactionPublicationV1;
+use crate::VerifiedCompactionTrustRegistryV1;
+use crate::archive_codec::Decoder;
+use crate::archive_codec::Encoder;
+use crate::archive_codec::Wire;
+use crate::archive_codec::WireError;
+use crate::durable::CompactionArtifactImagesV1;
+use crate::durable::DurableCompactionBundleV1;
+use crate::durable::DurableCompactionDisposition;
+use crate::durable::DurableCompactionError;
+use crate::durable::DurableCompactionOutboxEventV1;
+use crate::durable::DurableCompactionPublicationReceiptV1;
+use crate::durable::DurableCompactionTrustSetV1;
 
 pub const MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2: &str = "memory.checkpoint-coordinator.v2";
 

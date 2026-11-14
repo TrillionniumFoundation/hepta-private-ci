@@ -12,19 +12,20 @@ mod guarded;
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
-use sqlx::sqlite::{
-    SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions, SqliteSynchronous,
-};
-use sqlx::{Row, SqlitePool};
+use sqlx::Row;
+use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
 
-use crate::coordinator::{
-    CompactionCoordinatorErrorV2, CompactionPublicationReceiptV2,
-    VerifiedCompactionSelectionV2,
-};
-use crate::durable::{DurableCompactionError, DurableCompactionOutboxEventV1};
-use crate::{
-    VerifiedCompactionPublicationV1, VerifiedCompactionTrustRegistryV1,
-};
+use crate::VerifiedCompactionPublicationV1;
+use crate::VerifiedCompactionTrustRegistryV1;
+use crate::coordinator::CompactionCoordinatorErrorV2;
+use crate::coordinator::CompactionPublicationReceiptV2;
+use crate::coordinator::VerifiedCompactionSelectionV2;
+use crate::durable::DurableCompactionError;
+use crate::durable::DurableCompactionOutboxEventV1;
 
 pub const MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2: &str =
     guarded::MEMORY_CHECKPOINT_COORDINATOR_CALLER_V2;
@@ -169,11 +170,7 @@ impl MemoryCheckpointCoordinatorV2 {
         revoked_at_unix_seconds: u64,
     ) -> Result<Digest32, CompactionCoordinatorErrorV2> {
         self.inner
-            .revoke_checkpoint(
-                checkpoint_digest,
-                reason_digest,
-                revoked_at_unix_seconds,
-            )
+            .revoke_checkpoint(checkpoint_digest, reason_digest, revoked_at_unix_seconds)
             .await
     }
 
@@ -235,8 +232,7 @@ fn verify_supplied_manifest_chain(
     }
     let mut previous: Option<VerifiedCompactionTrustRegistryV1> = None;
     for manifest in manifest_chain {
-        let registry =
-            VerifiedCompactionTrustRegistryV1::verify(pinned_root_key, manifest)?;
+        let registry = VerifiedCompactionTrustRegistryV1::verify(pinned_root_key, manifest)?;
         if registry.owner_id().as_str() != owner_id {
             return Err(CompactionCoordinatorErrorV2::Invalid(
                 "signed manifest owner differs from the durable owner",
@@ -302,9 +298,7 @@ async fn verify_durable_manifest_preflight(
     };
     let manifest: String = row.try_get("manifest_digest").map_err(sql_error)?;
     let root: String = row.try_get("root_key_digest").map_err(sql_error)?;
-    if manifest != expected_manifest.to_string()
-        || root != expected_root.to_string()
-    {
+    if manifest != expected_manifest.to_string() || root != expected_root.to_string() {
         return Err(manifest_conflict(
             "supplied manifest chain is stale, forked or bound to another root",
         ));
@@ -312,9 +306,7 @@ async fn verify_durable_manifest_preflight(
     Ok(())
 }
 
-async fn open_pool(
-    database_url: &str,
-) -> Result<SqlitePool, CompactionCoordinatorErrorV2> {
+async fn open_pool(database_url: &str) -> Result<SqlitePool, CompactionCoordinatorErrorV2> {
     let options = SqliteConnectOptions::from_str(database_url)
         .map_err(sql_error)?
         .create_if_missing(true)
@@ -333,13 +325,9 @@ fn sql_error(error: sqlx::Error) -> CompactionCoordinatorErrorV2 {
 }
 
 fn manifest_conflict(message: impl Into<String>) -> CompactionCoordinatorErrorV2 {
-    CompactionCoordinatorErrorV2::Durable(DurableCompactionError::Conflict(
-        message.into(),
-    ))
+    CompactionCoordinatorErrorV2::Durable(DurableCompactionError::Conflict(message.into()))
 }
 
 fn manifest_corrupt(message: impl Into<String>) -> CompactionCoordinatorErrorV2 {
-    CompactionCoordinatorErrorV2::Durable(DurableCompactionError::Corrupt(
-        message.into(),
-    ))
+    CompactionCoordinatorErrorV2::Durable(DurableCompactionError::Corrupt(message.into()))
 }

@@ -23,7 +23,10 @@ async fn exact_schema_opens_and_reopens_with_integrity_verification() {
     let reopened = DurableCompactionStoreV1::open(&url, "agent-owner")
         .await
         .expect("reopen store");
-    reopened.verify_integrity().await.expect("verify reopened store");
+    reopened
+        .verify_integrity()
+        .await
+        .expect("verify reopened store");
 }
 
 #[tokio::test]
@@ -40,7 +43,7 @@ async fn claimed_outbox_is_reconciled_after_restart_and_completed_once() {
         .await
         .expect("begin");
     insert_outbox_raw(
-        &mut *connection,
+        &mut connection,
         store.owner_id(),
         &publication.to_string(),
         "checkpoint-published",

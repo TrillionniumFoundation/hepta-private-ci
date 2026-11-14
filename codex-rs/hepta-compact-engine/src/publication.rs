@@ -63,11 +63,19 @@ pub struct SignedCompactionTokenAccountingV1 {
 }
 
 wire_struct!(SignedCompactionTokenAccountingV1 {
-    schema_version: u32, key_id: StableId, trust_epoch: u64,
-    issued_at_unix_seconds: u64, expires_at_unix_seconds: u64, nonce: Digest32,
-    source_snapshot_digest: Digest32, source_memory_snapshot_digest: Digest32,
-    policy_digest: Digest32, input_manifest_digest: Digest32, payload_digest: Digest32,
-    payload_tokenization_receipt_digest: Digest32, signature: [u8; 64]
+    schema_version: u32,
+    key_id: StableId,
+    trust_epoch: u64,
+    issued_at_unix_seconds: u64,
+    expires_at_unix_seconds: u64,
+    nonce: Digest32,
+    source_snapshot_digest: Digest32,
+    source_memory_snapshot_digest: Digest32,
+    policy_digest: Digest32,
+    input_manifest_digest: Digest32,
+    payload_digest: Digest32,
+    payload_tokenization_receipt_digest: Digest32,
+    signature: [u8; 64]
 });
 
 impl SignedCompactionTokenAccountingV1 {
@@ -84,7 +92,8 @@ impl SignedCompactionTokenAccountingV1 {
         self.policy_digest.write(&mut output)?;
         self.input_manifest_digest.write(&mut output)?;
         self.payload_digest.write(&mut output)?;
-        self.payload_tokenization_receipt_digest.write(&mut output)?;
+        self.payload_tokenization_receipt_digest
+            .write(&mut output)?;
         Ok(output.finish())
     }
 
@@ -93,28 +102,51 @@ impl SignedCompactionTokenAccountingV1 {
         Ok(Digest32::of_parts(&[&bytes, &self.signature]))
     }
 
-    fn verify(&self, request: &CompactionPublicationRequestV1, principal: &CompactionTrustedPrincipalV1, now: u64) -> Result<(), CompactionAdmissionErrorV1> {
+    fn verify(
+        &self,
+        request: &CompactionPublicationRequestV1,
+        principal: &CompactionTrustedPrincipalV1,
+        now: u64,
+    ) -> Result<(), CompactionAdmissionErrorV1> {
         let enrollment = &principal.enrollment;
-        if self.schema_version != 1 || self.nonce.is_zero()
-            || self.key_id != enrollment.key_id || self.trust_epoch != enrollment.trust_epoch
+        if self.schema_version != 1
+            || self.nonce.is_zero()
+            || self.key_id != enrollment.key_id
+            || self.trust_epoch != enrollment.trust_epoch
             || self.issued_at_unix_seconds < enrollment.valid_from_unix_seconds
             || self.expires_at_unix_seconds > enrollment.valid_until_unix_seconds
             || self.issued_at_unix_seconds >= self.expires_at_unix_seconds
-            || now < self.issued_at_unix_seconds || now >= self.expires_at_unix_seconds
+            || now < self.issued_at_unix_seconds
+            || now >= self.expires_at_unix_seconds
         {
-            return Err(CompactionAdmissionErrorV1::Invalid("token batch identity, epoch, nonce or validity"));
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "token batch identity, epoch, nonce or validity",
+            ));
         }
         if self.source_snapshot_digest != request.source_snapshot.vector_digest
             || self.source_memory_snapshot_digest != request.source_memory_snapshot.snapshot_digest
             || self.policy_digest != request.evidence.policy.digest()
-            || self.input_manifest_digest != compaction_input_manifest_digest(&request.evidence.inputs)
+            || self.input_manifest_digest
+                != compaction_input_manifest_digest(&request.evidence.inputs)
             || self.payload_digest != request.evidence.semantic_payload.payload_digest
-            || self.payload_tokenization_receipt_digest != request.evidence.semantic_payload.tokenization_receipt.receipt_digest()
+            || self.payload_tokenization_receipt_digest
+                != request
+                    .evidence
+                    .semantic_payload
+                    .tokenization_receipt
+                    .receipt_digest()
         {
-            return Err(CompactionAdmissionErrorV1::Invalid("token batch subject substitution"));
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "token batch subject substitution",
+            ));
         }
-        let key = VerifyingKey::from_bytes(&enrollment.verifying_key).map_err(|_| CompactionAdmissionErrorV1::Invalid("tokenizer key"))?;
-        key.verify_strict(&self.signing_bytes()?, &Signature::from_bytes(&self.signature)).map_err(|_| CompactionAdmissionErrorV1::Invalid("token batch signature"))
+        let key = VerifyingKey::from_bytes(&enrollment.verifying_key)
+            .map_err(|_| CompactionAdmissionErrorV1::Invalid("tokenizer key"))?;
+        key.verify_strict(
+            &self.signing_bytes()?,
+            &Signature::from_bytes(&self.signature),
+        )
+        .map_err(|_| CompactionAdmissionErrorV1::Invalid("token batch signature"))
     }
 }
 
@@ -157,8 +189,18 @@ wire_struct!(CompactionPublicationRequestV1 {
 
 impl CompactionPublicationRequestV1 {
     fn canonicalize(&mut self) {
-        self.source_memory_snapshot.records.sort_by(|a, b| a.record_id.cmp(&b.record_id).then_with(|| a.revision.cmp(&b.revision)));
-        self.evidence.inputs.sort_by(|a, b| a.record.record_id.cmp(&b.record.record_id).then_with(|| a.record.revision.cmp(&b.record.revision)).then_with(|| a.digest().cmp(&b.digest())));
+        self.source_memory_snapshot.records.sort_by(|a, b| {
+            a.record_id
+                .cmp(&b.record_id)
+                .then_with(|| a.revision.cmp(&b.revision))
+        });
+        self.evidence.inputs.sort_by(|a, b| {
+            a.record
+                .record_id
+                .cmp(&b.record.record_id)
+                .then_with(|| a.record.revision.cmp(&b.record.revision))
+                .then_with(|| a.digest().cmp(&b.digest()))
+        });
         self.evidence.policy.protected_record_ids.sort();
     }
 
@@ -169,7 +211,9 @@ impl CompactionPublicationRequestV1 {
         if payload.payload.len() > crate::MAX_QUALIFIED_COMPACTION_BYTES as usize
             || Digest32::of_bytes(&payload.payload) != payload.payload_digest
         {
-            return Err(CompactionAdmissionErrorV1::Invalid("payload byte integrity"));
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "payload byte integrity",
+            ));
         }
         let mut metadata = Self {
             source_snapshot: self.source_snapshot.clone(),
@@ -227,27 +271,64 @@ impl VerifiedCompactionPublicationV1 {
         let selection = &evidence.selection_receipt;
         let generation = &evidence.generation_receipt;
         let evaluation = &evidence.evaluation_receipt;
-        let selector = registry.resolve(CompactionTrustRoleV1::RetentionSelector, &selection.key_id, selection.trust_epoch, accepted_at_unix_seconds)?;
-        let generator = registry.resolve(CompactionTrustRoleV1::SemanticGenerator, &generation.key_id, generation.trust_epoch, accepted_at_unix_seconds)?;
-        let tokenizer = registry.resolve(CompactionTrustRoleV1::Tokenizer, &selection.tokenizer_key_id, selection.tokenizer_trust_epoch, accepted_at_unix_seconds)?;
-        let evaluator = registry.resolve(CompactionTrustRoleV1::Evaluator, &evaluation.key_id, evaluation.trust_epoch, accepted_at_unix_seconds)?;
-        if evaluator.principal_id == generator.principal_id || evaluator.principal_id == selector.principal_id
+        let selector = registry.resolve(
+            CompactionTrustRoleV1::RetentionSelector,
+            &selection.key_id,
+            selection.trust_epoch,
+            accepted_at_unix_seconds,
+        )?;
+        let generator = registry.resolve(
+            CompactionTrustRoleV1::SemanticGenerator,
+            &generation.key_id,
+            generation.trust_epoch,
+            accepted_at_unix_seconds,
+        )?;
+        let tokenizer = registry.resolve(
+            CompactionTrustRoleV1::Tokenizer,
+            &selection.tokenizer_key_id,
+            selection.tokenizer_trust_epoch,
+            accepted_at_unix_seconds,
+        )?;
+        let evaluator = registry.resolve(
+            CompactionTrustRoleV1::Evaluator,
+            &evaluation.key_id,
+            evaluation.trust_epoch,
+            accepted_at_unix_seconds,
+        )?;
+        if evaluator.principal_id == generator.principal_id
+            || evaluator.principal_id == selector.principal_id
             || evaluator.enrollment.verifying_key == generator.enrollment.verifying_key
             || evaluator.enrollment.verifying_key == selector.enrollment.verifying_key
         {
-            return Err(CompactionAdmissionErrorV1::Invalid("evaluator is not an independent registered principal"));
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "evaluator is not an independent registered principal",
+            ));
         }
         if generator.artifact_digest != request.source_snapshot.vector.model_digest
             || tokenizer.artifact_digest != request.source_snapshot.vector.tokenizer_digest
             || evaluator.subject_id != evidence.qualification.evaluator_id
         {
-            return Err(CompactionAdmissionErrorV1::Invalid("registered model, tokenizer or evaluator substitution"));
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "registered model, tokenizer or evaluator substitution",
+            ));
         }
-        evidence.token_accounting_receipt.verify(&request, tokenizer, accepted_at_unix_seconds)?;
-        let trusted_selector = TrustedRetentionSelectorV1 { enrollment: selector.enrollment.clone() };
-        let trusted_generator = TrustedSemanticGeneratorV1 { enrollment: generator.enrollment.clone() };
-        let trusted_tokenizer = TrustedTokenizerV1 { enrollment: tokenizer.enrollment.clone(), tokenizer_digest: tokenizer.artifact_digest };
-        let trusted_evaluator = TrustedCompactionEvaluatorV1 { enrollment: evaluator.enrollment.clone(), evaluator_id: evaluator.subject_id.clone() };
+        evidence
+            .token_accounting_receipt
+            .verify(&request, tokenizer, accepted_at_unix_seconds)?;
+        let trusted_selector = TrustedRetentionSelectorV1 {
+            enrollment: selector.enrollment.clone(),
+        };
+        let trusted_generator = TrustedSemanticGeneratorV1 {
+            enrollment: generator.enrollment.clone(),
+        };
+        let trusted_tokenizer = TrustedTokenizerV1 {
+            enrollment: tokenizer.enrollment.clone(),
+            tokenizer_digest: tokenizer.artifact_digest,
+        };
+        let trusted_evaluator = TrustedCompactionEvaluatorV1 {
+            enrollment: evaluator.enrollment.clone(),
+            evaluator_id: evaluator.subject_id.clone(),
+        };
         let candidate = crate::build_qualified_candidate(QualifiedCandidateBuildRequestV1 {
             source_snapshot: request.source_snapshot.clone(),
             source_memory_snapshot: &request.source_memory_snapshot,
@@ -262,19 +343,45 @@ impl VerifiedCompactionPublicationV1 {
             tokenizer: &trusted_tokenizer,
             inputs: evidence.inputs.clone(),
             verification_time_unix_seconds: accepted_at_unix_seconds,
-        }).map_err(|e| CompactionAdmissionErrorV1::Trust(e.to_string()))?;
+        })
+        .map_err(|e| CompactionAdmissionErrorV1::Trust(e.to_string()))?;
         let proof = crate::prove_compaction(TrustedCompactionProofRequestV1 {
             candidate: &candidate,
             evaluator: &trusted_evaluator,
             qualification: evidence.qualification.clone(),
             evaluation_receipt: evaluation,
             verification_time_unix_seconds: accepted_at_unix_seconds,
-        }).map_err(|e| CompactionAdmissionErrorV1::Trust(e.to_string()))?;
+        })
+        .map_err(|e| CompactionAdmissionErrorV1::Trust(e.to_string()))?;
         let nonce_bindings = [
-            CompactionNonceBindingV1 { role: CompactionTrustRoleV1::RetentionSelector, key_id: selection.key_id.clone(), trust_epoch: selection.trust_epoch, nonce: selection.nonce, receipt_digest: selection.receipt_digest() },
-            CompactionNonceBindingV1 { role: CompactionTrustRoleV1::SemanticGenerator, key_id: generation.key_id.clone(), trust_epoch: generation.trust_epoch, nonce: generation.nonce, receipt_digest: generation.receipt_digest() },
-            CompactionNonceBindingV1 { role: CompactionTrustRoleV1::Tokenizer, key_id: evidence.token_accounting_receipt.key_id.clone(), trust_epoch: evidence.token_accounting_receipt.trust_epoch, nonce: evidence.token_accounting_receipt.nonce, receipt_digest: evidence.token_accounting_receipt.receipt_digest()? },
-            CompactionNonceBindingV1 { role: CompactionTrustRoleV1::Evaluator, key_id: evaluation.key_id.clone(), trust_epoch: evaluation.trust_epoch, nonce: evaluation.nonce, receipt_digest: evaluation.receipt_digest() },
+            CompactionNonceBindingV1 {
+                role: CompactionTrustRoleV1::RetentionSelector,
+                key_id: selection.key_id.clone(),
+                trust_epoch: selection.trust_epoch,
+                nonce: selection.nonce,
+                receipt_digest: selection.receipt_digest(),
+            },
+            CompactionNonceBindingV1 {
+                role: CompactionTrustRoleV1::SemanticGenerator,
+                key_id: generation.key_id.clone(),
+                trust_epoch: generation.trust_epoch,
+                nonce: generation.nonce,
+                receipt_digest: generation.receipt_digest(),
+            },
+            CompactionNonceBindingV1 {
+                role: CompactionTrustRoleV1::Tokenizer,
+                key_id: evidence.token_accounting_receipt.key_id.clone(),
+                trust_epoch: evidence.token_accounting_receipt.trust_epoch,
+                nonce: evidence.token_accounting_receipt.nonce,
+                receipt_digest: evidence.token_accounting_receipt.receipt_digest()?,
+            },
+            CompactionNonceBindingV1 {
+                role: CompactionTrustRoleV1::Evaluator,
+                key_id: evaluation.key_id.clone(),
+                trust_epoch: evaluation.trust_epoch,
+                nonce: evaluation.nonce,
+                receipt_digest: evaluation.receipt_digest(),
+            },
         ];
         let mut output = Encoder::new(ARCHIVE_DOMAIN)?;
         1_u32.write(&mut output)?;
@@ -285,11 +392,20 @@ impl VerifiedCompactionPublicationV1 {
         request.write(&mut output)?;
         request_digest.write(&mut output)?;
         candidate.candidate_digest().write(&mut output)?;
-        candidate.checkpoint().checkpoint_digest.write(&mut output)?;
+        candidate
+            .checkpoint()
+            .checkpoint_digest
+            .write(&mut output)?;
         proof.proof.proof_digest.write(&mut output)?;
         Ok(Self {
-            candidate, proof,
-            principals: [selector.clone(), generator.clone(), tokenizer.clone(), evaluator.clone()],
+            candidate,
+            proof,
+            principals: [
+                selector.clone(),
+                generator.clone(),
+                tokenizer.clone(),
+                evaluator.clone(),
+            ],
             nonce_bindings,
             owner_id: registry.owner_id().clone(),
             root_key_digest: registry.root_key_digest(),
@@ -316,7 +432,9 @@ impl VerifiedCompactionPublicationV1 {
             || Digest32::read(&mut input)? != accepted_registry.root_key_digest()
             || Digest32::read(&mut input)? != accepted_registry.manifest_digest()
         {
-            return Err(CompactionAdmissionErrorV1::Invalid("archive owner or trust substitution"));
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "archive owner or trust substitution",
+            ));
         }
         let accepted_at = u64::read(&mut input)?;
         let mut request = CompactionPublicationRequestV1::read(&mut input)?;
@@ -333,27 +451,59 @@ impl VerifiedCompactionPublicationV1 {
             || verified.proof.proof.proof_digest != proof_digest
             || verified.archive.as_slice() != archive
         {
-            return Err(CompactionAdmissionErrorV1::Invalid("archive cross-object integrity or canonical encoding"));
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "archive cross-object integrity or canonical encoding",
+            ));
         }
         Ok(verified)
     }
 
-    pub fn readmit_current_trust(&self, registry: &VerifiedCompactionTrustRegistryV1, now: u64) -> Result<(), CompactionAdmissionErrorV1> {
-        if self.owner_id != *registry.owner_id() || self.root_key_digest != registry.root_key_digest() {
-            return Err(CompactionAdmissionErrorV1::Invalid("current owner or root substitution"));
+    pub fn readmit_current_trust(
+        &self,
+        registry: &VerifiedCompactionTrustRegistryV1,
+        now: u64,
+    ) -> Result<(), CompactionAdmissionErrorV1> {
+        if self.owner_id != *registry.owner_id()
+            || self.root_key_digest != registry.root_key_digest()
+        {
+            return Err(CompactionAdmissionErrorV1::Invalid(
+                "current owner or root substitution",
+            ));
         }
-        for principal in &self.principals { registry.readmit_principal(principal, now)?; }
+        for principal in &self.principals {
+            registry.readmit_principal(principal, now)?;
+        }
         Ok(())
     }
 
-    pub fn candidate(&self) -> &QualifiedCompactionCandidateV2 { &self.candidate }
-    pub fn proof(&self) -> &TrustedCompactionProofV1 { &self.proof }
-    pub fn owner_id(&self) -> &StableId { &self.owner_id }
-    pub fn root_key_digest(&self) -> Digest32 { self.root_key_digest }
-    pub fn registry_digest(&self) -> Digest32 { self.registry_digest }
-    pub fn request_digest(&self) -> Digest32 { self.request_digest }
-    pub fn accepted_at_unix_seconds(&self) -> u64 { self.accepted_at_unix_seconds }
-    pub fn archive(&self) -> &[u8] { &self.archive }
-    pub fn archive_digest(&self) -> Digest32 { Digest32::of_bytes(&self.archive) }
-    pub fn nonce_bindings(&self) -> &[CompactionNonceBindingV1; 4] { &self.nonce_bindings }
+    pub fn candidate(&self) -> &QualifiedCompactionCandidateV2 {
+        &self.candidate
+    }
+    pub fn proof(&self) -> &TrustedCompactionProofV1 {
+        &self.proof
+    }
+    pub fn owner_id(&self) -> &StableId {
+        &self.owner_id
+    }
+    pub fn root_key_digest(&self) -> Digest32 {
+        self.root_key_digest
+    }
+    pub fn registry_digest(&self) -> Digest32 {
+        self.registry_digest
+    }
+    pub fn request_digest(&self) -> Digest32 {
+        self.request_digest
+    }
+    pub fn accepted_at_unix_seconds(&self) -> u64 {
+        self.accepted_at_unix_seconds
+    }
+    pub fn archive(&self) -> &[u8] {
+        &self.archive
+    }
+    pub fn archive_digest(&self) -> Digest32 {
+        Digest32::of_bytes(&self.archive)
+    }
+    pub fn nonce_bindings(&self) -> &[CompactionNonceBindingV1; 4] {
+        &self.nonce_bindings
+    }
 }
