@@ -1,0 +1,42 @@
+{
+  "TRAIN_files_only": true,
+  "created_UTC": "2026-10-23T18:13:44.010071+00:00",
+  "dataset_bytes_downloaded": 0,
+  "official_document": "https://github.com/zalandoresearch/fashion-mnist/blob/b2617bb6d3ffa2e429640350f613e3291e10b141/README.md",
+  "previous_directory_denial_not_retried": true,
+  "results": [
+    {
+      "CPU_ns": 20029564,
+      "action": "HEAD official README direct TRAIN file link",
+      "error_body": "",
+      "headers": {
+        "connection": "close",
+        "content-length": "16",
+        "content-type": "text/plain",
+        "date": "Fri, 23 Oct 2026 18:13:43 GMT",
+        "server": "envoy"
+      },
+      "outcome": "denied/error; no retry or alternate URL",
+      "reason": "HTTP Error 403: Forbidden",
+      "status": 403,
+      "target": "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz"
+    },
+    {
+      "CPU_ns": 1787261,
+      "action": "HEAD official README direct TRAIN file link",
+      "error_body": "",
+      "headers": {
+        "connection": "close",
+        "content-length": "16",
+        "content-type": "text/plain",
+        "date": "Fri, 23 Oct 2026 18:13:43 GMT",
+        "server": "envoy"
+      },
+      "outcome": "denied/error; no retry or alternate URL",
+      "reason": "HTTP Error 403: Forbidden",
+      "status": 403,
+      "target": "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz"
+    }
+  ],
+  "schema": "hepta.fashion-train-access.v1"
+}

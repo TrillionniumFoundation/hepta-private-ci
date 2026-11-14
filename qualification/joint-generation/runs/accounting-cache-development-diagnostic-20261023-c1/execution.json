@@ -1,0 +1,16 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python runs/accounting-cache-development-diagnostic-20261023-c1/worker.py",
+  "executions": 1,
+  "exit_code": 0,
+  "observed_process_threads_after_import": 1,
+  "protocol_sha256": "03253f1bb00a69aeccf5bb109522c7442c647d29bc0dd8505439404071cd585a",
+  "qualification": false,
+  "retry_performed": false,
+  "schema": "hepta.development-diagnostic-execution.v1",
+  "stderr_file": "stderr.log",
+  "stdout_file": "stdout.log",
+  "unit_log_sha256": "32ce9f04c565310ddb7df808e4bbaf6637891c53540f2c33b94f3bd79e0c457c",
+  "unit_log_source": "/tmp/hepta-r2-cache-unit.log",
+  "worker_sha256": "c61e82e3b37d17ff84ab07f3605b1655313c553d5fc576de4db318f9d423dd19",
+  "working_directory": "/workspace/hepta-private-ci/qualification/joint-generation"
+}

@@ -1,0 +1,537 @@
+{
+  "comparisons": [
+    {
+      "direct": "A1",
+      "group_nested_minus_direct_cpu_ns": {
+        "calibration_measure": -35500966,
+        "compile": -221479981,
+        "dataset_train": -183597071,
+        "dataset_validation": -14487822,
+        "decoder": -10222876,
+        "export": -1447904,
+        "matching_manifest": -5911497,
+        "pretrain_loop": -13187408,
+        "validation": -2858192
+      },
+      "nested": "B1",
+      "nested_minus_direct_shared_cpu_ns": -494561757,
+      "pair": 1
+    },
+    {
+      "direct": "A2",
+      "group_nested_minus_direct_cpu_ns": {
+        "calibration_measure": -86862586,
+        "compile": 90688233,
+        "dataset_train": -6885406,
+        "dataset_validation": -19524301,
+        "decoder": -18591853,
+        "export": -1344341,
+        "matching_manifest": 2899688,
+        "pretrain_loop": -48612890,
+        "validation": -20631914
+      },
+      "nested": "B2",
+      "nested_minus_direct_shared_cpu_ns": -126697534,
+      "pair": 2
+    }
+  ],
+  "fixed_order": [
+    "A1",
+    "B1",
+    "B2",
+    "A2"
+  ],
+  "original_failures_superseded": false,
+  "qualification": false,
+  "recorded_external_rd": {
+    "cumulative_worker_cpu_ns_all_four": 11732311824,
+    "declared_shared_work_units_all_four": 14445486948,
+    "scope": "External diagnostic R&D, no credit to any build. Worker cumulative CPU includes startup, all children and earlier archive writes through its final counter; last counter write/print and tool-shell administration excluded. Timed nested parent CPU is separate and does not include parent startup/final receipt administration. Parent waited child CPU is NOT added again.",
+    "shared_cpu_ns_all_four": 9770675305,
+    "timed_nested_parent_own_cpu_ns": 1457611
+  },
+  "runtime_fields_equal_all_starts_and_ends": {
+    "executable_realpath": true,
+    "flags": true,
+    "numpy_binary_path": true,
+    "numpy_binary_sha256": true,
+    "numpy_cpu_features": true,
+    "numpy_geterr": true,
+    "numpy_path": true,
+    "numpy_version": true,
+    "python": true,
+    "runtime_config": true,
+    "safe_environment": true,
+    "sys_profile": true,
+    "sys_trace": true,
+    "threadpools": true,
+    "warnings_filters": true
+  },
+  "samples": {
+    "A1": {
+      "base_comparison": {
+        "11": {
+          "equals_t8": true,
+          "sha256": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47"
+        },
+        "23": {
+          "equals_t8": true,
+          "sha256": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083"
+        },
+        "47": {
+          "equals_t8": true,
+          "sha256": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400"
+        }
+      },
+      "boundary_affinities": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "boundary_pool_sizes": [
+        1
+      ],
+      "boundary_snapshots": 86,
+      "boundary_task_counts": [
+        1
+      ],
+      "calibration_calls": 27,
+      "calibration_prepare_cpu_ns": 22162236,
+      "calibration_protocol_cpu_ns": 21028062,
+      "calibration_rows": 1944,
+      "calibration_service_cpu_ns": 197346284,
+      "container_deltas": {
+        "cpu_stat": {
+          "burst_usec": 0,
+          "nice_usec": 0,
+          "nr_bursts": 0,
+          "nr_periods": 26,
+          "nr_throttled": 0,
+          "system_usec": 41378,
+          "throttled_usec": 0,
+          "usage_usec": 2831457,
+          "user_usec": 2790079
+        },
+        "memory_events": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "scope": "container, not process; deltas do not establish causation"
+      },
+      "exit_code": 0,
+      "gc_cpu_ns_total": 4315684,
+      "group_cpu_ns": {
+        "calibration_measure": 240536582,
+        "compile": 612019936,
+        "dataset_train": 324928167,
+        "dataset_validation": 64540657,
+        "decoder": 225009910,
+        "export": 15380035,
+        "matching_manifest": 26169871,
+        "pretrain_loop": 1002699471,
+        "validation": 37313005
+      },
+      "imports_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 184656356,
+        "thread_cpu_ns": 184657455,
+        "total_cpu_ns": 184656356,
+        "wall_ns": 184659366
+      },
+      "launch_kind": "direct",
+      "major_faults": 0,
+      "native_library_sha256": "154f13f2dc2a707a15c99730973b688e1f66652f9d1ee194fecf5eea956bf770",
+      "residual": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 52140249,
+        "thread_cpu_ns": 52138460,
+        "total_cpu_ns": 52140249,
+        "wall_ns": 52050404
+      },
+      "shared": {
+        "child_cpu_ns": 609219000,
+        "process_cpu_ns": 1991518883,
+        "thread_cpu_ns": 1991517098,
+        "total_cpu_ns": 2600737883,
+        "wall_ns": 2607459176
+      },
+      "shared_work_units": 3611371737,
+      "verification_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 3131137,
+        "thread_cpu_ns": 3132017,
+        "total_cpu_ns": 3131137,
+        "wall_ns": 3133509
+      },
+      "worker_complete": {
+        "clock": {
+          "child_cpu_ns": 622617000,
+          "process_cpu_ns": 2701348812,
+          "thread_cpu_ns": 2701350638,
+          "total_cpu_ns": 3323965812,
+          "wall_ns": 14442275956577,
+          "wall_since_execute_entry_ns": 3221466904
+        },
+        "outcome": "diagnostic completed; original T8 failure retained",
+        "scope": "cumulative process+children CPU through all prior diagnostic persistence; final counter write/print excluded"
+      }
+    },
+    "A2": {
+      "base_comparison": {
+        "11": {
+          "equals_t8": true,
+          "sha256": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47"
+        },
+        "23": {
+          "equals_t8": true,
+          "sha256": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083"
+        },
+        "47": {
+          "equals_t8": true,
+          "sha256": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400"
+        }
+      },
+      "boundary_affinities": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "boundary_pool_sizes": [
+        1
+      ],
+      "boundary_snapshots": 86,
+      "boundary_task_counts": [
+        1
+      ],
+      "calibration_calls": 27,
+      "calibration_prepare_cpu_ns": 22936896,
+      "calibration_protocol_cpu_ns": 22874083,
+      "calibration_rows": 1944,
+      "calibration_service_cpu_ns": 278604380,
+      "container_deltas": {
+        "cpu_stat": {
+          "burst_usec": 0,
+          "nice_usec": 0,
+          "nr_bursts": 0,
+          "nr_periods": 26,
+          "nr_throttled": 0,
+          "system_usec": 0,
+          "throttled_usec": 0,
+          "usage_usec": 2595614,
+          "user_usec": 2595614
+        },
+        "memory_events": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "scope": "container, not process; deltas do not establish causation"
+      },
+      "exit_code": 0,
+      "gc_cpu_ns_total": 5662260,
+      "group_cpu_ns": {
+        "calibration_measure": 324415359,
+        "compile": 314276761,
+        "dataset_train": 200688530,
+        "dataset_validation": 78457664,
+        "decoder": 317057018,
+        "export": 16977973,
+        "matching_manifest": 18289468,
+        "pretrain_loop": 1197930886,
+        "validation": 58152571
+      },
+      "imports_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 138544275,
+        "thread_cpu_ns": 138545238,
+        "total_cpu_ns": 138544275,
+        "wall_ns": 138546864
+      },
+      "launch_kind": "direct",
+      "major_faults": 0,
+      "native_library_sha256": "154f13f2dc2a707a15c99730973b688e1f66652f9d1ee194fecf5eea956bf770",
+      "residual": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 68983185,
+        "thread_cpu_ns": 68989325,
+        "total_cpu_ns": 68983185,
+        "wall_ns": 68914592
+      },
+      "shared": {
+        "child_cpu_ns": 312013000,
+        "process_cpu_ns": 2283216415,
+        "thread_cpu_ns": 2283215373,
+        "total_cpu_ns": 2595229415,
+        "wall_ns": 2595160748
+      },
+      "shared_work_units": 3611371737,
+      "verification_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 2734369,
+        "thread_cpu_ns": 2735586,
+        "total_cpu_ns": 2734369,
+        "wall_ns": 2737120
+      },
+      "worker_complete": {
+        "clock": {
+          "child_cpu_ns": 317717000,
+          "process_cpu_ns": 2700414302,
+          "thread_cpu_ns": 2700415925,
+          "total_cpu_ns": 3018131302,
+          "wall_ns": 14496505509124,
+          "wall_since_execute_entry_ns": 2952440359
+        },
+        "outcome": "diagnostic completed; original T8 failure retained",
+        "scope": "cumulative process+children CPU through all prior diagnostic persistence; final counter write/print excluded"
+      }
+    },
+    "B1": {
+      "base_comparison": {
+        "11": {
+          "equals_t8": true,
+          "sha256": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47"
+        },
+        "23": {
+          "equals_t8": true,
+          "sha256": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083"
+        },
+        "47": {
+          "equals_t8": true,
+          "sha256": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400"
+        }
+      },
+      "boundary_affinities": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "boundary_pool_sizes": [
+        1
+      ],
+      "boundary_snapshots": 86,
+      "boundary_task_counts": [
+        1
+      ],
+      "calibration_calls": 27,
+      "calibration_prepare_cpu_ns": 15297995,
+      "calibration_protocol_cpu_ns": 16981898,
+      "calibration_rows": 1944,
+      "calibration_service_cpu_ns": 172755723,
+      "container_deltas": {
+        "cpu_stat": {
+          "burst_usec": 0,
+          "nice_usec": 0,
+          "nr_bursts": 0,
+          "nr_periods": 21,
+          "nr_throttled": 0,
+          "system_usec": 0,
+          "throttled_usec": 0,
+          "usage_usec": 2106355,
+          "user_usec": 2106356
+        },
+        "memory_events": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "scope": "container, not process; deltas do not establish causation"
+      },
+      "exit_code": 0,
+      "gc_cpu_ns_total": 5002078,
+      "group_cpu_ns": {
+        "calibration_measure": 205035616,
+        "compile": 390539955,
+        "dataset_train": 141331096,
+        "dataset_validation": 50052835,
+        "decoder": 214787034,
+        "export": 13932131,
+        "matching_manifest": 20258374,
+        "pretrain_loop": 989512063,
+        "validation": 34454813
+      },
+      "imports_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 92039076,
+        "thread_cpu_ns": 92039841,
+        "total_cpu_ns": 92039076,
+        "wall_ns": 92040431
+      },
+      "launch_kind": "nested",
+      "major_faults": 0,
+      "native_library_sha256": "154f13f2dc2a707a15c99730973b688e1f66652f9d1ee194fecf5eea956bf770",
+      "residual": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 46272209,
+        "thread_cpu_ns": 46265004,
+        "total_cpu_ns": 46272209,
+        "wall_ns": 46042653
+      },
+      "shared": {
+        "child_cpu_ns": 388147000,
+        "process_cpu_ns": 1718029126,
+        "thread_cpu_ns": 1718027937,
+        "total_cpu_ns": 2106176126,
+        "wall_ns": 2105662017
+      },
+      "shared_work_units": 3611371737,
+      "verification_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 2139403,
+        "thread_cpu_ns": 2140119,
+        "total_cpu_ns": 2139403,
+        "wall_ns": 2141701
+      },
+      "worker_complete": {
+        "clock": {
+          "child_cpu_ns": 393897000,
+          "process_cpu_ns": 2154334062,
+          "thread_cpu_ns": 2154335797,
+          "total_cpu_ns": 2548231062,
+          "wall_ns": 14462654971380,
+          "wall_since_execute_entry_ns": 2500851023
+        },
+        "outcome": "diagnostic completed; original T8 failure retained",
+        "scope": "cumulative process+children CPU through all prior diagnostic persistence; final counter write/print excluded"
+      }
+    },
+    "B2": {
+      "base_comparison": {
+        "11": {
+          "equals_t8": true,
+          "sha256": "f6b75f2639fe5d14475d0d68634bc637fbaabf12346102426a202923d8166c47"
+        },
+        "23": {
+          "equals_t8": true,
+          "sha256": "640aeaaaa82ca4be068b6680d1d919b03c7650f22a3e6139e44dce2591492083"
+        },
+        "47": {
+          "equals_t8": true,
+          "sha256": "4b9f25a39c2849f2ebd27989c9d1a6ef91f1c3163d78d813e17ab21713d54400"
+        }
+      },
+      "boundary_affinities": [
+        [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      ],
+      "boundary_pool_sizes": [
+        1
+      ],
+      "boundary_snapshots": 86,
+      "boundary_task_counts": [
+        1
+      ],
+      "calibration_calls": 27,
+      "calibration_prepare_cpu_ns": 18992942,
+      "calibration_protocol_cpu_ns": 19952447,
+      "calibration_rows": 1944,
+      "calibration_service_cpu_ns": 198607384,
+      "container_deltas": {
+        "cpu_stat": {
+          "burst_usec": 0,
+          "nice_usec": 0,
+          "nr_bursts": 0,
+          "nr_periods": 24,
+          "nr_throttled": 0,
+          "system_usec": 374795,
+          "throttled_usec": 0,
+          "usage_usec": 3018069,
+          "user_usec": 2643274
+        },
+        "memory_events": {
+          "high": 0,
+          "low": 0,
+          "max": 0,
+          "oom": 0,
+          "oom_group_kill": 0,
+          "oom_kill": 0
+        },
+        "scope": "container, not process; deltas do not establish causation"
+      },
+      "exit_code": 0,
+      "gc_cpu_ns_total": 4470655,
+      "group_cpu_ns": {
+        "calibration_measure": 237552773,
+        "compile": 404964994,
+        "dataset_train": 193803124,
+        "dataset_validation": 58933363,
+        "decoder": 298465165,
+        "export": 15633632,
+        "matching_manifest": 21189156,
+        "pretrain_loop": 1149317996,
+        "validation": 37520657
+      },
+      "imports_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 118015290,
+        "thread_cpu_ns": 118016203,
+        "total_cpu_ns": 118015290,
+        "wall_ns": 118017888
+      },
+      "launch_kind": "nested",
+      "major_faults": 0,
+      "native_library_sha256": "154f13f2dc2a707a15c99730973b688e1f66652f9d1ee194fecf5eea956bf770",
+      "residual": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 51151021,
+        "thread_cpu_ns": 51144257,
+        "total_cpu_ns": 51151021,
+        "wall_ns": 51093843
+      },
+      "shared": {
+        "child_cpu_ns": 403114000,
+        "process_cpu_ns": 2065417881,
+        "thread_cpu_ns": 2065416891,
+        "total_cpu_ns": 2468531881,
+        "wall_ns": 2473512622
+      },
+      "shared_work_units": 3611371737,
+      "verification_clocks": {
+        "child_cpu_ns": 0,
+        "process_cpu_ns": 2289311,
+        "thread_cpu_ns": 2290276,
+        "total_cpu_ns": 2289311,
+        "wall_ns": 2291717
+      },
+      "worker_complete": {
+        "clock": {
+          "child_cpu_ns": 407672000,
+          "process_cpu_ns": 2434311648,
+          "thread_cpu_ns": 2434313385,
+          "total_cpu_ns": 2841983648,
+          "wall_ns": 14481056213050,
+          "wall_since_execute_entry_ns": 2767170096
+        },
+        "outcome": "diagnostic completed; original T8 failure retained",
+        "scope": "cumulative process+children CPU through all prior diagnostic persistence; final counter write/print excluded"
+      }
+    }
+  },
+  "schema": "hepta.launch-paired-summary.v1"
+}
