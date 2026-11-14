@@ -1626,27 +1626,63 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .flush_rollout()
         .await
         .expect("parent rollout should flush");
-    let child_thread_id = harness
-        .control
-        .spawn_agent_with_metadata(
-            child_config,
-            text_input("child task"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: None,
-            })),
-            SpawnAgentOptions {
-                fork_parent_spawn_call_id: Some(parent_spawn_call_id.clone()),
-                fork_mode: Some(SpawnAgentForkMode::FullHistory),
-                ..Default::default()
-            },
-        )
+    // Freeze the fork before its initial prompt can add canonical context or
+    // advance the inherited reference baseline.
+    let delivery_hook = harness.manager.pause_next_startup_before_delivery();
+    let child_spawn = harness.control.spawn_agent_with_metadata(
+        child_config,
+        text_input("child task"),
+        Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
+            parent_thread_id,
+            depth: 1,
+            agent_path: None,
+            agent_nickname: None,
+            agent_role: None,
+        })),
+        SpawnAgentOptions {
+            fork_parent_spawn_call_id: Some(parent_spawn_call_id.clone()),
+            fork_mode: Some(SpawnAgentForkMode::FullHistory),
+            ..Default::default()
+        },
+    );
+    tokio::pin!(child_spawn);
+    tokio::select! {
+        _ = delivery_hook.wait_until_entered() => {}
+        result = &mut child_spawn => panic!("fork returned before startup delivery paused: {result:?}"),
+    }
+    let fork_snapshot = async {
+        let child_thread_ids: Vec<_> = harness
+            .manager
+            .list_thread_ids()
+            .await
+            .into_iter()
+            .filter(|thread_id| *thread_id != parent_thread_id)
+            .collect();
+        let [snapshot_thread_id] = child_thread_ids.as_slice() else {
+            return Err(format!(
+                "expected one published child, got {child_thread_ids:?}"
+            ));
+        };
+        let child_thread = harness
+            .manager
+            .get_thread(*snapshot_thread_id)
+            .await
+            .map_err(|error| error.to_string())?;
+        Ok((
+            *snapshot_thread_id,
+            child_thread.session.clone_history().await,
+            child_thread.session.reference_context_item().await,
+        ))
+    }
+    .await;
+    delivery_hook.release();
+    let child_thread_id = child_spawn
         .await
         .expect("forked spawn should succeed")
         .thread_id;
+    let (snapshot_thread_id, history, reference_context_item) =
+        fork_snapshot.expect("capture full fork before the first child turn");
+    assert_eq!(snapshot_thread_id, child_thread_id);
 
     let child_thread = harness
         .manager
@@ -1658,7 +1694,6 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         child_thread.config_snapshot().await.history_mode,
         ThreadHistoryMode::Legacy
     );
-    let history = child_thread.session.clone_history().await;
     let history_items = history.raw_items().cloned().collect::<Vec<_>>();
     let expected_final_answer = parent_thread
         .session
@@ -1726,7 +1761,7 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         "full-history forked child history should replace parent usage hints with the child subagent hint while filtering non-final assistant/tool chatter"
     );
     assert_eq!(
-        serde_json::to_value(child_thread.session.reference_context_item().await)
+        serde_json::to_value(reference_context_item)
             .expect("serialize child reference context item"),
         serde_json::to_value(Some(parent_reference_context_item))
             .expect("serialize expected reference context item"),
@@ -1740,33 +1775,60 @@ async fn spawn_agent_can_fork_parent_thread_history_with_sanitized_items() {
         .multi_agent_v2
         .subagent_developer_instructions = Some(String::new());
     no_hint_child_config.multi_agent_v2.subagent_usage_hint_text = Some(String::new());
-    let no_hint_child_thread_id = harness
-        .control
-        .spawn_agent_with_metadata(
-            no_hint_child_config,
-            text_input("child task without hints"),
-            Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
-                parent_thread_id,
-                depth: 1,
-                agent_path: None,
-                agent_nickname: None,
-                agent_role: None,
-            })),
-            SpawnAgentOptions {
-                fork_parent_spawn_call_id: Some(parent_spawn_call_id.clone()),
-                fork_mode: Some(SpawnAgentForkMode::FullHistory),
-                ..Default::default()
-            },
-        )
+    let no_hint_delivery_hook = harness.manager.pause_next_startup_before_delivery();
+    let no_hint_child_spawn = harness.control.spawn_agent_with_metadata(
+        no_hint_child_config,
+        text_input("child task without hints"),
+        Some(SessionSource::SubAgent(SubAgentSource::ThreadSpawn {
+            parent_thread_id,
+            depth: 1,
+            agent_path: None,
+            agent_nickname: None,
+            agent_role: None,
+        })),
+        SpawnAgentOptions {
+            fork_parent_spawn_call_id: Some(parent_spawn_call_id.clone()),
+            fork_mode: Some(SpawnAgentForkMode::FullHistory),
+            ..Default::default()
+        },
+    );
+    tokio::pin!(no_hint_child_spawn);
+    tokio::select! {
+        _ = no_hint_delivery_hook.wait_until_entered() => {}
+        result = &mut no_hint_child_spawn => panic!("no-hint fork returned before startup delivery paused: {result:?}"),
+    }
+    let no_hint_snapshot = async {
+        let child_thread_ids: Vec<_> = harness
+            .manager
+            .list_thread_ids()
+            .await
+            .into_iter()
+            .filter(|thread_id| *thread_id != parent_thread_id && *thread_id != child_thread_id)
+            .collect();
+        let [snapshot_thread_id] = child_thread_ids.as_slice() else {
+            return Err(format!(
+                "expected one published no-hint child, got {child_thread_ids:?}"
+            ));
+        };
+        let no_hint_child_thread = harness
+            .manager
+            .get_thread(*snapshot_thread_id)
+            .await
+            .map_err(|error| format!("no-hint child thread should be registered: {error}"))?;
+        Ok((
+            *snapshot_thread_id,
+            no_hint_child_thread.session.clone_history().await,
+        ))
+    }
+    .await;
+    no_hint_delivery_hook.release();
+    let no_hint_child_thread_id = no_hint_child_spawn
         .await
         .expect("forked spawn should honor an empty subagent usage hint")
         .thread_id;
-    let no_hint_child_thread = harness
-        .manager
-        .get_thread(no_hint_child_thread_id)
-        .await
-        .expect("no-hint child thread should be registered");
-    let no_hint_history = no_hint_child_thread.session.clone_history().await;
+    let (no_hint_snapshot_thread_id, no_hint_history) =
+        no_hint_snapshot.expect("capture no-hint full fork before the first child turn");
+    assert_eq!(no_hint_snapshot_thread_id, no_hint_child_thread_id);
     assert!(
         !history_contains_text(no_hint_history.raw_items(), "Child subagent guidance.")
             && !history_contains_text(
