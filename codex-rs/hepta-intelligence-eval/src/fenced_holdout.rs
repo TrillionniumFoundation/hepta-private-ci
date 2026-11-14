@@ -176,6 +176,19 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     poisoned: bool,
 }
 
+#[cfg(any(test, feature = "qualification-file-observation"))]
+impl FencedFinalHoldoutOwnerV1<crate::LockedFileFinalHoldoutCasStoreV1> {
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, crate::LockedFileCasErrorV1> {
+        if self.poisoned {
+            return Err(crate::LockedFileCasErrorV1::Indeterminate);
+        }
+        self.store.qualification_file_bytes(maximum_bytes)
+    }
+}
+
 impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
     /// Initialize a previously absent authoritative record.
     pub fn initialize(
@@ -297,10 +310,14 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         if self.poisoned {
             return Err(FencedHoldoutError::Poisoned);
         }
-        let current = self
-            .store
-            .load(self.binding)?
-            .ok_or(FencedHoldoutError::Missing)?;
+        let current = match self.store.load(self.binding) {
+            Ok(current) => current.ok_or(FencedHoldoutError::Missing)?,
+            Err(FinalHoldoutCasStoreError::Indeterminate) => {
+                self.poisoned = true;
+                return Err(FencedHoldoutError::Indeterminate);
+            }
+            Err(error) => return Err(FencedHoldoutError::Store(error)),
+        };
         current.validate(self.binding)?;
         if current.fence != self.fence {
             self.poisoned = true;
