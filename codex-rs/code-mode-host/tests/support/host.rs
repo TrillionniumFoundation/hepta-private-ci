@@ -86,5 +86,46 @@ pub(crate) async fn startup_diagnostics(child: &mut Child) -> String {
         }
         None => "stderr was not captured".to_string(),
     };
-    format!("code-mode host startup failed: pid={pid:?}, status={status}; {stderr}")
+    let diagnostics =
+        format!("code-mode host startup failed: pid={pid:?}, status={status}; {stderr}");
+    #[cfg(target_os = "macos")]
+    let diagnostics = if status == "running" {
+        match pid {
+            Some(pid) => format!("{diagnostics}; {}", macos_pid_snapshot(pid).await),
+            None => diagnostics,
+        }
+    } else {
+        diagnostics
+    };
+    diagnostics
+}
+
+#[cfg(target_os = "macos")]
+async fn macos_pid_snapshot(pid: u32) -> String {
+    // This runs only after the original startup deadline has already failed.
+    // Inspect one PID without collecting process arguments or environment.
+    let mut command = Command::new("/bin/ps");
+    command
+        .args([
+            "-p",
+            &pid.to_string(),
+            "-o",
+            "pid=,ppid=,state=,wchan=,etime=,time=,comm=",
+        ])
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .kill_on_drop(/*kill_on_drop*/ true);
+    match timeout(Duration::from_millis(/*millis*/ 100), command.output()).await {
+        Ok(Ok(output)) => {
+            let stdout = String::from_utf8_lossy(&output.stdout[..output.stdout.len().min(4096)]);
+            let stderr = String::from_utf8_lossy(&output.stderr[..output.stderr.len().min(4096)]);
+            format!(
+                "macOS PID snapshot (PID may exit or be reused): status={}, stdout={stdout:?}, stderr={stderr:?}",
+                output.status
+            )
+        }
+        Ok(Err(error)) => format!("macOS PID snapshot unavailable: {error}"),
+        Err(_) => "macOS PID snapshot unavailable within 100ms".to_string(),
+    }
 }
