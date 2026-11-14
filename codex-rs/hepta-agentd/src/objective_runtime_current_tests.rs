@@ -29,7 +29,7 @@ pub(crate) struct CurrentFixture {
 }
 
 impl CurrentFixture {
-    pub(crate) fn trust(&self, epoch: u64, revoked: bool) {
+    pub(crate) fn trust(&self, epoch: u64, revoked: bool) -> Result<(), String> {
         let value = serde_json::json!({
             "schema_version": 1, "agent_id": self.state.identity.agent_id.as_str(),
             "issuer_id": self.record.authentication.issuer_id.as_str(), "key_epoch": epoch,
@@ -37,21 +37,39 @@ impl CurrentFixture {
                 .map(|byte| format!("{byte:02x}")).collect::<String>(),
             "revoked": revoked, "thread_ids": []
         });
-        std::fs::write(&self.trust_file, serde_json::to_vec(&value).unwrap()).unwrap();
-        std::fs::set_permissions(&self.trust_file, std::fs::Permissions::from_mode(0o600)).unwrap();
+        std::fs::write(
+            &self.trust_file,
+            serde_json::to_vec(&value).map_err(|error| error.to_string())?,
+        )
+        .map_err(|error| error.to_string())?;
+        std::fs::set_permissions(&self.trust_file, std::fs::Permissions::from_mode(0o600))
+            .map_err(|error| error.to_string())?;
+        Ok(())
     }
 }
 
-pub(crate) async fn fixture(clock: ClockCase) -> CurrentFixture {
-    let (owner, registry, previous) = super::isolation_tests::fixture().unwrap();
+pub(crate) async fn fixture(clock: ClockCase) -> Result<CurrentFixture, String> {
+    let (owner, registry, previous) =
+        super::isolation_tests::fixture().map_err(|error| error.to_string())?;
     let identity = previous.identity.clone();
     drop(previous);
-    let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16).unwrap();
-    state.refresh_generation().unwrap();
-    let cognitive = CognitiveStore::open(&state.identity.layout).await.unwrap();
-    state.attach_cognitive_store(Arc::new(cognitive)).unwrap();
-    state.mark_runtime_prerequisites_ready().unwrap();
-    state.mark_app_server_ready().unwrap();
+    let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)
+        .map_err(|error| error.to_string())?;
+    state
+        .refresh_generation()
+        .map_err(|error| error.to_string())?;
+    let cognitive = CognitiveStore::open(&state.identity.layout)
+        .await
+        .map_err(|error| error.to_string())?;
+    state
+        .attach_cognitive_store(Arc::new(cognitive))
+        .map_err(|error| error.to_string())?;
+    state
+        .mark_runtime_prerequisites_ready()
+        .map_err(|error| error.to_string())?;
+    state
+        .mark_app_server_ready()
+        .map_err(|error| error.to_string())?;
     fixture_with_state(clock, owner, registry, Arc::new(state)).await
 }
 
@@ -60,8 +78,8 @@ pub(crate) async fn fixture_with_state(
     owner: tempfile::TempDir,
     registry: FleetRegistry,
     state: Arc<AgentdState>,
-) -> CurrentFixture {
-    let result = unadmitted_fixture_with_state(clock, owner, registry, state).await;
+) -> Result<CurrentFixture, String> {
+    let result = unadmitted_fixture_with_state(clock, owner, registry, state).await?;
     // Expiry cases model an already-admitted run before its deadline passed;
     // the current reader uses the real clock, without a deadline sweep.
     let deadline = result.record.admission.deadline_unix_micros / 1000;
@@ -69,10 +87,10 @@ pub(crate) async fn fixture_with_state(
         .state
         .runs
         .lock()
-        .unwrap()
+        .map_err(|error| error.to_string())?
         .start_revalidated_run_start(deadline - 1, &result.record)
-        .unwrap();
-    result
+        .map_err(|error| format!("{error:?}"))?;
+    Ok(result)
 }
 
 pub(crate) async fn unadmitted_fixture_with_state(
@@ -80,14 +98,15 @@ pub(crate) async fn unadmitted_fixture_with_state(
     owner: tempfile::TempDir,
     registry: FleetRegistry,
     state: Arc<AgentdState>,
-) -> CurrentFixture {
-    std::fs::set_permissions(owner.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+) -> Result<CurrentFixture, String> {
+    std::fs::set_permissions(owner.path(), std::fs::Permissions::from_mode(0o700))
+        .map_err(|error| error.to_string())?;
     std::fs::set_permissions(
         &state.identity.home_root,
         std::fs::Permissions::from_mode(0o700),
     )
-    .unwrap();
-    let now = crate::authbus_ingress::now_ms().unwrap();
+    .map_err(|error| error.to_string())?;
+    let now = crate::authbus_ingress::now_ms().map_err(|error| error.to_string())?;
     let key = SigningKey::from_bytes(&[89; 32]);
     let mut record = crate::objective_runtime::tests::record(
         "run.current",
@@ -97,8 +116,8 @@ pub(crate) async fn unadmitted_fixture_with_state(
     record.snapshot.generation = 2;
     record.snapshot.fence_digest =
         objective_run_fence(state.identity(), /*current_generation*/ 2)
-            .parse()
-            .unwrap();
+            .parse::<Digest32>()
+            .map_err(|error| error.to_string())?;
     let deadline = if matches!(clock, ClockCase::ElapsedDeadline) {
         now - 1_000
     } else {
@@ -107,9 +126,10 @@ pub(crate) async fn unadmitted_fixture_with_state(
     record.admission.deadline_unix_micros = deadline * 1_000;
     let claims = SignedMessageClaims {
         issuer_id: record.authentication.issuer_id.clone(),
-        key_epoch: Generation::new(1).unwrap(),
+        key_epoch: Generation::new(1).map_err(|error| error.to_string())?,
         message_id: record.authentication.message_id.clone(),
-        subject_id: StableId::new(state.identity.agent_id.as_str()).unwrap(),
+        subject_id: StableId::new(state.identity.agent_id.as_str())
+            .map_err(|error| error.to_string())?,
         scope_digest: objective_run_scope(state.identity()),
         payload_digest: record.authentication.signed_body_digest,
         sequence: 17,
@@ -123,7 +143,10 @@ pub(crate) async fn unadmitted_fixture_with_state(
     record.authentication.expires_at_ms = claims.expires_at_ms;
     record.authentication.signature = key.sign(&claims.signing_bytes()).to_bytes();
     let (journal, host, record) = crate::objective_runtime::tests::current_host_with(record);
-    state.objective_runtime.set(host).map_err(|_| ()).unwrap();
+    state
+        .objective_runtime
+        .set(host)
+        .map_err(|_| "objective runtime already initialized".to_string())?;
     let trust_file = state
         .identity
         .home_root
@@ -137,17 +160,20 @@ pub(crate) async fn unadmitted_fixture_with_state(
         _owner: owner,
         _journal: journal,
     };
-    result.trust(/*epoch*/ 1, /*revoked*/ false);
+    result.trust(/*epoch*/ 1, /*revoked*/ false)?;
     let home = codex_utils_absolute_path::AbsolutePathBuf::from_absolute_path(
         &result.state.identity.home_root,
     )
-    .unwrap();
+    .map_err(|error| error.to_string())?;
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
         &codex_state::SqliteConfig::from_sqlite_home(home),
     )
     .await
-    .unwrap();
-    let frontier = evidence.authbus_replay_frontier_digest().await.unwrap();
+    .map_err(|error| error.to_string())?;
+    let frontier = evidence
+        .authbus_replay_frontier_digest()
+        .await
+        .map_err(|error| error.to_string())?;
     drop(evidence);
     let checkpoint = result
         ._owner
@@ -159,29 +185,31 @@ pub(crate) async fn unadmitted_fixture_with_state(
             "schema_version": 1, "agent_id": result.state.identity.agent_id.as_str(),
             "generation": 1, "digest": frontier.to_string()
         }))
-        .unwrap(),
+        .map_err(|error| error.to_string())?,
     )
-    .unwrap();
-    std::fs::set_permissions(&checkpoint, std::fs::Permissions::from_mode(0o600)).unwrap();
+    .map_err(|error| error.to_string())?;
+    std::fs::set_permissions(&checkpoint, std::fs::Permissions::from_mode(0o600))
+        .map_err(|error| error.to_string())?;
     let ingress = crate::authbus_ingress::TextIngress::open(
         result.state.identity(),
         result.trust_file.clone(),
         checkpoint,
     )
     .await
-    .unwrap();
+    .map_err(|error| error.to_string())?;
     result
         .state
         .authbus
         .set(Arc::new(ingress))
-        .map_err(|_| ())
-        .unwrap();
-    result
+        .map_err(|_| "AuthBus ingress already initialized".to_string())?;
+    Ok(result)
 }
 
 #[tokio::test]
 async fn current_read_is_owner_bound_read_only_and_explicitly_selected() {
-    let f = fixture(ClockCase::Current).await;
+    let f = fixture(ClockCase::Current)
+        .await
+        .expect("current objective fixture");
     let before = f
         .state
         .runs
@@ -224,19 +252,26 @@ async fn current_read_is_owner_bound_read_only_and_explicitly_selected() {
             .unwrap(),
         journal_before
     );
-    let other = fixture(ClockCase::Current).await;
+    let other = fixture(ClockCase::Current)
+        .await
+        .expect("current objective fixture");
     assert!(other.state.revalidate_current_objective(&proof).is_err());
 }
 
 #[tokio::test]
 async fn current_read_rechecks_signature_epoch_and_fleet_without_readmission() {
-    let f = fixture(ClockCase::Current).await;
+    let f = fixture(ClockCase::Current)
+        .await
+        .expect("current objective fixture");
     let proof = f.state.checked_current_objective("run.current").unwrap();
-    f.trust(/*epoch*/ 1, /*revoked*/ true);
+    f.trust(/*epoch*/ 1, /*revoked*/ true)
+        .expect("write current objective trust");
     assert!(f.state.revalidate_current_objective(&proof).is_err());
-    f.trust(/*epoch*/ 2, /*revoked*/ false);
+    f.trust(/*epoch*/ 2, /*revoked*/ false)
+        .expect("write current objective trust");
     assert!(f.state.checked_current_objective("run.current").is_err());
-    f.trust(/*epoch*/ 1, /*revoked*/ false);
+    f.trust(/*epoch*/ 1, /*revoked*/ false)
+        .expect("write current objective trust");
     f.registry
         .compare_and_transition(
             &f.state.identity.agent_id,
@@ -256,7 +291,7 @@ async fn current_read_rechecks_signature_epoch_and_fleet_without_readmission() {
         RunPhase::Cancelled
     );
     for clock in [ClockCase::ElapsedDeadline, ClockCase::ExpiredSignature] {
-        let expired = fixture(clock).await;
+        let expired = fixture(clock).await.expect("current objective fixture");
         assert!(
             expired
                 .state
@@ -268,7 +303,9 @@ async fn current_read_rechecks_signature_epoch_and_fleet_without_readmission() {
 
 #[tokio::test]
 async fn released_and_readmitted_run_cannot_reuse_an_old_observation() {
-    let f = fixture(ClockCase::Current).await;
+    let f = fixture(ClockCase::Current)
+        .await
+        .expect("current objective fixture");
     let proof = f.state.checked_current_objective("run.current").unwrap();
     let now = crate::authbus_ingress::now_ms().unwrap();
     let (_, cancelled) = f

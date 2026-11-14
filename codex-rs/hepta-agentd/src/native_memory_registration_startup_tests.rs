@@ -11,7 +11,8 @@ use crate::NativeMemoryContextAuthorityV1;
 async fn starting_install_waits_for_running_readiness_and_drain_revokes_current_context() {
     let f =
         starting_factory_fixture(crate::native_memory_test_support::controlled_document_bytes())
-            .await;
+            .await
+            .expect("current memory fixture");
     let state = &f.current.objective.state;
     assert_eq!(
         (
@@ -26,7 +27,10 @@ async fn starting_install_waits_for_running_readiness_and_drain_revokes_current_
         .attach(state, Arc::clone(&f.writer), &runtime)
         .unwrap();
     let host = f.registration.host().unwrap();
-    let mut query = f.current.query("starting-to-serving");
+    let mut query = f
+        .current
+        .query("starting-to-serving")
+        .expect("current memory fixture operation");
     query.key = f.source.admission.query().key.clone();
     assert!(host.prepare_read("run.current", query.clone()).is_err());
     assert!(
@@ -57,7 +61,8 @@ async fn starting_install_waits_for_running_readiness_and_drain_revokes_current_
     let prepared = host.prepare_read("run.current", query.clone()).unwrap();
     let signed = f
         .current
-        .sign(prepared.binding().clone(), "starting-to-serving");
+        .sign(prepared.binding().clone(), "starting-to-serving")
+        .expect("current memory fixture operation");
     let mut context = prepared.authorize(&signed).unwrap();
     let observed = context.current().unwrap();
     assert_eq!(

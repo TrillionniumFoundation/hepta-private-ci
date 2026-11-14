@@ -17,8 +17,8 @@ use std::path::Path;
 fn d(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
-fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+fn id(value: &str) -> Result<StableId> {
+    Ok(StableId::new(value)?)
 }
 
 pub fn sign(binding: FinalUseBinding, label: &str, now: u64) -> Result<SignedFinalUseGrant> {
@@ -80,30 +80,30 @@ pub fn prepare_ndu(
     )?;
     let policy = NduProductionPolicyV1 {
         utility_profile: UtilityProfile {
-            profile_id: id("process.policy"),
+            profile_id: id("process.policy")?,
             axis_registry_digest: d("axes"),
             normalization_manifest_digest: d("normalization"),
-            dimensions: vec![(id("success"), AxisDirection::Maximize)],
+            dimensions: vec![(id("success")?, AxisDirection::Maximize)],
             risk_ceilings: vec![],
             resource_ceilings: vec![],
             required_organs: RequiredOrganSet {
-                organ_ids: vec![id("memory")],
+                organ_ids: vec![id("memory")?],
             },
         },
         evaluation_policy: EvaluationPolicyV1 {
-            policy_id: id("process.evaluation"),
+            policy_id: id("process.evaluation")?,
             utility_rules: vec![AxisAggregationRule {
-                axis: id("success"),
+                axis: id("success")?,
                 operator: AggregationOperator::Sum,
             }],
             risk_rules: vec![],
             resource_rules: vec![],
             uncertainty_rules: vec![AxisAggregationRule {
-                axis: id("success"),
+                axis: id("success")?,
                 operator: AggregationOperator::Maximum,
             }],
             pareto_absolute_tolerances: vec![AxisValue {
-                axis: id("success"),
+                axis: id("success")?,
                 value: FixedQ32::ZERO,
             }],
         },
@@ -113,8 +113,8 @@ pub fn prepare_ndu(
         &root,
         authority,
         NduOwnerContextV1 {
-            principal_id: id(identity.agent_id.as_str()),
-            owner_id: id("process.ndu"),
+            principal_id: id(identity.agent_id.as_str())?,
+            owner_id: id("process.ndu")?,
             host_generation: 2,
             principal_scope_digest: d("principal"),
             fence_digest: d("ndu fence"),
@@ -122,7 +122,7 @@ pub fn prepare_ndu(
         },
         policy,
     )?;
-    let subject = native_memory_subject_digest_v1(&id(identity.agent_id.as_str()));
+    let subject = native_memory_subject_digest_v1(&id(identity.agent_id.as_str())?);
     for (label, mutation) in [
         (
             "process.append",

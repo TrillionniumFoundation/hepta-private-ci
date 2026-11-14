@@ -42,7 +42,9 @@ async fn pretrained_current_factory_executes_one_exact_decoder_and_fences_delive
     let source_hash = Digest32::of_bytes(&document_bytes).to_string();
     let document: MemoryCellDocumentV1 = serde_json::from_slice(&document_bytes).unwrap();
     document.validate().unwrap();
-    let mut f = factory_fixture_with_document(document_bytes).await;
+    let mut f = factory_fixture_with_document(document_bytes)
+        .await
+        .expect("current memory fixture");
     assert_eq!(
         f.source.claim.production.source_content_sha256.as_str(),
         source_hash
@@ -54,13 +56,17 @@ async fn pretrained_current_factory_executes_one_exact_decoder_and_fences_delive
         .attach(&f.current.objective.state, Arc::clone(&f.writer), &runtime)
         .unwrap();
     let host = f.registration.host().unwrap();
-    let mut query = f.current.query("pretrained-current-factory");
+    let mut query = f
+        .current
+        .query("pretrained-current-factory")
+        .expect("current memory fixture operation");
     query.key = document.key.clone();
     query.deadline_unix_ms = f.current.objective.record.admission.deadline_unix_micros / 1000;
     let prepared = host.prepare_read("run.current", query.clone()).unwrap();
     let signed = f
         .current
-        .sign(prepared.binding().clone(), "pretrained-current-factory");
+        .sign(prepared.binding().clone(), "pretrained-current-factory")
+        .expect("current memory fixture operation");
     let mut shadow_profile = profile(&model);
     // Existing pretrained shadow envelope, configured rather than calibrated.
     shadow_profile.limits.p95_latency_micros = 120_000_000;
@@ -81,7 +87,8 @@ async fn pretrained_current_factory_executes_one_exact_decoder_and_fences_delive
         .unwrap();
     let mut different_query = query.clone();
     different_query.request_id =
-        crate::native_memory_current_test_support::id("ungranted-current-query");
+        crate::native_memory_current_test_support::id("ungranted-current-query")
+            .expect("stable test request id");
     assert!(shadow.read(different_query).await.is_err());
     let result = shadow.read(query.clone()).await.unwrap();
     shadow.revalidate_delivery(&result).await.unwrap();

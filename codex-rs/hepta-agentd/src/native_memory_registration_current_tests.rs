@@ -36,13 +36,15 @@ pub(super) struct FactoryFixture {
     _config: AgentdConfig,
 }
 
-async fn factory_fixture() -> FactoryFixture {
+async fn factory_fixture() -> Result<FactoryFixture, String> {
     factory_fixture_with_document(crate::native_memory_test_support::controlled_document_bytes())
         .await
 }
 
-pub(super) async fn factory_fixture_with_document(document_bytes: Vec<u8>) -> FactoryFixture {
-    let f = starting_factory_fixture(document_bytes).await;
+pub(super) async fn factory_fixture_with_document(
+    document_bytes: Vec<u8>,
+) -> Result<FactoryFixture, String> {
+    let f = starting_factory_fixture(document_bytes).await?;
     let state = &f.current.objective.state;
     f.current
         .objective
@@ -52,38 +54,50 @@ pub(super) async fn factory_fixture_with_document(document_bytes: Vec<u8>) -> Fa
             /*expected_generation*/ 1,
             AgentLifecycle::Running,
         )
-        .unwrap();
-    state.refresh_generation().unwrap();
-    state.mark_app_server_ready().unwrap();
+        .map_err(|error| error.to_string())?;
+    state
+        .refresh_generation()
+        .map_err(|error| error.to_string())?;
+    state
+        .mark_app_server_ready()
+        .map_err(|error| error.to_string())?;
     state
         .start_current_run_start_record(&f.current.objective.record)
-        .unwrap();
-    f
+        .map_err(|error| error.to_string())?;
+    Ok(f)
 }
 
-pub(super) async fn starting_factory_fixture(document_bytes: Vec<u8>) -> FactoryFixture {
-    let owner_root = tempfile::tempdir().unwrap();
-    let root = owner_root.path().canonicalize().unwrap();
+pub(super) async fn starting_factory_fixture(
+    document_bytes: Vec<u8>,
+) -> Result<FactoryFixture, String> {
+    let owner_root = tempfile::tempdir().map_err(|error| error.to_string())?;
+    let root = owner_root
+        .path()
+        .canonicalize()
+        .map_err(|error| error.to_string())?;
     let fleet_path = root.join("fleet");
-    let fleet = HeptaFleetRoot::parse(fleet_path.clone()).unwrap();
-    let registry = FleetRegistry::initialize(fleet.clone()).unwrap();
+    let fleet = HeptaFleetRoot::parse(fleet_path.clone()).map_err(|error| error.to_string())?;
+    let registry = FleetRegistry::initialize(fleet.clone()).map_err(|error| error.to_string())?;
     let workspace = root.join("workspace");
-    std::fs::create_dir(&workspace).unwrap();
-    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap();
+    std::fs::create_dir(&workspace).map_err(|error| error.to_string())?;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")
+        .map_err(|error| error.to_string())?;
     let manifest = AgentManifest::new(
         owner.clone(),
-        WorkspaceBinding::new(&workspace, &fleet).unwrap(),
+        WorkspaceBinding::new(&workspace, &fleet).map_err(|error| error.to_string())?,
         ResourceBudget::local_default(),
     )
-    .unwrap();
-    let record = registry.register(manifest).unwrap();
+    .map_err(|error| error.to_string())?;
+    let record = registry
+        .register(manifest)
+        .map_err(|error| error.to_string())?;
     registry
         .compare_and_transition(
             &owner,
             /*expected_generation*/ 0,
             AgentLifecycle::Starting,
         )
-        .unwrap();
+        .map_err(|error| error.to_string())?;
     let config = AgentdConfig::load(
         fleet_path,
         owner.clone(),
@@ -93,21 +107,25 @@ pub(super) async fn starting_factory_fixture(document_bytes: Vec<u8>) -> Factory
         record.layout.home_root().to_path_buf(),
         workspace,
     )
-    .unwrap();
+    .map_err(|error| error.to_string())?;
     let store = CognitiveStore::open(&config.identity().layout)
         .await
-        .unwrap();
-    let anchor = store.recovery_anchor().await.unwrap();
+        .map_err(|error| error.to_string())?;
+    let anchor = store
+        .recovery_anchor()
+        .await
+        .map_err(|error| error.to_string())?;
     store.close().await;
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner,
         Sha256Digest::for_bytes(b"registered-source-test"),
         /*authority_epoch*/ 1,
         /*owner_epoch*/ 1,
-        crate::authbus_ingress::now_ms().unwrap() / 1000 + 3600,
-        ProductionAuthorityToken::from_verified_bytes(b"registered-source-test".to_vec()).unwrap(),
+        crate::authbus_ingress::now_ms().map_err(|error| error.to_string())? / 1000 + 3600,
+        ProductionAuthorityToken::from_verified_bytes(b"registered-source-test".to_vec())
+            .map_err(|error| error.to_string())?,
     )
-    .unwrap();
+    .map_err(|error| error.to_string())?;
     let verifier = Arc::new(Verifier(AtomicBool::default()));
     let writer = Arc::new(
         AgentdProductionWriterHost::open(
@@ -119,46 +137,55 @@ pub(super) async fn starting_factory_fixture(document_bytes: Vec<u8>) -> Factory
             /*lease_generation*/ 1,
         )
         .await
-        .unwrap(),
+        .map_err(|error| error.to_string())?,
     );
     let config = config
         .with_production_writer_host(Arc::clone(&writer))
-        .unwrap();
+        .map_err(|error| error.to_string())?;
     let state = Arc::new(
         AgentdState::new(
             config.identity().clone(),
             registry.clone(),
             /*event_capacity*/ 16,
         )
-        .unwrap(),
+        .map_err(|error| error.to_string())?,
     );
     let cognitive = writer.cognitive_runtime();
     state
-        .attach_cognitive_store(Arc::clone(cognitive.available_store().unwrap()))
-        .unwrap();
-    state.refresh_generation().unwrap();
-    state.mark_runtime_prerequisites_ready().unwrap();
+        .attach_cognitive_store(Arc::clone(
+            cognitive
+                .available_store()
+                .ok_or_else(|| "test cognitive store unavailable".to_string())?,
+        ))
+        .map_err(|error| error.to_string())?;
+    state
+        .refresh_generation()
+        .map_err(|error| error.to_string())?;
+    state
+        .mark_runtime_prerequisites_ready()
+        .map_err(|error| error.to_string())?;
     let objective = crate::state::objective_current_tests::unadmitted_fixture_with_state(
         ClockCase::Current,
         owner_root,
         registry,
         state,
     )
-    .await;
-    let current = crate::native_memory_current_test_support::fixture_with_objective(objective);
+    .await?;
+    let current = crate::native_memory_current_test_support::fixture_with_objective(objective)?;
     let mut source = crate::native_memory_test_support::fixture_with_document_bytes(
-        tempfile::tempdir().unwrap(),
+        tempfile::tempdir().map_err(|error| error.to_string())?,
         writer.writer(),
         verifier,
         document_bytes,
     )
     .await;
     source.config.output_width = 5;
-    std::fs::create_dir_all(&source.config.checkpoint).unwrap();
+    std::fs::create_dir_all(&source.config.checkpoint).map_err(|error| error.to_string())?;
     let manifest = serde_json::to_vec(&serde_json::json!({
         "roots": [source.claim.production.source_content_sha256.as_str()], "scope": source.config.scope,
-    })).unwrap();
-    std::fs::write(source.config.checkpoint.join("lineage.json"), &manifest).unwrap();
+    })).map_err(|error| error.to_string())?;
+    std::fs::write(source.config.checkpoint.join("lineage.json"), &manifest)
+        .map_err(|error| error.to_string())?;
     source.config.pins.manifest_sha256 = Digest32::of_bytes(&manifest).to_string();
     let registration = Arc::new(AgentdNativeMemoryRegistrationV1::new(
         Arc::clone(&current.ndu),
@@ -166,14 +193,14 @@ pub(super) async fn starting_factory_fixture(document_bytes: Vec<u8>) -> Factory
     ));
     let config = config
         .with_native_memory_registration(Arc::clone(&registration))
-        .unwrap();
-    FactoryFixture {
+        .map_err(|error| error.to_string())?;
+    Ok(FactoryFixture {
         current,
         source,
         writer,
         registration,
         _config: config,
-    }
+    })
 }
 
 pub(super) fn registered_source(f: &FactoryFixture) -> NativeMemorySourceConfigV1 {
@@ -187,7 +214,9 @@ pub(super) fn registered_source(f: &FactoryFixture) -> NativeMemorySourceConfigV
 
 #[tokio::test]
 async fn installation_requires_no_admitted_run_and_runtime_drop_closes_live_factory_children() {
-    let f = factory_fixture().await;
+    let f = factory_fixture()
+        .await
+        .expect("current memory factory fixture");
     let state = &f.current.objective.state;
     let cancelled = state
         .response(
@@ -222,7 +251,10 @@ async fn installation_requires_no_admitted_run_and_runtime_drop_closes_live_fact
         .attach(state, Arc::clone(&f.writer), &runtime)
         .unwrap();
     let host = f.registration.host().unwrap();
-    let mut query = f.current.query("factory-later-run");
+    let mut query = f
+        .current
+        .query("factory-later-run")
+        .expect("current memory fixture operation");
     query.key = f.source.admission.query().key.clone();
     assert!(host.prepare_read("run.current", query.clone()).is_err());
     assert!(
@@ -236,7 +268,8 @@ async fn installation_requires_no_admitted_run_and_runtime_drop_closes_live_fact
     let prepared = host.prepare_read("run.current", query.clone()).unwrap();
     let signed = f
         .current
-        .sign(prepared.binding().clone(), "factory-later-run");
+        .sign(prepared.binding().clone(), "factory-later-run")
+        .expect("current memory fixture operation");
     let owner = host
         .open_shadow(
             prepared,
@@ -257,7 +290,9 @@ async fn installation_requires_no_admitted_run_and_runtime_drop_closes_live_fact
 
 #[tokio::test]
 async fn factory_rejects_foreign_preparation_and_key_before_spending_grant() {
-    let f = factory_fixture().await;
+    let f = factory_fixture()
+        .await
+        .expect("current memory factory fixture");
     let state = &f.current.objective.state;
     let runtime = CancellationToken::new();
     let _lifetime = f
@@ -265,7 +300,10 @@ async fn factory_rejects_foreign_preparation_and_key_before_spending_grant() {
         .attach(state, Arc::clone(&f.writer), &runtime)
         .unwrap();
     let host = f.registration.host().unwrap();
-    let mut query = f.current.query("factory-exact-query");
+    let mut query = f
+        .current
+        .query("factory-exact-query")
+        .expect("current memory fixture operation");
     query.key = f.source.admission.query().key.clone();
     // Same real owners, different enrolled host: equality of owner IDs alone
     // does not permit an opaque preparation to cross runtime handles.
@@ -276,7 +314,8 @@ async fn factory_rejects_foreign_preparation_and_key_before_spending_grant() {
         .unwrap();
     let signed = f
         .current
-        .sign(prepared.binding().clone(), "foreign-preparation");
+        .sign(prepared.binding().clone(), "foreign-preparation")
+        .expect("current memory fixture operation");
     let before = f.current.authority.frontier().unwrap();
     assert!(
         host.open_shadow(
@@ -293,7 +332,8 @@ async fn factory_rejects_foreign_preparation_and_key_before_spending_grant() {
     let prepared = host.prepare_read("run.current", query.clone()).unwrap();
     let signed = f
         .current
-        .sign(prepared.binding().clone(), "wrong-source-key");
+        .sign(prepared.binding().clone(), "wrong-source-key")
+        .expect("current memory fixture operation");
     let mut source = registered_source(&f);
     source.key.relation = "another-repair".to_string();
     assert!(
@@ -311,7 +351,8 @@ async fn factory_rejects_foreign_preparation_and_key_before_spending_grant() {
     let prepared = host.prepare_read("run.current", query.clone()).unwrap();
     let signed = f
         .current
-        .sign(prepared.binding().clone(), "correct-source-key");
+        .sign(prepared.binding().clone(), "correct-source-key")
+        .expect("current memory fixture operation");
     let owner = host
         .open_shadow(
             prepared,
@@ -323,7 +364,8 @@ async fn factory_rejects_foreign_preparation_and_key_before_spending_grant() {
         .await
         .unwrap();
     let mut substitute = query.clone();
-    substitute.request_id = crate::native_memory_current_test_support::id("different-read");
+    substitute.request_id = crate::native_memory_current_test_support::id("different-read")
+        .expect("stable test request id");
     assert!(owner.read(substitute).await.is_err());
     runtime.cancel();
     assert!(f.registration.host().is_err());

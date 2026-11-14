@@ -124,7 +124,9 @@ async fn current_read_survives_unrelated_durable_run_admission() {
     use crate::state::objective_current_tests::fixture;
     use ed25519_dalek::Signer;
 
-    let f = fixture(ClockCase::Current).await;
+    let f = fixture(ClockCase::Current)
+        .await
+        .expect("current objective fixture");
     let proof = f.state.checked_current_objective("run.current").unwrap();
     let mut other = f.record.clone();
     other.snapshot.run_id = id("run.other");

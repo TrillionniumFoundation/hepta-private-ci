@@ -5,20 +5,23 @@ use codex_hepta_types::Digest32;
 use std::time::Duration;
 use std::time::Instant;
 
-fn prepared_worker(temp: &tempfile::TempDir) -> crate::NativeMemoryModelConfigV1 {
+fn prepared_worker(temp: &tempfile::TempDir) -> Result<crate::NativeMemoryModelConfigV1, String> {
     let mut c = config(temp.path());
     let python = std::process::Command::new("python3")
         .args(["-c", "import sys; print(sys.executable)"])
         .output()
-        .unwrap();
+        .map_err(|error| error.to_string())?;
     assert!(python.status.success());
-    c.python = String::from_utf8(python.stdout).unwrap().trim().into();
+    c.python = String::from_utf8(python.stdout)
+        .map_err(|error| error.to_string())?
+        .trim()
+        .into();
     for path in [
         "scripts/memory_cell_native",
         "scripts/memory_cell_network",
         "receipts",
     ] {
-        std::fs::create_dir_all(temp.path().join(path)).unwrap();
+        std::fs::create_dir_all(temp.path().join(path)).map_err(|error| error.to_string())?;
     }
     let worker = b"import time\ntime.sleep(30)\n";
     let launcher = b"import runpy,sys\nrunpy.run_path(sys.argv[-1],run_name='__main__')\n";
@@ -27,22 +30,22 @@ fn prepared_worker(temp: &tempfile::TempDir) -> crate::NativeMemoryModelConfigV1
             .join("scripts/memory_cell_native/native_worker.py"),
         worker,
     )
-    .unwrap();
+    .map_err(|error| error.to_string())?;
     std::fs::write(
         temp.path()
             .join("scripts/memory_cell_network/model_child.py"),
         launcher,
     )
-    .unwrap();
+    .map_err(|error| error.to_string())?;
     c.pins.worker_sha256 = Digest32::of_bytes(worker).to_string();
     c.pins.launcher_sha256 = Digest32::of_bytes(launcher).to_string();
-    c
+    Ok(c)
 }
 
 #[test]
 fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() {
     let temp = tempfile::tempdir().unwrap();
-    let mut c = prepared_worker(&temp);
+    let mut c = prepared_worker(&temp).expect("prepare process-only worker");
     c.timeout_millis = 100;
     // A 64 KiB payload can fit entirely in a Unix pipe without blocking.
     let input = vec![b'x'; 2 * 1024 * 1024];
@@ -72,7 +75,7 @@ fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() {
 #[test]
 fn native_memory_daemon_lifetime_cancels_child_and_keeps_failure() {
     let temp = tempfile::tempdir().unwrap();
-    let c = prepared_worker(&temp);
+    let c = prepared_worker(&temp).expect("prepare process-only worker");
     let cancellation = tokio_util::sync::CancellationToken::new();
     let other = cancellation.clone();
     let cancel = std::thread::spawn(move || {
@@ -95,7 +98,7 @@ fn native_memory_daemon_lifetime_cancels_child_and_keeps_failure() {
 #[test]
 fn native_memory_current_guard_runs_after_setup_and_refuses_child_spawn() {
     let temp = tempfile::tempdir().unwrap();
-    let c = prepared_worker(&temp);
+    let c = prepared_worker(&temp).expect("prepare process-only worker");
     let input = b"pre-spawn guard fixture".to_vec();
     let directory = c
         .receipt_directory
@@ -126,7 +129,7 @@ fn native_memory_current_guard_runs_after_setup_and_refuses_child_spawn() {
 #[test]
 fn native_memory_cancellation_during_final_guard_refuses_child_spawn() {
     let temp = tempfile::tempdir().unwrap();
-    let c = prepared_worker(&temp);
+    let c = prepared_worker(&temp).expect("prepare process-only worker");
     let input = b"cancel inside final guard fixture".to_vec();
     let directory = c
         .receipt_directory
