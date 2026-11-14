@@ -1,46 +1,34 @@
-use super::SOURCE_LIMIT;
-use super::take_bytes_at_char_boundary;
-
-fn original_boundary(s: &str, maxb: usize) -> &str {
-    if s.len() <= maxb {
-        return s;
-    }
-    let mut end = 0;
-    for (index, ch) in s.char_indices() {
-        let next = index + ch.len_utf8();
-        if next > maxb {
-            break;
-        }
-        end = next;
-    }
-    &s[..end]
-}
+use crate::take_bytes_at_char_boundary;
 
 #[test]
-fn actual_public_caller_matches_original_for_unicode_budgets() {
-    for s in ["", "ASCII", "é😀中", "𐀀🧪z", "a\r\nb", "\u{10ffff}"] {
-        for budget in 0..=s.len() + 2 {
-            assert_eq!(
-                take_bytes_at_char_boundary(s, budget),
-                original_boundary(s, budget)
-            );
-        }
-        assert_eq!(take_bytes_at_char_boundary(s, usize::MAX), s);
+fn native_prefix_uses_the_public_string_api() {
+    let text = "aé汉😀z";
+    let boundaries = [0, 1, 1, 3, 3, 3, 6, 6, 6, 6, 10, 11, 11];
+    for (budget, expected) in boundaries.into_iter().enumerate() {
+        let actual = take_bytes_at_char_boundary(text, budget);
+        assert_eq!(actual, &text[..expected]);
+        assert_eq!(actual.as_ptr(), text.as_ptr());
     }
 }
 
 #[test]
-fn actual_public_caller_accepts_exact_wire_limit() {
-    let input = "x".repeat(SOURCE_LIMIT - 8);
+fn native_prefix_accepts_zero_and_unbounded_budgets() {
+    for text in ["", "ascii", "é汉😀", "\0\u{10ffff}"] {
+        assert_eq!(take_bytes_at_char_boundary(text, 0), "");
+        assert_eq!(take_bytes_at_char_boundary(text, usize::MAX), text);
+    }
+}
+
+#[test]
+fn native_prefix_has_no_one_mib_input_limit() {
+    let prefix = "x".repeat(1_048_575);
+    let text = format!("{prefix}😀tail");
+    for budget in 1_048_575..1_048_579 {
+        assert_eq!(take_bytes_at_char_boundary(&text, budget), prefix);
+    }
     assert_eq!(
-        take_bytes_at_char_boundary(&input, input.len()),
-        input.as_str()
+        take_bytes_at_char_boundary(&text, 1_048_579),
+        &text[..1_048_579]
     );
-}
-
-#[test]
-#[should_panic(expected = "input exceeds locked 1 MiB")]
-fn oversize_native_input_is_not_silently_fallback_to_rust() {
-    let input = "x".repeat(SOURCE_LIMIT - 7);
-    let _ = take_bytes_at_char_boundary(&input, input.len());
+    assert_eq!(take_bytes_at_char_boundary(&text, usize::MAX), text);
 }

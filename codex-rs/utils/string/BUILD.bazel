@@ -2,5 +2,7 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "string",
+    build_script_compile_data = ["//hia:cargo_build.rs"],
+    build_script_data = ["//hia:build_inputs"],
     crate_name = "codex_utils_string",
 )
