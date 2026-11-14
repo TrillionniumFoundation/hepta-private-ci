@@ -1,4 +1,4 @@
-# Preserve only the 113 frozen original byte streams. No active source or general archive rule.
+# Preserve exact frozen originals; the original 113 custody rules are retained below.
 originals/.github/authbus-convergence-apply.py -text
 originals/.github/codex-patches/control-runtime-request-integrity/request-integrity.patch.gz.b64 -text
 originals/.github/cognitive-boundary.part1 -text
@@ -112,3 +112,9 @@ originals/scripts/runtime_codex_patch_2.py -text
 originals/scripts/runtime_codex_patch_3.py -text
 originals/scripts/runtime_codex_patch_4.py -text
 originals/scripts/runtime_codex_quarantine_wire_fix.py -text
+
+# Four additional reviewed originals; see additional4-custody-manifest.json.
+originals/.github/workflows/context-compiler-worktree-export.yml -text
+originals/.github/workflows/desktop-commander-recover-20260925.yml -text
+originals/.github/workflows/desktop-commander-recover-fleet-20260925.yml -text
+originals/.github/workflows/desktop-commander-recover-via-rog-20260925.yml -text

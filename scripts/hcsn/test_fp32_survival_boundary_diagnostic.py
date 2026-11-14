@@ -23,7 +23,11 @@ from scipy.special import erf, log_ndtr, ndtr
 from hepta_free_boundary_reference import first_passage_cdf
 
 
-REFERENCE_BLOB = "54e9e2440eb73399a95adf04d98674df68c191b3"
+# The scalar reference was reformatted by the repository formatter in commit
+# 639f84c1aafa6fb5044b690ae21706a7782861ef. Its pre-format Git blob remains
+# 54e9e2440eb73399a95adf04d98674df68c191b3; full Python ASTs compare equal.
+# Bind the reviewed current bytes exactly; numerical tolerances are unchanged.
+REFERENCE_BLOB = "22afe894d7c748607bbd2366680ead8ea5032872"
 REFERENCE_FILE = Path(__file__).with_name("hepta_free_boundary_reference.py")
 
 
