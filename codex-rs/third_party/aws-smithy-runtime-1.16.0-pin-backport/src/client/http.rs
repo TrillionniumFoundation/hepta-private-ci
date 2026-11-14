@@ -14,7 +14,8 @@ pub mod connection_poisoning;
 pub mod test_util {
     #![allow(missing_docs)]
 
-    pub use aws_smithy_http_client::test_util::{CaptureRequestHandler, CaptureRequestReceiver};
+    pub use aws_smithy_http_client::test_util::CaptureRequestHandler;
+    pub use aws_smithy_http_client::test_util::CaptureRequestReceiver;
 
     // `capture_request` and `infallible_client_fn` re-export the pre-1.x variants, so they require
     // `legacy-test-util`. Enabling `test-util` alone no longer pulls the http 0.2.x ecosystem in;
@@ -31,7 +32,8 @@ pub mod test_util {
         pub use aws_smithy_http_client::test_util::dvr::*;
     }
 
-    pub use aws_smithy_http_client::test_util::{ReplayEvent, StaticReplayClient};
+    pub use aws_smithy_http_client::test_util::ReplayEvent;
+    pub use aws_smithy_http_client::test_util::StaticReplayClient;
 
     pub use aws_smithy_http_client::test_util::NeverClient;
 
@@ -90,7 +92,9 @@ impl DefaultClientOptions {
 #[cfg(feature = "default-https-client")]
 pub(crate) fn default_https_client(options: DefaultClientOptions) -> Option<SharedHttpClient> {
     use aws_smithy_http_client::proxy::ProxyConfig;
-    use aws_smithy_http_client::{tls, Builder, ConnectorBuilder};
+    use aws_smithy_http_client::tls;
+    use aws_smithy_http_client::Builder;
+    use aws_smithy_http_client::ConnectorBuilder;
     tracing::trace!("creating a new default hyper 1.x client using rustls<aws-lc>");
 
     let client = Builder::new().build_with_connector_fn(move |settings, runtime_components| {

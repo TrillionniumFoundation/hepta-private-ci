@@ -229,7 +229,8 @@ impl TypeErasedError {
 
 #[cfg(test)]
 mod tests {
-    use super::{TypeErasedBox, TypeErasedError};
+    use super::TypeErasedBox;
+    use super::TypeErasedError;
     use std::fmt;
 
     #[derive(Debug, Clone, PartialEq, Eq)]

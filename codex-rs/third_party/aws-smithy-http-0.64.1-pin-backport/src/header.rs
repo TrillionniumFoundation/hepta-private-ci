@@ -8,7 +8,9 @@
 use aws_smithy_types::date_time::Format;
 use aws_smithy_types::primitive::Parse;
 use aws_smithy_types::DateTime;
-use http_1x::header::{HeaderMap, HeaderName, HeaderValue};
+use http_1x::header::HeaderMap;
+use http_1x::header::HeaderName;
+use http_1x::header::HeaderValue;
 use std::borrow::Cow;
 use std::error::Error;
 use std::fmt;
@@ -419,16 +421,26 @@ pub fn append_merge_header_maps_http_1x(
 #[cfg(test)]
 mod test {
     use super::quote_header_value;
-    use crate::header::{
-        append_merge_header_maps, headers_for_prefix, many_dates, many_dates_bytes, one_or_none,
-        one_or_none_bytes, read_many_from_str, read_many_from_str_bytes, read_many_primitive,
-        read_many_primitive_bytes, set_request_header_if_absent, set_response_header_if_absent,
-        ParseError,
-    };
+    use crate::header::append_merge_header_maps;
+    use crate::header::headers_for_prefix;
+    use crate::header::many_dates;
+    use crate::header::many_dates_bytes;
+    use crate::header::one_or_none;
+    use crate::header::one_or_none_bytes;
+    use crate::header::read_many_from_str;
+    use crate::header::read_many_from_str_bytes;
+    use crate::header::read_many_primitive;
+    use crate::header::read_many_primitive_bytes;
+    use crate::header::set_request_header_if_absent;
+    use crate::header::set_response_header_if_absent;
+    use crate::header::ParseError;
     use aws_smithy_runtime_api::http::Request;
+    use aws_smithy_types::date_time::Format;
     use aws_smithy_types::error::display::DisplayErrorContext;
-    use aws_smithy_types::{date_time::Format, DateTime};
-    use http_1x::header::{HeaderMap, HeaderName, HeaderValue};
+    use aws_smithy_types::DateTime;
+    use http_1x::header::HeaderMap;
+    use http_1x::header::HeaderName;
+    use http_1x::header::HeaderValue;
     use std::collections::HashMap;
 
     #[test]

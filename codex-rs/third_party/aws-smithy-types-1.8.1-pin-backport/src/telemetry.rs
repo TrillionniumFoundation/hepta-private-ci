@@ -19,7 +19,8 @@
 //! It is off by default. When no input member is selected, nothing is captured and this value is
 //! absent from the `ConfigBag`.
 
-use crate::config_bag::{Storable, StoreReplace};
+use crate::config_bag::Storable;
+use crate::config_bag::StoreReplace;
 use std::collections::HashMap;
 use std::sync::Arc;
 

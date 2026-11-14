@@ -60,14 +60,7 @@ impl TestHeapName {
 }
 
 /// A simple test type with primitive fields.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("SimpleData({}, {})", self.flag, self.count)]
 struct SimpleData {
     flag: bool,
@@ -111,14 +104,7 @@ fn round_trip_heap_ref(heap_ref: &FrozenHeapRef) -> crate::Result<FrozenHeapRef>
 }
 
 /// A test type with rust heap-allocated fields (Vec, Box, String).
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("HeapData({:?}, {:?}, {:?})", self.items, self.label, self.boxed)]
 struct HeapData {
     items: Vec<u32>,
@@ -185,14 +171,7 @@ fn test_heap_allocated_value_round_trip() -> crate::Result<()> {
 }
 
 /// A test type with a FrozenValue field that references another value in the same heap.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("RefData({})", self.label)]
 struct RefData {
     label: usize,
@@ -254,14 +233,7 @@ fn test_frozen_value_ref_round_trip() -> crate::Result<()> {
 }
 
 /// A test type with Drop (due to Vec) that holds a FrozenValue reference.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("DropRefData({:?})", self.items)]
 struct DropRefData {
     items: Vec<u32>,
@@ -744,14 +716,7 @@ fn test_frozen_value_typed_round_trip() -> crate::Result<()> {
 }
 
 /// A test type with SmallMap<String, FrozenValue> — has Drop (SmallMap), goes in drop bump.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("SmallMapData")]
 struct SmallMapData {
     entries: starlark_map::small_map::SmallMap<String, FrozenValue>,
@@ -765,14 +730,7 @@ impl<'v> StarlarkValue<'v> for SmallMapData {
 }
 
 /// A test type with SmallMap<FrozenValue, FrozenValue>.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("SmallMapFvData")]
 struct SmallMapFvData {
     entries: starlark_map::small_map::SmallMap<FrozenValue, FrozenValue>,
@@ -1092,14 +1050,7 @@ fn test_owned_frozen_value_typed_round_trip() -> crate::Result<()> {
 }
 
 /// Test type mirroring StackFrame: String + Option<FileSpan>.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("TestStackFrame({}, {:?})", self.name, self.location)]
 struct TestStackFrame {
     name: String,
@@ -1570,14 +1521,7 @@ fn test_methods_static_heap_value_round_trip() -> crate::Result<()> {
 
 /// Phantom type used only as the `T` of `StarlarkValueAsType<T>` in the
 /// round-trip test below. Never allocated on a heap.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("AsTypeRoundTripTestType")]
 struct AsTypeRoundTripTestType;
 
@@ -1689,14 +1633,7 @@ impl<'de> pagable::PagableDeserialize<'de> for InnerArcData {
 /// The `Arc<InnerArcData>` field is routed through `pagable::PagableSerialize`
 /// (via `#[starlark_pagable(pagable)]`) so multiple `OuterArcValue`s sharing
 /// the same Arc dedup on the wire and round-trip to a pointer-equal Arc.
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("OuterArcValue({})", self.outer_label)]
 struct OuterArcValue {
     #[starlark_pagable(pagable)]
@@ -1793,14 +1730,7 @@ struct ArcBlanketInner {
 }
 
 /// Outer `StarlarkValue` with a plain `Arc<ArcBlanketInner>` field
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("ArcBlanketOuter({})", self.outer_label)]
 struct ArcBlanketOuter {
     inner: Arc<ArcBlanketInner>,
@@ -2177,14 +2107,7 @@ impl TypetagPayload for TypetagImpl {
     }
 }
 
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("TypetagOuter({})", self.outer)]
 struct TypetagOuter {
     #[starlark_pagable(pagable)]
@@ -2413,14 +2336,7 @@ impl crate::pagable::StarlarkDeserialize for AlwaysFailDeserialize {
     }
 }
 
-#[derive(
-    Debug,
-    Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable)]
 #[display("FieldErrorTestData")]
 struct FieldErrorTestData {
     good_field: bool,

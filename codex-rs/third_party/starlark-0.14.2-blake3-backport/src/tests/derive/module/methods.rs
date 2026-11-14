@@ -34,12 +34,7 @@ use crate::values::Value;
 use crate::values::ValueLike;
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    ProvidesStaticType,
-    NoSerialize,
-    Allocative,
-    StarlarkPagable
+    Debug, derive_more::Display, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable,
 )]
 #[display("{:?}", self)]
 struct Applaud {

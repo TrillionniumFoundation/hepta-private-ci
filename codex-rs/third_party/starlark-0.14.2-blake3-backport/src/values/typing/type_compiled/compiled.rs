@@ -120,14 +120,7 @@ where
 }
 
 #[derive(
-    Clone,
-    Eq,
-    PartialEq,
-    Debug,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
+    Clone, Eq, PartialEq, Debug, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable,
 )]
 #[starlark_pagable(bound = "T: TypeMatcher")]
 /// A compiled type expression wrapped as a Starlark value with a type matcher.
@@ -280,16 +273,7 @@ fn type_compiled_methods(methods: &mut MethodsBuilder) {
 
 /// Wrapper for a [`Value`] that acts like a runtime type matcher.
 #[derive(
-    Debug,
-    Allocative,
-    Freeze,
-    Trace,
-    Clone,
-    Copy,
-    Dupe,
-    Coerce,
-    ProvidesStaticType,
-    StarlarkPagable
+    Debug, Allocative, Freeze, Trace, Clone, Copy, Dupe, Coerce, ProvidesStaticType, StarlarkPagable,
 )]
 #[repr(transparent)]
 pub struct TypeCompiled<V: ValueLifetimeless>(

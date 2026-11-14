@@ -1,5 +1,7 @@
 use ahash::HashMap;
-use security_framework::trust_settings::{Domain, TrustSettings, TrustSettingsForCertificate};
+use security_framework::trust_settings::Domain;
+use security_framework::trust_settings::TrustSettings;
+use security_framework::trust_settings::TrustSettingsForCertificate;
 
 use super::CertificateResult;
 use crate::pki_types::CertificateDer;

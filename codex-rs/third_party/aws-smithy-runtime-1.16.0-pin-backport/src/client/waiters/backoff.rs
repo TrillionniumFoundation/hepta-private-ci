@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use std::{fmt, time::Duration};
+use std::fmt;
+use std::time::Duration;
 
 #[derive(Debug)]
 pub(super) struct Backoff {
@@ -87,7 +88,8 @@ impl RandomImpl {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::{Arc, Mutex};
+    use std::sync::Arc;
+    use std::sync::Mutex;
 
     fn test_backoff(
         min_delay: u64,

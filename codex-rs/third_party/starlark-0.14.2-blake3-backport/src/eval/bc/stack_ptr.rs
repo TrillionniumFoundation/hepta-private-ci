@@ -38,7 +38,7 @@ use crate::register_starlark_any;
     Eq,
     Hash,
     derive_more::Display,
-    pagable::Pagable
+    pagable::Pagable,
 )]
 #[display("&{}", _0)]
 pub(crate) struct BcSlot(pub(crate) u32);
@@ -202,7 +202,7 @@ impl BcSlotInRangeFrom {
     Dupe,
     derive_more::Display,
     pagable::Pagable,
-    starlark_derive::StarlarkPagableViaPagable
+    starlark_derive::StarlarkPagableViaPagable,
 )]
 pub(crate) struct BcSlotOut(BcSlot);
 

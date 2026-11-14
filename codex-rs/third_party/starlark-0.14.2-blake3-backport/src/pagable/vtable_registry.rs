@@ -199,14 +199,7 @@ mod tests {
     use crate::values::ValueLike;
 
     /// A simple test type to verify vtable registration works for simple values.
-    #[derive(
-        Debug,
-        Display,
-        ProvidesStaticType,
-        NoSerialize,
-        Allocative,
-        StarlarkPagable
-    )]
+    #[derive(Debug, Display, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable)]
     #[display("TestSimpleType")]
     struct TestSimpleType;
 
@@ -226,7 +219,7 @@ mod tests {
         Trace,
         Freeze,
         Coerce,
-        StarlarkPagable
+        StarlarkPagable,
     )]
     #[display("TestComplex")]
     #[repr(C)]

@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use percent_encoding::{AsciiSet, CONTROLS};
+use percent_encoding::AsciiSet;
+use percent_encoding::CONTROLS;
 
 /// base set of characters that must be URL encoded
 pub(crate) const BASE_SET: &AsciiSet = &CONTROLS

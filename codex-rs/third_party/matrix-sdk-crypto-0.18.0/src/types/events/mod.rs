@@ -33,8 +33,11 @@ mod to_device;
 mod utd_cause;
 
 use ruma::serde::Raw;
-pub use to_device::{ToDeviceCustomEvent, ToDeviceEvent, ToDeviceEvents};
-pub use utd_cause::{CryptoContextInfo, UtdCause};
+pub use to_device::ToDeviceCustomEvent;
+pub use to_device::ToDeviceEvent;
+pub use to_device::ToDeviceEvents;
+pub use utd_cause::CryptoContextInfo;
+pub use utd_cause::UtdCause;
 
 /// A trait for event contents to define their event type.
 pub trait EventType {

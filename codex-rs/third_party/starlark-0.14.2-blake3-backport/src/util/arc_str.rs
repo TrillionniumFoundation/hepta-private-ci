@@ -39,7 +39,7 @@ use crate::util::arc_or_static::ArcOrStatic;
     Debug,
     derive_more::Display,
     Allocative,
-    Pagable
+    Pagable,
 )]
 #[display("{}", &**self)]
 pub struct ArcStr(ArcOrStatic<str>);

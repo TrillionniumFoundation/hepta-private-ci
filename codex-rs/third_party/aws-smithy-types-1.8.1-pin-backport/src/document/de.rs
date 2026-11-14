@@ -8,9 +8,14 @@
 use super::doc_error::DocError;
 use super::Document;
 use crate::Number;
-use serde::de::{
-    self, DeserializeSeed, EnumAccess, MapAccess, SeqAccess, Unexpected, VariantAccess, Visitor,
-};
+use serde::de::DeserializeSeed;
+use serde::de::EnumAccess;
+use serde::de::MapAccess;
+use serde::de::SeqAccess;
+use serde::de::Unexpected;
+use serde::de::VariantAccess;
+use serde::de::Visitor;
+use serde::de::{self};
 use serde::forward_to_deserialize_any;
 
 /// Convert a [`Document`] into any `T: DeserializeOwned`.

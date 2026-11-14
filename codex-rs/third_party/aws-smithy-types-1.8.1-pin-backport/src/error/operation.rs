@@ -7,7 +7,8 @@
 
 use crate::date_time::DateTimeFormatError;
 use std::error::Error;
-use std::fmt::{Display, Formatter};
+use std::fmt::Display;
+use std::fmt::Formatter;
 
 #[derive(Debug)]
 enum SerializationErrorKind {

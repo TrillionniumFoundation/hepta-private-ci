@@ -66,15 +66,7 @@ pub trait TyCustomFunctionImpl:
 }
 
 #[derive(
-    Allocative,
-    Eq,
-    PartialEq,
-    Hash,
-    Ord,
-    PartialOrd,
-    Debug,
-    derive_more::Display,
-    Pagable
+    Allocative, Eq, PartialEq, Hash, Ord, PartialOrd, Debug, derive_more::Display, Pagable,
 )]
 #[display(
     "def({}) -> {}",
@@ -142,9 +134,7 @@ where
 }
 
 /// A function.
-#[derive(
-    Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable
-)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Allocative, Pagable)]
 pub struct TyFunction {
     /// The `.type` property of the function, often `""`.
     pub(crate) type_attr: Option<Ty>,

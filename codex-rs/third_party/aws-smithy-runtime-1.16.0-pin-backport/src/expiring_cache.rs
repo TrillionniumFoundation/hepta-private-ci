@@ -6,8 +6,10 @@
 use std::future::Future;
 use std::marker::PhantomData;
 use std::sync::Arc;
-use std::time::{Duration, SystemTime};
-use tokio::sync::{OnceCell, RwLock};
+use std::time::Duration;
+use std::time::SystemTime;
+use tokio::sync::OnceCell;
+use tokio::sync::RwLock;
 
 /// Expiry-aware cache
 ///
@@ -106,11 +108,13 @@ fn expired(expiration: SystemTime, buffer_time: Duration, now: SystemTime) -> bo
 
 #[cfg(all(test, feature = "client", feature = "http-auth"))]
 mod tests {
-    use super::{expired, ExpiringCache};
+    use super::expired;
+    use super::ExpiringCache;
     use aws_smithy_runtime_api::box_error::BoxError;
     use aws_smithy_runtime_api::client::identity::http::Token;
     use aws_smithy_runtime_api::client::identity::Identity;
-    use std::time::{Duration, SystemTime};
+    use std::time::Duration;
+    use std::time::SystemTime;
     use tracing_test::traced_test;
 
     fn identity(expired_secs: u64) -> Result<(Identity, SystemTime), BoxError> {

@@ -5,22 +5,26 @@
 
 #![cfg(all(feature = "client", feature = "wire-mock",))]
 
-use ::aws_smithy_runtime::client::retries::classifiers::{
-    HttpStatusCodeClassifier, TransientErrorClassifier,
-};
+use ::aws_smithy_runtime::client::retries::classifiers::HttpStatusCodeClassifier;
+use ::aws_smithy_runtime::client::retries::classifiers::TransientErrorClassifier;
 use aws_smithy_async::rt::sleep::TokioSleep;
 use aws_smithy_runtime::client::http::hyper_014::HyperClientBuilder;
-use aws_smithy_runtime::client::http::test_util::wire::{
-    RecordedEvent, ReplayedEvent, WireMockServer,
-};
+use aws_smithy_runtime::client::http::test_util::wire::RecordedEvent;
+use aws_smithy_runtime::client::http::test_util::wire::ReplayedEvent;
+use aws_smithy_runtime::client::http::test_util::wire::WireMockServer;
 use aws_smithy_runtime::client::orchestrator::operation::Operation;
+use aws_smithy_runtime::ev;
+use aws_smithy_runtime::match_events;
 use aws_smithy_runtime::test_util::capture_test_logs::capture_test_logs;
-use aws_smithy_runtime::{ev, match_events};
 use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
 use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
-use aws_smithy_runtime_api::client::retries::classifiers::{ClassifyRetry, RetryAction};
+use aws_smithy_runtime_api::client::retries::classifiers::ClassifyRetry;
+use aws_smithy_runtime_api::client::retries::classifiers::RetryAction;
 use aws_smithy_types::body::SdkBody;
-use aws_smithy_types::retry::{ErrorKind, ProvideErrorKind, ReconnectMode, RetryConfig};
+use aws_smithy_types::retry::ErrorKind;
+use aws_smithy_types::retry::ProvideErrorKind;
+use aws_smithy_types::retry::ReconnectMode;
+use aws_smithy_types::retry::RetryConfig;
 use aws_smithy_types::timeout::TimeoutConfig;
 use hyper_0_14::client::Builder as HyperBuilder;
 use std::fmt;

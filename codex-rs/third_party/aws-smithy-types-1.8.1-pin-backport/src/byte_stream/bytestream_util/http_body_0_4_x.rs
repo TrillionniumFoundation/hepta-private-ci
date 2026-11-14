@@ -3,13 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use super::{PathBody, State, DEFAULT_OFFSET};
+use super::PathBody;
+use super::State;
+use super::DEFAULT_OFFSET;
 use std::future::Future;
 use std::pin::Pin;
 use std::task::Poll;
 use tokio::fs::File;
 use tokio::io;
-use tokio::io::{AsyncReadExt, AsyncSeekExt};
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncSeekExt;
 use tokio_util::io::ReaderStream;
 
 impl http_body_0_4::Body for PathBody {
@@ -88,7 +91,9 @@ impl http_body_0_4::Body for PathBody {
 
 #[cfg(test)]
 mod test {
-    use crate::byte_stream::{ByteStream, FsBuilder, Length};
+    use crate::byte_stream::ByteStream;
+    use crate::byte_stream::FsBuilder;
+    use crate::byte_stream::Length;
     use bytes::Buf;
     use http_body_0_4::Body;
     use std::io::Write;

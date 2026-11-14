@@ -32,7 +32,8 @@ mod test {
     /// check for human redable format
     #[test]
     fn ser_human_readable_datetime() {
-        use serde::{Deserialize, Serialize};
+        use serde::Deserialize;
+        use serde::Serialize;
 
         let datetime = DateTime::from_secs(1576540098);
         #[derive(Serialize, Deserialize, PartialEq)]

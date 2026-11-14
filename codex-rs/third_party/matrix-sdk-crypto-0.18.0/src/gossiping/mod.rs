@@ -14,39 +14,39 @@
 
 mod machine;
 
-use std::{
-    collections::{BTreeMap, BTreeSet},
-    sync::Arc,
-};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::sync::Arc;
 
 pub(crate) use machine::GossipMachine;
 use matrix_sdk_common::locks::RwLock as StdRwLock;
-use ruma::{
-    DeviceId, OwnedDeviceId, OwnedTransactionId, OwnedUserId, TransactionId, UserId,
-    events::{
-        AnyToDeviceEventContent, ToDeviceEventType,
-        room_key_request::{Action, ToDeviceRoomKeyRequestEventContent},
-        secret::request::{
-            RequestAction, SecretName, SecretRequestAction,
-            ToDeviceSecretRequestEvent as SecretRequestEvent,
-            ToDeviceSecretRequestEventContent as SecretRequestEventContent,
-        },
-    },
-    serde::Raw,
-    to_device::DeviceIdOrAllDevices,
-};
-use serde::{Deserialize, Serialize};
+use ruma::DeviceId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedTransactionId;
+use ruma::OwnedUserId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::events::AnyToDeviceEventContent;
+use ruma::events::ToDeviceEventType;
+use ruma::events::room_key_request::Action;
+use ruma::events::room_key_request::ToDeviceRoomKeyRequestEventContent;
+use ruma::events::secret::request::RequestAction;
+use ruma::events::secret::request::SecretName;
+use ruma::events::secret::request::SecretRequestAction;
+use ruma::events::secret::request::ToDeviceSecretRequestEvent as SecretRequestEvent;
+use ruma::events::secret::request::ToDeviceSecretRequestEventContent as SecretRequestEventContent;
+use ruma::serde::Raw;
+use ruma::to_device::DeviceIdOrAllDevices;
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    Device,
-    types::{
-        events::{
-            olm_v1::DecryptedSecretSendEvent,
-            room_key_request::{RoomKeyRequestContent, RoomKeyRequestEvent, SupportedKeyInfo},
-        },
-        requests::{OutgoingRequest, ToDeviceRequest},
-    },
-};
+use crate::Device;
+use crate::types::events::olm_v1::DecryptedSecretSendEvent;
+use crate::types::events::room_key_request::RoomKeyRequestContent;
+use crate::types::events::room_key_request::RoomKeyRequestEvent;
+use crate::types::events::room_key_request::SupportedKeyInfo;
+use crate::types::requests::OutgoingRequest;
+use crate::types::requests::ToDeviceRequest;
 
 /// Struct containing a `m.secret.send` event and its accompanying info.
 ///
@@ -114,7 +114,12 @@ impl SecretInfo {
     pub fn as_key(&self) -> String {
         match &self {
             SecretInfo::KeyRequest(info) => {
-                format!("keyRequest:{}:{}:{}", info.room_id(), info.session_id(), info.algorithm())
+                format!(
+                    "keyRequest:{}:{}:{}",
+                    info.room_id(),
+                    info.session_id(),
+                    info.algorithm()
+                )
             }
             SecretInfo::SecretRequest(sname) => format!("secretName:{sname}"),
         }
@@ -191,7 +196,10 @@ impl GossipRequest {
             }
         };
 
-        OutgoingRequest { request_id: request.txn_id.clone(), request: Arc::new(request.into()) }
+        OutgoingRequest {
+            request_id: request.txn_id.clone(),
+            request: Arc::new(request.into()),
+        }
     }
 
     fn to_cancellation(&self, own_device_id: &DeviceId) -> OutgoingRequest {
@@ -220,7 +228,10 @@ impl GossipRequest {
             TransactionId::new(),
         );
 
-        OutgoingRequest { request_id: request.txn_id.clone(), request: Arc::new(request.into()) }
+        OutgoingRequest {
+            request_id: request.txn_id.clone(),
+            request: Arc::new(request.into()),
+        }
     }
 }
 
@@ -301,7 +312,11 @@ impl RequestInfo {
         requesting_device_id: OwnedDeviceId,
         request_id: OwnedTransactionId,
     ) -> Self {
-        Self { sender, requesting_device_id, request_id }
+        Self {
+            sender,
+            requesting_device_id,
+            request_id,
+        }
     }
 }
 
@@ -340,8 +355,14 @@ impl WaitQueue {
         let ids_waiting_key = (device.user_id().to_owned(), device.device_id().into());
 
         let mut write_guard = self.inner.write();
-        write_guard.requests_waiting_for_session.insert(requests_waiting_key, event);
-        write_guard.requests_ids_waiting.entry(ids_waiting_key).or_default().insert(request_id);
+        write_guard
+            .requests_waiting_for_session
+            .insert(requests_waiting_key, event);
+        write_guard
+            .requests_ids_waiting
+            .entry(ids_waiting_key)
+            .or_default()
+            .insert(request_id);
     }
 
     fn remove(&self, user_id: &UserId, device_id: &DeviceId) -> Vec<(RequestInfo, RequestEvent)> {

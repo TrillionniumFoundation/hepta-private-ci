@@ -4,13 +4,17 @@
  */
 
 use crate::body::SdkBody;
-use crate::byte_stream::{error::Error, error::ErrorKind, ByteStream};
+use crate::byte_stream::error::Error;
+use crate::byte_stream::error::ErrorKind;
+use crate::byte_stream::ByteStream;
 use std::cmp::min;
 use std::future::Future;
 use std::path::PathBuf;
 use std::pin::Pin;
 use tokio::fs::File;
-use tokio::io::{self, AsyncReadExt, AsyncSeekExt};
+use tokio::io::AsyncReadExt;
+use tokio::io::AsyncSeekExt;
+use tokio::io::{self};
 use tokio_util::io::ReaderStream;
 
 #[cfg(feature = "http-body-0-4-x")]

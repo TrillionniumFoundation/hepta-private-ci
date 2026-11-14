@@ -15,15 +15,17 @@
 use std::sync::Arc;
 
 use matrix_sdk_common::locks::Mutex;
-use ruma::{
-    api::client::backup::{EncryptedSessionDataInit, KeyBackupData, KeyBackupDataInit},
-    serde::Base64,
-};
-use vodozemac::{Curve25519PublicKey, pk_encryption::PkEncryption};
+use ruma::api::client::backup::EncryptedSessionDataInit;
+use ruma::api::client::backup::KeyBackupData;
+use ruma::api::client::backup::KeyBackupDataInit;
+use ruma::serde::Base64;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::pk_encryption::PkEncryption;
 use zeroize::Zeroizing;
 
 use super::decryption::DecodeError;
-use crate::{olm::InboundGroupSession, types::Signatures};
+use crate::olm::InboundGroupSession;
+use crate::types::Signatures;
 
 #[derive(Debug)]
 struct InnerBackupKey {
@@ -75,10 +77,15 @@ impl MegolmV1BackupKey {
     pub fn from_base64(public_key: &str) -> Result<Self, DecodeError> {
         let key = Curve25519PublicKey::from_base64(public_key)?;
 
-        let inner =
-            InnerBackupKey { key, signatures: Default::default(), version: Mutex::new(None) };
+        let inner = InnerBackupKey {
+            key,
+            signatures: Default::default(),
+            version: Mutex::new(None),
+        };
 
-        Ok(MegolmV1BackupKey { inner: inner.into() })
+        Ok(MegolmV1BackupKey {
+            inner: inner.into(),
+        })
     }
 
     /// Convert the [`MegolmV1BackupKey`] to a base 64 encoded string.

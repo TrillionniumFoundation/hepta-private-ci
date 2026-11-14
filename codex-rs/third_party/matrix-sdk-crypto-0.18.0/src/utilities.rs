@@ -15,10 +15,9 @@
 use std::num::NonZeroU8;
 
 use ruma::MilliSecondsSinceUnixEpoch;
-use time::{
-    OffsetDateTime,
-    format_description::well_known::{Iso8601, iso8601},
-};
+use time::OffsetDateTime;
+use time::format_description::well_known::Iso8601;
+use time::format_description::well_known::iso8601;
 
 #[cfg(test)]
 pub(crate) fn json_convert<T, U>(value: &T) -> serde_json::Result<U>
@@ -31,7 +30,9 @@ where
 }
 
 const ISO8601_WITH_MILLIS: iso8601::EncodedConfig = iso8601::Config::DEFAULT
-    .set_time_precision(iso8601::TimePrecision::Second { decimal_digits: NonZeroU8::new(3) })
+    .set_time_precision(iso8601::TimePrecision::Second {
+        decimal_digits: NonZeroU8::new(3),
+    })
     .encode();
 
 /// Format the given timestamp into a human-readable timestamp.
@@ -66,7 +67,8 @@ pub fn timestamp_to_iso8601(ts: MilliSecondsSinceUnixEpoch) -> Option<String> {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use ruma::{MilliSecondsSinceUnixEpoch, UInt};
+    use ruma::MilliSecondsSinceUnixEpoch;
+    use ruma::UInt;
 
     use super::timestamp_to_iso8601;
 
@@ -77,9 +79,14 @@ pub(crate) mod tests {
             Some("1970-01-01T00:00:00.000Z".to_owned())
         );
         assert_eq!(
-            timestamp_to_iso8601(MilliSecondsSinceUnixEpoch(UInt::new_saturating(1709657033012))),
+            timestamp_to_iso8601(MilliSecondsSinceUnixEpoch(UInt::new_saturating(
+                1709657033012
+            ))),
             Some("2024-03-05T16:43:53.012Z".to_owned())
         );
-        assert_eq!(timestamp_to_iso8601(MilliSecondsSinceUnixEpoch(UInt::MAX)), None);
+        assert_eq!(
+            timestamp_to_iso8601(MilliSecondsSinceUnixEpoch(UInt::MAX)),
+            None
+        );
     }
 }

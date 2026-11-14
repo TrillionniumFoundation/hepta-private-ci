@@ -17,26 +17,27 @@
 
 use std::fmt::Debug;
 
-use ruma::{OwnedUserId, UserId};
-use serde::{Deserialize, Serialize};
+use ruma::OwnedUserId;
+use ruma::UserId;
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::value::RawValue;
 use vodozemac::Ed25519PublicKey;
 
+use super::EventType;
+use super::dummy::DummyEventContent;
+use super::forwarded_room_key::ForwardedRoomKeyContent;
+use super::room_key::RoomKeyContent;
+use super::room_key_request::SupportedKeyInfo;
+use super::room_key_request::{self};
 #[cfg(feature = "experimental-push-secrets")]
 use super::secret_push::SecretPushContent;
-use super::{
-    EventType,
-    dummy::DummyEventContent,
-    forwarded_room_key::ForwardedRoomKeyContent,
-    room_key::RoomKeyContent,
-    room_key_request::{self, SupportedKeyInfo},
-    secret_send::SecretSendContent,
-};
-use crate::types::{
-    DeviceKeys, deserialize_ed25519_key,
-    events::{from_str, room_key_bundle::RoomKeyBundleContent},
-    serialize_ed25519_key,
-};
+use super::secret_send::SecretSendContent;
+use crate::types::DeviceKeys;
+use crate::types::deserialize_ed25519_key;
+use crate::types::events::from_str;
+use crate::types::events::room_key_bundle::RoomKeyBundleContent;
+use crate::types::serialize_ed25519_key;
 
 /// An `m.dummy` event that was decrypted using the
 /// `m.olm.v1.curve25519-aes-sha2` algorithm
@@ -367,24 +368,31 @@ mod tests {
     use std::collections::BTreeMap;
 
     use assert_matches::assert_matches;
-    use insta::{assert_json_snapshot, with_settings};
-    use ruma::{
-        KeyId, OwnedMxcUri, device_id,
-        events::room::{EncryptedFile, V2EncryptedFileInfo},
-        owned_room_id, owned_user_id, user_id,
-    };
-    use serde_json::{Value, json};
+    use insta::assert_json_snapshot;
+    use insta::with_settings;
+    use ruma::KeyId;
+    use ruma::OwnedMxcUri;
+    use ruma::device_id;
+    use ruma::events::room::EncryptedFile;
+    use ruma::events::room::V2EncryptedFileInfo;
+    use ruma::owned_room_id;
+    use ruma::owned_user_id;
+    use ruma::user_id;
+    use serde_json::Value;
+    use serde_json::json;
     use similar_asserts::assert_eq;
-    use vodozemac::{Curve25519PublicKey, Ed25519PublicKey, Ed25519Signature};
+    use vodozemac::Curve25519PublicKey;
+    use vodozemac::Ed25519PublicKey;
+    use vodozemac::Ed25519Signature;
 
     use super::AnyDecryptedOlmEvent;
-    use crate::types::{
-        DeviceKey, DeviceKeys, EventEncryptionAlgorithm, Signatures,
-        events::{
-            olm_v1::{DecryptedRoomKeyBundleEvent, DecryptedRoomKeyEvent},
-            room_key_bundle::RoomKeyBundleContent,
-        },
-    };
+    use crate::types::DeviceKey;
+    use crate::types::DeviceKeys;
+    use crate::types::EventEncryptionAlgorithm;
+    use crate::types::Signatures;
+    use crate::types::events::olm_v1::DecryptedRoomKeyBundleEvent;
+    use crate::types::events::olm_v1::DecryptedRoomKeyEvent;
+    use crate::types::events::room_key_bundle::RoomKeyBundleContent;
 
     const ED25519_KEY: &str = "aOfOnlaeMb5GW1TxkZ8pXnblkGMgAvps+lAukrdYaZk";
 
@@ -648,10 +656,10 @@ mod tests {
         // Given JSON for a room key event with sender_device_keys using the unstable
         // prefix
         let mut event_json = room_key_event();
-        event_json
-            .as_object_mut()
-            .unwrap()
-            .insert("org.matrix.msc4147.device_keys".to_owned(), sender_device_keys_json);
+        event_json.as_object_mut().unwrap().insert(
+            "org.matrix.msc4147.device_keys".to_owned(),
+            sender_device_keys_json,
+        );
 
         // When we deserialize it
         let event: DecryptedRoomKeyEvent = serde_json::from_value(event_json)
@@ -704,7 +712,10 @@ mod tests {
 
         let event = DecryptedRoomKeyBundleEvent::new(sender, recipient, key, None, content);
 
-        assert_eq!(serde_json::to_value(&event).unwrap(), room_key_bundle_event_stable());
+        assert_eq!(
+            serde_json::to_value(&event).unwrap(),
+            room_key_bundle_event_stable()
+        );
     }
 
     #[test]

@@ -46,12 +46,7 @@ impl<T: StarlarkTypeRepr> StarlarkTypeRepr for StarlarkIter<T> {
 }
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    Allocative,
-    ProvidesStaticType,
-    NoSerialize,
-    StarlarkPagable
+    Debug, derive_more::Display, Allocative, ProvidesStaticType, NoSerialize, StarlarkPagable,
 )]
 #[display("{}", Self::TYPE)]
 pub(crate) struct TypingIterable;

@@ -41,15 +41,7 @@ use crate::values::Value;
 use crate::values::none::NoneOr;
 use crate::values::starlark_value;
 
-#[derive(
-    ProvidesStaticType,
-    Trace,
-    Allocative,
-    Debug,
-    NoSerialize,
-    Clone,
-    StarlarkPagable
-)]
+#[derive(ProvidesStaticType, Trace, Allocative, Debug, NoSerialize, Clone, StarlarkPagable)]
 /// A frame of the call-stack.
 struct StackFrame {
     /// The name of the entry on the call-stack.

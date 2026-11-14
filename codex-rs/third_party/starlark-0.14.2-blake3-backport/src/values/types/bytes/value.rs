@@ -51,12 +51,7 @@ pub const BYTES_TYPE: &str = "bytes";
 ///
 /// Values of this type are created via `b"..."` literals or the `bytes()` constructor.
 #[derive(
-    Clone,
-    Debug,
-    ProvidesStaticType,
-    Allocative,
-    pagable::Pagable,
-    crate::StarlarkPagableViaPagable
+    Clone, Debug, ProvidesStaticType, Allocative, pagable::Pagable, crate::StarlarkPagableViaPagable,
 )]
 pub struct StarlarkBytes {
     content: Box<[u8]>,

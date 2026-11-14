@@ -63,16 +63,7 @@ enum StarlarkIntError {
     RightShiftNegative,
 }
 
-#[derive(
-    Debug,
-    Clone,
-    Eq,
-    PartialEq,
-    derive_more::Display,
-    Hash,
-    AllocValue,
-    AllocFrozenValue
-)]
+#[derive(Debug, Clone, Eq, PartialEq, derive_more::Display, Hash, AllocValue, AllocFrozenValue)]
 #[doc(hidden)]
 pub enum StarlarkInt {
     Small(InlineInt),

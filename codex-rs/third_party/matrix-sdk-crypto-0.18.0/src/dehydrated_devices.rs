@@ -43,26 +43,32 @@
 
 use std::sync::Arc;
 
-use ruma::{
-    DeviceId,
-    api::client::dehydrated_device::{DehydratedDeviceData, put_dehydrated_device},
-    assign,
-    events::AnyToDeviceEvent,
-    serde::Raw,
-};
+use ruma::DeviceId;
+use ruma::api::client::dehydrated_device::DehydratedDeviceData;
+use ruma::api::client::dehydrated_device::put_dehydrated_device;
+use ruma::assign;
+use ruma::events::AnyToDeviceEvent;
+use ruma::serde::Raw;
 use thiserror::Error;
-use tracing::{instrument, trace};
-use vodozemac::{DehydratedDeviceError, LibolmPickleError};
+use tracing::instrument;
+use tracing::trace;
+use vodozemac::DehydratedDeviceError;
+use vodozemac::LibolmPickleError;
 
-use crate::{
-    Account, CryptoStoreError, DecryptionSettings, EncryptionSyncChanges, OlmError, OlmMachine,
-    SignatureError,
-    store::{
-        CryptoStoreWrapper, MemoryStore, Store,
-        types::{Changes, DehydratedDeviceKey, RoomKeyInfo},
-    },
-    verification::VerificationMachine,
-};
+use crate::Account;
+use crate::CryptoStoreError;
+use crate::DecryptionSettings;
+use crate::EncryptionSyncChanges;
+use crate::OlmError;
+use crate::OlmMachine;
+use crate::SignatureError;
+use crate::store::CryptoStoreWrapper;
+use crate::store::MemoryStore;
+use crate::store::Store;
+use crate::store::types::Changes;
+use crate::store::types::DehydratedDeviceKey;
+use crate::store::types::RoomKeyInfo;
+use crate::verification::VerificationMachine;
 
 /// Error type for device dehydration issues.
 #[derive(Debug, Error)]
@@ -106,8 +112,11 @@ impl DehydratedDevices {
         let user_identity = self.inner.store().private_identity();
 
         let account = Account::new_dehydrated(user_id);
-        let store =
-            Arc::new(CryptoStoreWrapper::new(user_id, account.device_id(), MemoryStore::new()));
+        let store = Arc::new(CryptoStoreWrapper::new(
+            user_id,
+            account.device_id(),
+            MemoryStore::new(),
+        ));
 
         let verification_machine = VerificationMachine::new(
             account.static_data().clone(),
@@ -115,10 +124,16 @@ impl DehydratedDevices {
             store.clone(),
         );
 
-        let store =
-            Store::new(account.static_data().clone(), user_identity, store, verification_machine);
+        let store = Store::new(
+            account.static_data().clone(),
+            user_identity,
+            store,
+            verification_machine,
+        );
         store
-            .save_pending_changes(crate::store::types::PendingChanges { account: Some(account) })
+            .save_pending_changes(crate::store::types::PendingChanges {
+                account: Some(account),
+            })
             .await?;
 
         Ok(DehydratedDevice { store })
@@ -148,10 +163,15 @@ impl DehydratedDevices {
         device_id: &DeviceId,
         device_data: Raw<DehydratedDeviceData>,
     ) -> Result<RehydratedDevice, DehydrationError> {
-        let rehydrated =
-            self.inner.rehydrate(pickle_key.inner.as_ref(), device_id, device_data).await?;
+        let rehydrated = self
+            .inner
+            .rehydrate(pickle_key.inner.as_ref(), device_id, device_data)
+            .await?;
 
-        Ok(RehydratedDevice { rehydrated, original: self.inner.to_owned() })
+        Ok(RehydratedDevice {
+            rehydrated,
+            original: self.inner.to_owned(),
+        })
     }
 
     /// Get the cached dehydrated device pickle key if any.
@@ -164,7 +184,11 @@ impl DehydratedDevices {
     pub async fn get_dehydrated_device_pickle_key(
         &self,
     ) -> Result<Option<DehydratedDeviceKey>, DehydrationError> {
-        Ok(self.inner.store().load_dehydrated_device_pickle_key().await?)
+        Ok(self
+            .inner
+            .store()
+            .load_dehydrated_device_pickle_key()
+            .await?)
     }
 
     /// Store the dehydrated device pickle key in the crypto store.
@@ -185,7 +209,11 @@ impl DehydratedDevices {
 
     /// Deletes the previously stored dehydrated device pickle key.
     pub async fn delete_dehydrated_device_pickle_key(&self) -> Result<(), DehydrationError> {
-        Ok(self.inner.store().delete_dehydrated_device_pickle_key().await?)
+        Ok(self
+            .inner
+            .store()
+            .delete_dehydrated_device_pickle_key()
+            .await?)
     }
 }
 
@@ -297,16 +325,26 @@ impl RehydratedDevice {
 
         let (_, changes) = self
             .rehydrated
-            .preprocess_sync_changes(&mut rehydrated_transaction, sync_changes, decryption_settings)
+            .preprocess_sync_changes(
+                &mut rehydrated_transaction,
+                sync_changes,
+                decryption_settings,
+            )
             .await?;
 
         // Now take the room keys and persist them in our original `OlmMachine`.
         let room_keys = &changes.inbound_group_sessions;
         let updates = room_keys.iter().map(Into::into).collect();
 
-        trace!(room_key_count = room_keys.len(), "Collected room keys from the rehydrated device");
+        trace!(
+            room_key_count = room_keys.len(),
+            "Collected room keys from the rehydrated device"
+        );
 
-        self.original.store().save_inbound_group_sessions(room_keys).await?;
+        self.original
+            .store()
+            .save_inbound_group_sessions(room_keys)
+            .await?;
 
         rehydrated_transaction.commit().await?;
         self.rehydrated.store().save_changes(changes).await?;
@@ -383,7 +421,12 @@ impl DehydratedDevice {
         let mut device_keys = device_keys
             .expect("We should always try to upload device keys for a dehydrated device.");
 
-        self.store.private_identity().lock().await.sign_device_keys(&mut device_keys).await?;
+        self.store
+            .private_identity()
+            .lock()
+            .await
+            .sign_device_keys(&mut device_keys)
+            .await?;
 
         trace!("Creating an upload request for a dehydrated device");
 
@@ -403,36 +446,37 @@ impl DehydratedDevice {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::BTreeMap, iter};
+    use std::collections::BTreeMap;
+    use std::iter;
 
     use js_option::JsOption;
     use matrix_sdk_test::async_test;
-    use ruma::{
-        DeviceId, RoomId, TransactionId, UserId,
-        api::client::{
-            dehydrated_device::put_dehydrated_device,
-            keys::get_keys::v3::Response as KeysQueryResponse,
-        },
-        assign,
-        encryption::DeviceKeys,
-        events::AnyToDeviceEvent,
-        room_id,
-        serde::Raw,
-        user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::RoomId;
+    use ruma::TransactionId;
+    use ruma::UserId;
+    use ruma::api::client::dehydrated_device::put_dehydrated_device;
+    use ruma::api::client::keys::get_keys::v3::Response as KeysQueryResponse;
+    use ruma::assign;
+    use ruma::encryption::DeviceKeys;
+    use ruma::events::AnyToDeviceEvent;
+    use ruma::room_id;
+    use ruma::serde::Raw;
+    use ruma::user_id;
 
-    use crate::{
-        DecryptionSettings, EncryptionSettings, OlmMachine, TrustRequirement,
-        dehydrated_devices::DehydratedDevice,
-        machine::{
-            test_helpers::{create_session, get_prepared_machine_test_helper},
-            tests::to_device_requests_to_content,
-        },
-        olm::OutboundGroupSession,
-        store::types::DehydratedDeviceKey,
-        types::{DeviceKeys as DeviceKeysType, events::ToDeviceEvent},
-        utilities::json_convert,
-    };
+    use crate::DecryptionSettings;
+    use crate::EncryptionSettings;
+    use crate::OlmMachine;
+    use crate::TrustRequirement;
+    use crate::dehydrated_devices::DehydratedDevice;
+    use crate::machine::test_helpers::create_session;
+    use crate::machine::test_helpers::get_prepared_machine_test_helper;
+    use crate::machine::tests::to_device_requests_to_content;
+    use crate::olm::OutboundGroupSession;
+    use crate::store::types::DehydratedDeviceKey;
+    use crate::types::DeviceKeys as DeviceKeysType;
+    use crate::types::events::ToDeviceEvent;
+    use crate::utilities::json_convert;
 
     fn pickle_key() -> DehydratedDeviceKey {
         DehydratedDeviceKey::from_bytes(&[0u8; 32])
@@ -477,7 +521,11 @@ mod tests {
         recipient: &UserId,
     ) -> (Raw<AnyToDeviceEvent>, OutboundGroupSession) {
         let to_device_requests = machine
-            .share_room_key(room_id, iter::once(recipient), EncryptionSettings::default())
+            .share_room_key(
+                room_id,
+                iter::once(recipient),
+                EncryptionSettings::default(),
+            )
             .await
             .unwrap();
 
@@ -486,8 +534,11 @@ mod tests {
             to_device_requests_to_content(to_device_requests),
         );
 
-        let session =
-            machine.inner.group_session_manager.get_outbound_group_session(room_id).expect(
+        let session = machine
+            .inner
+            .group_session_manager
+            .get_outbound_group_session(room_id)
+            .expect(
                 "An outbound group session should have been created when the room key was shared",
             );
 
@@ -576,8 +627,9 @@ mod tests {
         assert_eq!(rehydrated.rehydrated.device_id(), request.device_id);
         assert_eq!(rehydrated.original.device_id(), alice.device_id());
 
-        let decryption_settings =
-            DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+        let decryption_settings = DecryptionSettings {
+            sender_device_trust_requirement: TrustRequirement::Untrusted,
+        };
 
         // Push the to-device event containing the room key into the rehydrated device.
         let ret = rehydrated
@@ -585,7 +637,11 @@ mod tests {
             .await
             .expect("We should be able to push to-device events into the rehydrated device");
 
-        assert_eq!(ret.len(), 1, "The rehydrated device should have imported a room key");
+        assert_eq!(
+            ret.len(),
+            1,
+            "The rehydrated device should have imported a room key"
+        );
 
         // The `OlmMachine` now does know about the room key since the rehydrated device
         // shared it with us.
@@ -609,15 +665,24 @@ mod tests {
 
         let dehydrated_manager = alice.dehydrated_devices();
 
-        let stored_key = dehydrated_manager.get_dehydrated_device_pickle_key().await.unwrap();
+        let stored_key = dehydrated_manager
+            .get_dehydrated_device_pickle_key()
+            .await
+            .unwrap();
         assert!(stored_key.is_none());
 
         let pickle_key = DehydratedDeviceKey::new();
 
-        dehydrated_manager.save_dehydrated_device_pickle_key(&pickle_key).await.unwrap();
+        dehydrated_manager
+            .save_dehydrated_device_pickle_key(&pickle_key)
+            .await
+            .unwrap();
 
-        let stored_key =
-            dehydrated_manager.get_dehydrated_device_pickle_key().await.unwrap().unwrap();
+        let stored_key = dehydrated_manager
+            .get_dehydrated_device_pickle_key()
+            .await
+            .unwrap()
+            .unwrap();
         assert_eq!(stored_key.to_base64(), pickle_key.to_base64());
 
         let dehydrated_device = dehydrated_manager.create().await.unwrap();
@@ -638,7 +703,10 @@ mod tests {
             .await
             .expect("Should be able to delete the dehydrated device key");
 
-        let stored_key = dehydrated_manager.get_dehydrated_device_pickle_key().await.unwrap();
+        let stored_key = dehydrated_manager
+            .get_dehydrated_device_pickle_key()
+            .await
+            .unwrap();
         assert!(stored_key.is_none());
     }
 
@@ -691,8 +759,9 @@ mod tests {
         assert_eq!(rehydrated.rehydrated.device_id(), &device_id);
         assert_eq!(rehydrated.original.device_id(), alice.device_id());
 
-        let decryption_settings =
-            DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+        let decryption_settings = DecryptionSettings {
+            sender_device_trust_requirement: TrustRequirement::Untrusted,
+        };
 
         // Push the to-device event containing the room key into the rehydrated device.
         let ret = rehydrated
@@ -700,7 +769,11 @@ mod tests {
             .await
             .expect("We should be able to push to-device events into the rehydrated device");
 
-        assert_eq!(ret.len(), 1, "The rehydrated device should have imported a room key");
+        assert_eq!(
+            ret.len(),
+            1,
+            "The rehydrated device should have imported a room key"
+        );
 
         // The `OlmMachine` now does know about the room key since the rehydrated device
         // shared it with us.

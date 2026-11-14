@@ -35,15 +35,7 @@ pagable::static_value!(
 );
 crate::static_starlark_any!(VALUE_EMPTY_CODEMAP: CodeMap = NativeCodeMap::to_codemap(EMPTY_NATIVE_CODEMAP_STATIC));
 
-#[derive(
-    Debug,
-    Copy,
-    Clone,
-    Dupe,
-    PartialEq,
-    Eq,
-    starlark_derive::StarlarkPagable
-)]
+#[derive(Debug, Copy, Clone, Dupe, PartialEq, Eq, starlark_derive::StarlarkPagable)]
 pub(crate) struct FrozenFileSpan {
     file: FrozenAnyValue<CodeMap>,
     #[starlark_pagable(pagable)]

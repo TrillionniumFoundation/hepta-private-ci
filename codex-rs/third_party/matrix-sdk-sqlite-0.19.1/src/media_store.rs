@@ -14,43 +14,50 @@
 
 //! An SQLite-based backend for the [`MediaStore`].
 
-use std::{
-    fmt,
-    path::{Path, PathBuf},
-    sync::Arc,
-};
+use std::fmt;
+use std::path::Path;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use deadpool::managed::PoolConfig;
-use matrix_sdk_base::{
-    cross_process_lock::CrossProcessLockGeneration,
-    media::{
-        MediaRequestParameters, UniqueKey,
-        store::{
-            IgnoreMediaRetentionPolicy, MediaRetentionPolicy, MediaService, MediaStore,
-            MediaStoreInner,
-        },
-    },
-    timer,
-};
+use matrix_sdk_base::cross_process_lock::CrossProcessLockGeneration;
+use matrix_sdk_base::media::MediaRequestParameters;
+use matrix_sdk_base::media::UniqueKey;
+use matrix_sdk_base::media::store::IgnoreMediaRetentionPolicy;
+use matrix_sdk_base::media::store::MediaRetentionPolicy;
+use matrix_sdk_base::media::store::MediaService;
+use matrix_sdk_base::media::store::MediaStore;
+use matrix_sdk_base::media::store::MediaStoreInner;
+use matrix_sdk_base::timer;
 use matrix_sdk_store_encryption::StoreCipher;
-use ruma::{MilliSecondsSinceUnixEpoch, MxcUri, time::SystemTime};
-use rusqlite::{OptionalExtension, params_from_iter};
-use tokio::{
-    fs,
-    sync::{Mutex, OwnedMutexGuard},
-};
-use tracing::{debug, instrument};
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::MxcUri;
+use ruma::time::SystemTime;
+use rusqlite::OptionalExtension;
+use rusqlite::params_from_iter;
+use tokio::fs;
+use tokio::sync::Mutex;
+use tokio::sync::OwnedMutexGuard;
+use tracing::debug;
+use tracing::instrument;
 
-use crate::{
-    OpenStoreError, RuntimeConfig, Secret, SqliteStoreConfig,
-    connection::{self, Connection as SqliteAsyncConn, Pool as SqlitePool, SqliteConnections},
-    error::{Error, Result},
-    utils::{
-        EncryptableStore, SqliteAsyncConnExt, SqliteKeyValueStoreAsyncConnExt,
-        SqliteKeyValueStoreConnExt, SqliteTransactionExt, time_to_timestamp,
-    },
-};
+use crate::OpenStoreError;
+use crate::RuntimeConfig;
+use crate::Secret;
+use crate::SqliteStoreConfig;
+use crate::connection::Connection as SqliteAsyncConn;
+use crate::connection::Pool as SqlitePool;
+use crate::connection::SqliteConnections;
+use crate::connection::{self};
+use crate::error::Error;
+use crate::error::Result;
+use crate::utils::EncryptableStore;
+use crate::utils::SqliteAsyncConnExt;
+use crate::utils::SqliteKeyValueStoreAsyncConnExt;
+use crate::utils::SqliteKeyValueStoreConnExt;
+use crate::utils::SqliteTransactionExt;
+use crate::utils::time_to_timestamp;
 
 mod keys {
     // Entries in Key-value store
@@ -123,7 +130,9 @@ impl SqliteMediaStore {
 
         let _timer = timer!("open_with_config");
 
-        fs::create_dir_all(&config.path).await.map_err(OpenStoreError::CreateDir)?;
+        fs::create_dir_all(&config.path)
+            .await
+            .map_err(OpenStoreError::CreateDir)?;
 
         let db_path = config.path.join(DATABASE_NAME);
         let pool_config = config.pool_config();
@@ -131,12 +140,20 @@ impl SqliteMediaStore {
 
         let pool = config.build_pool_of_connections(DATABASE_NAME)?;
 
-        let this =
-            Self::open_with_pool(pool, db_path, pool_config, runtime_config, config.secret.clone())
-                .await?;
+        let this = Self::open_with_pool(
+            pool,
+            db_path,
+            pool_config,
+            runtime_config,
+            config.secret.clone(),
+        )
+        .await?;
 
         // Apply runtime config on the write connection.
-        this.write().await?.apply_runtime_config(runtime_config).await?;
+        this.write()
+            .await?
+            .apply_runtime_config(runtime_config)
+            .await?;
 
         Ok(this)
     }
@@ -164,7 +181,9 @@ impl SqliteMediaStore {
 
         let media_service = MediaService::new();
         let media_retention_policy = conn.get_serialized_kv(keys::MEDIA_RETENTION_POLICY).await?;
-        let last_media_cleanup_time = conn.get_serialized_kv(keys::LAST_MEDIA_CLEANUP_TIME).await?;
+        let last_media_cleanup_time = conn
+            .get_serialized_kv(keys::LAST_MEDIA_CLEANUP_TIME)
+            .await?;
         media_service.restore(media_retention_policy, last_media_cleanup_time);
 
         let connections = SqliteConnections {
@@ -198,7 +217,9 @@ impl SqliteMediaStore {
         // support must be enabled on a per-connection basis. Execute it every
         // time we try to get a connection, since we can't guarantee a previous
         // connection did enable it before.
-        connection.execute_batch("PRAGMA foreign_keys = ON;").await?;
+        connection
+            .execute_batch("PRAGMA foreign_keys = ON;")
+            .await?;
 
         Ok(connection)
     }
@@ -218,7 +239,9 @@ impl SqliteMediaStore {
         // support must be enabled on a per-connection basis. Execute it every
         // time we try to get a connection, since we can't guarantee a previous
         // connection did enable it before.
-        connection.execute_batch("PRAGMA foreign_keys = ON;").await?;
+        connection
+            .execute_batch("PRAGMA foreign_keys = ON;")
+            .await?;
 
         Ok(connection)
     }
@@ -354,7 +377,9 @@ impl MediaStore for SqliteMediaStore {
     ) -> Result<()> {
         let _timer = timer!("method");
 
-        self.media_service.add_media_content(self, request, content, ignore_policy).await
+        self.media_service
+            .add_media_content(self, request, content, ignore_policy)
+            .await
     }
 
     #[instrument(skip_all)]
@@ -396,7 +421,11 @@ impl MediaStore for SqliteMediaStore {
         let format = self.encode_key(keys::MEDIA, request.format.unique_key());
 
         let conn = self.write().await?;
-        conn.execute("DELETE FROM media WHERE uri = ? AND format = ?", (uri, format)).await?;
+        conn.execute(
+            "DELETE FROM media WHERE uri = ? AND format = ?",
+            (uri, format),
+        )
+        .await?;
 
         Ok(())
     }
@@ -408,7 +437,8 @@ impl MediaStore for SqliteMediaStore {
         let uri = self.encode_key(keys::MEDIA, uri);
 
         let conn = self.write().await?;
-        conn.execute("DELETE FROM media WHERE uri = ?", (uri,)).await?;
+        conn.execute("DELETE FROM media WHERE uri = ?", (uri,))
+            .await?;
 
         Ok(())
     }
@@ -420,7 +450,9 @@ impl MediaStore for SqliteMediaStore {
     ) -> Result<(), Self::Error> {
         let _timer = timer!("method");
 
-        self.media_service.set_media_retention_policy(self, policy).await
+        self.media_service
+            .set_media_retention_policy(self, policy)
+            .await
     }
 
     #[instrument(skip_all)]
@@ -438,7 +470,9 @@ impl MediaStore for SqliteMediaStore {
     ) -> Result<(), Self::Error> {
         let _timer = timer!("method");
 
-        self.media_service.set_ignore_media_retention_policy(self, request, ignore_policy).await
+        self.media_service
+            .set_ignore_media_retention_policy(self, request, ignore_policy)
+            .await
     }
 
     #[instrument(skip_all)]
@@ -482,7 +516,8 @@ impl MediaStoreInner for SqliteMediaStore {
         policy: MediaRetentionPolicy,
     ) -> Result<(), Self::Error> {
         let conn = self.write().await?;
-        conn.set_serialized_kv(keys::MEDIA_RETENTION_POLICY, policy).await?;
+        conn.set_serialized_kv(keys::MEDIA_RETENTION_POLICY, policy)
+            .await?;
         Ok(())
     }
 
@@ -563,7 +598,8 @@ impl MediaStoreInner for SqliteMediaStore {
             })
             .await?;
 
-        data.map(|v| self.decode_value(&v).map(Into::into)).transpose()
+        data.map(|v| self.decode_value(&v).map(Into::into))
+            .transpose()
     }
 
     async fn clean_inner(
@@ -702,29 +738,32 @@ impl MediaStoreInner for SqliteMediaStore {
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        path::PathBuf,
-        sync::{
-            LazyLock,
-            atomic::{AtomicU32, Ordering::SeqCst},
-        },
-        time::Duration,
-    };
+    use std::path::PathBuf;
+    use std::sync::LazyLock;
+    use std::sync::atomic::AtomicU32;
+    use std::sync::atomic::Ordering::SeqCst;
+    use std::time::Duration;
 
-    use matrix_sdk_base::{
-        media::{
-            MediaFormat, MediaRequestParameters, MediaThumbnailSettings,
-            store::{IgnoreMediaRetentionPolicy, MediaStore, MediaStoreError},
-        },
-        media_store_inner_integration_tests, media_store_integration_tests,
-        media_store_integration_tests_time,
-    };
+    use matrix_sdk_base::media::MediaFormat;
+    use matrix_sdk_base::media::MediaRequestParameters;
+    use matrix_sdk_base::media::MediaThumbnailSettings;
+    use matrix_sdk_base::media::store::IgnoreMediaRetentionPolicy;
+    use matrix_sdk_base::media::store::MediaStore;
+    use matrix_sdk_base::media::store::MediaStoreError;
+    use matrix_sdk_base::media_store_inner_integration_tests;
+    use matrix_sdk_base::media_store_integration_tests;
+    use matrix_sdk_base::media_store_integration_tests_time;
     use matrix_sdk_test::async_test;
-    use ruma::{events::room::MediaSource, media::Method, mxc_uri, uint};
-    use tempfile::{TempDir, tempdir};
+    use ruma::events::room::MediaSource;
+    use ruma::media::Method;
+    use ruma::mxc_uri;
+    use ruma::uint;
+    use tempfile::TempDir;
+    use tempfile::tempdir;
 
     use super::SqliteMediaStore;
-    use crate::{SqliteStoreConfig, utils::SqliteAsyncConnExt};
+    use crate::SqliteStoreConfig;
+    use crate::utils::SqliteAsyncConnExt;
 
     static TMP_DIR: LazyLock<TempDir> = LazyLock::new(|| tempdir().unwrap());
     static NUM: AtomicU32 = AtomicU32::new(0);
@@ -739,7 +778,9 @@ mod tests {
 
         tracing::info!("using media store @ {}", tmpdir_path.to_str().unwrap());
 
-        Ok(SqliteMediaStore::open(tmpdir_path.to_str().unwrap(), None).await.unwrap())
+        Ok(SqliteMediaStore::open(tmpdir_path.to_str().unwrap(), None)
+            .await
+            .unwrap())
     }
 
     media_store_integration_tests!();
@@ -749,11 +790,15 @@ mod tests {
     async fn get_media_store_content_sorted_by_last_access(
         media_store: &SqliteMediaStore,
     ) -> Vec<Vec<u8>> {
-        let sqlite_db = media_store.read().await.expect("accessing sqlite db failed");
+        let sqlite_db = media_store
+            .read()
+            .await
+            .expect("accessing sqlite db failed");
         sqlite_db
-            .prepare("SELECT data FROM media ORDER BY last_access DESC", |mut stmt| {
-                stmt.query(())?.mapped(|row| row.get(0)).collect()
-            })
+            .prepare(
+                "SELECT data FROM media ORDER BY last_access DESC",
+                |mut stmt| stmt.query(())?.mapped(|row| row.get(0)).collect(),
+            )
             .await
             .expect("querying media cache content by last access failed")
     }
@@ -763,14 +808,18 @@ mod tests {
         let tmpdir_path = new_media_store_workspace();
         let store_open_config = SqliteStoreConfig::new(tmpdir_path).pool_max_size(42);
 
-        let store = SqliteMediaStore::open_with_config(&store_open_config).await.unwrap();
+        let store = SqliteMediaStore::open_with_config(&store_open_config)
+            .await
+            .unwrap();
 
         assert_eq!(store.pool_max_size().await.unwrap(), 42);
     }
 
     #[async_test]
     async fn test_last_access() {
-        let media_store = get_media_store().await.expect("creating media cache failed");
+        let media_store = get_media_store()
+            .await
+            .expect("creating media cache failed");
         let uri = mxc_uri!("mxc://localhost/media");
         let file_request = MediaRequestParameters {
             source: MediaSource::Plain(uri.to_owned()),
@@ -790,7 +839,11 @@ mod tests {
 
         // Add the media.
         media_store
-            .add_media_content(&file_request, content.clone(), IgnoreMediaRetentionPolicy::No)
+            .add_media_content(
+                &file_request,
+                content.clone(),
+                IgnoreMediaRetentionPolicy::No,
+            )
             .await
             .expect("adding file failed");
 
@@ -811,7 +864,10 @@ mod tests {
         let contents = get_media_store_content_sorted_by_last_access(&media_store).await;
 
         assert_eq!(contents.len(), 2, "media cache contents length is wrong");
-        assert_eq!(contents[0], thumbnail_content, "thumbnail is not last access");
+        assert_eq!(
+            contents[0], thumbnail_content,
+            "thumbnail is not last access"
+        );
         assert_eq!(contents[1], content, "file is not second-to-last access");
 
         // Since the precision of the timestamp is in seconds, wait so the timestamps
@@ -830,24 +886,28 @@ mod tests {
 
         assert_eq!(contents.len(), 2, "media cache contents length is wrong");
         assert_eq!(contents[0], content, "file is not last access");
-        assert_eq!(contents[1], thumbnail_content, "thumbnail is not second-to-last access");
+        assert_eq!(
+            contents[1], thumbnail_content,
+            "thumbnail is not second-to-last access"
+        );
     }
 }
 
 #[cfg(test)]
 mod close_reopen_tests {
-    use std::sync::{
-        LazyLock,
-        atomic::{AtomicU32, Ordering::SeqCst},
-    };
+    use std::sync::LazyLock;
+    use std::sync::atomic::AtomicU32;
+    use std::sync::atomic::Ordering::SeqCst;
 
-    use matrix_sdk_base::media::{
-        MediaFormat, MediaRequestParameters,
-        store::{IgnoreMediaRetentionPolicy, MediaStore},
-    };
+    use matrix_sdk_base::media::MediaFormat;
+    use matrix_sdk_base::media::MediaRequestParameters;
+    use matrix_sdk_base::media::store::IgnoreMediaRetentionPolicy;
+    use matrix_sdk_base::media::store::MediaStore;
     use matrix_sdk_test::async_test;
-    use ruma::{events::room::MediaSource, mxc_uri};
-    use tempfile::{TempDir, tempdir};
+    use ruma::events::room::MediaSource;
+    use ruma::mxc_uri;
+    use tempfile::TempDir;
+    use tempfile::tempdir;
 
     use super::SqliteMediaStore;
 
@@ -937,7 +997,10 @@ mod close_reopen_tests {
         assert!(err.is_err(), "read should fail when closed");
 
         let err_msg = err.unwrap_err().to_string();
-        assert!(err_msg.contains("closed"), "error should mention 'closed', got: {err_msg}");
+        assert!(
+            err_msg.contains("closed"),
+            "error should mention 'closed', got: {err_msg}"
+        );
     }
 
     #[async_test]
@@ -946,12 +1009,19 @@ mod close_reopen_tests {
         store.close().await.unwrap();
 
         let err = store
-            .add_media_content(&test_request(), b"data".to_vec(), IgnoreMediaRetentionPolicy::No)
+            .add_media_content(
+                &test_request(),
+                b"data".to_vec(),
+                IgnoreMediaRetentionPolicy::No,
+            )
             .await;
         assert!(err.is_err(), "write should fail when closed");
 
         let err_msg = err.unwrap_err().to_string();
-        assert!(err_msg.contains("closed"), "error should mention 'closed', got: {err_msg}");
+        assert!(
+            err_msg.contains("closed"),
+            "error should mention 'closed', got: {err_msg}"
+        );
     }
 
     #[async_test]
@@ -1012,7 +1082,10 @@ mod close_reopen_tests {
         // After close, the connections field should be None (pool and write
         // connection have been fully torn down).
         let guard = store.connections.lock().await;
-        assert!(guard.is_none(), "all connections should be released after close");
+        assert!(
+            guard.is_none(),
+            "all connections should be released after close"
+        );
     }
 
     #[async_test]
@@ -1024,7 +1097,10 @@ mod close_reopen_tests {
 
         // Read should work immediately after reopen.
         let result = store.get_media_content(&test_request()).await;
-        assert!(result.is_ok(), "read should succeed immediately after reopen");
+        assert!(
+            result.is_ok(),
+            "read should succeed immediately after reopen"
+        );
 
         // Write should work immediately after reopen.
         let result = store
@@ -1034,7 +1110,10 @@ mod close_reopen_tests {
                 IgnoreMediaRetentionPolicy::No,
             )
             .await;
-        assert!(result.is_ok(), "write should succeed immediately after reopen");
+        assert!(
+            result.is_ok(),
+            "write should succeed immediately after reopen"
+        );
     }
 
     #[async_test]
@@ -1055,14 +1134,20 @@ mod close_reopen_tests {
         tokio::time::sleep(std::time::Duration::from_millis(200)).await;
 
         // The close task should still be running because we hold a connection.
-        assert!(!close_handle.is_finished(), "close should be waiting for the held connection");
+        assert!(
+            !close_handle.is_finished(),
+            "close should be waiting for the held connection"
+        );
 
         // Release the held connection — this lets pool.status().size drop to 0.
         drop(held_conn);
 
         // Now close should complete promptly (well within the 5s timeout).
         let timeout = tokio::time::timeout(std::time::Duration::from_secs(3), close_handle).await;
-        assert!(timeout.is_ok(), "close should complete after the held connection is released");
+        assert!(
+            timeout.is_ok(),
+            "close should complete after the held connection is released"
+        );
         timeout.unwrap().unwrap();
 
         // Verify the store is fully closed.
@@ -1073,16 +1158,16 @@ mod close_reopen_tests {
 
 #[cfg(test)]
 mod encrypted_tests {
-    use std::sync::{
-        LazyLock,
-        atomic::{AtomicU32, Ordering::SeqCst},
-    };
+    use std::sync::LazyLock;
+    use std::sync::atomic::AtomicU32;
+    use std::sync::atomic::Ordering::SeqCst;
 
-    use matrix_sdk_base::{
-        media::store::MediaStoreError, media_store_inner_integration_tests,
-        media_store_integration_tests, media_store_integration_tests_time,
-    };
-    use tempfile::{TempDir, tempdir};
+    use matrix_sdk_base::media::store::MediaStoreError;
+    use matrix_sdk_base::media_store_inner_integration_tests;
+    use matrix_sdk_base::media_store_integration_tests;
+    use matrix_sdk_base::media_store_integration_tests_time;
+    use tempfile::TempDir;
+    use tempfile::tempdir;
 
     use super::SqliteMediaStore;
 
@@ -1095,9 +1180,11 @@ mod encrypted_tests {
 
         tracing::info!("using media store @ {}", tmpdir_path.to_str().unwrap());
 
-        Ok(SqliteMediaStore::open(tmpdir_path.to_str().unwrap(), Some("default_test_password"))
-            .await
-            .unwrap())
+        Ok(
+            SqliteMediaStore::open(tmpdir_path.to_str().unwrap(), Some("default_test_password"))
+                .await
+                .unwrap(),
+        )
     }
 
     media_store_integration_tests!();

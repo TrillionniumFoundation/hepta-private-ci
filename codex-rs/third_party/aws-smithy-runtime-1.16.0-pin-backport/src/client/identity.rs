@@ -4,7 +4,8 @@
  */
 
 mod cache;
-pub use cache::{IdentityCache, LazyCacheBuilder};
+pub use cache::IdentityCache;
+pub use cache::LazyCacheBuilder;
 
 /// Identity resolver implementation for "no auth".
 pub mod no_auth;

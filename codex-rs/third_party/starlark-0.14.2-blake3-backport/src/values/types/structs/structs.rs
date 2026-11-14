@@ -42,9 +42,7 @@ use crate::values::Heap;
 use crate::values::structs::value::FrozenStruct;
 use crate::values::structs::value::Struct;
 
-#[derive(
-    Allocative, Clone, Copy, Dupe, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Pagable
-)]
+#[derive(Allocative, Clone, Copy, Dupe, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Pagable)]
 struct StructType;
 
 pagable::register_typetag!(TyCustomFunction<StructType> as dyn TyCustomDyn);

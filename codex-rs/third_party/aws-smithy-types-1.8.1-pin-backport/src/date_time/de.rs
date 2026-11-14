@@ -4,7 +4,8 @@
  */
 
 use super::*;
-use serde::de::{Error, Visitor};
+use serde::de::Error;
+use serde::de::Visitor;
 use serde::Deserialize;
 
 struct DateTimeVisitor;
@@ -71,7 +72,8 @@ mod test {
     /// check for human redable format
     #[test]
     fn de_human_readable_datetime() {
-        use serde::{Deserialize, Serialize};
+        use serde::Deserialize;
+        use serde::Serialize;
 
         let datetime = DateTime::from_secs(1576540098);
         #[derive(Serialize, Deserialize, PartialEq)]

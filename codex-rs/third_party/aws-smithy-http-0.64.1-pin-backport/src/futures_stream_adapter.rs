@@ -9,7 +9,8 @@ use aws_smithy_types::byte_stream::ByteStream;
 use bytes::Bytes;
 use futures_core::stream::Stream;
 use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::task::Context;
+use std::task::Poll;
 
 /// A new-type wrapper to enable the impl of the `futures_core::stream::Stream` trait
 ///

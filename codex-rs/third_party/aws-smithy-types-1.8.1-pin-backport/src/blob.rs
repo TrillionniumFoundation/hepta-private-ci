@@ -118,7 +118,8 @@ mod serde_serialize {
 #[cfg(all(aws_sdk_unstable, feature = "serde-deserialize"))]
 mod serde_deserialize {
     use super::*;
-    use serde::{de::Visitor, Deserialize};
+    use serde::de::Visitor;
+    use serde::Deserialize;
 
     struct HumanReadableBlobVisitor;
     impl<'de> Visitor<'de> for HumanReadableBlobVisitor {
@@ -233,7 +234,8 @@ mod test {
 ))]
 mod test_serde {
     use crate::Blob;
-    use serde::{Deserialize, Serialize};
+    use serde::Deserialize;
+    use serde::Serialize;
 
     #[derive(Deserialize, Serialize, Debug, PartialEq)]
     #[allow(dead_code)]

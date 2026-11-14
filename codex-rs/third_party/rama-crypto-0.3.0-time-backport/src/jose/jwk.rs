@@ -1,20 +1,32 @@
-use aws_lc_rs::{
-    digest::{Digest, SHA256, digest},
-    encoding::{AsDer, Pkcs8V1Der},
-    pkcs8::Document,
-    rand::SystemRandom,
-    rsa::KeySize,
-    signature::{
-        self, ECDSA_P256_SHA256_FIXED_SIGNING, EcdsaKeyPair, EcdsaSigningAlgorithm,
-        EcdsaVerificationAlgorithm, KeyPair, RsaKeyPair, Signature,
-    },
-};
-use base64::{Engine as _, prelude::BASE64_URL_SAFE_NO_PAD};
+use aws_lc_rs::digest::Digest;
+use aws_lc_rs::digest::SHA256;
+use aws_lc_rs::digest::digest;
+use aws_lc_rs::encoding::AsDer;
+use aws_lc_rs::encoding::Pkcs8V1Der;
+use aws_lc_rs::pkcs8::Document;
+use aws_lc_rs::rand::SystemRandom;
+use aws_lc_rs::rsa::KeySize;
+use aws_lc_rs::signature::ECDSA_P256_SHA256_FIXED_SIGNING;
+use aws_lc_rs::signature::EcdsaKeyPair;
+use aws_lc_rs::signature::EcdsaSigningAlgorithm;
+use aws_lc_rs::signature::EcdsaVerificationAlgorithm;
+use aws_lc_rs::signature::KeyPair;
+use aws_lc_rs::signature::RsaKeyPair;
+use aws_lc_rs::signature::Signature;
+use aws_lc_rs::signature::{self};
+use base64::Engine as _;
+use base64::prelude::BASE64_URL_SAFE_NO_PAD;
+use rama_core::error::BoxError;
 use rama_core::error::BoxErrorExt as _;
-use rama_core::error::{BoxError, ErrorContext};
-use serde::{Deserialize, Serialize, Serializer, ser::SerializeStruct};
+use rama_core::error::ErrorContext;
+use serde::Deserialize;
+use serde::Serialize;
+use serde::Serializer;
+use serde::ser::SerializeStruct;
 
-use crate::jose::{JWA, Signer, jwk_utils::create_subject_public_key_info};
+use crate::jose::JWA;
+use crate::jose::Signer;
+use crate::jose::jwk_utils::create_subject_public_key_info;
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 /// [`JWK`] or JSON Web Key as defined in [`rfc7517`]

@@ -89,12 +89,7 @@ mod tests {
     }
 
     #[derive(
-        ProvidesStaticType,
-        derive_more::Display,
-        Debug,
-        NoSerialize,
-        Allocative,
-        StarlarkPagable
+        ProvidesStaticType, derive_more::Display, Debug, NoSerialize, Allocative, StarlarkPagable,
     )]
     #[display("SomeType")]
     struct MyValue {

@@ -26,7 +26,8 @@ use matrix_sdk_crypto::CryptoStoreError;
 use thiserror::Error;
 use tokio::io;
 
-use crate::connection::{CreatePoolError, PoolError};
+use crate::connection::CreatePoolError;
+use crate::connection::PoolError;
 
 /// All the errors that can occur when opening an SQLite store.
 #[derive(Error, Debug)]

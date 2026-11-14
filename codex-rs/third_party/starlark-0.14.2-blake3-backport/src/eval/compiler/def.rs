@@ -322,13 +322,7 @@ impl<T> ParametersCompiled<T> {
 }
 
 /// Copy local variable slot to nested function.
-#[derive(
-    Debug,
-    Clone,
-    Dupe,
-    pagable::Pagable,
-    starlark_derive::StarlarkPagableViaPagable
-)]
+#[derive(Debug, Clone, Dupe, pagable::Pagable, starlark_derive::StarlarkPagableViaPagable)]
 pub(crate) struct CopySlotFromParent {
     /// Slot in the outer function.
     pub(crate) parent: LocalSlotIdCapturedOrNot,
@@ -537,12 +531,7 @@ impl Compiler<'_, '_, '_, '_> {
 /// Starlark function internal representation and implementation of
 /// [`StarlarkValue`].
 #[derive(
-    Derivative,
-    NoSerialize,
-    ProvidesStaticType,
-    Trace,
-    Allocative,
-    starlark_derive::StarlarkPagable
+    Derivative, NoSerialize, ProvidesStaticType, Trace, Allocative, starlark_derive::StarlarkPagable,
 )]
 #[derivative(Debug)]
 pub(crate) struct DefGen<V> {

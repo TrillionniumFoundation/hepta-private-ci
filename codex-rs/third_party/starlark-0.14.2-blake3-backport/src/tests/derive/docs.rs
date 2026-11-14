@@ -50,14 +50,7 @@ fn object_docs_1(_: &mut MethodsBuilder) {
     }
 }
 
-#[derive(
-    Debug,
-    Display,
-    ProvidesStaticType,
-    NoSerialize,
-    Allocative,
-    StarlarkPagable
-)]
+#[derive(Debug, Display, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable)]
 struct TestExample {}
 
 starlark_simple_value!(TestExample);
@@ -75,15 +68,7 @@ impl<'v> StarlarkValue<'v> for TestExample {
 }
 
 #[derive(
-    Clone,
-    Debug,
-    Coerce,
-    Display,
-    Trace,
-    Freeze,
-    ProvidesStaticType,
-    Allocative,
-    StarlarkPagable
+    Clone, Debug, Coerce, Display, Trace, Freeze, ProvidesStaticType, Allocative, StarlarkPagable,
 )]
 #[repr(C)]
 struct ComplexTestExampleGen<V>(V);

@@ -12,39 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    collections::BTreeMap,
-    time::{Duration, SystemTime},
-};
+use std::collections::BTreeMap;
+use std::time::Duration;
+use std::time::SystemTime;
 
 use assert_matches2::assert_let;
-use matrix_sdk_common::deserialized_responses::{
-    ProcessedToDeviceEvent, ToDeviceUnableToDecryptReason,
-};
+use matrix_sdk_common::deserialized_responses::ProcessedToDeviceEvent;
+use matrix_sdk_common::deserialized_responses::ToDeviceUnableToDecryptReason;
 use matrix_sdk_test::async_test;
-use ruma::{
-    DeviceKeyAlgorithm, DeviceKeyId, SecondsSinceUnixEpoch,
-    canonical_json::to_canonical_value,
-    device_id,
-    events::{AnyToDeviceEvent, dummy::ToDeviceDummyEventContent},
-    user_id,
-};
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::SecondsSinceUnixEpoch;
+use ruma::canonical_json::to_canonical_value;
+use ruma::device_id;
+use ruma::events::AnyToDeviceEvent;
+use ruma::events::dummy::ToDeviceDummyEventContent;
+use ruma::user_id;
 use serde_json::json;
 use vodozemac::Ed25519SecretKey;
 
-use crate::{
-    DecryptionSettings, DeviceData, OlmMachine, TrustRequirement,
-    machine::{
-        test_helpers::{
-            create_session, get_machine_pair, get_machine_pair_with_session,
-            get_machine_pair_with_setup_sessions_test_helper,
-        },
-        tests::{self, megolm_sender_data::receive_to_device_event},
-    },
-    olm::utility::SignJson,
-    store::types::Changes,
-    types::{DeviceKeys, events::ToDeviceEvent},
-};
+use crate::DecryptionSettings;
+use crate::DeviceData;
+use crate::OlmMachine;
+use crate::TrustRequirement;
+use crate::machine::test_helpers::create_session;
+use crate::machine::test_helpers::get_machine_pair;
+use crate::machine::test_helpers::get_machine_pair_with_session;
+use crate::machine::test_helpers::get_machine_pair_with_setup_sessions_test_helper;
+use crate::machine::tests::megolm_sender_data::receive_to_device_event;
+use crate::machine::tests::{self};
+use crate::olm::utility::SignJson;
+use crate::store::types::Changes;
+use crate::types::DeviceKeys;
+use crate::types::events::ToDeviceEvent;
 
 #[async_test]
 async fn test_session_creation() {
@@ -63,7 +63,14 @@ async fn test_session_creation() {
 
     let session = alice_machine
         .store()
-        .get_sessions(&bob_machine.store().static_account().identity_keys().curve25519.to_base64())
+        .get_sessions(
+            &bob_machine
+                .store()
+                .static_account()
+                .identity_keys()
+                .curve25519
+                .to_base64(),
+        )
         .await
         .unwrap()
         .unwrap();
@@ -188,11 +195,19 @@ async fn test_get_most_recent_session_of_device_with_no_curve_key() {
         DeviceData::try_from(&bob_device_keys).unwrap()
     };
 
-    alice_machine.store().save_device_data(&[bob_device_data]).await.unwrap();
+    alice_machine
+        .store()
+        .save_device_data(&[bob_device_data])
+        .await
+        .unwrap();
 
     // Now, fetch the device from the store, and the most recent session should be
     // None.
-    let device = alice_machine.get_device(bob_user_id, bob_device_id, None).await.unwrap().unwrap();
+    let device = alice_machine
+        .get_device(bob_user_id, bob_device_id, None)
+        .await
+        .unwrap()
+        .unwrap();
     let newest_session = device.get_most_recent_session().await.unwrap();
     assert!(newest_session.is_none());
 }
@@ -201,7 +216,11 @@ async fn olm_encryption_test_helper(use_fallback_key: bool) {
     let (alice, bob) =
         get_machine_pair_with_session(tests::alice_id(), tests::user_id(), use_fallback_key).await;
 
-    let bob_device = alice.get_device(bob.user_id(), bob.device_id(), None).await.unwrap().unwrap();
+    let bob_device = alice
+        .get_device(bob.user_id(), bob.device_id(), None)
+        .await
+        .unwrap()
+        .unwrap();
 
     let (_, content, _) = bob_device
         .encrypt("m.dummy", ToDeviceDummyEventContent::new())
@@ -215,8 +234,9 @@ async fn olm_encryption_test_helper(use_fallback_key: bool) {
             .expect("We should be able to deserialize the encrypted content"),
     );
 
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     // Decrypting the first time should succeed.
     let decrypted = bob
@@ -299,20 +319,38 @@ async fn test_decrypt_to_device_message_with_unsigned_sender_keys() {
     let ciphertext = alice_session.encrypt_helper(&plaintext).await.unwrap();
     let event = ToDeviceEvent::new(
         alice.user_id().to_owned(),
-        alice_session.build_encrypted_event(ciphertext, None).await.unwrap(),
+        alice_session
+            .build_encrypted_event(ciphertext, None)
+            .await
+            .unwrap(),
     );
 
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     // Bob receives the to-device message
     let (to_device_events, _) = receive_to_device_event(&bob, &event, &decryption_settings).await;
 
-    let event = to_device_events.first().expect("Bob did not get a to-device event").clone();
+    let event = to_device_events
+        .first()
+        .expect("Bob did not get a to-device event")
+        .clone();
 
     // The to-device event should remain encrypted.
-    assert_let!(ProcessedToDeviceEvent::UnableToDecrypt { encrypted_event, utd_info } = event);
-    assert_eq!(encrypted_event.get_field("type").unwrap(), Some("m.room.encrypted"));
+    assert_let!(
+        ProcessedToDeviceEvent::UnableToDecrypt {
+            encrypted_event,
+            utd_info
+        } = event
+    );
+    assert_eq!(
+        encrypted_event.get_field("type").unwrap(),
+        Some("m.room.encrypted")
+    );
 
-    assert_eq!(utd_info.reason, ToDeviceUnableToDecryptReason::DecryptionFailure);
+    assert_eq!(
+        utd_info.reason,
+        ToDeviceUnableToDecryptReason::DecryptionFailure
+    );
 }

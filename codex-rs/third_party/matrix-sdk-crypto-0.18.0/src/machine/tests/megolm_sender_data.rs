@@ -12,40 +12,51 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{fmt::Debug, iter, pin::Pin};
+use std::fmt::Debug;
+use std::iter;
+use std::pin::Pin;
 
 use assert_matches::assert_matches;
 use futures_core::Stream;
-use futures_util::{FutureExt, StreamExt};
+use futures_util::FutureExt;
+use futures_util::StreamExt;
 use matrix_sdk_common::deserialized_responses::ProcessedToDeviceEvent;
 use matrix_sdk_test::async_test;
-use ruma::{
-    DeviceKeyId, RoomId, TransactionId, UserId, canonical_json::to_canonical_value, owned_user_id,
-    room_id, user_id,
-};
+use ruma::DeviceKeyId;
+use ruma::RoomId;
+use ruma::TransactionId;
+use ruma::UserId;
+use ruma::canonical_json::to_canonical_value;
+use ruma::owned_user_id;
+use ruma::room_id;
+use ruma::user_id;
 use serde::Serialize;
 use serde_json::json;
 use tokio_stream::wrappers::errors::BroadcastStreamRecvError;
 use vodozemac::Curve25519SecretKey;
 
-use crate::{
-    Account, DecryptionSettings, DeviceData, EncryptionSettings, EncryptionSyncChanges, EventError,
-    OlmError, OlmMachine, Session, TrustRequirement,
-    machine::{
-        DeviceKeyAlgorithm,
-        test_helpers::{
-            bootstrap_requests_to_keys_query_response,
-            get_machine_pair_with_setup_sessions_test_helper,
-        },
-        tests::to_device_requests_to_content,
-    },
-    olm::{InboundGroupSession, SenderData},
-    store::types::RoomKeyInfo,
-    types::{
-        DeviceKey, DeviceKeys,
-        events::{EventType, ToDeviceEvent, room::encrypted::ToDeviceEncryptedEventContent},
-    },
-};
+use crate::Account;
+use crate::DecryptionSettings;
+use crate::DeviceData;
+use crate::EncryptionSettings;
+use crate::EncryptionSyncChanges;
+use crate::EventError;
+use crate::OlmError;
+use crate::OlmMachine;
+use crate::Session;
+use crate::TrustRequirement;
+use crate::machine::DeviceKeyAlgorithm;
+use crate::machine::test_helpers::bootstrap_requests_to_keys_query_response;
+use crate::machine::test_helpers::get_machine_pair_with_setup_sessions_test_helper;
+use crate::machine::tests::to_device_requests_to_content;
+use crate::olm::InboundGroupSession;
+use crate::olm::SenderData;
+use crate::store::types::RoomKeyInfo;
+use crate::types::DeviceKey;
+use crate::types::DeviceKeys;
+use crate::types::events::EventType;
+use crate::types::events::ToDeviceEvent;
+use crate::types::events::room::encrypted::ToDeviceEncryptedEventContent;
 
 /// Test the behaviour when a megolm session is received from an unknown device,
 /// and the device keys are not in the to-device message.
@@ -64,8 +75,9 @@ async fn test_receive_megolm_session_from_unknown_device() {
     let room_id = room_id!("!test:example.org");
     let event = create_and_share_session_with_custom_sender_data(&alice, &bob, room_id, None).await;
 
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     // Bob receives the to-device message
     receive_to_device_event(&bob, &event, &decryption_settings).await;
@@ -93,8 +105,9 @@ async fn test_receive_megolm_session_with_bad_device_keys() {
     let (alice, bob) = get_machine_pair().await;
 
     let room_id = room_id!("!test:example.org");
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     let alice_account = alice.store().load_account().await.unwrap().unwrap();
     let alice_device_keys = alice_account.device_keys();
@@ -130,7 +143,9 @@ async fn test_receive_megolm_session_with_bad_device_keys() {
     )
     .await;
     assert_matches!(
-        bob_account.decrypt_to_device_event(bob_store, &event, &decryption_settings).await,
+        bob_account
+            .decrypt_to_device_event(bob_store, &event, &decryption_settings)
+            .await,
         Err(OlmError::EventError(EventError::InvalidSenderDeviceKeys))
     );
 
@@ -150,7 +165,9 @@ async fn test_receive_megolm_session_with_bad_device_keys() {
     )
     .await;
     assert_matches!(
-        bob_account.decrypt_to_device_event(bob_store, &event, &decryption_settings).await,
+        bob_account
+            .decrypt_to_device_event(bob_store, &event, &decryption_settings)
+            .await,
         Err(OlmError::EventError(EventError::InvalidSenderDeviceKeys))
     );
 
@@ -174,7 +191,9 @@ async fn test_receive_megolm_session_with_bad_device_keys() {
     )
     .await;
     assert_matches!(
-        bob_account.decrypt_to_device_event(bob_store, &event, &decryption_settings).await,
+        bob_account
+            .decrypt_to_device_event(bob_store, &event, &decryption_settings)
+            .await,
         Err(OlmError::EventError(EventError::InvalidSenderDeviceKeys))
     );
 }
@@ -204,14 +223,19 @@ async fn test_receive_megolm_session_from_known_device() {
         alice.user_id().to_owned(),
         to_device_requests_to_content(
             alice
-                .share_room_key(room_id, iter::once(bob.user_id()), EncryptionSettings::default())
+                .share_room_key(
+                    room_id,
+                    iter::once(bob.user_id()),
+                    EncryptionSettings::default(),
+                )
                 .await
                 .unwrap(),
         ),
     );
 
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     // Bob receives the to-device message
     receive_to_device_event(&bob, &event, &decryption_settings).await;
@@ -247,8 +271,9 @@ async fn test_update_unknown_device_senderdata_on_keys_query() {
     let room_id = room_id!("!test:example.org");
     let event = create_and_share_session_with_custom_sender_data(&alice, &bob, room_id, None).await;
 
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     // Bob receives the to-device message
     receive_to_device_event(&bob, &event, &decryption_settings).await;
@@ -300,7 +325,11 @@ async fn test_update_device_info_senderdata_on_keys_query() {
     let room_id = room_id!("!test:example.org");
 
     let to_device_requests = alice
-        .share_room_key(room_id, iter::once(bob.user_id()), EncryptionSettings::default())
+        .share_room_key(
+            room_id,
+            iter::once(bob.user_id()),
+            EncryptionSettings::default(),
+        )
         .await
         .unwrap();
     let event = ToDeviceEvent::new(
@@ -308,8 +337,9 @@ async fn test_update_device_info_senderdata_on_keys_query() {
         to_device_requests_to_content(to_device_requests),
     );
 
-    let decryption_settings =
-        DecryptionSettings { sender_device_trust_requirement: TrustRequirement::Untrusted };
+    let decryption_settings = DecryptionSettings {
+        sender_device_trust_requirement: TrustRequirement::Untrusted,
+    };
 
     // Bob receives the to-device message
     receive_to_device_event(&bob, &event, &decryption_settings).await;
@@ -325,7 +355,9 @@ async fn test_update_device_info_senderdata_on_keys_query() {
     // signature for her device
     let bootstrap_requests = alice.bootstrap_cross_signing(false).await.unwrap();
     let kq_response = bootstrap_requests_to_keys_query_response(bootstrap_requests);
-    bob.receive_keys_query_response(&TransactionId::new(), &kq_response).await.unwrap();
+    bob.receive_keys_query_response(&TransactionId::new(), &kq_response)
+        .await
+        .unwrap();
 
     // Then Bob should have received an update about the session, and it should now
     // be `SenderData::SenderUnverified`
@@ -350,8 +382,13 @@ async fn get_machine_pair() -> (OlmMachine, OlmMachine) {
 /// given user.
 async fn forget_devices_for_user(machine: &OlmMachine, other_user: &UserId) {
     let mut keys_query_response = ruma::api::client::keys::get_keys::v3::Response::default();
-    keys_query_response.device_keys.insert(other_user.to_owned(), Default::default());
-    machine.receive_keys_query_response(&TransactionId::new(), &keys_query_response).await.unwrap();
+    keys_query_response
+        .device_keys
+        .insert(other_user.to_owned(), Default::default());
+    machine
+        .receive_keys_query_response(&TransactionId::new(), &keys_query_response)
+        .await
+        .unwrap();
 }
 
 /// Create a new [`OutboundGroupSession`], and build a to-device event to share
@@ -406,17 +443,20 @@ async fn create_and_share_session_with_custom_sender_data(
         "content": room_key_content,
     });
     if let Some(sender_device_keys) = sender_device_keys {
-        plaintext_value
-            .as_object_mut()
-            .unwrap()
-            .insert("org.matrix.msc4147.device_keys".to_owned(), sender_device_keys);
+        plaintext_value.as_object_mut().unwrap().insert(
+            "org.matrix.msc4147.device_keys".to_owned(),
+            sender_device_keys,
+        );
     }
     let plaintext = serde_json::to_string(&plaintext_value).unwrap();
 
     let ciphertext = olm_session.encrypt_helper(&plaintext).await.unwrap();
     ToDeviceEvent::new(
         alice.user_id().to_owned(),
-        olm_session.build_encrypted_event(ciphertext, None).await.unwrap(),
+        olm_session
+            .build_encrypted_event(ciphertext, None)
+            .await
+            .unwrap(),
     )
 }
 

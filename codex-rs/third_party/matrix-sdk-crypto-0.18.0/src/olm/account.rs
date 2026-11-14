@@ -12,75 +12,107 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::{
-    collections::{BTreeMap, HashMap},
-    fmt,
-    ops::{Deref, Not as _},
-    sync::Arc,
-    time::Duration,
-};
+use std::collections::BTreeMap;
+use std::collections::HashMap;
+use std::fmt;
+use std::ops::Deref;
+use std::ops::Not as _;
+use std::sync::Arc;
+use std::time::Duration;
 
 use hkdf::Hkdf;
 use js_option::JsOption;
-use matrix_sdk_common::deserialized_responses::{
-    AlgorithmInfo, DeviceLinkProblem, EncryptionInfo, VerificationLevel, VerificationState,
-};
-use ruma::{
-    CanonicalJsonValue, DeviceId, DeviceKeyAlgorithm, DeviceKeyId, MilliSecondsSinceUnixEpoch,
-    OneTimeKeyAlgorithm, OneTimeKeyId, OwnedDeviceId, OwnedDeviceKeyId, OwnedOneTimeKeyId,
-    OwnedUserId, RoomId, SecondsSinceUnixEpoch, UInt, UserId,
-    api::client::{
-        dehydrated_device::{DehydratedDeviceData, DehydratedDeviceV2},
-        keys::{
-            upload_keys,
-            upload_signatures::v3::{Request as SignatureUploadRequest, SignedKeys},
-        },
-    },
-    canonical_json::to_canonical_value,
-    events::{AnyToDeviceEvent, room::history_visibility::HistoryVisibility},
-    serde::Raw,
-};
-use serde::{Deserialize, Serialize, de::Error};
-use serde_json::value::{RawValue as RawJsonValue, to_raw_value};
-use sha2::{Digest, Sha256};
+use matrix_sdk_common::deserialized_responses::AlgorithmInfo;
+use matrix_sdk_common::deserialized_responses::DeviceLinkProblem;
+use matrix_sdk_common::deserialized_responses::EncryptionInfo;
+use matrix_sdk_common::deserialized_responses::VerificationLevel;
+use matrix_sdk_common::deserialized_responses::VerificationState;
+use ruma::CanonicalJsonValue;
+use ruma::DeviceId;
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::OneTimeKeyAlgorithm;
+use ruma::OneTimeKeyId;
+use ruma::OwnedDeviceId;
+use ruma::OwnedDeviceKeyId;
+use ruma::OwnedOneTimeKeyId;
+use ruma::OwnedUserId;
+use ruma::RoomId;
+use ruma::SecondsSinceUnixEpoch;
+use ruma::UInt;
+use ruma::UserId;
+use ruma::api::client::dehydrated_device::DehydratedDeviceData;
+use ruma::api::client::dehydrated_device::DehydratedDeviceV2;
+use ruma::api::client::keys::upload_keys;
+use ruma::api::client::keys::upload_signatures::v3::Request as SignatureUploadRequest;
+use ruma::api::client::keys::upload_signatures::v3::SignedKeys;
+use ruma::canonical_json::to_canonical_value;
+use ruma::events::AnyToDeviceEvent;
+use ruma::events::room::history_visibility::HistoryVisibility;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
+use serde::de::Error;
+use serde_json::value::RawValue as RawJsonValue;
+use serde_json::value::to_raw_value;
+use sha2::Digest;
+use sha2::Sha256;
 use tokio::sync::Mutex;
-use tracing::{Span, debug, field::debug, info, instrument, trace, warn};
-use vodozemac::{
-    Curve25519PublicKey, Ed25519Signature, KeyId, PickleError, base64_encode,
-    olm::{
-        Account as InnerAccount, AccountPickle, IdentityKeys, OlmMessage,
-        OneTimeKeyGenerationResult, PreKeyMessage, SessionConfig,
-    },
-};
+use tracing::Span;
+use tracing::debug;
+use tracing::field::debug;
+use tracing::info;
+use tracing::instrument;
+use tracing::trace;
+use tracing::warn;
+use vodozemac::Curve25519PublicKey;
+use vodozemac::Ed25519Signature;
+use vodozemac::KeyId;
+use vodozemac::PickleError;
+use vodozemac::base64_encode;
+use vodozemac::olm::Account as InnerAccount;
+use vodozemac::olm::AccountPickle;
+use vodozemac::olm::IdentityKeys;
+use vodozemac::olm::OlmMessage;
+use vodozemac::olm::OneTimeKeyGenerationResult;
+use vodozemac::olm::PreKeyMessage;
+use vodozemac::olm::SessionConfig;
 
-use super::{
-    EncryptionSettings, InboundGroupSession, OutboundGroupSession, PrivateCrossSigningIdentity,
-    Session, SessionCreationError as MegolmSessionCreationError, utility::SignJson,
-};
+use super::EncryptionSettings;
+use super::InboundGroupSession;
+use super::OutboundGroupSession;
+use super::PrivateCrossSigningIdentity;
+use super::Session;
+use super::SessionCreationError as MegolmSessionCreationError;
+use super::utility::SignJson;
+use crate::DecryptionSettings;
+use crate::Device;
+use crate::OlmError;
+use crate::SignatureError;
+use crate::TrustRequirement;
+use crate::dehydrated_devices::DehydrationError;
+use crate::error::EventError;
+use crate::error::OlmResult;
+use crate::error::SessionCreationError;
+use crate::identities::DeviceData;
+use crate::olm::SenderData;
+use crate::store::Store;
+use crate::store::types::Changes;
+use crate::store::types::DeviceChanges;
+use crate::types::CrossSigningKey;
+use crate::types::DeviceKeys;
+use crate::types::EventEncryptionAlgorithm;
+use crate::types::MasterPubkey;
+use crate::types::OneTimeKey;
+use crate::types::SignedKey;
+use crate::types::events::olm_v1::AnyDecryptedOlmEvent;
+use crate::types::events::room::encrypted::EncryptedToDeviceEvent;
+use crate::types::events::room::encrypted::OlmV1Curve25519AesSha2Content;
 #[cfg(feature = "experimental-algorithms")]
 use crate::types::events::room::encrypted::OlmV2Curve25519AesSha2Content;
-use crate::{
-    DecryptionSettings, Device, OlmError, SignatureError, TrustRequirement,
-    dehydrated_devices::DehydrationError,
-    error::{EventError, OlmResult, SessionCreationError},
-    identities::DeviceData,
-    olm::SenderData,
-    store::{
-        Store,
-        types::{Changes, DeviceChanges},
-    },
-    types::{
-        CrossSigningKey, DeviceKeys, EventEncryptionAlgorithm, MasterPubkey, OneTimeKey, SignedKey,
-        events::{
-            olm_v1::AnyDecryptedOlmEvent,
-            room::encrypted::{
-                EncryptedToDeviceEvent, OlmV1Curve25519AesSha2Content,
-                ToDeviceEncryptedEventContent,
-            },
-        },
-        requests::UploadSigningKeysRequest,
-    },
-};
+use crate::types::events::room::encrypted::ToDeviceEncryptedEventContent;
+use crate::types::requests::UploadSigningKeysRequest;
 
 #[derive(Debug)]
 enum PrekeyBundle {
@@ -153,7 +185,10 @@ impl OlmMessageHash {
             .chain_update(ciphertext)
             .finalize();
 
-        Self { sender_key, hash: base64_encode(sha.as_slice()) }
+        Self {
+            sender_key,
+            hash: base64_encode(sha.as_slice()),
+        }
     }
 }
 
@@ -206,7 +241,11 @@ impl StaticAccountData {
         settings: EncryptionSettings,
         own_sender_data: SenderData,
     ) -> Result<(OutboundGroupSession, InboundGroupSession), MegolmSessionCreationError> {
-        trace!(?room_id, algorithm = settings.algorithm.as_str(), "Creating a new room key");
+        trace!(
+            ?room_id,
+            algorithm = settings.algorithm.as_str(),
+            "Creating a new room key"
+        );
 
         let visibility = settings.history_visibility.clone();
         let algorithm = settings.algorithm.to_owned();
@@ -817,7 +856,11 @@ impl Account {
     ///   this device to the server.
     pub async fn bootstrap_cross_signing(
         &self,
-    ) -> (PrivateCrossSigningIdentity, UploadSigningKeysRequest, SignatureUploadRequest) {
+    ) -> (
+        PrivateCrossSigningIdentity,
+        UploadSigningKeysRequest,
+        SignatureUploadRequest,
+    ) {
         let identity = PrivateCrossSigningIdentity::for_account(self);
 
         let signature_request = identity
@@ -851,8 +894,11 @@ impl Account {
         &self,
         master_key: &MasterPubkey,
     ) -> Result<SignatureUploadRequest, SignatureError> {
-        let public_key =
-            master_key.get_first_key().ok_or(SignatureError::MissingSigningKey)?.to_base64().into();
+        let public_key = master_key
+            .get_first_key()
+            .ok_or(SignatureError::MissingSigningKey)?
+            .to_base64()
+            .into();
 
         let mut cross_signing_key: CrossSigningKey = master_key.as_ref().clone();
         cross_signing_key.signatures.clear();
@@ -895,7 +941,11 @@ impl Account {
     pub fn signed_fallback_keys(&self) -> FallbackKeys {
         let fallback_key = self.fallback_key();
 
-        if fallback_key.is_empty() { BTreeMap::new() } else { self.signed_keys(fallback_key, true) }
+        if fallback_key.is_empty() {
+            BTreeMap::new()
+        } else {
+            self.signed_keys(fallback_key, true)
+        }
     }
 
     fn signed_keys(
@@ -967,7 +1017,9 @@ impl Account {
         fallback_used: bool,
         our_device_keys: DeviceKeys,
     ) -> Result<Session, vodozemac::olm::SessionCreationError> {
-        let session = self.inner.create_outbound_session(config, identity_key, one_time_key)?;
+        let session = self
+            .inner
+            .create_outbound_session(config, identity_key, one_time_key)?;
 
         let now = SecondsSinceUnixEpoch::now();
         let session_id = session.session_id();
@@ -1100,7 +1152,9 @@ impl Account {
         #[cfg(feature = "experimental-algorithms")]
         let config = SessionConfig::version_2();
 
-        let result = self.inner.create_inbound_session(config, their_identity_key, message)?;
+        let result = self
+            .inner
+            .create_inbound_session(config, their_identity_key, message)?;
         let now = SecondsSinceUnixEpoch::now();
         let session_id = result.session.session_id();
 
@@ -1134,8 +1188,9 @@ impl Account {
         let one_time_map = other.signed_one_time_keys();
         let device = DeviceData::from_account(other);
 
-        let mut our_session =
-            self.create_outbound_session(&device, &one_time_map, self.device_keys()).unwrap();
+        let mut our_session = self
+            .create_outbound_session(&device, &one_time_map, self.device_keys())
+            .unwrap();
 
         other.mark_keys_as_published();
 
@@ -1194,12 +1249,18 @@ impl Account {
             )
             .await
         {
-            Ok((session, result)) => {
-                Ok(OlmDecryptionInfo { session, message_hash, result, inbound_group_session: None })
-            }
+            Ok((session, result)) => Ok(OlmDecryptionInfo {
+                session,
+                message_hash,
+                result,
+                inbound_group_session: None,
+            }),
             Err(OlmError::SessionWedged(user_id, sender_key)) => {
                 if store.is_message_known(&message_hash).await? {
-                    info!(?sender_key, "An Olm message got replayed, decryption failed");
+                    info!(
+                        ?sender_key,
+                        "An Olm message got replayed, decryption failed"
+                    );
                     Err(OlmError::ReplayedMessage(user_id, sender_key))
                 } else {
                     Err(OlmError::SessionWedged(user_id, sender_key))
@@ -1262,11 +1323,13 @@ impl Account {
 
         match &event.content {
             ToDeviceEncryptedEventContent::OlmV1Curve25519AesSha2(c) => {
-                self.decrypt_olm_v1(store, &event.sender, c, decryption_settings).await
+                self.decrypt_olm_v1(store, &event.sender, c, decryption_settings)
+                    .await
             }
             #[cfg(feature = "experimental-algorithms")]
             ToDeviceEncryptedEventContent::OlmV2Curve25519AesSha2(c) => {
-                self.decrypt_olm_v2(store, &event.sender, c, decryption_settings).await
+                self.decrypt_olm_v2(store, &event.sender, c, decryption_settings)
+                    .await
             }
             ToDeviceEncryptedEventContent::Unknown(_) => {
                 warn!(
@@ -1395,8 +1458,10 @@ impl Account {
                 // we might try to create the same session again.
                 // TODO: separate the session cache from the storage so we only add
                 // it to the cache but don't store it.
-                let mut changes =
-                    Changes { sessions: vec![result.session.clone()], ..Default::default() };
+                let mut changes = Changes {
+                    sessions: vec![result.session.clone()],
+                    ..Default::default()
+                };
 
                 // Any new Olm session will bump the Olm wedging index for the
                 // sender's device, if we have their device, which will cause us
@@ -1408,8 +1473,10 @@ impl Account {
                     let mut device_data = device.inner;
                     device_data.olm_wedging_index.increment();
 
-                    changes.devices =
-                        DeviceChanges { changed: vec![device_data], ..Default::default() };
+                    changes.devices = DeviceChanges {
+                        changed: vec![device_data],
+                        ..Default::default()
+                    };
                 }
 
                 store.save_changes(changes).await?;
@@ -1430,8 +1497,9 @@ impl Account {
         message: &OlmMessage,
         decryption_settings: &DecryptionSettings,
     ) -> OlmResult<(SessionType, DecryptionResult)> {
-        let (session, plaintext) =
-            self.decrypt_olm_message(store, sender, sender_key, message).await?;
+        let (session, plaintext) = self
+            .decrypt_olm_message(store, sender, sender_key, message)
+            .await?;
 
         trace!("Successfully decrypted an Olm message");
 
@@ -1570,16 +1638,20 @@ impl Account {
         // MSC4268 requires room key bundle events to have a `sender_device_keys` field.
         // Enforce that now.
         if let AnyDecryptedOlmEvent::RoomKeyBundle(_) = event {
-            sender_device_keys.ok_or(EventError::MissingSigningKey).inspect_err(|_| {
-                warn!("The room key bundle was missing the sender device keys in the event")
-            })?;
+            sender_device_keys
+                .ok_or(EventError::MissingSigningKey)
+                .inspect_err(|_| {
+                    warn!("The room key bundle was missing the sender device keys in the event")
+                })?;
         }
 
         // For event types other than `m.room_key`, we need to look up the device in the
         // database irrespective of whether the `sender_device_keys` field is
         // present in the event, because it may have been marked as "locally
         // trusted" in the database.
-        let store_device = store.get_device_from_curve_key(event.sender(), sender_key).await?;
+        let store_device = store
+            .get_device_from_curve_key(event.sender(), sender_key)
+            .await?;
 
         match (store_device, sender_device_keys) {
             // If the device is in the database, it had better have an Ed25519 key which
@@ -1925,26 +1997,31 @@ fn satisfies_sender_trust_requirement(
 
 #[cfg(test)]
 mod tests {
-    use std::{
-        collections::{BTreeMap, BTreeSet},
-        ops::Deref,
-        time::Duration,
-    };
+    use std::collections::BTreeMap;
+    use std::collections::BTreeSet;
+    use std::ops::Deref;
+    use std::time::Duration;
 
     use anyhow::Result;
     use matrix_sdk_test::async_test;
-    use ruma::{
-        DeviceId, MilliSecondsSinceUnixEpoch, OneTimeKeyAlgorithm, OneTimeKeyId, UserId, device_id,
-        events::room::history_visibility::HistoryVisibility, room_id, user_id,
-    };
+    use ruma::DeviceId;
+    use ruma::MilliSecondsSinceUnixEpoch;
+    use ruma::OneTimeKeyAlgorithm;
+    use ruma::OneTimeKeyId;
+    use ruma::UserId;
+    use ruma::device_id;
+    use ruma::events::room::history_visibility::HistoryVisibility;
+    use ruma::room_id;
+    use ruma::user_id;
     use serde_json::json;
 
     use super::Account;
-    use crate::{
-        DeviceData, EncryptionSettings,
-        olm::{SignedJsonObject, account::shared_history_from_history_visibility},
-        types::{DeviceKeys, SignedKey},
-    };
+    use crate::DeviceData;
+    use crate::EncryptionSettings;
+    use crate::olm::SignedJsonObject;
+    use crate::olm::account::shared_history_from_history_visibility;
+    use crate::types::DeviceKeys;
+    use crate::types::SignedKey;
 
     fn user_id() -> &'static UserId {
         user_id!("@alice:localhost")
@@ -2039,9 +2116,12 @@ mod tests {
             "We should not upload new fallback keys unless our current fallback key expires."
         );
 
-        let fallback_key_timestamp =
-            account.fallback_creation_timestamp.unwrap().to_system_time().unwrap()
-                - Duration::from_secs(3600 * 24 * 30);
+        let fallback_key_timestamp = account
+            .fallback_creation_timestamp
+            .unwrap()
+            .to_system_time()
+            .unwrap()
+            - Duration::from_secs(3600 * 24 * 30);
 
         account.fallback_creation_timestamp =
             Some(MilliSecondsSinceUnixEpoch::from_system_time(fallback_key_timestamp).unwrap());
@@ -2078,7 +2158,9 @@ mod tests {
             .expect("Couldn't verify signature");
 
         let device = DeviceData::from_account(&account);
-        device.verify_one_time_key(&key).expect("The device can verify its own signature");
+        device
+            .verify_one_time_key(&key)
+            .expect("The device can verify its own signature");
 
         Ok(())
     }

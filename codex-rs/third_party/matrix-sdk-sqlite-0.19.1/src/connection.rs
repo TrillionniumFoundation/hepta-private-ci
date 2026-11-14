@@ -64,13 +64,20 @@
 //! [spawn_blocking]: https://github.com/deadpool-rs/deadpool/blob/d6f7d58756f0cc7bdd1f3d54d820c1332d67e4d5/crates/deadpool-sync/src/lib.rs#L113-L131
 //! [WAL]: https://www.sqlite.org/wal.html
 
-use std::{convert::Infallible, path::PathBuf, sync::Arc, time::Duration};
+use std::convert::Infallible;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::time::Duration;
 
+use deadpool::managed::Metrics;
+use deadpool::managed::PoolConfig;
+use deadpool::managed::RecycleError;
 pub use deadpool::managed::reexports::*;
-use deadpool::managed::{self, Metrics, PoolConfig, RecycleError};
+use deadpool::managed::{self};
 use deadpool_sync::SyncWrapper;
 use tokio::sync::Mutex;
-use tracing::{info, warn};
+use tracing::info;
+use tracing::warn;
 
 /// The default runtime used by `matrix-sdk-sqlite` for `deadpool`.
 pub const RUNTIME: Runtime = Runtime::Tokio1;
@@ -186,7 +193,10 @@ pub(crate) async fn close_connections(connections: &Mutex<Option<SqliteConnectio
         return;
     };
 
-    let SqliteConnections { pool, write_connection } = conns;
+    let SqliteConnections {
+        pool,
+        write_connection,
+    } = conns;
 
     // Close the pool. Idle read connections are dropped immediately;
     // in-flight reads complete and their connections are discarded (not
@@ -251,18 +261,22 @@ pub(crate) async fn reopen_connections(
     }
 
     // Rebuild the pool (connections are created lazily on first get()).
-    let pool =
-        Pool::builder(Manager::new(db_path)).config(pool_config).runtime(RUNTIME).build().map_err(
-            |e| crate::error::Error::InvalidData {
-                details: format!("Failed to rebuild connection pool: {e}"),
-            },
-        )?;
+    let pool = Pool::builder(Manager::new(db_path))
+        .config(pool_config)
+        .runtime(RUNTIME)
+        .build()
+        .map_err(|e| crate::error::Error::InvalidData {
+            details: format!("Failed to rebuild connection pool: {e}"),
+        })?;
 
     let write_conn = pool.get().await?;
     // Re-apply runtime config (WAL mode, busy timeout, etc.)
     write_conn.apply_runtime_config(runtime_config).await?;
 
-    *guard = Some(SqliteConnections { pool, write_connection: Arc::new(Mutex::new(write_conn)) });
+    *guard = Some(SqliteConnections {
+        pool,
+        write_connection: Arc::new(Mutex::new(write_conn)),
+    });
 
     Ok(())
 }

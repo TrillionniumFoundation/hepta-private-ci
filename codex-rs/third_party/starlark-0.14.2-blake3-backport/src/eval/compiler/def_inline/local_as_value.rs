@@ -41,12 +41,7 @@ use crate::values::layout::heap::heap_type::FrozenHeapName;
 /// Local slot id as `FrozenValue`. This object only using during compilation
 /// and never appears in the executed program.
 #[derive(
-    derive_more::Display,
-    Debug,
-    ProvidesStaticType,
-    NoSerialize,
-    Allocative,
-    StarlarkPagable
+    derive_more::Display, Debug, ProvidesStaticType, NoSerialize, Allocative, StarlarkPagable,
 )]
 #[display("{:?}", self)]
 pub(crate) struct LocalAsValue {

@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_eventstream::frame::{write_message_to, MarshallMessage, SignMessage};
+use aws_smithy_eventstream::frame::write_message_to;
+use aws_smithy_eventstream::frame::MarshallMessage;
+use aws_smithy_eventstream::frame::SignMessage;
 use aws_smithy_eventstream::message_size_hint::MessageSizeHint;
 use aws_smithy_runtime_api::client::result::SdkError;
 use aws_smithy_types::error::ErrorMetadata;
@@ -15,7 +17,8 @@ use std::fmt;
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::pin::Pin;
-use std::task::{Context, Poll};
+use std::task::Context;
+use std::task::Poll;
 use tracing::trace;
 
 /// Wrapper for event stream items that may include an initial-request message.
@@ -255,14 +258,19 @@ where
 #[cfg(test)]
 mod tests {
     use super::MarshallMessage;
-    use crate::event_stream::{EventStreamSender, MessageStreamAdapter};
+    use crate::event_stream::EventStreamSender;
+    use crate::event_stream::MessageStreamAdapter;
     use async_stream::stream;
     use aws_smithy_eventstream::error::Error as EventStreamError;
-    use aws_smithy_eventstream::frame::{
-        read_message_from, write_message_to, NoOpSigner, SignMessage, SignMessageError,
-    };
+    use aws_smithy_eventstream::frame::read_message_from;
+    use aws_smithy_eventstream::frame::write_message_to;
+    use aws_smithy_eventstream::frame::NoOpSigner;
+    use aws_smithy_eventstream::frame::SignMessage;
+    use aws_smithy_eventstream::frame::SignMessageError;
     use aws_smithy_runtime_api::client::result::SdkError;
-    use aws_smithy_types::event_stream::{Header, HeaderValue, Message};
+    use aws_smithy_types::event_stream::Header;
+    use aws_smithy_types::event_stream::HeaderValue;
+    use aws_smithy_types::event_stream::Message;
     use futures_util::stream::StreamExt;
     use std::error::Error as StdError;
 

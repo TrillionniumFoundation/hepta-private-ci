@@ -4,16 +4,19 @@
  */
 
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::interceptors::context::{
-    BeforeSerializationInterceptorContextRef, BeforeTransmitInterceptorContextMut,
-    FinalizerInterceptorContextMut, FinalizerInterceptorContextRef,
-};
-use aws_smithy_runtime_api::client::interceptors::context::{
-    Error, Input, InterceptorContext, Output,
-};
-use aws_smithy_runtime_api::client::interceptors::{
-    dyn_dispatch_hint, Intercept, InterceptorError, OverriddenHooks, SharedInterceptor,
-};
+use aws_smithy_runtime_api::client::interceptors::context::BeforeSerializationInterceptorContextRef;
+use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::context::Error;
+use aws_smithy_runtime_api::client::interceptors::context::FinalizerInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::context::FinalizerInterceptorContextRef;
+use aws_smithy_runtime_api::client::interceptors::context::Input;
+use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
+use aws_smithy_runtime_api::client::interceptors::context::Output;
+use aws_smithy_runtime_api::client::interceptors::dyn_dispatch_hint;
+use aws_smithy_runtime_api::client::interceptors::Intercept;
+use aws_smithy_runtime_api::client::interceptors::InterceptorError;
+use aws_smithy_runtime_api::client::interceptors::OverriddenHooks;
+use aws_smithy_runtime_api::client::interceptors::SharedInterceptor;
 use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_types::body::SdkBody;
@@ -400,15 +403,14 @@ where
 mod tests {
     use super::*;
     use aws_smithy_runtime_api::box_error::BoxError;
-    use aws_smithy_runtime_api::client::interceptors::context::{
-        BeforeTransmitInterceptorContextRef, Input, InterceptorContext,
-    };
-    use aws_smithy_runtime_api::client::interceptors::{
-        disable_interceptor, Intercept, SharedInterceptor,
-    };
-    use aws_smithy_runtime_api::client::runtime_components::{
-        RuntimeComponents, RuntimeComponentsBuilder,
-    };
+    use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextRef;
+    use aws_smithy_runtime_api::client::interceptors::context::Input;
+    use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
+    use aws_smithy_runtime_api::client::interceptors::disable_interceptor;
+    use aws_smithy_runtime_api::client::interceptors::Intercept;
+    use aws_smithy_runtime_api::client::interceptors::SharedInterceptor;
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
     use aws_smithy_types::config_bag::ConfigBag;
 
     #[derive(Debug)]

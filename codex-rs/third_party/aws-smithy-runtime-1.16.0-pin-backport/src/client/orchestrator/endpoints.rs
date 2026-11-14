@@ -3,19 +3,22 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-use aws_smithy_runtime_api::client::endpoint::{
-    error::ResolveEndpointError, EndpointFuture, EndpointResolverParams, ResolveEndpoint,
-};
+use aws_smithy_runtime_api::box_error::BoxError;
+use aws_smithy_runtime_api::client::endpoint::error::ResolveEndpointError;
+use aws_smithy_runtime_api::client::endpoint::EndpointFuture;
+use aws_smithy_runtime_api::client::endpoint::EndpointPrefix;
+use aws_smithy_runtime_api::client::endpoint::EndpointResolverParams;
+use aws_smithy_runtime_api::client::endpoint::ResolveEndpoint;
 use aws_smithy_runtime_api::client::identity::Identity;
 use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
 use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
-use aws_smithy_runtime_api::{box_error::BoxError, client::endpoint::EndpointPrefix};
 use aws_smithy_types::config_bag::ConfigBag;
 use aws_smithy_types::endpoint::Endpoint;
 use http_1x::header::HeaderName;
 use http_1x::uri::PathAndQuery;
-use http_1x::{HeaderValue, Uri};
+use http_1x::HeaderValue;
+use http_1x::Uri;
 use std::borrow::Cow;
 use std::fmt::Debug;
 use std::str::FromStr;

@@ -1,25 +1,36 @@
 //! BoringSSL-backed self-signed certificate generation (feature `boring`).
 
-use super::{SelfSignedData, SelfSignedKeyKind};
-use crate::dep::boring::{
-    asn1::{Asn1Object, Asn1ObjectRef, Asn1Time},
-    bn::{BigNum, MsbOption},
-    ec::{EcGroup, EcKey},
-    hash::MessageDigest,
-    nid::Nid,
-    pkey::{Id, PKey, PKeyRef, Private},
-    rand::rand_bytes,
-    rsa::Rsa,
-    x509::{
-        X509, X509Extension, X509NameBuilder, X509Ref,
-        extension::{
-            AuthorityKeyIdentifier, BasicConstraints, KeyUsage, SubjectAlternativeName,
-            SubjectKeyIdentifier,
-        },
-    },
-};
-use crate::pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer};
-use rama_core::error::{BoxError, ErrorContext};
+use super::SelfSignedData;
+use super::SelfSignedKeyKind;
+use crate::dep::boring::asn1::Asn1Object;
+use crate::dep::boring::asn1::Asn1ObjectRef;
+use crate::dep::boring::asn1::Asn1Time;
+use crate::dep::boring::bn::BigNum;
+use crate::dep::boring::bn::MsbOption;
+use crate::dep::boring::ec::EcGroup;
+use crate::dep::boring::ec::EcKey;
+use crate::dep::boring::hash::MessageDigest;
+use crate::dep::boring::nid::Nid;
+use crate::dep::boring::pkey::Id;
+use crate::dep::boring::pkey::PKey;
+use crate::dep::boring::pkey::PKeyRef;
+use crate::dep::boring::pkey::Private;
+use crate::dep::boring::rand::rand_bytes;
+use crate::dep::boring::rsa::Rsa;
+use crate::dep::boring::x509::X509;
+use crate::dep::boring::x509::X509Extension;
+use crate::dep::boring::x509::X509NameBuilder;
+use crate::dep::boring::x509::X509Ref;
+use crate::dep::boring::x509::extension::AuthorityKeyIdentifier;
+use crate::dep::boring::x509::extension::BasicConstraints;
+use crate::dep::boring::x509::extension::KeyUsage;
+use crate::dep::boring::x509::extension::SubjectAlternativeName;
+use crate::dep::boring::x509::extension::SubjectKeyIdentifier;
+use crate::pki_types::CertificateDer;
+use crate::pki_types::PrivateKeyDer;
+use crate::pki_types::PrivatePkcs8KeyDer;
+use rama_core::error::BoxError;
+use rama_core::error::ErrorContext;
 use rama_core::telemetry::tracing;
 use rama_net::address::Domain;
 

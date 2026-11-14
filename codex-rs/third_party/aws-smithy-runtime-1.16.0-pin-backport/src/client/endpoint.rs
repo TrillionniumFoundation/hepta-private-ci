@@ -5,7 +5,8 @@
 
 //! Code for applying endpoints to a request.
 
-use aws_smithy_runtime_api::client::endpoint::{error::InvalidEndpointError, EndpointPrefix};
+use aws_smithy_runtime_api::client::endpoint::error::InvalidEndpointError;
+use aws_smithy_runtime_api::client::endpoint::EndpointPrefix;
 use std::borrow::Cow;
 use std::result::Result as StdResult;
 use std::str::FromStr;

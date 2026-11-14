@@ -3,39 +3,55 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+use crate::client::http::body::minimum_throughput::MaybeUploadThroughputCheckFuture;
 use crate::client::interceptors::Interceptors;
-use crate::client::orchestrator::http::{log_response_body, read_body};
+use crate::client::orchestrator::endpoints::orchestrate_endpoint;
+use crate::client::orchestrator::http::log_response_body;
+use crate::client::orchestrator::http::read_body;
 use crate::client::retries::LongPollingBackoff;
-use crate::client::timeout::{MaybeTimeout, MaybeTimeoutConfig, TimeoutKind};
-use crate::client::{
-    http::body::minimum_throughput::MaybeUploadThroughputCheckFuture,
-    orchestrator::endpoints::orchestrate_endpoint,
-};
-use auth::{resolve_identity, sign_request};
+use crate::client::timeout::MaybeTimeout;
+use crate::client::timeout::MaybeTimeoutConfig;
+use crate::client::timeout::TimeoutKind;
+use auth::resolve_identity;
+use auth::sign_request;
 use aws_smithy_async::rt::sleep::AsyncSleep;
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::http::{HttpClient, HttpConnector, HttpConnectorSettings};
-use aws_smithy_runtime_api::client::interceptors::context::{
-    Error, Input, InterceptorContext, Output, RewindResult,
-};
-use aws_smithy_runtime_api::client::orchestrator::{
-    HttpResponse, LoadedRequestBody, OrchestratorError,
-};
+use aws_smithy_runtime_api::client::http::HttpClient;
+use aws_smithy_runtime_api::client::http::HttpConnector;
+use aws_smithy_runtime_api::client::http::HttpConnectorSettings;
+use aws_smithy_runtime_api::client::interceptors::context::Error;
+use aws_smithy_runtime_api::client::interceptors::context::Input;
+use aws_smithy_runtime_api::client::interceptors::context::InterceptorContext;
+use aws_smithy_runtime_api::client::interceptors::context::Output;
+use aws_smithy_runtime_api::client::interceptors::context::RewindResult;
+use aws_smithy_runtime_api::client::orchestrator::HttpResponse;
+use aws_smithy_runtime_api::client::orchestrator::LoadedRequestBody;
+use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
 use aws_smithy_runtime_api::client::result::SdkError;
-use aws_smithy_runtime_api::client::retries::{RequestAttempts, RetryStrategy, ShouldAttempt};
+use aws_smithy_runtime_api::client::retries::RequestAttempts;
+use aws_smithy_runtime_api::client::retries::RetryStrategy;
+use aws_smithy_runtime_api::client::retries::ShouldAttempt;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugins;
-use aws_smithy_runtime_api::client::ser_de::{
-    DeserializeResponse, SerializeRequest, SharedRequestSerializer, SharedResponseDeserializer,
-};
+use aws_smithy_runtime_api::client::ser_de::DeserializeResponse;
+use aws_smithy_runtime_api::client::ser_de::SerializeRequest;
+use aws_smithy_runtime_api::client::ser_de::SharedRequestSerializer;
+use aws_smithy_runtime_api::client::ser_de::SharedResponseDeserializer;
 use aws_smithy_types::body::SdkBody;
 use aws_smithy_types::byte_stream::ByteStream;
 use aws_smithy_types::config_bag::ConfigBag;
-use aws_smithy_types::retry::{MergeRetryConfig, RetryConfig, RetrySpec};
-use aws_smithy_types::timeout::{MergeTimeoutConfig, TimeoutConfig};
+use aws_smithy_types::retry::MergeRetryConfig;
+use aws_smithy_types::retry::RetryConfig;
+use aws_smithy_types::retry::RetrySpec;
+use aws_smithy_types::timeout::MergeTimeoutConfig;
+use aws_smithy_types::timeout::TimeoutConfig;
 use endpoints::apply_endpoint;
 use std::mem;
-use tracing::{debug, debug_span, instrument, trace, Instrument};
+use tracing::debug;
+use tracing::debug_span;
+use tracing::instrument;
+use tracing::trace;
+use tracing::Instrument;
 
 mod auth;
 pub use auth::AuthSchemeAndEndpointOrchestrationV2;
@@ -570,49 +586,58 @@ async fn finally_op(
 
 #[cfg(all(test, any(feature = "test-util", feature = "legacy-test-util")))]
 mod tests {
-    use crate::client::auth::no_auth::{NoAuthRuntimePluginV2, NO_AUTH_SCHEME_ID};
+    use crate::client::auth::no_auth::NoAuthRuntimePluginV2;
+    use crate::client::auth::no_auth::NO_AUTH_SCHEME_ID;
     use crate::client::orchestrator::endpoints::StaticUriEndpointResolver;
-    use crate::client::orchestrator::{invoke, invoke_with_stop_point, StopPoint};
+    use crate::client::orchestrator::invoke;
+    use crate::client::orchestrator::invoke_with_stop_point;
+    use crate::client::orchestrator::StopPoint;
     use crate::client::retries::strategy::NeverRetryStrategy;
-    use crate::client::test_util::{
-        deserializer::CannedResponseDeserializer, serializer::CannedRequestSerializer,
-    };
+    use crate::client::test_util::deserializer::CannedResponseDeserializer;
+    use crate::client::test_util::serializer::CannedRequestSerializer;
     use aws_smithy_http_client::test_util::NeverClient;
     use aws_smithy_runtime_api::box_error::BoxError;
     use aws_smithy_runtime_api::client::auth::static_resolver::StaticAuthSchemeOptionResolver;
-    use aws_smithy_runtime_api::client::auth::{
-        AuthSchemeOptionResolverParams, SharedAuthSchemeOptionResolver,
-    };
-    use aws_smithy_runtime_api::client::endpoint::{
-        EndpointResolverParams, SharedEndpointResolver,
-    };
-    use aws_smithy_runtime_api::client::http::{
-        http_client_fn, HttpConnector, HttpConnectorFuture,
-    };
-    use aws_smithy_runtime_api::client::interceptors::context::{
-        AfterDeserializationInterceptorContextRef, BeforeDeserializationInterceptorContextMut,
-        BeforeDeserializationInterceptorContextRef, BeforeSerializationInterceptorContextMut,
-        BeforeSerializationInterceptorContextRef, BeforeTransmitInterceptorContextMut,
-        BeforeTransmitInterceptorContextRef, FinalizerInterceptorContextMut,
-        FinalizerInterceptorContextRef, Input, Output,
-    };
-    use aws_smithy_runtime_api::client::interceptors::{Intercept, SharedInterceptor};
-    use aws_smithy_runtime_api::client::orchestrator::{HttpRequest, OrchestratorError};
+    use aws_smithy_runtime_api::client::auth::AuthSchemeOptionResolverParams;
+    use aws_smithy_runtime_api::client::auth::SharedAuthSchemeOptionResolver;
+    use aws_smithy_runtime_api::client::endpoint::EndpointResolverParams;
+    use aws_smithy_runtime_api::client::endpoint::SharedEndpointResolver;
+    use aws_smithy_runtime_api::client::http::http_client_fn;
+    use aws_smithy_runtime_api::client::http::HttpConnector;
+    use aws_smithy_runtime_api::client::http::HttpConnectorFuture;
+    use aws_smithy_runtime_api::client::interceptors::context::AfterDeserializationInterceptorContextRef;
+    use aws_smithy_runtime_api::client::interceptors::context::BeforeDeserializationInterceptorContextMut;
+    use aws_smithy_runtime_api::client::interceptors::context::BeforeDeserializationInterceptorContextRef;
+    use aws_smithy_runtime_api::client::interceptors::context::BeforeSerializationInterceptorContextMut;
+    use aws_smithy_runtime_api::client::interceptors::context::BeforeSerializationInterceptorContextRef;
+    use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextMut;
+    use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextRef;
+    use aws_smithy_runtime_api::client::interceptors::context::FinalizerInterceptorContextMut;
+    use aws_smithy_runtime_api::client::interceptors::context::FinalizerInterceptorContextRef;
+    use aws_smithy_runtime_api::client::interceptors::context::Input;
+    use aws_smithy_runtime_api::client::interceptors::context::Output;
+    use aws_smithy_runtime_api::client::interceptors::Intercept;
+    use aws_smithy_runtime_api::client::interceptors::SharedInterceptor;
+    use aws_smithy_runtime_api::client::orchestrator::HttpRequest;
+    use aws_smithy_runtime_api::client::orchestrator::OrchestratorError;
     use aws_smithy_runtime_api::client::retries::SharedRetryStrategy;
-    use aws_smithy_runtime_api::client::runtime_components::{
-        RuntimeComponents, RuntimeComponentsBuilder,
-    };
-    use aws_smithy_runtime_api::client::runtime_plugin::{RuntimePlugin, RuntimePlugins};
-    use aws_smithy_runtime_api::client::ser_de::{
-        SharedRequestSerializer, SharedResponseDeserializer,
-    };
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
+    use aws_smithy_runtime_api::client::runtime_components::RuntimeComponentsBuilder;
+    use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin;
+    use aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugins;
+    use aws_smithy_runtime_api::client::ser_de::SharedRequestSerializer;
+    use aws_smithy_runtime_api::client::ser_de::SharedResponseDeserializer;
     use aws_smithy_runtime_api::shared::IntoShared;
     use aws_smithy_types::body::SdkBody;
-    use aws_smithy_types::config_bag::{ConfigBag, FrozenLayer, Layer};
+    use aws_smithy_types::config_bag::ConfigBag;
+    use aws_smithy_types::config_bag::FrozenLayer;
+    use aws_smithy_types::config_bag::Layer;
     use aws_smithy_types::timeout::TimeoutConfig;
-    use http_1x::{Response, StatusCode};
+    use http_1x::Response;
+    use http_1x::StatusCode;
     use std::borrow::Cow;
-    use std::sync::atomic::{AtomicBool, Ordering};
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::Ordering;
     use std::sync::Arc;
     use tracing_test::traced_test;
 

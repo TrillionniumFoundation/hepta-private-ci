@@ -5,7 +5,8 @@
 
 use std::env;
 use std::io::Write;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
 use tracing::subscriber::DefaultGuard;
 use tracing::Level;
 use tracing_subscriber::fmt::TestWriter;

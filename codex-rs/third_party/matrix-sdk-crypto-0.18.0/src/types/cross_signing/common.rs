@@ -22,17 +22,25 @@
 use std::collections::BTreeMap;
 
 use as_variant::as_variant;
-use ruma::{
-    DeviceKeyAlgorithm, DeviceKeyId, OwnedDeviceKeyId, OwnedUserId, UserId,
-    encryption::KeyUsage,
-    serde::{JsonCastable, Raw},
-};
-use serde::{Deserialize, Serialize};
-use serde_json::{Value, value::to_raw_value};
-use vodozemac::{Ed25519PublicKey, KeyError};
+use ruma::DeviceKeyAlgorithm;
+use ruma::DeviceKeyId;
+use ruma::OwnedDeviceKeyId;
+use ruma::OwnedUserId;
+use ruma::UserId;
+use ruma::encryption::KeyUsage;
+use ruma::serde::JsonCastable;
+use ruma::serde::Raw;
+use serde::Deserialize;
+use serde::Serialize;
+use serde_json::Value;
+use serde_json::value::to_raw_value;
+use vodozemac::Ed25519PublicKey;
+use vodozemac::KeyError;
 
-use super::{SelfSigningPubkey, UserSigningPubkey};
-use crate::types::{Signatures, SigningKeys};
+use super::SelfSigningPubkey;
+use super::UserSigningPubkey;
+use crate::types::Signatures;
+use crate::types::SigningKeys;
 
 /// A cross signing key.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -67,7 +75,13 @@ impl CrossSigningKey {
         keys: SigningKeys<OwnedDeviceKeyId>,
         signatures: Signatures,
     ) -> Self {
-        Self { user_id, usage, keys, signatures, other: BTreeMap::new() }
+        Self {
+            user_id,
+            usage,
+            keys,
+            signatures,
+            other: BTreeMap::new(),
+        }
     }
 
     /// Serialize the cross signing key into a Raw version.
@@ -83,7 +97,9 @@ impl CrossSigningKey {
     ///
     /// [cross_signing_key_spec]: https//spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3keysdevice_signingupload
     pub fn get_first_key_and_id(&self) -> Option<(&DeviceKeyId, Ed25519PublicKey)> {
-        self.keys.iter().find_map(|(id, key)| Some((id.as_ref(), key.ed25519()?)))
+        self.keys
+            .iter()
+            .find_map(|(id, key)| Some((id.as_ref(), key.ed25519()?)))
     }
 }
 

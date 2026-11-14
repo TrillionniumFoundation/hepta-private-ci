@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use matrix_sdk_common::deserialized_responses::{
-    UnableToDecryptInfo, UnableToDecryptReason, VerificationLevel, WithheldCode,
-};
-use ruma::{MilliSecondsSinceUnixEpoch, events::AnySyncTimelineEvent, serde::Raw};
+use matrix_sdk_common::deserialized_responses::UnableToDecryptInfo;
+use matrix_sdk_common::deserialized_responses::UnableToDecryptReason;
+use matrix_sdk_common::deserialized_responses::VerificationLevel;
+use matrix_sdk_common::deserialized_responses::WithheldCode;
+use ruma::MilliSecondsSinceUnixEpoch;
+use ruma::events::AnySyncTimelineEvent;
+use ruma::serde::Raw;
 use serde::Deserialize;
 
 /// Our best guess at the reason why an event can't be decrypted.
@@ -144,24 +147,38 @@ impl UtdCause {
     ) -> Self {
         use UnableToDecryptReason::*;
         match &unable_to_decrypt_info.reason {
-            MissingMegolmSession { withheld_code: Some(WithheldCode::Unverified) } => {
-                UtdCause::WithheldForUnverifiedOrInsecureDevice
-            }
+            MissingMegolmSession {
+                withheld_code: Some(WithheldCode::Unverified),
+            } => UtdCause::WithheldForUnverifiedOrInsecureDevice,
 
-            MissingMegolmSession { withheld_code: Some(WithheldCode::Blacklisted) }
-            | MissingMegolmSession { withheld_code: Some(WithheldCode::Unauthorised) }
-            | MissingMegolmSession { withheld_code: Some(WithheldCode::Unavailable) }
-            | MissingMegolmSession { withheld_code: Some(WithheldCode::NoOlm) }
-            | MissingMegolmSession { withheld_code: Some(WithheldCode::_Custom(_)) } => {
-                UtdCause::WithheldBySender
+            MissingMegolmSession {
+                withheld_code: Some(WithheldCode::Blacklisted),
             }
+            | MissingMegolmSession {
+                withheld_code: Some(WithheldCode::Unauthorised),
+            }
+            | MissingMegolmSession {
+                withheld_code: Some(WithheldCode::Unavailable),
+            }
+            | MissingMegolmSession {
+                withheld_code: Some(WithheldCode::NoOlm),
+            }
+            | MissingMegolmSession {
+                withheld_code: Some(WithheldCode::_Custom(_)),
+            } => UtdCause::WithheldBySender,
 
-            MissingMegolmSession { withheld_code: None }
-            | MissingMegolmSession { withheld_code: Some(WithheldCode::HistoryNotShared) }
+            MissingMegolmSession {
+                withheld_code: None,
+            }
+            | MissingMegolmSession {
+                withheld_code: Some(WithheldCode::HistoryNotShared),
+            }
             | UnknownMegolmMessageIndex => {
                 // Look in the unsigned area for a `membership` field.
-                if let Some(unsigned) =
-                    raw_event.get_field::<UnsignedWithMembership>("unsigned").ok().flatten()
+                if let Some(unsigned) = raw_event
+                    .get_field::<UnsignedWithMembership>("unsigned")
+                    .ok()
+                    .flatten()
                     && let Membership::Leave = unsigned.membership
                 {
                     // We were not a member - this is the cause of the UTD
@@ -237,14 +254,19 @@ impl UtdCause {
 
 #[cfg(test)]
 mod tests {
-    use matrix_sdk_common::deserialized_responses::{
-        DeviceLinkProblem, UnableToDecryptInfo, UnableToDecryptReason, VerificationLevel,
-        WithheldCode,
-    };
-    use ruma::{MilliSecondsSinceUnixEpoch, events::AnySyncTimelineEvent, serde::Raw};
-    use serde_json::{json, value::to_raw_value};
+    use matrix_sdk_common::deserialized_responses::DeviceLinkProblem;
+    use matrix_sdk_common::deserialized_responses::UnableToDecryptInfo;
+    use matrix_sdk_common::deserialized_responses::UnableToDecryptReason;
+    use matrix_sdk_common::deserialized_responses::VerificationLevel;
+    use matrix_sdk_common::deserialized_responses::WithheldCode;
+    use ruma::MilliSecondsSinceUnixEpoch;
+    use ruma::events::AnySyncTimelineEvent;
+    use ruma::serde::Raw;
+    use serde_json::json;
+    use serde_json::value::to_raw_value;
 
-    use crate::types::events::{UtdCause, utd_cause::CryptoContextInfo};
+    use crate::types::events::UtdCause;
+    use crate::types::events::utd_cause::CryptoContextInfo;
 
     const EVENT_TIME: usize = 5555;
     const BEFORE_EVENT_TIME: usize = 1111;
@@ -254,7 +276,11 @@ mod tests {
     fn test_if_there_is_no_membership_info_we_guess_unknown() {
         // If our JSON contains no membership info, then we guess the UTD is unknown.
         assert_eq!(
-            UtdCause::determine(&raw_event(json!({})), device_old(), &missing_megolm_session()),
+            UtdCause::determine(
+                &raw_event(json!({})),
+                device_old(),
+                &missing_megolm_session()
+            ),
             UtdCause::Unknown
         );
     }
@@ -365,7 +391,11 @@ mod tests {
     #[test]
     fn test_verification_violation_is_passed_through() {
         assert_eq!(
-            UtdCause::determine(&raw_event(json!({})), device_old(), &verification_violation()),
+            UtdCause::determine(
+                &raw_event(json!({})),
+                device_old(),
+                &verification_violation()
+            ),
             UtdCause::VerificationViolation
         );
     }
@@ -395,11 +425,17 @@ mod tests {
         let context = device_old();
 
         // So we have no explanation for this UTD.
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
 
         // Same for unknown megolm message index
         let info = unknown_megolm_message_index();
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
     }
 
     #[test]
@@ -441,11 +477,17 @@ mod tests {
 
         // So this could be expected historical like the previous test, but because the
         // encrypted event is malformed, that takes precedence, and it's unexpected.
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
 
         // Same for decryption failures
         let info = megolm_decryption_failure();
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
     }
 
     #[test]
@@ -496,11 +538,17 @@ mod tests {
 
         // So this UTD is unexpected since we should be able to fetch the key from
         // storage.
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
 
         // Same for unknown megolm message index
         let info = unknown_megolm_message_index();
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
     }
 
     #[test]
@@ -527,11 +575,17 @@ mod tests {
         // TODO: it might be nice to tell the user that our backup is not working!
         // Currently we don't distinguish between Unknown cases, since we want
         // to make sure they are all reported as unexpected UTDs.
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
 
         // Same for unknown megolm message index
         let info = unknown_megolm_message_index();
-        assert_eq!(UtdCause::determine(&utd_event(), context, &info), UtdCause::Unknown);
+        assert_eq!(
+            UtdCause::determine(&utd_event(), context, &info),
+            UtdCause::Unknown
+        );
     }
 
     fn utd_event() -> Raw<AnySyncTimelineEvent> {
@@ -577,7 +631,9 @@ mod tests {
     fn missing_megolm_session() -> UnableToDecryptInfo {
         UnableToDecryptInfo {
             session_id: None,
-            reason: UnableToDecryptReason::MissingMegolmSession { withheld_code: None },
+            reason: UnableToDecryptReason::MissingMegolmSession {
+                withheld_code: None,
+            },
         }
     }
 

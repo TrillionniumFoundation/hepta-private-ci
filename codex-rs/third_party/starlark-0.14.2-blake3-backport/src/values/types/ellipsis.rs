@@ -29,12 +29,7 @@ use crate::values::FrozenValue;
 use crate::values::StarlarkValue;
 
 #[derive(
-    Allocative,
-    NoSerialize,
-    Debug,
-    derive_more::Display,
-    ProvidesStaticType,
-    StarlarkPagable
+    Allocative, NoSerialize, Debug, derive_more::Display, ProvidesStaticType, StarlarkPagable,
 )]
 #[display("Ellipsis")]
 pub(crate) struct Ellipsis;

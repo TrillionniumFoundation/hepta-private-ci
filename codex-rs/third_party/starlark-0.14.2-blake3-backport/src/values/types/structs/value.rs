@@ -100,16 +100,7 @@ impl StructGen<'static, FrozenValue> {
 starlark_complex_value!(pub(crate) Struct<'v>);
 
 /// The result of calling `struct()`.
-#[derive(
-    Clone,
-    Default,
-    Debug,
-    Trace,
-    Freeze,
-    ProvidesStaticType,
-    Allocative,
-    StarlarkPagable
-)]
+#[derive(Clone, Default, Debug, Trace, Freeze, ProvidesStaticType, Allocative, StarlarkPagable)]
 #[starlark_pagable(
     bound = "V: StarlarkPagable, V::String: StarlarkPagable + SmallMapKeyDeserialize"
 )]

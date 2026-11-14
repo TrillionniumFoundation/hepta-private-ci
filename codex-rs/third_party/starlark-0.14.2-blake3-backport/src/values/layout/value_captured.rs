@@ -45,14 +45,7 @@ use crate::values::ValueLike;
 #[allocative(skip)]
 pub(crate) struct ValueCaptured<'v>(Cell<Option<Value<'v>>>);
 
-#[derive(
-    Debug,
-    ProvidesStaticType,
-    Display,
-    NoSerialize,
-    Allocative,
-    StarlarkPagable
-)]
+#[derive(Debug, ProvidesStaticType, Display, NoSerialize, Allocative, StarlarkPagable)]
 #[display("{:?}", self)] // Type is not user visible
 #[repr(transparent)]
 pub(crate) struct FrozenValueCaptured(Option<FrozenValue>);

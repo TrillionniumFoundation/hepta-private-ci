@@ -16,10 +16,12 @@
 
 use std::collections::BTreeMap;
 
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 
-use super::{EventType, ToDeviceEvent};
+use super::EventType;
+use super::ToDeviceEvent;
 
 /// The `m.dummy` to-device event.
 pub type DummyEvent = ToDeviceEvent<DummyEventContent>;
@@ -45,7 +47,8 @@ impl EventType for DummyEventContent {
 
 #[cfg(test)]
 pub(super) mod tests {
-    use serde_json::{Value, json};
+    use serde_json::Value;
+    use serde_json::json;
 
     use super::DummyEvent;
 

@@ -23,11 +23,14 @@
 use std::collections::BTreeMap;
 
 use ruma::events::secret::request::SecretName;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
-use zeroize::{Zeroize, ZeroizeOnDrop};
+use zeroize::Zeroize;
+use zeroize::ZeroizeOnDrop;
 
-use super::{EventType, ToDeviceEvent};
+use super::EventType;
+use super::ToDeviceEvent;
 
 /// The `io.element.msc4385.secret.push` to-device event.
 pub type SecretPushEvent = ToDeviceEvent<SecretPushContent>;
@@ -52,14 +55,20 @@ pub struct SecretPushContent {
 impl SecretPushContent {
     /// Create a new `io.element.msc4385.secret.push` content.
     pub fn new(name: SecretName, secret: String) -> Self {
-        Self { name, secret, other: Default::default() }
+        Self {
+            name,
+            secret,
+            other: Default::default(),
+        }
     }
 }
 
 #[cfg(not(tarpaulin_include))]
 impl std::fmt::Debug for SecretPushContent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("SecretPushContent").field("name", &self.name).finish_non_exhaustive()
+        f.debug_struct("SecretPushContent")
+            .field("name", &self.name)
+            .finish_non_exhaustive()
     }
 }
 
@@ -69,7 +78,8 @@ impl EventType for SecretPushContent {
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use serde_json::{Value, json};
+    use serde_json::Value;
+    use serde_json::json;
 
     use super::SecretPushEvent;
 

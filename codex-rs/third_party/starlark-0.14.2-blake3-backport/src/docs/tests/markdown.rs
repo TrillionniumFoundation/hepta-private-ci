@@ -102,12 +102,7 @@ def _do_not_export():
 "#;
 
 #[derive(
-    Debug,
-    derive_more::Display,
-    ProvidesStaticType,
-    Allocative,
-    NoSerialize,
-    StarlarkPagable
+    Debug, derive_more::Display, ProvidesStaticType, Allocative, NoSerialize, StarlarkPagable,
 )]
 #[display("magic")]
 struct Magic;
@@ -213,14 +208,7 @@ fn get_globals() -> Globals {
         .build()
 }
 
-#[derive(
-    ProvidesStaticType,
-    Debug,
-    Display,
-    Allocative,
-    Serialize,
-    StarlarkPagable
-)]
+#[derive(ProvidesStaticType, Debug, Display, Allocative, Serialize, StarlarkPagable)]
 #[display("obj")]
 struct Obj;
 

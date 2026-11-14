@@ -16,21 +16,23 @@
 //! into one time series per byte count.
 
 use aws_smithy_observability::instruments::Histogram;
-use aws_smithy_observability::{AttributeValue, Attributes};
+use aws_smithy_observability::AttributeValue;
+use aws_smithy_observability::Attributes;
 use aws_smithy_runtime_api::box_error::BoxError;
-use aws_smithy_runtime_api::client::interceptors::context::{
-    BeforeDeserializationInterceptorContextMut, BeforeTransmitInterceptorContextMut,
-};
+use aws_smithy_runtime_api::client::interceptors::context::BeforeDeserializationInterceptorContextMut;
+use aws_smithy_runtime_api::client::interceptors::context::BeforeTransmitInterceptorContextMut;
 use aws_smithy_runtime_api::client::interceptors::Intercept;
 use aws_smithy_runtime_api::client::orchestrator::Metadata;
 use aws_smithy_runtime_api::client::runtime_components::RuntimeComponents;
 use aws_smithy_types::body::SdkBody;
 use aws_smithy_types::config_bag::ConfigBag;
-use http_body_1x::{Body, Frame};
+use http_body_1x::Body;
+use http_body_1x::Frame;
 use std::mem;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::task::{Context, Poll};
+use std::task::Context;
+use std::task::Poll;
 
 use crate::client::metrics::OperationTelemetry;
 
