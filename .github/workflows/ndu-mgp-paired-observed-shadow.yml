@@ -1,0 +1,76 @@
+name: NDU MGP P1 paired observed-output research gates
+
+on:
+  push:
+    branches: [research/ndu-mgp-p1-paired-actual-output-20261022]
+  pull_request:
+    paths:
+      - 'experiments/ndu_mgp_gates/**'
+      - '.github/workflows/ndu-mgp-paired-observed-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paired-observed-shadow:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: experiments/ndu_mgp_gates
+      - name: Install isolated research-only numerical dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/mgp-paired-venv"
+          "$RUNNER_TEMP/mgp-paired-venv/bin/python" -m pip install \
+            --disable-pip-version-check --no-cache-dir 'numpy==1.26.4'
+      - name: Execute exact-head 15 adversarial P1 checks and original five gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/mgp-paired-venv/bin/python"
+          "$PY" -m compileall -q experiments/ndu_mgp_gates
+          "$PY" -m unittest discover -s experiments/ndu_mgp_gates -p test_paired_superiority.py -v
+          "$PY" -m unittest discover -s experiments/ndu_mgp_gates -p test_verify.py -v
+      - name: Independently show both synthetic effects remain unauthenticated
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/mgp-paired-venv/bin/python"
+          PYTHONPATH=experiments/ndu_mgp_gates "$PY" - <<'PY'
+          import json, os
+          from pathlib import Path
+          from paired_superiority import evaluate
+          from test_paired_superiority import study_fixture
+          good = evaluate(study_fixture(strong_ndu=True, bootstrap_replicates=2000))
+          bad = evaluate(study_fixture(strong_ndu=False, bootstrap_replicates=2000))
+          assert good["all_provisional_gates_pass"] and not bad["all_provisional_gates_pass"]
+          assert good["status"] == bad["status"] == "HOLD_NO_GO"
+          assert good["authority"] == bad["authority"] == "DENY_ALL"
+          p = Path(os.environ["RUNNER_TEMP"]) / "paired-shadow-receipt.json"
+          p.write_text(json.dumps({
+             "source_sha": os.environ["GITHUB_SHA"],
+             "scope": "synthetic_local_math_only_not_real_model",
+             "favorable_provisional": good["all_provisional_gates_pass"],
+             "negative_provisional": bad["all_provisional_gates_pass"],
+             "scientific_qualification": "HOLD_NO_GO",
+             "authority": "DENY_ALL"
+          }, indent=2) + "\n")
+          print(p.read_text())
+          PY
+      - name: Keep exact-source narrow evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-mgp-paired-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/paired-shadow-receipt.json
+          if-no-files-found: warn
+          retention-days: 30
