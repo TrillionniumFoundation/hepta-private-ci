@@ -1,11 +1,19 @@
 //! Utilities for truncating large chunks of output while preserving a prefix
 //! and suffix on UTF-8 boundaries.
 
+#[cfg(not(feature = "hia-native"))]
 const APPROX_BYTES_PER_TOKEN: usize = 4;
 
 /// Truncate a string to `max_bytes` using a character-count marker.
 pub fn truncate_middle_chars(s: &str, max_bytes: usize) -> String {
-    truncate_with_byte_estimate(s, max_bytes, /*use_tokens*/ false)
+    #[cfg(feature = "hia-native")]
+    {
+        crate::hia_native_truncate::truncate_middle_chars(s, max_bytes)
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        truncate_with_byte_estimate(s, max_bytes, /*use_tokens*/ false)
+    }
 }
 
 /// Truncate the middle of a UTF-8 string to at most `max_tokens` approximate
@@ -13,28 +21,36 @@ pub fn truncate_middle_chars(s: &str, max_bytes: usize) -> String {
 /// truncated string and `Some(original_token_count)` if truncation occurred;
 /// otherwise returns the original string and `None`.
 pub fn truncate_middle_with_token_budget(s: &str, max_tokens: usize) -> (String, Option<u64>) {
-    if s.is_empty() {
-        return (String::new(), None);
+    #[cfg(feature = "hia-native")]
+    {
+        crate::hia_native_truncate::truncate_middle_with_token_budget(s, max_tokens)
     }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        if s.is_empty() {
+            return (String::new(), None);
+        }
 
-    if max_tokens > 0 && s.len() <= approx_bytes_for_tokens(max_tokens) {
-        return (s.to_string(), None);
-    }
+        if max_tokens > 0 && s.len() <= approx_bytes_for_tokens(max_tokens) {
+            return (s.to_string(), None);
+        }
 
-    let truncated = truncate_with_byte_estimate(
-        s,
-        approx_bytes_for_tokens(max_tokens),
-        /*use_tokens*/ true,
-    );
-    let total_tokens = u64::try_from(approx_token_count(s)).unwrap_or(u64::MAX);
+        let truncated = truncate_with_byte_estimate(
+            s,
+            approx_bytes_for_tokens(max_tokens),
+            /*use_tokens*/ true,
+        );
+        let total_tokens = u64::try_from(approx_token_count(s)).unwrap_or(u64::MAX);
 
-    if truncated == s {
-        (truncated, None)
-    } else {
-        (truncated, Some(total_tokens))
+        if truncated == s {
+            (truncated, None)
+        } else {
+            (truncated, Some(total_tokens))
+        }
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn truncate_with_byte_estimate(s: &str, max_bytes: usize, use_tokens: bool) -> String {
     if s.is_empty() {
         return String::new();
@@ -69,20 +85,47 @@ fn truncate_with_byte_estimate(s: &str, max_bytes: usize, use_tokens: bool) -> S
 }
 
 pub fn approx_token_count(text: &str) -> usize {
-    let len = text.len();
-    len.saturating_add(APPROX_BYTES_PER_TOKEN.saturating_sub(1)) / APPROX_BYTES_PER_TOKEN
+    #[cfg(feature = "hia-native")]
+    {
+        match usize::try_from(crate::hia_native_truncate::approx_tokens_from_byte_count(
+            text.len(),
+        )) {
+            Ok(tokens) => tokens,
+            Err(_) => panic!("HIA token count does not fit usize"),
+        }
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        let len = text.len();
+        len.saturating_add(APPROX_BYTES_PER_TOKEN.saturating_sub(1)) / APPROX_BYTES_PER_TOKEN
+    }
 }
 
 pub fn approx_bytes_for_tokens(tokens: usize) -> usize {
-    tokens.saturating_mul(APPROX_BYTES_PER_TOKEN)
+    #[cfg(feature = "hia-native")]
+    {
+        crate::hia_native_truncate::approx_bytes_for_tokens(tokens)
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        tokens.saturating_mul(APPROX_BYTES_PER_TOKEN)
+    }
 }
 
 pub fn approx_tokens_from_byte_count(bytes: usize) -> u64 {
-    let bytes_u64 = bytes as u64;
-    bytes_u64.saturating_add((APPROX_BYTES_PER_TOKEN as u64).saturating_sub(1))
-        / (APPROX_BYTES_PER_TOKEN as u64)
+    #[cfg(feature = "hia-native")]
+    {
+        crate::hia_native_truncate::approx_tokens_from_byte_count(bytes)
+    }
+    #[cfg(not(feature = "hia-native"))]
+    {
+        let bytes_u64 = bytes as u64;
+        bytes_u64.saturating_add((APPROX_BYTES_PER_TOKEN as u64).saturating_sub(1))
+            / (APPROX_BYTES_PER_TOKEN as u64)
+    }
 }
 
+#[cfg(any(test, not(feature = "hia-native")))]
 fn split_string(s: &str, beginning_bytes: usize, end_bytes: usize) -> (usize, &str, &str) {
     if s.is_empty() {
         return (0, "", "");
@@ -123,11 +166,13 @@ fn split_string(s: &str, beginning_bytes: usize, end_bytes: usize) -> (usize, &s
     (removed_chars, before, after)
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn split_budget(budget: usize) -> (usize, usize) {
     let left = budget / 2;
     (left, budget - left)
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn format_truncation_marker(use_tokens: bool, removed_count: u64) -> String {
     if use_tokens {
         format!("…{removed_count} tokens truncated…")
@@ -136,6 +181,7 @@ fn format_truncation_marker(use_tokens: bool, removed_count: u64) -> String {
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn removed_units(use_tokens: bool, removed_bytes: usize, removed_chars: usize) -> u64 {
     if use_tokens {
         approx_tokens_from_byte_count(removed_bytes)
@@ -144,6 +190,7 @@ fn removed_units(use_tokens: bool, removed_bytes: usize, removed_chars: usize) -
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn assemble_truncated_output(prefix: &str, suffix: &str, marker: &str) -> String {
     let mut out = String::with_capacity(prefix.len() + marker.len() + suffix.len() + 1);
     out.push_str(prefix);
@@ -154,3 +201,7 @@ fn assemble_truncated_output(prefix: &str, suffix: &str, marker: &str) -> String
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(all(test, feature = "hia-native"))]
+#[path = "truncate_native_tests.rs"]
+mod native_tests;
