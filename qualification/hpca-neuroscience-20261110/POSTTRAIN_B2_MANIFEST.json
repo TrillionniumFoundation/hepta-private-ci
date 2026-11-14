@@ -1,0 +1,370 @@
+{
+  "created_utc": "2026-11-11T04:14:39.850621+00:00",
+  "phase": "FROZEN_BEFORE_EVALUATION",
+  "random_salt": "3fa012c0d4ac9d94a830a9689a8ba686276911b27f5edc1310df3223f38891ac",
+  "schema": "HPCA-POSTTRAIN-OPERATOR-B2-V1",
+  "scope": "operator-constructed arithmetic only; not an independent evaluator",
+  "tasks": [
+    {
+      "family": "even",
+      "id": "even-1-00",
+      "prompt": "Answer yes or no. Is 60 an even integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "even",
+      "id": "even-1-01",
+      "prompt": "Answer yes or no. Is 108 an even integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "even",
+      "id": "even-1-02",
+      "prompt": "Answer yes or no. Is 1856 an even integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "even",
+      "id": "even-1-03",
+      "prompt": "Answer yes or no. Is 1362 an even integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "even",
+      "id": "even-1-04",
+      "prompt": "Answer yes or no. Is 1726 an even integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "even",
+      "id": "even-1-05",
+      "prompt": "Answer yes or no. Is 1582 an even integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "even",
+      "id": "even-0-00",
+      "prompt": "Answer yes or no. Is 1103 an even integer?",
+      "truth": "no"
+    },
+    {
+      "family": "even",
+      "id": "even-0-01",
+      "prompt": "Answer yes or no. Is 1389 an even integer?",
+      "truth": "no"
+    },
+    {
+      "family": "even",
+      "id": "even-0-02",
+      "prompt": "Answer yes or no. Is 241 an even integer?",
+      "truth": "no"
+    },
+    {
+      "family": "even",
+      "id": "even-0-03",
+      "prompt": "Answer yes or no. Is 67 an even integer?",
+      "truth": "no"
+    },
+    {
+      "family": "even",
+      "id": "even-0-04",
+      "prompt": "Answer yes or no. Is 1497 an even integer?",
+      "truth": "no"
+    },
+    {
+      "family": "even",
+      "id": "even-0-05",
+      "prompt": "Answer yes or no. Is 797 an even integer?",
+      "truth": "no"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-1-00",
+      "prompt": "Answer yes or no. Is 790 strictly greater than 45?",
+      "truth": "yes"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-1-01",
+      "prompt": "Answer yes or no. Is 967 strictly greater than 592?",
+      "truth": "yes"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-1-02",
+      "prompt": "Answer yes or no. Is 111 strictly greater than 44?",
+      "truth": "yes"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-1-03",
+      "prompt": "Answer yes or no. Is 769 strictly greater than 636?",
+      "truth": "yes"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-1-04",
+      "prompt": "Answer yes or no. Is 525 strictly greater than 335?",
+      "truth": "yes"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-1-05",
+      "prompt": "Answer yes or no. Is 997 strictly greater than 137?",
+      "truth": "yes"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-0-00",
+      "prompt": "Answer yes or no. Is 548 strictly greater than 882?",
+      "truth": "no"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-0-01",
+      "prompt": "Answer yes or no. Is 231 strictly greater than 935?",
+      "truth": "no"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-0-02",
+      "prompt": "Answer yes or no. Is 159 strictly greater than 525?",
+      "truth": "no"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-0-03",
+      "prompt": "Answer yes or no. Is 847 strictly greater than 946?",
+      "truth": "no"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-0-04",
+      "prompt": "Answer yes or no. Is 528 strictly greater than 730?",
+      "truth": "no"
+    },
+    {
+      "family": "comparison",
+      "id": "comparison-0-05",
+      "prompt": "Answer yes or no. Is 153 strictly greater than 308?",
+      "truth": "no"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-1-00",
+      "prompt": "Answer yes or no. Is the integer 610 divisible by 5 with no remainder?",
+      "truth": "yes"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-1-01",
+      "prompt": "Answer yes or no. Is the integer 441 divisible by 9 with no remainder?",
+      "truth": "yes"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-1-02",
+      "prompt": "Answer yes or no. Is the integer 360 divisible by 4 with no remainder?",
+      "truth": "yes"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-1-03",
+      "prompt": "Answer yes or no. Is the integer 360 divisible by 3 with no remainder?",
+      "truth": "yes"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-1-04",
+      "prompt": "Answer yes or no. Is the integer 88 divisible by 8 with no remainder?",
+      "truth": "yes"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-1-05",
+      "prompt": "Answer yes or no. Is the integer 600 divisible by 4 with no remainder?",
+      "truth": "yes"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-0-00",
+      "prompt": "Answer yes or no. Is the integer 65 divisible by 8 with no remainder?",
+      "truth": "no"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-0-01",
+      "prompt": "Answer yes or no. Is the integer 421 divisible by 4 with no remainder?",
+      "truth": "no"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-0-02",
+      "prompt": "Answer yes or no. Is the integer 475 divisible by 13 with no remainder?",
+      "truth": "no"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-0-03",
+      "prompt": "Answer yes or no. Is the integer 270 divisible by 7 with no remainder?",
+      "truth": "no"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-0-04",
+      "prompt": "Answer yes or no. Is the integer 205 divisible by 4 with no remainder?",
+      "truth": "no"
+    },
+    {
+      "family": "divisibility",
+      "id": "divisibility-0-05",
+      "prompt": "Answer yes or no. Is the integer 592 divisible by 15 with no remainder?",
+      "truth": "no"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-1-00",
+      "prompt": "Answer yes or no. Does the number 213 occur in the set {12, 117, 118, 195, 213, 222}?",
+      "truth": "yes"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-1-01",
+      "prompt": "Answer yes or no. Does the number 209 occur in the set {71, 75, 172, 209, 216, 228}?",
+      "truth": "yes"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-1-02",
+      "prompt": "Answer yes or no. Does the number 89 occur in the set {37, 76, 89, 139, 203, 225}?",
+      "truth": "yes"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-1-03",
+      "prompt": "Answer yes or no. Does the number 241 occur in the set {71, 101, 102, 119, 172, 241}?",
+      "truth": "yes"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-1-04",
+      "prompt": "Answer yes or no. Does the number 229 occur in the set {75, 92, 136, 187, 191, 229}?",
+      "truth": "yes"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-1-05",
+      "prompt": "Answer yes or no. Does the number 147 occur in the set {19, 32, 80, 92, 147, 190}?",
+      "truth": "yes"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-0-00",
+      "prompt": "Answer yes or no. Does the number 58 occur in the set {14, 51, 59, 165, 190, 224}?",
+      "truth": "no"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-0-01",
+      "prompt": "Answer yes or no. Does the number 209 occur in the set {101, 119, 120, 135, 149, 180}?",
+      "truth": "no"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-0-02",
+      "prompt": "Answer yes or no. Does the number 182 occur in the set {49, 62, 66, 67, 149, 203}?",
+      "truth": "no"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-0-03",
+      "prompt": "Answer yes or no. Does the number 117 occur in the set {58, 67, 103, 129, 135, 187}?",
+      "truth": "no"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-0-04",
+      "prompt": "Answer yes or no. Does the number 43 occur in the set {12, 34, 42, 125, 180, 247}?",
+      "truth": "no"
+    },
+    {
+      "family": "set_membership",
+      "id": "set_membership-0-05",
+      "prompt": "Answer yes or no. Does the number 49 occur in the set {18, 81, 163, 184, 197, 216}?",
+      "truth": "no"
+    },
+    {
+      "family": "prime",
+      "id": "prime-1-00",
+      "prompt": "Answer yes or no. Is 359 a prime integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "prime",
+      "id": "prime-1-01",
+      "prompt": "Answer yes or no. Is 43 a prime integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "prime",
+      "id": "prime-1-02",
+      "prompt": "Answer yes or no. Is 353 a prime integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "prime",
+      "id": "prime-1-03",
+      "prompt": "Answer yes or no. Is 101 a prime integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "prime",
+      "id": "prime-1-04",
+      "prompt": "Answer yes or no. Is 241 a prime integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "prime",
+      "id": "prime-1-05",
+      "prompt": "Answer yes or no. Is 199 a prime integer?",
+      "truth": "yes"
+    },
+    {
+      "family": "prime",
+      "id": "prime-0-00",
+      "prompt": "Answer yes or no. Is 249 a prime integer?",
+      "truth": "no"
+    },
+    {
+      "family": "prime",
+      "id": "prime-0-01",
+      "prompt": "Answer yes or no. Is 361 a prime integer?",
+      "truth": "no"
+    },
+    {
+      "family": "prime",
+      "id": "prime-0-02",
+      "prompt": "Answer yes or no. Is 144 a prime integer?",
+      "truth": "no"
+    },
+    {
+      "family": "prime",
+      "id": "prime-0-03",
+      "prompt": "Answer yes or no. Is 200 a prime integer?",
+      "truth": "no"
+    },
+    {
+      "family": "prime",
+      "id": "prime-0-04",
+      "prompt": "Answer yes or no. Is 242 a prime integer?",
+      "truth": "no"
+    },
+    {
+      "family": "prime",
+      "id": "prime-0-05",
+      "prompt": "Answer yes or no. Is 162 a prime integer?",
+      "truth": "no"
+    }
+  ],
+  "training_archive_sha256": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c"
+}
