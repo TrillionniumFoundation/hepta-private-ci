@@ -209,6 +209,13 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
     if set(gaps) != LINEAGES or any(type(x) is not int or x < 1 for x in gaps.values()):
         raise ContractError("all seven lineage clocks must be explicit positive integers")
     last: dict[str, int] = {}
+    # The last admitted clock slot is not the last observed event. A clock-denied
+    # event still advances the per-lineage event-time frontier. Otherwise an
+    # earlier candidate may be processed after a later denied opportunity.
+    last_seen_sequence: dict[str, int] = {}
+    # Track observed candidate generations separately from admitted clock slots.
+    # A denied opportunity must not permit a stale generation to reappear.
+    last_generation: dict[str, int] = {}
     outputs = []
     for ev in events:
         if (ev.lineage not in LINEAGES or type(ev.sequence) is not int
@@ -217,8 +224,15 @@ def cadence_gate(events: Iterable[UpdateOpportunity], gaps: dict[str, int]
                 or type(ev.evaluation_independent) is not bool
                 or type(ev.preregistered_gate_passed) is not bool):
             raise ContractError("invalid update opportunity")
-        if ev.lineage in last and ev.sequence < last[ev.lineage]:
+        if (ev.lineage in last_seen_sequence
+                and ev.sequence < last_seen_sequence[ev.lineage]):
             raise ContractError("clock regression")
+        last_seen_sequence[ev.lineage] = ev.sequence
+        prior_generation = last_generation.get(ev.lineage)
+        if (prior_generation is not None
+                and ev.candidate_generation < prior_generation):
+            raise ContractError("candidate generation regression")
+        last_generation[ev.lineage] = ev.candidate_generation
         previous = last.get(ev.lineage)
         allowed = previous is None or ev.sequence - previous >= gaps[ev.lineage]
         if allowed:
@@ -245,6 +259,9 @@ class MemoryRecord:
     observed_sequence: int
     tombstoned: bool = False
     rights_revoked: bool = False
+    # Same owner-declared logical object across corrections/tombstones. A bare
+    # event_id means an independent object, never an inferred same-key erase.
+    logical_id: str | None = None
 
 
 def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: str,
@@ -259,12 +276,37 @@ def select_replay(records: Iterable[MemoryRecord], *, policy: str, query_key: st
     if len(entries) > 65_536 or len({e.event_id for e in entries}) != len(entries):
         raise ContractError("duplicate memory identities or oversized records")
     for e in entries:
-        if (not e.event_id or not e.key or not _valid_hash(e.source_digest)
+        if (not isinstance(e.event_id, str) or not e.event_id
+                or not isinstance(e.key, str) or not e.key
+                or not _valid_hash(e.source_digest)
                 or e.kind not in MEMORY_KINDS or type(e.observed_sequence) is not int
-                or e.observed_sequence < 0):
+                or e.observed_sequence < 0 or type(e.tombstoned) is not bool
+                or type(e.rights_revoked) is not bool
+                or (e.logical_id is not None and
+                    (not isinstance(e.logical_id, str) or not e.logical_id))):
             raise ContractError("invalid memory event")
-    eligible = [e for e in entries if not e.tombstoned and not e.rights_revoked
-                and e.observed_sequence <= now_sequence]
+    # Visible revisions must be evaluated together. Filtering each tombstone
+    # individually can resurrect an older revision from the same logical object.
+    # A shared query key alone is NOT an identity: unrelated sources may share it.
+    # Explicit logical IDs and implicit per-event IDs are distinct namespaces.
+    # Otherwise a self-declared tombstone for logical_id == another event_id
+    # could suppress an unrelated record that never opted into that identity.
+    by_logical_id: dict[tuple[str, str], list[MemoryRecord]] = {}
+    for e in entries:
+        if e.observed_sequence <= now_sequence:
+            identity = (("logical", e.logical_id) if e.logical_id is not None
+                        else ("event", e.event_id))
+            by_logical_id.setdefault(identity, []).append(e)
+    eligible = []
+    for versions in by_logical_id.values():
+        if (len({e.observed_sequence for e in versions}) != len(versions)
+                or len({(e.key, e.kind) for e in versions}) != 1):
+            raise ContractError("ambiguous logical revision or identity drift")
+        # Revocation / deletion is sticky within this declared logical object.
+        # No unsigned later 'active' revision may grant restoration authority.
+        if any(e.tombstoned or e.rights_revoked for e in versions):
+            continue
+        eligible.append(max(versions, key=lambda e: e.observed_sequence))
     if policy == "exact":
         ordered = sorted((e for e in eligible if e.key == query_key),
                          key=lambda e: (-e.observed_sequence, e.event_id))
@@ -329,11 +371,26 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
         block[row.arm] = row
     if len(keys) > 100_000:
         raise ContractError("too many matched evaluation blocks")
+    # Prospective seed clusters must have the same family-by-episode roster.
+    # Complete individual arm blocks alone do not make seed means comparable.
+    roster_by_seed: dict[int, dict[str, int]] = {}
+    for (_, seed, family) in keys:
+        roster = roster_by_seed.setdefault(seed, {})
+        roster[family] = roster.get(family, 0) + 1
+    if len({tuple(sorted(r.items())) for r in roster_by_seed.values()}) != 1:
+        raise ContractError("unequal family/episode roster across seed clusters")
     net_diffs_by_seed: dict[int, list[float]] = {}
     cost_diffs_by_seed: dict[int, list[float]] = {}
     retention_diffs_by_seed: dict[int, list[float]] = {}
     seen_receipts: set[str] = set()
     all_independent = True
+    # The evaluator and offered resource ceilings are pre-registered once per
+    # task family. Within-arm matching alone cannot prevent each new training
+    # seed or episode from silently switching the scoring rule or opportunity.
+    # Different task families may use different locked contracts; trained
+    # model/ability digests may legitimately differ between seeds.
+    frozen_evaluators: dict[str, str] = {}
+    frozen_opportunities: dict[str, tuple[int, int, int, int]] = {}
     for (episode_id, seed, family), block in keys.items():
         if set(block) != set(ARMS):
             raise ContractError("missing matched arm")
@@ -351,6 +408,16 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
             if row.outcome_receipt_digest in seen_receipts:
                 raise ContractError("reused outcome receipt across trial arms or blocks")
             seen_receipts.add(row.outcome_receipt_digest)
+        evaluator = ref.evaluator_digest
+        if family in frozen_evaluators and evaluator != frozen_evaluators[family]:
+            raise ContractError("unfrozen evaluator within task family")
+        frozen_evaluators[family] = evaluator
+        opportunity = (ref.feedback_budget_bits, ref.query_budget,
+                       ref.training_budget, ref.compute_budget_us)
+        if (family in frozen_opportunities
+                and opportunity != frozen_opportunities[family]):
+            raise ContractError("unfrozen resource opportunity within task family")
+        frozen_opportunities[family] = opportunity
         all_independent &= all(row.evaluator_independent for row in block.values())
         shuffled = block["shuffled"]
         net_diffs_by_seed.setdefault(seed, []).append(
@@ -358,7 +425,8 @@ def paired_evidence(rows: Iterable[TrialRow]) -> dict:
             (shuffled.gross_value - shuffled.full_cost))
         cost_diffs_by_seed.setdefault(seed, []).append(
             ref.full_cost - shuffled.full_cost)
-        if ref.retention_value is not None and shuffled.retention_value is not None:
+        # A full four-arm retention panel cannot be inferred from primary arms.
+        if all(row.retention_value is not None for row in block.values()):
             retention_diffs_by_seed.setdefault(seed, []).append(
                 ref.retention_value - shuffled.retention_value)
     # A seed reused across task families is ONE randomization unit, not
