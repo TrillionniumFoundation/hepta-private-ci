@@ -17,10 +17,10 @@ ORIGINALS = ROOT / "qualification/hcsn_n256_new_export/evidence/attempt001"
 EVENTS = ROOT / "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/EVENTS.jsonl"
 
 EXPECTED = {
-    ".github/workflows/hcsn-currentstate-n256-uniformization-contract.yml": "da457c82f32bfd2252e08ae15af3679007b1d341e4793074efc7fefa6fbd01f0",
-    "qualification/hcsn_currentstate_n256_uniformization_contract/README.md": "bd95d943ccdea35e3ada1b51a1d0685349a06ad9ba4f4bbe3daa9b1a785c9721",
-    "qualification/hcsn_currentstate_n256_uniformization_contract/REQUEST.json": "4931815ec2b24f292ec40e589e338809cca60f1af817e99d2ea6b4220ee0d255",
-    "qualification/hcsn_currentstate_n256_uniformization_contract/SOURCE_FREEZE.json": "bd1d15eeac5bca1b796db98a63e96afe6b16980e68f9ad7a55e65594741c2d3d",
+    ".github/workflows/hcsn-currentstate-n256-uniformization-contract.yml": "6da01b5a006534c98653313977ebe50e4b5ff4e9aa0f2507df4ceab08f11ce45",
+    "qualification/hcsn_currentstate_n256_uniformization_contract/README.md": "026e9b44fb47277b5862964de02d425f1f81338260228093cfd3ba64d9e07a65",
+    "qualification/hcsn_currentstate_n256_uniformization_contract/REQUEST.json": "f17c8e718686ce34cb984457facf3eae3b921824ec17bdfec3f39313d2314a90",
+    "qualification/hcsn_currentstate_n256_uniformization_contract/SOURCE_FREEZE.json": "988bac11a1806fc797eb5b562c1b4b3ad63dd9a9861628ac29fefc1e4e31768f",
     "qualification/hcsn_currentstate_n256_uniformization_contract/__init__.py": "34d86e6686e0a573c4890a7975d41136ba9ed95e663bb48063272e49139afd24",
     "qualification/hcsn_currentstate_n256_uniformization_contract/stiffness_review.py": "4ead22435bc776a2266d0d051281b4a6960c5714888d930a64ca63e721ae8041",
     "qualification/hcsn_currentstate_n256_uniformization_contract/test_contract.py": "545af14904d882c11498d9e81f4989bad84047c2e9e6ffc32f158c2da97dfcb0",
