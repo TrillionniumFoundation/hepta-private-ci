@@ -4,7 +4,11 @@ import hashlib
 import json
 from pathlib import Path
 
-from .reference_stream_contract import require_reference_execution_admission, validate_request
+from .reference_stream_contract import (
+    AdmissionRequired,
+    require_reference_execution_admission,
+    validate_request,
+)
 
 
 ROOT = Path(__file__).parent
@@ -26,7 +30,7 @@ def main():
             raise SystemExit(f"source mismatch: {relative}: {actual} != {expected}")
     try:
         require_reference_execution_admission(ROOT / "REQUEST.json", None)
-    except RuntimeError:
+    except AdmissionRequired:
         pass
     else:
         raise SystemExit("reference source intent failed open")
