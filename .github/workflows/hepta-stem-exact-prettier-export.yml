@@ -1,0 +1,57 @@
+name: Hepta Stem exact Prettier repair export (non-authorizing)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-stem-exact-prettier-export.yml"
+      - ".github/workflows/hepta-stem-multimodal-source-v1.yml"
+      - ".github/workflows/hepta-stem-v2-original-physical-bridge.yml"
+      - ".github/workflows/hepta-stem-v4-public-learning-audit.yml"
+      - ".github/workflows/hepta-stem-v5-scienceqa-original-rejudge.yml"
+      - ".github/workflows/hepta-stem-v6-original-margin.yml"
+      - ".github/workflows/hepta-stem-v7-real-image-intervention.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  format-only:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'research/stem-multimodal-source-bound-v1-20261016'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Export exact root-lock Prettier 3.5.3 output for independent review
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          target="$RUNNER_TEMP/hepta-stem-formatted/.github/workflows"
+          mkdir -p "$target"
+          for stem in \
+            hepta-stem-multimodal-source-v1.yml \
+            hepta-stem-v2-original-physical-bridge.yml \
+            hepta-stem-v4-public-learning-audit.yml \
+            hepta-stem-v5-scienceqa-original-rejudge.yml \
+            hepta-stem-v6-original-margin.yml \
+            hepta-stem-v7-real-image-intervention.yml \
+            hepta-stem-exact-prettier-export.yml; do
+            test -f ".github/workflows/$stem"
+            cp ".github/workflows/$stem" "$target/$stem"
+          done
+          npm exec --yes --package=prettier@3.5.3 -- prettier --write "$target"/*.yml
+          npm exec --yes --package=prettier@3.5.3 -- prettier --check "$target"/*.yml
+          sha256sum "$target"/*.yml
+          echo "Formatting only; original source not modified; model/authority untouched"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hepta-stem-prettier-3-5-3-exact-replacement-yamls
+          path: ${{ runner.temp }}/hepta-stem-formatted/.github/workflows/*.yml
+          retention-days: 2
+          if-no-files-found: error
