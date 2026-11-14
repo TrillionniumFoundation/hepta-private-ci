@@ -1,0 +1,28 @@
+name: hcsn-currentstate-n256-uniformization-primitive
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_uniformization_primitive/**"
+      - ".github/workflows/hcsn-currentstate-n256-uniformization-primitive.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  source-primitive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run bounded standard-library fixtures
+        run: |
+          python -m unittest qualification.hcsn_currentstate_n256_uniformization_primitive.test_uniformization
+          python -O -m unittest qualification.hcsn_currentstate_n256_uniformization_primitive.test_uniformization
+          python -m py_compile qualification/hcsn_currentstate_n256_uniformization_primitive/*.py
+      - name: Verify exact source-only freeze
+        run: python -m qualification.hcsn_currentstate_n256_uniformization_primitive.verify_source
