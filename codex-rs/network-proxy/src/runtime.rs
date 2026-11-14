@@ -229,6 +229,9 @@ where
     }
 }
 
+#[cfg(test)]
+type DnsLookupForTest = fn(&str, u16) -> std::io::Result<Vec<SocketAddr>>;
+
 pub struct NetworkProxyState {
     state: Arc<RwLock<ConfigState>>,
     reloader: Arc<dyn ConfigReloader>,
@@ -240,7 +243,7 @@ pub struct NetworkProxyState {
     environment_id: Option<Arc<str>>,
     execution_id: Option<Arc<str>>,
     #[cfg(test)]
-    dns_lookup_for_test: Option<fn(&str, u16) -> std::io::Result<Vec<SocketAddr>>>,
+    dns_lookup_for_test: Option<DnsLookupForTest>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1059,10 +1062,7 @@ fn unix_timestamp() -> i64 {
 #[cfg(test)]
 impl NetworkProxyState {
     /// Supplies fixture DNS answers through the normal timeout and IP classification.
-    pub(crate) fn set_dns_lookup_for_test(
-        &mut self,
-        lookup: fn(&str, u16) -> std::io::Result<Vec<SocketAddr>>,
-    ) {
+    pub(crate) fn set_dns_lookup_for_test(&mut self, lookup: DnsLookupForTest) {
         self.dns_lookup_for_test = Some(lookup);
     }
 }
