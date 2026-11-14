@@ -12,6 +12,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from hepta_workflow_commands import workflow_commands
+from hepta_lane_e_source import source_import_errors
+from hepta_lane_e_source import is_agentd_source
+from hepta_lane_e_source import mask_qualification_items
+from hepta_lane_e_source import qualification_is_nondefault
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -591,6 +595,8 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
         r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
     }
 
+    qualification_only = qualification_is_nondefault(ROOT)
+
     for path in (ROOT / "codex-rs").rglob("*.rs"):
         relative = path.relative_to(ROOT).as_posix()
         if any(
@@ -606,6 +612,16 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
             continue
 
         text = path.read_text(encoding="utf-8")
+        for error in source_import_errors(text, path, ROOT):
+            findings.add(
+                "legacy_learning_source_import_unproved", f"{relative}: {error}"
+            )
+        if (
+            qualification_only
+            and is_agentd_source(path, ROOT)
+            and any(re.search(pattern, text) for pattern in forbidden)
+        ):
+            text = mask_qualification_items(text)
         for pattern, description in forbidden.items():
             findings.require(
                 re.search(pattern, text) is None,
