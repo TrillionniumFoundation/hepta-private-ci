@@ -1711,13 +1711,9 @@ mod tests {
         renewed.lease_generation = 2;
         renewed.issued_at = 21;
         renewed.signature = key.sign(&renewed.signing_bytes()).to_bytes();
-        let reopened = LearningArtifactOwnerHost::open(
-            &directory.0,
-            trust(&key, scope_digest),
-            renewed,
-            22,
-        )
-        .fixture("original host reopens under a renewed valid lease");
+        let reopened =
+            LearningArtifactOwnerHost::open(&directory.0, trust(&key, scope_digest), renewed, 22)
+                .fixture("original host reopens under a renewed valid lease");
         assert_ne!(
             reopened.writer_lease_digest(),
             original_checkpoint.original_writer_lease_digest

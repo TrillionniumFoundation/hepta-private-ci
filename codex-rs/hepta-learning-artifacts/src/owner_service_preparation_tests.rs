@@ -157,7 +157,9 @@ fn original_registry_lost_return_and_cold_readback_cannot_recreate_continuation(
         Err(ArtifactPublicationError::SnapshotMismatch)
     ));
     assert!(matches!(
-        service.host.resume_publication(prepared.transaction.snapshot(), 21),
+        service
+            .host
+            .resume_publication(prepared.transaction.snapshot(), 21),
         Err(crate::ArtifactOwnerHostError::Publication(
             ArtifactPublicationError::SnapshotMismatch
         ))
@@ -432,9 +434,11 @@ fn original_registry_preparation_preserves_failed_withdrawal_install_fence() {
     let frontier = fs::read(directory.0.join("withdrawal.CURRENT")).fixture("original frontier");
     let pending = directory.0.join("withdrawal.pending");
     fs::write(&pending, b"conflicting original intent").fixture("make install fail");
-    assert!(service
-        .install_withdrawal_frontier(service.withdrawal_registry().clone())
-        .is_err());
+    assert!(
+        service
+            .install_withdrawal_frontier(service.withdrawal_registry().clone())
+            .is_err()
+    );
     fs::remove_file(pending).fixture("remove only the test's conflicting marker");
     assert!(matches!(
         service.prepare_original_registry_with_clock(context, b"payload", &|| Ok(20)),

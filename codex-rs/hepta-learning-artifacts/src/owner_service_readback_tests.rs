@@ -253,8 +253,11 @@ fn original_publication_readback_bounds_all_head_directory_entries() {
     let fixture = OriginalPublicationReadbackFixture::fresh();
     let directory = fixture.directory.0.join("heads");
     for index in 0..4_097 {
-        fs::write(directory.join(format!("readback-bound-{index}.ignored")), b"")
-            .fixture("actual original head-directory entry");
+        fs::write(
+            directory.join(format!("readback-bound-{index}.ignored")),
+            b"",
+        )
+        .fixture("actual original head-directory entry");
     }
     let before = fixture.bytes();
     assert!(matches!(
