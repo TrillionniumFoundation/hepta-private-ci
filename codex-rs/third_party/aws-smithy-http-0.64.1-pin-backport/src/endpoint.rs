@@ -5,7 +5,8 @@
 
 //! Code for resolving an endpoint (URI) that a request should be sent to
 
-use aws_smithy_runtime_api::client::endpoint::{error::InvalidEndpointError, EndpointPrefix};
+use aws_smithy_runtime_api::client::endpoint::error::InvalidEndpointError;
+use aws_smithy_runtime_api::client::endpoint::EndpointPrefix;
 use std::borrow::Cow;
 use std::result::Result as StdResult;
 use std::str::FromStr;

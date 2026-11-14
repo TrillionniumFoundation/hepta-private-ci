@@ -18,6 +18,12 @@
       "path": "Cargo.toml.orig",
       "before_sha256": "9cef7888df63d609c75ef91ebaf0324d6ad9fa0648f00568538b88e8a86d1e70",
       "after_sha256": "2476cad959011ac479a3e1c2a6e0ff7ffbbca324fb6a0827bf79b0a3e8499006"
+    },
+    {
+      "path": "src/endpoint.rs",
+      "before_sha256": "2823cf5ea6a0db3708e06de02ad801767354121b78331384809ec31cf98d2a0c",
+      "after_sha256": "76320036c95ee69041505ba4a0dbe29d981eef4ee0862066421f2e86f0acdab5",
+      "kind": "formatting-only"
     }
   ],
   "minimal_patch_sha256": "10726a1f3e59afe401fba181e3ad476808d2025f958cc563da07c6f61c691c6c",
@@ -31,6 +37,26 @@
       "9a67dfe11f42cafab121082f4e0d87d278418d1d"
     ],
     "base": "9a67dfe11f42cafab121082f4e0d87d278418d1d",
-    "formatter_only_files": []
+    "formatter_only_files": ["src/endpoint.rs"],
+    "followups": [
+      {
+        "base": "83e1c6fc47bfc7277100534cd0994a547028cb11",
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "83e1c6fc47bfc7277100534cd0994a547028cb11"
+        ],
+        "changes": [
+          {
+            "path": "src/endpoint.rs",
+            "before_sha256": "2823cf5ea6a0db3708e06de02ad801767354121b78331384809ec31cf98d2a0c",
+            "after_sha256": "76320036c95ee69041505ba4a0dbe29d981eef4ee0862066421f2e86f0acdab5",
+            "kind": "formatting-only"
+          }
+        ],
+        "runtime_semantics_changed": false
+      }
+    ]
   }
 }
