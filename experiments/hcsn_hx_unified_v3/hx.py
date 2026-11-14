@@ -248,6 +248,7 @@ def _coupon_survival_annuity(p: HX, x: float, tau: float) -> float:
     return total
 
 
+
 def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = None,
                *, direct_coupon_survival: bool = False) -> float:
     """Finite-maturity defaultable bond, published equation (8), including endpoints."""
@@ -257,17 +258,25 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
         raise ValueError('Invalid bond (asset, maturity, boundary)')
     recovery=p.recovery*b/p.maturity
     if asset<=b:
+        if not math.isfinite(recovery):
+            raise ArithmeticError('HX recovery cashflow unresolved in f64')
         return recovery
     if tau==0:
-        return p.per_bond_principal
+        principal=p.per_bond_principal
+        if not math.isfinite(principal):
+            raise ArithmeticError('HX principal cashflow unresolved in f64')
+        return principal
     F,G=_first_passage_factors(p,_log_asset_ratio(asset,b),tau)
     # Explicit slow research opt-in; never propagated to equity_resolvent
     # or mechanism_channels. Default formula/refusal policy is unchanged.
     if direct_coupon_survival:
         coupon_pv=(p.per_bond_coupon*_coupon_survival_annuity(p,_log_asset_ratio(asset,b),tau)
                    if p.per_bond_coupon else 0.)
-        return (coupon_pv+math.exp(-p.q*tau)*p.per_bond_principal*(1-F)
-                +recovery*G)
+        value=(coupon_pv+math.exp(-p.q*tau)*p.per_bond_principal*(1-F)
+               +recovery*G)
+        if not math.isfinite(value):
+            raise ArithmeticError('HX direct coupon cashflow unresolved in f64')
+        return value
     qt=p.q*tau
     # For q*tau below the conservative f64 danger band, coupon/q-sized
     # terms can cancel catastrophically EVEN when exp(-q*tau) is < 1.
@@ -292,7 +301,10 @@ def bond_value(p: HX, asset: float, tau: float, asset_boundary: float | None = N
             raise ArithmeticError('HX stopped coupon cashflow unresolved in f64')
         return value
     base=p.per_bond_coupon/p.q
-    return base+math.exp(-p.q*tau)*(p.per_bond_principal-base)*(1-F)+(recovery-base)*G
+    value=base+math.exp(-p.q*tau)*(p.per_bond_principal-base)*(1-F)+(recovery-base)*G
+    if not math.isfinite(value):
+        raise ArithmeticError('HX bond cashflow unresolved in f64')
+    return value
 
 
 def _K(p: HX, v: float, y: float, beta: float) -> float:
