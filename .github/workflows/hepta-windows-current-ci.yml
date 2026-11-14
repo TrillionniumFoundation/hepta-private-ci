@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/hepta-windows-current-ci.yml"
       - ".github/scripts/windows_current_ci.py"
+      - ".github/scripts/windows_process_observer.py"
       - ".github/scripts/test_windows_current_ci.py"
       - ".github/fixtures/windows-current-ci-scope.json"
       - "codex-rs/git-utils/src/git_process_tests.rs"

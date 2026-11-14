@@ -14,6 +14,8 @@ import subprocess
 import sys
 import time
 
+from windows_process_observer import run_with_observation
+
 ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
 
 
@@ -97,21 +99,44 @@ def execute_groups(
         ]
         path = output / (group["id"] + ".log")
         started = time.monotonic()
+        observation = None
         if invoke is None:
             with path.open("w", encoding="utf-8") as stream:
-                process = subprocess.run(
-                    command,
-                    cwd=root / "codex-rs",
-                    stdout=stream,
-                    stderr=subprocess.STDOUT,
-                    check=False,
-                )
-            code = process.returncode
+                if group["id"] == "sandbox-original-failures":
+                    code, observation = run_with_observation(
+                        command, root / "codex-rs", stream
+                    )
+                else:
+                    process = subprocess.run(
+                        command,
+                        cwd=root / "codex-rs",
+                        stdout=stream,
+                        stderr=subprocess.STDOUT,
+                        check=False,
+                    )
+                    code = process.returncode
             text = path.read_text(encoding="utf-8", errors="replace")
         else:
             code, text = invoke(command)
             path.write_text(text, encoding="utf-8")
         result = assess(group, code, text)
+        if observation is not None:
+            diagnostic = output / (group["id"] + ".processes.json")
+            try:
+                diagnostic.write_text(
+                    json.dumps(observation, indent=2) + "\n", encoding="utf-8"
+                )
+                result["processObservation"] = {
+                    "path": diagnostic.name,
+                    "status": observation["status"],
+                    "exhaustive": False,
+                }
+            except Exception as error:
+                result["processObservation"] = {
+                    "status": "write_failed",
+                    "kind": type(error).__name__,
+                    "exhaustive": False,
+                }
         result.update(
             command=command, durationSeconds=round(time.monotonic() - started, 3)
         )
