@@ -267,14 +267,23 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
                     )
                     self.assertEqual(len(calls), 1)
                     target_option = f"--platforms={platform}"
+                    toolchain_option = (
+                        "--extra_toolchains=//:linux_musl_tests_on_gnu_host_toolchain"
+                    )
                     self.assertEqual(calls[0].count(target_option), 1)
+                    self.assertEqual(calls[0].count(toolchain_option), 1)
                     self.assertEqual(
-                        [arg for arg in calls[0] if arg != target_option],
+                        [
+                            arg
+                            for arg in calls[0]
+                            if arg not in (target_option, toolchain_option)
+                        ],
                         baseline_calls[0],
                     )
                     self.assertTrue(
                         all(
                             index < calls[0].index(target_option)
+                            and index < calls[0].index(toolchain_option)
                             for index, arg in enumerate(calls[0])
                             if arg.startswith("--config=")
                         )

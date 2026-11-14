@@ -292,7 +292,10 @@ if [[ -n "$linux_target_platform" ]]; then
   # ci-linux selects the GNU RBE target. Override only the target after that
   # config; keep the GNU host/exec platform for compiler tools and proc macros.
   # The keyless Python fallback also preserves this explicit platform.
-  post_config_bazel_args+=("--platforms=${linux_target_platform}")
+  post_config_bazel_args+=(
+    "--platforms=${linux_target_platform}"
+    "--extra_toolchains=//:linux_musl_tests_on_gnu_host_toolchain"
+  )
 fi
 
 if [[ "${RUNNER_OS:-}" == "macOS" ]]; then

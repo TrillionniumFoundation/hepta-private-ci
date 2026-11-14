@@ -109,7 +109,7 @@ impl Boot {
         if unsafe {
             libc::ioctl(
                 control.as_raw_fd(),
-                0xc080_4803 as libc::c_ulong,
+                0xc080_4803_u32 as _,
                 query.as_mut_ptr(),
             )
         } != 0

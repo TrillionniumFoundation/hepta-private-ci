@@ -45,7 +45,7 @@ fn denial(file: &File, boot: &Boot, opcode: u16, slot: u64, payload: &[u8]) -> i
     if unsafe {
         libc::ioctl(
             file.as_raw_fd(),
-            0xc020_4802 as libc::c_ulong,
+            0xc020_4802_u32 as _,
             descriptor.as_mut_ptr(),
         )
     } != 0

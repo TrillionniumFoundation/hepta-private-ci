@@ -62,7 +62,7 @@ pub(super) fn receive_target_files(socket: &UnixDatagram) -> anyhow::Result<(Fil
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: atomically closes rights on exec and bounds all receive buffers.
     let received =
         unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };

@@ -297,12 +297,12 @@ async fn notes_objective_session_registration_returns_observer_for_the_same_priv
                 message.msg_iovlen = 1;
                 message.msg_control = control.as_mut_ptr().cast();
                 message.msg_controllen =
-                    libc::CMSG_SPACE((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
+                    libc::CMSG_SPACE((2 * mem::size_of::<libc::c_int>()) as u32) as _;
                 let header = libc::CMSG_FIRSTHDR(&message);
                 (*header).cmsg_level = libc::SOL_SOCKET;
                 (*header).cmsg_type = libc::SCM_RIGHTS;
                 (*header).cmsg_len =
-                    libc::CMSG_LEN((2 * mem::size_of::<libc::c_int>()) as u32) as usize;
+                    libc::CMSG_LEN((2 * mem::size_of::<libc::c_int>()) as u32) as _;
                 let descriptors = libc::CMSG_DATA(header).cast::<libc::c_int>();
                 descriptors.write(effect.as_raw_fd());
                 descriptors.add(1).write(recovery.as_raw_fd());

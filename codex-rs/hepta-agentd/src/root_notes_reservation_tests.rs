@@ -152,7 +152,7 @@ fn reservation_closes_unexpected_rights_and_disables_credentials_for_original_of
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     assert_eq!(
         unsafe { libc::recvmsg(root.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) },
         14
@@ -179,14 +179,14 @@ fn send_rights(socket: &UnixDatagram, bytes: &[u8], rights: &[i32]) {
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = unsafe { libc::CMSG_SPACE(length as u32) } as usize;
-    assert!(message.msg_controllen <= mem::size_of_val(&control));
+    message.msg_controllen = unsafe { libc::CMSG_SPACE(length as u32) } as _;
+    assert!(message.msg_controllen as usize <= mem::size_of_val(&control));
     // SAFETY: the header and borrowed rights fit in the aligned retained buffer.
     unsafe {
         let header = libc::CMSG_FIRSTHDR(&message);
         (*header).cmsg_level = libc::SOL_SOCKET;
         (*header).cmsg_type = libc::SCM_RIGHTS;
-        (*header).cmsg_len = libc::CMSG_LEN(length as u32) as usize;
+        (*header).cmsg_len = libc::CMSG_LEN(length as u32) as _;
         std::ptr::copy_nonoverlapping(
             rights.as_ptr(),
             libc::CMSG_DATA(header).cast(),

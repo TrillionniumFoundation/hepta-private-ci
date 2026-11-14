@@ -33,7 +33,7 @@ fn notes_startup_sends_exact_reserved_identity_without_descriptors() {
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     let count = unsafe { libc::recvmsg(session.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
     assert!(count > 0 && count as usize <= MAX_BOOTSTRAP_BYTES);
     // SAFETY: recvmsg initialized the live aligned ancillary buffer, and no

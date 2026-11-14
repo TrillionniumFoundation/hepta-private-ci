@@ -198,7 +198,7 @@ fn receive_packet(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = mem::size_of_val(&control);
+    message.msg_controllen = mem::size_of_val(&control) as _;
     // SAFETY: recvmsg writes only initialized bounded buffers and atomically
     // gives received rights CLOEXEC; no buffer address escapes this call.
     let length = unsafe { libc::recvmsg(socket.as_raw_fd(), &mut message, libc::MSG_CMSG_CLOEXEC) };
@@ -255,14 +255,14 @@ fn send_packet(
     message.msg_iov = &mut vector;
     message.msg_iovlen = 1;
     message.msg_control = control.as_mut_ptr().cast();
-    message.msg_controllen = space;
+    message.msg_controllen = space as _;
     // SAFETY: the header and complete borrowed descriptor array fit within the
     // aligned retained control buffer. sendmsg borrows, never owns these FDs.
     unsafe {
         let header = libc::CMSG_FIRSTHDR(&message);
         (*header).cmsg_level = libc::SOL_SOCKET;
         (*header).cmsg_type = libc::SCM_RIGHTS;
-        (*header).cmsg_len = libc::CMSG_LEN(length as u32) as usize;
+        (*header).cmsg_len = libc::CMSG_LEN(length as u32) as _;
         std::ptr::copy_nonoverlapping(
             descriptors.as_ptr(),
             libc::CMSG_DATA(header).cast(),
