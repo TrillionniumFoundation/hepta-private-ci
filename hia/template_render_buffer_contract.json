@@ -1,0 +1,231 @@
+{
+  "schema": "codex.hia.template-render-buffer-contract.v1",
+  "revision": 1,
+  "module": "template_render",
+  "symbol": "codex_hia_template_render",
+  "entry_profile": "borrowed-buffers-u32-v1",
+  "platform": "Linux x86-64; little-endian u64 words and 64-bit borrowed-buffer lengths",
+  "scope": "Duplicate and required/extra selection, segment lookup, checked output planning and UTF-8 payload copying. Host preserves the exact generic callback and destructor scaffold and owns allocations.",
+  "original": {
+    "commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+    "crate": "codex-rs/utils/template",
+    "complete_crate_tree": "239023ac5b71e7cd40b23bff31cbf3e36c59a8c5",
+    "source_blob": "62d2314ffb30959cc7dab3c9fd6924e189e53ca8",
+    "source_bytes": 13066,
+    "source_sha256": "f930640a38e4ed882274397f6f2ac2105c3aac7891269b7b1edf39393b5d80cf",
+    "complete_snapshot": "next-template-native/original-a201",
+    "original_tests": 14,
+    "source_functions": [
+      "Template::render",
+      "build_variable_map",
+      "render"
+    ],
+    "parse_dto_unchanged": "Template { placeholders: BTreeSet<String>, segments: Vec<Segment> }, with Segment::Literal(String) and Segment::Placeholder(String). No new public fields, variants or signatures."
+  },
+  "calling_convention_and_frame": {
+    "profile": "borrowed-buffers-u32-v1",
+    "arguments": [
+      "source_ptr",
+      "source_len_u64",
+      "output_ptr",
+      "output_capacity_u64",
+      "workspace_ptr",
+      "workspace_len_u64"
+    ],
+    "return_type": "u64 carrying the fixed transport status",
+    "byte_order": "Little endian; fields may be unaligned. Offsets and lengths count bytes.",
+    "workspace_bytes": 32,
+    "workspace_words": [
+      [
+        0,
+        "version=1"
+      ],
+      [
+        8,
+        "operation"
+      ],
+      [
+        16,
+        "reserved=0"
+      ],
+      [
+        24,
+        "reserved=0"
+      ]
+    ],
+    "operations": {
+      "0": "CheckCandidate: key-log frame only; compare its last key to prior keys and produce a fixed header.",
+      "1": "FinalQuery: final DTO frame; full validation and semantic/output computation, header only.",
+      "2": "FinalEmit: identical final DTO frame; repeat full preflight, then header and full rendered UTF-8 bytes."
+    },
+    "input_header_bytes": 64,
+    "input_header_words": [
+      [
+        0,
+        "version=1"
+      ],
+      [
+        8,
+        "frame_kind: 0=key log, 1=final DTO"
+      ],
+      [
+        16,
+        "exact total source byte length"
+      ],
+      [
+        24,
+        "variable/key entry count N"
+      ],
+      [
+        32,
+        "declared placeholder count P"
+      ],
+      [
+        40,
+        "segment count S"
+      ],
+      [
+        48,
+        "reserved=0"
+      ],
+      [
+        56,
+        "reserved=0"
+      ]
+    ],
+    "key_log_frame": {
+      "constraints": "Operation 0; frame_kind=0; N>=1; P=S=0.",
+      "body": "Starting at byte64, exactly N entries in encounter order. Each entry is u64 name_byte_length followed immediately by that many UTF-8 name bytes. No padding or trailing bytes.",
+      "candidate": "The last entry. The operation compares only this candidate against earlier entries. Prior-prefix uniqueness is not falsely claimed as a raw-ABI prerequisite or proven by this operation.",
+      "raw_prefix_semantics": "Duplicate keys entirely within an earlier prefix do not themselves cause Duplicate unless the last candidate matches a prior key. The safe host establishes uniqueness inductively by running this operation for every yielded item.",
+      "value_timing": "Values are intentionally absent from this frame, but the Rust value AsRef and owned copy must already have completed before the call. The ABI alone cannot prove that host-side timing."
+    },
+    "final_frame": {
+      "constraints": "Operation 1 or2; frame_kind=1; N,P,S may each be zero.",
+      "body_order": [
+        "N variable entries",
+        "P declared-placeholder entries",
+        "S materialized segment entries"
+      ],
+      "variable_entry": "u64 name_length, u64 value_length, exact name bytes, exact value bytes. Encounter order is retained; names and values may be empty.",
+      "placeholder_entry": "u64 name_length, exact name bytes. Entries must be strictly increasing by unsigned UTF-8 byte order, matching the original BTreeSet iteration. Empty names remain structurally valid for a private DTO; parse18 never constructs one.",
+      "segment_entry": "u64 kind, u64 payload_length, exact payload bytes. kind1=Literal, kind3=Placeholder. These are materialized DTO segments; parse18 append-literal instructions are not accepted here.",
+      "shape_policy": "Do not merge adjacent literals, drop empty literals, trim names or require the segment-placeholder set to equal the declared set. Such extra restrictions would unnecessarily remove the original defensive segment lookup behavior. The public parse-produced DTO already has its stronger invariants.",
+      "extent": "The last record must end exactly at source_len. Counts, header sizes and every advancing cursor use checked arithmetic. No unspecified padding, foreign pointer or out-of-frame reference is accepted."
+    },
+    "output_header_bytes": 80,
+    "output_header_words": [
+      [
+        0,
+        "version=1"
+      ],
+      [
+        8,
+        "echo operation"
+      ],
+      [
+        16,
+        "echo source_len"
+      ],
+      [
+        24,
+        "required bytes including header"
+      ],
+      [
+        32,
+        "written bytes"
+      ],
+      [
+        40,
+        "semantic_error: 0 none, 1 DuplicateValue, 2 MissingValue, 3 ExtraValue"
+      ],
+      [
+        48,
+        "error_origin: 0 none, 1 variable, 2 declared placeholder, 3 segment"
+      ],
+      [
+        56,
+        "zero-based error entry index within that origin"
+      ],
+      [
+        64,
+        "exact error-name byte offset in source"
+      ],
+      [
+        72,
+        "error-name byte length"
+      ]
+    ],
+    "output_invariants": [
+      "Successful CheckCandidate writes exactly80 bytes, required=80, semantic_error=0 and all four error-detail words zero.",
+      "Semantic error in any operation writes only the80-byte header with required=written=80. CheckCandidate Duplicate points to its last key; final Duplicate points to the earliest second occurrence.",
+      "Successful FinalQuery writes80 bytes and reports required=80+R with zero error-detail words. Successful FinalEmit writes exactly required bytes; bytes80..required are the complete rendered UTF-8 string.",
+      "Query and emit must agree on source identity, required length and all semantic fields after normalizing only operation and written extent.",
+      "Error origin/index/range must identify the exact serialized name field, never a value field or arbitrary matching substring. The host may validate this transport relation without choosing the semantic error.",
+      "An empty successful render has required=written=80 in Emit. No artificial minimum output payload exists."
+    ],
+    "transport_status": {
+      "0": "A fully formed success or semantic-error header was written.",
+      "4294967294": "SHORT: the fully validated selected response requires more output capacity. Source, workspace and the entire supplied output buffer remain unchanged.",
+      "4294967295": "INVALID: unsupported operation/version, malformed frame/reserved fields/kind/order/UTF-8, or checked arithmetic failure. Source, workspace and the entire supplied output buffer remain unchanged."
+    },
+    "preflight_order": [
+      "Validate exact workspace size/version/op/reserved fields and minimum readable input header.",
+      "Validate all counts, record extents, kinds, full UTF-8 of every present string, exact final cursor, and declared-set strict ordering. No output writes occur during this traversal.",
+      "Evaluate semantic priority and, only on semantic success, calculate the checked full output length.",
+      "Check output capacity against the entire selected response:80 on semantic error,80 on Query/Check, or80+R on successful Emit.",
+      "Only then write the header and any complete payload. No partial prefix is written on a nonzero return."
+    ],
+    "ffi_preconditions": "The caller supplies actual readable/writable live, disjoint buffers for the declared extents. The ABI validates bytes and arithmetic, not forged native pointers. It retains no pointer across calls.",
+    "size_policy": "No static item count, string length or one-MiB cap. Only actual buffer extents, checked u64 arithmetic and the Rust allocation/usize representability boundary apply."
+  },
+  "generic_effect_contract": {
+    "retain_source_scaffold": [
+      "Keep a separate variable-building helper with the original for (name, value) tuple pattern and the original shadowing let name = name.as_ref().to_string() statement.",
+      "Preserve the existing name.clone() evaluation before value.as_ref().to_string() when entering the transport insertion operation. The insertion operation may contain only allocation/serialization/native dispatch/materialization.",
+      "Keep immediate DuplicateValue { name } return in that same iteration scope. No extra next call, prefetch, collecting adapter, size_hint, len, fold, try_fold, nth, cloning of K/V, or iterator trait extension may be introduced.",
+      "On each successful step, leave the same current-item scope before requesting the next element. Do not hold K or V in a Vec; only the copied Strings may survive.",
+      "On the first None, finish and drop the original for-loop iterator before final template serialization/query or missing/extra error construction. Keeping the helper boundary makes this order explicit.",
+      "Do not replace the tuple-pattern loop with a loop over an owned tuple: tuple-field drops and local-binding drops are different language mechanisms.",
+      "Do not serialize or validate the Template before the variable helper consumes its iterator. Original Missing/Extra checks occur only after all nonduplicate inputs and the iterator destructor have completed."
+    ],
+    "per_item_order": [
+      "Iterator::next returns one (K,V).",
+      "K::as_ref is called once; its returned bytes are copied into the local owned name before V::as_ref is invoked.",
+      "The local name is cloned for insertion as in the original expression, then V::as_ref is called once and its bytes are copied.",
+      "Only now may HIA CheckCandidate run, even if the name is already known to duplicate.",
+      "Accepted: keep only owned data, then leave the current iteration scope and ask next again.",
+      "Duplicate: construct the original DuplicateValue using the current local name and return immediately; the same current K/V and iterator scopes unwind naturally."
+    ],
+    "panic_and_drop_boundary": [
+      "An AsRef or next panic must retain the same earlier event prefix; no HIA duplicate/missing check may move ahead of a callback that the original invokes.",
+      "A current item or iterator destructor may itself panic. Do not catch or suppress it, manually drop the iterator early, or convert it into a TemplateRenderError.",
+      "For the free render function, malformed parse prevents IntoIterator::into_iter and all next/AsRef calls, but the owned variables argument still drops as the function returns. Zero iteration is not a zero-Drop claim.",
+      "Exact user-owned I/IntoIter/K/V event traces are a required future whole-original differential gate, not a claim already established by this design.",
+      "Allocation counts, capacities, internal String/map-node deallocation traces and allocator-failure timing are not promised to match the Rust BTreeMap implementation. The original has no allocation-error Result variant; native transport failure must remain distinguishable from Duplicate/Missing/Extra."
+    ],
+    "one_shot": "Keep Template::parse(template)?.render(variables).map_err(Into::into) unchanged. Parse error has priority over all variable callbacks."
+  },
+  "semantic_priority": [
+    "After complete frame preflight, scan variable entries by increasing second-occurrence index; return Duplicate for the first key with any earlier equal key.",
+    "Walk the already strictly ordered declared-placeholder table; return Missing for its first name absent from the variable entries.",
+    "Only if every required name exists, find the unsigned-byte lexicographic minimum variable key absent from the declared-placeholder table; return Extra for it.",
+    "Walk segments in order. Literal contributes its exact payload; Placeholder selects the exact matching variable value. Preserve the original defensive Missing return for the first missing segment key, even in a privately inconsistent DTO.",
+    "Calculate the full checked output extent; Emit repeats validation/selection before writing the selected literal/value bytes. Values are never reparsed, escaped, normalized or recursively expanded."
+  ],
+  "performance": {
+    "definitions": "N=consumed variables before termination, P=declared unique names, S=segments, K_j=all key bytes through item j, B=final frame bytes, M=1+maximum name byte length, R=rendered output bytes.",
+    "incremental_duplicate_total": "Each CheckCandidate validates its whole current key log and compares the last key against the prefix: O(K_j+j*M). Over N accepted items the conservative bound is O(sum_j K_j + N^2*M). The key-log Vec itself is appended amortized linearly; it is not rebuilt from all prior values on every item.",
+    "final_query": "With simple scans and no native allocation, O(B + (N^2 + P*N + S*N)*M). The raw final duplicate check is defensive even though the safe host has already established uniqueness.",
+    "final_emit": "Same validation/selection cost as Query, plus O(R) byte copying.",
+    "space": "O(K+V+template_bytes+R) host memory with explicit temporary constant factors; O(1) additional native algorithm state if scans use counters/ranges. No recursive tree, hash-table reserve or count-limited scratch arena is required.",
+    "comparison_to_original": "The original BTreeMap uses logarithmic insertion/lookup. This initial native protocol can regress many-key workloads and has no performance qualification. An HIA-owned index can later reduce this cost, but it must preserve streaming callback timing and strict raw-buffer validation."
+  },
+  "qualification": {
+    "whole_crate_qualified": false,
+    "actual_cargo_qualified": false,
+    "whole_codex_closed": false,
+    "default_changed": false,
+    "legacy_retirement": false
+  }
+}
