@@ -47,6 +47,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   native-components:
@@ -113,6 +114,41 @@ jobs:
             git -C Hepta rev-parse HEAD
           } > "$RUNNER_TEMP/hia-toolchain.log"
           cat "$RUNNER_TEMP/hia-toolchain.log"
+
+      # Upstream v8 150.4.0 lacks the ptrcomp/sandbox GNU release (HTTP 404).
+      # Reuse this repository's immutable, version-matched Bazel V8 artifact.
+      - name: Verify pinned Bazel V8 release pair for Core fixtures
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          command -v gh
+          python3 -B - <<'PY'
+          import tomllib
+          from pathlib import Path
+          lock = tomllib.loads(Path("codex/codex-rs/Cargo.lock").read_text())
+          versions = [p["version"] for p in lock["package"] if p["name"] == "v8"]
+          if versions != ["150.4.0"]:
+              raise SystemExit(f"V8 artifact version mismatch: {versions}")
+          PY
+          name=v8-canary-150.4.0-ptrcomp-sandbox-x86_64-unknown-linux-gnu
+          artifact_id="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/43634973980/artifacts" \
+            --jq '.artifacts[] | select(.name == "v8-canary-150.4.0-ptrcomp-sandbox-x86_64-unknown-linux-gnu" and .expired == false) | .id')"
+          test "$artifact_id" = 14129547571
+          libdir="$RUNNER_TEMP/hia-v8-release"
+          mkdir -p "$libdir"
+          gh run download 43634973980 --repo "$GITHUB_REPOSITORY" \
+            --name "$name" --dir "$libdir"
+          (
+            cd "$libdir"
+            sha256sum --check rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256
+          )
+          archive="$libdir/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+          binding="$libdir/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+          test -s "$archive"
+          test -s "$binding"
+          echo "RUSTY_V8_ARCHIVE=$archive" >> "$GITHUB_ENV"
+          echo "RUSTY_V8_SRC_BINDING_PATH=$binding" >> "$GITHUB_ENV"
 
       - name: Rebuild compiler generations and native components
         id: build
@@ -422,6 +458,21 @@ jobs:
             --report "$RUNNER_TEMP/hia-installed-patch.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-installed-patch.log"
 
+      # Core integration tests discover these executable fixtures using
+      # cargo_bin(), not the nextest-built test binaries under debug/deps.
+      # Keep the fixture binaries on the original test path; never skip tests.
+      - name: Build required Core MCP and Code Mode test binaries
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-rmcp-client --bin test_stdio_server \
+            2>&1 | tee "$RUNNER_TEMP/hia-test-stdio-server-build.log"
+          cargo build --locked -p codex-code-mode-host --bin codex-code-mode-host \
+            2>&1 | tee "$RUNNER_TEMP/hia-code-mode-host-build.log"
+          test -x "$CARGO_TARGET_DIR/debug/test_stdio_server"
+          test -x "$CARGO_TARGET_DIR/debug/codex-code-mode-host"
+
       - name: Test full Codex owners with HIA enabled
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -539,6 +590,8 @@ jobs:
             ${{ runner.temp }}/hia-installed-patch.json
             ${{ runner.temp }}/hia-installed-patch.log
             ${{ runner.temp }}/hia-default-crates.log
+            ${{ runner.temp }}/hia-test-stdio-server-build.log
+            ${{ runner.temp }}/hia-code-mode-host-build.log
             ${{ runner.temp }}/hia-codex-owners.log
             ${{ runner.temp }}/hia-installed-codex-build.log
             ${{ runner.temp }}/hia-original-codex-build.log
