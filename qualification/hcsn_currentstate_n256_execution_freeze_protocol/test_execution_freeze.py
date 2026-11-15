@@ -33,6 +33,8 @@ class ExecutionFreezeTests(unittest.TestCase):
                 "host_alias": "synthetic-host-only",
                 "captured_at_utc": "2026-11-14T01:00:00Z",
             }
+        originals["allocation"]["captured_at_utc"] = "2026-11-14T00:55:00Z"
+        originals["calendar"]["captured_at_utc"] = "2026-11-14T00:50:00Z"
         self.record = {
             "schema": SCHEMA,
             "parent_roster_resolved_request_sha256": PARENT_REQUEST_SHA256,
