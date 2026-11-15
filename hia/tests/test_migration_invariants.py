@@ -94,6 +94,8 @@ class RetirementGateTest(unittest.TestCase):
             "source_tree": "a" * 40, "qualification_sha256": "b" * 64,
             "verified_platforms": ["linux-x86_64-gnu"],
         }]
+        migration["candidate_modules"][0]["retire_legacy"] = True
+        migration["candidate_modules"][0]["production_dispatch_migrated"] = True
         # Valid declarations are consistency checks, never executed qualification.
         self.assertEqual(validate(migration, verification), [])
 
@@ -122,6 +124,44 @@ class RetirementGateTest(unittest.TestCase):
         }]
         self.assertIn("invalid executed platform qualification entries",
                       "\n".join(validate(migration, verification)))
+
+    def test_retirement_ready_rejects_unowned_source_deletion(self):
+        migration, verification = incomplete()
+        migration["retirement"]["ready"] = True
+        migration["retirement"]["approved_paths"] = ["codex-rs/unowned.rs"]
+        self.assertIn("no candidate module owns approved source deletion",
+                      "\\n".join(validate(migration, verification)))
+
+    def test_retirement_ready_requires_all_shared_source_owners(self):
+        migration, verification = incomplete()
+        migration["candidate_modules"][0]["retire_legacy"] = True
+        migration["candidate_modules"][0]["production_dispatch_migrated"] = True
+        migration["candidate_modules"].append({
+            "id": "other_function_in_same_file",
+            "source_path": "codex-rs/sample.rs",
+            "retire_legacy": False,
+            "production_dispatch_migrated": False,
+        })
+        migration["retirement"]["ready"] = True
+        migration["retirement"]["approved_paths"] = ["codex-rs/sample.rs"]
+        self.assertIn("shared source still has active or unqualified module owners",
+                      "\\n".join(validate(migration, verification)))
+
+    def test_retirement_ready_requires_the_owners_default_dispatch(self):
+        migration, verification = incomplete()
+        migration["candidate_modules"][0]["retire_legacy"] = True
+        migration["retirement"]["ready"] = True
+        migration["retirement"]["approved_paths"] = ["codex-rs/sample.rs"]
+        self.assertIn("shared source still has active or unqualified module owners",
+                      "\\n".join(validate(migration, verification)))
+
+    def test_nested_or_mixed_case_git_metadata_cannot_be_retired(self):
+        migration, verification = incomplete()
+        for path in ("codex-rs/.git/config", "codex-rs/.GiT/objects", ".Git/config"):
+            with self.subTest(path=path):
+                migration["retirement"]["approved_paths"] = [path]
+                self.assertIn("unsafe approved source path",
+                              "\\n".join(validate(migration, verification)))
 
     def test_retired_flag_requires_readiness(self):
         migration, verification = incomplete()

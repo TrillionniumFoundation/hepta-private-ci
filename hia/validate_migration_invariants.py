@@ -73,7 +73,7 @@ def validate(migration: dict, verification: dict) -> list[str]:
     for path in approved:
         if (path.startswith("/") or "\\" in path or "\0" in path
                 or path == ".git" or path.startswith(".git/")
-                or any(part in ("", ".", "..") for part in path.split("/"))):
+                or any(part in ("", ".", "..") or part.casefold() == ".git" for part in path.split("/"))):
             errors.append(f"{path}: unsafe approved source path")
     for flag in ("production_dispatch_migrated", "whole_codex_rewritten"):
         mv, vv = migration.get(flag), verification.get(flag)
@@ -125,6 +125,19 @@ def validate(migration: dict, verification: dict) -> list[str]:
                           for p in record["verified_platforms"])
                   or len(set(record["verified_platforms"])) != len(record["verified_platforms"])):
                 errors.append(f"{path}: invalid executed platform qualification entries")
+    # An approved deletion must not remove a shared Rust file still owned by
+    # another active HIA candidate. A single migrated symbol does not retire
+    # every other symbol in its source file.
+    if retiring.get("ready") is True:
+        for path in approved:
+            owners = [m for m in modules if isinstance(m, dict)
+                      and m.get("source_path") == path]
+            if not owners:
+                errors.append(f"{path}: no candidate module owns approved source deletion")
+            elif any(m.get("retire_legacy") is not True
+                     or m.get("production_dispatch_migrated") is not True
+                     for m in owners):
+                errors.append(f"{path}: shared source still has active or unqualified module owners")
     for item in modules:
         if isinstance(item, dict) and item.get("retire_legacy") is True:
             source = item.get("source_path")
