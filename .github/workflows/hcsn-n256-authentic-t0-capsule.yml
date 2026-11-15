@@ -27,8 +27,8 @@ jobs:
       - name: Build once and audit in a fresh process
         run: |
           mkdir -p /tmp/hcsn-n256-t0
-          python qualification/hcsn_currentstate_n256_t0_capsule_v1/builder.py --root . --output /tmp/hcsn-n256-t0/capsule.bin --receipt /tmp/hcsn-n256-t0/BUILD.json
-          python qualification/hcsn_currentstate_n256_t0_capsule_v1/cold_audit.py --root . --capsule /tmp/hcsn-n256-t0/capsule.bin --receipt /tmp/hcsn-n256-t0/AUDIT.json
+          python -m qualification.hcsn_currentstate_n256_t0_capsule_v1.builder --root . --output /tmp/hcsn-n256-t0/capsule.bin --receipt /tmp/hcsn-n256-t0/BUILD.json
+          python -m qualification.hcsn_currentstate_n256_t0_capsule_v1.cold_audit --root . --capsule /tmp/hcsn-n256-t0/capsule.bin --receipt /tmp/hcsn-n256-t0/AUDIT.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
