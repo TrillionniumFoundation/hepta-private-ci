@@ -3277,5 +3277,68 @@
     "canary_jobs_skipped": 2,
     "applies_to_current_fifteen_module_candidate": false,
     "performance_qualified": false
+  },
+  "published_allowed_prefixes15_qualification": {
+    "source_revision": "ae39735ac801c33c2166f043ea1471c3c445460a",
+    "source_tree": "6d15a6c7cb648af9e85418d3aa03f1260f77548c",
+    "local_checkpoint": {
+      "report": "hia/verification.json#allowed_prefixes_qualification",
+      "base_revision": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+      "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+      "module_count": 15,
+      "borrowed_module_count": 14,
+      "scalar_module_count": 1,
+      "configured_production_path_algorithms": 12,
+      "scalar_helpers": [
+        "prefix_admission"
+      ],
+      "current_installed_standalone_symbols": 3,
+      "expected_full_codex_symbols": 13,
+      "build_receipt_checks": 70,
+      "allowed_prefix_raw_abi_calls": 6118,
+      "original_public_comparisons": 11270,
+      "concurrent_comparisons_included": 512,
+      "entry_observations": 16,
+      "effect_and_panic_cases": 6,
+      "allocation_cases": 31,
+      "zero_allocation_cases": 12,
+      "failure_injection_cases": 35,
+      "ignored_transport_cases": 5,
+      "native_execpolicy_tests": 34,
+      "default_execpolicy_tests": 34,
+      "installed_standalone_cases": 30,
+      "installed_standalone_processes": 60,
+      "owner_original_aggregate_passed": false,
+      "owner_artifact_reconciliation_passed": true,
+      "final_source_bytes_match_execution": true,
+      "post_final_fix_fmt_tests_run": false,
+      "final_source_ci_qualified": false,
+      "installed_full_codex_cli": "pending_current_fifteen_module_ci",
+      "protocol_allowed_prefix_consumer": "pending_current_fifteen_module_ci",
+      "core_execpolicy_and_network_consumers": "pending_current_fifteen_module_ci",
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "whole_policy_migrated": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "retirement_ready": false,
+      "performance_scope": "All fourteen measured rows are slower than Rust; single_large takes about 123x total time and 3x logical requested-live peak. All prior negative records remain unchanged."
+    },
+    "native_ci_passed": true,
+    "native_run_ids": [
+      43701762416,
+      43701773665
+    ],
+    "native_steps_per_run": 49,
+    "broader_ci_passed": false,
+    "blocking_job_counts": {
+      "success": 17,
+      "failure": 15,
+      "cancelled": 1,
+      "skipped": 4
+    },
+    "report": "hia/verification.json#published_allowed_prefixes15_ci",
+    "applies_to_current_command_dispatch_increment": false,
+    "scope": "The local checkpoint remains the original record; two exact-source native CI runs subsequently completed its pending selected gates. Whole-workspace/platform/performance/default/retirement qualification remains false. Separate SDK PR 6374 is not included in module-16 source."
   }
 }

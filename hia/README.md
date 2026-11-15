@@ -469,7 +469,88 @@ original oracle output from another machine. The imported output must echo
 every exact input frame, so results cannot silently be joined to a different
 corpus. See `python hia/tests/test_seek_sequence.py --help`.
 
-### Allowed-prefix increment: current scoped qualification
+### Published fifteen-module CI: immutable history
+
+Draft PR 6372 published `ae39735ac801c33c2166f043ea1471c3c445460a`,
+tree `6d15a6c7cb648af9e85418d3aa03f1260f77548c`. The PR merge
+`c28ba747003858d306a4ac827996bddea3958a8d` has the same tree. Push native
+run `43701762416` and PR native run `43701773665` each completed 49 successful
+steps. The independent root audit verified 91 published source bindings and
+all 162 members of each artifact archive. It compared 162 available local
+members for the push run and 135 for the PR run. These are source-specific
+fifteen-module results; they do not qualify a later dispatcher change.
+
+Each run reproduced the fifteen-module B1/B2/B3 fixed point and executed 70
+receipt checks and 122 scalar-artifact admission checks. Actual public gates
+included 11,270 allowed-prefix comparisons, 67,976 network-domain comparisons,
+10,356 policy-summary comparisons and 49,938 prefix comparisons. Concurrent
+comparisons are included in their reported totals. The component audit covers
+32 executed reports using 23 boolean PASS fields, eight status
+fields and one legacy assertion-count schema. The supplementary audit retained
+that schema correction without altering any original report bytes.
+
+| Fifteen-module native CI gate | Actual result in each run |
+| ---------------------------- | ------------------------- |
+| Owning component crates | 198 native and 185 default tests passed; zero skipped. |
+| CLI, arg0 and TUI owners | 4,474 passed; six skipped. This is not a whole-workspace test. |
+| Relocated standalone | 30 cases, 60 processes and three native symbols. |
+| Relocated full CLI | 34 behavior cases, two startup cases and 13 native symbols; zero skipped. Symbol retention is link evidence, not behavioral proof for every retained algorithm. |
+| Core execpolicy filter | 11 passed; 3,870 skipped outside the filter. |
+| Core network consumer | One passed; 3,880 skipped outside its exact filter. |
+| Protocol allowed-prefix consumer | `models::tests::format_allow_prefixes_limits_output` passed; 300 skipped outside its exact filter. |
+
+All 37 measured timing rows in each native run were slower than their original
+Rust baselines: 14 allowed-prefix, 11 network-domain, five policy-summary and
+seven prefix rows. The complete values and allocation vectors remain in the
+hashed reports. Diagnostic timing does not establish performance acceptance.
+
+The same publication's `blocking-ci` run `43701773797` finished with 37 jobs:
+17 succeeded, 15 failed, one was cancelled and four were skipped. Architecture
+convergence completed three successful jobs; the canary had one successful job
+and two skipped jobs. Native results do not override the broader failures.
+Of the 16 failed/cancelled jobs, 13 original logs were available: 12 were bound
+to an actual checkout and one only to the workflow definition. Three original
+logs were unavailable. The audit made no paired base run comparison and did
+not assign historical causes to current failures. Bazel targets, cached passes,
+retries, Rust cases and repeated log tails are separate counts.
+The independent root review checked all 43 jobs across these three workflows
+and 49 evidence references; its successful audit does not change the failed
+`blocking-ci` conclusion.
+
+The exact source, per-run identities, counts and external report paths are in
+[`published_allowed_prefixes15_ci`](verification.json#published_allowed_prefixes15_ci).
+The earlier local checkpoint below remains unchanged evidence, including its
+failed wrappers and local performance values. Complete Policy/Core/workspace,
+required platforms, performance, default dispatch and retirement remain open.
+
+### Separate SDK resolver follow-up
+
+Draft PR 6374 is a separate one-patch branch at
+`e744466830b5c823b723d81c2b6cab9c95abd60b`, based on the fifteen-module
+publication. Its SDK job passed 19 steps and five TypeScript suites with 47
+tests. Its Python SDK job passed six steps with 131 tests passed and 38 skipped;
+that job installed the existing `openai-codex-cli-bin` 0.147.0 package rather
+than building a new repository CLI. Both logs identify PR merge
+`4e67c46faeee0e85cc92913fba5b0f2c4a3715bf`, whose tree matches that patch head.
+
+The separate SDK publication's final blocking CI still failed: 16 jobs passed,
+13 failed and eight were skipped, with no cancellations. All 13 original
+failure logs were available; 12 identify the actual checkout and one identifies
+only the workflow. Its required aggregate rejected Bazel while SDK succeeded.
+The GNU Clippy job passed ten steps but emitted warnings, so this is not a
+`-D warnings` closure. GNU compilation passed eleven steps in fastbuild mode
+with debug assertions disabled; it does not establish a fully optimized
+release build. These are separate source-specific observations.
+
+This patch is not included in the command-dispatch source baseline. These
+selected jobs do not replace the fifteen-module SDK failure or establish
+sixteen-module HIA, whole-repository or DNS runtime qualification. CI did not
+expose generated resolver binding bytes or object symbol tables. The separate
+offline binding/symbol probes remain incomplete, with their actual cache and
+header failures preserved. See
+[`separate_sdk_resolver_followup`](verification.json#separate_sdk_resolver_followup).
+
+### Allowed-prefix increment: recorded fifteen-module local checkpoint
 
 The fourteen-file increment starts from `b39a8ef9bd4256113874daf721ddf3f12b85dd4b`. Its frozen source manifest is
 `2f9b47f940b30c7e298d4cf771a027479f9212eb01553578b488fc28389d254e` and qualification summary is
@@ -524,12 +605,13 @@ including selected-frame/render-copy costs and spill boundaries, remain in the
 exact reports referenced by
 [`allowed_prefixes_qualification`](verification.json#allowed_prefixes_qualification).
 
-Current-source CI must execute the expected thirteen-symbol full CLI, exact
-Protocol consumer `models::tests::format_allow_prefixes_limits_output` with
-`codex-execpolicy/hia-native`, both existing Core consumer gates and all prior
-components. No PASS count is prefilled for these pending gates. Whole Policy,
-Core, workspace, required platforms, performance, default release and source
-retirement remain open.
+At this local checkpoint, the thirteen-symbol full CLI, exact Protocol
+consumer `models::tests::format_allow_prefixes_limits_output`, both Core
+consumer gates and prior component reruns were pending. The published
+fifteen-module CI above later executed those selected gates on its own exact
+source. Those results do not qualify a subsequent dispatcher change. Whole
+Policy, Core, workspace, required platforms, performance, default release and
+source retirement remain open.
 
 ### Network-domain increment: recorded fourteen-module local checkpoint
 
