@@ -1,0 +1,14 @@
+test_deadline_expiry_after_restart_cannot_extend_original_budget (test_durable_lifecycle.DurableLifecycleTests.test_deadline_expiry_after_restart_cannot_extend_original_budget) ... ok
+test_foreign_but_self_consistent_invocation_is_never_original_receipt (test_durable_lifecycle.DurableLifecycleTests.test_foreign_but_self_consistent_invocation_is_never_original_receipt) ... ok
+test_foreign_receipt_after_restore_clears_old_success_and_is_rejected (test_durable_lifecycle.DurableLifecycleTests.test_foreign_receipt_after_restore_clears_old_success_and_is_rejected) ... ok
+test_fully_spent_primitive_budget_survives_reopen (test_durable_lifecycle.DurableLifecycleTests.test_fully_spent_primitive_budget_survives_reopen) ... ok
+test_known_precommit_repair_budget_survives_reopen (test_durable_lifecycle.DurableLifecycleTests.test_known_precommit_repair_budget_survives_reopen) ... ok
+test_paused_state_and_original_deadline_survive_two_processes (test_durable_lifecycle.DurableLifecycleTests.test_paused_state_and_original_deadline_survive_two_processes) ... ok
+test_process_death_after_real_publication_reconciles_original_once (test_durable_lifecycle.DurableLifecycleTests.test_process_death_after_real_publication_reconciles_original_once) ... ok
+test_process_death_before_apply_remains_unknown_without_replay (test_durable_lifecycle.DurableLifecycleTests.test_process_death_before_apply_remains_unknown_without_replay) ... ok
+test_second_writer_and_contract_model_drift_are_rejected (test_durable_lifecycle.DurableLifecycleTests.test_second_writer_and_contract_model_drift_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 2.535s
+
+OK

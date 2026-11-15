@@ -1,0 +1,21 @@
+{
+  "scope": "configured Hepta plugin operator hosts; not a target state verdict",
+  "checks": [
+    {
+      "host": "x230",
+      "operation": "host_health",
+      "outcome": "MCP_REQUEST_TIMEOUT",
+      "code": -32603,
+      "target_reachability": "UNKNOWN"
+    },
+    {
+      "host": "desktop",
+      "operation": "host_health",
+      "outcome": "MCP_REQUEST_TIMEOUT",
+      "code": -32603,
+      "target_reachability": "UNKNOWN"
+    }
+  ],
+  "local_native_toolchain": "rustc/cargo and target Agentd/AppServer binaries not found in inspected standard/current scratch paths",
+  "privilege_or_network_widened": false
+}

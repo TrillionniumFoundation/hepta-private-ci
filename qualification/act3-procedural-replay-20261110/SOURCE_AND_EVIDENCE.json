@@ -1,0 +1,34 @@
+{
+  "original_act2_commit": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+  "parent_remote_commit": "ff247a38262b1a779957e0bc94f005e4c8155dd6",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "source_sha256": {
+    "scripts/act2_learning/procedural_replay.py": "af8593acbbd74388e605eb9bafa2cb9910ea0d64a52f9845bf7df848244290a6",
+    "scripts/act2_learning/test_procedural_replay.py": "8fe8a3cd167726d0a91e7eb9d9328dce8e7850ce247c06ef9caa935669b92090",
+    "scripts/act2_learning/qualify_families.py": "14cee192b89a89e1e42d044f7a7f5dd8206eaf8f442796899f7d6ce36aa6a333",
+    "scripts/act2_learning/test_family_qualification.py": "8fed4dfdca3f8025c45f2bc3ad67d0473e1d2cda3e0a473c067ba307338bd8b1",
+    "scripts/act2_learning/audit_families.py": "b1fb1b28a83a956253b056d8360f050849ddfae4c08fc3d1c9b445f3b2e5f90f",
+    "scripts/act2_learning/models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "scripts/act2_learning/run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+    "scripts/act2_learning/sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4",
+    "scripts/act2_learning/file_family.py": "9d65246d0374d18d7035428b930ccbee68075ff8b264bb47bff1ee69dfd62dfd",
+    "scripts/act2_learning/diagnose.py": "ea427daece8b211a1b01c4fe23f9273c3bcfdb308a3c139078b1ad954d11cb2a",
+    ".github/workflows/hepta-act3-qualification.yml": "78dd646cefb98d14edc2c3decaebce53cb4bea2e522852deceabbfb96beeed9e"
+  },
+  "evidence_sha256": {
+    "ARCHIVE_INDEX.json": "635780f7d4aa4ad415600c7df161361597e88c0277e85b23769dde42ff62a9b8",
+    "README.md": "251ffd97b7dc2ece2d32b6cb8f91c110f26c39e4d8d681c3b9ce22b290e90ba0",
+    "RESULT.json": "b73cf2a66fab2d18e6c37b892e5ac29d191d39a02b33e243fb5691d24cb91a78",
+    "family-tests.log": "3098d74e73884dfe5e70f1e671a9ddd7def692a90fc94deba03ddc4c3ec4689d",
+    "filesystem.tar.xz": "fd9e5e01c471dc4d79ce6602c0726bddb8bbee4a56af40d80fe8dbdf5b1b6347",
+    "formatter-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "formatter.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "replay-tests.log": "74e8da2ce62a8bbd4a5e233deef4cf39094b6d80fa9dc2d3ffdd216431462e05",
+    "retained-audit.json": "350e43e7eb4eb81692b43db9ac137e3024c102122686e3aea0b3b164250ce47f",
+    "training.tar.xz": "eb0e5f2e384f6c37810381e9b8bb29c0ec31f6d916045687340567616aad3940"
+  },
+  "formatter": "just 1.51.0 fmt --base 0584b3344f70ed51d9e09224e105bfa4d1a4635f, then --check",
+  "hosted_status": "must be read separately for exact published commit",
+  "local_passes_do_not_transfer_to_hosted_runs": true
+}
