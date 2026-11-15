@@ -2,6 +2,8 @@
 use core::ffi::c_void;
 
 use super::number;
+use super::windows_crypto_security;
+use super::windows_crypto_security::SelfHandleKind;
 use super::write;
 use super::GetProcAddress;
 
@@ -162,7 +164,7 @@ const EMPTY: HandleKey = HandleKey {
     attributes: 0,
     basic_available: false,
 };
-const HANDLE_LIMIT: usize = 64;
+const HANDLE_LIMIT: usize = 128;
 const REPORT_LIMIT: usize = 24;
 const QUERY_REPORT_LIMIT: usize = 8;
 
@@ -196,6 +198,7 @@ impl Handles {
             let query = unsafe { GetProcAddress(ntdll, c"NtQueryObject".as_ptr().cast()) };
             let mut differences = 0;
             let mut fallback_count = 0;
+            let mut security_count = 0;
             loop {
                 // All fields, including unused union storage, start initialized.
                 let mut entry: HandleEntry = unsafe { core::mem::zeroed() };
@@ -289,7 +292,41 @@ impl Handles {
                             // SAFETY: named export; query only this currently owned handle's type.
                             let query =
                                 unsafe { core::mem::transmute::<*mut c_void, Query>(query) };
-                            object_type(query, entry.handle);
+                            let kind = object_type(query, entry.handle);
+                            if matches!(kind, SelfHandleKind::File | SelfHandleKind::Key) {
+                                // A metadata change on an existing handle is not a new handle.
+                                // Skip reused values conservatively; this still cannot prove
+                                // identity across a close/reopen between snapshot and query.
+                                let new_handle_value = before.is_some_and(|before| {
+                                    before.complete
+                                        && !before.entries[..before.len]
+                                            .iter()
+                                            .any(|previous| previous.handle == entry.handle)
+                                });
+                                if !new_handle_value {
+                                    number(
+                                        b"handle_delta_dacl_existing_value_skipped",
+                                        /*value*/ 1,
+                                    );
+                                } else if basic_available && entry.granted_access & 0x0002_0000 != 0
+                                {
+                                    security_count += 1;
+                                    if security_count <= 2 {
+                                        windows_crypto_security::observe(ntdll, entry.handle);
+                                    } else {
+                                        number(
+                                            b"handle_delta_dacl_query_capacity_exceeded",
+                                            /*value*/ 1,
+                                        );
+                                    }
+                                } else {
+                                    // Never reopen or acquire extra rights for an observation.
+                                    number(
+                                        b"handle_delta_dacl_read_control_unavailable",
+                                        /*value*/ 1,
+                                    );
+                                }
+                            }
                         }
                     }
                 }
@@ -331,7 +368,7 @@ impl Handles {
     }
 }
 
-fn object_type(query: Query, handle: isize) {
+fn object_type(query: Query, handle: isize) -> SelfHandleKind {
     let mut data = [0_usize; 64];
     let mut returned = 0;
     let status = unsafe {
@@ -345,7 +382,7 @@ fn object_type(query: Query, handle: isize) {
     };
     number(b"handle_delta_type_ntstatus", status as u32);
     if status < 0 || returned as usize > core::mem::size_of_val(&data) {
-        return;
+        return SelfHandleKind::Other;
     }
     // PUBLIC_OBJECT_TYPE_INFORMATION begins with a UNICODE_STRING; all pointer
     // reads stay inside this query's initialized, aligned, bounded output.
@@ -360,16 +397,21 @@ fn object_type(query: Query, handle: isize) {
         });
     if len == 0 || len > 128 || len % 2 != 0 || valid.is_none() {
         number(b"handle_delta_type_bounds_invalid", /*value*/ 1);
-        return;
+        return SelfHandleKind::Other;
     }
     let units = unsafe { core::slice::from_raw_parts(data[1] as *const u16, len / 2) };
     if units.iter().any(|value| !(32..=126).contains(value)) {
         number(b"handle_delta_type_non_ascii", /*value*/ 1);
-        return;
+        return SelfHandleKind::Other;
     }
     write(b"handle_delta_type_name=");
     for unit in units {
         write(&[*unit as u8]);
     }
     write(b"\n");
+    match units {
+        [70, 105, 108, 101] => SelfHandleKind::File,
+        [75, 101, 121] => SelfHandleKind::Key,
+        _ => SelfHandleKind::Other,
+    }
 }

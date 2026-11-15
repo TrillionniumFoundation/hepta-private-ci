@@ -6,6 +6,7 @@
 use core::ffi::c_void;
 
 mod windows_crypto_observe;
+mod windows_crypto_security;
 
 #[link(name = "kernel32")]
 unsafe extern "system" {
