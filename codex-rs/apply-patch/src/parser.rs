@@ -24,6 +24,9 @@
 //! The parser below is a little more lenient than the explicit spec and allows for
 //! leading/trailing whitespace around patch markers.
 use crate::ApplyPatchArgs;
+// BEGIN HIA_NATIVE legacy_stream_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_stream_import
 use crate::streaming_parser::StreamingPatchParser;
 #[cfg(test)]
 use codex_utils_absolute_path::test_support::PathBufExt;
@@ -34,14 +37,41 @@ use std::path::PathBuf;
 
 use thiserror::Error;
 
+// BEGIN HIA_NATIVE legacy_begin_patch
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_begin_patch
 pub(crate) const BEGIN_PATCH_MARKER: &str = "*** Begin Patch";
+// BEGIN HIA_NATIVE legacy_end_patch
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_end_patch
 pub(crate) const END_PATCH_MARKER: &str = "*** End Patch";
+// BEGIN HIA_NATIVE legacy_add_file
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_add_file
 pub(crate) const ADD_FILE_MARKER: &str = "*** Add File: ";
+// BEGIN HIA_NATIVE legacy_delete_file
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_delete_file
 pub(crate) const DELETE_FILE_MARKER: &str = "*** Delete File: ";
+// BEGIN HIA_NATIVE legacy_update_file
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_update_file
 pub(crate) const UPDATE_FILE_MARKER: &str = "*** Update File: ";
+// BEGIN HIA_NATIVE legacy_move_to
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_move_to
 pub(crate) const MOVE_TO_MARKER: &str = "*** Move to: ";
+// BEGIN HIA_NATIVE legacy_eof
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_eof
 pub(crate) const EOF_MARKER: &str = "*** End of File";
+// BEGIN HIA_NATIVE legacy_change_context
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_change_context
 pub(crate) const CHANGE_CONTEXT_MARKER: &str = "@@ ";
+// BEGIN HIA_NATIVE legacy_empty_change_context
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_empty_change_context
 pub(crate) const EMPTY_CHANGE_CONTEXT_MARKER: &str = "@@";
 
 /// Currently, the only OpenAI model that knowingly requires lenient parsing is
@@ -59,6 +89,9 @@ pub enum ParseError {
     #[error("invalid hunk at line {line_number}, {message}")]
     InvalidHunkError { message: String, line_number: usize },
 }
+// BEGIN HIA_NATIVE legacy_error_variants
+#[cfg(any(not(feature = "hia-native"), test))]
+// END HIA_NATIVE legacy_error_variants
 use ParseError::*;
 
 #[derive(Debug, PartialEq, Clone)]
@@ -82,6 +115,29 @@ pub enum Hunk {
 }
 
 impl Hunk {
+    // BEGIN HIA_NATIVE native_hunk_paths
+    #[cfg(feature = "hia-native")]
+    pub fn resolve_path(&self, cwd: &PathUri) -> Result<PathUri, PathUriParseError> {
+        let path = crate::hia_native_parser::select_hunk_path(
+            self,
+            crate::hia_native_parser::PathRole::Source,
+        );
+        cwd.join(&path.to_string_lossy())
+    }
+
+    #[cfg(feature = "hia-native")]
+    /// Returns the native-selected affected path, including rename destinations.
+    pub fn path(&self) -> &Path {
+        crate::hia_native_parser::select_hunk_path(
+            self,
+            crate::hia_native_parser::PathRole::Affected,
+        )
+    }
+
+    // END HIA_NATIVE native_hunk_paths
+    // BEGIN HIA_NATIVE legacy_resolve_path
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA_NATIVE legacy_resolve_path
     pub fn resolve_path(&self, cwd: &PathUri) -> Result<PathUri, PathUriParseError> {
         let path = match self {
             Hunk::UpdateFile { path, .. } => path,
@@ -91,6 +147,9 @@ impl Hunk {
     }
 
     /// Returns the path affected by this hunk, using the move destination for rename hunks.
+    // BEGIN HIA_NATIVE legacy_affected_path
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA_NATIVE legacy_affected_path
     pub fn path(&self) -> &Path {
         match self {
             Hunk::AddFile { path, .. } => path,
@@ -131,6 +190,9 @@ pub struct UpdateFileChunk {
     pub is_end_of_file: bool,
 }
 
+// BEGIN HIA_NATIVE legacy_context_append
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_context_append
 impl UpdateFileChunk {
     /// Adds a context line to both sides while recording its corresponding
     /// indices so it remains distinguishable from identical changed lines.
@@ -190,6 +252,20 @@ enum ParseMode {
     Lenient,
 }
 
+// BEGIN HIA_NATIVE native_batch_parser
+#[cfg(feature = "hia-native")]
+fn parse_patch_text(patch: &str, mode: ParseMode) -> Result<ApplyPatchArgs, ParseError> {
+    let normalization = match mode {
+        ParseMode::Strict => crate::hia_native_parser::Normalization::Strict,
+        ParseMode::Lenient => crate::hia_native_parser::Normalization::Lenient,
+    };
+    crate::hia_native_parser::parse_patch_text(patch, normalization)
+}
+
+// END HIA_NATIVE native_batch_parser
+// BEGIN HIA_NATIVE legacy_batch_parser
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_batch_parser
 fn parse_patch_text(patch: &str, mode: ParseMode) -> Result<ApplyPatchArgs, ParseError> {
     let lines: Vec<&str> = patch.trim().lines().collect();
     let patch_lines = match mode {
@@ -212,6 +288,9 @@ fn parse_patch_text(patch: &str, mode: ParseMode) -> Result<ApplyPatchArgs, Pars
 
 /// Checks the start and end lines of the patch text for `apply_patch`,
 /// returning an error if they do not match the expected markers.
+// BEGIN HIA_NATIVE legacy_check_patch_boundaries_strict
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_check_patch_boundaries_strict
 fn check_patch_boundaries_strict<'a>(lines: &'a [&'a str]) -> Result<&'a [&'a str], ParseError> {
     let (first_line, last_line) = match lines {
         [] => (None, None),
@@ -229,6 +308,9 @@ fn check_patch_boundaries_strict<'a>(lines: &'a [&'a str]) -> Result<&'a [&'a st
 ///
 /// If successful, returns the lines of the patch text that contain the patch
 /// contents, excluding the heredoc markers.
+// BEGIN HIA_NATIVE legacy_check_patch_boundaries_lenient
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_check_patch_boundaries_lenient
 fn check_patch_boundaries_lenient<'a>(
     original_lines: &'a [&'a str],
 ) -> Result<&'a [&'a str], ParseError> {
@@ -253,6 +335,9 @@ fn check_patch_boundaries_lenient<'a>(
     }
 }
 
+// BEGIN HIA_NATIVE legacy_check_start_and_end_lines_strict
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE legacy_check_start_and_end_lines_strict
 fn check_start_and_end_lines_strict(
     first_line: Option<&&str>,
     last_line: Option<&&str>,

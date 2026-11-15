@@ -80,14 +80,14 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "nine_module_fixed_point_sourcefile_owner_and_admission_passed_current_cargo_installed_ci_performance_platform_gates_open",
+    "qualification_status": "recovered_ten_module_parser_component_and_admission_gates_passed_current_ci_open",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU; nine B3 modules and seven opt-in production algorithm groups. Full SourceFile parse/line_texts/apply_replacements/into_contents behavior passed independent original-Rust and raw-ABI gates on the recorded snapshot. Nine-module Cargo, consumer and installed-executable CI remain pending; performance, all 15 complete capability migrations, default dispatch, retirement and other platforms remain open.",
+    "qualification_scope": "Recovered Linux x86-64 GNU build of ten B3 modules; eight opt-in algorithm groups are connected. The restored parser passed six source-bound component/admission gates on ai395. Two adapter panic-spelling repairs then passed the full original public differential and standalone Clippy with every actual workspace lint level; HIA/ABI inputs are unchanged. Actual host dependencies were freshly built and strictly bound; the repair shares one persistent build. Earlier group behavior and CI remain historical. Current ten-module Cargo/consumer/installed/strict/fix CI, all 15 complete capabilities, default production dispatch, retirement, other platforms and whole-product performance remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -570,6 +570,78 @@
         "artifact_generation": "B3",
         "current_local_component_gates": "passed",
         "current_cargo_and_installed_ci": "pending",
+        "performance_qualified": false,
+        "checkpoint_scope": "Historical nine-module owner; current parser qualification is separately recorded."
+      }
+    },
+    {
+      "id": "parser",
+      "hia_source": "hia/parser.hepta",
+      "source_paths": [
+        "codex-rs/apply-patch/src/parser.rs",
+        "codex-rs/apply-patch/src/streaming_parser.rs"
+      ],
+      "public_entries": [
+        "parse_patch",
+        "StreamingPatchParser::push_delta",
+        "StreamingPatchParser::finish",
+        "StreamingPatchParser::environment_id",
+        "Hunk::path",
+        "Hunk::resolve_path"
+      ],
+      "production_algorithm_group": "parser",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "complete_original_public_transcripts_raw_abi_and_fresh_host_admission_passed_current_cargo_installed_ci_open",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_parser",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/parser_buffer_contract.json",
+        "contract_sha256": "f5c56e0e49455faa925b60306b1de72b7575391ce154c26b914250a4b0b47706",
+        "request_bytes": 128,
+        "output_header_bytes": 160,
+        "record_bytes": 64,
+        "operations": {
+          "0": "push_strict_query",
+          "1": "push_strict_emit",
+          "2": "finish_strict_query",
+          "3": "finish_strict_emit",
+          "4": "push_trusted_query",
+          "5": "push_trusted_emit",
+          "6": "finish_trusted_query",
+          "7": "finish_trusted_emit",
+          "8": "normalize_strict_query",
+          "9": "normalize_strict_emit",
+          "10": "normalize_lenient_query",
+          "11": "normalize_lenient_emit",
+          "12": "normalize_strict_trusted_query",
+          "13": "normalize_strict_trusted_emit",
+          "14": "normalize_lenient_trusted_query",
+          "15": "normalize_lenient_trusted_emit",
+          "16": "select_affected_path",
+          "17": "select_source_path"
+        }
+      },
+      "behavior": [
+        "HIA owns complete batch normalization/heredoc grammar and streaming state transitions.",
+        "Preserve exact AST/context provenance, all nine error families, error line numbers and accepted-prefix state commits before returning Err.",
+        "Preserve pending fragments, finish exceptions, double CR handling, Clone/Default/Debug and owned results.",
+        "HIA selects affected/source paths; the actual PathUri implementation and native host PathBuf formatting remain at the host boundary.",
+        "No original Rust grammar fallback is called by the HIA feature-selected adapters."
+      ],
+      "tests": [
+        "hia/tests/native_parser_caller.rs",
+        "hia/tests/test_native_parser_caller.py",
+        "hia/tests/parser_cases.py",
+        "hia/tests/parser_oracle_Cargo.lock",
+        "hia/tests/test_parser_abi.py",
+        "hia/tests/test_parser_host_receipt.py"
+      ],
+      "validation": {
+        "report": "hia/verification.json#parser_increment",
+        "current_local_component_gates": "passed_on_recovered_ai395",
+        "current_cargo_and_installed_ci": "pending_published_parser_head",
         "performance_qualified": false
       }
     }
@@ -776,10 +848,11 @@
         "line ending modes and file effects",
         "Unicode context matching and search ordering"
       ],
-      "next_implementation": "Qualify nine-module Cargo/installed dispatch and migrate remaining patch grammar, compute_replacements planning, NormalizeToLf path, filesystem effects and file-search owners.",
+      "next_implementation": "Qualify current parser Cargo/consumer/installed/strict/fix CI, then migrate replacement planning, normalized updates and filesystem/search owners.",
       "candidate_modules": [
         "seek_sequence",
-        "source_file"
+        "source_file",
+        "parser"
       ]
     },
     {
@@ -2317,7 +2390,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_nine_module_sourcefile_receipts_and_scalar_build_admission_passed",
+    "status": "recovered_ten_module_parser_receipts_and_scalar_admission_passed",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2327,13 +2400,16 @@
       "ascii_json_fragment",
       "truncate",
       "token_budget",
-      "source_file"
+      "source_file",
+      "parser"
     ],
-    "checks_passed": 58,
-    "scalar_build_admission_checks_passed": 115,
+    "checks_passed": 60,
+    "scalar_build_admission_checks_passed": 116,
     "shared_cargo_helper_changed": false,
-    "mutation_module": "source_file",
+    "mutation_module": "parser",
     "typed_scalar_mutation_history": "Historical 56-check eight-module 7fe65ae result retained at hia/verification.json#native_optimization; not a current nine-module receipt count.",
-    "report": "hia/verification.json#source_file_increment"
-  }
+    "report": "hia/verification.json#parser_increment",
+    "host_dependency_admission_tests": "hia/tests/test_parser_host_receipt.py"
+  },
+  "whole_product_performance_qualified": false
 }

@@ -17,6 +17,7 @@ import tempfile
 
 from test_installed_patch import inspect_binary
 from test_installed_patch import run_case
+from test_installed_patch import run_parser_cases
 from test_installed_patch import run_source_file_case
 from test_installed_patch import sha256
 
@@ -30,6 +31,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_truncate",
     "codex_hia_token_budget",
     "codex_hia_source_file",
+    "codex_hia_parser",
 )
 
 
@@ -96,6 +98,10 @@ def verify(args: argparse.Namespace, report: dict) -> None:
             run_source_file_case(
                 paths["native", name], paths["reference", name],
                 root / f"{dispatch}-mixed-endings", environment, report, dispatch=dispatch,
+            )
+            run_parser_cases(
+                paths["native", name], paths["reference", name],
+                root / f"{dispatch}-parser", environment, report, dispatch=dispatch,
             )
     report["passed"] = True
 
