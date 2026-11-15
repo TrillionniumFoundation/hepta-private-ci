@@ -38,10 +38,87 @@ block request(request_source:readbuf,request_output:mutbuf,request_workspace:mut
   branch v32 frame(request_source,request_output,v13) invalid()
 block frame(frame_source:readbuf,frame_output:mutbuf,frame_operation:u64)
   v33:bool,v34:usize,v35:usize = call(frame_source,frame_operation) {"function":"validate_frame"}
-  branch v33 validated() invalid()
-block validated()
-  v36:u32 = const() {"value":0}
-  ret(v36)
+  branch v33 operation(frame_source,frame_output,frame_operation,v34,v35) invalid()
+block operation(operation_source:readbuf,operation_output:mutbuf,operation_operation:u64,operation_pstart:usize,operation_sstart:usize)
+  v36:u64 = const() {"value":0}
+  v37:bool = compare.eq(operation_operation,v36)
+  branch v37 key(operation_source,operation_output,operation_operation,operation_sstart) final(operation_source,operation_output,operation_operation,operation_pstart,operation_sstart)
+block key(key_source:readbuf,key_output:mutbuf,key_operation:u64,key_sstart:usize)
+  v38:usize = const() {"value":0}
+  v39:usize = const() {"value":24}
+  v40:usize = int.add.checked(v38,v39)
+  v41:u64 = buffer.load.u64.le(key_source,v40)
+  v42:usize = int.cast(v41) {"mode":"wrap"}
+  v43:u64 = const() {"value":0}
+  v44:bool = const() {"value":true}
+  v45:bool,v46:usize,v47:usize = call(key_source,v42,v43,v44) {"function":"duplicate"}
+  v48:u64 = const() {"value":1}
+  v49:usize = const() {"value":80}
+  branch v45 error(key_source,key_output,key_operation,key_sstart,v48,v46,v47) success(key_source,key_output,key_operation,key_sstart,v49)
+block final(final_source:readbuf,final_output:mutbuf,final_operation:u64,final_pstart:usize,final_sstart:usize)
+  v50:u64,v51:usize,v52:usize = call(final_source,final_pstart,final_sstart) {"function":"semantics"}
+  v53:u64 = const() {"value":5}
+  v54:bool = compare.eq(v50,v53)
+  branch v54 invalid() selected(final_source,final_output,final_operation,final_sstart,v50,v51,v52)
+block selected(selected_source:readbuf,selected_output:mutbuf,selected_operation:u64,selected_sstart:usize,selected_code:u64,selected_record:usize,selected_aux:usize)
+  v55:u64 = const() {"value":0}
+  v56:bool = compare.eq(selected_code,v55)
+  branch v56 success(selected_source,selected_output,selected_operation,selected_sstart,selected_aux) error(selected_source,selected_output,selected_operation,selected_sstart,selected_code,selected_record,selected_aux)
+block error(error_source:readbuf,error_output:mutbuf,error_operation:u64,error_sstart:usize,error_code:u64,error_record:usize,error_index:usize)
+  v57:u64 = const() {"value":2}
+  v58:bool = compare.eq(error_code,v57)
+  v59:u64 = const() {"value":4}
+  v60:bool = compare.eq(error_code,v59)
+  v61:u64 = const() {"value":0}
+  v62:bool = compare.eq(error_operation,v61)
+  v63:bool = bool.or(v58,v62)
+  v64:usize = const() {"value":8}
+  v65:usize = const() {"value":16}
+  v66:usize = select(v63,v64,v65)
+  v67:usize = int.add.checked(error_record,v66)
+  v68:usize = const() {"value":8}
+  v69:usize = const() {"value":0}
+  v70:usize = select(v60,v68,v69)
+  v71:usize = int.add.checked(error_record,v70)
+  v72:u64 = buffer.load.u64.le(error_source,v71)
+  v73:usize = int.cast(v72) {"mode":"wrap"}
+  v74:u64 = const() {"value":2}
+  v75:u64 = select(v60,v74,error_code)
+  v76:u64 = const() {"value":2}
+  v77:u64 = const() {"value":3}
+  v78:u64 = const() {"value":1}
+  v79:u64 = select(v60,v77,v78)
+  v80:u64 = select(v58,v76,v79)
+  v81:usize = const() {"value":80}
+  jump capacity(error_source,error_output,error_operation,error_sstart,v81,v75,v80,error_index,v67,v73)
+block success(success_source:readbuf,success_output:mutbuf,success_operation:u64,success_sstart:usize,success_required:usize)
+  v82:u64 = const() {"value":0}
+  v83:u64 = const() {"value":0}
+  v84:usize = const() {"value":0}
+  jump capacity(success_source,success_output,success_operation,success_sstart,success_required,v82,v83,v84,v84,v84)
+block capacity(capacity_source:readbuf,capacity_output:mutbuf,capacity_operation:u64,capacity_sstart:usize,capacity_required:usize,capacity_error:u64,capacity_origin:u64,capacity_index:usize,capacity_offset:usize,capacity_size:usize)
+  v85:u64 = const() {"value":2}
+  v86:bool = compare.eq(capacity_operation,v85)
+  v87:u64 = const() {"value":0}
+  v88:bool = compare.eq(capacity_error,v87)
+  v89:bool = bool.and(v86,v88)
+  v90:usize = const() {"value":80}
+  v91:usize = select(v89,capacity_required,v90)
+  v92:usize = buffer.len(capacity_output)
+  v93:bool = compare.ge(v92,v91)
+  branch v93 admitted(capacity_source,capacity_output,capacity_operation,capacity_sstart,capacity_required,capacity_error,capacity_origin,capacity_index,capacity_offset,capacity_size,v89,v91) short()
+block admitted(admitted_source:readbuf,admitted_output:mutbuf,admitted_operation:u64,admitted_sstart:usize,admitted_required:usize,admitted_error:u64,admitted_origin:u64,admitted_index:usize,admitted_offset:usize,admitted_size:usize,admitted_emit:bool,admitted_written:usize)
+  branch admitted_emit copy(admitted_source,admitted_output,admitted_operation,admitted_sstart,admitted_required,admitted_error,admitted_origin,admitted_index,admitted_offset,admitted_size,admitted_written) publish(admitted_source,admitted_output,admitted_operation,admitted_sstart,admitted_required,admitted_error,admitted_origin,admitted_index,admitted_offset,admitted_size,admitted_written)
+block copy(copy_source:readbuf,copy_output:mutbuf,copy_operation:u64,copy_sstart:usize,copy_required:usize,copy_error:u64,copy_origin:u64,copy_index:usize,copy_offset:usize,copy_size:usize,copy_written:usize)
+  v94:u32 = call(copy_source,copy_output,copy_sstart) {"function":"render_copy"}
+  jump publish(copy_source,copy_output,copy_operation,copy_sstart,copy_required,copy_error,copy_origin,copy_index,copy_offset,copy_size,copy_written)
+block publish(publish_source:readbuf,publish_output:mutbuf,publish_operation:u64,publish_sstart:usize,publish_required:usize,publish_error:u64,publish_origin:u64,publish_index:usize,publish_offset:usize,publish_size:usize,publish_written:usize)
+  v95:usize = buffer.len(publish_source)
+  v96:u32 = call(publish_output,publish_operation,v95,publish_required,publish_written,publish_error,publish_origin,publish_index,publish_offset,publish_size) {"function":"header"}
+  ret(v96)
+block short()
+  v97:u32 = const() {"value":4294967294}
+  ret(v97)
 block invalid()
   v98:u32 = const() {"value":4294967295}
   ret(v98)
@@ -403,4 +480,350 @@ block invalid()
   v72:bool = const() {"value":false}
   v73:usize = const() {"value":0}
   ret(v72,v73,v73)
+end
+fn at_index(source:readbuf,first:usize,index:usize,kind:u64) -> (usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,first:usize,index:usize,kind:u64)
+  v1:usize = const() {"value":0}
+  jump loop(source,first,index,kind,v1)
+block loop(loop_source:readbuf,loop_first:usize,loop_index:usize,loop_kind:u64,loop_current:usize)
+  v2:bool = compare.lt(loop_current,loop_index)
+  branch v2 advance(loop_source,loop_first,loop_index,loop_kind,loop_current) done(loop_first)
+block advance(advance_source:readbuf,advance_first:usize,advance_index:usize,advance_kind:u64,advance_current:usize)
+  v3:usize = call(advance_source,advance_first,advance_kind) {"function":"next_record"}
+  v4:usize = const() {"value":1}
+  v5:usize = int.add.checked(advance_current,v4)
+  jump loop(advance_source,v3,advance_index,advance_kind,v5)
+block done(done_record:usize)
+  ret(done_record)
+end
+fn lookup(source:readbuf,cursor:usize,count:usize,kind:u64,target:usize,size:usize) -> (bool,usize,usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,cursor:usize,count:usize,kind:u64,target:usize,size:usize)
+  v1:usize = const() {"value":0}
+  jump loop(source,cursor,count,kind,target,size,v1)
+block loop(loop_source:readbuf,loop_cursor:usize,loop_count:usize,loop_kind:u64,loop_target:usize,loop_size:usize,loop_index:usize)
+  v2:bool = compare.lt(loop_index,loop_count)
+  branch v2 compare(loop_source,loop_cursor,loop_count,loop_kind,loop_target,loop_size,loop_index) missing()
+block compare(compare_source:readbuf,compare_cursor:usize,compare_count:usize,compare_kind:u64,compare_target:usize,compare_size:usize,compare_index:usize)
+  v3:usize,v4:usize,v5:usize = call(compare_source,compare_cursor,compare_kind) {"function":"record_layout"}
+  v6:u64 = call(compare_source,v3,v4,compare_target,compare_size) {"function":"compare_ranges"}
+  v7:u64 = const() {"value":0}
+  v8:bool = compare.eq(v6,v7)
+  branch v8 found(compare_cursor,compare_index) advance(compare_source,compare_cursor,compare_count,compare_kind,compare_target,compare_size,compare_index)
+block advance(advance_source:readbuf,advance_cursor:usize,advance_count:usize,advance_kind:u64,advance_target:usize,advance_size:usize,advance_index:usize)
+  v9:usize = call(advance_source,advance_cursor,advance_kind) {"function":"next_record"}
+  v10:usize = const() {"value":1}
+  v11:usize = int.add.checked(advance_index,v10)
+  jump loop(advance_source,v9,advance_count,advance_kind,advance_target,advance_size,v11)
+block found(found_record:usize,found_index:usize)
+  v12:bool = const() {"value":true}
+  ret(v12,found_record,found_index)
+block missing()
+  v13:bool = const() {"value":false}
+  v14:usize = const() {"value":0}
+  ret(v13,v14,v14)
+end
+fn duplicate(source:readbuf,count:usize,kind:u64,last_only:bool) -> (bool,usize,usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,count:usize,kind:u64,last_only:bool)
+  v1:usize = const() {"value":0}
+  branch last_only last(source,count,kind) begin(source,count,kind,v1)
+block last(last_source:readbuf,last_count:usize,last_kind:u64)
+  v2:usize = const() {"value":1}
+  v3:usize = int.sub.checked(last_count,v2)
+  jump begin(last_source,last_count,last_kind,v3)
+block begin(begin_source:readbuf,begin_count:usize,begin_kind:u64,begin_index:usize)
+  v4:usize = const() {"value":64}
+  v5:usize = call(begin_source,v4,begin_index,begin_kind) {"function":"at_index"}
+  jump loop(begin_source,begin_count,begin_kind,begin_index,v5)
+block loop(loop_source:readbuf,loop_count:usize,loop_kind:u64,loop_index:usize,loop_cursor:usize)
+  v6:bool = compare.lt(loop_index,loop_count)
+  branch v6 check(loop_source,loop_count,loop_kind,loop_index,loop_cursor) none()
+block check(check_source:readbuf,check_count:usize,check_kind:u64,check_index:usize,check_cursor:usize)
+  v7:usize,v8:usize,v9:usize = call(check_source,check_cursor,check_kind) {"function":"record_layout"}
+  v10:usize = const() {"value":64}
+  v11:bool,v12:usize,v13:usize = call(check_source,v10,check_index,check_kind,v7,v8) {"function":"lookup"}
+  branch v11 found(check_cursor,check_index) advance(check_source,check_count,check_kind,check_index,check_cursor)
+block advance(advance_source:readbuf,advance_count:usize,advance_kind:u64,advance_index:usize,advance_cursor:usize)
+  v14:usize = call(advance_source,advance_cursor,advance_kind) {"function":"next_record"}
+  v15:usize = const() {"value":1}
+  v16:usize = int.add.checked(advance_index,v15)
+  jump loop(advance_source,advance_count,advance_kind,v16,v14)
+block found(found_record:usize,found_index:usize)
+  v17:bool = const() {"value":true}
+  ret(v17,found_record,found_index)
+block none()
+  v18:bool = const() {"value":false}
+  v19:usize = const() {"value":0}
+  ret(v18,v19,v19)
+end
+fn first_missing(source:readbuf,pstart:usize,pcount:usize,n:usize) -> (bool,usize,usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,pstart:usize,pcount:usize,n:usize)
+  v1:usize = const() {"value":0}
+  jump loop(source,pstart,pcount,n,v1)
+block loop(loop_source:readbuf,loop_pstart:usize,loop_pcount:usize,loop_n:usize,loop_index:usize)
+  v2:bool = compare.lt(loop_index,loop_pcount)
+  branch v2 check(loop_source,loop_pstart,loop_pcount,loop_n,loop_index) none()
+block check(check_source:readbuf,check_pstart:usize,check_pcount:usize,check_n:usize,check_index:usize)
+  v3:usize = const() {"value":64}
+  v4:u64 = const() {"value":1}
+  v5:usize = const() {"value":8}
+  v6:usize = int.add.checked(check_pstart,v5)
+  v7:u64 = buffer.load.u64.le(check_source,check_pstart)
+  v8:usize = int.cast(v7) {"mode":"wrap"}
+  v9:bool,v10:usize,v11:usize = call(check_source,v3,check_n,v4,v6,v8) {"function":"lookup"}
+  branch v9 advance(check_source,check_pstart,check_pcount,check_n,check_index) missing(check_pstart,check_index)
+block advance(advance_source:readbuf,advance_pstart:usize,advance_pcount:usize,advance_n:usize,advance_index:usize)
+  v12:u64 = const() {"value":2}
+  v13:usize = call(advance_source,advance_pstart,v12) {"function":"next_record"}
+  v14:usize = const() {"value":1}
+  v15:usize = int.add.checked(advance_index,v14)
+  jump loop(advance_source,v13,advance_pcount,advance_n,v15)
+block missing(missing_record:usize,missing_index:usize)
+  v16:bool = const() {"value":true}
+  ret(v16,missing_record,missing_index)
+block none()
+  v17:bool = const() {"value":false}
+  v18:usize = const() {"value":0}
+  ret(v17,v18,v18)
+end
+fn first_extra(source:readbuf,pstart:usize,pcount:usize,n:usize) -> (bool,usize,usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,pstart:usize,pcount:usize,n:usize)
+  v1:usize = const() {"value":64}
+  v2:usize = const() {"value":0}
+  jump loop(source,pstart,pcount,n,v1,v2,v2,v2)
+block loop(loop_source:readbuf,loop_pstart:usize,loop_pcount:usize,loop_n:usize,loop_cursor:usize,loop_index:usize,loop_best:usize,loop_best_index:usize)
+  v3:bool = compare.lt(loop_index,loop_n)
+  branch v3 check(loop_source,loop_pstart,loop_pcount,loop_n,loop_cursor,loop_index,loop_best,loop_best_index) done(loop_best,loop_best_index)
+block check(check_source:readbuf,check_pstart:usize,check_pcount:usize,check_n:usize,check_cursor:usize,check_index:usize,check_best:usize,check_best_index:usize)
+  v4:u64 = const() {"value":2}
+  v5:usize = const() {"value":16}
+  v6:usize = int.add.checked(check_cursor,v5)
+  v7:u64 = buffer.load.u64.le(check_source,check_cursor)
+  v8:usize = int.cast(v7) {"mode":"wrap"}
+  v9:bool,v10:usize,v11:usize = call(check_source,check_pstart,check_pcount,v4,v6,v8) {"function":"lookup"}
+  branch v9 advance(check_source,check_pstart,check_pcount,check_n,check_cursor,check_index,check_best,check_best_index) choose(check_source,check_pstart,check_pcount,check_n,check_cursor,check_index,check_best,check_best_index)
+block choose(choose_source:readbuf,choose_pstart:usize,choose_pcount:usize,choose_n:usize,choose_cursor:usize,choose_index:usize,choose_best:usize,choose_best_index:usize)
+  v12:usize = const() {"value":0}
+  v13:bool = compare.eq(choose_best,v12)
+  branch v13 replace(choose_source,choose_pstart,choose_pcount,choose_n,choose_cursor,choose_index,choose_best,choose_best_index) compare(choose_source,choose_pstart,choose_pcount,choose_n,choose_cursor,choose_index,choose_best,choose_best_index)
+block compare(compare_source:readbuf,compare_pstart:usize,compare_pcount:usize,compare_n:usize,compare_cursor:usize,compare_index:usize,compare_best:usize,compare_best_index:usize)
+  v14:usize = const() {"value":16}
+  v15:usize = int.add.checked(compare_cursor,v14)
+  v16:u64 = buffer.load.u64.le(compare_source,compare_cursor)
+  v17:usize = int.cast(v16) {"mode":"wrap"}
+  v18:usize = const() {"value":16}
+  v19:usize = int.add.checked(compare_best,v18)
+  v20:u64 = buffer.load.u64.le(compare_source,compare_best)
+  v21:usize = int.cast(v20) {"mode":"wrap"}
+  v22:u64 = call(compare_source,v15,v17,v19,v21) {"function":"compare_ranges"}
+  v23:u64 = const() {"value":1}
+  v24:bool = compare.eq(v22,v23)
+  branch v24 replace(compare_source,compare_pstart,compare_pcount,compare_n,compare_cursor,compare_index,compare_best,compare_best_index) advance(compare_source,compare_pstart,compare_pcount,compare_n,compare_cursor,compare_index,compare_best,compare_best_index)
+block replace(replace_source:readbuf,replace_pstart:usize,replace_pcount:usize,replace_n:usize,replace_cursor:usize,replace_index:usize,replace_best:usize,replace_best_index:usize)
+  jump advance(replace_source,replace_pstart,replace_pcount,replace_n,replace_cursor,replace_index,replace_cursor,replace_index)
+block advance(advance_source:readbuf,advance_pstart:usize,advance_pcount:usize,advance_n:usize,advance_cursor:usize,advance_index:usize,advance_best:usize,advance_best_index:usize)
+  v25:u64 = const() {"value":1}
+  v26:usize = call(advance_source,advance_cursor,v25) {"function":"next_record"}
+  v27:usize = const() {"value":1}
+  v28:usize = int.add.checked(advance_index,v27)
+  jump loop(advance_source,advance_pstart,advance_pcount,advance_n,v26,v28,advance_best,advance_best_index)
+block done(done_record:usize,done_index:usize)
+  v29:usize = const() {"value":0}
+  v30:bool = compare.ne(done_record,v29)
+  ret(v30,done_record,done_index)
+end
+fn segment_range(source:readbuf,record:usize,n:usize) -> (bool,usize,usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,record:usize,n:usize)
+  v1:u64 = buffer.load.u64.le(source,record)
+  v2:u64 = const() {"value":1}
+  v3:bool = compare.eq(v1,v2)
+  branch v3 literal(source,record) placeholder(source,record,n)
+block literal(literal_source:readbuf,literal_record:usize)
+  v4:bool = const() {"value":true}
+  v5:usize = const() {"value":16}
+  v6:usize = int.add.checked(literal_record,v5)
+  v7:usize = const() {"value":8}
+  v8:usize = int.add.checked(literal_record,v7)
+  v9:u64 = buffer.load.u64.le(literal_source,v8)
+  v10:usize = int.cast(v9) {"mode":"wrap"}
+  ret(v4,v6,v10)
+block placeholder(placeholder_source:readbuf,placeholder_record:usize,placeholder_n:usize)
+  v11:usize = const() {"value":64}
+  v12:u64 = const() {"value":1}
+  v13:usize = const() {"value":16}
+  v14:usize = int.add.checked(placeholder_record,v13)
+  v15:usize = const() {"value":8}
+  v16:usize = int.add.checked(placeholder_record,v15)
+  v17:u64 = buffer.load.u64.le(placeholder_source,v16)
+  v18:usize = int.cast(v17) {"mode":"wrap"}
+  v19:bool,v20:usize,v21:usize = call(placeholder_source,v11,placeholder_n,v12,v14,v18) {"function":"lookup"}
+  branch v19 value(placeholder_source,v20) missing()
+block value(value_source:readbuf,value_variable:usize)
+  v22:usize = const() {"value":16}
+  v23:usize = int.add.checked(value_variable,v22)
+  v24:u64 = buffer.load.u64.le(value_source,value_variable)
+  v25:usize = int.cast(v24) {"mode":"wrap"}
+  v26:usize = int.add.checked(v23,v25)
+  v27:bool = const() {"value":true}
+  v28:usize = const() {"value":8}
+  v29:usize = int.add.checked(value_variable,v28)
+  v30:u64 = buffer.load.u64.le(value_source,v29)
+  v31:usize = int.cast(v30) {"mode":"wrap"}
+  ret(v27,v26,v31)
+block missing()
+  v32:bool = const() {"value":false}
+  v33:usize = const() {"value":0}
+  ret(v32,v33,v33)
+end
+fn render_plan(source:readbuf,first:usize,count:usize,n:usize) -> (u64,usize,usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,first:usize,count:usize,n:usize)
+  v1:usize = const() {"value":0}
+  v2:usize = const() {"value":80}
+  jump loop(source,first,count,n,v1,v2)
+block loop(loop_source:readbuf,loop_first:usize,loop_count:usize,loop_n:usize,loop_index:usize,loop_required:usize)
+  v3:bool = compare.lt(loop_index,loop_count)
+  branch v3 segment(loop_source,loop_first,loop_count,loop_n,loop_index,loop_required) done(loop_required)
+block segment(segment_source:readbuf,segment_first:usize,segment_count:usize,segment_n:usize,segment_index:usize,segment_required:usize)
+  v4:bool,v5:usize,v6:usize = call(segment_source,segment_first,segment_n) {"function":"segment_range"}
+  branch v4 capacity(segment_source,segment_first,segment_count,segment_n,segment_index,segment_required,v6) missing(segment_first,segment_index)
+block capacity(capacity_source:readbuf,capacity_first:usize,capacity_count:usize,capacity_n:usize,capacity_index:usize,capacity_required:usize,capacity_size:usize)
+  v7:usize = const() {"value":18446744073709551615}
+  v8:usize = int.sub.checked(v7,capacity_required)
+  v9:bool = compare.le(capacity_size,v8)
+  branch v9 advance(capacity_source,capacity_first,capacity_count,capacity_n,capacity_index,capacity_required,capacity_size) overflow()
+block advance(advance_source:readbuf,advance_first:usize,advance_count:usize,advance_n:usize,advance_index:usize,advance_required:usize,advance_size:usize)
+  v10:u64 = const() {"value":3}
+  v11:usize = call(advance_source,advance_first,v10) {"function":"next_record"}
+  v12:usize = const() {"value":1}
+  v13:usize = int.add.checked(advance_index,v12)
+  v14:usize = int.add.checked(advance_required,advance_size)
+  jump loop(advance_source,v11,advance_count,advance_n,v13,v14)
+block missing(missing_record:usize,missing_index:usize)
+  v15:u64 = const() {"value":4}
+  ret(v15,missing_record,missing_index)
+block done(done_required:usize)
+  v16:u64 = const() {"value":0}
+  v17:usize = const() {"value":0}
+  ret(v16,v17,done_required)
+block overflow()
+  v18:u64 = const() {"value":5}
+  v19:usize = const() {"value":0}
+  ret(v18,v19,v19)
+end
+fn semantics(source:readbuf,pstart:usize,sstart:usize) -> (u64,usize,usize) effects(read,trap) entry(entry)
+block entry(source:readbuf,pstart:usize,sstart:usize)
+  v1:usize = const() {"value":0}
+  v2:usize = const() {"value":24}
+  v3:usize = int.add.checked(v1,v2)
+  v4:u64 = buffer.load.u64.le(source,v3)
+  v5:usize = int.cast(v4) {"mode":"wrap"}
+  v6:usize = const() {"value":0}
+  v7:usize = const() {"value":32}
+  v8:usize = int.add.checked(v6,v7)
+  v9:u64 = buffer.load.u64.le(source,v8)
+  v10:usize = int.cast(v9) {"mode":"wrap"}
+  v11:usize = const() {"value":0}
+  v12:usize = const() {"value":40}
+  v13:usize = int.add.checked(v11,v12)
+  v14:u64 = buffer.load.u64.le(source,v13)
+  v15:usize = int.cast(v14) {"mode":"wrap"}
+  v16:u64 = const() {"value":1}
+  v17:bool = const() {"value":false}
+  v18:bool,v19:usize,v20:usize = call(source,v5,v16,v17) {"function":"duplicate"}
+  v21:u64 = const() {"value":1}
+  branch v18 error(v21,v19,v20) missing(source,pstart,sstart,v5,v10,v15)
+block missing(missing_source:readbuf,missing_pstart:usize,missing_sstart:usize,missing_n:usize,missing_p:usize,missing_count:usize)
+  v22:bool,v23:usize,v24:usize = call(missing_source,missing_pstart,missing_p,missing_n) {"function":"first_missing"}
+  v25:u64 = const() {"value":2}
+  branch v22 error(v25,v23,v24) extra(missing_source,missing_pstart,missing_sstart,missing_n,missing_p,missing_count)
+block extra(extra_source:readbuf,extra_pstart:usize,extra_sstart:usize,extra_n:usize,extra_p:usize,extra_count:usize)
+  v26:bool,v27:usize,v28:usize = call(extra_source,extra_pstart,extra_p,extra_n) {"function":"first_extra"}
+  v29:u64 = const() {"value":3}
+  branch v26 error(v29,v27,v28) render(extra_source,extra_sstart,extra_count,extra_n)
+block render(render_source:readbuf,render_first:usize,render_count:usize,render_n:usize)
+  v30:u64,v31:usize,v32:usize = call(render_source,render_first,render_count,render_n) {"function":"render_plan"}
+  ret(v30,v31,v32)
+block error(error_code:u64,error_record:usize,error_index:usize)
+  ret(error_code,error_record,error_index)
+end
+fn copy_range(source:readbuf,start:usize,size:usize,output:mutbuf,destination:usize) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,start:usize,size:usize,output:mutbuf,destination:usize)
+  v1:usize = const() {"value":0}
+  jump loop(source,start,size,output,destination,v1)
+block loop(loop_source:readbuf,loop_start:usize,loop_size:usize,loop_output:mutbuf,loop_destination:usize,loop_index:usize)
+  v2:bool = compare.lt(loop_index,loop_size)
+  branch v2 copy(loop_source,loop_start,loop_size,loop_output,loop_destination,loop_index) done()
+block copy(copy_source:readbuf,copy_start:usize,copy_size:usize,copy_output:mutbuf,copy_destination:usize,copy_index:usize)
+  v3:usize = int.add.checked(copy_start,copy_index)
+  v4:u8 = buffer.load(copy_source,v3)
+  v5:usize = int.add.checked(copy_destination,copy_index)
+  _ = buffer.store(copy_output,v5,v4)
+  v6:usize = const() {"value":1}
+  v7:usize = int.add.checked(copy_index,v6)
+  jump loop(copy_source,copy_start,copy_size,copy_output,copy_destination,v7)
+block done()
+  v8:u32 = const() {"value":0}
+  ret(v8)
+end
+fn render_copy(source:readbuf,output:mutbuf,first:usize) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,first:usize)
+  v1:usize = const() {"value":0}
+  v2:usize = const() {"value":24}
+  v3:usize = int.add.checked(v1,v2)
+  v4:u64 = buffer.load.u64.le(source,v3)
+  v5:usize = int.cast(v4) {"mode":"wrap"}
+  v6:usize = const() {"value":0}
+  v7:usize = const() {"value":40}
+  v8:usize = int.add.checked(v6,v7)
+  v9:u64 = buffer.load.u64.le(source,v8)
+  v10:usize = int.cast(v9) {"mode":"wrap"}
+  v11:usize = const() {"value":0}
+  v12:usize = const() {"value":80}
+  jump loop(source,output,first,v5,v10,v11,v12)
+block loop(loop_source:readbuf,loop_output:mutbuf,loop_first:usize,loop_n:usize,loop_count:usize,loop_index:usize,loop_destination:usize)
+  v13:bool = compare.lt(loop_index,loop_count)
+  branch v13 copy(loop_source,loop_output,loop_first,loop_n,loop_count,loop_index,loop_destination) done()
+block copy(copy_source:readbuf,copy_output:mutbuf,copy_first:usize,copy_n:usize,copy_count:usize,copy_index:usize,copy_destination:usize)
+  v14:bool,v15:usize,v16:usize = call(copy_source,copy_first,copy_n) {"function":"segment_range"}
+  v17:u32 = call(copy_source,v15,v16,copy_output,copy_destination) {"function":"copy_range"}
+  v18:u64 = const() {"value":3}
+  v19:usize = call(copy_source,copy_first,v18) {"function":"next_record"}
+  v20:usize = const() {"value":1}
+  v21:usize = int.add.checked(copy_index,v20)
+  v22:usize = int.add.checked(copy_destination,v16)
+  jump loop(copy_source,copy_output,v19,copy_n,copy_count,v21,v22)
+block done()
+  v23:u32 = const() {"value":0}
+  ret(v23)
+end
+fn header(output:mutbuf,operation:u64,source_len:usize,required:usize,written:usize,error:u64,origin:u64,index:usize,offset:usize,size:usize) -> (u32) effects(write,trap) entry(entry)
+block entry(output:mutbuf,operation:u64,source_len:usize,required:usize,written:usize,error:u64,origin:u64,index:usize,offset:usize,size:usize)
+  v1:u64 = const() {"value":1}
+  v2:u64 = int.cast(source_len) {"mode":"wrap"}
+  v3:u64 = int.cast(required) {"mode":"wrap"}
+  v4:u64 = int.cast(written) {"mode":"wrap"}
+  v5:u64 = int.cast(index) {"mode":"wrap"}
+  v6:u64 = int.cast(offset) {"mode":"wrap"}
+  v7:u64 = int.cast(size) {"mode":"wrap"}
+  v8:usize = const() {"value":0}
+  _ = buffer.store.u64.le(output,v8,v1)
+  v9:usize = const() {"value":8}
+  _ = buffer.store.u64.le(output,v9,operation)
+  v10:usize = const() {"value":16}
+  _ = buffer.store.u64.le(output,v10,v2)
+  v11:usize = const() {"value":24}
+  _ = buffer.store.u64.le(output,v11,v3)
+  v12:usize = const() {"value":32}
+  _ = buffer.store.u64.le(output,v12,v4)
+  v13:usize = const() {"value":40}
+  _ = buffer.store.u64.le(output,v13,error)
+  v14:usize = const() {"value":48}
+  _ = buffer.store.u64.le(output,v14,origin)
+  v15:usize = const() {"value":56}
+  _ = buffer.store.u64.le(output,v15,v5)
+  v16:usize = const() {"value":64}
+  _ = buffer.store.u64.le(output,v16,v6)
+  v17:usize = const() {"value":72}
+  _ = buffer.store.u64.le(output,v17,v7)
+  v18:u32 = const() {"value":0}
+  ret(v18)
 end
