@@ -2,6 +2,7 @@
 
 use super::*;
 use std::io::Write;
+use std::os::fd::FromRawFd;
 use std::os::unix::fs::PermissionsExt;
 
 fn original(root: &Path, name: &str, bytes: &[u8]) -> std::io::Result<(PathBuf, File)> {
@@ -82,10 +83,19 @@ fn initial_q24_ledger_files_read_only_key_must_match_fixed_root_role() -> anyhow
         .verifying_key()
         .to_bytes();
     assert!(original_key(&reader, &other_role).is_err());
-    let path_only = OpenOptions::new()
-        .read(true)
-        .custom_flags(libc::O_PATH | libc::O_CLOEXEC)
-        .open(&path)?;
+    // OpenOptions may strip O_PATH on musl; exercise a real path-only descriptor.
+    let c_path = CString::new(path.as_os_str().as_bytes())?;
+    // SAFETY: the path is NUL-terminated and these flags do not create a file.
+    let fd = unsafe { libc::open(c_path.as_ptr(), libc::O_PATH | libc::O_CLOEXEC) };
+    if fd < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    // SAFETY: open returned a new descriptor and ownership is transferred once.
+    let path_only = unsafe { File::from_raw_fd(fd) };
+    // SAFETY: F_GETFL only inspects the owned, live descriptor.
+    let flags = unsafe { libc::fcntl(path_only.as_raw_fd(), libc::F_GETFL) };
+    assert!(flags >= 0);
+    assert_ne!(flags & libc::O_PATH, 0);
     assert!(original_key(&path_only, &expected).is_err());
     assert_eq!(std::fs::read(path)?, bytes);
     Ok(())

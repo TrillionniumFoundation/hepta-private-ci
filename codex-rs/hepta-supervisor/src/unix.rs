@@ -679,12 +679,25 @@ fn query_agent_drain_once(
             "Agentd drain request exceeded the bounded control frame",
         ));
     }
-    let response_bytes = match read_agent_drain_frame(identity, &bytes) {
+    interpret_agent_drain_response(
+        identity,
+        request_id,
+        read_agent_drain_frame(identity, &bytes),
+    )
+}
+
+fn interpret_agent_drain_response(
+    identity: &AgentHealthProbeIdentity,
+    request_id: u64,
+    response: std::io::Result<Vec<u8>>,
+) -> Result<bool, ProcessDriverError> {
+    let response_bytes = match response {
         Ok(response) => response,
         Err(error)
             if matches!(
                 error.kind(),
                 std::io::ErrorKind::NotFound
+                    | std::io::ErrorKind::NotConnected
                     | std::io::ErrorKind::ConnectionRefused
                     | std::io::ErrorKind::ConnectionReset
                     | std::io::ErrorKind::ConnectionAborted
@@ -695,7 +708,7 @@ fn query_agent_drain_once(
                     | std::io::ErrorKind::Interrupted
             ) =>
         {
-            // Shutdown can remove the control socket before waitpid sees exit.
+            // Peer shutdown can disconnect or remove the socket before waitpid sees exit.
             // No response is NOT a drain acknowledgement. Preserve the existing
             // deadline/escalation path instead of aborting lifecycle observation.
             return Ok(false);
