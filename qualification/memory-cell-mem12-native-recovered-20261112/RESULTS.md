@@ -40,6 +40,8 @@ Continuation 02's initial submission acknowledgement was UNKNOWN. Exact same-key
 
 ## Complete originals and recovery indexes
 
+`continuation-02-recovery.tar.xz` is stored as two ordered byte parts. The [storage and restoration instructions](../memory-cell-archive-storage-20261115/README.md) restore its original path and SHA256 before using the original manifests or `SHA256SUMS`.
+
 | File | Scope |
 | --- | --- |
 | [native-811e0e27.tar.xz](native-811e0e27.tar.xz) | Complete original attempt archive: 149,224 bytes; 101 members, 75 regular files; all 74 original manifest entries verified. |
@@ -47,7 +49,7 @@ Continuation 02's initial submission acknowledgement was UNKNOWN. Exact same-key
 | [checkpoint.tar.xz](checkpoint.tar.xz) / [CHECKPOINT_MANIFEST.json](CHECKPOINT_MANIFEST.json) | Original recovery context, initial submission/reconciliation, raw SDK material, original terminal, and header repair; unchanged. |
 | [archive-recovery.tar.xz](archive-recovery.tar.xz) / [ARCHIVE_RECOVERY_MANIFEST.json](ARCHIVE_RECOVERY_MANIFEST.json) | Complete original archive transport: SDK pages, reconstructed payloads, version-bound chunks, and requests; unchanged. |
 | [continuation-recovery.tar.xz](continuation-recovery.tar.xz) / [CONTINUATION_MANIFEST.json](CONTINUATION_MANIFEST.json) | Continuation 01 result/terminal/JUnit/receipt/log and correction, plus continuation 02's original submission/reconciliation; unchanged. |
-| [continuation-02-recovery.tar.xz](continuation-02-recovery.tar.xz) / [CONTINUATION_02_MANIFEST.json](CONTINUATION_02_MANIFEST.json) | Final continuation source readbacks and progress, seven complete original SDK payloads, and the complete archive transport: 3 chunks / 15 SDK pages / 3 payloads. |
+| [continuation-02-recovery.tar.xz parts](continuation-02-recovery.tar.xz.parts.json) / [CONTINUATION_02_MANIFEST.json](CONTINUATION_02_MANIFEST.json) | Final continuation source readbacks and progress, seven complete original SDK payloads, and the complete archive transport: 3 chunks / 15 SDK pages / 3 payloads. |
 | [EVIDENCE.json](EVIDENCE.json), [ARCHIVE_VERIFICATION.json](ARCHIVE_VERIFICATION.json), [CONTINUATION_02_VERIFICATION.json](CONTINUATION_02_VERIFICATION.json), [SHA256SUMS](SHA256SUMS) | Machine-readable results, original/final archive safety and content verification, and whole-file checksums. |
 
 The continuation 01 standalone archive was observed remotely as 147,044 bytes with SHA256 `8f08e07e530eff7e5d3ce1ae70848559044d9790f2f0262e74da61447e120380`; that archive was not downloaded for this publication. Its required result, terminal, memory JUnit, receipt, log, and raw SDK readbacks are complete and retained separately. This limitation does not apply to the complete original or continuation 02 archives.
