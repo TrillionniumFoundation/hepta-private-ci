@@ -132,8 +132,6 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     pub(super) fn response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
-        #[cfg(test)]
-        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(18);
         let started_at = now()?;
         let request: wire::Request = serde_json::from_slice(bytes)?;
         request.require_context(&self.context, self.binding, request_id)?;
@@ -186,8 +184,6 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
     }
 
     fn read_original(&self) -> Result<Readback, Error> {
-        #[cfg(test)]
-        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(19);
         self.require_task_input_current()?;
         let coordinator = wire::decision(&self.context)?;
         let cell: &PublishedCircuitCellOwnerV1<_> = &self.cell;

@@ -218,15 +218,6 @@ impl LearningIterationEvidenceClientV1 {
     ) -> Result<SignedLearningEvidenceV1, Error> {
         let stage = receipt.observation.stage();
         let role = evidence_role(stage)?;
-        #[cfg(test)]
-        let _hepta_evidence_span =
-            crate::learning_iteration_evidence_client::completed_read_timing::Span::new(
-                match stage {
-                    LearningIterationStageV1::Training => 22,
-                    LearningIterationStageV1::Selection => 23,
-                    _ => 24,
-                },
-            );
         if snapshot.request != self.initial.request
             || snapshot.owners != self.initial.owners
             || receipt.actor_id != self.actor_id
@@ -263,15 +254,11 @@ impl LearningIterationEvidenceClientV1 {
             predecessor: receipt.predecessor.to_string(),
             receipt_digest: Digest32::of_bytes(&payload).to_string(),
         };
-        #[cfg(test)]
-        let hepta_readback_evidence_rpc = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(match stage { LearningIterationStageV1::Training => 25, LearningIterationStageV1::Selection => 27, _ => 29 });
         let response: wire::Response = channel
             .transport
             .read(&request)
             .await
             .map_err(|_| unavailable())?;
-        #[cfg(test)]
-        drop(hepta_readback_evidence_rpc);
         if response.schema != 1
             || response.operation != request.operation
             || response.request_id != request_id
@@ -286,14 +273,10 @@ impl LearningIterationEvidenceClientV1 {
             .duration_since(UNIX_EPOCH)
             .map_err(|_| unavailable())?
             .as_secs();
-        #[cfg(test)]
-        let hepta_readback_evidence_verify = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(match stage { LearningIterationStageV1::Training => 26, LearningIterationStageV1::Selection => 28, _ => 30 });
         let verified = self
             .verifier
             .verify(role, &signature, &payload, now)
             .map_err(Error::Evidence)?;
-        #[cfg(test)]
-        drop(hepta_readback_evidence_verify);
         if verified.principal().principal_id != self.actor_id || receipt.observed_unix_seconds > now
         {
             return Err(Error::Evidence(SignedEvidenceError::ContextMismatch));
@@ -360,89 +343,3 @@ pub(crate) use ordinary_stage_owners::recovered_material_only;
 pub(crate) use ordinary_stage_owners::fixture_from_original_clients;
 #[cfg(test)]
 pub(crate) use ordinary_stage_owners::recovered_candidate_clients;
-
-// Temporary mechanism-test timing. All records are type labels and costs;
-// no payload, signature, identity, path or key is observed by this helper.
-#[cfg(test)]
-pub(crate) mod completed_read_timing {
-    use std::sync::atomic::AtomicU64;
-    use std::sync::atomic::Ordering;
-    use std::time::Instant;
-
-    const LABELS: [&str; 31] = [
-        "observer.readback", "observer.prepare", "observer.predecessors",
-        "observer.finish", "observer.decode", "observer.authenticate_completed",
-        "observer.authenticate_predecessors", "observer.journal",
-        "selector.readback", "selector.prepare", "selector.trainer",
-        "selector.finish", "selector.decode", "selector.authenticate_completed",
-        "selector.authenticate_training", "selector.journal",
-        "task.client", "task.rpc", "task.server", "task.physical",
-        "task.context", "task.verify", "trainer.evidence", "selector.evidence",
-        "other.evidence", "trainer.rpc", "trainer.verify",
-        "selector.rpc", "selector.verify", "other.rpc", "other.verify",
-    ];
-    static CALLS: [AtomicU64; LABELS.len()] =
-        [const { AtomicU64::new(0) }; LABELS.len()];
-    static MICROS: [AtomicU64; LABELS.len()] =
-        [const { AtomicU64::new(0) }; LABELS.len()];
-
-    fn snapshot() -> [[u64; 2]; LABELS.len()] {
-        std::array::from_fn(|index| [
-            CALLS[index].load(Ordering::Relaxed),
-            MICROS[index].load(Ordering::Relaxed),
-        ])
-    }
-
-    pub(crate) struct Span {
-        kind: usize,
-        started: Instant,
-    }
-
-    impl Span {
-        pub(crate) fn new(kind: usize) -> Self {
-            Self { kind, started: Instant::now() }
-        }
-    }
-
-    impl Drop for Span {
-        fn drop(&mut self) {
-            let micros = u64::try_from(self.started.elapsed().as_micros())
-                .unwrap_or(u64::MAX);
-            MICROS[self.kind].fetch_add(micros, Ordering::Relaxed);
-            CALLS[self.kind].fetch_add(1, Ordering::Relaxed);
-        }
-    }
-
-    // Counters are process-local so awaited work and the dedicated Task/Selector
-    // threads remain visible. This is an observation of the bounded fixture,
-    // not a per-request attribution API for concurrent production traffic.
-    pub(crate) struct ReadbackTrace {
-        started: Instant,
-        before: [[u64; 2]; LABELS.len()],
-    }
-
-    impl ReadbackTrace {
-        pub(crate) fn new() -> Self {
-            Self { started: Instant::now(), before: snapshot() }
-        }
-    }
-
-    impl Drop for ReadbackTrace {
-        fn drop(&mut self) {
-            let after = snapshot();
-            let mut rows = Vec::new();
-            for (index, label) in LABELS.iter().enumerate() {
-                let calls = after[index][0].saturating_sub(self.before[index][0]);
-                let micros = after[index][1].saturating_sub(self.before[index][1]);
-                if calls != 0 {
-                    rows.push(format!("{label}={calls}/{micros}"));
-                }
-            }
-            eprintln!(
-                "[completed-read] total_us={} count/micros {}",
-                self.started.elapsed().as_micros(),
-                rows.join(" "),
-            );
-        }
-    }
-}

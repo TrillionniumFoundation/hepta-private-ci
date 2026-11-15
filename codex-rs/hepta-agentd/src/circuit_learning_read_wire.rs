@@ -61,8 +61,6 @@ pub(super) fn mode(context: &Context) -> Result<Mode, Error> {
 }
 
 pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Error> {
-    #[cfg(test)]
-    let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(20);
     let mode = mode(context)?;
     let snapshot = &context.prefix;
     if snapshot.owners.evidence_trust_digest != context.verifier.trust_digest()
@@ -71,16 +69,12 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
         return Err(Error::Binding("original published read trust"));
     }
     let training_receipt = &snapshot.receipts[2];
-    #[cfg(test)]
-    let hepta_readback_verify = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(21);
     let training = context.verifier.verify(
         LearningEvidenceRoleV1::Generator,
         &context.training_evidence,
         &learning_iteration_receipt_signing_bytes_v1(training_receipt)?,
         at,
     )?;
-    #[cfg(test)]
-    drop(hepta_readback_verify);
     if training.principal().principal_id != training_receipt.actor_id {
         return Err(Error::Binding("original Generator read binding"));
     }
@@ -88,16 +82,12 @@ pub(super) fn context_binding(context: &Context, at: u64) -> Result<Digest32, Er
     signatures.extend_from_slice(&context.training_evidence.signature);
     if let Some(original) = &context.selection_evidence {
         let selection_receipt = &snapshot.receipts[3];
-        #[cfg(test)]
-        let hepta_readback_verify = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(21);
         let selection = context.verifier.verify(
             LearningEvidenceRoleV1::Selector,
             original,
             &learning_iteration_receipt_signing_bytes_v1(selection_receipt)?,
             at,
         )?;
-        #[cfg(test)]
-        drop(hepta_readback_verify);
         if selection.principal().principal_id != selection_receipt.actor_id {
             return Err(Error::Binding("original Selector read binding"));
         }
