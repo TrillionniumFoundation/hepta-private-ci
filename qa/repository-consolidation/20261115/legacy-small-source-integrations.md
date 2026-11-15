@@ -80,3 +80,15 @@ builtin/null round trips, oversized progress/results and invalid payload bounds,
 including cycles. No model work or external campaign was run. The preserved
 reproducer, compatibility note, exact source hashes and test log are under
 `legacy-small/hard-deadline`.
+
+## Family/cohort factorial preflight
+
+Incoming `9e11892e80b3cbb990d3d2dc8a897bc670dad8fc` adds the dataclass-based
+`factorial_evidence` interface. Complete source/test review confirmed paired
+A/B/C/D core/controller identities, equal opportunity contracts, per-seed frozen
+cohort identities and balanced family rosters. Missing outcomes suppress all
+net-value inference and family diagnostics; missing retention/resources remain
+null. Sign flips use training-seed clusters rather than repeated task counts,
+and four-contrast Holm correction remains exploratory. HOLD_NO_GO/DENY_ALL is
+unconditional. All incoming bytes are retained. The focused suite passes 17
+synthetic contract tests; these do not run a model or an owner.
