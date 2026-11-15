@@ -5002,5 +5002,202 @@
       }
     ],
     "scope": "Actual fresh fourteen-module B1/B2/B3 build and scoped network-domain raw ABI, complete original public owner, allocation, injected-callee, execpolicy owner and standalone gates. Final fix/fmt changed no source bytes. New fourteen-module full Codex CLI, Core network consumer, previous component reruns, workspace and required platforms remain pending; no performance, default-release or retirement closure is claimed."
+  },
+  "published_network_domains14_ci_history": {
+    "recorded_at_revision": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+    "source_tree": "641cdf1111cc346da3ede2ee45bafc8a3fbdcd05",
+    "pull_request": 6365,
+    "applies_to_current_fifteen_module_candidate": false,
+    "merge_revision": "1e1f117e2119e3570134fb626fa40f09318c13ab",
+    "merge_parents": [
+      "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+      "b39a8ef9bd4256113874daf721ddf3f12b85dd4b"
+    ],
+    "module_count": 14,
+    "scope": "Immutable published fourteen-module push/PR native CI and terminal broader CI. No transfer of these passes to the fifteen-module candidate.",
+    "published_source_bindings_verified": 55,
+    "artifact_members_rehashed_total": 260,
+    "full_cli_binary_equal_between_events": false,
+    "standalone_binary_equal_between_events": true,
+    "runs": [
+      {
+        "run_id": 43692321284,
+        "job_id": 132745391175,
+        "event": "push",
+        "actual_checkout": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+        "conclusion": "success",
+        "artifact_id": 14153173708,
+        "zip_sha256": "ae3ff46d51d3785cf252b644ab8169669b6815762a417506e1285939fd30a30c",
+        "members_rehashed": 130,
+        "build_report_sha256": "27498f761a84e0f4c8c4900267a191123a364a9d33eb41074fec0426be7a85e5",
+        "native_full_cli_sha256": "b9bd32fbf96a945f35846a7b30f023ecbb817b3cb94137624bb789baf9b5cee5",
+        "reference_full_cli_sha256": "8084d40eddce7aa534ab1d34c75a7879f606d0e46a1d9ba7809782cabc921e50",
+        "timing_rows_slower_than_rust": {
+          "network_domains": 11,
+          "policy_summary": 5,
+          "prefix": 7
+        },
+        "negative_measurement_scope": "All 23 timing rows are slower; all 25 network allocation observations and nine identified allocation/resource regressions remain verbatim in the cited native report for this run, together with earlier-owner negative rows. Binary hashes are report-bound; binary files were not in these ZIPs."
+      },
+      {
+        "run_id": 43692332741,
+        "job_id": 132745428238,
+        "event": "pull_request",
+        "actual_checkout": "1e1f117e2119e3570134fb626fa40f09318c13ab",
+        "conclusion": "success",
+        "artifact_id": 14153867855,
+        "zip_sha256": "b9906adecc2addb60cc60e2db889e6b956b681cb37510c42af4f47735602c56c",
+        "members_rehashed": 130,
+        "build_report_sha256": "2a571ac92d0a38eef74fc3e5a2405f832c160ea96d86664778257a7570e57eaa",
+        "native_full_cli_sha256": "b4706dd4b4fc3382a2eabba0615ea36615e2e932470c6b768a35066e1c2329f4",
+        "reference_full_cli_sha256": "41100d8b220f217fe54f9db6bbb37fc5d11ecbbb0fa9274dda8541a09ec9e91b",
+        "timing_rows_slower_than_rust": {
+          "network_domains": 11,
+          "policy_summary": 5,
+          "prefix": 7
+        },
+        "negative_measurement_scope": "All 23 timing rows are slower; all 25 network allocation observations and nine identified allocation/resource regressions remain verbatim in the cited native report for this run, together with earlier-owner negative rows. Binary hashes are report-bound; binary files were not in these ZIPs."
+      }
+    ],
+    "each_run_gates": {
+      "steps_passed": 46,
+      "receipt_checks": 68,
+      "scalar_artifact_checks": 121,
+      "network_raw_calls": 8244,
+      "network_raw_error_no_write": 997,
+      "network_public_comparisons": 67976,
+      "network_allocation_cases": 25,
+      "network_zero_allocation_cases": 10,
+      "network_injected_callee_failures": 23,
+      "policy_summary_public_comparisons": 10356,
+      "policy_summary_raw_calls": 3955,
+      "policy_summary_mutations": 23,
+      "policy_summary_effect_traces": 6,
+      "policy_summary_allocation_cases": 30,
+      "policy_summary_zero_allocation_cases": 20,
+      "policy_summary_injected_callee_failures": 18,
+      "prefix_public_comparisons": 49938,
+      "prefix_raw_calls": 5937,
+      "scalar_abi_calls": 158100,
+      "prefix_allocation_cases": 20,
+      "prefix_zero_allocation_cases": 9,
+      "standalone_cases": 30,
+      "standalone_processes": 60,
+      "standalone_symbols": 3,
+      "full_cli_cases": 34,
+      "full_cli_startups": 2,
+      "full_cli_symbols": 12,
+      "native_component_tests": 198,
+      "default_component_tests": 185,
+      "cli_arg0_tui_tests": 4474,
+      "cli_arg0_tui_skipped": 6,
+      "filtered_core_tests": 11,
+      "core_tests_excluded_by_filter": 3870,
+      "actual_core_network_consumer_passed": 1,
+      "other_core_tests_excluded": 3880
+    },
+    "reports": [
+      {
+        "file": "published14/native-ci-summary.json",
+        "sha256": "c7a95ee20b7308e6302480b7bf557d9044ffde604536f9dfd5f27ac14856dc81",
+        "bytes": 211708
+      },
+      {
+        "file": "published14/root-native-ci-verification.json",
+        "sha256": "288ddcafbd3e589cc3b196f4a62ff65d1f116fb8cd17c8fb434332a937ae47f1",
+        "bytes": 9915
+      },
+      {
+        "file": "published14/published-source-bindings.json",
+        "sha256": "84bf498eb835f1f7965dd1dcf1d12b9a849c1a51428090af8f1a41169ac42c8f",
+        "bytes": 19440
+      }
+    ],
+    "broader_ci": {
+      "observed_at": "2026-11-15 09:03:43 UTC",
+      "report": {
+        "file": "published14/broader-final-audit.json",
+        "sha256": "c5ad5593c363bffbf8586f3dc64bc3050da307712119626c24ce34f63241f85b",
+        "bytes": 93599
+      },
+      "preserved_nonterminal_snapshot": {
+        "file": "published14/broader-nonterminal-snapshot.json",
+        "sha256": "0d0c547e53d8b2d2b7daa56ee8617c1c423a50655c9ac077aa67a378c2b29181",
+        "bytes": 238139
+      },
+      "runs": [
+        {
+          "run_id": 43692332760,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "total_jobs": 37,
+          "job_counts": {
+            "success": 17,
+            "failure": 16,
+            "skipped": 4
+          }
+        },
+        {
+          "run_id": 43692332757,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "total_jobs": 3,
+          "job_counts": {
+            "success": 3
+          }
+        },
+        {
+          "run_id": 43692332802,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "total_jobs": 3,
+          "job_counts": {
+            "success": 1,
+            "skipped": 2
+          }
+        }
+      ],
+      "failure_log_coverage": {
+        "nonsuccess_jobs": 16,
+        "available_original_logs": 13,
+        "actual_checkout_bound_jobs": [
+          132745972531,
+          132745972803,
+          132745972818,
+          132745972823,
+          132745972824,
+          132745972826,
+          132745972828,
+          132745972851,
+          132745972861,
+          132745972866,
+          132745972897,
+          132760100411
+        ],
+        "workflow_only_bound_jobs": [
+          132754102929
+        ],
+        "unavailable_original_log_jobs": [
+          132745972841,
+          132745972947,
+          132745972975
+        ]
+      },
+      "checkout_binding_scope": "Twelve actual merge1e1 checkouts, one workflow-only aggregation and three unavailable original failure logs. Run metadata alone does not prove checkout.",
+      "intel_mac": "Job 132745972897 failed: 363 pass, one build failure, 38 local failures and 165 skipped; it was not cancelled.",
+      "required_gate": "Job 132760100411 rejected bazel and sdk dependency failures.",
+      "baseline_comparison_performed": false,
+      "scope": "Observed fourteen-module outcomes only; no causal baseline attribution. Missing GNU Clippy/GNU tests/MUSL tests logs remain unavailable; compact Clippy action records do not reveal the linker missing symbol.",
+      "independent_review": {
+        "file": "published14/root-broader-final-verification.json",
+        "sha256": "660ecbf422647a010166a26fb90db3ec19deeb91a8ac94e546088cbba6f18a52",
+        "bytes": 9940
+      }
+    },
+    "performance_qualified": false,
+    "report_path_scope": "External immutable evidence: published14/* copies ci-evidence/network-domains14/*; reports are not source-tree artifacts."
   }
 }

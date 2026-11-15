@@ -539,6 +539,48 @@ Exact artifacts, original-owner identities,
 format reconciliation and report hashes are in
 [`policy_summary_qualification`](verification.json#policy_summary_qualification).
 
+### Published fourteen-module CI: immutable history
+
+Published head `b39a8ef9bd4256113874daf721ddf3f12b85dd4b` and PR merge
+`1e1f117e2119e3570134fb626fa40f09318c13ab` share tree `641cdf1111cc346da3ede2ee45bafc8a3fbdcd05`.
+Both native runs passed all 46 actual steps. Independent review rehashed all
+260 ZIP members across the two artifacts and 55 published source inputs.
+
+| Event | Run | Artifact | ZIP SHA-256 |
+| ----- | --- | -------- | ----------- |
+| push | [43692321284](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43692321284) | 14153173708 | `ae3ff46d51d3785cf252b644ab8169669b6815762a417506e1285939fd30a30c` |
+| pull_request | [43692332741](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43692332741) | 14153867855 | `b9906adecc2addb60cc60e2db889e6b956b681cb37510c42af4f47735602c56c` |
+
+Each run executed 68 receipt and 121 scalar-artifact checks, 8,244 raw network
+calls and 67,976 original public comparisons, 25 allocation cases with ten
+zero-allocation cases, and 23 injected-callee cases. The actual Core network
+consumer has one PASS with 3,880 excluded tests; the existing execpolicy filter
+has 11 PASS with 3,870 excluded. These are scoped consumers, not a complete Core
+suite. The full CLI has 34 cases, two startup probes and 12 retained symbols;
+standalone has 30 cases, 60 processes and three symbols. Native/default owner
+components passed 198/185; CLI/arg0/TUI passed 4,474 with six skips, not the
+whole workspace. Prior raw/public/allocation gates also executed.
+
+Module source/object/archive identities match between events, while the two full
+CLI binary hashes differ. Standalone binary hashes match. Each run's 11 network,
+five policy-summary and seven prefix timing rows are slower than Rust. Complete
+raw timing rows, all 25 network allocation rows and nine identified resource
+regressions per run remain in the immutable audit, without performance closure.
+Native audit SHA: `c7a95ee20b7308e6302480b7bf557d9044ffde604536f9dfd5f27ac14856dc81`;
+independent verification SHA: `288ddcafbd3e589cc3b196f4a62ff65d1f116fb8cd17c8fb434332a937ae47f1`.
+
+Broader CI is terminal: blocking run 43692332760 has 37 jobs, 17 successful,
+16 failed and four skipped. Architecture has three successful jobs; canary has
+one successful metadata job and two skips. Thirteen of sixteen original failure
+logs are available: twelve actual merge checkouts and one workflow-only
+aggregation. GNU Clippy, GNU tests and MUSL tests original logs are unavailable;
+compact Clippy records do not establish the linker missing symbol. Intel Mac
+failed with 363 pass, one build failure, 38 local failures and 165 skipped;
+Required rejected Bazel and SDK failures. No paired-base causal attribution was
+performed. Audit SHA: `c5ad5593c363bffbf8586f3dc64bc3050da307712119626c24ce34f63241f85b`;
+independent verification SHA: `660ecbf422647a010166a26fb90db3ec19deeb91a8ac94e546088cbba6f18a52`.
+These source-specific outcomes do not transfer to the current candidate.
+
 ### Published thirteen-module native CI: immutable history
 
 Push [43686447298](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43686447298)
