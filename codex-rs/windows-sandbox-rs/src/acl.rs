@@ -56,6 +56,9 @@ const GENERIC_READ_MASK: u32 = 0x8000_0000;
 const GENERIC_WRITE_MASK: u32 = 0x4000_0000;
 const DENY_ACCESS: i32 = 3;
 
+#[path = "acl_deny.rs"]
+mod deny;
+
 fn acl_api_result(path: &Path, operation: &str, code: u32) -> Result<()> {
     if code == ERROR_SUCCESS {
         Ok(())
@@ -197,22 +200,31 @@ unsafe fn dacl_mask_allows_with_scope(
 }
 
 /// Path-based wrapper around the mask check (single DACL fetch).
-pub fn path_mask_allows(
+///
+/// # Safety
+/// Every pointer in psids must refer to a complete, valid SID that is correctly
+/// aligned, readable and unchanged for this entire call. The caller retains
+/// each SID allocation; this function neither takes ownership nor frees it.
+pub unsafe fn path_mask_allows(
     path: &Path,
     psids: &[*mut c_void],
     desired_mask: u32,
     require_all_bits: bool,
 ) -> Result<bool> {
-    path_mask_allows_with_scope(
-        path,
-        psids,
-        desired_mask,
-        require_all_bits,
-        AceScope::Effective,
-    )
+    // SAFETY: the caller retains valid SID allocations for this complete query.
+    unsafe {
+        path_mask_allows_with_scope(
+            path,
+            psids,
+            desired_mask,
+            require_all_bits,
+            AceScope::Effective,
+        )
+    }
 }
 
-fn path_mask_allows_with_scope(
+// The caller retains the same valid SID allocations required by path_mask_allows.
+unsafe fn path_mask_allows_with_scope(
     path: &Path,
     psids: &[*mut c_void],
     desired_mask: u32,
@@ -270,12 +282,30 @@ pub unsafe fn dacl_has_write_allow_for_sid(p_dacl: *mut ACL, psid: *mut c_void) 
     false
 }
 
+/// Checks a complete effective and recursively inherited write deny for a directory.
+///
+/// # Safety
+/// The caller must retain a valid ACL (or null) and valid SID throughout this query.
 pub unsafe fn dacl_has_write_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Write.mask())
+    deny::has_complete_deny(
+        p_dacl,
+        psid,
+        DenyAceKind::Write.mask(),
+        deny::DenyTarget::Directory,
+    )
 }
 
+/// Checks a complete effective and recursively inherited read deny for a directory.
+///
+/// # Safety
+/// The caller must retain a valid ACL (or null) and valid SID throughout this query.
 pub unsafe fn dacl_has_read_deny_for_sid(p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-    dacl_has_complete_deny_for_sid(p_dacl, psid, DenyAceKind::Read.mask())
+    deny::has_complete_deny(
+        p_dacl,
+        psid,
+        DenyAceKind::Read.mask(),
+        deny::DenyTarget::Directory,
+    )
 }
 
 // SAFETY: callers retain a valid ACL (or null) and valid SID throughout this query.
@@ -283,7 +313,11 @@ unsafe fn dacl_has_complete_deny_for_sid(
     p_dacl: *mut ACL,
     psid: *mut c_void,
     mut required_mask: u32,
+    scope: DenyAceScope,
 ) -> bool {
+    if matches!(scope, DenyAceScope::Directory) {
+        return deny::has_complete_deny(p_dacl, psid, required_mask, deny::DenyTarget::Directory);
+    }
     if p_dacl.is_null() {
         return false;
     }
@@ -319,9 +353,10 @@ unsafe fn dacl_has_complete_deny_for_sid(
         if hdr.AceType != ACCESS_DENIED_ACE_TYPE || (hdr.AceFlags & INHERITED_ACE) != 0 {
             return false;
         }
-        // Match the constructor's effective, recursively inheritable scope.
-        // Inherit-only, no-propagate, or missing child scope is insufficient.
-        if hdr.AceFlags != (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) as u8 {
+        // Directories require effective recursive inheritance. Files have no
+        // descendants, and Windows stores their direct ACEs without child flags.
+        // Never accept inherited, inherit-only, or no-propagate substitutions.
+        if hdr.AceFlags != scope.inheritance() as u8 {
             continue;
         }
         let ace = &*(p_ace as *const ACCESS_DENIED_ACE);
@@ -361,7 +396,12 @@ unsafe fn dacl_allow_mask_needs_refresh(
 }
 
 /// Returns whether any provided SID needs its writable-root allow ACE refreshed.
-pub fn path_write_aces_need_refresh(path: &Path, psids: &[*mut c_void]) -> Result<bool> {
+///
+/// # Safety
+/// Every pointer in psids must refer to a complete, valid SID that is correctly
+/// aligned, readable and unchanged for this entire call. The caller retains
+/// each SID allocation; this function neither takes ownership nor frees it.
+pub unsafe fn path_write_aces_need_refresh(path: &Path, psids: &[*mut c_void]) -> Result<bool> {
     unsafe {
         let (p_dacl, p_sd) = fetch_dacl_handle(path)?;
         let needs_refresh = psids.iter().any(|psid| {
@@ -582,6 +622,21 @@ enum DenyAceKind {
     Write,
 }
 
+#[derive(Clone, Copy)]
+enum DenyAceScope {
+    File,
+    Directory,
+}
+
+impl DenyAceScope {
+    fn inheritance(self) -> u32 {
+        match self {
+            Self::File => 0,
+            Self::Directory => CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE,
+        }
+    }
+}
+
 impl DenyAceKind {
     fn mask(self) -> u32 {
         match self {
@@ -599,76 +654,18 @@ impl DenyAceKind {
         }
     }
 
-    unsafe fn already_present(self, p_dacl: *mut ACL, psid: *mut c_void) -> bool {
-        match self {
-            Self::Read => dacl_has_read_deny_for_sid(p_dacl, psid),
-            Self::Write => dacl_has_write_deny_for_sid(p_dacl, psid),
-        }
+    unsafe fn already_present(
+        self,
+        p_dacl: *mut ACL,
+        psid: *mut c_void,
+        scope: DenyAceScope,
+    ) -> bool {
+        dacl_has_complete_deny_for_sid(p_dacl, psid, self.mask(), scope)
     }
 }
 
 unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Result<bool> {
-    let mut p_sd: *mut c_void = std::ptr::null_mut();
-    let mut p_dacl: *mut ACL = std::ptr::null_mut();
-    let code = GetNamedSecurityInfoW(
-        to_wide(path).as_ptr(),
-        1,
-        DACL_SECURITY_INFORMATION,
-        std::ptr::null_mut(),
-        std::ptr::null_mut(),
-        &mut p_dacl,
-        std::ptr::null_mut(),
-        &mut p_sd,
-    );
-    if code != ERROR_SUCCESS {
-        if !p_sd.is_null() {
-            LocalFree(p_sd as HLOCAL);
-        }
-        return Err(anyhow!(
-            "GetNamedSecurityInfoW failed for {}: {code}",
-            path.display()
-        ));
-    }
-    let result = if kind.already_present(p_dacl, psid) {
-        Ok(false)
-    } else {
-        let trustee = TRUSTEE_W {
-            pMultipleTrustee: std::ptr::null_mut(),
-            MultipleTrusteeOperation: 0,
-            TrusteeForm: TRUSTEE_IS_SID,
-            TrusteeType: TRUSTEE_IS_UNKNOWN,
-            ptstrName: psid as *mut u16,
-        };
-        let mut explicit: EXPLICIT_ACCESS_W = std::mem::zeroed();
-        explicit.grfAccessPermissions = kind.mask();
-        explicit.grfAccessMode = DENY_ACCESS;
-        explicit.grfInheritance = CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE;
-        explicit.Trustee = trustee;
-        let mut p_new_dacl: *mut ACL = std::ptr::null_mut();
-        let code2 = SetEntriesInAclW(1, &explicit, p_dacl, &mut p_new_dacl);
-        let result = if let Err(err) = acl_api_result(path, "SetEntriesInAclW", code2) {
-            Err(err)
-        } else {
-            let code3 = SetNamedSecurityInfoW(
-                to_wide(path).as_ptr() as *mut u16,
-                1,
-                DACL_SECURITY_INFORMATION,
-                std::ptr::null_mut(),
-                std::ptr::null_mut(),
-                p_new_dacl,
-                std::ptr::null_mut(),
-            );
-            acl_api_result(path, "SetNamedSecurityInfoW", code3).map(|()| true)
-        };
-        if !p_new_dacl.is_null() {
-            LocalFree(p_new_dacl as HLOCAL);
-        }
-        result
-    };
-    if !p_sd.is_null() {
-        LocalFree(p_sd as HLOCAL);
-    }
-    result
+    deny::add_deny_ace(path, psid, kind)
 }
 
 /// Adds a deny ACE to prevent reads for the given SID on the target path.
