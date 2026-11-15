@@ -12,6 +12,10 @@ import time
 
 
 SOURCE_SHA256 = {
+    "MODULE.bazel.lock": "97b30244d34794606e6b8217012e8e49eb8aba0821758bf07b125989516555bc",
+    "codex-rs/Cargo.toml": "503190d567cc63ca5d8682459746e9a13f8985fbd66603431dc51bd4ce58eea9",
+    "MODULE.bazel": "2319432da8b2aa84b090cfc95627e17105e7d5b9adbae80ef1c212c37e02fe9e",
+    "codex-rs/Cargo.lock": "133e931e09b2dcfe95f6ded92d3db16fb1103eade317c085ed4758dbccad34df",
     "codex-rs/BUILD.bazel": "f9994442316003cae141ed91060c9a7bf098c15059f247b1c031964792fc79ad",
     "codex-rs/hepta-matrix-sdk/BUILD.bazel": "4b52bb2153b9f0df7a8c14fe440552dface4771d8908a640ba6c2b4cd347e26e",
     "codex-rs/hepta-matrix-sdk/src/sdk.rs": "3061024c6e84abd962b3933f2e974d744aba6d7f1ea2a0020720dd632e9268e5",
@@ -193,6 +197,52 @@ def action_projection(raw):
     return {"actions": result, "includes_environment_values": False}
 
 
+def verify_crypto_optimization(projection):
+    """Require the two production KDF libraries to retain checks when optimized."""
+    expected = {
+        "matrix-sdk-store-encryption-0.19.1",
+        "sha2-0.11.0",
+    }
+    observed = set()
+    for action in projection["actions"]:
+        package = next((
+            name for name in expected
+            if f"crates__{name}//:" in action["label"]
+        ), None)
+        if package is None:
+            continue
+        arguments = list(action["flags"])
+        for parameters in action["parameter_file_flags"]:
+            arguments.extend(parameters)
+        codegen = {}
+        index = 0
+        while index < len(arguments):
+            arg = arguments[index]
+            if arg == "-C":
+                index += 1
+                if index == len(arguments):
+                    raise ValueError("Incomplete codegen option")
+                arg = arguments[index]
+            elif arg.startswith("-C"):
+                arg = arg[2:]
+            else:
+                index += 1
+                continue
+            key, separator, value = arg.partition("=")
+            if separator:
+                codegen.setdefault(key, []).append(value)
+            index += 1
+        if set(codegen.get("opt-level", [])) != {"3"} or any(
+            not codegen.get(check)
+            or any(value not in ("yes", "on", "true", "1") for value in codegen[check])
+            for check in ("debug-assertions", "overflow-checks")
+        ):
+            raise ValueError(f"Missing checked production crypto optimization: {package}")
+        observed.add(package)
+    if observed != expected:
+        raise ValueError("The two production crypto compiler actions are required")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[2])
@@ -237,6 +287,7 @@ def main():
         if capture_actions and result.returncode == 0:
             try:
                 projection = action_projection(result.stdout.decode())
+                verify_crypto_optimization(projection)
                 save("compiler-actions.json", projection)
                 row["action_projection_verified"] = True
             except (ValueError, KeyError, UnicodeDecodeError) as error:
@@ -269,6 +320,8 @@ def main():
         "original_failure_head": "57e489472a03515438df8ed7a0fabec882404f02",
         "deep_diagnostic_head": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
         "deep_diagnostic_run": 43677083468,
+        "previous_cipher_candidate_head": "9b9da8d527663012827ab558d77584780bb1ba87",
+        "previous_cipher_candidate_run": 43681457607,
         "runner_os_version": platform.mac_ver()[0],
         "machine": platform.machine(),
         "tmpdir": os.environ.get("TMPDIR"),
@@ -311,6 +364,7 @@ def main():
         "original_pair_and_each_single_required": True,
         "tmpdir_not_overridden": True,
         "test_retries": 0,
+        "checked_production_crypto_optimization_required": True,
         "full_workspace_qualified": False,
     })
     if not passed:
