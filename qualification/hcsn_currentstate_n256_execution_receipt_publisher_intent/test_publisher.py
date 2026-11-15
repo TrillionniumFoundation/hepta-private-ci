@@ -93,6 +93,14 @@ class ExecutionReceiptPublisherIntentTests(unittest.TestCase):
             ):
                 publisher.build_receipt_record(**arguments)
 
+    def test_boolean_exit_code_cannot_alias_integer_zero(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            paths, _, _, _ = _write_records(Path(temporary))
+            arguments = _arguments(paths)
+            arguments["process_exit_code"] = False
+            with self.assertRaisesRegex(ValueError, "not a boolean"):
+                publisher.build_receipt_record(**arguments)
+
     def test_request_keeps_external_facts_unresolved(self):
         request = json.loads((ROOT / "REQUEST.json").read_text())
         self.assertTrue(

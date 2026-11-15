@@ -59,6 +59,10 @@ def build_receipt_record(
     admission = _record(provider_admission_path, "provider admission")
     freeze = _record(execution_freeze_path, "execution freeze")
     manifest = _record(result_manifest_path, "result manifest")
+    if type(process_exit_code) is not int:
+        raise ValueError("process exit code must be an integer, not a boolean")
+    if type(execution_complete) is not bool:
+        raise ValueError("execution-complete fact must be a boolean")
     payload = {
         "schema": receipt_contract.SCHEMA,
         "provider_admission_sha256": admission.get("admission_sha256"),
