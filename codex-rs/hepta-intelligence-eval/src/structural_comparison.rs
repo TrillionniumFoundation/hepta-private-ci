@@ -189,6 +189,9 @@ fn validate(
     {
         return Err(StructuralComparisonErrorV1::InvalidDesign);
     }
+    if plan.frozen_plan_digest != structural_comparison_plan_digest_v1(plan)? {
+        return Err(StructuralComparisonErrorV1::InvalidDesign);
+    }
     if result.candidate_compute_units == 0
         || result.matched_baseline_compute_units == 0
         || result.candidate_latency_p95_us == 0
