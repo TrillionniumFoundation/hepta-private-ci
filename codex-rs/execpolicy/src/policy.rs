@@ -201,6 +201,12 @@ impl Policy {
         )
     }
 
+    #[cfg(feature = "hia-native")]
+    pub fn compiled_network_domains(&self) -> (Vec<String>, Vec<String>) {
+        crate::hia_native_network_domains::compile(&self.network_rules)
+    }
+
+    #[cfg(not(feature = "hia-native"))]
     pub fn compiled_network_domains(&self) -> (Vec<String>, Vec<String>) {
         let mut allowed = Vec::new();
         let mut denied = Vec::new();
@@ -371,6 +377,7 @@ impl Policy {
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 fn upsert_domain(entries: &mut Vec<String>, host: &str) {
     entries.retain(|entry| entry != host);
     entries.push(host.to_string());
