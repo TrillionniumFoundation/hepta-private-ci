@@ -7,24 +7,25 @@
   "build_status": "built",
   "compiler_fixed_point": true,
   "compiler_generations": 3,
-  "native_module_count": 14,
-  "production_algorithm_group_count": 12,
+  "native_module_count": 15,
+  "production_algorithm_group_count": 13,
   "whole_codex_rewritten": false,
   "production_dispatch_migrated": false,
   "legacy_source_retired": false,
   "legacy_retirement_ready": false,
   "whole_product_performance_qualified": false,
   "opt_in_production_callers_verified": false,
-  "scope": "Linux x86-64 GNU, opt-in hia-native. Fourteen B3 modules cover twelve algorithm groups. The current fixed-point build, summary raw ABI (1328 calls), complete-original unified component ABI (522858 native calls, zero skips), two initial 68-check receipt gates and 120 scalar admission checks passed. All twelve inherited sources/static archives match the fully audited aeb88 effect parent. Frozen summary and unified prototypes separately passed their complete-original public comparisons; the unified prototype also passed actual checked/wrapping Cargo, cached-policy and strict owner-lint gates. These do not qualify the final combination's Cargo, public owners, installed executables, consumers or CI. All 15 complete capabilities, default dispatch, required platforms, release/LTO, retirement and whole-product performance remain open. The first published 0339 combination subsequently executed both native CI attempts, each with 56 successful steps, one cached-artifact admission failure and two skipped steps. Those exact results are historical; the current two-file repair passed bounded actual compiler-control regressions and awaits complete-source CI.",
-  "current_evidence_record": "patch_output_increment",
+  "scope": "Linux x86-64 GNU, opt-in hia-native. Fifteen B3 modules cover thirteen algorithm groups. The current fixed-point build preserves all fourteen prior source/archive/object/shared-library identities. Current application continuation tests executed 2790 native calls, including 1841 error/no-write cases, 512 concurrent calls and all 25 legal transitions; its actual 70-check source/archive receipt gate passed. An independent H build reproduced all 45 namespaced machine artifacts. The actual prepublication owner preflight passed native/default Cargo, 101/99 just tests with zero skips, both strict all-target workspace Clippy modes and compiler receipt admissions. That prepublication e23-plus-21-path record predates the final three metadata documents, two-import formatting follow-up and this six-file fixture repair; its original results and hashes remain unchanged. The first clean 08df public run passed the effects comparison with 121 original inputs, 13 unchanged root tests and 360 pairs, then stopped at application fixture 756 after 756 matching pairs: 1512 successful observations and one failed original attempt. Literal PATCH heredoc parsing failed before apply_hunks; the native counterpart did not execute. Eighteen materialized fixtures now use EOF, while two default/no-context/normal-writer string-API cases retain the original PATCH rejection bytes. Targeted 20-pair/40-process and 7-delimiter-pair/2-process probes passed; the repaired full 1470-pair/2940-process gate has not run. Final fix/format, installation, current complete consumer CI, required platforms, default dispatch, release/LTO, whole-product performance and retirement remain pending. Inherited fourteen-module CI remains bound to its own sources, including both failed 0339 attempts and the two complete successful e23 parent runs. All 15 complete capabilities and the 198-crate baseline inventory remain open. The subsequent clean 1083727e public attempt passed the fresh complete effects prerequisite, then rejected the stale DRIVER_SHA256 before compiling or executing an application observer. This correction changes only that constant to match the published driver, preserves the strict guard and corpus, and does not qualify the complete matrix.",
+  "current_evidence_record": "patch_application_increment",
   "composition_sources": {
     "source_file": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
     "parser": "168080b72c4be242d14eadd47168f2a9326590f2",
     "file_update_with_lint_repair": "8b138f979a77baeb78b28b8273febcef960dcb88",
     "local_combination_base": "5ce8ef42fadb6b28cc4049d5735711b2c28f0171",
-    "scope": "The audited effect parent plus native unified formatting and exact public-summary effect selection; no default or platform promotion.",
+    "scope": "The repaired fourteen-module output parent plus native application result routing; no default, platform or whole-product promotion.",
     "patch_integration_parent": "2ff44b608a202c25e7551edca67a7a5362f34d36",
-    "patch_effects_parent": "aeb88f596b83186456caac577080bcb2f253ad32"
+    "patch_effects_parent": "aeb88f596b83186456caac577080bcb2f253ad32",
+    "patch_output_repaired_parent": "e23bc0d7ae5d52e70839982c9c5517a3368ae049"
   },
   "production_algorithms": {
     "seek_sequence": "patch context matching",
@@ -38,7 +39,8 @@
     "parser": "Complete batch and streaming patch grammar, normalization, errors/events and path selection; PathUri joins remain host operations.",
     "patch_effects": "Patch filesystem operation order, missing-parent retry, delta exactness and committed-prefix transitions, and failed-removal byte comparison. Real OS operations and path/sandbox enforcement remain host callbacks.",
     "unified_diff": "Complete Similar 2.7.0 unified line diff decisions and bytes, including supported checked/wrapping arithmetic and semantic panics; compiler receipt admission and host allocation remain required.",
-    "patch_summary": "Public summary header and A/M/D path selection; the exact individual original writeln!/Path::display/Write effects remain the host bridge."
+    "patch_summary": "Public summary header and A/M/D path selection; the exact individual original writeln!/Path::display/Write effects remain the host bridge.",
+    "patch_application": "Application parser/effects/summary sequencing, diagnostic choice, writer-error priority and committed-delta result routing. Typed errors, exact original writeln!/Write effects, real filesystem calls and the existing asynchronous effects future remain host operations."
   },
   "sources": {
     "seek_sequence": {
@@ -376,15 +378,39 @@
         "library_sha256": "4a25aac683ca7843599d2679d3c278a54e4efd89a6b94e96306304bd84a80089",
         "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
       }
+    },
+    "patch_application": {
+      "source_sha256": "bdb1c92db9470c2f6d4b5208ac72107538a3e29a4dbe14c0390bc25db6b907ae",
+      "core_sha256": "3caaca95e9731da065bb87d4e8ebfcd1307c145705a3a8bc2d0e8ff66027a005",
+      "library_sha256": "aee7deacc5c764caffc168ae70cd3c52d1178256a1b740df7f7a8dd77bba4a34",
+      "library_bytes": 17192,
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "static_link": {
+        "symbol": "codex_hia_patch_application",
+        "library": "libcodex_hia_patch_application.so",
+        "object": "patch_application.namespaced.o",
+        "archive": "libcodex_hia_patch_application.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 8628,
+        "archive_sha256": "239908a405e106d6d7790437685b5477624e19f528ede93f35e8d317cc6d3665",
+        "text_sha256": "779ad2a20b91b9603190dbcdc68b810b1165090ff81a7e727b5ad3207e5ec5f9",
+        "defined_symbols": [
+          "codex_hia_patch_application"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "8dc6d021705a02be1e96b15b3938fca42306ddb7701ac4a6beb65b3514fc7bde",
+        "library_sha256": "8b442dedf7254614bf6eb4cf157f98e99d027a7fe71baa1e0f058ef5c9b654df",
+        "scope": "ELF namespaced symbol; HIA-compiled machine implementation"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "b72f7e1561288832a085bf69763f55b7778171bb10a11d7536a69eb808bc6647",
+    "toolchain_lock_sha256": "360ce2f5f143ad67eac2b73bebd318dca9efeeb553601c69364dd548f189fa48",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "a5a038a937d641093e5dc6702d7bb008bb82a8cdf8caced676f8ca0ca5bc7149",
+  "build_report_sha256": "dd8c2b46f6826528573c1fc03eb3d941ee82e66cba863e3bbeb8bdddd6d891d8",
   "compiler_generation_evidence": [
     {
       "case": "B1",
@@ -411,18 +437,19 @@
   "compiler_qualification_scope": "three generation rebuild; component differential tests separate",
   "current_source_inputs_scope": "Named inherited producing inputs plus every current HIA program, contract, test, policy helper and native dispatch input. Excludes exactly hia/README.md, hia/migration.json and hia/verification.json to avoid metadata self-hashing. These byte identities do not claim execution of pending gates.",
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "b10d40d92f14782d655242cf66fd7d38c20816637833e94ad278f27548851c1b",
+    ".github/workflows/codex-hia-native.yml": "d834bae39d2e6f16614dd13338126b7ef4fc82d863a8c6d81fcc5faed24f918d",
     "NOTICE": "b47d6a3bd64f5bbf9b3f9a14ea672dedbb1c483f1a3bf48c011d0782603c0854",
     "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
     "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
     "codex-rs/apply-patch/BUILD.bazel": "b46d28a69e2080c76b980da7d4256c2495154f39baf24602a6434a7de1bea719",
     "codex-rs/apply-patch/Cargo.toml": "aed216791ef6c3e37a9201da476355a7c7f3e1614c6ac799f62ce45ecbe9611a",
-    "codex-rs/apply-patch/build.rs": "f87936fa03922e76ca452c03048d24e911c43246f7e1d05d9728872e25989b52",
+    "codex-rs/apply-patch/build.rs": "ca7906f3da0589475252be01ee6392d9742ad5a976f1931cb9957722a5ed67ac",
     "codex-rs/apply-patch/src/file_update.rs": "290a7c76c9b988a7878be4dee73d61a25a3f638856e76b543547ca17f85ca29a",
     "codex-rs/apply-patch/src/file_update_tests.rs": "59fc1e6db897fd61be7ee865a741dc7fdb709501426c4f9603ef8a532fe08282",
     "codex-rs/apply-patch/src/hia_native.rs": "80981c210f252b24915c077cbd8b3b84356c7a0b4c3c4906d375cb9f42727749",
     "codex-rs/apply-patch/src/hia_native_file_update.rs": "4d60e39bfaaa5dfdca9a9a292de17e0b0b8e9ed11849a96ab45ca35c62a2abb2",
     "codex-rs/apply-patch/src/hia_native_parser.rs": "77826bfa61b2d38f37eda19edf0de12c2794b2680236e6b3338baec78b8b56e8",
+    "codex-rs/apply-patch/src/hia_native_patch_application.rs": "c9cf53b2d81618412f524ae3a238850fcd1a9358b03218aee9dab930d28e6072",
     "codex-rs/apply-patch/src/hia_native_patch_effects.rs": "cd6b48313d94fa732909c000da31fe86aacb478baddc8b6d7dfdd91b1bb4bda7",
     "codex-rs/apply-patch/src/hia_native_patch_summary.rs": "1d3bb2032a50348d0f66d0f45bd2358ddd3a9fbae53e1a63557a9d5db8409f25",
     "codex-rs/apply-patch/src/hia_native_streaming_parser.rs": "ab294ac591cecd8a31dc15d4d73c6c22ee26b612eeffcfbf059736670be2710a",
@@ -430,7 +457,7 @@
     "codex-rs/apply-patch/src/hia_native_unified_diff.rs": "cddc068db30a8dc14766c8eea1a7a951010872e0a9970875ea9a9e012a84c144",
     "codex-rs/apply-patch/src/hia_native_unified_diff_policy.rs": "90bdecd1249fbcb4a70f051b910c79befde27aa2d04a5ee5354843eafba12bea",
     "codex-rs/apply-patch/src/invocation.rs": "ab6ce54396919236a2b68a5dc33f670663c67c12fa8def3b80588933d297047a",
-    "codex-rs/apply-patch/src/lib.rs": "483b1d60104e34359490a343ee37960e0f73221dc6ceeb78ac76ce49051001a7",
+    "codex-rs/apply-patch/src/lib.rs": "194db2080c322f653605499effa094df2945c17b5a63c3f073c2a7c570419d1c",
     "codex-rs/apply-patch/src/main.rs": "31de3e573a13c50c81af81d262a11fdb758540408cbab3fafb5e638c66a50117",
     "codex-rs/apply-patch/src/parser.rs": "c5dd2d20dada169f7b4d9910b4b126707bb4cd040c38f1c2039c5c6f1c2e5a38",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
@@ -572,6 +599,8 @@
     "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
     "hia/parser.hepta": "4bc5c33576b56b27214d21dae686a7242f81ea01ac81516bd0be6583424b827f",
     "hia/parser_buffer_contract.json": "f5c56e0e49455faa925b60306b1de72b7575391ce154c26b914250a4b0b47706",
+    "hia/patch_application.hepta": "bdb1c92db9470c2f6d4b5208ac72107538a3e29a4dbe14c0390bc25db6b907ae",
+    "hia/patch_application_buffer_contract.json": "942faf595fc3bfcb915f5676ea362380f94a6ad16c4d44d5586d0f11b9e762b5",
     "hia/patch_effects.hepta": "3fa4152c1737970f67d4ab24594870c38f3f03a774ffa151a256da6cf3c026b8",
     "hia/patch_effects_buffer_contract.json": "fb02bb3a5812edc2ad9201820e920dba5f9d8319c59581cfd8a66f5f0283c855",
     "hia/patch_summary.hepta": "50dd79660f44dd6ed5bcaf835364478875528a2050fdaad2199077b74529b84e",
@@ -598,8 +627,17 @@
     "hia/tests/native_truncate_caller.rs": "de88b426d2330a5013fc3a2fb0fab300a51382ef45bd0f735257284138c7c451",
     "hia/tests/parser_cases.py": "fd506798eb666edbcc880f414f980b352226452bf71a1ac12f07f293c7ddfacd",
     "hia/tests/parser_oracle_Cargo.lock": "0617730b9259af552e2028a3716fb8a1a53f9e757c164b3015cccc5ab7ea142a",
+    "hia/tests/patch_application_oracle/__init__.py": "148180075061c0b200aebb1422ce838a48a4e415616e9eb13ea368de37385f3d",
+    "hia/tests/patch_application_oracle/corpus.py": "ac369768217dd5f3c448e19be31a9235e1872390645da229b704ea0cbc3062f2",
+    "hia/tests/patch_application_oracle/driver.rs": "0306fc9ae81434d1846ad0e1ebd037e7d027b99ea3abd4afdf59bcfc0c3468c8",
+    "hia/tests/patch_application_oracle/fixtures.rs": "9dc67411da1c7d98bbd58deea90035dd729de9e3c7410e5fae3b99ffd806d94c",
+    "hia/tests/patch_application_oracle/native_trace.rs": "3014346b2888ef4df68a3e0d3ee424b6622cf7d44215d1f776e110dd1644adc1",
+    "hia/tests/patch_application_oracle/observations.py": "88c12ec6c7345d1ab03b548405a28a1ae2e0e47bca793fee7d12ccaa1766d3ec",
+    "hia/tests/patch_application_oracle/validation.py": "a7a0dcf4f793a2cab68eb8253dcc55cde6a4232f6c0d0e9762f355371da64bc5",
+    "hia/tests/patch_application_oracle/values.rs": "791024c250a182598a7d9fe60ed3d22a4f0a41d185c0239efb2613d616e2762d",
+    "hia/tests/patch_application_oracle/writers.rs": "064e7f3fe5aba4bc7815783623d09ff2464d20c90f182aca93e9fcfda096380d",
     "hia/tests/patch_effects_oracle/__init__.py": "4675671d37c98f45a557c3e0869ffc87a9f0c7c3fe0c408cb546a1dee58c97ec",
-    "hia/tests/patch_effects_oracle/admission.py": "f0cb43fa3b2da27a57145291cde90e1a1a5e284e29de136b435410db3ca0956c",
+    "hia/tests/patch_effects_oracle/admission.py": "7e373da640210eedaf0f5d21c69fcb63df1d488c98554fb4d7c81e1ee188a434",
     "hia/tests/patch_effects_oracle/driver.rs": "248138e83e798b14f5e8d48bf28da7042e2486ab00d19c339b7f091fb941c680",
     "hia/tests/patch_effects_oracle/observations.py": "4d2ca57efddd58acaa8e4fdcb1b5533352f84dfac707bea3c7ba91aab9732af4",
     "hia/tests/patch_effects_oracle/observed_fs.rs": "bec939e2e1804f1c0cfc2b7ff222c167c9c55c824a732d20840afddfae040d8b",
@@ -612,8 +650,8 @@
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
     "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5",
     "hia/tests/test_file_update_abi.py": "d591e493a70ffc43923d9cd84341c72238aa6072d1c3403ca7bc1aade02930f5",
-    "hia/tests/test_installed_codex.py": "aeda4e6db874b769e57002a86e905e7001a851ade5ceeb31243c2178f68903b0",
-    "hia/tests/test_installed_patch.py": "9032eba104fadd48ee92088b1401780962e18c65962d9a4a39bc00f4031e1284",
+    "hia/tests/test_installed_codex.py": "2f2a277df63664993715a81d077379516211f3906ec7243456928cacbc239e26",
+    "hia/tests/test_installed_patch.py": "ca050156dea696df7233c5246f0546a022b1d12fc3fcc53658cbfbcece51663e",
     "hia/tests/test_markdown_location_abi.py": "bac67c99f75d4899571db903acd570a548ed62a7b3b2943f850c9d46ef06ca1d",
     "hia/tests/test_metric_tag_abi.py": "6d10774c87586c9ab428809acf9fa2007b2658cf074909d09b44b7851e3239be",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
@@ -621,6 +659,7 @@
     "hia/tests/test_native_markdown_caller.py": "92fb33c542e50e55d81b20abce470c4bec54359b3a2a79b488d55e4f45220157",
     "hia/tests/test_native_metric_caller.py": "31f1965f7620e392e123dfa5c908454dad3f2e179976b2132d30705345ef8adc",
     "hia/tests/test_native_parser_caller.py": "f4ff47173bd8954634039b4f5efda70f842bb4d44656026c58d5968685b850a4",
+    "hia/tests/test_native_patch_application_caller.py": "8137a14cc53273865325b9d2935b2c34ad0e5b67880d13f27558f10169f9fb3d",
     "hia/tests/test_native_patch_effects_caller.py": "3cdd64f7bd36c31ad383792deb98c0c4fbcc669aa0b3eb3aff536bb2e84386f5",
     "hia/tests/test_native_patch_summary_caller.py": "73409f498ee5cfdb6f069ccc21a5883d752e813d7d77700f935a0594bf6dd66d",
     "hia/tests/test_native_source_file_caller.py": "a7f00401280170a4b49adf7c5b73ff09526bd48e119190c6cebaca209690733e",
@@ -629,6 +668,7 @@
     "hia/tests/test_native_unified_diff_caller.py": "272a9984c3f2f028bcd83c2d9e6c088e0267fbeb5e41314b5a1480de2162ef6b",
     "hia/tests/test_parser_abi.py": "72530c2b2c4f554028c4786cefc625b15ccfab5face9c477dfad71e995a758ba",
     "hia/tests/test_parser_host_receipt.py": "84829f52edd05a7ff18998dfef83a7254c9b19673100c1be808910591207cdd7",
+    "hia/tests/test_patch_application_abi.py": "bbc6db386d25b894b265f409faa1dddf6a60b789aeafa2c3eef7263cbaf1dcab",
     "hia/tests/test_patch_effects_abi.py": "4cdbeabf2fed08f3b62d301186ed04b716d695da5dec80e3e4f200e538471c37",
     "hia/tests/test_patch_summary_abi.py": "e4442d6230eaefa2ed2def0460fbeeed7005dc01cdcf1290d5896bfb13a15c08",
     "hia/tests/test_scalar_build_admission.py": "490c838d4a46957d29bd73b9f8eb760c7fc83833af2aa66bd4dc7023c4f3e46e",
@@ -663,7 +703,7 @@
     "hia/tests/unified_diff_oracle/policies.py": "c7fffeb197db86aa53c3596569ef5a1ff50f8d086cc2f1d07a03b761e22bcc0b",
     "hia/tests/unified_diff_oracle/public.py": "b603892a2965765b557f23300d7bc4854aed828919455fff141d1708d3677f8a",
     "hia/token_budget.hepta": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
-    "hia/toolchain.json": "b72f7e1561288832a085bf69763f55b7778171bb10a11d7536a69eb808bc6647",
+    "hia/toolchain.json": "360ce2f5f143ad67eac2b73bebd318dca9efeeb553601c69364dd548f189fa48",
     "hia/truncate.hepta": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
     "hia/unified_diff.hepta": "36e347f329d061af2e6f45fbd7f0897b3c0a870a54b3d05090b335bfbce72ef5",
     "hia/unified_diff_buffer_contract.json": "758ffca2ba472ba7e8cd0618a92b5867c611efcdbc633d00ecae9bbafea1045e",
@@ -1099,15 +1139,16 @@
     "performance_qualified": false
   },
   "current_product_ci": {
-    "status": "cached_alias_repair_prepared_full_ci_pending",
+    "status": "fifteen_module_application_driver_pin_repair_public_and_full_ci_pending",
     "qualified": false,
-    "candidate_parent": "0339bd5f863ba2459084115906a875b10595a704",
-    "prior_attempts": "historical_published_ci.patch_output_before_cached_alias_repair",
+    "candidate_parent": "1083727e83e25f45686e19bfff1c13e393286354",
+    "parent_ci": "The direct parent is published 1083727e. Its clean H public run passed effects and rejected the stale driver pin before any application observer. Its consumer CI remains separately audited; no H result substitutes a CI outcome. Both older 08df native workflows failed their heredoc fixture; successful e23 workflows retain fourteen-module scope.",
     "pending_gates": [
-      "Complete original public effect, summary and unified comparisons on the final native/default production artifacts.",
-      "Actual current checked/wrapping policy, cached compiler receipt, source-negative, just test, strict all-target Clippy and scoped just fix gates.",
-      "Full owner/consumer CI and installed apply_patch/full Codex with six/thirteen required native symbols.",
-      "Required platforms, default releases/LTO and whole-product performance."
+      "Complete repaired immutable-original application comparison: 1470 pairs and 2940 processes across all three public APIs, with every observed transition and action independently covered. The targeted repair probe does not qualify this complete matrix.",
+      "Current complete original effect, summary and unified comparisons, including checked/wrapping owner policy and the original eight rejection cases.",
+      "Complete consumer CI on the final published source, scoped just fix and final formatting. Actual prepublication owner native/default Cargo, just tests and strict Clippy passed within their separately bound scope.",
+      "Installed apply_patch and full Codex with seven and fourteen required native symbols, complete current consumer CI and clean source identity.",
+      "Required platforms, default dispatch, clean releases/LTO and whole-product performance."
     ]
   },
   "historical_published_ci": {
@@ -1403,6 +1444,23 @@
         "complete unified public comparison"
       ],
       "executed_scope": "All other executed steps succeeded: fourteen native modules, component gates, summary public 1002 pairs, inherited 5375 Rust passes/6 existing skips, original effects/file-update, installed executables and strict/fix. These do not close the failed policy or skipped unified public gates."
+    },
+    "patch_output_cached_alias_repair": {
+      "head": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+      "tree": "e25b329eccdda8a5a0045e19942095ed01aac9b5",
+      "pull_request": 6369,
+      "push_run": 43706537096,
+      "pull_request_run": 43706541596,
+      "attempt": 1,
+      "each_run_steps_passed": 60,
+      "actual_source_specific_native_ci_passed": true,
+      "broader_checks_and_whole_product_qualified": false,
+      "audit": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-output-ci/cached-alias-repair-v1/terminal-audit.json",
+        "bytes": 216130,
+        "sha256": "0a1765be6f6ac9b0450455e70e2e7e9aefd90f42a0c183c3a90a4b0672e3459d"
+      },
+      "scope": "Complete checked/wrapping owner admissions and eight rejection cases, unified 7948 pairs/15864 HIA calls, summary 1002 pairs, effects 360 pairs, inherited tests, installed checks and strict/fix passed for this fourteen-module parent. This is not fifteen-module qualification; both older 0339 failed archives remain retained."
     }
   },
   "historical_performance": {
@@ -2325,5 +2383,431 @@
     "production_cargo_qualified_on_final_combination": false,
     "installed_full_codex_qualified": false,
     "whole_product_qualified": false
+  },
+  "patch_application_increment": {
+    "status": "native_components_and_owner_preflight_passed_targeted_fixture_repair_passed_full_public_pending",
+    "parent": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+    "native_module_count": 15,
+    "prior_fourteen_sources_and_machine_artifacts_unchanged": true,
+    "new_archive_matches_frozen_prototype": true,
+    "raw_counts": {
+      "native_calls": 2790,
+      "error_no_write_cases": 1841,
+      "legal_transitions": 25,
+      "concurrent_calls": 512,
+      "skipped": 0
+    },
+    "admission_checks_passed": 70,
+    "independent_h_native_artifacts_equal": 45,
+    "independent_h_build_report_sha256": "bdd8848d0bece5db1b16e4c8445fc808e2d8a972221bd429d684eafb7714602c",
+    "h_prepublication_source_inputs_sha256": "03645fd9956201b6c3438e17f63a8055c8253ec798d3eb6845926181a3fa8a01",
+    "h_prepublication_source_files": 9922,
+    "source_refresh_is_cargo_qualification": false,
+    "public_matrix_planned_pairs": 1470,
+    "public_matrix_planned_processes": 2940,
+    "public_matrix_executed": false,
+    "controlled_pending_and_cancellation_qualified": false,
+    "scope": "Native production sources and machine artifacts are unchanged. The prepublication owner preflight remains bound to e23 plus 21 code paths. The first clean 08df public attempt and its fixture-construction failure are separately retained below. Only the six-file repair targeted probes have passed; the full repaired 1470 pairs, final fix/format, full consumers and installation remain pending.",
+    "production_cargo_qualified": false,
+    "installed_full_codex_qualified": false,
+    "whole_product_qualified": false,
+    "legacy_retirement_qualified": false,
+    "native_build": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/native-build-v1/build.json",
+      "bytes": 184382,
+      "sha256": "dd8c2b46f6826528573c1fc03eb3d941ee82e66cba863e3bbeb8bdddd6d891d8"
+    },
+    "native_build_audit": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/native-build-audit-v1/report.json",
+      "bytes": 9967,
+      "sha256": "95187c87dbf372323d4a986b1ebfdd73d4576d7cda896cec91de322ef4017cf6"
+    },
+    "source_freeze": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application-native/manifest-v1.json",
+      "bytes": 5133,
+      "sha256": "fc69faf63379805c8248a7482cdbc3ad219e2ae8c338307728e66010f53ee725"
+    },
+    "oracle_freeze": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/freeze-manifest-v1.json",
+      "bytes": 14742,
+      "sha256": "d451f859ccb3e18e1a0a8d83622948599f82c5cc1a8b630b529d5313fdc6c468"
+    },
+    "semantic_review": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application-native/readonly-audit-v1/manifest.json",
+      "bytes": 3089,
+      "sha256": "af5f9216b9a461281a32b3669ecf677840551f2591e26b27639618fd576dd251"
+    },
+    "source_integration": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/integration-v1/report.json",
+      "bytes": 2436,
+      "sha256": "a293fa22b630fd51107b5b3b3b024a72d4720c1af9a452232dbec7be2a4e5c71"
+    },
+    "oracle_integration": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/oracle-integration-v1/report.json",
+      "bytes": 5699,
+      "sha256": "3db248217c0adc0ac6087a6bab1ef39091718dbaed823b0b8bb37da972e43f86"
+    },
+    "ci_integration": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/ci-integration-v1/report.json",
+      "bytes": 332,
+      "sha256": "3c0478308fd3000c64941b01d44f827f891d92e2f58203c41be09aad1a0cbdb4"
+    },
+    "raw_abi": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/application-abi-v1.json",
+      "bytes": 3988,
+      "sha256": "1cb1feae9cb9afc90a564f6f48640b3376a4c465a22fec3c7fc6514c8c6eab7c"
+    },
+    "admission": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/application-receipt-v1.json",
+      "bytes": 2680,
+      "sha256": "14de477c5955ca33b4460e1716983812daf657c9dc67f5622788f5d54c2289da"
+    },
+    "independent_h_native_build": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/remote-evidence/setup-v2/report.json",
+      "bytes": 6231,
+      "sha256": "916b1f7513a482af51d3297fe506b1ad9e5e963aa06b011b5acd28b128ae0f1b"
+    },
+    "h_source_refresh": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/remote-evidence/source-refresh-v1/report.json",
+      "bytes": 1181,
+      "sha256": "b4b342ef4fb1692e91e9a52a4eccb1922c9d242feeedf3cb033e7a03cb819264"
+    },
+    "owner_preflight": {
+      "passed": true,
+      "actual_commands_all_zero": 21,
+      "default_just_tests_passed": 99,
+      "native_just_tests_passed": 101,
+      "test_skips": 0,
+      "strict_all_target_workspace_clippy_modes_passed": [
+        "default",
+        "hia-native"
+      ],
+      "workspace_lint_levels": 37,
+      "uncapped_native_clippy_receipts": 2,
+      "checked_policy_admissions": 4,
+      "each_actual_graph_units_files_direct_entries": [
+        666,
+        1284,
+        15
+      ],
+      "source_and_graph_artifacts_unchanged": true,
+      "tested_source_scope": "Prepublication e23 parent plus the frozen 21 code paths. The final three metadata documents and a two-import ordering change in the public oracle were applied afterward; all production inputs remain identical. Clean-source public qualification remains pending.",
+      "report": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-preflight-v2/actual-report.json",
+        "bytes": 68513,
+        "sha256": "77bc6164746b748841e9f0b8edcb4f63043c0b5831ad4673136ae0236bde7a33"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-preflight-v2/freeze-manifest.json",
+        "bytes": 6508,
+        "sha256": "ef3a862334c7ceb1196dc20569a121dc99b098000dd11baa762e0cbef1b7fa6b"
+      },
+      "summary": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-preflight-v2/verified-summary.json",
+        "bytes": 2496,
+        "sha256": "9eca6cb72e86929cfa561b95d060cd902e7239bb11d21a83df614a41c57d2358"
+      },
+      "terminal_result": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-preflight-v2/result.json",
+        "bytes": 3961,
+        "sha256": "4ec9da3026dd5d9ae48c4855954925a92217f8d909f12e0b732b86691d393c8c"
+      },
+      "prior_durable_launch_state": "UNKNOWN retained unchanged; read-only checks found no process/unit/output before the separately recorded guarded fixed-unit launch.",
+      "prior_fixed_unit_exit_code": 1,
+      "prior_fixed_unit_failure": "The nextest version guard rejected global 0.9.151 before Cargo metadata/build/test. A separately owned 0.9.103 installation then passed; no global tool changed.",
+      "prior_failure_report": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-preflight-v1/failed-preflight-report-v1.json",
+        "bytes": 41514,
+        "sha256": "1efe72dafa614363d3b95167bf94c50670a9fa7363aec007a0c504bc5882a30e"
+      },
+      "complete_original_public_executed": false,
+      "final_fix_or_fmt_executed": false,
+      "full_codex_executed": false,
+      "whole_product_qualified": false
+    },
+    "oracle_format_followup": {
+      "path": "/workspace/scratch/9f380f39cb05/next-patch-application/format-followup-v1.json",
+      "bytes": 691,
+      "sha256": "0d321948b8d539a972434d7d4a9b23700ad878cab5f2951088258a9396e7e1ab"
+    },
+    "first_clean_public_attempt": {
+      "published_head": "08dfcb769c44eea3738b02c21b5834ad32476a21",
+      "published_tree": "3677af6ed0752d486e309d1a3f31ab7a4631e7a8",
+      "passed": false,
+      "exit_code": 1,
+      "scope": "Clean 08df whole-owner attempt; failure occurred while constructing the original typed-hunk fixture, before the tested apply_hunks API.",
+      "source_files": 9922,
+      "source_snapshot": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application/publication-v2/source-inputs.json",
+        "bytes": 2069004,
+        "sha256": "af10cc15a38910b6abf3ba55ffa684d4bdb854e95862984b8619df8e06923830"
+      },
+      "source_unchanged_at_failure": true,
+      "effects": {
+        "passed": true,
+        "source_and_artifacts_unchanged": true,
+        "original_source_files": 121,
+        "original_root_tests": {
+          "names": [
+            "tests::test_add_file_hunk_creates_file_with_contents",
+            "tests::test_apply_patch_fails_on_write_error",
+            "tests::test_apply_patch_hunks_accept_relative_and_absolute_paths",
+            "tests::test_delete_file_hunk_removes_file",
+            "tests::test_delete_symlink_returns_inexact_delta",
+            "tests::test_failed_move_returns_committed_destination_delta",
+            "tests::test_multiple_update_chunks_apply_to_single_file",
+            "tests::test_pure_addition_chunk_followed_by_removal",
+            "tests::test_unreadable_destinations_return_inexact_delta",
+            "tests::test_update_file_hunk_can_move_file",
+            "tests::test_update_file_hunk_interleaved_changes",
+            "tests::test_update_file_hunk_modifies_content",
+            "tests::test_update_line_with_unicode_dash"
+          ],
+          "passed": 13,
+          "skipped": 0,
+          "scope": "13 unchanged root tests; other complete crate tests are not claimed."
+        },
+        "actual_graph_counts": {
+          "default": {
+            "units": 666,
+            "files": 1284
+          },
+          "native": {
+            "units": 666,
+            "files": 1284
+          }
+        },
+        "pairs": 360,
+        "processes": 720,
+        "mismatches": 0,
+        "skipped": 0,
+        "native_transport": {
+          "passed": true,
+          "actual_processes": 14,
+          "planner_call_attempts": 95,
+          "real_native_forwarded_calls": 88
+        }
+      },
+      "application": {
+        "passed": false,
+        "matched_pairs": 756,
+        "successful_observed_processes": 1512,
+        "additional_failed_original_processes": 1,
+        "actual_process_attempts": 1513,
+        "failed_case": 756,
+        "failed_case_name": "heredoc_unicode",
+        "failed_entry": "apply_hunks",
+        "failure_before_tested_api": true,
+        "failed_returncode": 1,
+        "failed_signal": null,
+        "native_counterpart_executed": false,
+        "successful_native_calls": 3261,
+        "full_1468_passed": false,
+        "error": "RuntimeError: actual application observer process failed"
+      },
+      "fixture_cause": "The heredoc_unicode fixture used unsupported literal <<'PATCH' ... PATCH; parse_patch rejected it before apply_hunks.",
+      "final_fix_or_fmt_executed": false,
+      "complete_public_qualified": false,
+      "freeze": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v1/failure/freeze-summary.json",
+        "bytes": 5997,
+        "sha256": "7df47f34d607141944ba59cfd4fda898af9e2eb7321bd7099a1b84c8122d1674"
+      },
+      "main_report": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v1/failure/main-report.json",
+        "bytes": 792963,
+        "sha256": "749958a59665dadf0af523c1082a866c0d422a53583bef15725b40a455afb563"
+      },
+      "application_report": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v1/failure/application-report.json",
+        "bytes": 54215,
+        "sha256": "a0fad2533636eea0b9bacd29bf15dc1b968c642ea053f1e06d3190135f52b07c"
+      },
+      "effects_report": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v1/failure/effects-report.json",
+        "bytes": 732125,
+        "sha256": "377acbba3b33d8ef7a808aede3b478ab0bcaa57ed9891fb055b061245754dd86"
+      },
+      "terminal_result": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v1/failure/result.json",
+        "bytes": 3107,
+        "sha256": "d850b05b44da109b51623ae28f67e7681cd76a0d2c543409693727fd1c458df2"
+      }
+    },
+    "fixture_repair": {
+      "status": "targeted_passed_full_matrix_pending",
+      "direct_parent": "08dfcb769c44eea3738b02c21b5834ad32476a21",
+      "test_files_changed": 6,
+      "production_inputs_changed": false,
+      "native_artifacts_changed": false,
+      "historical_preflight_and_failure_evidence_changed": false,
+      "old_wire_selector_prefix_unchanged": 1468,
+      "old_materialized_patch_bytes_changed": 18,
+      "materialized_change": "The 18 heredoc_unicode selectors now construct EOF delimiters instead of PATCH; unchanged serialized selectors do not mean unchanged actual patch bytes.",
+      "preserved_PATCH_rejections": {
+        "new_cases": 2,
+        "entries": [
+          "apply_patch",
+          "apply_patch_with_options"
+        ],
+        "options": "default",
+        "context": "none",
+        "writers": "normal",
+        "scope": "Original PATCH bytes retained only in these two string-API rejection cases, not across every prior context/options combination."
+      },
+      "planned_pairs": 1470,
+      "planned_processes": 2940,
+      "complete_matrix_executed": false,
+      "targeted_pairs": 20,
+      "targeted_processes": 40,
+      "delimiter_pairs": 7,
+      "delimiter_processes": 2,
+      "targeted_mismatches": 0,
+      "targeted_skips": 0,
+      "actual_probe_exit_code": 0,
+      "after_source_inputs": {
+        "hia/tests/patch_application_oracle/corpus.py": "ac369768217dd5f3c448e19be31a9235e1872390645da229b704ea0cbc3062f2",
+        "hia/tests/patch_application_oracle/driver.rs": "0306fc9ae81434d1846ad0e1ebd037e7d027b99ea3abd4afdf59bcfc0c3468c8",
+        "hia/tests/patch_application_oracle/fixtures.rs": "9dc67411da1c7d98bbd58deea90035dd729de9e3c7410e5fae3b99ffd806d94c",
+        "hia/tests/patch_application_oracle/observations.py": "88c12ec6c7345d1ab03b548405a28a1ae2e0e47bca793fee7d12ccaa1766d3ec",
+        "hia/tests/patch_application_oracle/validation.py": "a7a0dcf4f793a2cab68eb8253dcc55cde6a4232f6c0d0e9762f355371da64bc5",
+        "hia/tests/test_native_patch_application_caller.py": "950e8bf112cad73361954d752574e9dbe2015ea25b24f98656884796d36b4769"
+      },
+      "freeze": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/fixture-repair-v1/freeze-manifest.json",
+        "bytes": 5454,
+        "sha256": "44582c52b8407e5c5e263fda22e690daa42a4923412ac5576caaa96b2df3ae9b"
+      },
+      "independent_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-application-ci/fixture-repair-independent-review-v1.json",
+        "bytes": 4808,
+        "sha256": "78ce6e87bfd1c2f07512050acb180e8a9c2c38d2298ea3d1a4d9c70b53fef5ea"
+      },
+      "targeted_report": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/fixture-repair-v1/actual-report.json",
+        "bytes": 82701,
+        "sha256": "61498e0285661a17f5a861ff65057b07e88ebcc440dd9c7ba1a4abafbc60be6f"
+      },
+      "targeted_terminal": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/fixture-repair-v1/actual-terminal.json",
+        "bytes": 729,
+        "sha256": "34b73d2820e72fe6b50e9cc6bc0575db7b3ebce11f352dc1966bf4d9d081eb57"
+      }
+    },
+    "second_clean_public_attempt": {
+      "published_head": "1083727e83e25f45686e19bfff1c13e393286354",
+      "published_tree": "843274870c5888265b042d8b98fb64a0e9bf1d47",
+      "main_passed": false,
+      "exit_code": 1,
+      "source_at_failure": {
+        "path": "/home/qq/codex-hia-work/9f38-recovery-20261115/next-patch-application/public-qualification-v2/source-at-failure.json",
+        "bytes": 2069004,
+        "sha256": "5ff8d788c268d4eb63df504fb9df75f1999b9e0298ede4ebbfc21d12800306ce"
+      },
+      "source_unchanged_at_failure": true,
+      "application": {
+        "passed": false,
+        "observer_compiles": 0,
+        "processes": 0,
+        "compared_pairs": 0,
+        "native_calls": 0,
+        "failure_before_observer_compilation": true,
+        "error": "RuntimeError: bound input differs: /home/qq/codex-hia-work/9f38-recovery-20261115/patch-application/hia/tests/patch_application_oracle/driver.rs",
+        "old_driver_pin": "d725d1f8fd33a9849f44d274bd98ad7b0ef97ae35b4499a847e28ca7b1c1a436",
+        "actual_driver_sha256": "0306fc9ae81434d1846ad0e1ebd037e7d027b99ea3abd4afdf59bcfc0c3468c8",
+        "full_1470_passed": false
+      },
+      "final_fix_or_fmt_executed": false,
+      "readonly_final_check": {
+        "actual_job": "1a1df43e053-392-26ad",
+        "actual_exit_code": 0,
+        "report": {
+          "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/readonly-final-report.json",
+          "bytes": 1683,
+          "sha256": "6d79424b92a6304ca4118598b8dec8b44e382125f84cb21c04023331daf585bf"
+        },
+        "terminal": {
+          "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/readonly-final-terminal.json",
+          "bytes": 731,
+          "sha256": "7500d934c9117658525902c59f48241e5fda4243121dda9c3f0cd72da03cc796"
+        },
+        "native_artifacts_unchanged": 45,
+        "old_public_v1_and_probe_files_unchanged": 28080,
+        "preflight_staged_files_unchanged": 2568,
+        "current_graphs_verified": 2
+      },
+      "effects": {
+        "passed": true,
+        "source_and_artifacts_unchanged": true,
+        "original_source_files": 121,
+        "pairs": 360,
+        "processes": 720,
+        "mismatches": 0,
+        "skipped": 0
+      },
+      "original_root_tests_passed": 13,
+      "freeze": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/freeze-summary.json",
+        "bytes": 7550,
+        "sha256": "169d7e092b0937139fb361638d29b6ce029d2c986228068a59581adcb175f61b"
+      },
+      "reports": {
+        "main-report.json": {
+          "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/main-report.json",
+          "bytes": 795897,
+          "sha256": "27477e15a272a4739617d183bc9aa8c5d0c5acbb098cd4b62d1e033f9acd0829"
+        },
+        "effects-report.json": {
+          "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/effects-report.json",
+          "bytes": 732384,
+          "sha256": "00bb34c2f927dcaea061d6c02384ddf9d6448accab81d0b83150cb931841aefb"
+        },
+        "application-report.json": {
+          "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/application-report.json",
+          "bytes": 827,
+          "sha256": "c30175abb33ec69c210f3da73cf91de39420419b49c0a588f8eab5c344280be2"
+        },
+        "result.json": {
+          "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/result.json",
+          "bytes": 3107,
+          "sha256": "7661ebac738abc4c12b447c649703eef030c68c90a6037dfc13ce5b284c04857"
+        },
+        "unit-terminal.json": {
+          "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/h-public-v2/failure/unit-terminal.json",
+          "bytes": 1460,
+          "sha256": "58aa8c4a55b7639bb1b68e374f6de99d9c5a587f476cc9693ba53176e7f4af47"
+        }
+      }
+    },
+    "driver_pin_correction": {
+      "status": "strict_source_binding_repaired_full_public_pending",
+      "direct_parent": "1083727e83e25f45686e19bfff1c13e393286354",
+      "only_test_file_changed": "hia/tests/test_native_patch_application_caller.py",
+      "old_pin": "d725d1f8fd33a9849f44d274bd98ad7b0ef97ae35b4499a847e28ca7b1c1a436",
+      "new_pin": "0306fc9ae81434d1846ad0e1ebd037e7d027b99ea3abd4afdf59bcfc0c3468c8",
+      "actual_driver_bytes": 8494,
+      "before_runner_sha256": "950e8bf112cad73361954d752574e9dbe2015ea25b24f98656884796d36b4769",
+      "after_runner_sha256": "8137a14cc53273865325b9d2935b2c34ad0e5b67880d13f27558f10169f9fb3d",
+      "all_runner_literal_source_pins_checked": {
+        "hia/tests/patch_application_oracle/driver.rs": "0306fc9ae81434d1846ad0e1ebd037e7d027b99ea3abd4afdf59bcfc0c3468c8",
+        "hia/tests/patch_effects_oracle/observed_fs.rs": "bec939e2e1804f1c0cfc2b7ff222c167c9c55c824a732d20840afddfae040d8b"
+      },
+      "exact_constant_only_change": true,
+      "strict_guard_relaxed": false,
+      "production_sources_changed": false,
+      "native_artifacts_changed": false,
+      "full_matrix_executed": false,
+      "proof": {
+        "path": "/workspace/scratch/9f380f39cb05/next-patch-application-oracle/driver-pin-repair-v1/proof.json",
+        "bytes": 1263,
+        "sha256": "c6586f908af5ab04ea45a8d2ecfc7b22611def60f1c1634ffdfcca3651dd5fb9"
+      },
+      "independent_review": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/patch-application-ci/fixture-repair-v1/driver-pin-independent-review-v1.json",
+        "bytes": 1754,
+        "sha256": "7213a95a3f8b87be0b52903ba67a04b78cf23bbea17eaa51efe3a8ec4650c399"
+      },
+      "review_scope_correction": "The prior narrow six-file review missed an unchanged cross-file pin. Its limited probe and review are retained unchanged and do not cover full entrypoint admission."
+    }
   }
 }

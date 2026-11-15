@@ -2,7 +2,7 @@
 
 This directory contains the current HIA implementation and its native build,
 contracts, Rust call boundaries and original-behavior tests. The combined patch
-candidate contains **14 compiled modules covering twelve algorithm groups**.
+candidate contains **15 compiled modules covering thirteen algorithm groups**.
 Production selection remains the opt-in `hia-native` feature on Linux x86-64 GNU.
 The complete Codex rewrite, default release migration, required-platform
 qualification, whole-product performance and legacy retirement remain open.
@@ -30,23 +30,25 @@ complete workspace or a different source tree.
 | `patch_effects` | Filesystem operation order, missing-parent retry, committed delta transitions, exactness and removal-error comparison. | Rust performs selected real filesystem calls with the original path, context and options. |
 | `unified_diff` | Line splitting, Myers/Compact/Replace transitions, grouping, context arithmetic and unified-diff bytes. | Rust transports valid strings and materializes HIA-selected output; actual compiler receipts select the supported arithmetic mode. |
 | `patch_summary` | Success header, A/M/D group order, path index and continuation selection. | Rust executes each original `writeln!` separately with the actual `Path::display` and `Write` implementation. |
+| `patch_application` | Parser/effects/summary order, diagnostic choice, writer-error priority and committed-delta result selection. | Rust retains original typed errors, individual writer calls and the existing asynchronous effects future. |
 
 The patch path composes the native parser, file-update planner, matcher,
-SourceFile owner, effect state machine, unified formatter and summary selector.
+SourceFile owner, effect state machine, unified formatter, summary selector and
+application result routing.
 The feature-selected adapters use HIA for these decisions. PathUri, real
 filesystem execution, symlink/sandbox enforcement, string allocation and the
 public writer's formatting/I/O remain host boundaries. The original Rust owners
 remain available to the default platform path and immutable parity tests.
 
-Thirteen native symbols are required in installed full Codex checks, including
-six in apply_patch. Standalone apply_patch does not call the unified formatter;
+Fourteen native symbols are required in installed full Codex checks, including
+seven in apply_patch. Standalone apply_patch does not call the unified formatter;
 the full Codex verification path does. `utf8_boundaries` has a separate
 qualification entry. These are required checks, not claims that the new installed
 combination has already passed.
 
 ## Native interfaces
 
-The six complete buffer contracts are normative:
+The seven complete buffer contracts are normative:
 
 - [SourceFile](source_file_buffer_contract.json): strict operations 0–7 and
   trusted-string counterparts 8–15; 64-byte request header, 40-byte result header
@@ -62,6 +64,8 @@ The six complete buffer contracts are normative:
   panic results.
 - [Patch summary](patch_summary_buffer_contract.json): 64-byte request and result,
   no workspace, explicit group/index continuation and one selected write effect.
+- [Patch application](patch_application_buffer_contract.json): 64-byte request and
+  result, no workspace, two entries and 25 explicit result-routing transitions.
 
 All integer fields in these buffer interfaces are little-endian u64. Their
 capacity, frame, range, UTF-8, error-priority and no-write rules are specified in
@@ -69,6 +73,14 @@ the contracts and exercised directly against machine code. Unaligned live,
 disjoint buffers are supported. Native calls retain no host pointers.
 
 ### Patch semantics
+
+The application continuation selects parse/effects/summary sequencing and the
+result after each original writer call. A failed diagnostic takes precedence over
+the parse or effects error; a failed summary preserves the already committed
+delta. Effects diagnostics execute before an error downcast. The adapter awaits
+the original effects future once and preserves its typed error ownership. The
+raw continuation gate does not qualify controlled Pending/cancellation behavior;
+that scope remains explicit in the verification record.
 
 SourceFile retains LF, CRLF and bare CR, the first preferred ending, and the
 absence of a terminal empty sentinel. Inserted strings containing internal
@@ -243,6 +255,61 @@ the complete Codex owner gates.
 
 ## Qualification
 
+### Current fifteen-module application candidate
+
+The current build reproduces the B1/B2/B3 fixed point and preserves every prior
+HIA source, namespaced object, archive and shared-library identity. A separate
+remote build reproduced all 45 machine artifacts. The application gate executed
+2,790 native calls, including 1,841 error/no-write cases, 512 concurrent calls and
+all 25 legal transitions, with zero skips. Its source/archive admission passed
+70 checks against the actual fifteen-module build.
+
+The actual owner preflight passed all 21 commands: native/default Cargo,
+101/99 tests through `just test` with zero skips, both strict all-target workspace
+Clippy modes and actual compiler receipt admissions. Its complete 9,922-file
+source snapshot and machine artifacts remained unchanged. After this
+prepublication test, final preparation changed the three metadata documents and
+formatted the order of two oracle imports; all production inputs remain identical.
+
+The first clean published `08dfcb76` public run passed the effects gate with
+121 complete original inputs, 13 unchanged root tests and 360 result pairs.
+Application comparison then stopped at case 756 during original fixture
+construction, before `apply_hunks`: the fixture used unsupported literal
+`<<'PATCH' ... PATCH`. It had matched 756 pairs, with 1,512 successful process
+observations and one failed original attempt; the native counterpart of the
+failed case did not run. Source bytes were unchanged. This attempt did not reach
+final fix or formatting and does not qualify the complete application matrix.
+
+The six-file test repair changes 18 materialized heredoc patches from `PATCH`
+to accepted `EOF` delimiters. The previous 1,468 serialized selectors remain an
+identical prefix, but those 18 actual patch inputs change. Two added rejection
+cases retain the exact old `PATCH` bytes through the string APIs with default
+options, no context and normal writers; other option/context combinations are
+not claimed for these two additions. Targeted real-library checks passed
+20 pairs/40 processes and 7 delimiter pairs in 2 processes, with zero mismatches
+or skips. These probes do not qualify the full repaired matrix.
+
+The subsequent clean `1083727e` run passed the fresh complete effects gate,
+then the application entrypoint rejected a stale `DRIVER_SHA256`. No application
+observer was compiled or executed, and final fix/format did not run. This
+follow-up changes that one constant to the already published driver SHA,
+retains the strict check and corpus, and verifies both hardcoded harness pins
+against their actual files. The earlier bounded probe did not exercise this
+full entrypoint admission; both failed runs are retained.
+
+The current requirement is 1,470 original/native pairs and 2,940 processes
+across three public APIs. That complete repaired gate has not run. The three
+metadata documents, earlier two-import ordering follow-up and these six test
+files are outside the original prepublication preflight scope; all production
+inputs and native artifacts remain identical. Final fix/format, installed
+executables and complete current consumer CI remain pending. The direct parent
+is `1083727e`; its consumer CI is audited separately from the H public run, and
+no H result substitutes its actual CI outcome. The earlier nextest version failure and UNKNOWN durable launch retain
+their original evidence and status. The machine-readable failure and targeted
+repair records are linked under `patch_application_increment` in verification.
+
+### Fourteen-module parent history
+
 The first published fourteen-module source, `0339bd5f`, ran both native CI
 attempts. Each had 56 successful steps, one failed cached arithmetic-policy
 admission, and two skipped steps. The checked Cargo build succeeded; its
@@ -250,24 +317,27 @@ hashless publication alias still indexed a different real compiler unit.
 Wrapping, the eight policy rejection commands, and the complete unified public
 comparison did not execute. Both full failed-run archives remain retained.
 
-The current repair selects that alias through the unique hashed peer in the
+The published parent repair selects that alias through the unique hashed peer in the
 same actual Cargo row. Actual compiler output events, crate/features, output
 paths, immutable receipt identity, source/probe/mode checks, and complete
 alias/artifact byte hashes remain required. Seven real baseline commands
 reproduced the failure; 31 repaired commands exercised nine successful
 admissions, four linked policy observers and five genuine rejections. These
-small compiler controls do not qualify the complete owner. Fresh full CI is
-still required for this repaired source; HIA programs and Rust adapters are
-unchanged by the repair.
+small compiler controls are separate from the full owner gates. The repaired
+`e23bc0d7` parent subsequently passed both complete native CI runs on attempt 1,
+each with all 60 steps successful. These runs executed checked/wrapping owner
+admission, all eight rejection cases, 7,948 unified public pairs, inherited
+comparisons, installed checks and strict/fix. Broader checks and whole-product
+qualification remain separate; these parent results do not qualify this candidate.
 
-The current fourteen-module build reproduces the B1/B2/B3 fixed point. All twelve
+The recorded fourteen-module build reproduced the B1/B2/B3 fixed point. All twelve
 existing HIA sources and static archives match the qualified effect parent.
 The summary archive matches its exercised prototype. The unified formatter's
 raw and namespaced objects also match its exercised prototype; its canonical
 archive differs only in the ar member name, `hia.o` instead of `unified_diff.o`.
-The current receipt gates exercise that actual canonical archive.
+Those receipt gates exercised that actual canonical archive.
 
-| Current combination | Observed result |
+| Recorded fourteen-module combination | Observed result |
 | --- | --- |
 | Native build | Fourteen B3 modules; three identical compiler generations; all twelve inherited static archives unchanged. |
 | Summary raw ABI | 1,328 calls, 157 error/no-write cases, 128 concurrent calls and 125 complete small-count traces; zero skips. |
@@ -293,10 +363,10 @@ Clippy. Its complete immutable-original public comparison passed 3,974 fixtures
 under each of the two supported policies: 7,948 pairs and 15,864 native calls.
 The 1,417 outcomes that differ between checked and wrapping behavior are retained.
 These frozen-prototype results bind their exact source/artifact identities;
-the portable gates must separately qualify the final fourteen-module composition.
+the portable gates must separately qualify each final composition.
 
 The canonical component gate has also run on the actual fourteen-module build,
-binding the current source, contract, objects and archives. It rebuilt the complete
+binding that source, contract, objects and archives. It rebuilt the complete
 73-file Similar release into two reference libraries and four observers. Its
 522,858 native calls comprise 109,152 original-corpus calls, 2,490 raw-contract
 calls, 3,136 frontend calls and 408,080 word-boundary calls. This includes 1,082
