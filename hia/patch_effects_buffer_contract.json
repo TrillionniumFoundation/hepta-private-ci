@@ -1,0 +1,299 @@
+{
+  "schema": "codex.hia.patch-effects-buffer-contract.v1",
+  "status": "native candidate contract; complete original public prototype differential passed, current production Cargo and installed qualification pending",
+  "module": "codex_patch_effects",
+  "entry": "f0",
+  "entry_profile": "borrowed-buffers-u32-v1",
+  "source_sha256": "3fa4152c1737970f67d4ab24594870c38f3f03a774ffa151a256da6cf3c026b8",
+  "source_header_bytes": 176,
+  "output_header_bytes": 128,
+  "workspace_bytes": 0,
+  "request_u64_le_fields": [
+    {
+      "byte_offset": 0,
+      "name": "revision"
+    },
+    {
+      "byte_offset": 8,
+      "name": "phase"
+    },
+    {
+      "byte_offset": 16,
+      "name": "hunk_count"
+    },
+    {
+      "byte_offset": 24,
+      "name": "hunk_index"
+    },
+    {
+      "byte_offset": 32,
+      "name": "hunk_kind"
+    },
+    {
+      "byte_offset": 40,
+      "name": "has_move"
+    },
+    {
+      "byte_offset": 48,
+      "name": "delta_exact"
+    },
+    {
+      "byte_offset": 56,
+      "name": "delta_length"
+    },
+    {
+      "byte_offset": 64,
+      "name": "old_present"
+    },
+    {
+      "byte_offset": 72,
+      "name": "destination_delta_index"
+    },
+    {
+      "byte_offset": 80,
+      "name": "callback_status"
+    },
+    {
+      "byte_offset": 88,
+      "name": "metadata_bits"
+    },
+    {
+      "byte_offset": 96,
+      "name": "parent_present"
+    },
+    {
+      "byte_offset": 104,
+      "name": "expected_length"
+    },
+    {
+      "byte_offset": 112,
+      "name": "expected_offset"
+    },
+    {
+      "byte_offset": 120,
+      "name": "observed_length"
+    },
+    {
+      "byte_offset": 128,
+      "name": "observed_offset"
+    },
+    {
+      "byte_offset": 136,
+      "name": "follow_symlinks"
+    },
+    {
+      "byte_offset": 144,
+      "name": "update_mode"
+    },
+    {
+      "byte_offset": 152,
+      "name": "reserved_0"
+    },
+    {
+      "byte_offset": 160,
+      "name": "reserved_1"
+    },
+    {
+      "byte_offset": 168,
+      "name": "reserved_2"
+    }
+  ],
+  "response_u64_le_fields": [
+    {
+      "byte_offset": 0,
+      "name": "revision"
+    },
+    {
+      "byte_offset": 8,
+      "name": "effect"
+    },
+    {
+      "byte_offset": 16,
+      "name": "next_phase"
+    },
+    {
+      "byte_offset": 24,
+      "name": "delta_exact"
+    },
+    {
+      "byte_offset": 32,
+      "name": "delta_length"
+    },
+    {
+      "byte_offset": 40,
+      "name": "next_hunk_index"
+    },
+    {
+      "byte_offset": 48,
+      "name": "next_destination_delta_index"
+    },
+    {
+      "byte_offset": 56,
+      "name": "next_old_present"
+    },
+    {
+      "byte_offset": 64,
+      "name": "delta_action"
+    },
+    {
+      "byte_offset": 72,
+      "name": "affected_action"
+    },
+    {
+      "byte_offset": 80,
+      "name": "hunk_kind_echo"
+    },
+    {
+      "byte_offset": 88,
+      "name": "error_selection"
+    },
+    {
+      "byte_offset": 96,
+      "name": "follow_symlinks_echo"
+    },
+    {
+      "byte_offset": 104,
+      "name": "update_mode_echo"
+    },
+    {
+      "byte_offset": 112,
+      "name": "reserved_0"
+    },
+    {
+      "byte_offset": 120,
+      "name": "reserved_1"
+    }
+  ],
+  "return_status": {
+    "0": "accepted frame and one selected transition",
+    "4294967294": "source or output shorter than fixed headers; no write",
+    "4294967295": "invalid frame, nonempty workspace or arithmetic overflow; no write"
+  },
+  "memory_contract": [
+    "Three buffers are disjoint and live for the call; no pointer is retained.",
+    "Every transport rejection leaves the entire output, source and workspace unchanged.",
+    "Success writes exactly the first 128 output bytes and preserves the output tail, source and workspace.",
+    "No filesystem access, allocation, global state or imported function exists in the HIA module."
+  ],
+  "hunk_kind": {
+    "0": "end only",
+    "1": "AddFile",
+    "2": "DeleteFile",
+    "3": "UpdateFile"
+  },
+  "callback_status": {
+    "0": "no callback; phase 0 only",
+    "1": "success",
+    "2": "io::ErrorKind::NotFound",
+    "3": "another error"
+  },
+  "metadata_bits": {
+    "1": "is_file",
+    "2": "is_symlink",
+    "4": "is_directory"
+  },
+  "update_mode": {
+    "0": "NormalizeToLf",
+    "1": "PreserveLineEndings"
+  },
+  "phases": {
+    "0": "begin or advance",
+    "1": "source resolution result",
+    "2": "source delta-support metadata result",
+    "3": "optional add overwritten text result",
+    "4": "initial add write result",
+    "5": "add parent selection",
+    "6": "add parent creation result",
+    "7": "add retry write result",
+    "10": "delete original text result",
+    "11": "delete directory metadata result",
+    "12": "delete remove result",
+    "13": "delete removal-error read result",
+    "20": "updated content derivation result",
+    "21": "move destination resolution result",
+    "22": "move destination delta-support metadata result",
+    "23": "optional move destination text result",
+    "24": "initial move destination write result",
+    "25": "move source directory metadata result after destination Add",
+    "26": "move source remove result",
+    "27": "move destination parent selection",
+    "28": "move destination parent creation result",
+    "29": "move destination retry write result",
+    "30": "in-place update write result",
+    "31": "move removal-error read result"
+  },
+  "effects": {
+    "0": "done",
+    "1": "resolve source and retain original affected path",
+    "2": "read source metadata",
+    "3": "read source text",
+    "4": "derive updated text with existing file-update owner",
+    "5": "resolve move destination",
+    "6": "read destination metadata",
+    "7": "read destination text",
+    "8": "write source",
+    "9": "write destination",
+    "10": "select source parent",
+    "11": "select destination parent",
+    "12": "create selected source parent recursively",
+    "13": "create selected destination parent recursively",
+    "14": "read source metadata for directory check",
+    "15": "remove source nonrecursively without force",
+    "16": "reread source after failed removal",
+    "17": "advance to next hunk",
+    "18": "return selected error"
+  },
+  "delta_action": {
+    "0": "none",
+    "1": "append source Add",
+    "2": "append source Delete with retained text",
+    "3": "append in-place Update",
+    "4": "append destination Add immediately after successful move write",
+    "5": "replace the previous request destination_delta_index with the move Update"
+  },
+  "affected_action": {
+    "0": "none",
+    "1": "append original Hunk::path() to added",
+    "2": "append original Hunk::path() to modified",
+    "3": "append original Hunk::path() to deleted"
+  },
+  "error_selection": {
+    "0": "none",
+    "1": "No files were modified.",
+    "2": "propagate current host error unchanged",
+    "3": "Failed to write file SOURCE",
+    "4": "Failed to write file DESTINATION",
+    "5": "Failed to create parent directories for SOURCE",
+    "6": "Failed to create parent directories for DESTINATION",
+    "7": "Failed to delete file SOURCE, preserve original removal error when present",
+    "8": "Failed to delete file SOURCE, InvalidInput: path is a directory",
+    "9": "Failed to remove original SOURCE, preserve original removal error when present",
+    "10": "Failed to remove original SOURCE, InvalidInput: path is a directory"
+  },
+  "canonical_frame": [
+    "Boolean words are 0 or 1; all reserved words are zero; metadata_bits <= 7.",
+    "Only listed phases and kind/phase combinations are accepted. Hunk index is below count for active kinds; end kind requires index=count and phase=0.",
+    "No-move is mandatory for Add/Delete/end. Old-present is zero before the initial read/derive result is consumed.",
+    "The destination index is u64::MAX except phases25/26/31, where it is below delta_length.",
+    "Metadata bits must be zero outside successful metadata callbacks. Parent-present is used only at phases5/27 with success.",
+    "All non-probe frames are exactly176 bytes with all four payload span words zero.",
+    "Phases13/31 append expected bytes at offset176 and then observed bytes immediately after. The exact source length closes both spans; failed reads require an empty observed span. These are opaque bytes; UTF-8 validity is not part of byte equality.",
+    "Continuation validation is structural; it is not an authentication of prior host observations. Only the private adapter supplies real host callback results."
+  ],
+  "semantic_invariants": [
+    "Exactness is sticky false. Delta metadata/read operations are still selected when it is already false.",
+    "Add and move destination perform one initial write, and only NotFound selects optional recursive parent creation plus exactly one retry. In-place updates do not retry.",
+    "A move commits destination Add before source metadata/removal. A later failure retains that committed entry; successful removal replaces that same entry.",
+    "Failed removal with known old text always selects a reread, including when exactness is already false. HIA compares the returned bytes and preserves the original removal error.",
+    "Directory-check errors do not perform the removal-error reread.",
+    "Host operations retain the original ExecutorFileSystem, PathUri, sandbox reference and follow_symlinks on every call. Remove is recursive=false/force=false; parent creation is recursive=true.",
+    "Summary grouping and public stdout/stderr behavior remain in the unchanged outer caller.",
+    "A private adapter transport/framing/materialization error conservatively marks the known committed delta prefix inexact; it does not alter the treatment of ordinary filesystem errors."
+  ],
+  "qualification": {
+    "whole_codex_rewritten": false,
+    "production_dispatch_migrated": false,
+    "legacy_retirement_ready": false
+  },
+  "native_entry": "codex_hia_patch_effects"
+}

@@ -31,6 +31,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_source_file",
     "codex_hia_file_update",
     "codex_hia_parser",
+    "codex_hia_patch_effects",
 )
 INPUT_SIZE = 2 * 1024 * 1024
 PATCH = (

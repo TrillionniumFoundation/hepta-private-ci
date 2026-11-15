@@ -1,0 +1,284 @@
+"""Bind complete sources, actual Cargo units and the executed owner libraries."""
+import hashlib
+import json
+from pathlib import Path
+import re
+
+from file_update_oracle import cargo, identity
+
+MODULES = ("seek_sequence", "source_file", "file_update", "parser", "patch_effects")
+ORIGINAL_LIB_SHA256 = "7daa1b1f7df70220bcc2bd45e5e169246261c689b388fbb030c6b60b9d5db07a"
+ORIGINAL_LIB_BLOB = "1450223f39c2ce2e3ec6709df58a612d681e4b0d"
+ORIGINAL_TESTS = frozenset((
+    "test_add_file_hunk_creates_file_with_contents",
+    "test_apply_patch_hunks_accept_relative_and_absolute_paths",
+    "test_delete_file_hunk_removes_file",
+    "test_update_file_hunk_modifies_content",
+    "test_update_file_hunk_can_move_file",
+    "test_failed_move_returns_committed_destination_delta",
+    "test_multiple_update_chunks_apply_to_single_file",
+    "test_update_file_hunk_interleaved_changes",
+    "test_pure_addition_chunk_followed_by_removal",
+    "test_update_line_with_unicode_dash",
+    "test_apply_patch_fails_on_write_error",
+    "test_unreadable_destinations_return_inexact_delta",
+    "test_delete_symlink_returns_inexact_delta",
+))
+OBSERVER_HASHES = {
+    "driver.rs": "248138e83e798b14f5e8d48bf28da7042e2486ab00d19c339b7f091fb941c680",
+    "observed_fs.rs": "bec939e2e1804f1c0cfc2b7ff222c167c9c55c824a732d20840afddfae040d8b",
+}
+PROFILE = {"opt_level": "0", "debuginfo": 0, "debug_assertions": True,
+           "overflow_checks": True, "test": False}
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def original_lib(snapshot, manifest):
+    path = identity.CRATE + "/src/lib.rs"
+    record = manifest["files"][path]
+    require((record["bytes"], record["blob"], record["sha256"]) ==
+            (47657, ORIGINAL_LIB_BLOB, ORIGINAL_LIB_SHA256),
+            "complete immutable original lib.rs identity differs")
+    require(identity.sha(snapshot / path) == ORIGINAL_LIB_SHA256,
+            "complete original library bytes differ")
+    return record
+
+
+def recover_lib(producer):
+    """Remove only exact routing additions, never extract algorithm fragments."""
+    source = producer / identity.CRATE / "src/lib.rs"
+    data = source.read_bytes()
+    restored = data
+    native = '#[cfg(feature = "hia-native")]\n'
+    legacy = '#[cfg(not(feature = "hia-native"))]\n'
+    blocks = [
+        native + "mod hia_native_patch_effects;\n",
+        native + "use hia_native_patch_effects::apply_hunks_to_files;\n",
+    ]
+    for statement in (
+        "use std::io;", "use anyhow::Context;",
+        "use codex_exec_server::CreateDirectoryOptions;",
+        "use codex_exec_server::GetMetadataOptions;",
+        "use codex_exec_server::ReadFileOptions;",
+        "use codex_exec_server::RemoveOptions;",
+        "use codex_exec_server::WriteFileOptions;",
+        "use file_update::AppliedPatch;",
+        "use file_update::derive_new_contents_from_chunks;",
+    ):
+        before = (legacy + statement + "\n").encode()
+        require(restored.count(before) == 1, "legacy import routing is absent or duplicated")
+        restored = restored.replace(before, (statement + "\n").encode(), 1)
+    for function in (
+        "apply_hunks_to_files", "ensure_not_directory",
+        "remove_failure_was_side_effect_free", "read_optional_file_text_for_delta",
+        "note_existing_path_delta_support", "write_file_with_missing_parent_retry",
+    ):
+        after = "async fn " + function + "("
+        before = (legacy + after).encode()
+        require(restored.count(before) == 1, "legacy owner routing is absent or duplicated")
+        restored = restored.replace(before, after.encode(), 1)
+    # These four inherited module declarations are the complete a201 -> 2ff
+    # lib.rs difference, independently observed before effects routing.
+    blocks.extend(native + "mod " + name + ";\n" for name in (
+        "hia_native_file_update", "hia_native_parser",
+        "hia_native_streaming_parser", "hia_native_text_file",
+    ))
+    for block in blocks:
+        encoded = block.encode()
+        require(restored.count(encoded) == 1, "native module/import routing differs")
+        restored = restored.replace(encoded, b"", 1)
+    digest = hashlib.sha256(restored).hexdigest()
+    blob = hashlib.sha1(b"blob " + str(len(restored)).encode() + b"\0" + restored).hexdigest()
+    require((len(restored), digest, blob) ==
+            (47657, ORIGINAL_LIB_SHA256, ORIGINAL_LIB_BLOB),
+            "inverse routing must recover the entire unchanged original lib.rs")
+    return {"current_lib_sha256": hashlib.sha256(data).hexdigest(),
+            "exact_routing_rewrites": 21, "restored_bytes": len(restored),
+            "restored_sha256": digest, "restored_git_blob": blob}
+
+
+def native_inputs(producer, library):
+    report_path = library / "build.json"
+    build = json.loads(report_path.read_text())
+    require(build.get("status") == "built" and build.get("compiler_fixed_point") is True,
+            "a real native compiler fixed point and successful build are required")
+    modules = {}
+    for name in MODULES:
+        record = build["modules"][name]
+        source = producer / "hia" / (name + ".hepta")
+        archive = library / ("libcodex_hia_" + name + ".a")
+        abi = record["codex_link_abi"]
+        require(record["source_sha256"] == identity.sha(source),
+                "stale native source binding: " + name)
+        require(abi["archive_sha256"] == identity.sha(archive) and
+                abi["symbol"] == "codex_hia_" + name,
+                "stale native archive/symbol binding: " + name)
+        modules[name] = {"source_sha256": identity.sha(source),
+                         "archive_sha256": identity.sha(archive), "symbol": abi["symbol"]}
+    sources = {}
+    for relative in (
+        "codex-rs/apply-patch/src/lib.rs",
+        "codex-rs/apply-patch/src/hia_native_patch_effects.rs",
+        "hia/patch_effects_buffer_contract.json",
+    ):
+        sources[relative] = identity.sha(producer / relative)
+    return {"build_report_sha256": identity.sha(report_path),
+            "compiler_sha256": build["compiler_sha256"], "modules": modules,
+            "current_production_sources": sources}
+
+
+def shared_serde(graph, packages):
+    """Select by actual dependency identities, not just package/features names."""
+    records = {}
+    cache = {}
+
+    def fingerprint(unit):
+        key = (unit["package_id"], tuple(unit["files"]))
+        if key in cache:
+            return cache[key]
+        names = [name for name in unit["files"] if name.endswith(".rlib")]
+        require(len(names) == 1, "fingerprint unit must identify one real rlib")
+        file = graph["files"][names[0]]
+        require(file["package_id"] == unit["package_id"], "unit/file package differs")
+        source = Path(file["source"]).resolve(strict=True)
+        package = packages[unit["package_id"]]
+        suffix = source.stem.rsplit("-", 1)[-1]
+        require(re.fullmatch(r"[0-9a-f]{16}", suffix) is not None,
+                "actual Cargo artifact suffix differs")
+        base = source.parent.parent / ".fingerprint" / (
+            package["name"] + "-" + suffix) / ("lib-" + unit["target"]["name"])
+        json_path = base.with_suffix(".json")
+        require(identity.sha(json_path) == unit["fingerprint_sha256"],
+                "fingerprint JSON differs from actual admitted artifact")
+        raw = base.read_bytes()
+        require(re.fullmatch(rb"[0-9a-f]{16}", raw) is not None,
+                "Cargo fingerprint identity is not exactly 16 hex bytes")
+        value = int.from_bytes(bytes.fromhex(raw.decode()), "little")
+        body = json.loads(json_path.read_text())
+        require(json.loads(body["features"]) == unit["features"],
+                "actual fingerprint features differ")
+        deps = {}
+        for dep in body["deps"]:
+            require(len(dep) == 4 and isinstance(dep[1], str) and
+                    type(dep[3]) is int and 0 <= dep[3] < 2**64 and dep[1] not in deps,
+                    "ambiguous or invalid Cargo fingerprint dependency")
+            deps[dep[1]] = dep[3]
+        for path in (base, json_path):
+            records[str(path)] = identity.sha(path)
+        result = {"identity": value, "deps": deps, "unit": unit}
+        cache[key] = result
+        return result
+
+    def dependency(target, expected):
+        matches = []
+        for unit in graph["units"]:
+            if unit["target"]["name"] == target:
+                record = fingerprint(unit)
+                if record["identity"] == expected:
+                    matches.append(record)
+        require(len(matches) == 1, "missing/ambiguous real dependency identity: " + target)
+        return matches[0]
+
+    execute = fingerprint(graph["direct"]["codex_exec_server"]["unit"])
+    filesystem = dependency("codex_file_system", execute["deps"]["codex_file_system"])
+    json_unit = dependency("serde_json", execute["deps"]["serde_json"])
+    serde = dependency("serde", filesystem["deps"]["serde"])
+    require(serde["identity"] == execute["deps"]["serde"],
+            "exec-server and file-system select different serde identities")
+    require(serde["deps"]["serde_core"] == json_unit["deps"]["serde_core"],
+            "FileSystemSandboxContext and serde_json have different serde_core identities")
+    core = dependency("serde_core", json_unit["deps"]["serde_core"])
+    unit = json_unit["unit"]
+    require(unit["package_id"] ==
+            "registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154",
+            "locked serde_json package differs")
+    require(unit["profile"] == PROFILE, "actual serde_json profile differs")
+    names = [name for name in unit["files"] if name.endswith(".rlib")]
+    require(len(names) == 1, "actual serde_json library is ambiguous")
+    library = graph["files"][names[0]]
+    require(identity.sha(library["path"]) == library["sha256"],
+            "selected real serde_json library changed")
+    return {"library": library, "unit": unit,
+            "shared_serde_core_identity": core["identity"],
+            "filesystem_identity": filesystem["identity"],
+            "serde_identity": serde["identity"], "serde_json_identity": json_unit["identity"],
+            "fingerprint_inputs": records,
+            "chain": [execute, filesystem, serde, json_unit, core]}
+
+
+def verify_fingerprints(receipt):
+    for path, digest in receipt["fingerprint_inputs"].items():
+        require(identity.sha(path) == digest, "a selected Cargo dependency identity changed")
+
+
+def build_owners(rustc, producer, snapshot, support, default, native, serde,
+                 env, commands, output):
+    for name in identity.REQUIRED:
+        for field in ("package_id", "target", "features", "profile"):
+            require(default["direct"][name]["unit"][field] ==
+                    native["direct"][name]["unit"][field],
+                    "default/native direct dependency changed: " + name + "/" + field)
+    for field in ("package_id", "target", "features", "profile"):
+        require(serde["default"]["unit"][field] == serde["native"]["unit"][field],
+                "default/native selected serde_json differs: " + field)
+    child = env.copy()
+    child.pop("CODEX_HIA_NATIVE_LIB_DIR", None)
+    child["CARGO_MANIFEST_DIR"] = str(snapshot / identity.CRATE)
+    original_source = snapshot / identity.CRATE / "src/lib.rs"
+    flags = cargo.flags(rustc, default, original=True)
+    reference = output / "libcodex_apply_patch_original.rlib"
+    commands.run("effects-compile-complete-original-lib", flags + [
+        "--crate-name", "codex_apply_patch_original", "--crate-type", "rlib",
+        original_source, "-o", reference], cwd=producer, env=child)
+    tests = output / "original-crate-tests"
+    commands.run("effects-compile-complete-original-tests", flags + [
+        "--crate-name", "codex_apply_patch_original_tests", "--test",
+        original_source, "-o", tests], cwd=producer, env=child)
+    reference_hash, tests_hash = identity.sha(reference), identity.sha(tests)
+    listing = commands.run("effects-list-original-tests",
+                           [tests, "--list"], cwd=producer, env=child).read_text()
+    names = {line.removesuffix(": test") for line in listing.splitlines()
+             if line.startswith("tests::") and line.endswith(": test")}
+    expected = {"tests::" + name for name in ORIGINAL_TESTS}
+    require(names == expected, "the exact original 13 root-test inventory changed")
+    for index, name in enumerate(sorted(expected)):
+        text = commands.run("effects-original-root-test-" + str(index), [
+            tests, "--exact", name, "--nocapture", "--test-threads=1"],
+            cwd=producer, env=child).read_text()
+        require("test result: ok. 1 passed; 0 failed; 0 ignored;" in text and
+                "test " + name + " ... ok" in text,
+                "an unchanged original root test did not execute: " + name)
+    binaries = {"original": output / "effects-original-observer",
+                "native": output / "effects-native-observer"}
+    for side, binary in binaries.items():
+        graph = default if side == "original" else native
+        extra = ["--extern", "serde_json=" + serde[
+            "default" if side == "original" else "native"]["library"]["path"]]
+        if side == "original":
+            extra += ["--extern", "codex_apply_patch=" + str(reference)]
+        commands.run("effects-compile-public-" + side,
+                     cargo.flags(rustc, graph, original=side == "original") + extra + [
+                         "--crate-name", "patch_effects_public_" + side,
+                         support / "driver.rs", "-o", binary],
+                     cwd=producer / "codex-rs", env=child if side == "original" else env)
+        symbols = commands.run("effects-public-symbols-" + side,
+                               ["nm", "--defined-only", binary], cwd=producer, env=env).read_text()
+        for module in MODULES:
+            matches = re.findall(r"\b[Tt] codex_hia_" + module + r"$", symbols, re.MULTILINE)
+            require(len(matches) == (1 if side == "native" else 0),
+                    "real public executable has incorrect native dispatch: " + side + "/" + module)
+    receipts = {
+        "original_library": {"path": str(reference), "sha256": reference_hash},
+        "original_tests_binary": {"path": str(tests), "sha256": tests_hash},
+        "original_tests": {"names": sorted(expected), "passed": 13, "skipped": 0,
+                           "scope": "13 unchanged root tests; other complete crate tests are not claimed."},
+        "binaries": {side: {"path": str(path), "sha256": identity.sha(path)}
+                     for side, path in binaries.items()},
+    }
+    require(identity.sha(reference) == reference_hash and identity.sha(tests) == tests_hash,
+            "the original library/test executable changed during compilation or execution")
+    return binaries, receipts

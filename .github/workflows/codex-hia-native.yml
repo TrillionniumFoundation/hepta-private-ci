@@ -102,6 +102,26 @@ jobs:
             --output "$RUNNER_TEMP/hia-native" \
             2>&1 | tee "$RUNNER_TEMP/hia-build.log"
 
+      - name: Verify patch-effect frames and committed-state contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_patch_effects_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-patch-effects-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-effects-abi.log"
+
+      - name: Verify patch-effect source and archive receipts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module patch_effects \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-patch-effects-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-effects-receipt.log"
+
       - name: Verify file-update frame and no-write contracts
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -486,6 +506,19 @@ jobs:
             --report "$RUNNER_TEMP/hia-file-update-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-caller.log"
 
+      - name: Compare complete original and native filesystem-effect owners
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_patch_effects_caller.py \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --original-root "$GITHUB_WORKSPACE/codex-file-update-original" \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --work-dir "$RUNNER_TEMP/hia-patch-effects-caller" \
+            --report "$RUNNER_TEMP/hia-patch-effects-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-effects-caller.log"
+
       - name: Run strict native and default owner lint
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -518,6 +551,22 @@ jobs:
           include-hidden-files: true
           path: |
             ${{ runner.temp }}/hia-native/build.json
+            ${{ runner.temp }}/hia-patch-effects-abi.json
+            ${{ runner.temp }}/hia-patch-effects-abi.log
+            ${{ runner.temp }}/hia-patch-effects-receipt.json
+            ${{ runner.temp }}/hia-patch-effects-receipt.log
+            ${{ runner.temp }}/hia-patch-effects-caller.json
+            ${{ runner.temp }}/hia-patch-effects-caller.log
+            ${{ runner.temp }}/hia-patch-effects-caller/original/
+            ${{ runner.temp }}/hia-patch-effects-caller/original-source-manifest.json
+            ${{ runner.temp }}/hia-patch-effects-caller/metadata-source-inputs.json
+            ${{ runner.temp }}/hia-patch-effects-caller/default-dependency-manifest.json
+            ${{ runner.temp }}/hia-patch-effects-caller/native-dependency-manifest.json
+            ${{ runner.temp }}/hia-patch-effects-caller/actual-serde-identity.json
+            ${{ runner.temp }}/hia-patch-effects-caller/commands/
+            ${{ runner.temp }}/hia-patch-effects-caller/public-observations/
+            ${{ runner.temp }}/hia-patch-effects-caller/native-transport-report.json
+            ${{ runner.temp }}/hia-patch-effects-caller/native-transport/fixtures/
             ${{ runner.temp }}/hia-toolchain.log
             ${{ runner.temp }}/hia-patch-caller.log
             ${{ runner.temp }}/hia-source-file-caller.json

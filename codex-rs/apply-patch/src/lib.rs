@@ -1,5 +1,9 @@
 mod file_update;
 #[cfg(feature = "hia-native")]
+mod hia_native_patch_effects;
+#[cfg(feature = "hia-native")]
+use hia_native_patch_effects::apply_hunks_to_files;
+#[cfg(feature = "hia-native")]
 mod hia_native;
 #[cfg(feature = "hia-native")]
 mod hia_native_file_update;
@@ -17,17 +21,24 @@ mod streaming_parser;
 mod text_file;
 
 use std::collections::HashMap;
+#[cfg(not(feature = "hia-native"))]
 use std::io;
 use std::path::PathBuf;
 
+#[cfg(not(feature = "hia-native"))]
 use anyhow::Context;
 use anyhow::Result;
+#[cfg(not(feature = "hia-native"))]
 use codex_exec_server::CreateDirectoryOptions;
 use codex_exec_server::ExecutorFileSystem;
 use codex_exec_server::FileSystemSandboxContext;
+#[cfg(not(feature = "hia-native"))]
 use codex_exec_server::GetMetadataOptions;
+#[cfg(not(feature = "hia-native"))]
 use codex_exec_server::ReadFileOptions;
+#[cfg(not(feature = "hia-native"))]
 use codex_exec_server::RemoveOptions;
+#[cfg(not(feature = "hia-native"))]
 use codex_exec_server::WriteFileOptions;
 use codex_utils_path_uri::PathUri;
 use codex_utils_path_uri::PathUriParseError;
@@ -39,8 +50,10 @@ pub use parser::parse_patch;
 pub use streaming_parser::StreamingPatchParser;
 use thiserror::Error;
 
+#[cfg(not(feature = "hia-native"))]
 use file_update::AppliedPatch;
 pub use file_update::ApplyPatchFileUpdate;
+#[cfg(not(feature = "hia-native"))]
 use file_update::derive_new_contents_from_chunks;
 pub use file_update::unified_diff_from_chunks;
 pub use file_update::unified_diff_from_chunks_with_context;
@@ -477,6 +490,7 @@ pub struct AffectedPaths {
 
 /// Apply the hunks to the filesystem, returning which files were added, modified, or deleted.
 /// Returns an error if the patch could not be applied.
+#[cfg(not(feature = "hia-native"))]
 async fn apply_hunks_to_files(
     hunks: &[Hunk],
     options: ApplyPatchOptions,
@@ -735,6 +749,7 @@ async fn apply_hunks_to_files(
     })
 }
 
+#[cfg(not(feature = "hia-native"))]
 async fn ensure_not_directory(
     path: &PathUri,
     fs: &dyn ExecutorFileSystem,
@@ -753,6 +768,7 @@ async fn ensure_not_directory(
     Ok(())
 }
 
+#[cfg(not(feature = "hia-native"))]
 async fn remove_failure_was_side_effect_free(
     path: &PathUri,
     expected_content: Option<&str>,
@@ -769,6 +785,7 @@ async fn remove_failure_was_side_effect_free(
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 async fn read_optional_file_text_for_delta(
     path: &PathUri,
     fs: &dyn ExecutorFileSystem,
@@ -790,6 +807,7 @@ async fn read_optional_file_text_for_delta(
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 async fn note_existing_path_delta_support(
     path: &PathUri,
     fs: &dyn ExecutorFileSystem,
@@ -808,6 +826,7 @@ async fn note_existing_path_delta_support(
     }
 }
 
+#[cfg(not(feature = "hia-native"))]
 async fn write_file_with_missing_parent_retry(
     fs: &dyn ExecutorFileSystem,
     path: &PathUri,
