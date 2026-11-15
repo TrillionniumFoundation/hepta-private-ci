@@ -1,0 +1,17 @@
+{
+  "base_head": "e789acfb06714c02b9c99b761e79975c8cd48ea6",
+  "workflow_yaml_valid": true,
+  "trigger_examples": [
+    "scripts/hepta_ci_chef.py",
+    ".github/workflows/hepta-architecture-convergence.yml",
+    ".github/actions/prepare-bazel-ci/action.yml",
+    "qualification/verify2-dispatch-20261109/BLOCKERS.json",
+    "experiments/verification_cell_verify1/shadow_risk.py"
+  ],
+  "permissions_matrix_timeout_concurrency_preserved": true,
+  "full_test_and_effect_commands_preserved": true,
+  "checkout_and_assertion_bound_to_reviewed_head": true,
+  "artifact_name_bound_to_reviewed_head": true,
+  "full_new_head_CI": "PENDING",
+  "scientific_admission": "HOLD"
+}

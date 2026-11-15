@@ -191,7 +191,7 @@ jobs:
           if [ "$locked_status" -eq 0 ]; then
             exit 0
           fi
-          echo "::error::Cargo.lock differs from the exact candidate manifests"
+          echo "::error::Locked Cargo metadata failed; this alone does not establish lockfile drift (see resolver/transport diagnostics)"
           set +e
           cargo metadata --offline --format-version=1 >/dev/null
           offline_status=$?
