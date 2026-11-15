@@ -477,6 +477,9 @@ unsafe fn ensure_allow_mask_aces_with_inheritance_impl(
 }
 
 unsafe fn reopen_for_acl_write(path: &Path, file: &File) -> Result<File> {
+    if file.metadata()?.is_dir() {
+        return acl_target::reopen_directory_for_acl_write(path, file);
+    }
     // Reopen the retained object, never its potentially replaced name. This
     // checks effective WRITE_DAC authority without following a newly set tag.
     let writable = ReOpenFile(

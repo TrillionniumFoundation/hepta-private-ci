@@ -4,6 +4,8 @@ use super::legacy_process_test_guard;
 use super::sandbox_cwd;
 use super::spawn_windows_sandbox_session_legacy;
 use super::workspace_roots_for;
+use crate::acl_target;
+use crate::acl_target::Disposition;
 use crate::run_windows_sandbox_capture_with_filesystem_overrides;
 use crate::token::LocalSid;
 use crate::winutil::to_wide;
@@ -50,6 +52,10 @@ use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::TOKEN_DUPLICATE;
 use windows_sys::Win32::Security::TOKEN_IMPERSONATE;
 use windows_sys::Win32::Security::TOKEN_QUERY;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
@@ -198,17 +204,32 @@ struct AclSetupFailureFixture {
     marker: PathBuf,
 }
 
+enum ProtectedTarget {
+    File,
+    Directory,
+}
+
 impl AclSetupFailureFixture {
-    fn new() -> Self {
+    fn new(target: ProtectedTarget) -> Self {
         let test_root = TempDir::new_in(sandbox_cwd()).expect("create ACL failure test root");
         let workspace = test_root.path().join("workspace");
         fs::create_dir(&workspace).expect("create workspace");
         let codex_home = test_root.path().join("codex-home");
         // A deny-write carveout must lie inside a currently writable root.
         let protected_path = workspace.join("protected.txt");
-        fs::write(&protected_path, "protected").expect("seed protected file");
+        match target {
+            ProtectedTarget::File => {
+                fs::write(&protected_path, "protected").expect("seed protected file");
+            }
+            ProtectedTarget::Directory => {
+                fs::create_dir(&protected_path).expect("create protected directory");
+                fs::write(protected_path.join("content.txt"), "protected")
+                    .expect("seed protected directory");
+            }
+        }
         let file = OpenOptions::new()
             .access_mode(READ_CONTROL | WRITE_DAC)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
             .open(&protected_path)
             .expect("retain handle for restoring fixture ACL");
         let mut dacl = ptr::null_mut();
@@ -301,6 +322,7 @@ impl AclSetupFailureFixture {
         );
         let write_dac_error = match OpenOptions::new()
             .access_mode(WRITE_DAC)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
             .open(&protected_path)
         {
             Ok(_) => None,
@@ -374,7 +396,7 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
     // calls in the current-thread runtime. The process token remains unchanged.
     let _caller = PrivilegeRestrictedCaller::enter();
     current_thread_runtime().block_on(async {
-        let fixture = AclSetupFailureFixture::new();
+        let fixture = AclSetupFailureFixture::new(ProtectedTarget::File);
         let result = spawn_windows_sandbox_session_legacy(
             &PermissionProfile::workspace_write(),
             &workspace_roots_for(&fixture.workspace),
@@ -406,7 +428,7 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
 fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
     let _guard = legacy_process_test_guard();
     let _caller = PrivilegeRestrictedCaller::enter();
-    let fixture = AclSetupFailureFixture::new();
+    let fixture = AclSetupFailureFixture::new(ProtectedTarget::File);
     let result = run_windows_sandbox_capture_with_filesystem_overrides(
         &PermissionProfile::workspace_write(),
         &workspace_roots_for(&fixture.workspace),
@@ -425,4 +447,29 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
             .map(|_| ())
             .expect_err("ACL setup failure must prevent capture spawn"),
     );
+}
+
+#[test]
+fn retained_directory_acl_upgrade_checks_effective_caller_write_dac() -> anyhow::Result<()> {
+    let _caller = PrivilegeRestrictedCaller::enter();
+    let fixture = AclSetupFailureFixture::new(ProtectedTarget::Directory);
+    let retained = acl_target::open(
+        fixture.protected_file.as_path(),
+        READ_CONTROL,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        Disposition::Existing,
+    )?;
+    let error =
+        acl_target::reopen_directory_for_acl_write(fixture.protected_file.as_path(), &retained)
+            .expect_err("retaining READ_CONTROL must not grant a later WRITE_DAC request");
+    let code = error
+        .chain()
+        .find_map(|cause| cause.downcast_ref::<std::io::Error>())
+        .and_then(std::io::Error::raw_os_error);
+    assert_eq!(code, Some(ERROR_ACCESS_DENIED as i32), "{error:#}");
+    assert_eq!(
+        fs::read_to_string(fixture.protected_file.join("content.txt"))?,
+        "protected"
+    );
+    Ok(())
 }
