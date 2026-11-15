@@ -1,0 +1,103 @@
+{
+  "adam_first_second_moments_and_step_exact": true,
+  "continuous_resumed_full_state_exact": true,
+  "first_checkpoint_matches_step1": true,
+  "identities": {
+    "continuous": {
+      "bytes": 9113,
+      "sha256": "f5fab2bf9d28f9eac979740d0bad4081d06208e09703d62540765540d96d6467"
+    },
+    "first": {
+      "bytes": 8985,
+      "sha256": "86731258772ee6e7f2e8b04ae614688c765078a308a0a442a1254442e3565e6c"
+    },
+    "resumed": {
+      "bytes": 9177,
+      "sha256": "38538040fff0131415d23fb34aae96201913ab9185b481a82ccfdedb4c0a7ed4"
+    },
+    "source-mismatch": {
+      "bytes": 9073,
+      "sha256": "2588fad31b4f4ea0db486370d2a772f384c1adb83c679d813c8da032c84bfd27"
+    }
+  },
+  "model_parameters_exact": true,
+  "negative_control_changes_only_source_digest": true,
+  "new_model_executions": 0,
+  "new_optimizer_calls": 0,
+  "primitive_storage_count_per_checkpoint": {
+    "continuous": 5,
+    "first": 5,
+    "resumed": 5,
+    "source-mismatch": 5
+  },
+  "records_metadata_exact": true,
+  "rng_bytes_exact": true,
+  "schema": "hcsn-independent-native-full-state-review-v1",
+  "scope": "small fixed-prior uniform-grid physical Adam diagnostic; no complete HCSN training or graded/prior/network AD qualification",
+  "snapshot_scope": "four individually hash-bound originals; no atomic cross-file custody assertion",
+  "tensor_count": 5,
+  "tensors": [
+    {
+      "dtype": "float64",
+      "logical_bytes_sha256": "15652ad4d6d20669137dbed7569437d8fc53c4d05dccde161af33cee9079977c",
+      "path": "root/parameters",
+      "requires_grad": false,
+      "shape": [
+        5
+      ],
+      "storage_offset": 0,
+      "stride": [
+        1
+      ]
+    },
+    {
+      "dtype": "float32",
+      "logical_bytes_sha256": "d88c86f15bbea365d658ad95a81d45367c465f7af6f7264fb077f01747ddc77d",
+      "path": "root/optimizer/state/0/step",
+      "requires_grad": false,
+      "shape": [],
+      "storage_offset": 0,
+      "stride": []
+    },
+    {
+      "dtype": "float64",
+      "logical_bytes_sha256": "fc0547e7f6802e72abb016e69a2804ce0fc50851ea1315377176d1379aab1d35",
+      "path": "root/optimizer/state/0/exp_avg",
+      "requires_grad": false,
+      "shape": [
+        5
+      ],
+      "storage_offset": 0,
+      "stride": [
+        1
+      ]
+    },
+    {
+      "dtype": "float64",
+      "logical_bytes_sha256": "b32fb430642fd025a9459df39e5ab832b84abeb953604ddef0525a84aee770b7",
+      "path": "root/optimizer/state/0/exp_avg_sq",
+      "requires_grad": false,
+      "shape": [
+        5
+      ],
+      "storage_offset": 0,
+      "stride": [
+        1
+      ]
+    },
+    {
+      "dtype": "uint8",
+      "logical_bytes_sha256": "45f1da08f28631b508c9aa68b280e02035c6b122fa0ae90bbb3c9f5213f4886c",
+      "path": "root/rng",
+      "requires_grad": false,
+      "shape": [
+        5056
+      ],
+      "storage_offset": 0,
+      "stride": [
+        1
+      ]
+    }
+  ],
+  "torch_imported": false
+}
