@@ -32,6 +32,9 @@ mod hia_native_unified_diff_policy;
 mod invocation;
 mod parser;
 mod seek_sequence;
+// BEGIN HIA PATCH STANDALONE ROUTING v1: native-module-path
+#[cfg_attr(feature = "hia-native", path = "hia_native_patch_standalone.rs")]
+// END HIA PATCH STANDALONE ROUTING v1: native-module-path
 mod standalone_executable;
 mod streaming_parser;
 mod text_file;
@@ -128,8 +131,16 @@ impl Default for ApplyPatchOptions {
     }
 }
 
+// BEGIN HIA PATCH STANDALONE ROUTING v1: native-environment-export
+#[cfg(feature = "hia-native")]
+#[doc(hidden)]
+pub use standalone_executable::apply_patch_file_update_mode_from_env;
+// END HIA PATCH STANDALONE ROUTING v1: native-environment-export
 /// Reads the update mode selected for an arg0-dispatched `apply_patch` process.
 #[doc(hidden)]
+// BEGIN HIA PATCH STANDALONE ROUTING v1: legacy-environment-function
+#[cfg(not(feature = "hia-native"))]
+// END HIA PATCH STANDALONE ROUTING v1: legacy-environment-function
 pub fn apply_patch_file_update_mode_from_env() -> ApplyPatchFileUpdateMode {
     match std::env::var(CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS_ENV_VAR).as_deref() {
         Ok("1") => ApplyPatchFileUpdateMode::PreserveLineEndings,

@@ -14,4 +14,5 @@ fn main() {
     hia_build::link_native("unified_diff");
     hia_build::link_native("patch_summary");
     hia_build::link_native("patch_application");
+    hia_build::link_native("patch_standalone");
 }
