@@ -31,6 +31,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_template_render",
     "codex_hia_template_index",
     "codex_hia_prefix_match",
+    "codex_hia_prefix_admission",
 )
 
 

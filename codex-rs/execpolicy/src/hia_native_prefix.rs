@@ -1,14 +1,15 @@
 //! Checked transport for HIA's command-prefix rule matcher.
 //!
 //! HIA owns token counts, alternative traversal, byte comparisons and the
-//! match decision. This adapter only serializes the existing pattern, borrows
-//! the buffers for one native call and clones the selected command prefix.
+//! match decision. This adapter asks HIA to admit the token counts before
+//! serializing a frame, then borrows the buffers and clones the selected prefix.
 //! A native contract failure must not become `None`: that would enable the
 //! policy layer's unmatched-command heuristics.
 
 use crate::rule::PrefixPattern;
 
 unsafe extern "C" {
+    fn codex_hia_prefix_admission(command_count: u64, pattern_count: u64) -> u64;
     fn codex_hia_prefix_match(
         source: *const u8,
         source_len: u64,
@@ -25,6 +26,13 @@ pub(crate) fn matches_prefix(pattern: &PrefixPattern, command: &[String]) -> Opt
         .len()
         .checked_add(1)
         .unwrap_or_else(|| panic!("HIA prefix pattern length overflow"));
+    // SAFETY: the closed scalar ABI accepts two u64 values, retains no state
+    // and accesses no caller memory. HIA decides whether a full frame is needed.
+    match unsafe { codex_hia_prefix_admission(command.len() as u64, pattern_len as u64) } {
+        0 => return None,
+        1 => {}
+        status => panic!("HIA prefix count admission returned an invalid status: {status}"),
+    }
     let commands = &command[..command.len().min(pattern_len)];
     // The first token is Arc<str>, while later alternatives are Strings. Size
     // the exact wire layout without comparing or interpreting any token bytes.

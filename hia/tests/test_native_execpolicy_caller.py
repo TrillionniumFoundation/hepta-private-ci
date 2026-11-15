@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PUBLIC_SOURCE = ROOT / "codex-rs/execpolicy/src/rule.rs"
 ADAPTER = PUBLIC_SOURCE.with_name("hia_native_prefix.rs")
 HIA_SOURCE = ROOT / "hia/prefix_match.hepta"
+ADMISSION_SOURCE = ROOT / "hia/prefix_admission.hepta"
 TEST_SOURCE = ROOT / "hia/tests/native_execpolicy_caller.rs"
 ORIGINAL_REVISION = "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc"
 ORIGINAL_TOKEN_COUNT = 286
@@ -66,6 +67,7 @@ def verify(args, report):
         raise RuntimeError(f"a real Rust compiler is required: {args.rustc}")
     library = args.library_dir.resolve(strict=True)
     archive = library / "libcodex_hia_prefix_match.a"
+    admission_archive = library / "libcodex_hia_prefix_admission.a"
     section, token_hash = extract_public_source()
     report["inputs"] = {
         "public_source_sha256": sha256(PUBLIC_SOURCE),
@@ -75,6 +77,8 @@ def verify(args, report):
         "original_token_sha256": token_hash,
         "adapter_sha256": sha256(ADAPTER),
         "hia_source_sha256": sha256(HIA_SOURCE),
+        "admission_source_sha256": sha256(ADMISSION_SOURCE),
+        "admission_archive_sha256": sha256(admission_archive),
         "test_source_sha256": sha256(TEST_SOURCE),
         "archive_sha256": sha256(archive),
         "build_report_sha256": sha256(library / "build.json"),
@@ -97,11 +101,13 @@ def verify(args, report):
             "-C", "opt-level=3", str(TEST_SOURCE),
             "--extern", f"execpolicy_reference={reference}",
             "-L", f"native={library}", "-l", "static=codex_hia_prefix_match",
+            "-l", "static=codex_hia_prefix_admission",
             "-o", str(binary),
         ], report, env=environment)
         symbols = run(["nm", "--defined-only", "--extern-only", str(binary)], report)
-        if not re.search(r"\bT codex_hia_prefix_match$", symbols, re.MULTILINE):
-            raise RuntimeError("the public differential executable lacks the native HIA prefix matcher")
+        for symbol in ("codex_hia_prefix_match", "codex_hia_prefix_admission"):
+            if not re.search(rf"\bT {symbol}$", symbols, re.MULTILINE):
+                raise RuntimeError(f"the public differential executable lacks {symbol}")
         report["outputs"] = {
             "reference_rlib_sha256": sha256(reference),
             "native_test_binary_sha256": sha256(binary),

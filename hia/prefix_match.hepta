@@ -1,4 +1,4 @@
-hia-asm.v1 hepta.hia.program.v8 codex_prefix_match
+hia-asm.v1 hepta.hia.program.v9 codex_prefix_match
 fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
 block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
   output_size:usize = buffer.len(output)
@@ -195,60 +195,9 @@ block chunks(c_source:readbuf,c_left:usize,c_right:usize,c_remaining:usize)
   full_chunk:bool = compare.ge(c_remaining,chunk_size)
   branch full_chunk chunk(c_source,c_left,c_right,c_remaining) tail(c_source,c_left,c_right,c_remaining)
 block chunk(b_source:readbuf,b_left:usize,b_right:usize,b_remaining:usize)
-  left0:u8 = buffer.load(b_source,b_left)
-  right0:u8 = buffer.load(b_source,b_right)
-  diff0:u8 = bit.xor(left0,right0)
-  offset1:usize = const() {"value":1}
-  left_at1:usize = int.add.wrap(b_left,offset1)
-  right_at1:usize = int.add.wrap(b_right,offset1)
-  left1:u8 = buffer.load(b_source,left_at1)
-  right1:u8 = buffer.load(b_source,right_at1)
-  diff1:u8 = bit.xor(left1,right1)
-  offset2:usize = const() {"value":2}
-  left_at2:usize = int.add.wrap(b_left,offset2)
-  right_at2:usize = int.add.wrap(b_right,offset2)
-  left2:u8 = buffer.load(b_source,left_at2)
-  right2:u8 = buffer.load(b_source,right_at2)
-  diff2:u8 = bit.xor(left2,right2)
-  offset3:usize = const() {"value":3}
-  left_at3:usize = int.add.wrap(b_left,offset3)
-  right_at3:usize = int.add.wrap(b_right,offset3)
-  left3:u8 = buffer.load(b_source,left_at3)
-  right3:u8 = buffer.load(b_source,right_at3)
-  diff3:u8 = bit.xor(left3,right3)
-  offset4:usize = const() {"value":4}
-  left_at4:usize = int.add.wrap(b_left,offset4)
-  right_at4:usize = int.add.wrap(b_right,offset4)
-  left4:u8 = buffer.load(b_source,left_at4)
-  right4:u8 = buffer.load(b_source,right_at4)
-  diff4:u8 = bit.xor(left4,right4)
-  offset5:usize = const() {"value":5}
-  left_at5:usize = int.add.wrap(b_left,offset5)
-  right_at5:usize = int.add.wrap(b_right,offset5)
-  left5:u8 = buffer.load(b_source,left_at5)
-  right5:u8 = buffer.load(b_source,right_at5)
-  diff5:u8 = bit.xor(left5,right5)
-  offset6:usize = const() {"value":6}
-  left_at6:usize = int.add.wrap(b_left,offset6)
-  right_at6:usize = int.add.wrap(b_right,offset6)
-  left6:u8 = buffer.load(b_source,left_at6)
-  right6:u8 = buffer.load(b_source,right_at6)
-  diff6:u8 = bit.xor(left6,right6)
-  offset7:usize = const() {"value":7}
-  left_at7:usize = int.add.wrap(b_left,offset7)
-  right_at7:usize = int.add.wrap(b_right,offset7)
-  left7:u8 = buffer.load(b_source,left_at7)
-  right7:u8 = buffer.load(b_source,right_at7)
-  diff7:u8 = bit.xor(left7,right7)
-  diff01:u8 = bit.or(diff0,diff1)
-  diff23:u8 = bit.or(diff2,diff3)
-  diff45:u8 = bit.or(diff4,diff5)
-  diff67:u8 = bit.or(diff6,diff7)
-  diff03:u8 = bit.or(diff01,diff23)
-  diff47:u8 = bit.or(diff45,diff67)
-  difference:u8 = bit.or(diff03,diff47)
-  zero_byte:u8 = const() {"value":0}
-  same_chunk:bool = compare.eq(difference,zero_byte)
+  left_word:u64 = buffer.load.u64.le(b_source,b_left)
+  right_word:u64 = buffer.load.u64.le(b_source,b_right)
+  same_chunk:bool = compare.eq(left_word,right_word)
   chunk_step:usize = const() {"value":8}
   next_left:usize = int.add.wrap(b_left,chunk_step)
   next_right:usize = int.add.wrap(b_right,chunk_step)
@@ -276,104 +225,11 @@ block unequal()
 end
 fn read_word(source:readbuf,position:usize) -> (u64) effects(read,trap) entry(entry)
 block entry(source:readbuf,position:usize)
-  byte0:u8 = buffer.load(source,position)
-  value0:u64 = int.cast(byte0) {"mode":"wrap"}
-  offset1:usize = const() {"value":1}
-  address1:usize = int.add.checked(position,offset1)
-  byte1:u8 = buffer.load(source,address1)
-  value1:u64 = int.cast(byte1) {"mode":"wrap"}
-  shift1:u64 = const() {"value":8}
-  shifted1:u64 = int.shl.checked(value1,shift1)
-  offset2:usize = const() {"value":2}
-  address2:usize = int.add.checked(position,offset2)
-  byte2:u8 = buffer.load(source,address2)
-  value2:u64 = int.cast(byte2) {"mode":"wrap"}
-  shift2:u64 = const() {"value":16}
-  shifted2:u64 = int.shl.checked(value2,shift2)
-  offset3:usize = const() {"value":3}
-  address3:usize = int.add.checked(position,offset3)
-  byte3:u8 = buffer.load(source,address3)
-  value3:u64 = int.cast(byte3) {"mode":"wrap"}
-  shift3:u64 = const() {"value":24}
-  shifted3:u64 = int.shl.checked(value3,shift3)
-  offset4:usize = const() {"value":4}
-  address4:usize = int.add.checked(position,offset4)
-  byte4:u8 = buffer.load(source,address4)
-  value4:u64 = int.cast(byte4) {"mode":"wrap"}
-  shift4:u64 = const() {"value":32}
-  shifted4:u64 = int.shl.checked(value4,shift4)
-  offset5:usize = const() {"value":5}
-  address5:usize = int.add.checked(position,offset5)
-  byte5:u8 = buffer.load(source,address5)
-  value5:u64 = int.cast(byte5) {"mode":"wrap"}
-  shift5:u64 = const() {"value":40}
-  shifted5:u64 = int.shl.checked(value5,shift5)
-  offset6:usize = const() {"value":6}
-  address6:usize = int.add.checked(position,offset6)
-  byte6:u8 = buffer.load(source,address6)
-  value6:u64 = int.cast(byte6) {"mode":"wrap"}
-  shift6:u64 = const() {"value":48}
-  shifted6:u64 = int.shl.checked(value6,shift6)
-  offset7:usize = const() {"value":7}
-  address7:usize = int.add.checked(position,offset7)
-  byte7:u8 = buffer.load(source,address7)
-  value7:u64 = int.cast(byte7) {"mode":"wrap"}
-  shift7:u64 = const() {"value":56}
-  shifted7:u64 = int.shl.checked(value7,shift7)
-  part01:u64 = bit.or(value0,shifted1)
-  part23:u64 = bit.or(shifted2,shifted3)
-  part45:u64 = bit.or(shifted4,shifted5)
-  part67:u64 = bit.or(shifted6,shifted7)
-  part03:u64 = bit.or(part01,part23)
-  part47:u64 = bit.or(part45,part67)
-  result:u64 = bit.or(part03,part47)
+  result:u64 = buffer.load.u64.le(source,position)
   ret(result)
 end
 fn write_word(output:mutbuf,position:usize,value:u64) -> () effects(write,trap) entry(entry)
 block entry(output:mutbuf,position:usize,value:u64)
-  byte0:u8 = int.cast(value) {"mode":"wrap"}
-  _ = buffer.store(output,position,byte0)
-  shift1:u64 = const() {"value":8}
-  shifted1:u64 = int.shr.checked(value,shift1)
-  byte1:u8 = int.cast(shifted1) {"mode":"wrap"}
-  offset1:usize = const() {"value":1}
-  address1:usize = int.add.checked(position,offset1)
-  _ = buffer.store(output,address1,byte1)
-  shift2:u64 = const() {"value":16}
-  shifted2:u64 = int.shr.checked(value,shift2)
-  byte2:u8 = int.cast(shifted2) {"mode":"wrap"}
-  offset2:usize = const() {"value":2}
-  address2:usize = int.add.checked(position,offset2)
-  _ = buffer.store(output,address2,byte2)
-  shift3:u64 = const() {"value":24}
-  shifted3:u64 = int.shr.checked(value,shift3)
-  byte3:u8 = int.cast(shifted3) {"mode":"wrap"}
-  offset3:usize = const() {"value":3}
-  address3:usize = int.add.checked(position,offset3)
-  _ = buffer.store(output,address3,byte3)
-  shift4:u64 = const() {"value":32}
-  shifted4:u64 = int.shr.checked(value,shift4)
-  byte4:u8 = int.cast(shifted4) {"mode":"wrap"}
-  offset4:usize = const() {"value":4}
-  address4:usize = int.add.checked(position,offset4)
-  _ = buffer.store(output,address4,byte4)
-  shift5:u64 = const() {"value":40}
-  shifted5:u64 = int.shr.checked(value,shift5)
-  byte5:u8 = int.cast(shifted5) {"mode":"wrap"}
-  offset5:usize = const() {"value":5}
-  address5:usize = int.add.checked(position,offset5)
-  _ = buffer.store(output,address5,byte5)
-  shift6:u64 = const() {"value":48}
-  shifted6:u64 = int.shr.checked(value,shift6)
-  byte6:u8 = int.cast(shifted6) {"mode":"wrap"}
-  offset6:usize = const() {"value":6}
-  address6:usize = int.add.checked(position,offset6)
-  _ = buffer.store(output,address6,byte6)
-  shift7:u64 = const() {"value":56}
-  shifted7:u64 = int.shr.checked(value,shift7)
-  byte7:u8 = int.cast(shifted7) {"mode":"wrap"}
-  offset7:usize = const() {"value":7}
-  address7:usize = int.add.checked(position,offset7)
-  _ = buffer.store(output,address7,byte7)
+  _ = buffer.store.u64.le(output,position,value)
   ret()
 end
