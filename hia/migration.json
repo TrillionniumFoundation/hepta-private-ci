@@ -80,17 +80,17 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "ten_module_fixed_point_file_update_raw_abi_and_receipts_passed_complete_original_owner_and_consumer_gates_pending",
+    "qualification_status": "eleven_module_fixed_point_and_component_gates_passed_combined_product_ci_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU; ten real B3 modules cover eight algorithm groups including the new file_update candidate. The current native build, file_update raw ABI, 60 receipt checks and 116 shared scalar/build-admission checks passed. Complete-original public file_update parity, current Cargo/consumers/installed executables, strict lint/fix and performance remain pending. All 15 complete capabilities, default dispatch, global migration and retirement remain open.",
+    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Eleven B3 modules cover nine algorithm groups. The current native build and eleven component gates passed. The post-gate adapter lint repair and hidden-fixture upload change are separately bound; all native source/artifact files and prior component gate inputs remain unchanged. The complete combined file-update public owner, Cargo consumers, installed executables, strict lint and fix/clean-diff require fresh CI. Earlier published CI results qualify only their recorded source trees. All 15 complete capabilities, whole-Codex/default migration, required platforms, retirement and whole-product performance remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json#file_update_increment",
+    "report": "hia/verification.json#patch_integration",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
   },
   "candidate_modules": [
@@ -101,7 +101,7 @@
       "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
       "source_function": "seek_sequence",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_selfhost_component_passed",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -125,28 +125,9 @@
         "codex-rs/apply-patch/tests/suite/hia_native.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "valid_cases": 2327,
-          "invalid_cases": 86,
-          "buffer_boundary_calls": 135,
-          "original_rust_comparison": true,
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
-          "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
-          "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1"
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-apply-patch/hia-native",
-          "link": "static=codex_hia_seek_sequence",
-          "default_release_migrated": false
-        }
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "utf8_boundaries",
@@ -155,7 +136,7 @@
       "source_blob": "2d081f79e29d1d7d9a351c92700262e4ed98b87f",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_candidate",
-      "qualification_status": "native_selfhost_component_passed",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -176,26 +157,9 @@
         "hia/tests/test_utf8_boundaries.py"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "tests": 6,
-          "skipped": 0,
-          "native_calls": 75109,
-          "rust_oracle_calls": 2093,
-          "core_vm_calls": 56,
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
-          "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
-          "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17"
-        },
-        "production_dispatch": {
-          "status": "pending"
-        }
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "utf8_prefix",
@@ -203,7 +167,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -220,27 +184,9 @@
         "codex-rs/utils/string/src/hia_native_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
-          "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
-          "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
-          "tests": 5,
-          "skipped": 0,
-          "original_rust_comparisons": 18559
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_utf8_prefix",
-          "default_release_migrated": false
-        }
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "metric_tag",
@@ -248,7 +194,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "sanitize_metric_tag_value",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -277,28 +223,9 @@
         "codex-rs/utils/string/src/hia_native_metric_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "tests": 6,
-          "skipped": 0,
-          "original_rust_comparisons": 40992,
-          "abi_native_calls": 10535,
-          "report": "hia/verification.json",
-          "source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
-          "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
-          "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae"
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_metric_tag",
-          "default_release_migrated": false
-        }
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "markdown_location",
@@ -328,35 +255,16 @@
         "hia/tests/test_native_markdown_caller.py",
         "hia/tests/native_markdown_caller.rs",
         "hia/tests/test_markdown_location_abi.py",
-        "codex-rs/utils/string/src/hia_native_markdown_tests.rs"
+        "codex-rs/utils/string/src/markdown_location_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
-          "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
-          "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
-          "tests": 7,
-          "skipped": 0,
-          "original_rust_comparisons": 164791,
-          "abi_native_calls": 1289
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_markdown_location",
-          "default_release_migrated": false
-        }
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "ascii_json_fragment",
@@ -389,32 +297,13 @@
         "codex-rs/utils/string/src/ascii_json_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
-          "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
-          "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
-          "tests": 7,
-          "skipped": 0,
-          "original_rust_comparisons": 27075,
-          "abi_native_calls": 957
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_ascii_json_fragment",
-          "default_release_migrated": false
-        }
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "truncate",
@@ -426,7 +315,7 @@
         "truncate_middle_with_token_budget"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_ten_module_integration_pending",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -463,18 +352,9 @@
         "codex-rs/utils/string/src/truncate_native_tests.rs"
       ],
       "validation": {
-        "report": "hia/verification.json#native_optimization",
-        "artifact_generation": "B3",
-        "original_rust_comparisons": 229173,
-        "abi_native_calls": 2888,
-        "abi_error_no_write_cases": 757,
-        "native_string_tests_passed": 38,
-        "default_string_tests_passed": 26,
-        "skipped": 0,
-        "performance_qualified": false,
-        "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197; nine-module integration has separate pending gates."
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "token_budget",
@@ -487,7 +367,7 @@
       ],
       "production_algorithm_group": "truncate",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_ten_module_integration_pending",
+      "qualification_status": "native_built_in_current_combination_complete_product_requalification_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -508,14 +388,9 @@
         "hia/tests/test_build_receipt.py"
       ],
       "validation": {
-        "report": "hia/verification.json#native_optimization",
-        "native_calls": 74552,
-        "admission_checks": 114,
-        "original_rust_comparisons": 229173,
-        "performance_qualified": false,
-        "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197; nine-module integration has separate pending gates."
-      },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+        "current": "hia/verification.json#patch_integration",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
     },
     {
       "id": "source_file",
@@ -531,14 +406,14 @@
       ],
       "production_algorithm_group": "source_file",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "historical_nine_module_owner_original_rust_and_raw_abi_passed_current_ten_module_integration_pending",
+      "qualification_status": "current_complete_original_owner_and_raw_abi_passed_combined_product_ci_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
         "entry": "codex_hia_source_file",
         "profile": "borrowed-buffers-u32-v1",
         "contract": "hia/source_file_buffer_contract.json",
-        "contract_sha256": "0da7ff9106fc1c153a879214075bf0be99ccd5ec6847c6613c27e1f621208b5f",
+        "contract_sha256": "47d50172b6abd2a9449c8eb2e312c7a1588404e25e4480216b0d3241d5f54105",
         "operations": {
           "0": "parse query",
           "1": "parse emit",
@@ -547,7 +422,15 @@
           "4": "line_texts query",
           "5": "line_texts emit",
           "6": "into_contents query",
-          "7": "into_contents emit"
+          "7": "into_contents emit",
+          "8": "parse query (trusted UTF8)",
+          "9": "parse emit (trusted UTF8)",
+          "10": "apply query (trusted UTF8)",
+          "11": "apply emit (trusted UTF8)",
+          "12": "line_texts query (trusted UTF8)",
+          "13": "line_texts emit (trusted UTF8)",
+          "14": "into_contents query (trusted UTF8)",
+          "15": "into_contents emit (trusted UTF8)"
         },
         "workspace_header_bytes": 64,
         "output_header_bytes": 40,
@@ -556,14 +439,21 @@
         "invalid_input_return": 4294967295,
         "short_buffer_return": 4294967294,
         "invalid_utf8_return": 4294967293,
-        "error_effect": "Every returned error preserves every source/workspace/output byte. Successful calls never write source or workspace. No pointer provenance/admission is claimed beyond live/disjoint caller preconditions."
+        "error_effect": "Every returned error preserves every source/workspace/output byte. Successful calls never write source or workspace. No pointer provenance/admission is claimed beyond live/disjoint caller preconditions.",
+        "profiles": {
+          "strict": "Operations 0..7 preserve complete canonical UTF8 validation before span validation and output admission.",
+          "trusted_utf8": "Operations 8..15 require the caller to supply a complete valid UTF8 source. They skip only the whole-source UTF8 scan. All frame, table, literal, range, pool/subspan boundary, replacement, overflow and output-capacity checks remain identical. Invalid UTF8 violates this profile precondition and has no defined validation status.",
+          "production_precondition": "Every source in the safe Rust adapter is a borrowed &str or concatenated String/Cow<str>; only the private typed Operation enum selects the trusted profile.",
+          "base_operation": "operation & 7; bit 0 selects query/emit; all operation values above 15 are INVALID."
+        }
       },
       "behavior": [
         "Preserve mixed CR/LF/CRLF, the first preferred style and absence of a terminal empty sentinel.",
         "Keep inserted strings with internal CR/LF as one logical line across repeated replacements.",
         "Preserve preferred style through total deletion and reinsertion; empty replacement lists repair absent endings.",
         "Separate logical replacement positions from bounded physical take counts, including valid usize::MAX skips/deletes.",
-        "Validate complete UTF-8 pool bytes and every pool/subspan boundary before any result write.",
+        "Strict operations 0..7 validate complete UTF-8; trusted operations 8..15 require valid Rust strings and skip only that full scan. Both profiles validate every frame, pool/subspan boundary, range, replacement and arithmetic bound.",
+        "Use proven storage bounds for direct native emit, and exact native query/emit where bounds would overallocate; trim the logical buffer to the validated returned plan.",
         "Rust retains and compacts storage from HIA-selected spans; no parsing, replacement selection or render/reparse fallback."
       ],
       "tests": [
@@ -574,13 +464,18 @@
         "hia/tests/test_installed_codex.py"
       ],
       "validation": {
-        "report": "hia/verification.json#source_file_increment",
-        "artifact_generation": "B3",
-        "current_local_component_gates": "passed",
-        "current_cargo_and_installed_ci": "pending",
-        "performance_qualified": false
+        "current": "hia/verification.json#source_file_increment",
+        "published_history": "hia/verification.json#historical_published_ci"
       },
-      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+      "materialization": {
+        "owner": "Rust computes storage bounds only; HIA chooses every logical row and span.",
+        "parse": "Direct emit when input bytes <=256, with at most one result row per byte; larger inputs use exact query then emit.",
+        "apply": "Direct emit when checked(old_line_count + inserted_count) <=256; otherwise exact query then emit.",
+        "line_texts": "Direct emit with old_line_count records as the proven bound.",
+        "into_contents": "Direct emit with checked(2 * old_line_count) records as the proven bound.",
+        "capacity": "Checked 40 + 32 * record_bound allocation; validate native required size and count, require required size <= buffer length, then truncate logical buffer length to the complete returned plan. Spare initialized storage never becomes a row.",
+        "fallback": "The alternative is another HIA query/emit sequence; no Rust algorithm fallback."
+      }
     },
     {
       "id": "file_update",
@@ -594,7 +489,7 @@
       ],
       "production_algorithm_group": "file_update",
       "implementation_status": "native_opt_in_complete_computation_owner_candidate",
-      "qualification_status": "native_build_raw_abi_and_receipts_passed_complete_original_public_owner_and_current_consumers_pending",
+      "qualification_status": "current_raw_abi_and_receipts_passed_repaired_combined_public_adapter_ci_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "performance_qualified": false,
@@ -635,19 +530,77 @@
         "hia/tests/test_installed_codex.py"
       ],
       "validation": {
-        "report": "hia/verification.json#file_update_increment",
-        "artifact_generation": "B3",
-        "build_passed": true,
-        "raw_abi_passed": true,
-        "raw_abi_native_calls": 2897,
-        "error_no_write_cases": 1381,
-        "concurrent_native_calls": 768,
-        "receipt_checks_passed": 60,
-        "shared_scalar_build_admission_checks_passed": 116,
-        "whole_original_public_oracle_passed": false,
-        "original_owner_tests_passed": false,
-        "current_cargo_installed_lint_fix_passed": false,
-        "performance_qualified": false
+        "current": "hia/verification.json#file_update_increment",
+        "published_history": "hia/verification.json#historical_published_ci"
+      }
+    },
+    {
+      "id": "parser",
+      "hia_source": "hia/parser.hepta",
+      "source_paths": [
+        "codex-rs/apply-patch/src/parser.rs",
+        "codex-rs/apply-patch/src/streaming_parser.rs"
+      ],
+      "public_entries": [
+        "parse_patch",
+        "StreamingPatchParser::push_delta",
+        "StreamingPatchParser::finish",
+        "StreamingPatchParser::environment_id",
+        "Hunk::path",
+        "Hunk::resolve_path"
+      ],
+      "production_algorithm_group": "parser",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "current_complete_original_transcripts_raw_abi_and_fresh_host_admission_passed_combined_product_ci_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_parser",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/parser_buffer_contract.json",
+        "contract_sha256": "f5c56e0e49455faa925b60306b1de72b7575391ce154c26b914250a4b0b47706",
+        "request_bytes": 128,
+        "output_header_bytes": 160,
+        "record_bytes": 64,
+        "operations": {
+          "0": "push_strict_query",
+          "1": "push_strict_emit",
+          "2": "finish_strict_query",
+          "3": "finish_strict_emit",
+          "4": "push_trusted_query",
+          "5": "push_trusted_emit",
+          "6": "finish_trusted_query",
+          "7": "finish_trusted_emit",
+          "8": "normalize_strict_query",
+          "9": "normalize_strict_emit",
+          "10": "normalize_lenient_query",
+          "11": "normalize_lenient_emit",
+          "12": "normalize_strict_trusted_query",
+          "13": "normalize_strict_trusted_emit",
+          "14": "normalize_lenient_trusted_query",
+          "15": "normalize_lenient_trusted_emit",
+          "16": "select_affected_path",
+          "17": "select_source_path"
+        }
+      },
+      "behavior": [
+        "HIA owns complete batch normalization/heredoc grammar and streaming state transitions.",
+        "Preserve exact AST/context provenance, all nine error families, error line numbers and accepted-prefix state commits before returning Err.",
+        "Preserve pending fragments, finish exceptions, double CR handling, Clone/Default/Debug and owned results.",
+        "HIA selects affected/source paths; the actual PathUri implementation and native host PathBuf formatting remain at the host boundary.",
+        "No original Rust grammar fallback is called by the HIA feature-selected adapters."
+      ],
+      "tests": [
+        "hia/tests/native_parser_caller.rs",
+        "hia/tests/test_native_parser_caller.py",
+        "hia/tests/parser_cases.py",
+        "hia/tests/parser_oracle_Cargo.lock",
+        "hia/tests/test_parser_abi.py",
+        "hia/tests/test_parser_host_receipt.py"
+      ],
+      "validation": {
+        "current": "hia/verification.json#parser_increment",
+        "published_history": "hia/verification.json#historical_published_ci/parser"
       }
     }
   ],
@@ -853,10 +806,12 @@
         "line ending modes and file effects",
         "Unicode context matching and search ordering"
       ],
-      "next_implementation": "Qualify the new complete file_update computation candidate through the full original crate, real public filesystem results, actual consumers and installed executables; then migrate remaining patch grammar and filesystem/search owners. HIA matching and SourceFile remain composed components.",
+      "next_implementation": "Qualify this combined native parser/matcher/SourceFile/file-update tree through the complete original public owner, current Cargo consumers, installed executables and strict lint/fix. Then migrate unified-diff formatting, filesystem/search effects and remaining platform/default release paths.",
       "candidate_modules": [
         "seek_sequence",
-        "source_file"
+        "source_file",
+        "file_update",
+        "parser"
       ]
     },
     {
@@ -2394,7 +2349,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_ten_module_file_update_receipts_and_shared_build_admission_passed",
+    "status": "current_eleven_module_receipts_and_shared_build_admission_passed",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2405,13 +2360,18 @@
       "truncate",
       "token_budget",
       "source_file",
-      "file_update"
+      "file_update",
+      "parser"
     ],
-    "checks_passed": 60,
-    "scalar_build_admission_checks_passed": 116,
+    "checks_passed": 62,
+    "scalar_build_admission_checks_passed": 117,
     "shared_cargo_helper_changed": false,
-    "mutation_module": "file_update",
-    "typed_scalar_mutation_history": "Historical eight- and nine-module receipt/admission evidence remains scoped to those checkpoints. Current 60 checks mutate file_update; the separate 116-check gate retains typed scalar entry/ELF qualification.",
-    "report": "hia/verification.json#file_update_increment"
+    "report": "hia/verification.json#patch_integration",
+    "checks_passed_scope": "62 checks independently for each of source_file, file_update and parser.",
+    "mutation_modules": [
+      "source_file",
+      "file_update",
+      "parser"
+    ]
   }
 }
