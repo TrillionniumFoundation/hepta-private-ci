@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Verify HIA components in a relocated full Codex CLI against its Rust build.
 
-Require all production HIA symbols in the full executable. Exercise its
-apply_patch alias and internal patch dispatch, both newline modes, and ordinary
+Require the HIA symbols reachable from the full executable. The library-only
+UUID matcher has a caller gate in test_native_uuid_find_caller.py. Exercise the
+CLI's apply_patch alias and internal patch dispatch, both newline modes, and ordinary
 help/version startup after removing HIA artifact and shared-library paths.
 """
 
@@ -37,12 +38,20 @@ NATIVE_SYMBOLS = (
     "codex_hia_patch_summary",
     "codex_hia_patch_application",
     "codex_hia_patch_standalone",
-    "codex_hia_uuid_find",
     "codex_hia_unified_diff",
 )
 
 
+LIBRARY_ONLY_NATIVE_SYMBOLS = ("codex_hia_uuid_find",)
+
+
 def verify(args: argparse.Namespace, report: dict) -> None:
+    report["symbol_scope"] = {
+        "required_native_cli_symbols": list(NATIVE_SYMBOLS),
+        "library_only_native_symbols": list(LIBRARY_ONLY_NATIVE_SYMBOLS),
+        "required_absent_from_reference": list(NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS),
+        "library_positive_gate": "hia/tests/test_native_uuid_find_caller.py",
+    }
     binary = args.binary.resolve(strict=True)
     reference = args.reference_binary.resolve(strict=True)
     for path in (binary, reference):
@@ -52,7 +61,10 @@ def verify(args: argparse.Namespace, report: dict) -> None:
     report["binary_sha256"] = sha256(binary)
     inspect_binary(binary, report, required_symbols=NATIVE_SYMBOLS)
     report["reference_binary"] = {"path": str(reference), "sha256": sha256(reference)}
-    inspect_binary(reference, report["reference_binary"], native=False, required_symbols=NATIVE_SYMBOLS)
+    inspect_binary(
+        reference, report["reference_binary"], native=False,
+        required_symbols=NATIVE_SYMBOLS + LIBRARY_ONLY_NATIVE_SYMBOLS,
+    )
 
     environment = os.environ.copy()
     removed = ["CODEX_HIA_NATIVE_LIB_DIR", "LD_LIBRARY_PATH"]

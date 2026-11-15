@@ -42,11 +42,17 @@ filesystem execution, symlink/sandbox enforcement, string allocation and the
 public writer's formatting/I/O remain host boundaries. The original Rust owners
 remain available to the default platform path and immutable parity tests.
 
-Sixteen native symbols are required in installed full Codex checks, including
-eight in apply_patch. Standalone apply_patch does not call the unified formatter;
-the full Codex verification path does. `utf8_boundaries` has a separate
-qualification entry. These are required checks, not claims that the new installed
-combination has already passed.
+Fifteen CLI-reachable native symbols are required in installed full Codex checks,
+including eight in apply_patch. Standalone apply_patch does not call the unified
+formatter; the full Codex verification path does. `utf8_boundaries` has a separate
+qualification entry. `find_uuids` is an exported library API with no production
+caller in the current full Codex CLI, so `codex_hia_uuid_find` is not a required
+CLI symbol. Its native library behavior is covered by
+[`test_native_uuid_find_caller.py`](tests/test_native_uuid_find_caller.py).
+The default reference executable must still contain none of all sixteen native
+symbols, including UUID. Installation reports distinguish both symbol scopes.
+These are required checks, not claims that the repaired installed combination
+has passed.
 
 ## Native interfaces
 
@@ -305,6 +311,17 @@ CLI repair `eb439d69`; neither that repair nor inherited results establish
 successful sixteen- or seventeen-module CI. Performance, default dispatch
 and retirement remain unqualified. Exact reports and input hashes are in
 `verification.json#uuid_find_increment`.
+
+Both initial `7c94ad70` native CI runs failed the installed full-Codex step.
+The inspected PR and push artifact reports each record successful `nm`, one
+definition of each of the fifteen required CLI symbols, and only
+`codex_hia_uuid_find` missing. The scope correction removes that library-only
+positive symbol requirement; it retains all sixteen default-binary absence
+assertions and all other symbol, dynamic-library and runtime checks. The
+initial failures remain recorded in
+`verification.json#uuid_installed_scope_repair_history`. The selected artifact
+members were CRC-checked; neither complete artifact ZIP was audited. This
+correction does not claim a successful rerun or promote any qualification.
 
 #### Inherited checkpoint text
 

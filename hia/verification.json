@@ -712,7 +712,7 @@
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
     "hia/tests/test_build_receipt.py": "ce81334c959dbd31a92d9ce92c494425b00537e0b82a56d54fe85f566e67d1e5",
     "hia/tests/test_file_update_abi.py": "d591e493a70ffc43923d9cd84341c72238aa6072d1c3403ca7bc1aade02930f5",
-    "hia/tests/test_installed_codex.py": "715f4670262a2aa0668dffb09c6b18931c50f1aca3e69394da04dbc030cd98c9",
+    "hia/tests/test_installed_codex.py": "92e29d1f730026451047885fe402ff22f9091dc48616349b825d8ecdddd0f658",
     "hia/tests/test_installed_patch.py": "91d674831a64bfac7bc97b57745ba88c84a8e6f25a25eec0ac27f142cab925dd",
     "hia/tests/test_markdown_location_abi.py": "bac67c99f75d4899571db903acd570a548ed62a7b3b2943f850c9d46ef06ca1d",
     "hia/tests/test_metric_tag_abi.py": "6d10774c87586c9ab428809acf9fa2007b2658cf074909d09b44b7851e3239be",
@@ -3283,5 +3283,148 @@
         "sha256": "52a9f3f780e50e8ab3bbc6d23902ff4fb1b92f3a24f19e78b29c498252fa8170"
       }
     }
-  }
+  },
+  "uuid_installed_scope_repair_history": [
+    {
+      "status": "cli_symbol_scope_corrected_requalification_pending",
+      "initial_head": "7c94ad7080d04c1829d43e635588097792883053",
+      "initial_tree": "c9bec54464f302360e06967a18ef0e661666e79c",
+      "initial_source_snapshot": {
+        "path": "/workspace/scratch/9f380f39cb05/next-uuid/metadata-integration-v1/source-after.json",
+        "bytes": 1875890,
+        "sha256": "92da4e2b81043d34c9c1d0285527150c4991b381163ed0844e5156670978522d"
+      },
+      "initial_ci_runs_and_selected_artifacts": [
+        {
+          "run_id": 43743162746,
+          "job_id": 132900558384,
+          "kind": "push",
+          "conclusion": "failure",
+          "failed_step": "Verify installed full Codex executable",
+          "step_number": 50,
+          "jobs": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/push-43743162746/jobs.json",
+            "bytes": 14278,
+            "sha256": "35eeb13229e9c4f1cadbd9d18c3f11782c46baeba073a3cddff1bea462bb3f27"
+          },
+          "range_inspection": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/push-43743162746/range-inspection-v1/report.json",
+            "bytes": 5831,
+            "sha256": "4164c70c8cf0ffde521b1cb19329a8ca0cd3c4c118681964fab2b60f4c22bac6"
+          },
+          "installed_report": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/push-43743162746/range-inspection-v1/hia-installed-codex.json",
+            "bytes": 3038,
+            "sha256": "d5b8114f7668a148296dba152b0059478d617ace67f9de5258f5ff4bf5ce6cca"
+          },
+          "installed_log": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/push-43743162746/range-inspection-v1/hia-installed-codex.log",
+            "bytes": 59,
+            "sha256": "669c8cbd37a6f12f55daf8dd97323bdb4790afb593ad18578189536fa3cd6745"
+          }
+        },
+        {
+          "run_id": 43743168996,
+          "job_id": 132900576735,
+          "kind": "pr",
+          "conclusion": "failure",
+          "failed_step": "Verify installed full Codex executable",
+          "step_number": 50,
+          "jobs": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/pr-43743168996/jobs.json",
+            "bytes": 14278,
+            "sha256": "46b6b3c1618a425b8afd6ca196b491b23870dff379183bfa0c702ec1ea596977"
+          },
+          "range_inspection": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/pr-43743168996/range-inspection-v1/report.json",
+            "bytes": 5809,
+            "sha256": "81a29763bcfae057bb20611c47ea42e389ec538963dd6474670fd742ccff7c3a"
+          },
+          "installed_report": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/pr-43743168996/range-inspection-v1/hia-installed-codex.json",
+            "bytes": 3038,
+            "sha256": "ccce16e80218d1a5a52c26be304ab7f2975981e7f35a8520b9530d867a2d1a88"
+          },
+          "installed_log": {
+            "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/pr-43743168996/range-inspection-v1/hia-installed-codex.log",
+            "bytes": 59,
+            "sha256": "669c8cbd37a6f12f55daf8dd97323bdb4790afb593ad18578189536fa3cd6745"
+          }
+        }
+      ],
+      "initial_ci_preservation": {
+        "path": "/workspace/scratch/9f380f39cb05/qualification/uuid-ci/initial-7c94/preservation-receipt.json",
+        "bytes": 1865,
+        "sha256": "f67e0875b949c8a1a27b62849d4c1f709dac1433c054094e149cd80c67666a44"
+      },
+      "range_diagnosis_review": {
+        "path": "/workspace/scratch/9f380f39cb05/next-uuid/push-installed-range-final-v1/review.json",
+        "bytes": 6856,
+        "sha256": "acc2e734f7b66dc489404c756cf9ffb0a5d320eae5d465d646520d032c240ae5"
+      },
+      "common_observed_failure": {
+        "nm_exit_code": 0,
+        "only_missing_symbol": "codex_hia_uuid_find",
+        "other_fifteen_symbols_defined_once": true,
+        "duplicate_symbols": [],
+        "installed_check_passed": false,
+        "dynamic_dependency_check_reached": false,
+        "startup_cases_executed_per_run": 0,
+        "patch_cases_executed_per_run": 0,
+        "selected_members_crc_verified": true,
+        "complete_archive_sha256_verified": false,
+        "all_archive_members_audited": false
+      },
+      "scope_correction": {
+        "required_full_codex_symbols": [
+          "codex_hia_seek_sequence",
+          "codex_hia_utf8_prefix",
+          "codex_hia_metric_tag",
+          "codex_hia_markdown_location",
+          "codex_hia_ascii_json_fragment",
+          "codex_hia_truncate",
+          "codex_hia_token_budget",
+          "codex_hia_source_file",
+          "codex_hia_file_update",
+          "codex_hia_parser",
+          "codex_hia_patch_effects",
+          "codex_hia_patch_summary",
+          "codex_hia_patch_application",
+          "codex_hia_patch_standalone",
+          "codex_hia_unified_diff"
+        ],
+        "required_apply_patch_symbol_count": 8,
+        "required_absent_from_default_reference": [
+          "codex_hia_seek_sequence",
+          "codex_hia_utf8_prefix",
+          "codex_hia_metric_tag",
+          "codex_hia_markdown_location",
+          "codex_hia_ascii_json_fragment",
+          "codex_hia_truncate",
+          "codex_hia_token_budget",
+          "codex_hia_source_file",
+          "codex_hia_file_update",
+          "codex_hia_parser",
+          "codex_hia_patch_effects",
+          "codex_hia_patch_summary",
+          "codex_hia_patch_application",
+          "codex_hia_patch_standalone",
+          "codex_hia_unified_diff",
+          "codex_hia_uuid_find"
+        ],
+        "uuid_scope": "The exported find_uuids library API has no production caller in this CLI. Its symbol is not required in the full executable.",
+        "library_caller_gate": "hia/tests/test_native_uuid_find_caller.py",
+        "library_caller_gate_sha256": "b49f56a2c75b5d95f601ebe385bcb1c1268b2691c3f6141bf6a8485566dcfc94",
+        "preserved_checks": "All remaining fifteen positive native-CLI symbol checks, all original sixteen default-reference absence checks including UUID, duplicate checks, dynamic-library inspection, relocated startup, patch dispatch and output comparisons are unchanged.",
+        "production_sources_or_linker_retention_changed": false,
+        "initial_checkpoint_boundary": "Existing current_product_ci and uuid_find_increment retain the initial seventeen-module checkpoint. This append-only history supersedes only its sixteen-symbol CLI requirement; it does not promote other pending qualifications."
+      },
+      "repaired_installed_gate_executed": false,
+      "new_cargo_or_public_qualification_claimed": false,
+      "current_ci_qualified": false,
+      "whole_product_qualified": false,
+      "default_dispatch_changed": false,
+      "legacy_retirement_qualified": false
+    }
+  ]
 }
