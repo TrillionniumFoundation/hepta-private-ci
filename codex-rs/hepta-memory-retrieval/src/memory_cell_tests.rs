@@ -265,7 +265,7 @@ fn shadow_fixture(with_candidate: bool) -> ShadowFixture {
         normalized_score: FixedQ32::ONE,
         ood: ProbabilityQ32::ZERO,
         support_digest: Digest32::of_bytes(b"candidate-support"),
-        contradiction_group_digest: None,
+        contradiction_evidence: None,
         generation_vector_digest: cue.snapshot_key.vector_digest,
     };
     let candidates = if with_candidate {
