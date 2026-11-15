@@ -305,7 +305,7 @@ pub async fn list_thread_ids_db(
     stage: &str,
 ) -> Option<Vec<ThreadId>> {
     let ctx = context?;
-    if ctx.sqlite() != sqlite {
+    if !ctx.matches_sqlite_config(sqlite) {
         warn!(
             "state db SQLite home mismatch: expected {}, got {}",
             sqlite.home().display(),
@@ -366,7 +366,7 @@ pub async fn list_threads_db(
     search_term: Option<&str>,
 ) -> Option<codex_state::ThreadsPage> {
     let ctx = context?;
-    if ctx.sqlite() != sqlite {
+    if !ctx.matches_sqlite_config(sqlite) {
         warn!(
             "state db SQLite home mismatch: expected {}, got {}",
             sqlite.home().display(),
@@ -742,3 +742,7 @@ pub async fn touch_thread_updated_at(
 #[cfg(test)]
 #[path = "state_db_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "state_db_configuration_tests.rs"]
+mod configuration_tests;
