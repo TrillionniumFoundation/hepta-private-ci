@@ -1,0 +1,1218 @@
+{
+  "all_continued_orders_and_final_order_rng_checked": 1,
+  "audit_status": "passed_completed_C1_chain_artifacts",
+  "child_best_checkpoint_sha256": "2b87719fb5d184389d4f3e2a845ee9a8d63e8c601202917ceaaffc3aaba2b406",
+  "child_last_checkpoint_sha256": "79b6a59a1baa5e74c770a7df3e776ae8fd3dd8688f4b5b1a3ee534c3ce4a42a0",
+  "child_report_sha256": "8118e4256922cb9ad1d395f7a122ba1b27efe4637801b54499199fe1660393b5",
+  "clock_sampling_adapter": {
+    "checks": "Every row finite and 0 <= raw_early <= raw_cumulative - complete_parent_outer <= complete_child_outer; no added tolerance.",
+    "existing_helper_tolerance_changed": false,
+    "helper_receives_deep_copy_with_late_phase_clock": true,
+    "intervals": [
+      {
+        "child_complete_outer_wall_seconds": 8.54430363792926,
+        "derived_phase_late_seconds": 7.349891092861071,
+        "epoch": 101,
+        "original_cumulative_seconds_unchanged": 227.64753227075562,
+        "raw_phase_early_seconds": 7.349889195989817,
+        "sample_gap_seconds": 1.8968712538480759e-06
+      }
+    ],
+    "quality_cost_axis": "Original later cumulative_process_wall_seconds, unchanged",
+    "raw_report_modified": false,
+    "schema": "C1-double-sampled-clock-adapter-v1"
+  },
+  "clock_sampling_source": {
+    "epoch_dictionary_line": 256,
+    "source_semantics": "Python dict value evaluation samples early phase first, then cumulative at a second elapsed() call.",
+    "source_sha256": "a9dd9399a2368779557a725a3cbfbfd7d74dda3deff3d486a73acfc89d4750ec"
+  },
+  "first_continued_order": {
+    "diagnostic_events_repeated": false,
+    "first_continued_order_matches_parent_rng": true,
+    "optimizer_and_torch_rng_restoration_proven_by_this_check": false
+  },
+  "fresh_forward": {
+    "batch_size": 32,
+    "bytes": 3071797,
+    "file": "fresh-C1-gru-s211-lr0.001.pt",
+    "gradients": false,
+    "max_logit_absolute_difference": 0.0,
+    "performed": true,
+    "scope": "Exact original-v8 constructor and model forward; C1 inherited implementation identities are audited separately.",
+    "seconds": 0.24650231492705643,
+    "sha256": "d644e742285d4b83da34f4a40ea0b1d092b714d4704c6f163e6da8e6937148a8",
+    "source": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8"
+  },
+  "independent_ABC_class_weight_denominators_checked": 12,
+  "independent_selected_development": {
+    "accuracy": 0.7335378067100651,
+    "balanced_accuracy_present_classes": 0.4122162975466886,
+    "brier_half_sum": 0.21562677002488195,
+    "brier_mean_classes": 0.03920486727725126,
+    "confusion_matrix": [
+      [
+        5706,
+        2,
+        52,
+        1,
+        0,
+        672,
+        128,
+        3,
+        1,
+        44,
+        0
+      ],
+      [
+        199,
+        18,
+        41,
+        36,
+        0,
+        219,
+        32,
+        0,
+        37,
+        49,
+        0
+      ],
+      [
+        335,
+        0,
+        659,
+        84,
+        0,
+        40,
+        11,
+        1,
+        2,
+        8,
+        0
+      ],
+      [
+        10,
+        1,
+        229,
+        9870,
+        0,
+        3,
+        1303,
+        4,
+        80,
+        0,
+        0
+      ],
+      [
+        214,
+        0,
+        14,
+        1,
+        0,
+        27,
+        2,
+        1,
+        0,
+        38,
+        0
+      ],
+      [
+        342,
+        0,
+        12,
+        2,
+        0,
+        4454,
+        60,
+        1,
+        0,
+        120,
+        0
+      ],
+      [
+        361,
+        0,
+        49,
+        1175,
+        0,
+        51,
+        1299,
+        1,
+        318,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        85,
+        323,
+        0,
+        0,
+        563,
+        3,
+        52,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        225,
+        0,
+        19,
+        311,
+        0,
+        1390,
+        0,
+        0
+      ],
+      [
+        51,
+        0,
+        0,
+        2,
+        0,
+        97,
+        9,
+        0,
+        0,
+        39,
+        0
+      ],
+      [
+        34,
+        0,
+        0,
+        14,
+        0,
+        23,
+        80,
+        0,
+        210,
+        0,
+        0
+      ]
+    ],
+    "ece_15_equal_width_bins": 0.18739039019003284,
+    "events": 31952,
+    "macro_f1_11_classes": 0.3970092476694809,
+    "macro_f1_present_classes": 0.3970092476694809,
+    "nll": 0.9472314952106758
+  },
+  "inherited_memorization_passed": true,
+  "journal": {
+    "clock_alias_scope": "phase wall/full phase CPU only; no cumulative CPU imputation",
+    "completed_epochs": 1,
+    "cumulative_main_updates": 1212,
+    "diagnostic_updates": 0,
+    "every_completed_epoch_complete_ABC": true,
+    "main_updates": 12,
+    "micro_forward_calls": {
+      "main": 12
+    },
+    "new_epochs_start_at": 101,
+    "parent_main_updates": 1200,
+    "partial_epoch_retained": false,
+    "partial_update_retained": false
+  },
+  "metric_absolute_differences": {
+    "accuracy": 0.0,
+    "balanced_accuracy_present_classes": 0.0,
+    "brier_half_sum": 0.0,
+    "brier_mean_classes": 6.938893903907228e-18,
+    "ece_15_equal_width_bins": 2.7755575615628914e-17,
+    "events": 0,
+    "macro_f1_11_classes": 1.1102230246251565e-16,
+    "macro_f1_present_classes": 1.1102230246251565e-16,
+    "nll": 0.0
+  },
+  "name": "gru-s211-lr0.001",
+  "new_diagnostic_updates": 0,
+  "optimizer_checks": {
+    "best.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 6,
+      "optimizer_steps": 1092,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "f30694c471f9339555a21cad565e9c68ebbf152e42120ee25226b8151a61ff58",
+      "torch_rng_format_valid": true
+    },
+    "last.pt": {
+      "AdamW_constructor_default_fields_checked": [
+        "amsgrad",
+        "betas",
+        "capturable",
+        "differentiable",
+        "eps",
+        "foreach",
+        "fused",
+        "maximize"
+      ],
+      "optimizer_group_names_and_hints_verified": true,
+      "optimizer_parameters": 6,
+      "optimizer_steps": 1212,
+      "second_moments_nonnegative": true,
+      "torch_rng_bytes_sha256": "f30694c471f9339555a21cad565e9c68ebbf152e42120ee25226b8151a61ff58",
+      "torch_rng_format_valid": true
+    }
+  },
+  "parent_best_checkpoint_sha256": "2b87719fb5d184389d4f3e2a845ee9a8d63e8c601202917ceaaffc3aaba2b406",
+  "parent_child_last_torch_rng_equal": true,
+  "parent_last_checkpoint_sha256": "3e7f7ed9a6af048b19052a19b48ed8c4679ffa4da8bd08bf53dada83d477911d",
+  "parent_report_sha256": "817bd7be38b6672e6f52a7d6084603013c88f7f8226ddb7b217f090a2d77f8af",
+  "phase_chain": {
+    "actual_parent_outer_wall_ceiling_seconds": 14169.325585023034,
+    "charged_chain_outer_wall_seconds": 228.8419448158238,
+    "combined_state": {
+      "anchor": 0.39700924766948104,
+      "best": 0.39700924766948104,
+      "best_epoch": 91,
+      "first_plateau_epoch": 101,
+      "stale": 10
+    },
+    "cpu_scope": "Original per-epoch CPU is exact. C1 cumulative CPU has a parent lower bound; complete parent exit CPU was not recorded.",
+    "crossing_status": "observed",
+    "cumulative_full_process_cpu_seconds": null,
+    "derived_chain_adequacy": true,
+    "first_observed_quality_crossing": {
+      "cumulative_cpu_lower_seconds": 130.545076924,
+      "cumulative_cpu_upper_seconds": 130.545076924,
+      "cumulative_process_wall_seconds": 130.60537917003967,
+      "epoch": 45,
+      "phase": "parent",
+      "quality": 0.30243880372334814
+    },
+    "full_file_and_checkpoint_audit_completed_by_this_function": false,
+    "inherited_plateau_state": {
+      "anchor": 0.39700924766948104,
+      "best": 0.39700924766948104,
+      "best_epoch": 91,
+      "first_plateau_epoch": null,
+      "stale": 9
+    },
+    "logical_phase_chain_checks_passed": true,
+    "nominal_outer_wall_ceiling_seconds": 14400,
+    "observed_points": [
+      {
+        "cumulative_cpu_lower_seconds": 58.951805191,
+        "cumulative_cpu_upper_seconds": 58.951805191,
+        "cumulative_process_wall_seconds": 59.00963792297989,
+        "epoch": 1,
+        "phase": "parent",
+        "quality": 0.013125021143629345
+      },
+      {
+        "cumulative_cpu_lower_seconds": 60.591035868,
+        "cumulative_cpu_upper_seconds": 60.591035868,
+        "cumulative_process_wall_seconds": 60.64884280995466,
+        "epoch": 2,
+        "phase": "parent",
+        "quality": 0.03929810499757654
+      },
+      {
+        "cumulative_cpu_lower_seconds": 62.206846017,
+        "cumulative_cpu_upper_seconds": 62.206846017,
+        "cumulative_process_wall_seconds": 62.26462716702372,
+        "epoch": 3,
+        "phase": "parent",
+        "quality": 0.02783754470386147
+      },
+      {
+        "cumulative_cpu_lower_seconds": 63.849771963,
+        "cumulative_cpu_upper_seconds": 63.849771963,
+        "cumulative_process_wall_seconds": 63.907512426842004,
+        "epoch": 4,
+        "phase": "parent",
+        "quality": 0.032487280776174056
+      },
+      {
+        "cumulative_cpu_lower_seconds": 65.444626593,
+        "cumulative_cpu_upper_seconds": 65.444626593,
+        "cumulative_process_wall_seconds": 65.50250404700637,
+        "epoch": 5,
+        "phase": "parent",
+        "quality": 0.0733044561411804
+      },
+      {
+        "cumulative_cpu_lower_seconds": 67.030664723,
+        "cumulative_cpu_upper_seconds": 67.030664723,
+        "cumulative_process_wall_seconds": 67.08854768285528,
+        "epoch": 6,
+        "phase": "parent",
+        "quality": 0.08584819399663599
+      },
+      {
+        "cumulative_cpu_lower_seconds": 68.641717166,
+        "cumulative_cpu_upper_seconds": 68.641717166,
+        "cumulative_process_wall_seconds": 68.69964713091031,
+        "epoch": 7,
+        "phase": "parent",
+        "quality": 0.0902471200634144
+      },
+      {
+        "cumulative_cpu_lower_seconds": 70.243258844,
+        "cumulative_cpu_upper_seconds": 70.243258844,
+        "cumulative_process_wall_seconds": 70.30141072603874,
+        "epoch": 8,
+        "phase": "parent",
+        "quality": 0.08540951662130919
+      },
+      {
+        "cumulative_cpu_lower_seconds": 71.825488719,
+        "cumulative_cpu_upper_seconds": 71.825488719,
+        "cumulative_process_wall_seconds": 71.88390107499436,
+        "epoch": 9,
+        "phase": "parent",
+        "quality": 0.09519297344377207
+      },
+      {
+        "cumulative_cpu_lower_seconds": 73.432803909,
+        "cumulative_cpu_upper_seconds": 73.432803909,
+        "cumulative_process_wall_seconds": 73.49118898087181,
+        "epoch": 10,
+        "phase": "parent",
+        "quality": 0.105436508094349
+      },
+      {
+        "cumulative_cpu_lower_seconds": 75.075472042,
+        "cumulative_cpu_upper_seconds": 75.075472042,
+        "cumulative_process_wall_seconds": 75.13382780295797,
+        "epoch": 11,
+        "phase": "parent",
+        "quality": 0.0873380145121323
+      },
+      {
+        "cumulative_cpu_lower_seconds": 76.708650931,
+        "cumulative_cpu_upper_seconds": 76.708650931,
+        "cumulative_process_wall_seconds": 76.7669797448907,
+        "epoch": 12,
+        "phase": "parent",
+        "quality": 0.08294102179849211
+      },
+      {
+        "cumulative_cpu_lower_seconds": 78.320892365,
+        "cumulative_cpu_upper_seconds": 78.320892365,
+        "cumulative_process_wall_seconds": 78.37919190200046,
+        "epoch": 13,
+        "phase": "parent",
+        "quality": 0.14378591203588592
+      },
+      {
+        "cumulative_cpu_lower_seconds": 79.945777432,
+        "cumulative_cpu_upper_seconds": 79.945777432,
+        "cumulative_process_wall_seconds": 80.00404664687812,
+        "epoch": 14,
+        "phase": "parent",
+        "quality": 0.18884648877629132
+      },
+      {
+        "cumulative_cpu_lower_seconds": 81.590018765,
+        "cumulative_cpu_upper_seconds": 81.590018765,
+        "cumulative_process_wall_seconds": 81.64826063602231,
+        "epoch": 15,
+        "phase": "parent",
+        "quality": 0.17082331364624356
+      },
+      {
+        "cumulative_cpu_lower_seconds": 83.234842338,
+        "cumulative_cpu_upper_seconds": 83.234842338,
+        "cumulative_process_wall_seconds": 83.29305632784963,
+        "epoch": 16,
+        "phase": "parent",
+        "quality": 0.1351436522026261
+      },
+      {
+        "cumulative_cpu_lower_seconds": 84.846283212,
+        "cumulative_cpu_upper_seconds": 84.846283212,
+        "cumulative_process_wall_seconds": 84.9044687198475,
+        "epoch": 17,
+        "phase": "parent",
+        "quality": 0.13107680476281947
+      },
+      {
+        "cumulative_cpu_lower_seconds": 86.444083401,
+        "cumulative_cpu_upper_seconds": 86.444083401,
+        "cumulative_process_wall_seconds": 86.50223840191029,
+        "epoch": 18,
+        "phase": "parent",
+        "quality": 0.13218568857050175
+      },
+      {
+        "cumulative_cpu_lower_seconds": 88.047555043,
+        "cumulative_cpu_upper_seconds": 88.047555043,
+        "cumulative_process_wall_seconds": 88.10568172601052,
+        "epoch": 19,
+        "phase": "parent",
+        "quality": 0.13198156643501718
+      },
+      {
+        "cumulative_cpu_lower_seconds": 89.684836349,
+        "cumulative_cpu_upper_seconds": 89.684836349,
+        "cumulative_process_wall_seconds": 89.74429703783244,
+        "epoch": 20,
+        "phase": "parent",
+        "quality": 0.15193767960994267
+      },
+      {
+        "cumulative_cpu_lower_seconds": 91.318900028,
+        "cumulative_cpu_upper_seconds": 91.318900028,
+        "cumulative_process_wall_seconds": 91.37833181698807,
+        "epoch": 21,
+        "phase": "parent",
+        "quality": 0.1304737011240448
+      },
+      {
+        "cumulative_cpu_lower_seconds": 92.91620639,
+        "cumulative_cpu_upper_seconds": 92.91620639,
+        "cumulative_process_wall_seconds": 92.97562119900249,
+        "epoch": 22,
+        "phase": "parent",
+        "quality": 0.14172795173876257
+      },
+      {
+        "cumulative_cpu_lower_seconds": 94.528463239,
+        "cumulative_cpu_upper_seconds": 94.528463239,
+        "cumulative_process_wall_seconds": 94.58783889887854,
+        "epoch": 23,
+        "phase": "parent",
+        "quality": 0.15976723534165402
+      },
+      {
+        "cumulative_cpu_lower_seconds": 96.163945572,
+        "cumulative_cpu_upper_seconds": 96.163945572,
+        "cumulative_process_wall_seconds": 96.22330012288876,
+        "epoch": 24,
+        "phase": "parent",
+        "quality": 0.1555089472411014
+      },
+      {
+        "cumulative_cpu_lower_seconds": 97.810100591,
+        "cumulative_cpu_upper_seconds": 97.810100591,
+        "cumulative_process_wall_seconds": 97.86943972692825,
+        "epoch": 25,
+        "phase": "parent",
+        "quality": 0.15947436648443844
+      },
+      {
+        "cumulative_cpu_lower_seconds": 99.457415582,
+        "cumulative_cpu_upper_seconds": 99.457415582,
+        "cumulative_process_wall_seconds": 99.51672481489368,
+        "epoch": 26,
+        "phase": "parent",
+        "quality": 0.1900708263788193
+      },
+      {
+        "cumulative_cpu_lower_seconds": 101.092235236,
+        "cumulative_cpu_upper_seconds": 101.092235236,
+        "cumulative_process_wall_seconds": 101.15154055901803,
+        "epoch": 27,
+        "phase": "parent",
+        "quality": 0.17203552708124759
+      },
+      {
+        "cumulative_cpu_lower_seconds": 102.729407593,
+        "cumulative_cpu_upper_seconds": 102.729407593,
+        "cumulative_process_wall_seconds": 102.78868508990854,
+        "epoch": 28,
+        "phase": "parent",
+        "quality": 0.1886610840970259
+      },
+      {
+        "cumulative_cpu_lower_seconds": 104.382526132,
+        "cumulative_cpu_upper_seconds": 104.382526132,
+        "cumulative_process_wall_seconds": 104.4417843958363,
+        "epoch": 29,
+        "phase": "parent",
+        "quality": 0.19645869390558987
+      },
+      {
+        "cumulative_cpu_lower_seconds": 106.040855154,
+        "cumulative_cpu_upper_seconds": 106.040855154,
+        "cumulative_process_wall_seconds": 106.10008712299168,
+        "epoch": 30,
+        "phase": "parent",
+        "quality": 0.2050616465267681
+      },
+      {
+        "cumulative_cpu_lower_seconds": 107.702676752,
+        "cumulative_cpu_upper_seconds": 107.702676752,
+        "cumulative_process_wall_seconds": 107.76187081984244,
+        "epoch": 31,
+        "phase": "parent",
+        "quality": 0.21026318745481937
+      },
+      {
+        "cumulative_cpu_lower_seconds": 109.330819802,
+        "cumulative_cpu_upper_seconds": 109.330819802,
+        "cumulative_process_wall_seconds": 109.39001036784612,
+        "epoch": 32,
+        "phase": "parent",
+        "quality": 0.21510936965633098
+      },
+      {
+        "cumulative_cpu_lower_seconds": 110.968146572,
+        "cumulative_cpu_upper_seconds": 110.968146572,
+        "cumulative_process_wall_seconds": 111.02730850991793,
+        "epoch": 33,
+        "phase": "parent",
+        "quality": 0.21614019048110925
+      },
+      {
+        "cumulative_cpu_lower_seconds": 112.608463139,
+        "cumulative_cpu_upper_seconds": 112.608463139,
+        "cumulative_process_wall_seconds": 112.66761757386848,
+        "epoch": 34,
+        "phase": "parent",
+        "quality": 0.22363781753332154
+      },
+      {
+        "cumulative_cpu_lower_seconds": 114.258934414,
+        "cumulative_cpu_upper_seconds": 114.258934414,
+        "cumulative_process_wall_seconds": 114.31806105794385,
+        "epoch": 35,
+        "phase": "parent",
+        "quality": 0.26077296030532876
+      },
+      {
+        "cumulative_cpu_lower_seconds": 115.88520182,
+        "cumulative_cpu_upper_seconds": 115.88520182,
+        "cumulative_process_wall_seconds": 115.94439962692559,
+        "epoch": 36,
+        "phase": "parent",
+        "quality": 0.2604161730849178
+      },
+      {
+        "cumulative_cpu_lower_seconds": 117.515535054,
+        "cumulative_cpu_upper_seconds": 117.515535054,
+        "cumulative_process_wall_seconds": 117.5748072268907,
+        "epoch": 37,
+        "phase": "parent",
+        "quality": 0.2603508930724377
+      },
+      {
+        "cumulative_cpu_lower_seconds": 119.142653406,
+        "cumulative_cpu_upper_seconds": 119.142653406,
+        "cumulative_process_wall_seconds": 119.2021671088878,
+        "epoch": 38,
+        "phase": "parent",
+        "quality": 0.26638158244995913
+      },
+      {
+        "cumulative_cpu_lower_seconds": 120.7739073,
+        "cumulative_cpu_upper_seconds": 120.7739073,
+        "cumulative_process_wall_seconds": 120.83352585998364,
+        "epoch": 39,
+        "phase": "parent",
+        "quality": 0.2636351671632072
+      },
+      {
+        "cumulative_cpu_lower_seconds": 122.409744653,
+        "cumulative_cpu_upper_seconds": 122.409744653,
+        "cumulative_process_wall_seconds": 122.46950084087439,
+        "epoch": 40,
+        "phase": "parent",
+        "quality": 0.27409614877036675
+      },
+      {
+        "cumulative_cpu_lower_seconds": 124.052102076,
+        "cumulative_cpu_upper_seconds": 124.052102076,
+        "cumulative_process_wall_seconds": 124.11219170084223,
+        "epoch": 41,
+        "phase": "parent",
+        "quality": 0.2782327883045675
+      },
+      {
+        "cumulative_cpu_lower_seconds": 125.699915804,
+        "cumulative_cpu_upper_seconds": 125.699915804,
+        "cumulative_process_wall_seconds": 125.76001774892211,
+        "epoch": 42,
+        "phase": "parent",
+        "quality": 0.2844418772401638
+      },
+      {
+        "cumulative_cpu_lower_seconds": 127.350619404,
+        "cumulative_cpu_upper_seconds": 127.350619404,
+        "cumulative_process_wall_seconds": 127.41078654583544,
+        "epoch": 43,
+        "phase": "parent",
+        "quality": 0.2873496030342057
+      },
+      {
+        "cumulative_cpu_lower_seconds": 128.94908929,
+        "cumulative_cpu_upper_seconds": 128.94908929,
+        "cumulative_process_wall_seconds": 129.0092731269542,
+        "epoch": 44,
+        "phase": "parent",
+        "quality": 0.29292508038495496
+      },
+      {
+        "cumulative_cpu_lower_seconds": 130.545076924,
+        "cumulative_cpu_upper_seconds": 130.545076924,
+        "cumulative_process_wall_seconds": 130.60537917003967,
+        "epoch": 45,
+        "phase": "parent",
+        "quality": 0.30243880372334814
+      },
+      {
+        "cumulative_cpu_lower_seconds": 132.132917662,
+        "cumulative_cpu_upper_seconds": 132.132917662,
+        "cumulative_process_wall_seconds": 132.19344143592753,
+        "epoch": 46,
+        "phase": "parent",
+        "quality": 0.30261851891846164
+      },
+      {
+        "cumulative_cpu_lower_seconds": 133.746111767,
+        "cumulative_cpu_upper_seconds": 133.746111767,
+        "cumulative_process_wall_seconds": 133.80677492986433,
+        "epoch": 47,
+        "phase": "parent",
+        "quality": 0.3037829652102316
+      },
+      {
+        "cumulative_cpu_lower_seconds": 135.333870785,
+        "cumulative_cpu_upper_seconds": 135.333870785,
+        "cumulative_process_wall_seconds": 135.39466534904204,
+        "epoch": 48,
+        "phase": "parent",
+        "quality": 0.3108400808053029
+      },
+      {
+        "cumulative_cpu_lower_seconds": 136.929363522,
+        "cumulative_cpu_upper_seconds": 136.929363522,
+        "cumulative_process_wall_seconds": 136.99016224499792,
+        "epoch": 49,
+        "phase": "parent",
+        "quality": 0.31318315435794447
+      },
+      {
+        "cumulative_cpu_lower_seconds": 138.512919768,
+        "cumulative_cpu_upper_seconds": 138.512919768,
+        "cumulative_process_wall_seconds": 138.5738044430036,
+        "epoch": 50,
+        "phase": "parent",
+        "quality": 0.32815897107777386
+      },
+      {
+        "cumulative_cpu_lower_seconds": 140.114430468,
+        "cumulative_cpu_upper_seconds": 140.114430468,
+        "cumulative_process_wall_seconds": 140.17548311990686,
+        "epoch": 51,
+        "phase": "parent",
+        "quality": 0.3230138735665826
+      },
+      {
+        "cumulative_cpu_lower_seconds": 141.69298152,
+        "cumulative_cpu_upper_seconds": 141.69298152,
+        "cumulative_process_wall_seconds": 141.7541379549075,
+        "epoch": 52,
+        "phase": "parent",
+        "quality": 0.3202167421108808
+      },
+      {
+        "cumulative_cpu_lower_seconds": 143.265739948,
+        "cumulative_cpu_upper_seconds": 143.265739948,
+        "cumulative_process_wall_seconds": 143.3271211630199,
+        "epoch": 53,
+        "phase": "parent",
+        "quality": 0.33702845301857914
+      },
+      {
+        "cumulative_cpu_lower_seconds": 144.850069377,
+        "cumulative_cpu_upper_seconds": 144.850069377,
+        "cumulative_process_wall_seconds": 144.91152286785655,
+        "epoch": 54,
+        "phase": "parent",
+        "quality": 0.3333195238962972
+      },
+      {
+        "cumulative_cpu_lower_seconds": 146.45815343,
+        "cumulative_cpu_upper_seconds": 146.45815343,
+        "cumulative_process_wall_seconds": 146.51988775003701,
+        "epoch": 55,
+        "phase": "parent",
+        "quality": 0.32516398290787013
+      },
+      {
+        "cumulative_cpu_lower_seconds": 148.045425119,
+        "cumulative_cpu_upper_seconds": 148.045425119,
+        "cumulative_process_wall_seconds": 148.10737992683426,
+        "epoch": 56,
+        "phase": "parent",
+        "quality": 0.34397354870638247
+      },
+      {
+        "cumulative_cpu_lower_seconds": 149.614232003,
+        "cumulative_cpu_upper_seconds": 149.614232003,
+        "cumulative_process_wall_seconds": 149.67631702194922,
+        "epoch": 57,
+        "phase": "parent",
+        "quality": 0.3404706980492848
+      },
+      {
+        "cumulative_cpu_lower_seconds": 151.197392684,
+        "cumulative_cpu_upper_seconds": 151.197392684,
+        "cumulative_process_wall_seconds": 151.2597874950152,
+        "epoch": 58,
+        "phase": "parent",
+        "quality": 0.34485279790570933
+      },
+      {
+        "cumulative_cpu_lower_seconds": 152.827910634,
+        "cumulative_cpu_upper_seconds": 152.827910634,
+        "cumulative_process_wall_seconds": 152.8903607148677,
+        "epoch": 59,
+        "phase": "parent",
+        "quality": 0.3463729181821249
+      },
+      {
+        "cumulative_cpu_lower_seconds": 154.418598973,
+        "cumulative_cpu_upper_seconds": 154.418598973,
+        "cumulative_process_wall_seconds": 154.48120240704156,
+        "epoch": 60,
+        "phase": "parent",
+        "quality": 0.3418761215627251
+      },
+      {
+        "cumulative_cpu_lower_seconds": 155.979857528,
+        "cumulative_cpu_upper_seconds": 155.979857528,
+        "cumulative_process_wall_seconds": 156.0431120910216,
+        "epoch": 61,
+        "phase": "parent",
+        "quality": 0.3524596764993251
+      },
+      {
+        "cumulative_cpu_lower_seconds": 157.569039667,
+        "cumulative_cpu_upper_seconds": 157.569039667,
+        "cumulative_process_wall_seconds": 157.63240205985494,
+        "epoch": 62,
+        "phase": "parent",
+        "quality": 0.3549901190426601
+      },
+      {
+        "cumulative_cpu_lower_seconds": 159.181884926,
+        "cumulative_cpu_upper_seconds": 159.181884926,
+        "cumulative_process_wall_seconds": 159.24530549696647,
+        "epoch": 63,
+        "phase": "parent",
+        "quality": 0.35060972623145403
+      },
+      {
+        "cumulative_cpu_lower_seconds": 160.759827303,
+        "cumulative_cpu_upper_seconds": 160.759827303,
+        "cumulative_process_wall_seconds": 160.8232706899289,
+        "epoch": 64,
+        "phase": "parent",
+        "quality": 0.35981255974909654
+      },
+      {
+        "cumulative_cpu_lower_seconds": 162.326400138,
+        "cumulative_cpu_upper_seconds": 162.326400138,
+        "cumulative_process_wall_seconds": 162.38988775783218,
+        "epoch": 65,
+        "phase": "parent",
+        "quality": 0.3553393523985673
+      },
+      {
+        "cumulative_cpu_lower_seconds": 163.9395825,
+        "cumulative_cpu_upper_seconds": 163.9395825,
+        "cumulative_process_wall_seconds": 164.0031271649059,
+        "epoch": 66,
+        "phase": "parent",
+        "quality": 0.3687534955481686
+      },
+      {
+        "cumulative_cpu_lower_seconds": 165.53613558,
+        "cumulative_cpu_upper_seconds": 165.53613558,
+        "cumulative_process_wall_seconds": 165.59973315498792,
+        "epoch": 67,
+        "phase": "parent",
+        "quality": 0.3607193604979987
+      },
+      {
+        "cumulative_cpu_lower_seconds": 167.090809923,
+        "cumulative_cpu_upper_seconds": 167.090809923,
+        "cumulative_process_wall_seconds": 167.1544299130328,
+        "epoch": 68,
+        "phase": "parent",
+        "quality": 0.36613297626160946
+      },
+      {
+        "cumulative_cpu_lower_seconds": 168.672440717,
+        "cumulative_cpu_upper_seconds": 168.672440717,
+        "cumulative_process_wall_seconds": 168.7384840399027,
+        "epoch": 69,
+        "phase": "parent",
+        "quality": 0.3591257324661011
+      },
+      {
+        "cumulative_cpu_lower_seconds": 170.257078641,
+        "cumulative_cpu_upper_seconds": 170.257078641,
+        "cumulative_process_wall_seconds": 170.32435398502275,
+        "epoch": 70,
+        "phase": "parent",
+        "quality": 0.3681926857249294
+      },
+      {
+        "cumulative_cpu_lower_seconds": 171.826133075,
+        "cumulative_cpu_upper_seconds": 171.826133075,
+        "cumulative_process_wall_seconds": 171.89347751089372,
+        "epoch": 71,
+        "phase": "parent",
+        "quality": 0.3657172603083007
+      },
+      {
+        "cumulative_cpu_lower_seconds": 173.42742689,
+        "cumulative_cpu_upper_seconds": 173.42742689,
+        "cumulative_process_wall_seconds": 173.49483812903054,
+        "epoch": 72,
+        "phase": "parent",
+        "quality": 0.36816770979145663
+      },
+      {
+        "cumulative_cpu_lower_seconds": 175.030029296,
+        "cumulative_cpu_upper_seconds": 175.030029296,
+        "cumulative_process_wall_seconds": 175.09757536882535,
+        "epoch": 73,
+        "phase": "parent",
+        "quality": 0.3665098913915159
+      },
+      {
+        "cumulative_cpu_lower_seconds": 176.645702054,
+        "cumulative_cpu_upper_seconds": 176.645702054,
+        "cumulative_process_wall_seconds": 176.71338526182808,
+        "epoch": 74,
+        "phase": "parent",
+        "quality": 0.37126595255783157
+      },
+      {
+        "cumulative_cpu_lower_seconds": 178.273509885,
+        "cumulative_cpu_upper_seconds": 178.273509885,
+        "cumulative_process_wall_seconds": 178.34131381195039,
+        "epoch": 75,
+        "phase": "parent",
+        "quality": 0.37487582337663583
+      },
+      {
+        "cumulative_cpu_lower_seconds": 179.890406942,
+        "cumulative_cpu_upper_seconds": 179.890406942,
+        "cumulative_process_wall_seconds": 179.95837257802486,
+        "epoch": 76,
+        "phase": "parent",
+        "quality": 0.3777607472048304
+      },
+      {
+        "cumulative_cpu_lower_seconds": 181.538968959,
+        "cumulative_cpu_upper_seconds": 181.538968959,
+        "cumulative_process_wall_seconds": 181.60714328987524,
+        "epoch": 77,
+        "phase": "parent",
+        "quality": 0.38061784921735975
+      },
+      {
+        "cumulative_cpu_lower_seconds": 183.184707957,
+        "cumulative_cpu_upper_seconds": 183.184707957,
+        "cumulative_process_wall_seconds": 183.25299076293595,
+        "epoch": 78,
+        "phase": "parent",
+        "quality": 0.37804779793313853
+      },
+      {
+        "cumulative_cpu_lower_seconds": 184.808846306,
+        "cumulative_cpu_upper_seconds": 184.808846306,
+        "cumulative_process_wall_seconds": 184.87719787098467,
+        "epoch": 79,
+        "phase": "parent",
+        "quality": 0.381340848335485
+      },
+      {
+        "cumulative_cpu_lower_seconds": 186.463253596,
+        "cumulative_cpu_upper_seconds": 186.463253596,
+        "cumulative_process_wall_seconds": 186.5317274800036,
+        "epoch": 80,
+        "phase": "parent",
+        "quality": 0.3732176224053608
+      },
+      {
+        "cumulative_cpu_lower_seconds": 188.124831923,
+        "cumulative_cpu_upper_seconds": 188.124831923,
+        "cumulative_process_wall_seconds": 188.19345161505044,
+        "epoch": 81,
+        "phase": "parent",
+        "quality": 0.3737469521724092
+      },
+      {
+        "cumulative_cpu_lower_seconds": 189.752660633,
+        "cumulative_cpu_upper_seconds": 189.752660633,
+        "cumulative_process_wall_seconds": 189.82143174903467,
+        "epoch": 82,
+        "phase": "parent",
+        "quality": 0.3806444053228031
+      },
+      {
+        "cumulative_cpu_lower_seconds": 191.374906223,
+        "cumulative_cpu_upper_seconds": 191.374906223,
+        "cumulative_process_wall_seconds": 191.44400622486137,
+        "epoch": 83,
+        "phase": "parent",
+        "quality": 0.3848747169786171
+      },
+      {
+        "cumulative_cpu_lower_seconds": 193.031499192,
+        "cumulative_cpu_upper_seconds": 193.031499192,
+        "cumulative_process_wall_seconds": 193.10089651099406,
+        "epoch": 84,
+        "phase": "parent",
+        "quality": 0.38876802475166117
+      },
+      {
+        "cumulative_cpu_lower_seconds": 194.687960165,
+        "cumulative_cpu_upper_seconds": 194.687960165,
+        "cumulative_process_wall_seconds": 194.75754797784612,
+        "epoch": 85,
+        "phase": "parent",
+        "quality": 0.3879653493241944
+      },
+      {
+        "cumulative_cpu_lower_seconds": 196.328241109,
+        "cumulative_cpu_upper_seconds": 196.328241109,
+        "cumulative_process_wall_seconds": 196.3980985810049,
+        "epoch": 86,
+        "phase": "parent",
+        "quality": 0.39068860476590284
+      },
+      {
+        "cumulative_cpu_lower_seconds": 197.968271832,
+        "cumulative_cpu_upper_seconds": 197.968271832,
+        "cumulative_process_wall_seconds": 198.03836059197783,
+        "epoch": 87,
+        "phase": "parent",
+        "quality": 0.3804282653278239
+      },
+      {
+        "cumulative_cpu_lower_seconds": 199.618284046,
+        "cumulative_cpu_upper_seconds": 199.618284046,
+        "cumulative_process_wall_seconds": 199.68867116700858,
+        "epoch": 88,
+        "phase": "parent",
+        "quality": 0.38824227548114476
+      },
+      {
+        "cumulative_cpu_lower_seconds": 201.250674126,
+        "cumulative_cpu_upper_seconds": 201.250674126,
+        "cumulative_process_wall_seconds": 201.32164548896253,
+        "epoch": 89,
+        "phase": "parent",
+        "quality": 0.38577766329500757
+      },
+      {
+        "cumulative_cpu_lower_seconds": 202.88515107,
+        "cumulative_cpu_upper_seconds": 202.88515107,
+        "cumulative_process_wall_seconds": 202.9563539829105,
+        "epoch": 90,
+        "phase": "parent",
+        "quality": 0.3943921909475387
+      },
+      {
+        "cumulative_cpu_lower_seconds": 204.506904408,
+        "cumulative_cpu_upper_seconds": 204.506904408,
+        "cumulative_process_wall_seconds": 204.5784063260071,
+        "epoch": 91,
+        "phase": "parent",
+        "quality": 0.39700924766948104
+      },
+      {
+        "cumulative_cpu_lower_seconds": 206.148501516,
+        "cumulative_cpu_upper_seconds": 206.148501516,
+        "cumulative_process_wall_seconds": 206.2202458428219,
+        "epoch": 92,
+        "phase": "parent",
+        "quality": 0.377374948765385
+      },
+      {
+        "cumulative_cpu_lower_seconds": 207.800046575,
+        "cumulative_cpu_upper_seconds": 207.800046575,
+        "cumulative_process_wall_seconds": 207.87210376001894,
+        "epoch": 93,
+        "phase": "parent",
+        "quality": 0.39022342940831484
+      },
+      {
+        "cumulative_cpu_lower_seconds": 209.416215121,
+        "cumulative_cpu_upper_seconds": 209.416215121,
+        "cumulative_process_wall_seconds": 209.48861593287438,
+        "epoch": 94,
+        "phase": "parent",
+        "quality": 0.37696622998143076
+      },
+      {
+        "cumulative_cpu_lower_seconds": 211.009156928,
+        "cumulative_cpu_upper_seconds": 211.009156928,
+        "cumulative_process_wall_seconds": 211.08186964388005,
+        "epoch": 95,
+        "phase": "parent",
+        "quality": 0.38670649871392127
+      },
+      {
+        "cumulative_cpu_lower_seconds": 212.614620242,
+        "cumulative_cpu_upper_seconds": 212.614620242,
+        "cumulative_process_wall_seconds": 212.68738927389495,
+        "epoch": 96,
+        "phase": "parent",
+        "quality": 0.38396906126326835
+      },
+      {
+        "cumulative_cpu_lower_seconds": 214.21864363,
+        "cumulative_cpu_upper_seconds": 214.21864363,
+        "cumulative_process_wall_seconds": 214.2915059570223,
+        "epoch": 97,
+        "phase": "parent",
+        "quality": 0.3911950753155066
+      },
+      {
+        "cumulative_cpu_lower_seconds": 215.812886098,
+        "cumulative_cpu_upper_seconds": 215.812886098,
+        "cumulative_process_wall_seconds": 215.88578139501624,
+        "epoch": 98,
+        "phase": "parent",
+        "quality": 0.3810916349230993
+      },
+      {
+        "cumulative_cpu_lower_seconds": 217.430573984,
+        "cumulative_cpu_upper_seconds": 217.430573984,
+        "cumulative_process_wall_seconds": 217.50361596397124,
+        "epoch": 99,
+        "phase": "parent",
+        "quality": 0.38187626363245214
+      },
+      {
+        "cumulative_cpu_lower_seconds": 219.032967773,
+        "cumulative_cpu_upper_seconds": 219.032967773,
+        "cumulative_process_wall_seconds": 219.10621564183384,
+        "epoch": 100,
+        "phase": "parent",
+        "quality": 0.3889824481375571
+      },
+      {
+        "cumulative_cpu_lower_seconds": 226.35863923,
+        "cumulative_cpu_upper_seconds": null,
+        "cumulative_process_wall_seconds": 227.64753227075562,
+        "epoch": 101,
+        "phase": "C1",
+        "quality": 0.3884631588734214
+      }
+    ],
+    "original_epoch_cap_retained": true,
+    "scientific_admission": "HOLD",
+    "wall_budget_cuts": [
+      {
+        "best_observed": {
+          "cumulative_cpu_lower_seconds": 204.506904408,
+          "cumulative_cpu_upper_seconds": 204.506904408,
+          "cumulative_process_wall_seconds": 204.5784063260071,
+          "epoch": 91,
+          "phase": "parent",
+          "quality": 0.39700924766948104
+        },
+        "budget": 300,
+        "no_interpolation": true
+      },
+      {
+        "best_observed": {
+          "cumulative_cpu_lower_seconds": 204.506904408,
+          "cumulative_cpu_upper_seconds": 204.506904408,
+          "cumulative_process_wall_seconds": 204.5784063260071,
+          "epoch": 91,
+          "phase": "parent",
+          "quality": 0.39700924766948104
+        },
+        "budget": 900,
+        "no_interpolation": true
+      },
+      {
+        "best_observed": {
+          "cumulative_cpu_lower_seconds": 204.506904408,
+          "cumulative_cpu_upper_seconds": 204.506904408,
+          "cumulative_process_wall_seconds": 204.5784063260071,
+          "epoch": 91,
+          "phase": "parent",
+          "quality": 0.39700924766948104
+        },
+        "budget": 1800,
+        "no_interpolation": true
+      }
+    ],
+    "wall_cost_scope": "sum of parent and child complete process wall; excludes inter-phase waiting and is not calendar latency"
+  },
+  "phase_final_report_CPU_scope": "Absolute time.process_time sampled before final report/artifact serialization, not independently recorded exit rusage. Whole waited-children CPU is available only in the C1 controller aggregate including preflight.",
+  "resume_evidence_scope": "Parent checkpoint/plan/source binding, complete sample-order recurrence, final RNG and Adam counters/groups, plus separately retained frozen implementation/equivalence tests. No pre-first-update resume snapshot exists; no training replay was performed.",
+  "resume_start_state_directly_observed": false,
+  "saved_logits_sha256": "17ffcf177ca6d7a037f28b342287db25f557b2be19eee3dc5306bef918e0e6af",
+  "scientific_admission": "HOLD",
+  "source_equivalence": {
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "exact_same_path_bytes",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/container.py": "exact_same_path_bytes",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/linear.py": "exact_same_path_bytes",
+    "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/rnn.py": "exact_same_path_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/audit_training.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/capacity.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/data.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/episodes.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/models.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/run_interface.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/test_capacity.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/test_episodes.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v2/train_development.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/campaign.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/continuation.py": "new_explicitly_pinned_continuation_module",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/continuation_state.py": "new_explicitly_pinned_continuation_module",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/cores.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/frozen_tables.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/hcsn_study_support.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/profile_hcsn.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/test_continuation.py": "new_explicitly_pinned_continuation_module",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/test_cores.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/proposals/localization-v3/train.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/__init__.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/benchmark_admission.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/checkpoint.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/contract.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/encoder.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/error_budget.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/evidence_chain.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/finite_renewal.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/localization_smoke.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/network.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/operator.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/regenerative.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/run_qualification.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/semantics.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/training_domain.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/training_domain_audit.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/training_domain_finite.py": "exact_bytes",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-c1-v1/qualification/hcsn_differentiable/value.py": "exact_bytes"
+  },
+  "strict_best_metric_absolute_differences": {
+    "accuracy": 0.0,
+    "balanced_accuracy_present_classes": 0.0,
+    "brier_half_sum": 0.0,
+    "brier_mean_classes": 6.938893903907228e-18,
+    "ece_15_equal_width_bins": 2.7755575615628914e-17,
+    "events": 0,
+    "macro_f1_11_classes": 1.1102230246251565e-16,
+    "macro_f1_present_classes": 1.1102230246251565e-16,
+    "nll": 0.0
+  }
+}

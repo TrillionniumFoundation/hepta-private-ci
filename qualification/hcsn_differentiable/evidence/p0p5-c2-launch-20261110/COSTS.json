@@ -1,0 +1,182 @@
+{
+  "accounting_complete": false,
+  "additive_grand_total": null,
+  "billed_currency": null,
+  "curation_cost": "COPY-RECEIPT.json",
+  "energy_joules": null,
+  "rows": [
+    {
+      "artifact": "preparation/v1/hcsn-c2-execution-candidate-20261110-v1.zip",
+      "id": "software-attempt-1",
+      "identity": {
+        "bytes": 15976,
+        "sha256": "2515259ed6e5434dcad5437a58b063a0294f61e71a237c25c5c46e579d784fb6"
+      },
+      "measurements": {
+        "children_cpu_seconds": 5.249424,
+        "whole_process_wall_seconds": 5.717592273002083
+      },
+      "member": "attempt-01/RESULT.json",
+      "scope": "Distinct cloud synthetic software test attempt; no production fit. Nested per-test timers are not added."
+    },
+    {
+      "artifact": "preparation/v1/hcsn-c2-execution-candidate-20261110-v1.zip",
+      "id": "software-attempt-2",
+      "identity": {
+        "bytes": 17622,
+        "sha256": "3bc10cf1e6ff9a2354c487e6c0589ef189018dc55d29a91cab3fd7acdc127f80"
+      },
+      "measurements": {
+        "children_cpu_seconds": 8.234498,
+        "whole_process_wall_seconds": 8.287400419001642
+      },
+      "member": "attempt-02/RESULT.json",
+      "scope": "Distinct cloud synthetic software test attempt; no production fit. Nested per-test timers are not added."
+    },
+    {
+      "artifact": "preparation/v2/hcsn-c2-execution-candidate-20261110-v2.zip",
+      "id": "software-attempt-3",
+      "identity": {
+        "bytes": 18769,
+        "sha256": "fac0d4dfd3fae092e68c530b05442e15eebbd58ec3a258f5d1fcc3a512d9028e"
+      },
+      "measurements": {
+        "children_cpu_seconds": 9.999804000000001,
+        "whole_process_wall_seconds": 10.46036075000302
+      },
+      "member": "c2-execution-validation-attempt-03/RESULT.json",
+      "scope": "Distinct cloud synthetic software test attempt; no production fit. Nested per-test timers are not added."
+    },
+    {
+      "artifact": "preparation/v3-review-original.zip",
+      "id": "software-attempt-4",
+      "identity": {
+        "bytes": 19956,
+        "sha256": "a4ce429771c818dd0bac5c85cbcf3828577821b5aa356b9229b7823ccecf50a5"
+      },
+      "measurements": {
+        "children_cpu_seconds": 11.141105,
+        "whole_process_wall_seconds": 11.557616989997769
+      },
+      "member": "owner-validation-attempt-04/RESULT.json",
+      "scope": "Distinct cloud synthetic software test attempt; no production fit. Nested per-test timers are not added."
+    },
+    {
+      "artifact": "preparation/v4/VALIDATION-RESULT.json",
+      "id": "software-attempt-5",
+      "identity": {
+        "bytes": 18023,
+        "sha256": "123450967295041fbd77fa8bb566b4f1c48d6c8a72acc5ba3fe07acf09501f9c"
+      },
+      "measurements": {
+        "children_cpu_seconds": 4.088808,
+        "whole_process_wall_seconds": 4.538071391998528
+      },
+      "member": null,
+      "scope": "Distinct cloud synthetic software test attempt; no production fit. Nested per-test timers are not added."
+    },
+    {
+      "artifact": "preparation/v4-review/RECEIPT.json",
+      "id": "v4-independent-static-review",
+      "identity": {
+        "bytes": 973,
+        "sha256": "6e4675fcad7e378f41956bc5131250ec3045f65481d2fb48aa24209ca103851a"
+      },
+      "measurements": {
+        "whole_child_wall_seconds": 0.14112427000145544,
+        "whole_waited_child_cpu_seconds": 0.137377
+      },
+      "member": null,
+      "scope": "Complete local stdlib metadata review child; no model or numerical oracle execution."
+    },
+    {
+      "artifact": "decision-review/RECEIPT.json",
+      "id": "decision-independent-review",
+      "identity": {
+        "bytes": 207,
+        "sha256": "4195abf672a6d4cdc6296331a2f24d05cbf43f0acda28481ffc7f27c275dc8df"
+      },
+      "measurements": {
+        "whole_child_wall_seconds": 0.0298166360007599,
+        "whole_waited_child_cpu_seconds": 0.029158
+      },
+      "member": null,
+      "scope": "Complete local stdlib metadata review child; no model or numerical oracle execution."
+    },
+    {
+      "artifact": "decision-provenance-review/RECEIPT.json",
+      "id": "first14-provenance-independent-closure",
+      "identity": {
+        "bytes": 232,
+        "sha256": "9ccc63e29e1655b23f9ba894a6688aff9fa9237d63aaaceee52e0230d4b8b306"
+      },
+      "measurements": {
+        "whole_child_wall_seconds": 0.040664883999852464,
+        "whole_waited_child_cpu_seconds": 0.03966
+      },
+      "member": null,
+      "scope": "Complete local stdlib metadata review child; no model or numerical oracle execution."
+    },
+    {
+      "artifact": "native-preflight/HANDOFF.json",
+      "id": "v3-native-preflight-and-separate-archive",
+      "identity": {
+        "bytes": 1951,
+        "sha256": "d94904a8ce41f552d4fd383430619e20f447c0aa91098c65ae701d1ed951190b"
+      },
+      "measurements": {
+        "gnu_outer_full_wall_seconds_rounded": 58.69,
+        "gnu_outer_system_seconds_rounded": 5.94,
+        "gnu_outer_user_seconds_rounded": 51.23,
+        "native_archive_gnu_full_wall_seconds_rounded": 0.35,
+        "native_archive_gnu_user_system_seconds_rounded": [
+          0.33,
+          0.01
+        ]
+      },
+      "member": null,
+      "scope": "Preflight and archive are distinct processes. GNU preflight totals contain 53 tests, six bind-only checks and controller work; do not add their child timers."
+    },
+    {
+      "artifact": "first-step/HANDOFF.json",
+      "id": "readonly-first-step-observer",
+      "identity": {
+        "bytes": 2792,
+        "sha256": "137fadbec60ef4295ba5b6e96a26292bd2f3a3e520b8b544fe90a79a5ba65408"
+      },
+      "measurements": {
+        "observer_gnu_full_wall_seconds_rounded": 0.26,
+        "observer_gnu_user_system_seconds_rounded": [
+          0.22,
+          0.04
+        ]
+      },
+      "member": null,
+      "scope": "Complete read-only observer, including its archive work. Its six observed optimizer steps belong to the ongoing C2 fits, not the observer."
+    },
+    {
+      "artifacts": [
+        "preparation/v2/hcsn-c2-execution-candidate-20261110-v2.zip",
+        "preparation/v3-review-original.zip",
+        "native-preflight/CONTROL-PLANE-ARCHIVE.json",
+        "first-step/CONTROL-PLANE-ARCHIVE.json"
+      ],
+      "complete_summed_CPU_seconds": null,
+      "complete_summed_wall_seconds": null,
+      "id": "retained-counterexamples-and-transport",
+      "scope": "Original counterexample costs, transfer failures, same-ID reconciliations, duplicate read observations, packaging and byte-recovery measurements remain in original receipts. Partial/main-entry/CPU-prefix timers are not complete process totals."
+    },
+    {
+      "artifact": "launch/FIRST-COMMANDS.jsonl",
+      "billed_currency": null,
+      "c2_complete_summed_CPU_seconds": null,
+      "c2_complete_summed_wall_seconds": null,
+      "energy_joules": null,
+      "id": "ongoing-c2-six-fits",
+      "parent_summed_full_outer_wall_seconds": 86261.1154101817,
+      "scope": "Cumulative 43200-second allowance per fit includes original full outer wall and all new work. No discarded-work refund. Ongoing fits have no final process totals in this snapshot."
+    }
+  ],
+  "rule": "Retain every failed preparation and original partial training work. Do not add nested/overlapping timers. Unknown is not zero.",
+  "schema": "c2-launch-cost-index-v1"
+}

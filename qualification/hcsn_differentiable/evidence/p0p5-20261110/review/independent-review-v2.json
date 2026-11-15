@@ -1,0 +1,335 @@
+{
+  "confirmation_access": false,
+  "created_utc": "2026-11-10T13:20:55.582774+00:00",
+  "findings": [
+    {
+      "analysis": "The old HX implementation provides hx_equity_closed and independent hx_equity. C is a killed single-cycle reward, F/G are first-hit quantities, U includes regeneration, M counts all events and J=dM/dt. The new differentiable network does not consume financial E.",
+      "files": [
+        "qualification/hcsn_differentiable/MODEL.md",
+        "qualification/hcsn_differentiable/semantics.py"
+      ],
+      "id": "P0-01",
+      "required_interpretation_or_action": "Do not rename arbitrary neural readouts or the finite QVI fixture as financial equity, and do not claim the old financial free boundary solves a sensor-task objective.",
+      "severity": "high",
+      "status": "resolved_in_source",
+      "title": "E is financial equity; finite/regenerative neural values are separate",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "Operator readout queries do not advance state. The interval_value/call feature pays a queried endpoint terminal feature each time; summing it over intervals overpays U. network.forward at zero time with observed=True still conditions and writes content. True padding requires observed=False and valid=False.",
+      "files": [
+        "qualification/hcsn_differentiable/MODEL.md",
+        "qualification/hcsn_differentiable/tests/test_readout_semantics.py"
+      ],
+      "id": "P0-02",
+      "required_interpretation_or_action": "Use the continuation-value functions for once-only terminal payoff; retain the distinction between duplicate queries, repeated observations and padding.",
+      "severity": "high",
+      "status": "resolved_in_contract",
+      "title": "A repeated query is different from an observation update",
+      "validation": "Earlier targeted native run: 9 tests passed; receipt linked below. Exact formatted final source is reserved for root revalidation."
+    },
+    {
+      "analysis": "The earlier first-posterior gradient cache could grant coverage to later unchecked posteriors. Current code compares every basis derivative via forward AD against 80-digit central differences, then all recorded posterior mixtures with those coefficients held fixed.",
+      "files": [
+        "qualification/hcsn_differentiable/training_domain_audit.py"
+      ],
+      "id": "P1-01",
+      "required_interpretation_or_action": "This verifies derivatives of continuum basis continuation with fixed posterior coefficients, not derivatives through observation filtering or all learned training trajectories.",
+      "severity": "high",
+      "status": "resolved_in_source",
+      "title": "Posterior gradient coverage must include the entire retained batch",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "The prior record-count cap could exceed the 64 MiB reader budget. The current writer caps bytes, reserves a footer, records drop reasons and truncation, excludes supplied padding, and hashes source before/after. The auditor refuses complete coverage when records were dropped or sources changed.",
+      "files": [
+        "qualification/hcsn_differentiable/training_domain.py",
+        "qualification/hcsn_differentiable/training_domain_audit.py"
+      ],
+      "id": "P1-02",
+      "required_interpretation_or_action": "The caller must still bind capture calls to its optimizer ledger. Complete retained coverage is not proof that every training call was supplied.",
+      "severity": "medium",
+      "status": "resolved_in_source",
+      "title": "Trace budgets and source changes now fail closed",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "The two first-hit terms combine by logaddexp before exponentiation; nonpositive durations use a safe inactive computation and return log probability minus infinity with zero branch derivative. The discounted root uses a safe expression at zero drift.",
+      "files": [
+        "qualification/hcsn_differentiable/operator.py",
+        "qualification/hcsn_differentiable/tests/test_logrisk.py"
+      ],
+      "id": "P1-03",
+      "required_interpretation_or_action": "A finite log-risk helper does not change the network risk channel into log-risk; current risk remains an expected interval event count. The finite fixture collection does not certify an entire parameter box.",
+      "severity": "high",
+      "status": "no_formula_defect_found",
+      "title": "Log F/G preserves rare probabilities and nonpositive-time semantics",
+      "validation": "Formula and branch inspection; fixture execution reported by numerical owner, not rerun in this review."
+    },
+    {
+      "analysis": "For a uniform source cell of width h, a tiny Brownian step crosses one edge with probability approximately sigma*sqrt(dt)/(h*sqrt(2*pi)). Reconstructing a uniform cell after each step gives effective diffusivity of order sigma*h/(sqrt(2*pi)*sqrt(dt)), which does not approach sigma^2/2 at fixed h. Larger truncation endpoints reduce real tail occupancy but do not automatically fix all-basis or infinitely repeated tiny-gap error.",
+      "files": [
+        "qualification/hcsn_differentiable/operator.py",
+        "qualification/hcsn_differentiable/training_domain_audit.py"
+      ],
+      "id": "P1-04",
+      "required_interpretation_or_action": "Keep failed perpetual stress gates failed. A finite actual-schedule audit is a different, explicitly scoped qualification. Closed quadrature alone cannot remove projection error; silently subdividing gaps is not justified.",
+      "severity": "high",
+      "status": "open_numerical_gate",
+      "title": "Repeated short-time QPR projection has a structural small-step error",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "For event index k, the reference uses first passage across x+k*x_reset with deadline T-k*d. Discounted event mass includes exp(-rho*k*d). The refractory occupation formula separates full and recent waits; remaining-phase integration truncates to r<=T, multiplies U/H by exp(-rho*r), and leaves count/active probability undiscounted. These expressions are consistent with the declared process.",
+      "files": [
+        "qualification/hcsn_differentiable/training_domain_finite.py"
+      ],
+      "id": "P1-05",
+      "required_interpretation_or_action": "The helper currently constructs default rewards .4/1/.2 and reset=True. Its caller must bind the exact probability, grid, parameters and full durations and prove these settings match the audited model. Order doubling is a sensitivity measurement, not a certified quadrature bound. Errors scaled by max(1,abs(reference)) are absolute errors for probabilities below one, not relative rare-tail accuracy. No future observations are applied.",
+      "severity": "medium",
+      "status": "mathematical_expressions_consistent",
+      "title": "Finite continuation reference handles regenerated counts and remaining age",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "The original tau*log(I/(I-1)) can round to zero at very large I and create infinite counts/NaNs. Current log1p formulas avoid that cancellation and reject event counts above one million. The geometric trace sums all within-interval crossings; local AD treats the integer event count as fixed, which is correct between count changes.",
+      "files": [
+        "proposals/localization-v3/cores.py",
+        "proposals/localization-v3/test_cores.py"
+      ],
+      "id": "P2-01",
+      "required_interpretation_or_action": "Do not claim smooth derivatives at grazing events or event-count transitions. This is an analytic event-time reference, not a validated implementation of EventProp.",
+      "severity": "high",
+      "status": "resolved_in_source",
+      "title": "Event-time LIF needs stable periods and a declared count domain",
+      "validation": "Large-current failure independently identified earlier; all-six-input finite-difference checks reported passed by training owner."
+    },
+    {
+      "analysis": "Current finally logic sets status=source_changed and adequacy=False on hash changes. Partial checkpoints retain model/optimizer/RNG but not an exact mid-epoch cursor and ordering state sufficient for exact resume; resume_supported=False is now explicit.",
+      "files": [
+        "proposals/localization-v3/train.py"
+      ],
+      "id": "P2-02",
+      "required_interpretation_or_action": "No exact recovery or P5 adoption credit should be inferred from the existence of interrupted.pt.",
+      "severity": "high",
+      "status": "resolved_in_source",
+      "title": "Changed source removes adequacy credit; recovery remains unsupported",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "The current UCI model passes x[...,12:24].any(-1) as observed and valid masks for HCSN; these coordinates are the actual UCI observation-mask features. The recorder excludes those padded states.",
+      "files": [
+        "proposals/localization-v3/cores.py",
+        "qualification/hcsn_differentiable/training_domain.py"
+      ],
+      "id": "P2-03",
+      "required_interpretation_or_action": "This heuristic is UCI-specific and cannot be used for the symbolic P4 21-to-25 adapter. New task drivers must supply explicit episode-length valid masks.",
+      "severity": "high",
+      "status": "resolved_for_uci",
+      "title": "Tail padding no longer repeats HCSN observations",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "The running v1 used score > best + plateau_delta both for checkpoint selection and plateau reset. At .299 then .3005 with delta=.002, time-to-.3 is recorded while best.pt remains at .299. The current canonical v2 separates strict best score from plateau_anchor; the frozen running v1 remains unchanged.",
+      "files": [
+        "proposals/localization-v3/train.py"
+      ],
+      "id": "P2-04",
+      "required_interpretation_or_action": "For v1, interpret first observed time-to-quality separately from selected checkpoint quality. Preserve the historical selection rule in every comparison; do not retrofit new-source credit to old results.",
+      "severity": "medium",
+      "status": "fixed_in_canonical_but_retained_in_running_v1",
+      "title": "Plateau threshold and strict best-checkpoint selection differ",
+      "validation": "Exact arithmetic counterexample plus source inspection; canonical fix reported by owner and observed in current source."
+    },
+    {
+      "analysis": "In v1, log hashing and result.json parsing were outside the exception guard, so missing/corrupt fit output could make future.result abort the controller before RESULT.json. Raw commands and stdout/stderr would remain. Current canonical catches this as evidence_failed and retains the attempt.",
+      "files": [
+        "proposals/localization-v3/campaign.py"
+      ],
+      "id": "P2-05",
+      "required_interpretation_or_action": "For the active v1 campaign, independently reconcile the complete 36-attempt roster and retain every failed/timeout attempt even if no final summary is produced. No occurrence of this failure was observed in this review.",
+      "severity": "medium",
+      "status": "fixed_in_canonical_but_retained_in_running_v1",
+      "title": "Malformed fit evidence could abort the controller summary",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "Dispatch-to-return wall includes process spawn/import and timeout work. RUSAGE_CHILDREN includes reaped failed children. Full-process RSS is measured; per-fit CPU starts later but campaign child CPU covers aggregate process CPU. Diagnostic updates and main updates are separate. No automatic retries are implemented.",
+      "files": [
+        "proposals/localization-v3/campaign.py",
+        "proposals/localization-v3/train.py",
+        "proposals/localization-v3/README.md"
+      ],
+      "id": "P2-06",
+      "required_interpretation_or_action": "External host contention and concurrency prevent a clean hardware-efficiency comparison. Historical preparation/reservations and physical energy remain unknown, not zero. The actual locked plan uses default quality threshold .3, plateau delta .002 and one thread, per training-owner confirmation.",
+      "severity": "medium",
+      "status": "cost_scope_disclosed",
+      "title": "Campaign costs include spawn/import and failed children, with explicit omissions",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "Independent RNG streams produce identical frontend/head weights per seed and freeze them in the primary regime. Only cores train; their parameter counts, state capacities and output ranges differ. The declared adequacy rule is minimum epochs plus a development plateau and a successful training-only memorization diagnostic, with initial tensors and optimizer restored before the main fit.",
+      "files": [
+        "proposals/localization-v3/cores.py",
+        "proposals/localization-v3/train.py",
+        "proposals/localization-v3/README.md"
+      ],
+      "id": "P2-07",
+      "required_interpretation_or_action": "This is a reproducible stopping-rule pass, not a proof of statistical or optimization convergence. Report each core under the fixed interface; keep any jointly trained interface as a separate experiment. CPU FP64 causal attention does not establish optimized-GPU Transformer efficiency. Complete seven-arm scientific comparison remains on HOLD until HCSN numerical admission and the larger confirmation protocol.",
+      "severity": "high",
+      "status": "interface_fixed_empirical_gate_open",
+      "title": "Shared frontend/head isolation and training sufficiency have limited meanings",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "Event-time LIF holds the current observation over the preceding gap. HCSN propagates the prior over the gap and observes at the endpoint. PLIF and S4D remain event-indexed and receive elapsed time through the common input; CfC receives actual durations.",
+      "files": [
+        "proposals/localization-v3/cores.py"
+      ],
+      "id": "P2-08",
+      "required_interpretation_or_action": "These are candidate timing conventions, not direct label leakage for endpoint classification. Freeze and disclose them; a continuous-time physical equivalence or superiority claim requires a separately matched convention.",
+      "severity": "medium",
+      "status": "disclosed_semantic_difference",
+      "title": "Temporal cores use different physical timing conventions",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "The finite reflecting birth/death model uses synthetic g(x)=x, cost=.6, delay=.2 and reset=1.37. Uniformized policy iteration and independent Bellman iteration solve that finite problem. Fixed threshold, fitted logistic policy and optimal finite action set are distinct groups. No financial equity expression or real sensor utility enters this objective.",
+      "files": [
+        "qualification/hcsn_qvi/oracle.py",
+        "qualification/hcsn_qvi/run_oracle.py",
+        "qualification/hcsn_qvi/README.md"
+      ],
+      "id": "P3-01",
+      "required_interpretation_or_action": "Only finite-fixture optimality and implementation consistency may be claimed. The fixture does not make E trainable or establish an effective neural free-boundary mechanism.",
+      "severity": "high",
+      "status": "finite_fixture_only",
+      "title": "The QVI oracle is not financial E or a trained task boundary",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "For A=I-K_pi and reward derivative -pi, dU/dcost=A^-1(-pi). This matches the code. The central-difference comparison is qualified only when both perturbations retain the active set. The threshold bracket is a discrete grid interval; no continuous boundary derivative is calculated. condition_inf is the fixed-policy linear-system condition number.",
+      "files": [
+        "qualification/hcsn_qvi/oracle.py",
+        "qualification/hcsn_qvi/run_oracle.py"
+      ],
+      "id": "P3-02",
+      "required_interpretation_or_action": "Do not describe the result as an implicit continuous-boundary gradient, a boundary conditioning certificate, smooth pasting, or real-task benefit. Reflecting truncation and reset interpolation remain part of the finite problem.",
+      "severity": "high",
+      "status": "value_derivative_verified_scope",
+      "title": "Cost derivative applies to finite values under a fixed optimal active set",
+      "validation": "Independent equation review; prior exhaustive seven-state, DP comparison and active-set-crossing tests passed on the earlier receipt, pending root exact-source revalidation."
+    },
+    {
+      "analysis": "The symbolic suite has overwrite retrieval, delayed ordered copy and two-key composition. Clock and symbol streams are independent. Query values are absent; copy requests have no answer-revealing index. The 21-dimensional input is padded with four zeros to reuse a 25-input framework without changing information.",
+      "files": [
+        "qualification/hcsn_memory_controls/generate.py",
+        "qualification/hcsn_memory_controls/PROTOCOL.md"
+      ],
+      "id": "P4-01",
+      "required_interpretation_or_action": "Use a fresh common 25-input frontend and eight-class head, explicit valid masks and a separate synthetic driver/manifest. UCI-trained zero-shot failure is not mechanism counterevidence. Generator validation and exact symbolic answers grant no model-training credit; the generated extrapolation probe is not blinded confirmation.",
+      "severity": "medium",
+      "status": "protocol_explicit",
+      "title": "Synthetic memory controls require a new training experiment",
+      "validation": "independent source inspection and mathematical reasoning"
+    },
+    {
+      "analysis": "For gru-s101-lr0.001, all 128 D episodes and 31,952 labels match their manifest hashes. A fresh best.pt forward pass exactly matches stored logits. NumPy metric recomputation matches all reported values. Initial/best/last shared frontend and head tensors are identical; all four GRU core tensors changed. The journal reconciles 360 main updates, 256 diagnostic updates and 30 completed epochs. Selected epoch is 16; development accuracy is 0.5117050575863795 and macro-F1 is 0.15827456447784624.",
+      "files": [
+        "proposals/localization-v3/cores.py",
+        "proposals/localization-v3/train.py"
+      ],
+      "id": "P2-09",
+      "required_interpretation_or_action": "The original fit reports development_plateau but training_adequacy_established=False. Independent reproducibility does not overrule its memorization gate, validate the other 35 fits, provide an E confirmation score or establish HCSN benefit.",
+      "severity": "high",
+      "status": "independently_reproduced_but_adequacy_false",
+      "title": "One completed GRU development fit reproduces exactly without gaining training-adequacy credit",
+      "validation": "Actually executed independent reviewer script on the immutable run-source-v1; native receipt and exact local copy SHA256 78bfd675f333eb32e5530446e8c05429ccf244cf49941993a8cb570974806a92."
+    }
+  ],
+  "full_repository_ci_established": false,
+  "git_head_at_capture": "d2fd5faaf08f1349d02f10086322b99b3222f2a3",
+  "historical_receipts": {
+    "/workspace/scratch/c385a7439f8e/evidence-chain-check-initial.json": {
+      "bytes": 50486,
+      "sha256": "b27fb4139eff7aed33c402a3f642fab6d8f9eac3ee09f76a7368689579b46794"
+    },
+    "/workspace/scratch/c385a7439f8e/memory-control-chain-validated.json": {
+      "bytes": 2231,
+      "sha256": "2d22b411634ac56011c844444c4043c6cd55516ee152d63092a8f4b5ff538623"
+    },
+    "/workspace/scratch/c385a7439f8e/p0-semantics-targeted.json": {
+      "bytes": 8032,
+      "sha256": "b1a863d0395b59395852b52c342c466cb67f516002eaf5cb121aa81c5b3e7d0a"
+    },
+    "/workspace/scratch/c385a7439f8e/qvi-oracle-final.json": {
+      "bytes": 7803,
+      "sha256": "2559510eac398fa7d12dafc3a68667e063817a566671492662edfc21026eb94b"
+    }
+  },
+  "open_gates": [
+    "Exact final source validation and overall CI are separate.",
+    "True filtered-posterior law, full learned physical domain and all training calls remain unqualified.",
+    "The failed perpetual tiny-step stress condition is not erased by an actual finite-schedule fixture.",
+    "Complete fair trained seven-core comparison and independent confirmation remain pending.",
+    "Real asynchronous multimodal task benefit, complete physical energy, scale and production adoption remain unestablished."
+  ],
+  "posthoc_first_fit": {
+    "accuracy": 0.5117050575863795,
+    "candidate_source": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v1",
+    "common_tensors_unchanged": true,
+    "development_episodes": 128,
+    "development_events": 31952,
+    "diagnostic_updates": 256,
+    "fit": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v1/gru-s101-lr0.001",
+    "fit_epochs": 30,
+    "fit_training_adequacy": false,
+    "inputs_unchanged": true,
+    "macro_f1_11_classes": 0.15827456447784624,
+    "main_updates": 360,
+    "maximum_logit_absolute_difference": 0.0,
+    "maximum_metric_absolute_difference": 0.0,
+    "native_directory": "/home/qian-qi/hepta-hcsn-independent-review-20261110-c385-v1",
+    "receipt": "/workspace/scratch/c385a7439f8e/hcsn-first-fit-independent-reproduction-v1.json",
+    "receipt_sha256": "78bfd675f333eb32e5530446e8c05429ccf244cf49941993a8cb570974806a92",
+    "rpc_start_result": "Timed out; a subsequent read-only result lookup established successful execution. No duplicate run was requested.",
+    "scope": "One completed ABC/D development fit; no E data, campaign-wide adequacy, HCSN benefit or formal admission.",
+    "selected_epoch": 16,
+    "source_matches_fit": true,
+    "status": "passed_independent_reproduction"
+  },
+  "repository": "/workspace/scratch/c385a7439f8e/hcsn-repo",
+  "reviewer": "/root/math_contract",
+  "schema": "hcsn-independent-review-v2",
+  "scientific_admission": "HOLD",
+  "scope": "Independent source and mathematical review; historical targeted receipts are distinguished from owner-reported tests and pending exact-source validation.",
+  "source_sha256": {
+    "proposals/localization-v2/episodes.py": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+    "proposals/localization-v2/train_development.py": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+    "proposals/localization-v3/README.md": "980ea2fd3ea7a6ca1dabde0ec66b6d799b140aeba282bcd428499134c723fa7c",
+    "proposals/localization-v3/campaign.py": "8011b2f325d1e08ab26088d9eceec029c032e2c3ef3af5d2076a514957f964fb",
+    "proposals/localization-v3/cores.py": "a010e476411f5a73638a49d71fe9338f6f8d03d1080bff3749ec232cc3f24f78",
+    "proposals/localization-v3/train.py": "56080c325bcc98cdc2e214bcf08a1aabae5088df4996bf4944c40879f4f84706",
+    "qualification/hcsn_differentiable/MODEL.md": "8919ff5f44af1e8929f2a6838d765f8e0333c807190834f6a957db8a142b611b",
+    "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "qualification/hcsn_differentiable/tests/test_logrisk.py": "d1b84e7f58cee227f8e7119c579581a798c8e9126061e54fde376127f6af539a",
+    "qualification/hcsn_differentiable/tests/test_training_domain.py": "eea2be596c6348576d888e3d01f52ba8622a1538eb39b872ead610240f9c551c",
+    "qualification/hcsn_differentiable/tests/test_training_domain_finite.py": "471a7c9f3c4aab88a71eb40b94c43fff98bc510947887d5d1ee7804d67d1cf97",
+    "qualification/hcsn_differentiable/training_domain.py": "64866abc5e4d4fbbf45469fbd7e4514e5d7dc6432d5c1e2f1d778cdc37836ce1",
+    "qualification/hcsn_differentiable/training_domain_audit.py": "0e887a7ca32ef08628b49a86c08bbfad9b7fd96ec50aadf85d5e0a8dea4c7960",
+    "qualification/hcsn_differentiable/training_domain_finite.py": "3d2079db1158fd4e89fc52cbac2121a94be7ce85374cc546565c2e91991986e5",
+    "qualification/hcsn_memory_controls/PROTOCOL.md": "f31ac07a894d16a73c08be96280dd0629974a1723db840bfdec30f5973c6c3c7",
+    "qualification/hcsn_memory_controls/generate.py": "0b274c1483670ddc51dc5704406fd9b58888cc829e0746dc5719b0035bc2745d",
+    "qualification/hcsn_qvi/README.md": "e6466d92fcf568eb3f0e183e23522ffd8c9d596e9d1f0e07e7f6619a3cbbb284",
+    "qualification/hcsn_qvi/oracle.py": "2d381486768cbbce4ced5de086ddf66770a1e31785839dc17424583f68341b22",
+    "qualification/hcsn_qvi/run_oracle.py": "413b87c049cdb437b7f3449c0ec25ed0e09f650732961a2d94961c0292484550"
+  },
+  "source_snapshot_atomic": false,
+  "supersedes": {
+    "path": "/workspace/scratch/c385a7439f8e/hcsn-independent-review-20261110-v1.json",
+    "reason": "Resolved unknown outcome of the first-fit independent reproduction without starting a duplicate process.",
+    "sha256": "ad599dee059136f8fd018b1810a25c4a0220d4815382b49573cf29ab4882bf81"
+  },
+  "updated_utc": "2026-11-10T13:23:36.963299+00:00"
+}

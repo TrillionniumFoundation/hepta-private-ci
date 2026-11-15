@@ -1,0 +1,66 @@
+{
+  "schema": "codespell-single-encoded-record-scope-v1",
+  "version": "2.4.3",
+  "source": "Same version observed in retained hosted codespell job130088467117",
+  "source_inputs_before": {
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json": "1511fe97bec17637deef2dd336b97f8bb04dbc6421708d55909896e9f6bba6e6",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/.github/workflows/codespell.yml": "26d6972ea5323ab421e3cb80046295f0795992172a8655070e28f6edc31d1492",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/.codespellrc": "26a2389b135dc72267c53fd8d94df04d5fe0f66a0dc5ab06b6e4d435eee542bc",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/.codespellignore": "58356c1e57abba237eca4db853dd1f183178591f9a623772ab797be7e8157028"
+  },
+  "source_inputs_after": {
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json": "1511fe97bec17637deef2dd336b97f8bb04dbc6421708d55909896e9f6bba6e6",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/.github/workflows/codespell.yml": "26d6972ea5323ab421e3cb80046295f0795992172a8655070e28f6edc31d1492",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/.codespellrc": "26a2389b135dc72267c53fd8d94df04d5fe0f66a0dc5ab06b6e4d435eee542bc",
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/.codespellignore": "58356c1e57abba237eca4db853dd1f183178591f9a623772ab797be7e8157028"
+  },
+  "source_inputs_unchanged": true,
+  "checks": [
+    {
+      "name": "original-red",
+      "argv": [
+        "uv",
+        "tool",
+        "run",
+        "--offline",
+        "--from",
+        "codespell==2.4.3",
+        "codespell",
+        "--quiet-level=2",
+        "--ignore-words=.codespellignore",
+        "--skip=./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006",
+        "./qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap"
+      ],
+      "returncode": 65,
+      "whole_child_wall_seconds": 0.20602053300171974,
+      "waited_child_CPU_seconds": 0.204419,
+      "stdout_sha256": "bb3963bb62ee320e71703f057b98c1e71ceae250421f0b076e838ed7704ddd13",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "changed-green",
+      "argv": [
+        "uv",
+        "tool",
+        "run",
+        "--offline",
+        "--from",
+        "codespell==2.4.3",
+        "codespell",
+        "--quiet-level=2",
+        "--ignore-words=.codespellignore",
+        "--skip=./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json",
+        "./qualification/hcsn_differentiable/evidence",
+        "./qualification/hcsn_differentiable/CURRENT.md",
+        "./.github/workflows/codespell.yml"
+      ],
+      "returncode": 0,
+      "whole_child_wall_seconds": 1.5849160289981228,
+      "waited_child_CPU_seconds": 1.4473449999999999,
+      "stdout_sha256": "66f4f0c5ac68a6fe1e4e3a5bc128b6cc5797ebbfb7a57dd9607bc0615868e647",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "full_repository_CI_claim": false,
+  "scientific_threshold_changed": false
+}

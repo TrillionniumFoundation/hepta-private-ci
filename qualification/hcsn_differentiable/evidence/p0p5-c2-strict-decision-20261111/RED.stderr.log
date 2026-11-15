@@ -1,0 +1,71 @@
+test_digest_or_manifest_mismatch_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_digest_or_manifest_mismatch_rejected) ... ok
+test_duplicate_authorization_key_rejected_even_if_digest_matches (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_duplicate_authorization_key_rejected_even_if_digest_matches) ... FAIL
+test_exact_well_formed_decision (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_exact_well_formed_decision) ... ok
+test_matching_symlink_decision_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_matching_symlink_decision_is_rejected) ... FAIL
+test_nonfinite_extra_metadata_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_nonfinite_extra_metadata_rejected) ... FAIL
+test_oversized_decision_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_oversized_decision_is_rejected) ... FAIL
+test_unreviewed_extra_metadata_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_unreviewed_extra_metadata_rejected) ... FAIL
+test_wrong_or_missing_schema_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_wrong_or_missing_schema_is_rejected) ... 
+  test_wrong_or_missing_schema_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_wrong_or_missing_schema_is_rejected) (variant='legacy') ... FAIL
+  test_wrong_or_missing_schema_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_wrong_or_missing_schema_is_rejected) (variant=None) ... FAIL
+
+======================================================================
+FAIL: test_duplicate_authorization_key_rejected_even_if_digest_matches (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_duplicate_authorization_key_rejected_even_if_digest_matches)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-decision-gate-r11-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py", line 40, in test_duplicate_authorization_key_rejected_even_if_digest_matches
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_matching_symlink_decision_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_matching_symlink_decision_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-decision-gate-r11-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py", line 65, in test_matching_symlink_decision_is_rejected
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_nonfinite_extra_metadata_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_nonfinite_extra_metadata_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-decision-gate-r11-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py", line 50, in test_nonfinite_extra_metadata_rejected
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_oversized_decision_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_oversized_decision_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-decision-gate-r11-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py", line 71, in test_oversized_decision_is_rejected
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_unreviewed_extra_metadata_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_unreviewed_extra_metadata_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-decision-gate-r11-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py", line 45, in test_unreviewed_extra_metadata_rejected
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_wrong_or_missing_schema_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_wrong_or_missing_schema_is_rejected) (variant='legacy')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-decision-gate-r11-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py", line 57, in test_wrong_or_missing_schema_is_rejected
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_wrong_or_missing_schema_is_rejected (test_execution_decision_freeze.ExecutionDecisionFreezeTests.test_wrong_or_missing_schema_is_rejected) (variant=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-decision-gate-r11-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py", line 57, in test_wrong_or_missing_schema_is_rejected
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.021s
+
+FAILED (failures=7)

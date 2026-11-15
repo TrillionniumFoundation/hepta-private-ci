@@ -1,0 +1,184 @@
+{
+  "artifact_scope": "All baseline raw results, checkpoints, traces, data/plan, executed source, launcher, tests and both independent byte reviews. HCSN full originals retained separately.",
+  "bytes": 452442,
+  "git_blob_identity_verified_against_local_bytes": true,
+  "git_blob_sha": "5fa72431893bafb13f6a5607f19c0c0fdfdb6cd5",
+  "member_manifest": {
+    "comparison/RESULT.json": {
+      "bytes": 15563,
+      "sha256": "d37a823576a5d55904e5075b71cbaf77ae6c6d82d224082dfecc4fc698ae7e86"
+    },
+    "comparison/compare.py": {
+      "bytes": 9570,
+      "sha256": "dbab604f1340a469a18df555cb2a2000a8d0bbb9037783180f1a6582bcc047f6"
+    },
+    "independent_review/RESULT.json": {
+      "bytes": 6120,
+      "sha256": "938da0d628947b7ebeeb96f3c5c713e5baefe9029e3193966f20e0a1b57206cd"
+    },
+    "independent_review/audit.py": {
+      "bytes": 7441,
+      "sha256": "fae408449721c3b12ba11523921e31ac0f34b38e33e3aa07a65255bb0cb85cea"
+    },
+    "launch/LAUNCH.json": {
+      "bytes": 1332,
+      "sha256": "f9250154ef5b0e96a01fe9086c9b8f8906668971a4bb1e092fd7c8d5aeb51bd0"
+    },
+    "launch/TERMINAL.json": {
+      "bytes": 425,
+      "sha256": "2ab8fc99ea8b33e7632b369c2ccfc996b5139776359710df3c79ee04c8f18c0b"
+    },
+    "launch/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "launch/stdout.log": {
+      "bytes": 119,
+      "sha256": "5a196b9777fc3d13e620b62bf62a3060d7f9cc55f95c135c940baedafb1cb7fd"
+    },
+    "original_factorial_inputs/DATA.json": {
+      "bytes": 910670,
+      "sha256": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427"
+    },
+    "original_factorial_inputs/PLAN.json": {
+      "bytes": 737,
+      "sha256": "7c4835da67c0e6730edb78e028703ad6e6053eadf1e03573cefec02a93f2ab55"
+    },
+    "run/PLAN.json": {
+      "bytes": 4159,
+      "sha256": "0059b0b68f3413acfb83894cdc84dae82130cf55422f68255a1e2819b5f6a873"
+    },
+    "run/SUMMARY.json": {
+      "bytes": 20118,
+      "sha256": "9c6bf865315e720c01b730a90043baa14ba2cd03b84e65aa19889b4c377e2cfa"
+    },
+    "run/seed11/checkpoint.pt": {
+      "bytes": 27788,
+      "sha256": "51548bfc981eae0daf549691a738212e2c9b9720867943911acdd3033b772dc3"
+    },
+    "run/seed11/development.json": {
+      "bytes": 46436,
+      "sha256": "46612455a2e54087cfb4eda98a4d46bffbc485caa562c58cc27ef9c47a8cdd76"
+    },
+    "run/seed11/result.json": {
+      "bytes": 4638,
+      "sha256": "f0e5cc68f322b32b2c10d17a8ae1e810c94f26c57334054fce3246a848543aef"
+    },
+    "run/seed11/training.jsonl": {
+      "bytes": 205652,
+      "sha256": "5bec8230bc559afc650e1658bb9f3913bd005782f75947330e71e0e3e0a64f64"
+    },
+    "run/seed23/checkpoint.pt": {
+      "bytes": 27852,
+      "sha256": "5f9cb1cb1d9f2b48d5374fe2f00208855c1f2804d314dc220d0c8960de10b76a"
+    },
+    "run/seed23/development.json": {
+      "bytes": 46753,
+      "sha256": "0d5df41f6bc6481a6960bc6d0552bd678d3e1cba839903da1569800af17f4fcb"
+    },
+    "run/seed23/result.json": {
+      "bytes": 4616,
+      "sha256": "bb25e058367c787c831200b48717d3c5508dfe27e19a17e16524688d16a22ee8"
+    },
+    "run/seed23/training.jsonl": {
+      "bytes": 201914,
+      "sha256": "ae4c98c076ee5755512d0c9af208478379f94bf8c9d45cfc9e95b872438dcba7"
+    },
+    "run/seed37/checkpoint.pt": {
+      "bytes": 27788,
+      "sha256": "33afa50a1b0b239e2ac8c8975452be91ee7f7335cce6b1d5969d9195257ab9ed"
+    },
+    "run/seed37/development.json": {
+      "bytes": 47247,
+      "sha256": "7c337a4563c7a34785657384cf0bceef5c87b91934e7d17947b00818ca352e90"
+    },
+    "run/seed37/result.json": {
+      "bytes": 4645,
+      "sha256": "8ff1a2fc81fc56b91c0787bbce00f00270b7ef9b57617a7f756e20c9c1fee082"
+    },
+    "run/seed37/training.jsonl": {
+      "bytes": 206690,
+      "sha256": "40264e58318cd84cadfb924840eac844c6b583a44c10493ea2f3354f57c2da30"
+    },
+    "source/qualification/hcsn_boundary_factorial/__init__.py": {
+      "bytes": 71,
+      "sha256": "f1e11f73d06c23dad7cfc3de70695360fbbe6ea1c14b2416c49aa125946f951c"
+    },
+    "source/qualification/hcsn_boundary_factorial/run.py": {
+      "bytes": 22489,
+      "sha256": "346be64443e31097ab5b8d4d262bd1606a523c1504628b16d08c2ae1aca06c79"
+    },
+    "source/qualification/hcsn_boundary_factorial/test_run.py": {
+      "bytes": 9494,
+      "sha256": "5c48bfe0718dca3d4e56fe1578de039e79e3e29ef67aa4a71a9e048f4b32038a"
+    },
+    "source/qualification/hcsn_budget_baselines/README.md": {
+      "bytes": 8297,
+      "sha256": "13aa9bfd7aa83ac44245e5c42061e2162c18b15abdcabf7a3d157366199df261"
+    },
+    "source/qualification/hcsn_budget_baselines/__init__.py": {
+      "bytes": 80,
+      "sha256": "d23532e95ec3c977d328835f646be3afa15c7b545fd5e6bc2b00a159cb85da88"
+    },
+    "source/qualification/hcsn_budget_baselines/model.py": {
+      "bytes": 3848,
+      "sha256": "3d2ae5009897acfcd7eaea75badbd537d1fa026b5e7602c5dad63c50994ae3b9"
+    },
+    "source/qualification/hcsn_budget_baselines/run.py": {
+      "bytes": 16074,
+      "sha256": "e1bd2e924d14db9c80ae3b18a2c7852ffee98cc545a51a267c543027a1dac981"
+    },
+    "source/qualification/hcsn_budget_baselines/test_baseline.py": {
+      "bytes": 3276,
+      "sha256": "6b36d44f43e8f3395b83884ad209f80dca47b5b79664eb5dc2ff9b1e80399b05"
+    },
+    "source/qualification/hcsn_differentiable/__init__.py": {
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    "source/qualification/hcsn_differentiable/checkpoint.py": {
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    "source/qualification/hcsn_differentiable/contract.py": {
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+    },
+    "source/qualification/hcsn_differentiable/encoder.py": {
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    "source/qualification/hcsn_differentiable/network.py": {
+      "bytes": 27553,
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687"
+    },
+    "source/qualification/hcsn_differentiable/operator.py": {
+      "bytes": 25180,
+      "sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"
+    },
+    "source/qualification/hcsn_memory_controls/generate.py": {
+      "bytes": 7740,
+      "sha256": "0b274c1483670ddc51dc5704406fd9b58888cc829e0746dc5719b0035bc2745d"
+    },
+    "tests/RESULT.json": {
+      "bytes": 1100,
+      "sha256": "ca755eaf2c88350d011c476226fa110d666bdb733c380406eb56c59ef6acc2a0"
+    },
+    "tests/stderr.log": {
+      "bytes": 652,
+      "sha256": "3f2c5cefbe8176f35733a88e45df38e1d3f37a63fedef18dc2745b2a5e536f96"
+    },
+    "tests/stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "members": 43,
+  "path": "/dev/shm/hepta-hcsn-gru-archive-001/gru7-20261112-8262.zip",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hcsn-budget-baseline-archive-pointer-v1",
+  "sha256": "3d77ab632219547685435eac2eb1b0e17c01de83c0f45c4af95f6c8e6c5232dc",
+  "tests_scope": "The three tests exercise unchanged model/test code. Runner timing instrumentation was added after that receipt and executed by the complete full run.",
+  "uncompressed_bytes": 1982121,
+  "zip_member_hashes_readback_verified": true
+}

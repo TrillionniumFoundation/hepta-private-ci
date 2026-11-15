@@ -1,0 +1,11 @@
+{
+  "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/pulls",
+  "payload": {
+    "base": "codex/hcsn-math-01-regenerative-20261108-v1",
+    "body": "## Problem and change\n\nFirst-hit probability and renewal count differ after reset. Add the finite-horizon shifted first-passage series for F/G/M/J, active/refractory occupation and a single final terminal payoff, with explicit domain and cancellation checks.\n\n## Validation and limits\n\nThe complete frozen source snapshot (archive SHA-256 `353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8`) passed 71/71 native CPU FP64 tests and all four declared numerical-budget fixtures. Source hashes matched before and after execution. Intermediate stack commits are review units; they are not separately executed qualifications.\n\nThe first 64-cell budget failure remains in the evidence. The 128-cell profile passed the original limits; this does not qualify the default grid or the entire trainable parameter domain. Formal real-task fits: 0. Physical energy: unmeasured. Endogenous optimal boundary: unsolved.\n\nThis is draft stage 2/7 above the existing unmerged HCSN stack. CI is intentionally not launched on this intermediate review unit; no skipped-job credit is claimed. The final evidence PR supplies the complete tree for actual checks. No merge, force update, main change or frozen-study mutation is included.\n",
+    "draft": true,
+    "head": "codex/hcsn-math-02-finite-renewal-20261108-v1",
+    "maintainer_can_modify": true,
+    "title": "HCSN math 2/7: Separate first passage from finite renewal counts and value"
+  }
+}

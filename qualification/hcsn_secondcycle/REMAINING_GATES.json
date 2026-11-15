@@ -1,0 +1,59 @@
+{
+  "schema": "hcsn-secondcycle-remaining-v1",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "source_freeze": "c3a5b3d64693222dc44687c82079084860a01dd9",
+  "candidate": "renewal statistics only, not current spatial checkpoint/fullCell",
+  "fixed_domain": {
+    "lanes": 2,
+    "original_offsets": [
+      0.001,
+      0.003,
+      0.02,
+      0.04,
+      0.08,
+      0.16
+    ],
+    "horizon_rule": "float(.2+offset)",
+    "cycles_max": 2,
+    "initial_phase_width": 0.025,
+    "delay": 0.2,
+    "mu": -0.12,
+    "sigma": 0.35,
+    "q": 0.15
+  },
+  "completed_exposed_evidence": {
+    "candidate_kernel_evaluations": 72,
+    "positive_series_terms": 2127264,
+    "positive_integral_references": 192,
+    "finite_matrix_expm_references": 1156,
+    "finite_controls": 2,
+    "comparison_rows": 24,
+    "quantity_error_rows": 336,
+    "relative_ineligible_rows": 43
+  },
+  "unchanged_rules": {
+    "relative_reference_floor": 1e-12,
+    "old_continuation_limit": 0.01,
+    "old_continuation_gate_not_retested": true,
+    "no_post_result_mesh_search": true,
+    "no_old_DDE_replays": true,
+    "no_neural_or_training_calls": true
+  },
+  "unknown_or_open": [
+    "below-floor rare component relative precision",
+    "floating point interval error certificate",
+    "prospective independent finite risk qualification",
+    "third+cycle and varying physics",
+    "full current spatial state and immutable checkpoint interface",
+    "all old initial laws and complete filtered trajectories",
+    "signed-content state and physical gradients",
+    "full training replay/C2 qualification",
+    "strong budget-matched baselines",
+    "future independent sources and real asynchronous tasks",
+    "complete compute/storage/energy costs",
+    "defaultCell/production adoption"
+  ],
+  "finite_upper_semantics": "permanently active nonreturning escape; continuum bracket charged and not a CTMC error certificate",
+  "first_cycle_negatives_retained": true
+}

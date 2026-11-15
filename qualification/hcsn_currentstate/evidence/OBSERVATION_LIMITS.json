@@ -1,0 +1,22 @@
+{
+  "identity": "currentstate-packets-finite-attempt001",
+  "original_source_and_receipts_unchanged": true,
+  "cold_final_bytes_exact_field_correction": {
+    "original_field": "SUMMARY.json cost.<fixture>.cold_final_bytes_exact=true",
+    "actual_check": "cold child's serialized-final SHA256 equals digest of retained warm final bytes",
+    "cold_final_raw_separately_saved": false,
+    "direct_two_file_byte_comparison_performed": false,
+    "cold_input_direct_dump_byte_comparison_performed": true
+  },
+  "coarse_schedule": {
+    "guarded_maximum_errors_retained": true,
+    "per_coordinate_arrays_retained": false,
+    "coarse_final_snapshot_retained": false,
+    "independent_raw_schedule_recomposition": "OPEN"
+  },
+  "parent_peak_RSS_only": true,
+  "children_combined_peak_RSS_retained": false,
+  "parent_startup_before_audit_timer_excluded": true,
+  "admission": "HOLD_NO_GO",
+  "all_closed": false
+}

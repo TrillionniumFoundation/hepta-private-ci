@@ -1,0 +1,60 @@
+{
+  "fits": [
+    {
+      "name": "hcsn-s101-lr0.001",
+      "sampled_peak_rss_bytes": 907976704,
+      "self_peak_rss_bytes": 908255232,
+      "waited_child_CPU_seconds": 120.08205699999999,
+      "whole_child_wall_seconds": 120.15156568703242
+    },
+    {
+      "name": "hcsn-s101-lr0.003",
+      "sampled_peak_rss_bytes": 909770752,
+      "self_peak_rss_bytes": 919592960,
+      "waited_child_CPU_seconds": 121.98139600000002,
+      "whole_child_wall_seconds": 122.02727339696139
+    },
+    {
+      "name": "hcsn-s211-lr0.001",
+      "sampled_peak_rss_bytes": 921694208,
+      "self_peak_rss_bytes": 920285184,
+      "waited_child_CPU_seconds": 121.61179099999995,
+      "whole_child_wall_seconds": 121.69395308895037
+    },
+    {
+      "name": "hcsn-s211-lr0.003",
+      "sampled_peak_rss_bytes": 900300800,
+      "self_peak_rss_bytes": 899936256,
+      "waited_child_CPU_seconds": 121.66127600000002,
+      "whole_child_wall_seconds": 121.68733861413784
+    },
+    {
+      "name": "hcsn-s307-lr0.001",
+      "sampled_peak_rss_bytes": 911966208,
+      "self_peak_rss_bytes": 909852672,
+      "waited_child_CPU_seconds": 120.94371899999994,
+      "whole_child_wall_seconds": 120.99439737084322
+    },
+    {
+      "name": "hcsn-s307-lr0.003",
+      "sampled_peak_rss_bytes": 915492864,
+      "self_peak_rss_bytes": 915025920,
+      "waited_child_CPU_seconds": 122.40198200000007,
+      "whole_child_wall_seconds": 122.43942100391723
+    }
+  ],
+  "limitations": [
+    "D timings are not an E runtime bound",
+    "E event and episode counts are unread and unknown",
+    "Current co-tenancy may increase time",
+    "The proposed 7200/240 budgets are not allocated or execution authorization"
+  ],
+  "schema": "hcsn-prospective-E-budget-basis-v1",
+  "scope": "Existing full-D replay JSON timings only. No checkpoint/logits/data read or model execution by this assembly.",
+  "source": {
+    "bytes": 23573,
+    "original_path": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/full-d-replay/SUMMARY.json",
+    "sha256": "04cc502f1bb2b7714982dd1e458c278cd78c48dbd0e8be9a34d513c848f82d16",
+    "snapshot_path": "source-context/full-d-replay-SUMMARY.json"
+  }
+}

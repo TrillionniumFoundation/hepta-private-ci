@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn-committed-current-verification-preflight-failure-v1",
+  "started_child": false,
+  "failure": "AssertionError before input hashing or child launch: three linked files were present in committed Git objects but absent from this sparse working checkout.",
+  "nonfile_targets": [
+    {
+      "path": "proposals/localization-v3/README.md",
+      "is_directory": false,
+      "exists": false
+    },
+    {
+      "path": "qualification/hcsn_memory_controls/PROTOCOL.md",
+      "is_directory": false,
+      "exists": false
+    },
+    {
+      "path": "qualification/hcsn_qvi/README.md",
+      "is_directory": false,
+      "exists": false
+    }
+  ],
+  "wall_seconds": null,
+  "CPU_seconds": null,
+  "cost_scope": "Tool returned preflight traceback; no dedicated process timing was captured.",
+  "followup": "Git ls-tree verified all three committed regular blobs; sparse-checkout add materialized the three existing directories for explicit working-byte comparisons.",
+  "description_correction": "The initially authored speculation about directory targets was contradicted by the recorded nonfile_targets. Corrected before any publication; the original AssertionError and no-child-launch outcome are unchanged."
+}

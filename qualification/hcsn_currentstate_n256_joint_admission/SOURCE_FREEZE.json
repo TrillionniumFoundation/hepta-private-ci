@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-n256-joint-admission-source-freeze-v1",
+  "identity": "hcsn-n256-joint-execution-envelope-20261113-c06d-001",
+  "base_source_commit": "e981eb3f678e5e9e486c3b4f1cc6726b758b2ac9",
+  "parent_draft": 6302,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-joint-admission.yml": "b14eb52942968653dadc5946e118876fae03249b33f8eef26b55c2be0918e4fe",
+    "qualification/hcsn_currentstate_n256_joint_admission/__init__.py": "b21cffb221ea51a8ca572ed5bf67a727e2f269b54185e8143f44c8ab687dcaba",
+    "qualification/hcsn_currentstate_n256_joint_admission/admission.py": "eec0dde1dd23f103d1a1942c81be84b1dea8a5697ebaf94bb2f482ab7872218a",
+    "qualification/hcsn_currentstate_n256_joint_admission/inspector.py": "5db86bc4a706377709fc39b8faebec9edabe69eb75bdbdb9a23db1e361c2ab52",
+    "qualification/hcsn_currentstate_n256_joint_admission/test_admission.py": "1a0d35c1512b25f024671c67a20da32ba0dd9c6ad3fcfe0d9c99f309713a716b",
+    "qualification/hcsn_currentstate_n256_joint_admission/REQUEST.json": "5136f694d3ae6813c041eea40967be595243bff5ae2635d2402308eba403e899",
+    "qualification/hcsn_currentstate_n256_joint_admission/README.md": "fe3c6ee3c1a29773c1d48c0e2eee27a496347a6343bd2786e892605f9eecf647"
+  },
+  "status": "RED_JOINT_ADMISSION_HOLD",
+  "new_numerical_idempotency_keys": 0,
+  "historical_resource_red_6295_unchanged": true,
+  "resource_snapshot_is_observation_only": true,
+  "resource_admitted": false,
+  "execution_counts": {
+    "n256_dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "candidate_oracle_calls": 0,
+    "n256_serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "largegrid_qualification": false,
+  "all_closed": false
+}

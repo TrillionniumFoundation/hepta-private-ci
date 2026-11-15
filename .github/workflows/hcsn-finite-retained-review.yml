@@ -1,0 +1,23 @@
+name: HCSN v2 retained finite arithmetic review
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_finite_review/**
+      - .github/workflows/hcsn-finite-retained-review.yml
+permissions:
+  contents: read
+jobs:
+  retained-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5
+      - run: python -B -m qualification.hcsn_finite_review.verify qualification/hcsn_finite_review/evidence/actual-v2-finite-attempt002
+      - run: git diff --exit-code

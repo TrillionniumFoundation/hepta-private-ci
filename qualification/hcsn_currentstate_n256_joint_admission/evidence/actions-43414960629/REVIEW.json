@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn-n256-joint-admission-actions-review-v1",
+  "result": "PASS_ORIGINAL_READBACK_HOLD",
+  "independent_numeric_executions": 0,
+  "zip_crc_valid": true,
+  "zip_member_count": 4,
+  "extracted_members_byte_identical": true,
+  "extracted_member_sha256": {
+    "COUNTS.json": "be9debf790cd59438551207a7655d6b868e29a12717f195df78286e038b899ca",
+    "REPORT.json": "bfb4200b4adce3c90005aa5dc34256b0562b198a066b1b538fb080282587fbc7",
+    "TEST_STDERR.txt": "21b25740c2244d260e1d5d9166e780d1dd184a8435cb733eea6e6f8af2405611",
+    "TEST_STDOUT.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "recorded_test_count": 5,
+  "status_preserved": "RED_JOINT_ADMISSION_HOLD",
+  "all_closed": false,
+  "largegrid_qualification": false,
+  "zero_execution_counters": {
+    "candidate_oracle_calls": 0,
+    "matrix_exponential_actions": 0,
+    "n256_dynamic_runs": 0,
+    "n256_serializer_calls": 0,
+    "new_idempotency_keys": 0,
+    "optimizer_steps": 0,
+    "torch_calls": 0
+  },
+  "qualification_scope": "original hosted artifact integrity and fail-closed arithmetic only",
+  "not_authorized": [
+    "N256 numerical candidate",
+    "N256 independent oracle",
+    "N256 canonical serialization",
+    "C2 full replay",
+    "HPCA generation",
+    "production adoption"
+  ]
+}

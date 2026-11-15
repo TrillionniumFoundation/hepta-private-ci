@@ -1,0 +1,172 @@
+{
+  "schema": "hcsn-native-publication-recovery-observation-v1",
+  "observed_native_terminal_utc": "2026-11-08T13:07:21.794000+00:00",
+  "host": "mac",
+  "operator_login": "ProfHepta",
+  "operator_id": 102159240,
+  "job_id": "1a1bb359662-13c47-124",
+  "idempotency_key": "hcsn-math-closure-20261108-native-pr-recovery-v1",
+  "driver_sha256": "ec9d03e076aa4459829c901f73197bbf0706a5c7d5e7e35b7988a6afd5e287b9",
+  "plan_sha256": "52e1e4baf0b45012031ff3d9d6cb9ec44c7d2cdffd6a4fc2e60d6403abfee253",
+  "status": "verified_first_seven_stage_stack",
+  "native_state": "succeeded",
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "final_commit": "03a9022619072a943e37c82c8c97600c5c4d2285",
+  "final_tree": "beee053c045235782980c61de8da8a2ddcfa63f0",
+  "parent_commit": "bb048cb811c2b755b7e54e97d24c63ec7ec8d1b7",
+  "stage_count": 7,
+  "file_count": 63,
+  "inline_text_files": 61,
+  "binary_blob_files": 2,
+  "complete_tree_merkle_verified": true,
+  "all_changed_files_sha256_readback_matches": true,
+  "merged": false,
+  "main_targeted": false,
+  "original_failed_job": {
+    "job_id": "1a1bb188227-13c47-99",
+    "state": "failed",
+    "exit_code": 1,
+    "history_rewritten": false,
+    "failure": "original stage-02 PR POST returned exact dial timeout; explicit state reconciliation used"
+  },
+  "pr_recovery": {
+    "stage": 2,
+    "pr": 5363,
+    "original_post_attempts": 1,
+    "recovery_post_attempts": 1,
+    "total_post_attempts": 2,
+    "maximum_total_post_attempts": 3,
+    "returncode": 0,
+    "elapsed_seconds": 5.700133665999999,
+    "transmission_outcome_of_original_attempt": "not inferred",
+    "fresh_exact_state_all_head_base_query_before_recovery": true,
+    "full_pinned_plan_tree_commit_and_payload_checked": true,
+    "original_response_create_only_after_exact_readback": true
+  },
+  "original_wrapper_resume_count": 1,
+  "transport_failure_record_count": 10,
+  "transport_failure_methods": {
+    "GET": 8,
+    "POST": 2
+  },
+  "transport_failures": [
+    {
+      "record": "transport-0001.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/hcsn-math-02-finite-renewal-20261108-v1",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    },
+    {
+      "record": "transport-0002.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/pulls?state=all&head=TrillionniumFoundation%3Acodex%2Fhcsn-math-03-projected-value-20261108-v1&base=codex%2Fhcsn-math-02-finite-renewal-20261108-v1&per_page=100",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    },
+    {
+      "record": "transport-0003.json",
+      "method": "POST",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/trees",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": "d8394e5fccff5248b1dc5605d12e8cd81ce8ed4fb1ecb45a95c4dee0b8a751e4"
+    },
+    {
+      "record": "transport-0004.json",
+      "method": "POST",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/blobs",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": "797d80c3215661eb0f3b3977f5b264bf725ee2710a959eecfd11cd20375d2ecb"
+    },
+    {
+      "record": "transport-0005.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/trees/59a2780b62110d5fcac2d5b0da8743f1e75ae5cd",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    },
+    {
+      "record": "transport-0006.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/f6aa1a2f00a5778b5ce2d9d9ed9ced736d88d5ee",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    },
+    {
+      "record": "transport-0007.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/93948a8b571e73acaf4f705320dbc27fb559baee",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    },
+    {
+      "record": "transport-0008.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/597f90dee11745df732e39de121291181cd81eef",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    },
+    {
+      "record": "transport-0009.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/d00c0a1b5c54932d67d146f58576040a4ec773f8",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    },
+    {
+      "record": "transport-0010.json",
+      "method": "GET",
+      "endpoint": "repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/hcsn-math-04-benchmark-contract-20261108-v1",
+      "attempt": 1,
+      "maximum_attempts": 4,
+      "request_body_sha256": null
+    }
+  ],
+  "wrapper_pr_post_replay": false,
+  "retained_streams": {
+    "stdout.jsonl": {
+      "bytes": 5249,
+      "sha256": "f0750bac66d172dbfad891656521de826752cfb7cb93c7e64296904c28966add"
+    },
+    "stderr.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "process-status.json": {
+      "bytes": 731,
+      "sha256": "89796f1780a8ce54fb98a09a31b033ec1959204dc87c4eccbeef6e0472d0a93c"
+    },
+    "process-read.json": {
+      "bytes": 16467,
+      "sha256": "286998a07152c0945da83ef5ab404070a609d28a5f996ce8f76180936dceb7a2"
+    },
+    "native-sdk-process-status.json": {
+      "bytes": 910,
+      "sha256": "0fe82c86db19d0265ffe7cf4fa9e14db54ce39367f50882fec761e8b07ce76eb"
+    },
+    "native-sdk-process-read.json": {
+      "bytes": 17380,
+      "sha256": "ebda2b1b76efbd07437de8816359e9c2f8f970fb5f39a79ca3deff6ba0ebb9cc"
+    },
+    "receipt-inline-tree-v1.json": {
+      "bytes": 4217,
+      "sha256": "6f2940874cd8567393f2a76cd61ff772358dfdc1fb16d36e579843b5b2466d49"
+    }
+  },
+  "scientific_qualification_claim": false,
+  "github_ci_claim": "Separate exact-head/merge-tree Actions audit; this receipt grants no CI or model-quality credit.",
+  "scope_note": "Publication receipt verifies the frozen first-seven-stage plan and final remote bytes, not completion of follow-up source/evidence stages.",
+  "privacy_note": "Selected current recovery bytes contain no private account email, credential, or authorization header. Two PR JSON fields contain the standard git@github.com SSH transport URL. The fixed driver source contains a noreply email format string. Original raw records remain unchanged."
+}

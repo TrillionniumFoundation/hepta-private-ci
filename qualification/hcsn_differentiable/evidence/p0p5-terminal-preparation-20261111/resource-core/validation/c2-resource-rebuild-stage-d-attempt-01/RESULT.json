@@ -1,0 +1,132 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/workspace/scratch/c385a7439f8e/c2-resource-rebuild-stage-d-attempt-01/source",
+    "-p",
+    "test_candidate_v2.py",
+    "-v"
+  ],
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "returncode": 0,
+  "schema": "c2-resource-rebuild-stage-validation-v2",
+  "scope": "New synthetic metadata tests only; not reconstructed lost24-test evidence. No actual C2, model, oracle or E access.",
+  "source_after": {
+    "analysis_worker.py": {
+      "bytes": 3005,
+      "sha256": "e0e4c5effc5227ce3f3947c1c93e6c73f53719195f881b52dc658a3c2d59c992"
+    },
+    "audit_evidence.py": {
+      "bytes": 11039,
+      "sha256": "43b3ce9c786f38bf402e65cce7da04e5aad1c684d03cfdef4b57ee82170431cb"
+    },
+    "build_report.py": {
+      "bytes": 12923,
+      "sha256": "927150306eeb547c430a22ba1409d93cf3b1dfad294a7abbc61cb5d169fa76df"
+    },
+    "candidate_accounting.py": {
+      "bytes": 14103,
+      "sha256": "081f983b59083f5b706802e1b92694716d5b206abbb7669ba78f935549e2d526"
+    },
+    "launch_analysis.py": {
+      "bytes": 9059,
+      "sha256": "6cba2ec1e93527fee9dd31c22e1ddedb4a7ee4a4a3cf5dda7afc57f2f926872a"
+    },
+    "metadata_io.py": {
+      "bytes": 7189,
+      "sha256": "88b809b3638113eb4a9633d2881effa802508e46b9fc6a05f5217a62392d15b3"
+    },
+    "old_metadata.py": {
+      "bytes": 11331,
+      "sha256": "158862164fae92e07323cc7da3ff7362ba32bd32c002a1134d2c42805b353c7f"
+    },
+    "resource_arithmetic.py": {
+      "bytes": 8406,
+      "sha256": "8a1befdf5803ecaf5f260057259ba0e482438b202ac9a7cd845fe81286833dbd"
+    },
+    "test_arithmetic_v2.py": {
+      "bytes": 4330,
+      "sha256": "10cb435017b3ab29ee2067f398021b6ae9d877e18fa82a8efc847bd9f563b7a8"
+    },
+    "test_audit_evidence_v2.py": {
+      "bytes": 9503,
+      "sha256": "87ea6403991a77350fac8cec18c095b04d64a68838fd12828371468376ee1a39"
+    },
+    "test_candidate_v2.py": {
+      "bytes": 9174,
+      "sha256": "33b210b1260550f05e2e2d039a451d68f274e699b4c958eb6d08db876fdf5945"
+    },
+    "test_old_metadata_v2.py": {
+      "bytes": 4265,
+      "sha256": "11922ea1627182ed638357adb4f36c5046652b95185e37c6ea8bbdb0a96d4750"
+    }
+  },
+  "source_before": {
+    "analysis_worker.py": {
+      "bytes": 3005,
+      "sha256": "e0e4c5effc5227ce3f3947c1c93e6c73f53719195f881b52dc658a3c2d59c992"
+    },
+    "audit_evidence.py": {
+      "bytes": 11039,
+      "sha256": "43b3ce9c786f38bf402e65cce7da04e5aad1c684d03cfdef4b57ee82170431cb"
+    },
+    "build_report.py": {
+      "bytes": 12923,
+      "sha256": "927150306eeb547c430a22ba1409d93cf3b1dfad294a7abbc61cb5d169fa76df"
+    },
+    "candidate_accounting.py": {
+      "bytes": 14103,
+      "sha256": "081f983b59083f5b706802e1b92694716d5b206abbb7669ba78f935549e2d526"
+    },
+    "launch_analysis.py": {
+      "bytes": 9059,
+      "sha256": "6cba2ec1e93527fee9dd31c22e1ddedb4a7ee4a4a3cf5dda7afc57f2f926872a"
+    },
+    "metadata_io.py": {
+      "bytes": 7189,
+      "sha256": "88b809b3638113eb4a9633d2881effa802508e46b9fc6a05f5217a62392d15b3"
+    },
+    "old_metadata.py": {
+      "bytes": 11331,
+      "sha256": "158862164fae92e07323cc7da3ff7362ba32bd32c002a1134d2c42805b353c7f"
+    },
+    "resource_arithmetic.py": {
+      "bytes": 8406,
+      "sha256": "8a1befdf5803ecaf5f260057259ba0e482438b202ac9a7cd845fe81286833dbd"
+    },
+    "test_arithmetic_v2.py": {
+      "bytes": 4330,
+      "sha256": "10cb435017b3ab29ee2067f398021b6ae9d877e18fa82a8efc847bd9f563b7a8"
+    },
+    "test_audit_evidence_v2.py": {
+      "bytes": 9503,
+      "sha256": "87ea6403991a77350fac8cec18c095b04d64a68838fd12828371468376ee1a39"
+    },
+    "test_candidate_v2.py": {
+      "bytes": 9174,
+      "sha256": "33b210b1260550f05e2e2d039a451d68f274e699b4c958eb6d08db876fdf5945"
+    },
+    "test_old_metadata_v2.py": {
+      "bytes": 4265,
+      "sha256": "11922ea1627182ed638357adb4f36c5046652b95185e37c6ea8bbdb0a96d4750"
+    }
+  },
+  "source_unchanged": true,
+  "stderr": {
+    "bytes": 1290,
+    "sha256": "47dece16b20b265e41a92a4cf77785cc23045a861b7c21a2cf8b2148eae6f35f"
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "timed_out": false,
+  "timing_scope": "Popen-before through actual wait4; subsequent driver archive/receipt work is excluded.",
+  "wait4_test_child_CPU_seconds": 0.29551799999999995,
+  "wait4_test_child_peak_RSS_bytes": 14024704,
+  "whole_test_child_wall_seconds": 0.5523977489997378
+}

@@ -1,0 +1,193 @@
+{
+  "schema": "hcsn-width16-independent-law-binding-v1",
+  "created_utc": "2026-11-10T14:42:47.479527+00:00",
+  "reviewer": "/root/math_contract",
+  "passed": true,
+  "scientific_admission": "HOLD",
+  "slow_oracles_recomputed": false,
+  "scope": "Source, checkpoint, actual trace and finite-law input linkage only.",
+  "review_source_sha256": "ed73dfcf67ac421e97fcfa093c2f7f2f38bf119a8d2d3df10157f1a41374c47d",
+  "checks": [
+    {
+      "name": "exact_source_and_real_two_update_checkpoint",
+      "passed": true,
+      "source_files": 34,
+      "changed_tensors": [
+        "core.network.layers.0.state_embedding",
+        "core.network.layers.0.likelihood.weight",
+        "core.network.layers.0.likelihood.bias",
+        "core.network.layers.0.write_gate.weight",
+        "core.network.layers.0.write_gate.bias",
+        "core.network.layers.0.content_proposal.weight",
+        "core.network.layers.0.content_proposal.bias",
+        "core.network.readout.weight",
+        "core.network.readout.bias",
+        "temporal_adapter.weight",
+        "temporal_adapter.bias"
+      ],
+      "optimizer_steps": 2,
+      "final_network_tensor_sha256": "8f79dd97ad52b4b5506e79027cb8c16ca60b6dd768e02cf5434c6f3e31732c78",
+      "final_wrapper_tensor_sha256": "03278be7ec5d1a3969394379df8a36919ed360154cfc33f55a4913f19e3cc28e",
+      "model_file_sha256": "587ca235eb1b961b9484e6ac9a3ff7e29fe5ad5e8deea41f6549426f3390cc76",
+      "shared_and_physical_tensors_unchanged": true
+    },
+    {
+      "name": "three_official_A_training_episodes_and_masks",
+      "passed": true,
+      "episode_ids": [
+        "A01-0",
+        "A01-256",
+        "A04-3072"
+      ],
+      "source_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "D_or_E_episodes": false
+    },
+    {
+      "name": "512_actual_pre_update_training_visits",
+      "passed": true,
+      "updates": [
+        0,
+        1
+      ],
+      "records": 512,
+      "model_identities": {
+        "0": "965fb27d183a70b7a05c9fc02b96fa698ad386903d243ddc1447c60b2a3b6c8e",
+        "1": "9b98292bd9feb62c48e1dd605b9ab08342dde15aaefbe0bfe83cab4a1b5e9ece"
+      },
+      "interpretation": "Forward visits before optimizer updates 1 and 2; final checkpoint separately evaluated."
+    },
+    {
+      "name": "768_supplementary_final_checkpoint_evaluation_visits",
+      "passed": true,
+      "records": 768,
+      "update_index": 2,
+      "episodes": [
+        "A01-0",
+        "A01-256",
+        "A04-3072"
+      ],
+      "training_visit_credit": false
+    },
+    {
+      "name": "five_laws_exactly_equal_exported_posteriors_and_actual_future_gaps",
+      "passed": true,
+      "fixtures": [
+        {
+          "episode": "A01-0",
+          "position": 31,
+          "intervals": 32,
+          "minimum_dt": 0.027029,
+          "maximum_dt": 0.0540589,
+          "horizon": 1.0000868
+        },
+        {
+          "episode": "A01-0",
+          "position": 31,
+          "intervals": 128,
+          "minimum_dt": 0.027029,
+          "maximum_dt": 0.1081168,
+          "horizon": 4.2436074999999995
+        },
+        {
+          "episode": "A01-256",
+          "position": 127,
+          "intervals": 32,
+          "minimum_dt": 0.0270291,
+          "maximum_dt": 0.0540589,
+          "horizon": 1.0000908
+        },
+        {
+          "episode": "A04-3072",
+          "position": 47,
+          "intervals": 8,
+          "minimum_dt": 1e-07,
+          "maximum_dt": 0.0540583,
+          "horizon": 0.1892062
+        },
+        {
+          "episode": "A04-3072",
+          "position": 47,
+          "intervals": 32,
+          "minimum_dt": 1e-07,
+          "maximum_dt": 0.0540589,
+          "horizon": 0.9460297
+        }
+      ],
+      "oracle_future_observations": false,
+      "oracle_future_labels": false
+    }
+  ],
+  "plan_sha256": "ad6ffd5a1ba89ae6f28adc4516107531e7b75b43b36abc0e579bca34c8228436",
+  "runner_sha256": "1eb6f839254fd6b113be6c6ff999dc92320a8a6357bb783e2a30192f3ba2452f",
+  "completed_stage_observation": [
+    {
+      "artifact": "training-audit-receipt.json",
+      "sha256": "c2583ff40b159d6f62d8d31421c694a670722a51db4b1ba8136ceeded66de779",
+      "execution_status": "completed_audit",
+      "numerical_status": "passed_recorded_states"
+    },
+    {
+      "artifact": "eval-A04-3072-receipt.json",
+      "sha256": "c6adf3b6d464d6258d92a78f7571413c32ba07875cf356d6f04a325648d4a1ec",
+      "execution_status": "completed_audit",
+      "numerical_status": "HOLD"
+    },
+    {
+      "artifact": "finite-1-receipt.json",
+      "sha256": "1424ceb9b6ea6328ccb1a2d94fd3dbdb46ffff1167901936bca788a59d049c3a",
+      "execution_status": "completed_finite_fixture",
+      "numerical_status": "passed_fixture"
+    },
+    {
+      "artifact": "finite-3-receipt.json",
+      "sha256": "9e9f27849bcb498652dee1f448b579288c679f274559d4b5369893063f15d16b",
+      "execution_status": "completed_finite_fixture",
+      "numerical_status": "passed_fixture"
+    },
+    {
+      "artifact": "finite-4-receipt.json",
+      "sha256": "b934b7e7dfa4210ce1640e4e777b8d721214c7cf80388fe8055d7a8a802c8830",
+      "execution_status": "completed_finite_fixture",
+      "numerical_status": "passed_fixture"
+    }
+  ],
+  "important_status_distinction": "completed/exit0 means execution finished; use audit_status or fixture_status plus coverage/source flags for numerical admission.",
+  "source_after": {
+    "qualification/hcsn_differentiable/training_domain_audit.py": "0e887a7ca32ef08628b49a86c08bbfad9b7fd96ec50aadf85d5e0a8dea4c7960",
+    "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "qualification/hcsn_differentiable/training_domain.py": "64866abc5e4d4fbbf45469fbd7e4514e5d7dc6432d5c1e2f1d778cdc37836ce1",
+    "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101",
+    "qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "qualification/hcsn_differentiable/training_domain_finite.py": "3d2079db1158fd4e89fc52cbac2121a94be7ce85374cc546565c2e91991986e5",
+    "proposals/localization-v3/test_cores.py": "497f13fd86fe5f5213d9acf7e06fd7e0df38b61063fe71c3a285831c91c873c4",
+    "proposals/localization-v3/hcsn_study_support.py": "5b778a9eeb01dbf8fcff897966ddebe0e2511d14284a5909ac4e4ecfd61b121f",
+    "proposals/localization-v3/cores.py": "44a17c4d6f34442289095d0d27cf1337f9f88523ab6ba2bb996fd34b7c19140f",
+    "proposals/localization-v3/profile_hcsn.py": "1797c0ff2830c9c3177b80b64be1100ab2dd70c37e131a04eff13e9cecb574e3",
+    "proposals/localization-v3/campaign.py": "6d2064bc44d45633eaefae9224fc27ce48ee996bbf9aa83c1ed0e10d39028078",
+    "proposals/localization-v3/train.py": "56994214e579a4c0a3827c9d9d261c7d913c157045b5204ca70ca43ce453f329",
+    "proposals/localization-v3/frozen_tables.py": "bd3d938014deefaab2b79b6317145573539d3be9a3210b07632de7619b6955e6",
+    "proposals/localization-v2/audit_training.py": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d",
+    "proposals/localization-v2/capacity.py": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d",
+    "proposals/localization-v2/train_development.py": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+    "proposals/localization-v2/episodes.py": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+    "proposals/localization-v2/test_episodes.py": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2",
+    "proposals/localization-v2/run_interface.py": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+    "proposals/localization-v2/test_capacity.py": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c",
+    "proposals/localization-v2/data.py": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+    "proposals/localization-v2/models.py": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877"
+  },
+  "source_unchanged": true,
+  "wall_seconds": 0.3774519850003344
+}

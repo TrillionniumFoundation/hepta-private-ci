@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p1-phase-only-oracle-r11-20261112/test_phase_delay_oracle.py", line 148, in <module>
+    assert Fraction(row[32]["max_tv"]) <= Fraction(row[2]["max_tv"]) / 2, (
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: falsified: reducing time steps while reprojecting phase bins does not halve fixed-time TV

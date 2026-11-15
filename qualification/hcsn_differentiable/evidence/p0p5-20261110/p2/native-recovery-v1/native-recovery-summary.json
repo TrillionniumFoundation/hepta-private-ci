@@ -1,0 +1,111 @@
+{
+  "schema": "hcsn-native-training-recovery-observation-v1",
+  "scope": "derived summary from retained exact process stdout pages; complete69937B query output not yet retrieved",
+  "query_job_id": "1a1c6555eb6-5074-aa",
+  "query_created_utc": "2026-11-10T16:40:46.006Z",
+  "captured_stdout_size": 69937,
+  "retained_byte_ranges": [
+    [
+      0,
+      16384
+    ],
+    [
+      16384,
+      32768
+    ],
+    [
+      65536,
+      69937
+    ]
+  ],
+  "missing_byte_range": [
+    32768,
+    65536
+  ],
+  "all_original36_baselines_terminal": true,
+  "terminal_baseline_count": 36,
+  "controller_pid": 1487187,
+  "controller_proc_exists": true,
+  "c1_source_existed_at_query": false,
+  "c1_output_existed_at_query": false,
+  "hcsn": [
+    {
+      "complete_epochs": 20,
+      "diagnostic_updates": 256,
+      "final": null,
+      "last_event": "update_started",
+      "last_memorization_passed": true,
+      "latest_D_F1": 0.11559867390579263,
+      "main_updates": 244,
+      "name": "hcsn-s101-lr0.001",
+      "status": "started"
+    },
+    {
+      "complete_epochs": 21,
+      "diagnostic_updates": 128,
+      "final": null,
+      "last_event": "update_started",
+      "last_memorization_passed": true,
+      "latest_D_F1": 0.24024420197823212,
+      "main_updates": 253,
+      "name": "hcsn-s101-lr0.003",
+      "status": "started"
+    },
+    {
+      "complete_epochs": 20,
+      "diagnostic_updates": 256,
+      "final": null,
+      "last_event": "update_started",
+      "last_memorization_passed": true,
+      "latest_D_F1": 0.1044319078015898,
+      "main_updates": 245,
+      "name": "hcsn-s211-lr0.001",
+      "status": "started"
+    },
+    {
+      "complete_epochs": 21,
+      "diagnostic_updates": 128,
+      "final": null,
+      "last_event": "update_started",
+      "last_memorization_passed": true,
+      "latest_D_F1": 0.2972188709850086,
+      "main_updates": 252,
+      "name": "hcsn-s211-lr0.003",
+      "status": "started"
+    },
+    {
+      "complete_epochs": 20,
+      "diagnostic_updates": 320,
+      "final": null,
+      "last_event": "update_started",
+      "last_memorization_passed": true,
+      "latest_D_F1": 0.12328543892903725,
+      "main_updates": 242,
+      "name": "hcsn-s307-lr0.001",
+      "status": "started"
+    },
+    {
+      "complete_epochs": 20,
+      "diagnostic_updates": 128,
+      "final": null,
+      "last_event": "optimizer_completed",
+      "last_memorization_passed": true,
+      "latest_D_F1": 0.22188172455483926,
+      "main_updates": 252,
+      "name": "hcsn-s307-lr0.003",
+      "status": "started"
+    }
+  ],
+  "original_final_result_exists": false,
+  "original_final_result_basis": "prior direct path read; no final result observed",
+  "c1_start": {
+    "job_id": "1a1c6608a96-5074-e0",
+    "idempotency_key": "native-fresh42-c1-controller-v3-c385-once",
+    "created_utc": "2026-11-10T16:52:58.134Z",
+    "launch_state": "launched",
+    "reused": false
+  },
+  "source_capsule_sha256": "f4b473aa4f373c1622bbdac90d61e33c64f0e9642b6c0506e7fec5b8885a3946",
+  "controller_sha256": "c24f1cdbc0a828393c5b9b3963880beae32f85bfacec6f9cb981e66d96cf89d4",
+  "note": "Launch is not successful training; no original task restarted."
+}

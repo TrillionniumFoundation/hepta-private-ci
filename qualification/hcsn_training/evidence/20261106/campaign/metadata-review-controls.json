@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-installer-metadata-independent-controls-v1",
+  "observed_utc": "2026-11-06T07:45:33.606447+00:00",
+  "candidate_sha256": "8fe33439e5610e9d032f75d83bc6d0c3666f6e2ad62df93aec334e08f54036db",
+  "execution_scope": "Only AST-extracted metadata helper; no installer/module top-level execution, no network, no host mutation",
+  "cases": [
+    {
+      "case": "legitimate_nested_vendor",
+      "accepted": true,
+      "result_sha256": "d2beaa7f60e3be7e599471933832951a8aff299abb313972ec65df6cdd2a8751"
+    },
+    {
+      "case": "duplicate_top_metadata",
+      "accepted": false,
+      "exception": "RuntimeError",
+      "message": "wheel must contain exactly one top-level dist-info/METADATA"
+    },
+    {
+      "case": "parent_escape_payload",
+      "accepted": false,
+      "exception": "RuntimeError",
+      "message": "wheel member has an unsafe archive path"
+    },
+    {
+      "case": "wrong_top_directory",
+      "accepted": false,
+      "exception": "RuntimeError",
+      "message": "wheel dist-info directory disagrees with the pinned identity"
+    },
+    {
+      "case": "duplicate_name_header",
+      "accepted": false,
+      "exception": "RuntimeError",
+      "message": "wheel METADATA must have exactly one Name and one Version"
+    },
+    {
+      "case": "symlink_metadata",
+      "accepted": false,
+      "exception": "RuntimeError",
+      "message": "wheel METADATA is not an ordinary unencrypted file"
+    },
+    {
+      "case": "fifo_metadata",
+      "accepted": true,
+      "result_sha256": "d2beaa7f60e3be7e599471933832951a8aff299abb313972ec65df6cdd2a8751"
+    },
+    {
+      "case": "socket_metadata",
+      "accepted": true,
+      "result_sha256": "d2beaa7f60e3be7e599471933832951a8aff299abb313972ec65df6cdd2a8751"
+    },
+    {
+      "case": "duplicate_payload_member",
+      "accepted": true,
+      "result_sha256": "d2beaa7f60e3be7e599471933832951a8aff299abb313972ec65df6cdd2a8751"
+    },
+    {
+      "case": "symlink_payload_member",
+      "accepted": true,
+      "result_sha256": "d2beaa7f60e3be7e599471933832951a8aff299abb313972ec65df6cdd2a8751"
+    }
+  ]
+}

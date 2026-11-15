@@ -1,0 +1,62 @@
+{
+  "schema": "hcsn-persistence-validation-summary-v1",
+  "source_base": "4ed61beacd9e8cf08cd1f7f8c938b75d747149e4",
+  "status": "SOFTWARE_FIXTURES_PASSED_SCIENTIFIC_HOLD",
+  "scope": "New source construction and synthetic software tests; no original C2 attempt resumed or reclassified.",
+  "source_files": 10,
+  "final_source_native_tests": {
+    "distinct_tests": 65,
+    "groups": {
+      "atomic_journal_materialize_runtime": 22,
+      "terminal": 15,
+      "inherited_execution_protocol_reporting_trace": 28
+    },
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "native_attempts": [
+    {
+      "job_id": "1a1c8ff5808-135c4-368",
+      "state": "succeeded",
+      "exit_code": 0,
+      "tests": 21,
+      "credit_to_final_source": 0,
+      "reason": "Earlier 8-file prototype; retained source and logs, superseded."
+    },
+    {
+      "job_id": "1a1c906f6e7-135c4-395",
+      "state": "failed",
+      "exit_code": 1,
+      "successful_test_groups": [
+        22,
+        15
+      ],
+      "source_unchanged": true,
+      "reason": "Fourth command invoked a relative-import CLI as a script and raised ImportError before inherited tests ran; failure retained."
+    },
+    {
+      "job_id": "1a1c90894e4-135c4-39c",
+      "state": "succeeded",
+      "exit_code": 0,
+      "tests": 28,
+      "source_unchanged": true,
+      "reason": "Correct module invocation on the same final source; no previously passed groups rerun."
+    }
+  ],
+  "cost": {
+    "first_final_wrapper_wall_seconds_through_report_lower_bound": 3.5787651808932424,
+    "first_final_wrapper_children_cpu_seconds": 3.3986039999999997,
+    "first_final_wrapper_peak_children_rss_bytes": 961273856,
+    "corrected_inherited_wrapper_elapsed_seconds": 2.6335421819239855,
+    "energy_joules": null,
+    "complete_research_campaign_cost": null,
+    "limits": "Partial local process observations only; launch, collection, failed earlier calls and publication tails are not all enclosed. Missing costs are unknown, not zero. No fair training or energy conclusion."
+  },
+  "original_c2_terminal_status": "unknown",
+  "original_c2_qualification": "HOLD_NO_GO",
+  "all_green_repository_ci_claim": false,
+  "full_training_domain_accuracy_qualified": false,
+  "measured_fair_scientific_benefit": false,
+  "production_adoption": false
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-source-tree-static-just-successor-request-v1",
+  "identity": "hcsn-original-visit897-source-tree-static-just-successor-20261112-c06d",
+  "idempotency_key": "hcsn-original-visit897-source-tree-static-just-successor-clear-20261112-c06d-001",
+  "parent_pr": 6262,
+  "parent_head": "ce18cb8854349934ed9cbd61e28f4c620cba0aba",
+  "parent_source_inventory_sha256": "aaee122301c1d172b72ebec2b0f7e22ed9a186af5b806ff3cbff7ce7c8bab212",
+  "purpose": "Use the repository-pinned CI tool bootstrap, prove just provenance, and perform one zero-execution complete-source-tree static admission.",
+  "tool_bootstrap": {
+    "action_path": ".github/actions/setup-ci-tools/action.yml",
+    "action_sha256": "c3cd9dbcbe45215f172f76ecb827ca90db329e76c6caffed7b3c156565d4587d",
+    "installer_action": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+    "installer_release": "v2.62.49",
+    "tool_spec": "just@1.51.0",
+    "required_version_output": "just 1.51.0",
+    "record_executable_sha256": true
+  },
+  "format_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "ce18cb8854349934ed9cbd61e28f4c620cba0aba"
+  ],
+  "parent_manifest_files_required": 27,
+  "runtime_closure_files_required": 11,
+  "static_only": true,
+  "numerical_identity": null,
+  "numerical_execution_authorized": false,
+  "maximum_candidate_imports": 0,
+  "maximum_model_forwards": 0,
+  "maximum_adjoints": 0,
+  "maximum_optimizer_updates": 0,
+  "stop_conditions": [
+    "tool bootstrap, version, executable path, or provenance failure",
+    "any parent or successor source byte mismatch",
+    "any missing or extra runtime dependency",
+    "format mutation or dirty working tree",
+    "any candidate import or numerical operation",
+    "any historical RED or UNKNOWN reclassification"
+  ],
+  "global_status": "HOLD",
+  "all_closed": false
+}

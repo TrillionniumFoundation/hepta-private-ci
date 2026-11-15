@@ -1,0 +1,54 @@
+{
+  "schema": "hcsn-n128-engineering-source-freeze-v1",
+  "base_commit": "64e862b9d6c24886e9d3db97deedff35874d1765",
+  "source_commit": "3653fd89031df3e84f82bd9b6e146b82591b3391",
+  "branch": "research/hcsn-n128-engineering-gate-20261112-c06d",
+  "source_files": {
+    "__init__.py": {
+      "bytes": 73,
+      "sha256": "f164df35d321516f2aca47c3913d9ca360ef63db2376a5cb35278b12914ee69d",
+      "git_blob": "b676a3a0e2126a7136a9db809ab499b99d00218b"
+    },
+    "candidate.py": {
+      "bytes": 26864,
+      "sha256": "0152e168cd3c5581517522b972276f6317c907eb740a09adb5219a9e820a09ad",
+      "git_blob": "4cc5ba0fcca094c7040a44ee6bec7f71f7810958"
+    },
+    "oracle.py": {
+      "bytes": 4891,
+      "sha256": "4165319631fa24a6065ae6a55000d68a33c6d2e94fe848b59e8805e824d739d6",
+      "git_blob": "13781954f8ceb31b19439f1cc9626f80a85bf47b"
+    },
+    "compare.py": {
+      "bytes": 1079,
+      "sha256": "018745b2080fcb112fc39291d1974c13214ae6e529bab0136789fd9a7530022c",
+      "git_blob": "f2eb11cd6eb7f43858ba5d40f8c1b5b9be0a0121"
+    },
+    "audit.py": {
+      "bytes": 4656,
+      "sha256": "e8ef250d51ec377eefbc70aabb333de7a9ccedee5516db3871d80a26cf684b7b",
+      "git_blob": "35d62cb7a5c465af76aedae7c046068617ce4320"
+    },
+    "test_engineering.py": {
+      "bytes": 7126,
+      "sha256": "2a81e442e48230a577cccc1317894cbd4af0e58b9f1dd0752b0d8319b98e2b2f",
+      "git_blob": "014629e873827a535106de654ad94a605c5ce38a"
+    },
+    "README.md": {
+      "bytes": 963,
+      "sha256": "525975e88dd669f36b9cad1bbcf3b167e598e2b5ae07baf3c84bc9567e28d904",
+      "git_blob": "c91ebd10300f370611f8af8c20c31c65ebd723c9"
+    },
+    "DEVELOPMENT_RED.json": {
+      "bytes": 1395,
+      "sha256": "e9b08247b8551899ab7655c17abee5d63d849fc0647aacf4e2a54cd3dda36398",
+      "git_blob": "5ca7530df84f08bec3a4161300970c7a17f14e60"
+    }
+  },
+  "remote_byte_readback": {
+    "files": 8,
+    "exact": 8,
+    "mismatches": 0
+  },
+  "source_changed_after_freeze": false
+}

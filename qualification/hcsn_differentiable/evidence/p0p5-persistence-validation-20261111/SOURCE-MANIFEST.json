@@ -1,0 +1,48 @@
+{
+  "schema": "hcsn-persistence-tested-source-v1",
+  "source_files": {
+    "proposals/hcsn_persistence_v1/__init__.py": {
+      "bytes": 83,
+      "sha256": "17d253386b0da5081090576b6e7be0f0b7927b9230f485f28eeff4eefe6d4130"
+    },
+    "proposals/hcsn_persistence_v1/atomic_io.py": {
+      "bytes": 3105,
+      "sha256": "cacd538c154a4565d932c31286412be11319f4b65077eb7a263b45c27e45f1d0"
+    },
+    "proposals/hcsn_persistence_v1/journal.py": {
+      "bytes": 11667,
+      "sha256": "25726913420ddb4f40f77c03bf3c585c2b982dca0de1b044590c693cf9548756"
+    },
+    "proposals/hcsn_persistence_v1/materialize.py": {
+      "bytes": 11252,
+      "sha256": "ba30b9950b5cbc4aa8b60015bc2cd6ea46c524c81c25eec0081fd27cfcecc88f"
+    },
+    "proposals/hcsn_persistence_v1/run_successor_tests.py": {
+      "bytes": 4613,
+      "sha256": "0130b4209fa65649aeb13bb69d3de213f9b879a38d1d2d7bd26c699a7e94734d"
+    },
+    "proposals/hcsn_persistence_v1/test_atomic_io.py": {
+      "bytes": 5192,
+      "sha256": "80e0e2c6ecd3a15bfbd60b50d814af878f7ff843b22a00c5d374d25541a843ff"
+    },
+    "proposals/hcsn_persistence_v1/test_journal.py": {
+      "bytes": 11497,
+      "sha256": "a49aa21c5658b4994dd8081e768a50cfd7e050fcf74bea0ff786927d713b9b1f"
+    },
+    "proposals/hcsn_persistence_v1/test_materialize.py": {
+      "bytes": 1961,
+      "sha256": "78a94d5f1de30876d13a934277887a8af4a4ef680e972e36042b3beb3087a276"
+    },
+    "proposals/hcsn_persistence_v1/test_runtime.py": {
+      "bytes": 5101,
+      "sha256": "ad08e63634af09210a1d089cf53dfc89ffd223c67d328cabd17bcfcdb872e107"
+    },
+    "proposals/hcsn_persistence_v1/test_successor_terminal.py": {
+      "bytes": 10269,
+      "sha256": "553b26212314e5470c3fa6a968a4d0a8a5547fc49edd9b27b96bb847e0c214e6"
+    }
+  },
+  "native_before_after_unchanged": true,
+  "source_base": "4ed61beacd9e8cf08cd1f7f8c938b75d747149e4",
+  "scope": "exact 10 proposal Python files; v4 archive and imported original source pinned by materializer"
+}

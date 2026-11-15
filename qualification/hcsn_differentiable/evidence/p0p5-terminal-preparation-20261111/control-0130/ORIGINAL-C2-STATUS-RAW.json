@@ -1,0 +1,22 @@
+{
+  "request": {
+    "label": "ORIGINAL-C2-STATUS",
+    "tool": "h_process_status",
+    "args": {
+      "host": "desktop",
+      "job_id": "1a1c74f3308-be2a-75"
+    }
+  },
+  "started": "2026-11-11T01:30:42.885Z",
+  "finished": "2026-11-11T01:30:44.341Z",
+  "control_wall_seconds": 1.456,
+  "raw": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_status`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+      }
+    ],
+    "isError": true
+  }
+}

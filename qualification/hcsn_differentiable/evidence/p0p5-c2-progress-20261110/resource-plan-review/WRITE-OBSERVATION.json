@@ -1,0 +1,16 @@
+{
+  "analysis_program_executed_before_this_receipt": false,
+  "claim": "Tool return was a write error although the complete parseable source was present; the following invocation is the first program execution, not a scientific/model retry.",
+  "exact_CPU_seconds": null,
+  "operation": "apply_patch adding review_plan.py",
+  "repeated_write": false,
+  "schema": "hcsn-document-write-observation-v1",
+  "subsequent_read_only_observation": {
+    "bytes": 8130,
+    "file_existed": true,
+    "only_file_in_new_directory": "review_plan.py",
+    "syntax_compiled_without_execution": true
+  },
+  "tool_reported_error": "Failed to write file /workspace/scratch/c385a7439f8e/c2-resource-plan-independent-review-v1/review_plan.py",
+  "tool_reported_wall_seconds": 3.4
+}

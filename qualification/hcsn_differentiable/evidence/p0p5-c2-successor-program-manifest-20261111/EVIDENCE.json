@@ -1,0 +1,110 @@
+{
+  "exact_base_sha": "7cb13c634be4705d1d41b08a21b8999fa01e18b9",
+  "kind": "unadopted prospective source preflight",
+  "model_training_performed": false,
+  "native_ci_of_new_head": "NOT_YET_RUN",
+  "native_environment": {
+    "host": "heptaruntime desktop",
+    "python": "3.12.3",
+    "python_path": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "torch": "2.8.0+cu128"
+  },
+  "native_logs": {
+    "ACTUAL-CANDIDATE-PREFLIGHT.native.log": {
+      "bytes": 264,
+      "sha256": "36b4b3f4ebf8ca4b20a79a63ccd81cda8c5afaa1a468454cd9baf6bd6f4412c4"
+    },
+    "COMBINED-GREEN.native.log": {
+      "bytes": 2991,
+      "sha256": "09f1bbf130928d4c5a5e5e3012b29307b0476b269fc0195f8e0cbcfac7c00cc5"
+    },
+    "GREEN.native.log": {
+      "bytes": 1191,
+      "sha256": "f5b1ea8fe3a4a960555f5d64fbbb001d960019881519d4066630ad0ccf9f932c"
+    },
+    "RED-CLI.native.log": {
+      "bytes": 330,
+      "sha256": "137dcd051cbdee31e7e690728cf525092ce907ebf1914b9a59a9165a52d6970d"
+    },
+    "RED.native.log": {
+      "bytes": 1144,
+      "sha256": "2ae102e1576c72f003750643656fb9583b7be94186f53f504458ebfc911d6280"
+    }
+  },
+  "original_job_id": "1a1c74f3308-be2a-75",
+  "original_job_outcome": "finalizing/unknown/no confirmed terminal",
+  "original_recheck_heptaruntime_job_id": "1a1cbb1729c-2564-c68",
+  "original_source_roster": {
+    "controller_result_present": false,
+    "expected": 6,
+    "independent_training_replays": 0,
+    "journal_bytes": 28672,
+    "journal_complete_rows": 16,
+    "journal_sha256": "1405bced8c59a294276616cd7054f2b4068e10d858ab61d78bb578b93992239f",
+    "journal_torn_tail": true,
+    "missing_result": [
+      "hcsn-s211-lr0.001",
+      "hcsn-s307-lr0.001"
+    ],
+    "producer_result": 4,
+    "zero_byte_interrupted": 2
+  },
+  "parent_pr": 5998,
+  "schema": "hcsn-c2-program-source-freeze-preflight-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "source_identities": {
+    ".github/workflows/hcsn-differentiable.yml": {
+      "bytes": 14159,
+      "git_blob_sha": "68ad774ac97f639c891899be39c89ad5495495fd",
+      "sha256": "cbd23942de262a0e4f402487a0399253cfa60210eaaffa9483d74f41f699539f"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/README.md": {
+      "bytes": 1780,
+      "git_blob_sha": "b86a56f5f02ee9b48120cca368bd3752b9e017b1",
+      "sha256": "569c890bcd94569c77838e7fdab512c2af700f917588f57e79ff47e17fb74b8a"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_program_freeze.py": {
+      "bytes": 3890,
+      "git_blob_sha": "fc84db67109533eaa4740b352d094015c209b82e",
+      "sha256": "3fcbe101c214a3112ba7bda527047f23cc9a747e6562660db8bdfedd85947fc2"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py": {
+      "bytes": 3727,
+      "git_blob_sha": "23819e1cb9d82e37b64a2572ed1d3eaa947d3105",
+      "sha256": "b9a52fc2c963da8b38070df4b2193c4fc8bd46629d4c9694a0db125893034667"
+    }
+  },
+  "status": "HOLD_NO_GO",
+  "tests": {
+    "actual_incomplete_candidate_readonly_preflight": {
+      "exit": 2,
+      "job_id": "1a1cbb03e90-2564-c63",
+      "manifest_published": false,
+      "missing_first": "POSTERIOR-POLICY.json"
+    },
+    "combined_final_green": {
+      "errors": 0,
+      "exit": 0,
+      "failures": 0,
+      "job_id": "1a1cbb03e90-2564-c63",
+      "skipped": 0,
+      "tests": 18
+    },
+    "initial_helper_green": {
+      "errors": 0,
+      "exit": 0,
+      "job_id": "1a1cbad460e-2564-c54",
+      "tests": 7
+    },
+    "initial_missing_tool_red": {
+      "errors": 1,
+      "exit": 1,
+      "job_id": "1a1cbac00c5-2564-c4e",
+      "tests_discovered": 1
+    },
+    "standalone_cli_import_red": {
+      "exit": 1,
+      "job_id": "1a1cbaef7e8-2564-c5d"
+    }
+  }
+}

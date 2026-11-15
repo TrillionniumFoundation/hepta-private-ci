@@ -1,0 +1,60 @@
+Native job_id: 1a1cb0b8f57-2564-9ca
+Native process_status: {"at_unix_ms":1794407911799,"audit_recorded":true,"automatic_retry":false,"cancelled":false,"exit_code":0,"job_id":"1a1cb0b8f57-2564-9ca","launch_nonce":"774fa3dd4bf426d6783ccb8aacc1c15c","log_bytes":{"stderr":{"seen":0,"stored":0},"stdout":{"seen":6133,"stored":6133}},"log_errors":{"stderr":null,"stdout":null},"log_synced":{"stderr":true,"stdout":true},"log_truncated":{"stderr":false,"stdout":false},"output_complete":true,"output_durable":true,"state":"succeeded","terminal_publication_confirmed":true,"terminal_publication_protocol":1,"timed_out":false}
+---- ORIGINAL STDOUT ----
+c2_durable.py 12491 c02d45119837c1b25a4b6ee0788b0c638718486c0301a8e90c5aa6d1f6252157
+c2_native_replay.py 9069 84f89b1003e333d27d3c89243efb72e813469fae7aeb0f4a4db368a1b4b2451e
+test_c2_native_replay.py 10821 f4e1c72ee3fc41bb8e4ed1669d35d68e88a365c2c7176c97702d8fb81bd50436
+test_c2_durable.py 10290 e69c21530f7004b01847dfc246abbf0bdb806d1de803c118124c907c0ba284ff
+test_c2_torch_interop.py 3025 2e17d3276ede35255982c5067a194327fa45ee77854c064d2f92c78bfebbd584
+ENV 3.12.3 2.8.0+cu128
+INNER_EXIT 0
+STDERR_BEGIN
+test_atomic_checkpoint_nonempty_and_no_overwrite (test_c2_durable.DurableTests.test_atomic_checkpoint_nonempty_and_no_overwrite) ... ok
+test_concurrent_append_has_unbroken_hash_chain (test_c2_durable.DurableTests.test_concurrent_append_has_unbroken_hash_chain) ... ok
+test_duplicate_terminal_rejected (test_c2_durable.DurableTests.test_duplicate_terminal_rejected) ... ok
+test_failing_serializer_never_publishes (test_c2_durable.DurableTests.test_failing_serializer_never_publishes) ... ok
+test_forged_canonical_receipt_without_native_proofs_is_rejected (test_c2_durable.DurableTests.test_forged_canonical_receipt_without_native_proofs_is_rejected) ... ok
+test_hard_exit_after_atomic_link_never_implies_terminal (test_c2_durable.DurableTests.test_hard_exit_after_atomic_link_never_implies_terminal) ... ok
+test_hard_exit_while_serializing_no_false_checkpoint (test_c2_durable.DurableTests.test_hard_exit_while_serializing_no_false_checkpoint) ... ok
+test_identity_spoof_and_roster_duplicates (test_c2_durable.DurableTests.test_identity_spoof_and_roster_duplicates) ... ok
+test_mutated_checksum_and_gap_rejected (test_c2_durable.DurableTests.test_mutated_checksum_and_gap_rejected) ... ok
+test_nonfinite_spoof_and_missing_native_proof_rejected (test_c2_durable.DurableTests.test_nonfinite_spoof_and_missing_native_proof_rejected) ... ok
+test_post_terminal_progress_is_contradictory (test_c2_durable.DurableTests.test_post_terminal_progress_is_contradictory) ... ok
+test_semantically_invalid_checkpoint_never_publishes (test_c2_durable.DurableTests.test_semantically_invalid_checkpoint_never_publishes) ... ok
+test_six_missing_not_promoted (test_c2_durable.DurableTests.test_six_missing_not_promoted) ... ok
+test_six_terminal_is_still_not_independent_admission (test_c2_durable.DurableTests.test_six_terminal_is_still_not_independent_admission) ... ok
+test_terminal_status_str_subclass_rejected (test_c2_durable.DurableTests.test_terminal_status_str_subclass_rejected) ... ok
+test_torn_jsonl_is_not_a_receipt (test_c2_durable.DurableTests.test_torn_jsonl_is_not_a_receipt) ... ok
+test_zero_byte_existing_checkpoint_rejected_not_overwritten (test_c2_durable.DurableTests.test_zero_byte_existing_checkpoint_rejected_not_overwritten) ... ok
+test_duplicate_native_job_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_native_job_rejected) ... ok
+test_duplicate_result_key_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_duplicate_result_key_with_matching_receipt_rejected) ... ok
+test_exit_zero_mismatch_rejected (test_c2_native_replay.NativeObservationTests.test_exit_zero_mismatch_rejected) ... ok
+test_failed_terminal_not_scientific_success (test_c2_native_replay.NativeObservationTests.test_failed_terminal_not_scientific_success) ... ok
+test_fractional_native_rss_rejected_even_with_bound_checksum (test_c2_native_replay.NativeObservationTests.test_fractional_native_rss_rejected_even_with_bound_checksum) ... ok
+test_impossible_zero_wall_with_positive_cpu_rejected (test_c2_native_replay.NativeObservationTests.test_impossible_zero_wall_with_positive_cpu_rejected) ... ok
+test_missing_native_status_rejected (test_c2_native_replay.NativeObservationTests.test_missing_native_status_rejected) ... ok
+test_missing_roster_keeps_full_denominator (test_c2_native_replay.NativeObservationTests.test_missing_roster_keeps_full_denominator) ... ok
+test_native_log_truncation_nested_numeric_flags_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_nested_numeric_flags_rejected) ... ok
+test_native_log_truncation_numeric_zero_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_numeric_zero_rejected) ... ok
+test_native_unknown_and_false_terminal_rejected (test_c2_native_replay.NativeObservationTests.test_native_unknown_and_false_terminal_rejected) ... ok
+test_non_wait4_child_cost_rejected_even_if_rehashed (test_c2_native_replay.NativeObservationTests.test_non_wait4_child_cost_rejected_even_if_rehashed) ... ok
+test_nonfinite_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_nonfinite_result_with_matching_receipt_rejected) ... ok
+test_rebound_duplicate_resource_json_key_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_duplicate_resource_json_key_rejected) ... ok
+test_rebound_nonfinite_extra_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_nonfinite_extra_resource_field_rejected) ... ok
+test_rebound_overflow_exponent_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_overflow_exponent_resource_field_rejected) ... ok
+test_rebound_oversized_resource_field_rejected (test_c2_native_replay.NativeObservationTests.test_rebound_oversized_resource_field_rejected) ... ok
+test_resource_hash_change_rejected (test_c2_native_replay.NativeObservationTests.test_resource_hash_change_rejected) ... ok
+test_scalar_result_with_matching_receipt_rejected (test_c2_native_replay.NativeObservationTests.test_scalar_result_with_matching_receipt_rejected) ... ok
+test_six_matching_copies_not_live_attestation_or_science (test_c2_native_replay.NativeObservationTests.test_six_matching_copies_not_live_attestation_or_science) ... ok
+test_undurable_output_rejected (test_c2_native_replay.NativeObservationTests.test_undurable_output_rejected) ... ok
+test_actual_optimizer_model_rng_frozen_round_trip (test_c2_torch_interop.TorchInteropTests.test_actual_optimizer_model_rng_frozen_round_trip) ... ok
+
+----------------------------------------------------------------------
+Ran 39 tests in 4.142s
+
+OK
+
+STDERR_END
+
+---- ORIGINAL STDERR ----
+

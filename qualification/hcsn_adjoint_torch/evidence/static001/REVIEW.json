@@ -1,0 +1,75 @@
+{
+  "schema": "hcsn-continuous-adjoint-torch-static-review-v1",
+  "reviewer": "review_spatial",
+  "reviewed_head": "bc1b94039dea52c5426b99ba617f7a2f59742377",
+  "previous_reviewed_head": "b3a2a7f77849a5273d8a9650d2ee39f79cc900e9",
+  "decision": "STATIC_CLEAR_FOR_SINGLE_DISCLOSED_BOUNDED_PROBE",
+  "numeric_qualification": "NOT_OBSERVED_OR_GRANTED",
+  "source_inventory_sha256": "ddd11bc5ceb38396b1f7b33c407ba24400dce47245614c0a274839afff6a4825",
+  "source_sha256": {
+    ".github/workflows/hcsn-continuous-adjoint-torch.yml": "003386e7811ef4615ed3584d3bfe86f60110f895c106e2f89543d1f830c3ed8d",
+    "qualification/hcsn_adjoint_torch/TORCH-REQUEST.json": "df6221d1aca3d289dbc9b001d1c112277cebed5ae63ef96a06ccc0c204f6a2c8",
+    "qualification/hcsn_adjoint_torch/native_probe.py": "acb198097f49d01beb83236ee1f635f87dff534a1aab1b101887e878b1d87e2f",
+    "qualification/hcsn_adjoint_torch/torch_flow.py": "2ed90108ca8523617b3dd117d524b74511b12b7482764379b1cef429a68c456b",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_adjoint/solver.py": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "scope": {
+    "intervals": [
+      7,
+      12
+    ],
+    "maximum_intervals": 12,
+    "content_channels": 2,
+    "planned_scalar_input_gradcheck_coordinates": 69,
+    "planned_retained_plus_minus_objectives": 138,
+    "planned_tensor_mutation_controls": 12,
+    "planned_metadata_mutation_controls": 8,
+    "planned_guard_adjoint_calls": 0,
+    "maximum_forward_calls": 220,
+    "maximum_adjoint_calls": 32,
+    "optimizer_updates": 0
+  },
+  "confirmed_static": [
+    "Forward calls unchanged JointModel.solve unbound on private FrozenForward that supplies the frozen actual Q/k/u/reset/delay/discount; no uniform-grid reconstruction or basis map.",
+    "Backward consumes each incoming output cotangent and runs the frozen continuous finite-DDE amplitude_vjp, splitting the complete N+K by C+1 result into all four raw input blocks.",
+    "Four original input tensors have independent live references, saved original/clone values, Torch version checks and dtype/device/shape/stride/storage-offset/data-pointer/requires-grad signatures.",
+    "Caller model/times/supports are checked for change by refreezing for rejection only; actual forward and backward use the original immutable snapshot.",
+    "Harness uses scalar-objective gradcheck with fast_mode=False, verifies finite retained positive/negative perturbation objectives for every one of69 input coordinates, and retains complete forward/backward journals.",
+    "Three tensor mutation types across four inputs plus eight metadata mutations must all raise RuntimeError with zero new adjoint calls; same-values new-storage replacement is actually present in source.",
+    "Normalized client explicitly constructs softmax probabilities and probability-times-mark contents and plans to retain full resulting gradient vectors.",
+    "Ten source paths match the static inventory and current local bytes. Workflow checks exact PR HEAD and static map before the probe; native source admission independently checks current, frozen and runtime manifests."
+  ],
+  "fixed_review_findings": [
+    {
+      "issue": "NaN budget limits bypassed >limit and >=limit comparisons",
+      "old_status": "Concrete static counterexample, not executed",
+      "resolution": "New exact-int positive bounded limits and nonnegative integer counters; public/forward/backward/adjoint/retain validation."
+    },
+    {
+      "issue": "Mutable live limit could increase after forward",
+      "old_status": "Concrete static counterexample, not executed",
+      "resolution": "First-admission limit tuple locked; subsequent changes rejected; forward and backward also compare against independent absolute220/32 ceilings."
+    }
+  ],
+  "remaining_limits": [
+    "Clear applies to one fixed trusted bounded research probe, not public-hostile-Python ledger attestation or production API.",
+    "Forward4096 accepted-step check is post-solve; it is not a timely per-forward memory/work cap. Workflow10-minute timeout is a job-level outer bound.",
+    "Continuous finite-DDE custom adjoint is not the discrete backward of adaptive BDF instructions.",
+    "Planned gradchecks and20 mutation controls remain unexecuted in this static review.",
+    "Prior30 snapshot-guard results do not qualify this new Torch bridge.",
+    "No n512, trainable physics/support/migration, optimizer, checkpoint restore, full network or scientific-superiority qualification."
+  ],
+  "review_calls": {
+    "candidate_imports": 0,
+    "torch": 0,
+    "forward_dde": 0,
+    "adjoint": 0,
+    "optimizer": 0
+  },
+  "publication_constraint": "Keep admission unique and separately costed. No old execution key or run is replayed. Global HOLD remains."
+}

@@ -1,0 +1,491 @@
+{
+  "audit_sha256": "0613cfd5f9cd98f7caed1e82764f46fef55d67747a7a246d95ba48b7a36f1731",
+  "audit_sources_after": {
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_boundary_audit/audit_representation.py": "0613cfd5f9cd98f7caed1e82764f46fef55d67747a7a246d95ba48b7a36f1731",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_boundary_audit/audit_trained_gradients.py": "2431ffa0d31d010134889b8b7e7ff3f8e70d4234f1e6b9ee637d4f18465adc9d"
+  },
+  "audit_sources_before": {
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_boundary_audit/audit_representation.py": "0613cfd5f9cd98f7caed1e82764f46fef55d67747a7a246d95ba48b7a36f1731",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_boundary_audit/audit_trained_gradients.py": "2431ffa0d31d010134889b8b7e7ff3f8e70d4234f1e6b9ee637d4f18465adc9d"
+  },
+  "audit_sources_unchanged": true,
+  "constructed_tables": 1104,
+  "coverage": {
+    "boundary_maximum": 0.008693885764339777,
+    "boundary_minimum": -0.007916723229884723,
+    "first_cell_maximum": 0.1779507048816143,
+    "first_cell_minimum": 0.009951191328542922,
+    "maximum_mass_defect": 4.440892098500626e-16,
+    "minimum_positive_probability": 8.35e-322,
+    "minimum_probability": 0.0,
+    "observed_dt": [
+      0.001,
+      0.003,
+      0.02,
+      0.04,
+      0.08,
+      0.16
+    ],
+    "posterior_positions": 14336,
+    "refractory_maximum": 0.11624333119791391,
+    "refractory_minimum": 1.9322714479616017e-05,
+    "tail_maximum": 3.1969073296967896e-07,
+    "tail_minimum": 0.0,
+    "trace_records": 384
+  },
+  "cpu_seconds": 10.077248637,
+  "exact_probability_content_svd": {
+    "1": {
+      "dense_probability_and_content_bytes": 1000,
+      "frobenius": {
+        "absolute_sum": 509.4277609667996,
+        "approximation_sum": 509.4277609667996,
+        "count": 14336,
+        "maximum_absolute": 0.06090954941215976,
+        "mean_absolute": 0.03553486055851002,
+        "mean_signed": 0.03553486055851002,
+        "reference_sum": 0.0,
+        "signed_sum": 509.4277609667996,
+        "worst_case": {
+          "approximation": 0.06090954941215976,
+          "arm": "c1_b1",
+          "episode_id": "pair_composition/train/00000",
+          "flattened_index": 12,
+          "reference": 0.0,
+          "seed": 23,
+          "step": 7
+        }
+      },
+      "probability_and_content_bytes": 432,
+      "probability_exact": true,
+      "summed_content": {
+        "absolute_sum": 714.3932966968578,
+        "approximation_sum": 2438.866294570026,
+        "count": 57344,
+        "maximum_absolute": 0.049979193415291556,
+        "mean_absolute": 0.012458030425098663,
+        "mean_signed": 0.004742118537486459,
+        "reference_sum": 2166.934249156411,
+        "signed_sum": 271.9320454136235,
+        "worst_case": {
+          "approximation": -0.08391894511652243,
+          "arm": "c0_b0",
+          "episode_id": "pair_composition/train/00001",
+          "flattened_index": 159,
+          "reference": -0.03393975170123087,
+          "seed": 11,
+          "step": 0
+        }
+      }
+    },
+    "2": {
+      "dense_probability_and_content_bytes": 1000,
+      "frobenius": {
+        "absolute_sum": 194.45023178710397,
+        "approximation_sum": 194.45023178710397,
+        "count": 14336,
+        "maximum_absolute": 0.027034037778022213,
+        "mean_absolute": 0.013563771748542409,
+        "mean_signed": 0.013563771748542409,
+        "reference_sum": 0.0,
+        "signed_sum": 194.45023178710397,
+        "worst_case": {
+          "approximation": 0.027034037778022213,
+          "arm": "c1_b1",
+          "episode_id": "pair_composition/train/00000",
+          "flattened_index": 7,
+          "reference": 0.0,
+          "seed": 37,
+          "step": 31
+        }
+      },
+      "probability_and_content_bytes": 664,
+      "probability_exact": true,
+      "summed_content": {
+        "absolute_sum": 364.4710384836168,
+        "approximation_sum": 2127.1859639783156,
+        "count": 57344,
+        "maximum_absolute": 0.03954449945078905,
+        "mean_absolute": 0.006355870509270661,
+        "mean_signed": -0.000693155084718347,
+        "reference_sum": 2166.934249156411,
+        "signed_sum": -39.74828517808889,
+        "worst_case": {
+          "approximation": -0.03649149428518186,
+          "arm": "c1_b0",
+          "episode_id": "pair_composition/train/00002",
+          "flattened_index": 119,
+          "reference": 0.0030530051656071917,
+          "seed": 11,
+          "step": 31
+        }
+      }
+    },
+    "3": {
+      "dense_probability_and_content_bytes": 1000,
+      "frobenius": {
+        "absolute_sum": 43.329620161092436,
+        "approximation_sum": 43.329620161092436,
+        "count": 14336,
+        "maximum_absolute": 0.006101996414459315,
+        "mean_absolute": 0.003022434442040488,
+        "mean_signed": 0.003022434442040488,
+        "reference_sum": 0.0,
+        "signed_sum": 43.329620161092436,
+        "worst_case": {
+          "approximation": 0.006101996414459315,
+          "arm": "c1_b1",
+          "episode_id": "pair_composition/train/00002",
+          "flattened_index": 38,
+          "reference": 0.0,
+          "seed": 23,
+          "step": 3
+        }
+      },
+      "probability_and_content_bytes": 896,
+      "probability_exact": true,
+      "summed_content": {
+        "absolute_sum": 48.391401854910676,
+        "approximation_sum": 2156.923624045238,
+        "count": 57344,
+        "maximum_absolute": 0.005091945405869602,
+        "mean_absolute": 0.0008438790781060037,
+        "mean_signed": -0.0001745714479487329,
+        "reference_sum": 2166.934249156411,
+        "signed_sum": -10.01062511117214,
+        "worst_case": {
+          "approximation": -0.1305562496934144,
+          "arm": "c0_b0",
+          "episode_id": "overwrite_retrieval/train/00003",
+          "flattened_index": 113,
+          "reference": -0.1254643042875448,
+          "seed": 11,
+          "step": 9
+        }
+      }
+    }
+  },
+  "independent_continuum_accuracy_established": false,
+  "input_identities": {
+    "/dev/shm/hcsn-hosted-43127560720/experiment/DATA.json": "6ea36475b199e4f047ceff0b5e15822e5517d4af6c3197c79b60f25b94803427",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/PLAN.json": "7c4835da67c0e6730edb78e028703ad6e6053eadf1e03573cefec02a93f2ab55",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/SUMMARY.json": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c0_b0/result.json": "fbda24152d45e29f01a443848e653dafaecb0b227560f4bc7b6fa8735806f5c7",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c0_b0/training.jsonl": "0fd1fa70b2428a0d50da547febefe480111a37359359a2f2d458473b2391f820",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c0_b1/result.json": "5a4c471fc321d3f2cfd227f07d09e4375cce16fe7ae1114b4d46fb28df35949b",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c0_b1/training.jsonl": "b757b97f974aea32e0fe0366a252199003b1383f91a8b669eed9ca229b3dd93a",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c1_b0/result.json": "44fcd2805463166e49652999f56010952c38f57edefa669acd5312cc573a5e50",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c1_b0/training.jsonl": "6c77fdba9cfbcf5743c4e8ddd5fdcdb3309b55156e8348f5e6a5c8a9d669e6e1",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c1_b1/result.json": "2a224efa7220e54bd54f7fdacadaefe2709b66514fce2d8541b73d05078a205c",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed11-c1_b1/training.jsonl": "05b08cf28b066a7f86638c14f8bbe853c7bddb91986eaea4a12842fa7fd3d7b8",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c0_b0/result.json": "d4924d9c64922dd95fe4f5fa46fea7bcabd014929e5b64385bffef1ab212d978",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c0_b0/training.jsonl": "6588e50a1df7dfef947a6ae6638166fbfc4a8ce6fdaa4e1543a2ef28f117090f",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c0_b1/result.json": "3d17351a1745487b66cbece16eda973b9b4fa66c8c434133d6fd62e4b5049823",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c0_b1/training.jsonl": "72251897aadb65f19e88d61746e6f682508db65055b5b4df3b2b08f3d1995741",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c1_b0/result.json": "6572e3ae9dbdc201591afff207cc479836b6250b66f5c63aaab6394d2669b40d",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c1_b0/training.jsonl": "8566fdcf6b0803a3a9c811960b5dbe0d36c8e45d1200fbefd6bdb794a21ba9dd",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c1_b1/result.json": "02c4a7a7673e9b598b9a5e88c6db9496fc4dcf1f673c21bb37eb196ed62f87e3",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed23-c1_b1/training.jsonl": "4036de3db6428fa9ae0d2c240387b8b46fdcfdb3ff8c55d652c3bff8a4bbaed9",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c0_b0/result.json": "fc3023f70c4132c2588a94493b3605ee97ef75cb3e72a38731b219dac4fd2d5f",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c0_b0/training.jsonl": "85b94839521504b2ea8648b8bcadd88eaabebc1d1d1745dd2061693ab34a410b",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c0_b1/result.json": "d95171b0010ac64a435fe7dda58b6be30cb7c2b97bde61d77a006eaed72beeba",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c0_b1/training.jsonl": "2a9fc79e38311147451511c5b6ecc17449faa544cc38bcaab567e4f9cbe08517",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c1_b0/result.json": "9d335871e817a9558fde5c4ee5a174a0f0c1f228fd6305ad37aaed20748b9dd2",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c1_b0/training.jsonl": "371bce4001b6c72733fc25c872630e4192fd25afc67757b67a4ee6a43837b8a3",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c1_b1/result.json": "cedad54ea4afa450385bb7e3cf0d5e5b4a39db7f40503ac49883cef3d49865e2",
+    "/dev/shm/hcsn-hosted-43127560720/experiment/seed37-c1_b1/training.jsonl": "519d82e453bb3fdbdf12b1d67df5faea2012aab2a0cf84d649fb32f8b793c1d9",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_boundary_factorial/__init__.py": "f1e11f73d06c23dad7cfc3de70695360fbbe6ea1c14b2416c49aa125946f951c",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_boundary_factorial/run.py": "346be64443e31097ab5b8d4d262bd1606a523c1504628b16d08c2ae1aca06c79",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_boundary_factorial/test_run.py": "5c48bfe0718dca3d4e56fe1578de039e79e3e29ef67aa4a71a9e048f4b32038a",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/test_training_domain_strict_trace.py": "def1e8b91f6f1edd839d6b67f184d800b08951c9f5b549c897ebe0ed2c7c9e78",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/training_domain.py": "424074b02a9f04fc2cf0eecc491318ce846ca696c68dcdeebfa88f5242e05881",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/training_domain_finite.py": "56c75ba1f0253b24591fd574cc767151ef581986c5718e3910bc21ae2c227c02",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101",
+    "/dev/shm/hcsn-representation-hosted-source-003/qualification/hcsn_memory_controls/generate.py": "0b274c1483670ddc51dc5704406fd9b58888cc829e0746dc5719b0035bc2745d"
+  },
+  "limitations": [
+    "All saved posteriors are training visits, not a new test source.",
+    "Risk probes cross every saved posterior with all observed positive dt values; averaging is over positions, not equal-weight episodes or unseen sequences.",
+    "Mean-margin collapse retains active occupancy and every refractory coefficient.",
+    "Content SVD re-encodes each dense saved state independently; repeated compression may accumulate error.",
+    "Transition SVD compares the second interval event probability (p P) r without observations or survival conditioning; it is not a first-hit CDF over two intervals.",
+    "Matrix application and negative-entry counts include repeated physical-parameter matrices; distinct_parameter_matrices reports unique parameter keys at the chosen dt.",
+    "Probability and first-hit preservation do not by themselves qualify task quality or reset/phase semantics."
+  ],
+  "longer_than_refractory_tested": false,
+  "low_noise_tested": false,
+  "mean_margin_risk": {
+    "0.001": {
+      "absolute_sum": 38.866772513972684,
+      "approximation_sum": 6.94290935636567e-179,
+      "count": 14336,
+      "maximum_absolute": 0.005273368960705861,
+      "mean_absolute": 0.002711130895226889,
+      "mean_signed": -0.002711130895226889,
+      "reference_sum": 38.866772513972684,
+      "signed_sum": -38.866772513972684,
+      "worst_case": {
+        "approximation": 5.897022494848954e-185,
+        "arm": "c0_b1",
+        "episode_id": "overwrite_retrieval/train/00003",
+        "flattened_index": 1,
+        "reference": 0.005273368960705861,
+        "seed": 37,
+        "step": 24
+      }
+    },
+    "0.003": {
+      "absolute_sum": 67.66177992641721,
+      "approximation_sum": 4.984325683638333e-62,
+      "count": 14336,
+      "maximum_absolute": 0.009180220198675017,
+      "mean_absolute": 0.004719711211385129,
+      "mean_signed": -0.004719711211385129,
+      "reference_sum": 67.66177992641721,
+      "signed_sum": -67.66177992641721,
+      "worst_case": {
+        "approximation": 4.06430778177384e-67,
+        "arm": "c0_b1",
+        "episode_id": "overwrite_retrieval/train/00003",
+        "flattened_index": 1,
+        "reference": 0.009180220198675017,
+        "seed": 37,
+        "step": 24
+      }
+    },
+    "0.02": {
+      "absolute_sum": 177.97396688801058,
+      "approximation_sum": 4.120136154432499e-10,
+      "count": 14336,
+      "maximum_absolute": 0.02414716560810518,
+      "mean_absolute": 0.01241447871707663,
+      "mean_signed": -0.01241447871707663,
+      "reference_sum": 177.97396688842264,
+      "signed_sum": -177.97396688801058,
+      "worst_case": {
+        "approximation": 8.405005156329747e-16,
+        "arm": "c0_b1",
+        "episode_id": "overwrite_retrieval/train/00003",
+        "flattened_index": 1,
+        "reference": 0.02414716560810602,
+        "seed": 37,
+        "step": 24
+      }
+    },
+    "0.04": {
+      "absolute_sum": 254.86505096695527,
+      "approximation_sum": 6.92782972172173e-05,
+      "count": 14336,
+      "maximum_absolute": 0.03457943076866858,
+      "mean_absolute": 0.017777975095351232,
+      "mean_signed": -0.017777975095351232,
+      "reference_sum": 254.86512024525263,
+      "signed_sum": -254.86505096695527,
+      "worst_case": {
+        "approximation": 9.387524102630233e-11,
+        "arm": "c0_b1",
+        "episode_id": "overwrite_retrieval/train/00003",
+        "flattened_index": 1,
+        "reference": 0.03457943086254382,
+        "seed": 37,
+        "step": 24
+      }
+    },
+    "0.08": {
+      "absolute_sum": 367.608809745103,
+      "approximation_sum": 0.06103076203238324,
+      "count": 14336,
+      "maximum_absolute": 0.04983363155559665,
+      "mean_absolute": 0.025642355590478724,
+      "mean_signed": -0.025642355590478724,
+      "reference_sum": 367.66984050713535,
+      "signed_sum": -367.608809745103,
+      "worst_case": {
+        "approximation": 1.4332407601218817e-07,
+        "arm": "c0_b1",
+        "episode_id": "overwrite_retrieval/train/00003",
+        "flattened_index": 1,
+        "reference": 0.04983377487967266,
+        "seed": 37,
+        "step": 24
+      }
+    },
+    "0.16": {
+      "absolute_sum": 549.942360301032,
+      "approximation_sum": 4.140147887961752,
+      "count": 14336,
+      "maximum_absolute": 0.07343959608170401,
+      "mean_absolute": 0.03836093473081975,
+      "mean_signed": -0.03836093473081975,
+      "reference_sum": 554.0825081889946,
+      "signed_sum": -549.942360301032,
+      "worst_case": {
+        "approximation": 0.00018722688219869547,
+        "arm": "c0_b1",
+        "episode_id": "overwrite_retrieval/train/00003",
+        "flattened_index": 1,
+        "reference": 0.07362682296390272,
+        "seed": 37,
+        "step": 24
+      }
+    }
+  },
+  "no_normalization_or_clipping": true,
+  "observed_kernel_speedup": null,
+  "physical_fixed": {
+    "absolute_reset": 1.3771277643359572,
+    "discount": 0.15,
+    "mu": -0.11999999999999998,
+    "sigma": 0.35
+  },
+  "recurrent_compressed_training": false,
+  "reference": "pinned finite QPR candidate; not an independent continuum reference",
+  "risk_posterior_horizon_pairs": 86016,
+  "risk_probe_scope": "Cartesian product of every saved posterior and every distinct positive observed training dt; not only the actual next dt of that saved posterior.",
+  "schema": "hcsn-offline-representation-probes-v3",
+  "scientific_admission": "HOLD_NO_GO",
+  "source_identity": {
+    "qualification/hcsn_boundary_factorial/__init__.py": "f1e11f73d06c23dad7cfc3de70695360fbbe6ea1c14b2416c49aa125946f951c",
+    "qualification/hcsn_boundary_factorial/run.py": "346be64443e31097ab5b8d4d262bd1606a523c1504628b16d08c2ae1aca06c79",
+    "qualification/hcsn_boundary_factorial/test_run.py": "5c48bfe0718dca3d4e56fe1578de039e79e3e29ef67aa4a71a9e048f4b32038a",
+    "qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "qualification/hcsn_differentiable/benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "qualification/hcsn_differentiable/checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "qualification/hcsn_differentiable/encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "qualification/hcsn_differentiable/error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "qualification/hcsn_differentiable/evidence_chain.py": "a20735bfe660028797a1ac466a6e91c2d9c8362d6308f854183440c06b4d9dbb",
+    "qualification/hcsn_differentiable/finite_renewal.py": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+    "qualification/hcsn_differentiable/localization_smoke.py": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+    "qualification/hcsn_differentiable/network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "qualification/hcsn_differentiable/regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "qualification/hcsn_differentiable/run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "qualification/hcsn_differentiable/semantics.py": "b90883ecfc4170227864a7dd0c9def70a37d100096b248435f87fae785534119",
+    "qualification/hcsn_differentiable/test_training_domain_strict_trace.py": "def1e8b91f6f1edd839d6b67f184d800b08951c9f5b549c897ebe0ed2c7c9e78",
+    "qualification/hcsn_differentiable/training_domain.py": "424074b02a9f04fc2cf0eecc491318ce846ca696c68dcdeebfa88f5242e05881",
+    "qualification/hcsn_differentiable/training_domain_audit.py": "5778e91df262273e36a3756a827c698a0401af4dec202a6bbcb93bd831fe3ecd",
+    "qualification/hcsn_differentiable/training_domain_finite.py": "56c75ba1f0253b24591fd574cc767151ef581986c5718e3910bc21ae2c227c02",
+    "qualification/hcsn_differentiable/value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101",
+    "qualification/hcsn_memory_controls/generate.py": "0b274c1483670ddc51dc5704406fd9b58888cc829e0746dc5719b0035bc2745d"
+  },
+  "status": "completed",
+  "transition_svd_at_largest_observed_dt": {
+    "12": {
+      "dense_stored_scalar_count": 625,
+      "distinct_parameter_matrices": 184,
+      "eligible_without_repairs": false,
+      "matrix_applications": 384,
+      "matrix_count_scope": "One application per retained episode/update trace at the largest observed dt; identical physical-parameter matrices are counted repeatedly.",
+      "maximum_phase_destination_row_l1_error": 0.4741154367454331,
+      "maximum_phase_source_row_l1_error": 0.9146466617478363,
+      "maximum_row_mass_defect": 0.389959803172809,
+      "minimum_entry": -0.09233172249986317,
+      "negative_entry_count": 104386,
+      "negative_entry_count_scope": "Summed over matrix applications, including repeated matrices; not a count of unique negative coefficients.",
+      "second_interval_event_probability_error": {
+        "absolute_sum": 78.38006242972551,
+        "approximation_sum": 634.6189140479988,
+        "count": 14336,
+        "maximum_absolute": 0.025610739456634786,
+        "mean_absolute": 0.005467359265466344,
+        "mean_signed": -0.004068505296062581,
+        "reference_sum": 692.9450059723521,
+        "signed_sum": -58.32609192435316,
+        "worst_case": {
+          "approximation": 0.08792712887434025,
+          "arm": "c0_b1",
+          "episode_id": "delayed_copy/train/00000",
+          "flattened_index": 0,
+          "reference": 0.06231638941770546,
+          "seed": 37,
+          "step": 23
+        }
+      },
+      "stored_scalar_count": 600
+    },
+    "4": {
+      "dense_stored_scalar_count": 625,
+      "distinct_parameter_matrices": 184,
+      "eligible_without_repairs": false,
+      "matrix_applications": 384,
+      "matrix_count_scope": "One application per retained episode/update trace at the largest observed dt; identical physical-parameter matrices are counted repeatedly.",
+      "maximum_phase_destination_row_l1_error": 0.9990448233136549,
+      "maximum_phase_source_row_l1_error": 1.062968928762023,
+      "maximum_row_mass_defect": 0.9560332146341262,
+      "minimum_entry": -0.08035548204932028,
+      "negative_entry_count": 89461,
+      "negative_entry_count_scope": "Summed over matrix applications, including repeated matrices; not a count of unique negative coefficients.",
+      "second_interval_event_probability_error": {
+        "absolute_sum": 405.678622460114,
+        "approximation_sum": 1098.6236284324655,
+        "count": 14336,
+        "maximum_absolute": 0.06470219867061743,
+        "mean_absolute": 0.028297894981871793,
+        "mean_signed": 0.028297894981871793,
+        "reference_sum": 692.9450059723521,
+        "signed_sum": 405.678622460114,
+        "worst_case": {
+          "approximation": 0.12607381357136793,
+          "arm": "c0_b1",
+          "episode_id": "delayed_copy/train/00001",
+          "flattened_index": 0,
+          "reference": 0.06137161490075051,
+          "seed": 37,
+          "step": 26
+        }
+      },
+      "stored_scalar_count": 200
+    },
+    "8": {
+      "dense_stored_scalar_count": 625,
+      "distinct_parameter_matrices": 184,
+      "eligible_without_repairs": false,
+      "matrix_applications": 384,
+      "matrix_count_scope": "One application per retained episode/update trace at the largest observed dt; identical physical-parameter matrices are counted repeatedly.",
+      "maximum_phase_destination_row_l1_error": 0.5043707789186206,
+      "maximum_phase_source_row_l1_error": 0.6590088177923807,
+      "maximum_row_mass_defect": 0.46916253852891165,
+      "minimum_entry": -0.09777255156442163,
+      "negative_entry_count": 96084,
+      "negative_entry_count_scope": "Summed over matrix applications, including repeated matrices; not a count of unique negative coefficients.",
+      "second_interval_event_probability_error": {
+        "absolute_sum": 235.4448060565895,
+        "approximation_sum": 928.3898120289425,
+        "count": 14336,
+        "maximum_absolute": 0.05471979189595793,
+        "mean_absolute": 0.016423326315331298,
+        "mean_signed": 0.016423326315331298,
+        "reference_sum": 692.9450059723521,
+        "signed_sum": 235.4448060565895,
+        "worst_case": {
+          "approximation": 0.11703618131366339,
+          "arm": "c0_b1",
+          "episode_id": "delayed_copy/train/00000",
+          "flattened_index": 0,
+          "reference": 0.06231638941770546,
+          "seed": 37,
+          "step": 23
+        }
+      },
+      "stored_scalar_count": 400
+    }
+  },
+  "unique_physical_parameters": 184,
+  "wall_seconds": 10.135622523000166
+}

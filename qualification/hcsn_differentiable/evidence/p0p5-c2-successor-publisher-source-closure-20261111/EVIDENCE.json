@@ -1,0 +1,58 @@
+{
+  "schema": "hcsn-c2-durable-implementation-dependency-source-closure-v1",
+  "parent_pr": 5993,
+  "exact_parent_head": "f00975420c07ab69cc1e4c6cfb6a63edd5994e39",
+  "scope": "P0/P2 source provenance for unadopted successor only",
+  "scientific_admission": "HOLD_NO_GO",
+  "original_job_id": "1a1c74f3308-be2a-75",
+  "original_job_status": "finalizing/outcome_unknown/no_authoritative_terminal",
+  "original_roster": {
+    "producer_result": 4,
+    "planned": 6,
+    "independent_model_replay": 0,
+    "zero_byte_interrupted_checkpoints": 2
+  },
+  "red": {
+    "job_id": "1a1cb7baf54-2564-b8c",
+    "discovery": 2,
+    "failures": 2,
+    "errors": 0,
+    "exit_code": 1,
+    "log_sha256": "ab608fc8de0d2ebde0d875de578656a103b9a19b00a7dbb8ec4736be10a691e6"
+  },
+  "green": {
+    "job_id": "1a1cb7d0947-2564-b93",
+    "source_closure": 4,
+    "existing_wiring": 6,
+    "failures": 0,
+    "exit_code": 0,
+    "log_sha256": "3790626412bc336c075fd3ceaa23d94ed604d5f2ed5467cbf6e0a1aa21b3f87c"
+  },
+  "combined_green": {
+    "native_python": "3.12.3 2.8.0+cu128",
+    "tests": 10,
+    "errors": 0,
+    "failures": 0,
+    "exit_code": 0,
+    "log_sha256": "8cc12d88349fdab6d8b69ecf79f0dea07df2ef960831cc42edebe0ae6492925e"
+  },
+  "original_runner_git_blob": "644676ed2589722b09e9be797d6ca9899feb1e03",
+  "new_files": {
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_runner.py": {
+      "sha256": "69359570756ee059f84831637dd97459a32352adfbde46549e679631fa3f7470",
+      "git_blob_sha": "43443c18240ee2009ec06e2b6b7bfd5077a10aa3",
+      "bytes": 29056
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py": {
+      "sha256": "1e50c913dc265e7b57fe9f38e47b2276dc7086fc4be7f883ee1139f8f76075d8",
+      "git_blob_sha": "7bb309d7897785ef94092bf4df07c05207a0bfb4",
+      "bytes": 2828
+    },
+    ".github/workflows/hcsn-differentiable.yml": {
+      "sha256": "15baca0db8f3b4efd2079b88e6694d138519ac3d6b9173e833e2138f3bfe910d",
+      "git_blob_sha": "2e918938fa639dbfde9458eebb750913d46c650e",
+      "bytes": 13931
+    }
+  },
+  "limitation": "The old contract/PROGRAM-MANIFEST lacks this dependency record. No old training run restarted, no C2 new six-fit train executed; independently replayed models and scientifically comparable baselines still zero."
+}

@@ -1,0 +1,26 @@
+name: HCSN fixed dense retained sweep and cost
+on:
+  pull_request:
+    paths:
+      - 'qualification/hcsn_dense_sweep/**'
+      - '.github/workflows/hcsn-fixed-dense-sweep.yml'
+permissions:
+  contents: read
+jobs:
+  retained-arithmetic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5
+      - name: Verify all fixed reset sweep rows without new kernels
+        run: python -m qualification.hcsn_dense_sweep.verify_sweep
+      - name: Verify all original posterior continuation rows without model calls
+        run: python -m qualification.hcsn_dense_sweep.verify_cost
+      - name: Check clean source
+        run: git diff --exit-code

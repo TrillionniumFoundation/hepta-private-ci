@@ -1,0 +1,26 @@
+{
+  "authority": "/root collaboration message",
+  "command": [
+    "/usr/bin/timeout",
+    "--signal=KILL",
+    "120s",
+    "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-infrastructure-attempt2/wait4_wrapper.py"
+  ],
+  "created_utc": "2026-11-10T22:38:24.716193+00:00",
+  "execution_authorized": true,
+  "first_failure_zip": {
+    "path": "/workspace/scratch/c385a7439f8e/p1-short-time-toy-launch-failure-v1.zip",
+    "sha256": "0860a47acc96cf9b393a7e45428adeb610bc5ab7ce8f00a7f1bff63bc9517816"
+  },
+  "infrastructure_attempt": 2,
+  "instruction": "Preserve infrastructure exit127 and unknown cost; use a new exclusive standard-library wait4 wrapper under timeout120s. This is the second infrastructure launch and first scalar-case execution. Mathematical source/48roster/256MiB/zero numerical retries remain unchanged. If any worker/case starts and this attempt fails, HOLD with no further numeric run.",
+  "intended_scalar_execution_number": 1,
+  "mathematical_program_manifest_sha256": "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966",
+  "schema": "hcsn-second-infrastructure-launch-authorization-transcription-v1",
+  "wrapper_source": {
+    "bytes": 8627,
+    "sha256": "54049e6509c52f0daee23115ab5926dd0c08003a276d6e4f61584385e26b5cad"
+  }
+}

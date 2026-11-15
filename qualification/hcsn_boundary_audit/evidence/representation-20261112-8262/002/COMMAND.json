@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/tmp/perc-runtime-e11c/bin/python",
+    "-B",
+    "-m",
+    "qualification.hcsn_boundary_audit.audit_representation",
+    "--pilot",
+    "/dev/shm/hcsn-hosted-43127560720/experiment",
+    "--summary-sha256",
+    "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715",
+    "--output",
+    "/dev/shm/hcsn-representation-hosted-audit-002/RESULT.json"
+  ],
+  "cwd": "/dev/shm/hcsn-gradient-hosted-source-001",
+  "thread_limits": 1,
+  "audit_source_sha256": {
+    "qualification/hcsn_boundary_audit/test_representation.py": "5a480c07968f09416f510a7bcfbc594e93305386fabd178d3be8916c608cbc64",
+    "qualification/hcsn_boundary_audit/audit_representation.py": "2f48e3b778cc8ca257981869102abea892be37c74dc17b9505792cad19695361",
+    "qualification/hcsn_boundary_audit/test_audit_trained_gradients.py": "b1521e42c6d349b5b6f1c490f5431a4843193f60644a32b08ce97324aa2d7dc2",
+    "qualification/hcsn_boundary_audit/audit_trained_gradients.py": "2431ffa0d31d010134889b8b7e7ff3f8e70d4234f1e6b9ee637d4f18465adc9d"
+  },
+  "previous_attempt_preserved": "/dev/shm/hcsn-representation-hosted-audit-001",
+  "revision_reason": "separate phase destinations from phase-source release errors; label second-interval risk precisely"
+}

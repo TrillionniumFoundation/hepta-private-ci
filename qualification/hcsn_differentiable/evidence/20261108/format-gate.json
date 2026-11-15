@@ -1,0 +1,27 @@
+{
+  "schema": "hcsn.format-gate-public-summary.v1",
+  "observed_utc": "2026-11-08T05:31:26.555605+00:00",
+  "candidate": "attempt-002 frozen candidate",
+  "parent_commit": "4cfa4a2941baeabc26ebf325b44446aa076d3888",
+  "required_command": "just fmt, from codex-rs",
+  "required_command_executed": true,
+  "final_exit_code": 0,
+  "status": "COMMAND_SUCCEEDED_NO_CANDIDATE_FORMATTER_COVERAGE",
+  "first_attempt": {
+    "exit_code": 1,
+    "cause": "Default Python 3.9 cannot import the parent formatting script's Python 3.10+ union annotations."
+  },
+  "resolved_with": "Prepending the already-installed Homebrew Python 3.14.3 to PATH; repository format scripts were not edited.",
+  "candidate_file_count": 12,
+  "all_candidate_paths_observed": true,
+  "selected_formatter_groups": [],
+  "coverage_limitation": "The parent's Python formatter scopes are sdk/python, scripts and .github. New qualification/hcsn_differentiable Python files are outside them; command success does not assert Ruff formatting of this candidate.",
+  "candidate_bytes_unchanged": true,
+  "reused_parent_sources_unchanged": true,
+  "github_blobs_fetched": 0,
+  "new_tools_installed": false,
+  "cargo_test_run": false,
+  "old_clone_retried": false,
+  "source_zip_sha256": "a23d9ca4d9f2aac36ebaa1029f7c47046582b6249458b8648ad22574ea8ef804",
+  "source_manifest_sha256": "9fae4e7798bd29e7a222a876e13ab8ccd27471f3604410991cbc4484f8303af0"
+}

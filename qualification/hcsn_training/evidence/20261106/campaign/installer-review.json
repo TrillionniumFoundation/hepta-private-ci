@@ -1,0 +1,120 @@
+{
+  "schema": "hcsn-installer-independent-review-v1",
+  "reviewed_at_utc": "2026-11-06T07:45:33.606447+00:00",
+  "verdict": "changes_required_before_this_snapshot_is_deployed",
+  "review_scope": "Environment-only offline recovery; frozen campaign and research remain unchanged. No installer was executed by this reviewer.",
+  "candidate": {
+    "source": "/workspace/scratch/b45d21c0650a/cuda-reconcile/resume_torch_install_v5_offline.py",
+    "snapshot": "/workspace/scratch/c084ba2352cd/hcsn-campaign-audit/resume_torch_install_v5_offline.py",
+    "sha256": "8fe33439e5610e9d032f75d83bc6d0c3666f6e2ad62df93aec334e08f54036db",
+    "bytes": 46243,
+    "predecessor_sha256": "a01f4a9bed417e97fe9446b670d5ba40ca4fecda3cf6910d860f8258588f3da3",
+    "note": "Concurrent author may have changed the candidate after this snapshot; verdict does not transfer to other bytes."
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "status": "open",
+      "location": "STAGE_PATH assignment, lines 77, 273-306; fixed receipt writes at 286-289",
+      "issue": "The new recovery still writes resumable-torch-stage-status.json and re-writes several previous cancellation/failure receipt files.",
+      "evidence": "It copies prior status to a timestamped file then calls write_json(STAGE_PATH, status). The historical durable job exit remains untouched, but the existing status path is overwritten and the copied snapshot is not fsynced.",
+      "required_change": "Use a recovery-specific status/output namespace. Read old source/status/receipts without writing them. If a separate current-status pointer is needed, label it as a new pointer and keep immutable predecessor paths."
+    },
+    {
+      "id": "R2",
+      "priority": "P1",
+      "status": "open",
+      "location": "Admission at lines 260-284, EX install.lock, and pip command at line 791",
+      "issue": "The EX lock prevents overlapping invocations but there is no persistent one-attempt claim to reject a later invocation after failure/crash.",
+      "evidence": "After any failed new install, the old metadata-failure exit1 prerequisite is still true. The only replay short-circuit requires state=complete and valid TORCH_READY. A later invocation can enter pip again after a failed/unknown attempt.",
+      "required_change": "Create a unique recovery claim atomically with O_EXCL or open(x), fsync file and containing directory before the first mutation, bind source hash/frozen manifests/predecessor identity, and refuse all subsequent invocations when that claim exists, including failed or indeterminate states. Preserve it on cancellation."
+    },
+    {
+      "id": "R3",
+      "priority": "P2",
+      "status": "observed_scope_gap",
+      "location": "read_pinned_wheel_metadata lines 134-166",
+      "issue": "The helper's ordinary-file wording and archive-validation scope are stronger than its actual checks.",
+      "evidence": "AST-extracted actual helper accepts FIFO and socket METADATA, duplicate payload members, and symlink payload members. It correctly rejects symlink METADATA, duplicate top-level METADATA, traversal, incorrect dist-info identity and duplicate Name headers.",
+      "required_change": "If strict ordinary-member/duplicate-payload validation is part of this recovery contract, reject duplicate archive names and non-regular non-directory member types (allow mode=0 ordinary ZIP entries). Otherwise describe this as top-level metadata identity validation, with whole-wheel frozen SHA validation as the remaining integrity boundary.",
+      "limit": "These controls do not show any malicious member in the frozen official wheel set; no security exploit or current data corruption is claimed."
+    },
+    {
+      "id": "R4",
+      "priority": "P1",
+      "status": "planned_dependency_not_yet_provided",
+      "location": "Existing wait_install_mamba.py EXPECTED_TORCH_JOB and TORCH_SCRIPT_SHA",
+      "issue": "The old waiter cannot be used as the Mamba successor after this recovery.",
+      "evidence": "STATUS_FOR_ROOT.md already acknowledges its old job/source binding. No new waiter or deployed successor identity was present in the reviewed local directory or fresh remote snapshot.",
+      "required_change": "Bind one separately controlled Mamba successor to the actual successful recovery receipt/source/job. Do not re-run the old waiter. Keep original wheel hashes and no automatic retries."
+    }
+  ],
+  "accepted_properties": [
+    "Correctly selects only the sole top-level dist-info/METADATA while ignoring nested vendored distribution metadata.",
+    "Metadata identity helper is used both for verification and for proof before redundant-part cleanup.",
+    "Whole-wheel size/SHA checks, manifest SHA/pins, numeric-base version checks, EX install.lock and existing storage gates remain in the candidate.",
+    "The offline part path requires an existing complete part plus receipt and rejects identity mismatch; ordinary admission does not fall back to downloading.",
+    "No research code or 170-run budget changes are part of the inspected diff."
+  ],
+  "controls": {
+    "path": "/workspace/scratch/c084ba2352cd/hcsn-campaign-audit/metadata-review-controls.json",
+    "count": 10,
+    "execution_scope": "Only AST-extracted metadata helper; no script top-level, network, pip, model or GPU execution."
+  },
+  "live_snapshot": {
+    "campaign_progress": {
+      "completed_cuda_runs": 0,
+      "pid": 357002,
+      "stages": [],
+      "status": "waiting_for_pinned_runtime",
+      "updated_utc": "2026-11-06T07:44:35.285059+00:00"
+    },
+    "files": [
+      {
+        "name": "MAMBA_WHEELS_READY.json",
+        "sha256": "f733f94818ea70056c52ef8ec7c5bd030f470482c3182d7642afa93d845cf384",
+        "size": 451,
+        "status": {
+          "finished_at": "2026-11-05T17:29:27.884343+00:00",
+          "state": "verified_wheels_only"
+        }
+      },
+      {
+        "name": "NUMERIC_READY.json",
+        "sha256": "74bd91aa38786f49beb3f4fc5be7ca9cf278f79d13d1246e02174d696ca9052f",
+        "size": 774,
+        "status": {
+          "finished_at": "2026-11-05T16:57:14.506804+00:00",
+          "schema": "hcsn-numeric-ready-v1",
+          "state": "ready"
+        }
+      }
+    ],
+    "observed_utc": "2026-11-06T07:44:50.884304+00:00",
+    "processes": [
+      {
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1acdd69f2-fc05-5757.service",
+        "executables": [
+          "python3",
+          "campaign.py"
+        ],
+        "pid": 357002
+      }
+    ],
+    "progress_sha256": "5ac23a082bb935b81c75e44bd9b4b85886176974d341b879103d349c692ff855"
+  },
+  "coordination": {
+    "path": "/workspace/scratch/b45d21c0650a/cuda-reconcile/COORDINATION_HCSN_TRAINING_20261106.md",
+    "second_installer_preparation_stopped": true,
+    "only_existing_peer_owner_should_deploy": true
+  },
+  "reviewer_actions": {
+    "remote_installer_deployed": false,
+    "pip_commands": 0,
+    "training_attempts": 0,
+    "process_cancellations": 0,
+    "remote_mutating_commands": 0,
+    "readonly_observer_job": "1a1afd13bb1-fc05-6be0"
+  }
+}

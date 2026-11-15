@@ -1,0 +1,29 @@
+{
+  "coverage": "actual imported Torch successor tests + actual Torch checkpoint semantics + AST-extracted terminal JSON gate; no original or new C2 training, no independent model replay or scientific benefit",
+  "cuda_build": "12.8",
+  "errors": 0,
+  "exact_tested_source_head": "4ab961d340134d93d64aa999290f8ed65cf1cc0d",
+  "exit_code": 0,
+  "failures": 0,
+  "host": "heptaruntime desktop",
+  "job_id": "1a1cc907477-2564-faa",
+  "logs": {
+    "NATIVE-COMBINED.stderr.log": {
+      "bytes": 6151,
+      "sha256": "ca1280708edf285c3bc566e157b26763e558a2e373731cc2b0c1563ae0ec71c4"
+    },
+    "NATIVE-COMBINED.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "numpy": "2.3.5",
+  "process_outcome": "succeeded",
+  "python": "3.12.3",
+  "schema": "hcsn-c2-native-combined-same-source-v1",
+  "scientific_admission": "HOLD_NO_GO",
+  "skipped": 0,
+  "tests": 38,
+  "torch": "2.8.0+cu128",
+  "utc": "2026-11-11T21:44:18.209686+00:00"
+}

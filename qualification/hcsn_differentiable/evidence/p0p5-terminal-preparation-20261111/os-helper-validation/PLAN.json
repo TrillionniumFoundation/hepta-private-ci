@@ -1,0 +1,52 @@
+{
+  "actual_child_cases": 8,
+  "attempt": "attempt-01",
+  "automatic_retry": false,
+  "case_count": 9,
+  "confirmation_E_access": false,
+  "fault_injection_cases": [
+    "final observation after real cleanup",
+    "suppress helper kill for a real orphan, then independent identity-checked kill/wait4"
+  ],
+  "internal_kill_seconds": 50,
+  "memory_enforcement": "independent sampled aggregate RSS with kill; each process additionally inherits AS128MiB. No kernel cgroup-memory-bound claim.",
+  "model_imports": 0,
+  "native_operator_calls": 0,
+  "observed_aggregate_RSS_limit_bytes": 268435456,
+  "old_lost_twelve_tests_credit": false,
+  "per_process_AS_limit_bytes": 134217728,
+  "prelaunch_no_child_case": 1,
+  "production_supervisor_invoked": false,
+  "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "new-os-helper-validation-plan-v3",
+  "source_compile_checked": true,
+  "source_files": [
+    {
+      "bytes": 9139,
+      "name": "worker.py",
+      "path": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/worker.py",
+      "sha256": "d516fd4fc748a044cbe703062490f4cc568b9f20d399764fe0e617c989ee1dee"
+    },
+    {
+      "bytes": 5976,
+      "name": "guard.py",
+      "path": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/guard.py",
+      "sha256": "bf5f8847c1a7fa256d9ef7e37bdcbc03cce9b385f6510cfc46b035118c32e0df"
+    },
+    {
+      "bytes": 16554,
+      "name": "complete_os_envelope.py",
+      "path": "/workspace/scratch/c385a7439f8e/numerics-exact-recovery-20261111-v1/supervisor-v2/complete_os_envelope.py",
+      "sha256": "7f2762c444031bc3d84131ec4cb6dd74790cbebd4b6a9229c6027886885ec0f9"
+    },
+    {
+      "bytes": 15037,
+      "name": "os_processes.py",
+      "path": "/workspace/scratch/c385a7439f8e/numerics-exact-recovery-20261111-v1/supervisor-v2/os_processes.py",
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    }
+  ],
+  "training_steps": 0,
+  "whole_external_timeout_seconds": 60
+}

@@ -1,0 +1,37 @@
+{
+  "address_space_bytes": 3221225472,
+  "arms": [
+    "gru",
+    "cfc",
+    "snn_plif",
+    "event_time_lif",
+    "ssm_s4d",
+    "attention"
+  ],
+  "batch_size": 32,
+  "historical_epoch_loss_semantics": "event-count average of batch-normalized weighted CE; not whole-epoch class-weight normalized CE",
+  "host_comparison": "native vs cloud elapsed times cannot be attributed to the adapter",
+  "learn_core_adapter": true,
+  "learning_rates": [
+    0.003
+  ],
+  "manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "max_epochs": 1,
+  "memorization_updates": 256,
+  "micro_batch_sizes": {},
+  "min_epochs": 1,
+  "patience": 10,
+  "peak_rss_bytes": 1610612736,
+  "per_fit_wall_seconds": 180,
+  "prepared": "/workspace/scratch/c385a7439f8e/uci-cloud-prepared-v1",
+  "python": "/workspace/scratch/c385a7439f8e/hcsn-study-env/bin/python",
+  "s4_repo": "/workspace/scratch/c385a7439f8e/hcsn-study-runtime-20261110/s4",
+  "seeds": [
+    101
+  ],
+  "source_capsule_sha256": "3c9562e560208f6a291846d79431f5d4e0718d1c695dd98c88c4cbf5dedc9fb5",
+  "stage": "new cloud host; uniform adapter; same 256-update memorization diagnostic",
+  "whole_wall_seconds": 1200,
+  "width": 16,
+  "workers": 1
+}

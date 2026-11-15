@@ -1,0 +1,36 @@
+{
+  "RPC_wall_cost_scope": "Individual exact tool intervals are retained per response; parallel/overlapping intervals are not additive; unknown native observer process cost remains null",
+  "confirmation_E_accessed": false,
+  "direct_read_failures": "Three epoch80 reads and one listing returned Internal error; seed101 outer read absent; two earlier parallel outer responses not persisted after local exec creation failure and remain unknown",
+  "future_status_not_inferred": true,
+  "latest_authoritative_job_status": "active/running at the 00:25:25-started original-job status request, same PID2132804 and invocation",
+  "latest_complete_journal_read": {
+    "bytes": 24917,
+    "identical_to_v8": true,
+    "request_started_utc": "2026-11-11T00:32:33.004Z",
+    "response_finished_utc": "2026-11-11T00:33:29.153Z",
+    "running_dispatch_rows_do_not_prove_current_per_PID_liveness": true,
+    "sha256": "2830d8017b5612319fd24ad816f43595bf1ceff2abb5b124e85a833f8c86b082",
+    "terminal_fit_names": [
+      "hcsn-s101-lr0.003",
+      "hcsn-s211-lr0.003",
+      "hcsn-s307-lr0.003"
+    ]
+  },
+  "numeric_science_admission": "HOLD",
+  "observer_v9": {
+    "distinct_requests": 1,
+    "key": "hcsn-c2-native-journal-suffix-observer-c385-v9",
+    "native_process_cost": null,
+    "outcome": "unknown ACK; both MCP calls timed out; an intermediate output-directory read was absent; registry cursor incomplete then expired",
+    "request_sha256": "acafe981298d55548ad4918f629a653264cd592f1c9f9c85b6a4478041caeb44",
+    "same_request_calls": 2,
+    "source_sha256": "1f16a3902ef57731405739076dd28b2ff285eb81f72bffaed71928a82371239a",
+    "training_updates_requested": 0
+  },
+  "original_training_job": "1a1c74f3308-be2a-75",
+  "schema": "C2-control-state-followup-20261111-v1",
+  "scope": "Append-only control observations after the restored v6-v8 evidence; no new successful observer/model/audit outcome",
+  "second_cloud_disconnect_is_proven_reset": false,
+  "training_key": "hcsn-c2-native-execution-c385-v1"
+}

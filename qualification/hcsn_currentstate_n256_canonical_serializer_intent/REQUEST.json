@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-n256-canonical-serializer-source-intent-v1",
+  "identity": "hcsn-n256-canonical-serializer-source-20261113-c06d-001",
+  "base_commit": "77f344bfd662630e8a93572cd5deba672a8e70b1",
+  "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+  "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "proposed_max_packet_bytes": 201326592,
+  "scope": "freeze canonical full-state serializer and cold-loader source with stdlib small-fixture controls",
+  "n256_serializer_execution_allowed": false,
+  "execution_key": null,
+  "admission_sha256": null,
+  "reserved_idempotency_key": "hcsn-n256-canonical-serializer-20261113-c06d-001",
+  "required_external_freeze": {
+    "serializer_source_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null
+  },
+  "forbidden_in_this_source_attempt": [
+    "N256 dynamic propagation or matrix exponential action",
+    "N256 serializer or cold-loader execution",
+    "candidate or oracle numerical call",
+    "Torch, backward, optimizer, training, or production adoption"
+  ],
+  "largegrid_qualification": false,
+  "all_closed": false
+}

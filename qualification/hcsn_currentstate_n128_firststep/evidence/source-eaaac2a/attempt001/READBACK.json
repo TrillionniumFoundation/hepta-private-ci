@@ -1,0 +1,51 @@
+{
+  "all_closed": false,
+  "artifact": {
+    "compressed_bytes": 166070,
+    "id": 13991419544,
+    "members": 12,
+    "name": "hcsn-n128-firststep-fullstate-attempt001-originals",
+    "sha256": "f13efe22242409b062ed1157eea1694fc321d023dd02d39fe565b67628acf7b7",
+    "uncompressed_member_bytes": 2506972
+  },
+  "calls": {
+    "candidate_dynamic_steps": 1,
+    "candidate_matrix_exponentials": 2,
+    "optimizer_updates": 0,
+    "oracle_dynamic_steps": 1,
+    "oracle_matrix_exponentials": 2,
+    "torch_operations": 0
+  },
+  "capsule": {
+    "bytes": 24363,
+    "cold_container_bytes_exact": true,
+    "sha256": "cde4c6bfb16ca1ce5d505787a6f5b320b8eac9d0370e66c633c39eb9547a2966"
+  },
+  "comparison": {
+    "bitwise_equal": 18528,
+    "candidate_coordinate_sha256": "e0681c0643bbb7819c487049b23e72bcf02f6e4e02ba8001f68a774ca176d51b",
+    "coordinates": 18528,
+    "failures": 0,
+    "max_abs": 0.0,
+    "oracle_coordinate_sha256": "e0681c0643bbb7819c487049b23e72bcf02f6e4e02ba8001f68a774ca176d51b",
+    "tolerance": 2e-12
+  },
+  "job": 131557003849,
+  "job_conclusion": "success",
+  "published_git_blobs": {
+    "decoded_complete_job_log_sha1": "98dcf881317f4b8691cd1a17113e75bc7e0472fe",
+    "original_artifact_zip_sha1": "20a53c09414e87ad5634cab1415b892853b8c52d"
+  },
+  "qualification": false,
+  "resource": {
+    "full_child_tree_cpu_seconds": 0.585433,
+    "full_child_tree_wall_seconds": 0.715671556000018,
+    "host_mem_available_bytes": 15391399936,
+    "reported_child_tree_max_rss_kib": 95008
+  },
+  "run": 43325558446,
+  "scope": "bounded N128 t=0 to .001 first step only",
+  "source_commit": "eaaac2a9bd0d3d637406af00b3cbb0ed0edcc1f0",
+  "status": "PASS_BOUNDED_N128_FIRSTSTEP_ONLY",
+  "unique_execution_key": "hcsn-n128-firststep-fullstate-20261112-c06d-001"
+}

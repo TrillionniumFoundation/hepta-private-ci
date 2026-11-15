@@ -1,0 +1,44 @@
+{
+  "cause": "The preserved old note used two relative filenames that were omitted or renamed when its source context was copied.",
+  "copied": [
+    {
+      "bytes": 11977,
+      "destination": "rare-tail-context/sources/SOURCE-INDEX.json",
+      "sha256": "b43266cf1b4d70af1e65a4e172085864953b7012ed19f0d914938bc40f7dae82",
+      "source": "qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/mathematical-diagnosis/SOURCE-INDEX.json"
+    },
+    {
+      "bytes": 3272,
+      "destination": "rare-tail-context/sources/FOLLOWUP-PLAN.json",
+      "sha256": "0b77e37a948247291d8043d0130c89706f687cecf7c4ceb47676467e9ee33f47",
+      "source": "qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/mathematical-diagnosis/FOLLOWUP-PLAN.json"
+    }
+  ],
+  "cost_scope": "The preserved first integrity child, formatter, spelling and builder receipts retain complete child clocks; enclosing and nested measurements are not added.",
+  "first_check_archive": {
+    "bytes": 103661,
+    "sha256": "6667b504be5d09162dcaa92c8d24ce7d510193fb6950907c1ed0af1d01800636"
+  },
+  "first_check_errors": [
+    {
+      "error": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/rare-tail-context/sources/SOURCE-INDEX.json",
+      "input": "qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/rare-tail-context/sources/fixed-grid-NOTE.md",
+      "target": "SOURCE-INDEX.json"
+    },
+    {
+      "error": "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/rare-tail-context/sources/FOLLOWUP-PLAN.json",
+      "input": "qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/rare-tail-context/sources/fixed-grid-NOTE.md",
+      "target": "FOLLOWUP-PLAN.json"
+    }
+  ],
+  "first_integrity_check_returncode": 1,
+  "model_or_oracle_execution": false,
+  "original_manifest": {
+    "bytes": 13023,
+    "sha256": "272675d4597282720cedddebc389deea3c7d243dfcf377e56ff4acfbdd08b1fb"
+  },
+  "original_manifest_changed": false,
+  "repair": "Append both original files under the unchanged relative names and bind them in a separate manifest. The old note, reviewed new note and all original evidence bytes remain unchanged.",
+  "schema": "hcsn-recovery-relative-link-closure-v1",
+  "validation_rerun_reason": "Verify the two actual omitted-file corrections and the full declared CI evidence gate."
+}

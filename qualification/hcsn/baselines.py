@@ -157,7 +157,7 @@ class PopulationFluxEncoder(nn.Module):
     population state with a marginal risk feature. The numerical grid and
     step size are recorded in every experiment using this encoder.
     """
-    def __init__(self, input_size, hidden_size, *, dt=0.1, recovery=True):
+    def __init__(self, input_size, hidden_size, *, dt=0.1, recovery=True, bins=32):
         super().__init__()
         from .population import PopulationConfig
         from .population_torch import TorchPopulation
@@ -165,7 +165,7 @@ class PopulationFluxEncoder(nn.Module):
         self.input = nn.Linear(input_size, hidden_size)
         self.recurrent = nn.Linear(hidden_size, hidden_size, bias=False)
         self.population = TorchPopulation(PopulationConfig(
-            bins=32, dt=dt, recovery_strength=0.2 if recovery else 0.0))
+            bins=bins, dt=dt, recovery_strength=0.2 if recovery else 0.0))
 
     def forward(self, x, dt=0.1):
         if not math.isclose(dt, self.population.config.dt, rel_tol=0, abs_tol=1e-12):

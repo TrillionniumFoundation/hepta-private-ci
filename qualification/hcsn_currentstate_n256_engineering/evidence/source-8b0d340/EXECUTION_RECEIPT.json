@@ -1,0 +1,36 @@
+{
+  "schema": "hcsn-n256-engineering-resource-execution-receipt-v1",
+  "identity": "hcsn-n256-engineering-resource-static-20261113-c06d-001",
+  "source_commit": "8b0d34034902a699b7a437a4076fbe76ad032368",
+  "job_id": "1a1d39c7d23-392-188",
+  "idempotency_key": "hcsn-n256-engineering-resource-static-20261113-c06d-001",
+  "request_digest": "33eb175c8cbe3c1cabc2d0e86565ebd52acfc024d0e352800d942d57fda8a3f3",
+  "host": "desktop",
+  "terminal_state": "succeeded",
+  "exit_code": 0,
+  "timed_out": false,
+  "cancelled": false,
+  "output_complete": true,
+  "output_durable": true,
+  "audit_sha256": "4ee017d5c418f6288c24fbad6f451e0e78524ad048a9b20d75bf5e626bd28376",
+  "cost": {
+    "wall_seconds": 0.29,
+    "user_cpu_seconds": 0.27,
+    "system_cpu_seconds": 0.01,
+    "max_rss_kib": 23724
+  },
+  "known_work": {
+    "spatial_operator_materializations": 1,
+    "dynamic_runs": 0,
+    "matrix_exponentials": 0,
+    "oracle_numeric_calls": 0,
+    "serializer_numeric_calls": 0,
+    "torch_calls": 0,
+    "backward_calls": 0,
+    "optimizer_steps": 0,
+    "training_runs": 0
+  },
+  "status": "RED_RESOURCE_CAP_HOLD",
+  "largegrid_qualification": false,
+  "all_closed": false
+}

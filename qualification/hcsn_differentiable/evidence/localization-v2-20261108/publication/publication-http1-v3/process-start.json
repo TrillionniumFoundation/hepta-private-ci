@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-"
+    ],
+    "created_unix_ms": 1794138076573,
+    "cwd": null,
+    "env_keys": [
+      "GODEBUG"
+    ],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1baf6759d-12894-1eb1",
+    "idempotency_key": "hcsn-math-closure-20261108-native-publication-http1-v3",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1baf6759d-12894-1eb1",
+    "request_digest": "6e2a0265eaa7d5de51c1577f4ea95c91f58810c4d4565750d7cc43ae726a8776",
+    "request_fingerprint": 7938159929945740766,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1baf6759d-12894-1eb1"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 70721,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1baf6759d-12894-1eb1"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

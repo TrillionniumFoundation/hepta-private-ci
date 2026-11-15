@@ -1,0 +1,29 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "qualification.hcsn_initial_law.test_migration",
+    "-v"
+  ],
+  "python": "3.12.14",
+  "exit_code": 0,
+  "wall_seconds": 5.798380438999629,
+  "child_user_seconds": 3.279525,
+  "child_system_seconds": 0.122429,
+  "child_peak_rss_kib": 24532,
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/initial-law/qualification/hcsn_initial_law/migration.py": "3acf7cc6cc00b6193e92af48f9374dbfe5788ca919b786a18894072fc2a4b8d0",
+    "/workspace/scratch/c06d659c1e72/initial-law/qualification/hcsn_initial_law/test_migration.py": "eabbe854cc57d2191a94f44623cab08c31671a0de09f10afdfc1d0623c217520",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/initial-law/qualification/hcsn_initial_law/migration.py": "3acf7cc6cc00b6193e92af48f9374dbfe5788ca919b786a18894072fc2a4b8d0",
+    "/workspace/scratch/c06d659c1e72/initial-law/qualification/hcsn_initial_law/test_migration.py": "eabbe854cc57d2191a94f44623cab08c31671a0de09f10afdfc1d0623c217520",
+    "/workspace/scratch/c06d659c1e72/joint-dde/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+  },
+  "source_unchanged": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "b41ce50ddc8a34e889bbef55244bd2c74e3c37d7189b2fe7a1d251fd700a1434",
+  "scope": "nine adapter tests only, including graded 256/512 initial-law lifts; no DDE rollout or all-domain gate"
+}

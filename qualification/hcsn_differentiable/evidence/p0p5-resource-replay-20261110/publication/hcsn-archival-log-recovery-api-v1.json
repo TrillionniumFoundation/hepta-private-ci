@@ -1,0 +1,73 @@
+{
+  "schema": "hcsn-archival-log-recovery-publication-v1",
+  "observed_utc": "2026-11-10T19:32:38.252Z",
+  "evidence": {
+    "stages": 8,
+    "branch": "codex/hcsn-evidence-api-20261110-c385",
+    "remote_head": "acb0e0894641b733568b8cd45efb1fe3d6c5e4f1",
+    "tree": "cbaf567ce25fb0289ee9a87a38a48e741b05f93f",
+    "verified": true
+  },
+  "protocol": {
+    "branch": "codex/hcsn-p2-protocol-api-20261110-c385",
+    "local_commit": "ee68bf135e3fbcf96a64528f1e3bd673b7c2ed0c",
+    "remote_commit": "404bedfcf219a55931be99a489e54013d547feaf",
+    "tree": "728edee63510ee28f3a057aa987b21eb3079a3b6",
+    "parents": [
+      "88844c8fbceb5c0c68267bd29b727bf66477587c",
+      "acb0e0894641b733568b8cd45efb1fe3d6c5e4f1"
+    ],
+    "full_tree_identical": true,
+    "ref_readback": {
+      "ref": "refs/heads/codex/hcsn-p2-protocol-api-20261110-c385",
+      "node_id": "REF_kwDOTrgxoNoAM3JlZnMvaGVhZHMvY29kZXgvaGNzbi1wMi1wcm90b2NvbC1hcGktMjAyNjExMTAtYzM4NQ",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/hcsn-p2-protocol-api-20261110-c385",
+      "object": {
+        "sha": "404bedfcf219a55931be99a489e54013d547feaf",
+        "type": "commit",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/404bedfcf219a55931be99a489e54013d547feaf"
+      }
+    },
+    "commit_readback": {
+      "sha": "404bedfcf219a55931be99a489e54013d547feaf",
+      "node_id": "C_kwDOTrgxoNoAKDQwNGJlZGZjZjIxOWE1NTkzMWJlOTlhNDg5ZTU0MDEzZDU0N2ZlYWY",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/404bedfcf219a55931be99a489e54013d547feaf",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/404bedfcf219a55931be99a489e54013d547feaf",
+      "author": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-10T19:32:37Z"
+      },
+      "committer": {
+        "name": "Qian QI",
+        "email": "102159240+ProfHepta@users.noreply.github.com",
+        "date": "2026-11-10T19:32:37Z"
+      },
+      "tree": {
+        "sha": "728edee63510ee28f3a057aa987b21eb3079a3b6",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/728edee63510ee28f3a057aa987b21eb3079a3b6"
+      },
+      "message": "Merge exact archival log recovery into the protocol draft",
+      "parents": [
+        {
+          "sha": "88844c8fbceb5c0c68267bd29b727bf66477587c",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/88844c8fbceb5c0c68267bd29b727bf66477587c",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/88844c8fbceb5c0c68267bd29b727bf66477587c"
+        },
+        {
+          "sha": "acb0e0894641b733568b8cd45efb1fe3d6c5e4f1",
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/acb0e0894641b733568b8cd45efb1fe3d6c5e4f1",
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/acb0e0894641b733568b8cd45efb1fe3d6c5e4f1"
+        }
+      ],
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "verified": true
+  }
+}

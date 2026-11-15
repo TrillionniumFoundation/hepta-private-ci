@@ -1,0 +1,167 @@
+{
+  "actual_remote_fit_count": null,
+  "classification": {
+    "accepted_provider_ack": false,
+    "accepted_provider_identity": false,
+    "actual_remote_execution_stopped": null,
+    "actual_remote_fit_count": null,
+    "actual_remote_object_created": null,
+    "actual_remote_optimizer_updates": null,
+    "credited_formal_fits": 0,
+    "credited_formal_optimizer_updates": 0,
+    "deployment_outcome": "HOLD",
+    "formal_owner_status": "HALTED",
+    "local_ever_claimed_fit_count": 0,
+    "local_fit_state_counts": {
+      "RESERVED": 20,
+      "UNSTARTED": 140
+    },
+    "native_owner_exit_code": 1,
+    "native_readonly_reconcile_exit_code": 1,
+    "no_automatic_owner_resume": true,
+    "original_remote_effect_unknown": true,
+    "original_remote_submission_state": "MAY_HAVE_BEEN_SENT",
+    "original_submission_state": "UNKNOWN",
+    "provider_request_bytes_unchanged_after_reconcile": true,
+    "readonly_false_scope": "remote_effect_unknown=false belongs to the later GET only; it does not clear the earlier SaveKernel uncertainty.",
+    "readonly_reconcile_result": {
+      "api_error_code": 403,
+      "api_error_status": "PERMISSION_DENIED",
+      "denied_permission": "kernelSessions.get",
+      "http_status": 403,
+      "remote_effect_unknown": false,
+      "rpc_action": "get"
+    },
+    "recorded_mutating_submit_attempts": 1,
+    "resolution_requirements": "The original owner rejects HALTED on entry. Read-only GET403 is not permission to replay, release reservations, or infer absence/stoppage. A future continuation needs an explicitly reviewed prospective route and authoritative resolution of prior effects; no such route is executed or granted here.",
+    "root_cause": "The retained submit error identifies INVALID_ARGUMENT but no offending field or server-side execution outcome. No narrower cause is established.",
+    "save_kernel_result": {
+      "api_error_code": 400,
+      "api_error_status": "INVALID_ARGUMENT",
+      "http_status": 400,
+      "remote_effect_unknown": true,
+      "rpc_action": "submit"
+    },
+    "scientific_outcome": "HOLD",
+    "zero_credit_scope": "Zero accepted completion credit and zero local ever-claimed entries do not establish zero remote fits or updates."
+  },
+  "completion_credit_for_hepta_ndu": 0,
+  "completion_credit_for_original_170_runs": 0,
+  "costs": {
+    "all_attempt_costs_complete": false,
+    "full_physical_energy_joules": null,
+    "interval_scope": "Supervisor timestamps include local execution overhead; adapter interval is nested in owner interval. They are not additive.",
+    "owner_supervisor_start_to_exit_seconds": 5.753,
+    "readonly_reconcile_supervisor_start_to_exit_seconds": 3.014,
+    "remote_compute_charges": null,
+    "remote_execution_wall_seconds": null,
+    "separate_launch_unknown_diagnostic_cost": null,
+    "submit_adapter_measured_wall_seconds": 5.51212338701589
+  },
+  "credited_formal_fits": 0,
+  "evidence_sha256": {
+    "native_owner_admission": "5dea63beb5cb850a59a07405ee03e5cda2de9478d9ff72cb4a584b48401324da",
+    "native_owner_terminal": "e86b6fe8f502247e30d6b1d8127d9cee1da926bc58954db7dd0f9803a66eb233",
+    "owner_halted_event": "2451e57c9255929c5c074227bcac05b4f0669100a0cf865b5a4734a50afdbf57",
+    "owner_reserved_event": "ca2833f288cdb030674cd189225b32072c3fc1e1f4a3ec04723d8b89150bc724",
+    "provider_request_before_and_after": "7243fc1f9b99cc0d9064185fb775b1f9d9b4fbeb430fd045979cf53b8ef26646",
+    "provider_submit_event": "959a2c08c6e18c5d8ce748859d801e8c13b8926f72836e7967ea428db010c5ae",
+    "provider_submit_failure_event": "4545ce1389da22d08aad6b16309f04629f35dd68e0964567e2fe52e72cc0a445",
+    "readonly_reconcile_stdout": "02e58a48f60f4f86e19f97cab3fb648a69266ee936cbbe0b9891842fb6b80dee",
+    "readonly_reconcile_terminal": "77bbeff219e24f697973b559b7def9b3442b2993f784f47c5a4f55b91070819d",
+    "submit_adapter_record": "f341435fc09777ee686ce97e750d89276a1908af5b4cd58529840a127e504a19",
+    "submitted_payload": "275c511e987354c973274855782cf49b4579ca598d2f43b219073c87b3c98861"
+  },
+  "plan_sha256": "e145972d3ea13f8259840498444614d41b8c41b30e99c370ac8032007edf6c15",
+  "prior_frozen_plan_bytes_unchanged": true,
+  "prior_qualification_remains_valid_within_its_scope": true,
+  "private_review_sha256": "519828044719f6044ecb470d07461a34dd708959eb0750163aa836e1ddfe8d8d",
+  "public_projection_note": "Root appended the exact reviewer-scope and effect fields from the bound private review; the upstream public projection is retained by its SHA-256.",
+  "retained_separate_diagnostics": [
+    {
+      "cause_observed": "Python SyntaxError before inventory logic",
+      "exit_code": 1,
+      "is_formal_submit": false,
+      "kind": "readonly_local_inventory_v1",
+      "native_state": "failed"
+    },
+    {
+      "costs_complete": false,
+      "is_formal_submit": false,
+      "kind": "readonly_local_inventory_v2",
+      "later_native_job_directory_unavailable": true,
+      "native_state": "launch_unknown",
+      "terminal_state_proved": false
+    }
+  ],
+  "reviewer_effects": {
+    "existing_ledgers_modified": 0,
+    "frozen_sources_modified": 0,
+    "git_calls": 0,
+    "model_runs": 0,
+    "native_calls": 0,
+    "provider_calls": 0
+  },
+  "reviewer_scope": "Read-only review of retained actual runtime bytes, source contracts, and native witnesses. Reviewer did not operate the failed owner or reconciliation; reviewer contributed earlier qualification/control design, so this is operator-independent evidence review, not blind source-author independence.",
+  "schema": "hcsn-cpu-formal-first-halt-public-review-v1",
+  "scope": "Append-only account of an actual formal launch failure, not a numerical rerun, task result, replacement qualification, or authorization to replay.",
+  "source_map_sha256": "6facc00162b24fcc7e3fc3267a891650b178d96598618220c73c03bf27296bfa",
+  "source_pins_count": 93,
+  "source_references": {
+    "installed_adapter": {
+      "sections": {
+        "canonical_event_digest": [
+          30,
+          35
+        ],
+        "existing_request_never_replayed": [
+          341,
+          350
+        ],
+        "read_only_resume_denial_propagates": [
+          453,
+          503
+        ],
+        "submit_uncertainty": [
+          382,
+          398
+        ]
+      },
+      "sha256": "8dc1f9f5c7b54ed40a20701fdf299359200b13b5472dcce335afa8fc8ecbd304"
+    },
+    "owner": {
+      "path": "qualification/hcsn_regenerative/kaggle_execution_v1/native_owner.py",
+      "sections": {
+        "failure_preserves_reservations": [
+          544,
+          547
+        ],
+        "reject_halted": [
+          505,
+          506
+        ],
+        "release_requires_capsule": [
+          197,
+          200
+        ],
+        "reserve_once": [
+          365,
+          398
+        ]
+      },
+      "sha256": "cd9e30bc89b525f64722a489515ff0086352618e5b8d9517f8d47d7ce2336b68"
+    },
+    "provider": {
+      "path": "qualification/hcsn_regenerative/kaggle_execution_v1/kaggle_provider.py",
+      "sections": {
+        "one_call_and_error": [
+          90,
+          120
+        ]
+      },
+      "sha256": "78d7b02981a8e0253ed0c49f04ee2eb143107eac0b4e4708bdaf53958f4650e7"
+    }
+  },
+  "status": "ACTUAL_FAILURE_CLASSIFICATION_VERIFIED",
+  "upstream_public_projection_sha256": "f5a8ad7af6cfce6fef833500750419014b46a0995198373cec335d5482387a7a"
+}

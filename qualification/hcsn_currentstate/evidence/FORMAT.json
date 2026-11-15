@@ -1,0 +1,50 @@
+{
+  "command": "/workspace/scratch/c06d659c1e72/hcsn-format-tools/bin/just --justfile ../justfile fmt",
+  "cwd": "currentstate-packets/codex-rs",
+  "first_attempt": {
+    "exit_code": 1,
+    "reason": "Sparse formatter support lacked scripts/pyproject.toml and scripts/uv.lock; ruff missing",
+    "observed_output": "==> Python scripts formatter failed\n$ uv run --frozen --project scripts ruff format ./scripts/verify_hcsn_currentstate_retained.py\nerror: Failed to spawn: ruff\n  cause: No such file or directory (os error 2)\nFormatting failed: Python scripts\nerror: Recipe `fmt` failed on line 51 with exit code 1\n"
+  },
+  "remediation": {
+    "repository_support_commit": "118764f4a8d4ecbd52fcf1bc5ed792b30117ea82",
+    "fetched_files": [
+      "scripts/pyproject.toml",
+      "scripts/uv.lock"
+    ],
+    "command": "uv sync --frozen --project scripts",
+    "exit_code": 0,
+    "installed": "ruff==0.15.13",
+    "repository_dependency_changed": false
+  },
+  "final_attempt": {
+    "chunk_id": "b6f87b",
+    "wall_time_seconds": 0.203636955,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "sha256_before": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149",
+    "scripts/verify_hcsn_currentstate_retained.py": "f90231ffd8bb616ea5d2e3a15521fb1bac7031be26888fe77f6fa9998a98f6c1"
+  },
+  "sha256_after": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149",
+    "scripts/verify_hcsn_currentstate_retained.py": "19a20a14944b3874c42644e7f70d1be5b465b6b8abde68b0897695dda9350b3f"
+  },
+  "frozen_math_sources_unchanged": true,
+  "numerical_runs_after_formatter": 0,
+  "scope": "Formatter owns the new scripts verifier; qualification Python remains outside configured formatter ownership. No Rust changed."
+}

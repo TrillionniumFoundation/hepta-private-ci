@@ -1,0 +1,57 @@
+{
+  "created_utc": "2026-11-10T18:56:35.595049+00:00",
+  "finding": "MATH-01",
+  "full_prefix_reaudit_performed": false,
+  "mathematical_assessment": "The fixed continuum model and sigma>0 condition are explicit, and automatic transfer of long-run escape/recurrence to the finite returning-tail QPR chain is excluded. No finite-chain rate is asserted.",
+  "model_or_native_runtime_read": false,
+  "new_CURRENT": {
+    "bytes": 29900,
+    "sha256": "1ac67e067a180a9c6231b569b115bd8f1f4a4b98ba454ef726640d34703cf0f8"
+  },
+  "new_CURRENT_lines": 448,
+  "new_paragraph": "For the fixed continuum diffusion/regenerative reference with `sigma > 0`\nand a fixed positive reset distance, negative drift has finite mean cycle\n`d+x_r/(-mu)`. Zero drift hits almost surely but has infinite mean cycle time.\nPositive drift has a nonzero escape probability and a finite total number of\nfuture events almost surely. The constructor allows crossing zero; this does\nnot qualify a stationary firing-rate objective or a trainable domain.\nThese continuum asymptotics do not qualify the finite QPR chain: its fixed\nreturning-tail reconstruction can change long-run recurrence and event rates.\n",
+  "numerical_experiment_performed": false,
+  "old_CURRENT_sha256": "05383a803ea62d839dc77c612bcc722332c51978997436005c34818adfcbe55f",
+  "old_paragraph": "With fixed positive reset distance, negative drift has finite mean cycle\n`d+x_r/(-mu)`. Zero drift hits almost surely but has infinite mean cycle time.\nPositive drift has a nonzero escape probability and a finite total number of\nfuture events almost surely. The constructor allows crossing zero; this does\nnot qualify a stationary firing-rate objective or a trainable domain.\n",
+  "only_declared_paragraph_changed": true,
+  "prior_review": {
+    "bytes": 357406,
+    "sha256": "2e16dc1f537ee3c4b3b9bca113d1f18036dfc3fc3b28cbbf0d78b45150164599"
+  },
+  "reverse_exact_paragraph_replacement_reconstructs_old_sha256": true,
+  "schema": "CURRENT-continuum-scope-closure-v1",
+  "scientific_admission": "HOLD",
+  "scope": "Only CURRENT paragraph delta and unchanged companion documents/top manifest/math inputs; previous complete curation report remains immutable. Newly arrived terminal outcomes/archives are outside this closure.",
+  "status": "closed_by_narrow_documentation_change",
+  "training_performed": false,
+  "unchanged_companion_inputs": {
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/proposals/localization-v3/README.md": {
+      "bytes": 16537,
+      "sha256": "1d329eb632407fc7dd2161cc2b202ffe7efadd3a74adb0f31d353fa5fc04024f"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/MODEL.md": {
+      "bytes": 26963,
+      "sha256": "8919ff5f44af1e8929f2a6838d765f8e0333c807190834f6a957db8a142b611b"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/contract.py": {
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json": {
+      "bytes": 80267,
+      "sha256": "bc8721b37d4a69c28a25a028dd6375ebbeaaa41111bafc97a22b7239609f5bc6"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/README.md": {
+      "bytes": 23706,
+      "sha256": "9047c530ec6d837362b10befa6d2ccb35f203c7135113dc6d1db796220cffb38"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md": {
+      "bytes": 4989,
+      "sha256": "6e95b42e76af344cc3f1ea0ae297af32a12b1167d25c42bf86107a55153691c3"
+    },
+    "/workspace/scratch/c385a7439f8e/hcsn-repo/qualification/hcsn_differentiable/operator.py": {
+      "bytes": 25180,
+      "sha256": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"
+    }
+  }
+}

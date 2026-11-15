@@ -1,0 +1,69 @@
+{
+  "additive_total": null,
+  "archive": {
+    "bytes": 77859,
+    "sha256": "cab12a2f8f73660e3436e68c2dc84f072f1be857dc5513e8f956c995f2e7d743"
+  },
+  "artifact_id": 13797877354,
+  "attempt": 1,
+  "billed_currency": null,
+  "complete_hosted_job_CPU_seconds": null,
+  "complete_hosted_job_wall_seconds": null,
+  "disposition": "Known local fixture timings were retained in the artifact but not individually indexed by the frozen21-row ledger. This separate addendum indexes them without changing the frozen snapshot or claiming complete costs.",
+  "energy_joules": null,
+  "members": [
+    {
+      "bytes": 85633,
+      "measurements": {
+        "peak_rss_native": 644900,
+        "peak_rss_native_unit": "KiB",
+        "process_cpu_seconds": 8.124293352999999,
+        "wall_seconds": 8.136141367999997
+      },
+      "member": "qualification.json",
+      "scope": "Producer main qualification interval, after imports. Reported process CPU is its sampled interval; RSS is process high-water mark. Not whole hosted job, billing, or artifact-download cost.",
+      "sha256": "4d28861414e63cc995687d47ba33144820a35d52b9d7808c62ecdd5d191e31a2"
+    },
+    {
+      "bytes": 32793,
+      "measurements": {
+        "wall_seconds": 6.990235205000005
+      },
+      "member": "error-budget.json",
+      "scope": "Producer historical error-budget fixture interval; no complete process exit CPU or hosted job total is inferred.",
+      "sha256": "5993c1d6eea9e2c8d3570cc75155042b5c1017fe41f10d9394f9bffb8522e810"
+    },
+    {
+      "bytes": 7802,
+      "measurements": {
+        "total_wall_seconds": 0.04448069500000429
+      },
+      "member": "qvi-oracle.json",
+      "scope": "Small independent QVI fixture report timer; not neural free-boundary task gain or a full hosted job duration.",
+      "sha256": "6cc1803152f23398bf56b7e62cae30b15cca544a850a7bd41b98737566e621dd"
+    },
+    {
+      "bytes": 593,
+      "measurements": {
+        "tests": 3,
+        "unittest_reported_seconds": 0.119
+      },
+      "member": "qvi-tests.log",
+      "scope": "Unittest internal elapsed time, excludes startup/import/teardown outside its runner; distinct from the oracle report, both nested in the hosted job.",
+      "sha256": "c5515796f35f2cafadbefe42bf62620b0ed2916c84142fd368e0dea4b01490ce"
+    },
+    {
+      "bytes": 665,
+      "measurements": {
+        "tests": 3,
+        "unittest_reported_seconds": 0.003
+      },
+      "member": "memory-controls-tests.log",
+      "scope": "Unittest internal elapsed time, not complete process or actual memory-task training.",
+      "sha256": "cda32e2f5a92881bb89896d503212470b6b86de24934de8addf3cd0aabe55934"
+    }
+  ],
+  "run_id": 42890048946,
+  "schema": "exact-hosted-artifact-local-timing-addendum-v1",
+  "scope": "Extracted existing artifact fields only. All fixture timers are nested within the hosted job and separate from archive download/collection. No CI or oracle rerun."
+}

@@ -1,0 +1,23 @@
+test_frozen_policy_lineage (unittest.loader._FailedTest.test_frozen_policy_lineage) ... ERROR
+
+======================================================================
+ERROR: test_frozen_policy_lineage (unittest.loader._FailedTest.test_frozen_policy_lineage)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_frozen_policy_lineage
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/unittest/loader.py", line 137, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py", line 7, in <module>
+    from c2_program_freeze import REQUIRED_FILES, collect_manifest
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/c2_program_freeze.py", line 14, in <module>
+    from c2_boundary import Ineligible, require
+  File "/home/qian-qi/hcsn-p0p5-frozen-policy-r13-20261111/qualification/hcsn_differentiable/c2_successor_v1/c2_boundary.py", line 10, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

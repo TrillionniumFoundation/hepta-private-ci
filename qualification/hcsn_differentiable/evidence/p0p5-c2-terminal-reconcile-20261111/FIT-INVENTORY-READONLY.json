@@ -1,0 +1,90 @@
+{
+  "schema": "hcsn-original-c2-fits-readonly-inventory-v1",
+  "observation_scope": "heptaruntime desktop, same read-only investigation after 2026-11-11T04:33:07Z",
+  "original_job_id": "1a1c74f3308-be2a-75",
+  "original_fits_root": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits",
+  "method": "Read-only ls/stat for all six fit directories; h_file_info full SHA256 for eight existing files. No model load, training, replay or checkpoint mutation.",
+  "files": [
+    {
+      "candidate": "hcsn-s101-lr0.001",
+      "file": "result.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.001/result.json",
+      "size_bytes": 844446,
+      "sha256": "829efa71d908cabf94e7f73f541871b1726a94673275af7783f8bad8558c0eb0"
+    },
+    {
+      "candidate": "hcsn-s101-lr0.003",
+      "file": "result.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/result.json",
+      "size_bytes": 578890,
+      "sha256": "6bb4fd3fce8022816a605b0043925fa4a04c331f998582adefa11754d4792794"
+    },
+    {
+      "candidate": "hcsn-s211-lr0.003",
+      "file": "result.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/result.json",
+      "size_bytes": 360283,
+      "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+    },
+    {
+      "candidate": "hcsn-s307-lr0.003",
+      "file": "result.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/result.json",
+      "size_bytes": 436682,
+      "sha256": "720e09baa3bb77458c17af00025b53cfd93ee336ce6a4f6e23d7d776251bcd7a"
+    },
+    {
+      "candidate": "hcsn-s211-lr0.001",
+      "file": "interrupted.pt",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/interrupted.pt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "candidate": "hcsn-s307-lr0.001",
+      "file": "interrupted.pt",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/interrupted.pt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "candidate": "hcsn-s211-lr0.001",
+      "file": "best.pt",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/best.pt",
+      "size_bytes": 450552,
+      "sha256": "a83e259366c76f1f3856c4be1291d2e842d32b283c661f656ae44fd156b37b3c"
+    },
+    {
+      "candidate": "hcsn-s307-lr0.001",
+      "file": "best.pt",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/best.pt",
+      "size_bytes": 450552,
+      "sha256": "14a9c527bf87ad6524c771ab7da5a1ccf32723cd1f2fc6c7d8f6d8797d1b2ed9"
+    }
+  ],
+  "observed_missing_files": [
+    {
+      "candidate": "hcsn-s211-lr0.001",
+      "file": "result.json"
+    },
+    {
+      "candidate": "hcsn-s307-lr0.001",
+      "file": "result.json"
+    }
+  ],
+  "result_json_present_candidates": [
+    "hcsn-s101-lr0.001",
+    "hcsn-s101-lr0.003",
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.003"
+  ],
+  "zero_byte_interrupted_candidates": [
+    "hcsn-s211-lr0.001",
+    "hcsn-s307-lr0.001"
+  ],
+  "interpretation": "The zero-byte interrupted.pt files are not valid serialized checkpoints. Separate existing best.pt objects do not themselves prove the latest interrupted state, a completed attempt, or independent B evaluation. Four producer result.json objects are only source files, not independent scientific validation.",
+  "all_six_terminal_established": false,
+  "all_six_independent_replay": false,
+  "qualification": "HOLD_NO_GO",
+  "new_training_started": false
+}

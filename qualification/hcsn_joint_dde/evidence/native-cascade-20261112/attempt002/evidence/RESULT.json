@@ -1,0 +1,49 @@
+{
+  "child_cpu_seconds": 7.711197,
+  "child_peak_rss_kib": 658184,
+  "command": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "qualification.hcsn_joint_dde.test_torch_cascade",
+    "-v"
+  ],
+  "complete_no_skip_pass": true,
+  "failure": null,
+  "full_hcsn_qualification": false,
+  "graded_mesh_gradients": false,
+  "independent_future": 0,
+  "network_training": false,
+  "production_qualified": false,
+  "returncode": 0,
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.3",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cu128"
+  },
+  "schema": "hcsn-torch-cascade-checks-v1",
+  "scope": "finite uniform-mesh CPU FP64 autograd research oracle",
+  "source_after": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_joint_dde/run_cascade_checks.py": "8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6",
+    "qualification/hcsn_joint_dde/test_torch_cascade.py": "fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb",
+    "qualification/hcsn_joint_dde/torch_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773"
+  },
+  "source_before": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_joint_dde/run_cascade_checks.py": "8d1200074f2ca2ea191ea3b997d421e1539310e401096632d4921099bd3c8db6",
+    "qualification/hcsn_joint_dde/test_torch_cascade.py": "fb79f47c547d3dc85497bd664157a76e2bef1ceef27e7130a6fe9e16ec2bf8eb",
+    "qualification/hcsn_joint_dde/torch_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773"
+  },
+  "source_unchanged": true,
+  "stderr_sha256": "f2da49076cebab4edda5c963871885c4f699112707f48cbdc3d58d8055cc9e02",
+  "stdout_sha256": "60f10d0c3468f10e14639d6c1b4d411c8c55b9bed8a16720d04bfd5a2e76be6d",
+  "tests": 6,
+  "wall_seconds": 10.61667998903431
+}

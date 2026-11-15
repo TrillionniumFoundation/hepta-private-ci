@@ -1,0 +1,173 @@
+{
+  "recorded_at_utc": "2026-11-10 16:07:35 UTC",
+  "scope": "First page of pull-request-triggered workflow runs from connector; not an exhaustive all-CI assertion",
+  "results": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "stage": "p1",
+        "commit": "bad0eb639737c5b15a6e2df34cbd682c831e9b9e",
+        "runs": [
+          {
+            "id": 42827955790,
+            "name": "blocking-ci",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 34870,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955790/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955790/logs",
+            "workflow_id": 336746106
+          },
+          {
+            "id": 42827955505,
+            "name": "v8-canary",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 34689,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955505/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955505/logs",
+            "workflow_id": 336746138
+          },
+          {
+            "id": 42827955616,
+            "name": "HCSN differentiable qualification",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 30,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955616/logs",
+            "workflow_id": 411141452
+          },
+          {
+            "id": 42827955434,
+            "name": "Hepta architecture convergence",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 21684,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955434/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42827955434/logs",
+            "workflow_id": 344551465
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "stage": "p2_original",
+        "commit": "3e49eda398778220fc45604908aaedb9bca9f1a0",
+        "runs": [
+          {
+            "id": 42832804343,
+            "name": "Hepta architecture convergence",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 21708,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804343/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804343/logs",
+            "workflow_id": 344551465
+          },
+          {
+            "id": 42832804387,
+            "name": "blocking-ci",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 34894,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804387/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832804387/logs",
+            "workflow_id": 336746106
+          },
+          {
+            "id": 42832803987,
+            "name": "v8-canary",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 34713,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832803987/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42832803987/logs",
+            "workflow_id": 336746138
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "stage": "p2_v8",
+        "commit": "18ce50e1a26d6c639c735442e2cca20443bab848",
+        "runs": [
+          {
+            "id": 42849594011,
+            "name": "Hepta architecture convergence",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 21746,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849594011/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849594011/logs",
+            "workflow_id": 344551465
+          },
+          {
+            "id": 42849594165,
+            "name": "blocking-ci",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 34932,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849594165/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849594165/logs",
+            "workflow_id": 336746106
+          },
+          {
+            "id": 42849594302,
+            "name": "v8-canary",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 34751,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849594302/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849594302/logs",
+            "workflow_id": 336746138
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "stage": "p2_c1",
+        "commit": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+        "runs": [
+          {
+            "id": 42849615711,
+            "name": "Hepta architecture convergence",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 21749,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849615711/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849615711/logs",
+            "workflow_id": 344551465
+          },
+          {
+            "id": 42849616115,
+            "name": "blocking-ci",
+            "status": "queued",
+            "conclusion": null,
+            "run_number": 34935,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849616115/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849616115/logs",
+            "workflow_id": 336746106
+          },
+          {
+            "id": 42849615492,
+            "name": "v8-canary",
+            "status": "completed",
+            "conclusion": "success",
+            "run_number": 34754,
+            "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849615492/jobs",
+            "logs_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42849615492/logs",
+            "workflow_id": 336746138
+          }
+        ]
+      }
+    }
+  ]
+}
+

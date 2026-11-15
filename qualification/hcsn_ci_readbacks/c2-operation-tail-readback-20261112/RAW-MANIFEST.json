@@ -1,0 +1,20 @@
+{
+  "schema": "hcsn-c2-operation-tail-raw-manifest-v1",
+  "base_pr": 6255,
+  "base_commit": "62b7773739eb061531a02ebc76f76539b46931ed",
+  "operation_id": "185441d37ac6e5e976f67a3a142304d21f618234183b12ef17c1152a15d57f7d",
+  "files": [
+    {"path": "raw/operation-result-page-000000.json", "bytes": 22535, "sha256": "10c60b5c977b38d6dcd266f8ac436ad3548fb6c02ebeb2adb1eab113955df7de"},
+    {"path": "raw/operation-result-page-016384.json", "bytes": 22539, "sha256": "68cb2f8b3d30d69a3a6fea18cea98d281e1caa43a1f6e1f8eb29233b31a2b43b"},
+    {"path": "raw/operation-result-page-032768.json", "bytes": 22539, "sha256": "8cd5d69eab1bbe606b00da1aab208e1fa05a4fb6f12f7db30bbbc6b02c2219cf"},
+    {"path": "raw/operation-result-page-049152.json", "bytes": 22539, "sha256": "73b403e2686bca750c84cde88be5df13aa3d9c4f67755143c927357fc8727346"},
+    {"path": "raw/operation-result-page-065536.json", "bytes": 22539, "sha256": "ac27424346301da74245885a0c13c2d171ef7a982ff042ae3680c186c26fdeee"},
+    {"path": "raw/operation-result-page-081920.json", "bytes": 8518, "sha256": "68c3df0242750dbdee73eb85474a1477cfe7a7d2b736757280facfce98fdb0a4"},
+    {"path": "raw/zip-tail-offset-11331623.b64", "bytes": 87385, "sha256": "c5729b8b771b8c44d48c73a32263d72ee6510feea128fa1b256b739246430b8c"}
+  ],
+  "derived_sources": [
+    {"path": "inspect_operation_tail.py", "bytes": 8924, "sha256": "af02273cb5e424d49ad534a938994c2e82434e7d97860b90496c8d4be5722d0e"},
+    {"path": "test_inspect_operation_tail.py", "bytes": 693, "sha256": "9f0fa72bbd2a89dfdd641d04608c9f7bf84c50cd2a2a76e0edc77deb9cb2b0ab"}
+  ],
+  "recovery": "Sort the six operation-result pages by offset, base64-decode each data_base64 independently, concatenate, and verify the 87789-byte operation SHA. Parse the resulting CallToolResult JSON, then decode its nested data_base64 to recover the exact 65536-byte ZIP tail."
+}

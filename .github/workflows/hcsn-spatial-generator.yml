@@ -1,0 +1,33 @@
+name: HCSN killed spatial generator research
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_boundary_audit/spatial_generator.py
+      - qualification/hcsn_boundary_audit/test_spatial_generator.py
+      - qualification/hcsn_boundary_audit/probe_spatial_generator.py
+      - .github/workflows/hcsn-spatial-generator.yml
+permissions:
+  contents: read
+jobs:
+  spatial-primitive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - run: python -B -m unittest qualification.hcsn_boundary_audit.test_spatial_generator -v
+      - run: python -B -m qualification.hcsn_boundary_audit.probe_spatial_generator --output "$RUNNER_TEMP/spatial/RESULT.json"
+      - run: git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: killed-spatial-generator-research
+          path: ${{ runner.temp }}/spatial

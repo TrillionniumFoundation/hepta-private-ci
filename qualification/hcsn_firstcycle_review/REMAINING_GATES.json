@@ -1,0 +1,41 @@
+{
+  "schema": "hcsn-retained-firstcycle-math-remaining-v1",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "new_models": 0,
+  "new_spatial_rollouts": 0,
+  "new_dde_runs": 0,
+  "new_training_calls": 0,
+  "mesh_changes": 0,
+  "retained_head": "49db2c4ae2b10077d261896979f8df9e53f69822",
+  "reference_source_freeze": "14cefc8404a057f897c371619c50d780fa185942",
+  "bounded_exposed_diagnostics": {
+    "retained_runs": 4,
+    "query_rows": 24,
+    "unique_reference_cases": 12,
+    "oracle_precisions": [
+      80,
+      120
+    ],
+    "horizon_max": 0.16,
+    "delay": 0.2,
+    "phase_width": 0.025,
+    "relative_reference_floor": 1e-12,
+    "total_phase_does_not_certify_rare_components": true,
+    "near800_negative_retained": true
+  },
+  "unknown_or_open": [
+    "prospective risk admission",
+    "rare metrics below unchanged reference floor",
+    "interval-certified reference bounds",
+    "complete physical parameter box",
+    "all initial laws and whole original filtered state trajectories",
+    "long-horizon delayed renewal for new profiles",
+    "new-profile physical gradients and training",
+    "strong budget-matched baselines and future independent sources",
+    "real asynchronous tasks",
+    "complete compute/storage/energy cost",
+    "default Cell or production adoption"
+  ],
+  "old_qualifications_not_transferred": true
+}

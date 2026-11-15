@@ -1,0 +1,41 @@
+{
+  "host": "desktop",
+  "idempotency_key": "hcsn-initial-amplitude-native-20261112-c06d-v2",
+  "source_commit": "372d84ed9a04cab0e1d873f9cdd534a33689b485",
+  "remote_root": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002",
+  "python": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+  "command_git_blob": "09df3fcdc8c5aa0d11939ac9687bc979191a38ad",
+  "bundle_git_blob": "7315e77af1d41a178720b37f03dada7cd80990be",
+  "bundle_sha256": "424407ffbbc484768eefa1898c2599c6276a16cd02d8f6e9e98a5ba3c6ab45e8",
+  "bundle_size": 130888,
+  "timeout_seconds": 600,
+  "child_timeout_seconds": 300,
+  "environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "requested_optimizer_calls": 0,
+  "full_network_training": false,
+  "source_precommitted": true,
+  "mutations": "New unique isolated research directory only; original C2 directories untouched",
+  "expected_checks": [
+    "Two fixed-physics initial-amplitude VJPs/positive-amplitude projected gradchecks",
+    "Unmodified #6150 uniform native graph oracle",
+    "Client normalized softmax and probability-times-mark graph",
+    "All four direct inputs normal/unsafe-data mutation guards",
+    "Old physical-only trainable-prior refusal",
+    "Complete source/input/call/resource receipts"
+  ],
+  "transport": {
+    "tool": "binary_write",
+    "host": "desktop",
+    "path": "/home/qian-qi/hcsn-initial-amplitude-20261112-c06d-002.bundle.tar.gz",
+    "expected_version": "absent",
+    "decoded_size": 130888,
+    "sha256": "424407ffbbc484768eefa1898c2599c6276a16cd02d8f6e9e98a5ba3c6ab45e8"
+  },
+  "command_source_bytes": 3739,
+  "previous_request": "native001 rejected INVALID_ARGUMENT shell source exceeds 64KiB; no job id or successful execution observed."
+}

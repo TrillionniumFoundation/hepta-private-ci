@@ -1,0 +1,42 @@
+{
+  "schema": "hcsn-migration-binding-repair-v1",
+  "base_commit": "7337b31059459cd14ba3b032f6dc1c758fe49d40",
+  "red": {
+    "tests": 4,
+    "failures": 3,
+    "exit": 1
+  },
+  "green": {
+    "tests": 19,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "exit": 0
+  },
+  "source_before_format": {
+    "qualification/hcsn_joint_dde/graded_migration.py": {
+      "sha256": "11197373cdb4716e8ec510d8142132aa1ac59048d31737b7512977a9ea095b82",
+      "ast": "7101f9c3b43dc622d0eaf75339cf3bbb08c51ecfc58f8807973bfd9686a63dad"
+    },
+    "qualification/hcsn_joint_dde/test_migration_binding.py": {
+      "sha256": "9e394e206cdc1a7e4884e33032785f16f6de28d3dd97ccc720eae7a5b305fb5d",
+      "ast": "bff425e2840dc7fd7985a3b04402239e43bd6f950a1cf1cb6521eee2b3b8c2b9"
+    }
+  },
+  "source_after_format": {
+    "qualification/hcsn_joint_dde/graded_migration.py": {
+      "sha256": "ac2fc4ed94d87f20dbd6cb6ee2ba8d91342538cbef70426c4bad26a126d8a1a4",
+      "ast": "7101f9c3b43dc622d0eaf75339cf3bbb08c51ecfc58f8807973bfd9686a63dad"
+    },
+    "qualification/hcsn_joint_dde/test_migration_binding.py": {
+      "sha256": "b49e3aabf8ff9efa267cd2503b0bf3ef2f1235afbf7329b91ee6dba6e9add3aa",
+      "ast": "bff425e2840dc7fd7985a3b04402239e43bd6f950a1cf1cb6521eee2b3b8c2b9"
+    }
+  },
+  "AST_unchanged": true,
+  "just_fmt_exit": 0,
+  "tests_rerun_after_format": false,
+  "new_model_training": 0,
+  "new_optimizer_calls": 0,
+  "scope": "Source/target binding of the existing migration; no additional numerical-domain or scientific qualification"
+}

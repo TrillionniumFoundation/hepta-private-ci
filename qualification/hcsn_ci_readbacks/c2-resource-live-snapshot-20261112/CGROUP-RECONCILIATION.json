@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn-c2-desktop-cgroup-reconciliation-v1",
+  "source_request_commit": "efbf36f880ad88ada702e42f96cd3d1ad6fee4d0",
+  "identity": "hcsn-c2-desktop-cgroup-readonly-witness-c06d-v1",
+  "idempotency_key": "hcsn-c2-desktop-cgroup-readonly-witness-c06d-v1",
+  "original_dispatch_observation": {
+    "request_id": "281c6f01c55af9fb277afa57de5c108676fb0003967a2010a54edb06582fa8a5",
+    "accepted_unix_ms": 1794497572774,
+    "state_observed": "accepted",
+    "terminal_effect_then": "UNKNOWN"
+  },
+  "exact_retry_reconciliation": {
+    "reused": true,
+    "retried_launch": false,
+    "job_id": "1a1d068d908-2564-1b7c",
+    "created_unix_ms": 1794497894664,
+    "request_digest": "9ab47e36617f4be3428c158d6b28a05ceb669dfb0f42453544439596e4ef3852",
+    "final_state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false,
+    "cancelled": false,
+    "stdout_bytes": 7604,
+    "stderr_bytes": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "execution_counts": {
+    "shell_processes_confirmed": 1,
+    "model_calls": 0,
+    "optimizer_calls": 0,
+    "native_training_calls": 0,
+    "new_idempotency_keys": 1
+  },
+  "interpretation": {
+    "point_in_time_host_and_ancestor_cgroup_observation": true,
+    "campaign_allocation_or_reservation": false,
+    "six_fit_full_replay_authorized_by_this_evidence": false,
+    "full_replay_completed": "0/6",
+    "global_status": "HOLD_NO_GO",
+    "all_closed": false
+  },
+  "preserved_unknowns": [
+    "historical cancelled attempts lifetime optimizer total",
+    "original controller terminal state",
+    "future campaign allocation, concurrency, and calendar",
+    "six original start parents and remaining-wall ledger"
+  ]
+}

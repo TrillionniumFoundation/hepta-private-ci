@@ -1,0 +1,41 @@
+test_fractional_native_rss_rejected_even_with_bound_checksum (test_c2_native_replay.NativeObservationTests.test_fractional_native_rss_rejected_even_with_bound_checksum) ... FAIL
+test_impossible_zero_wall_with_positive_cpu_rejected (test_c2_native_replay.NativeObservationTests.test_impossible_zero_wall_with_positive_cpu_rejected) ... FAIL
+test_native_log_truncation_numeric_zero_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_numeric_zero_rejected) ... FAIL
+test_native_log_truncation_nested_numeric_flags_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_nested_numeric_flags_rejected) ... FAIL
+
+======================================================================
+FAIL: test_fractional_native_rss_rejected_even_with_bound_checksum (test_c2_native_replay.NativeObservationTests.test_fractional_native_rss_rejected_even_with_bound_checksum)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-typed-observations-20261111-1325-r5/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 185, in test_fractional_native_rss_rejected_even_with_bound_checksum
+    self.assertIn(NAMES[0], out["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_impossible_zero_wall_with_positive_cpu_rejected (test_c2_native_replay.NativeObservationTests.test_impossible_zero_wall_with_positive_cpu_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-typed-observations-20261111-1325-r5/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 189, in test_impossible_zero_wall_with_positive_cpu_rejected
+    self.assertIn(NAMES[0], out["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_native_log_truncation_numeric_zero_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_numeric_zero_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-typed-observations-20261111-1325-r5/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 194, in test_native_log_truncation_numeric_zero_rejected
+    self.assertIn(NAMES[0], self.audit()["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+======================================================================
+FAIL: test_native_log_truncation_nested_numeric_flags_rejected (test_c2_native_replay.NativeObservationTests.test_native_log_truncation_nested_numeric_flags_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hcsn-c2-exported-typed-observations-20261111-1325-r5/qualification/hcsn_differentiable/recovery_v1/test_c2_native_replay.py", line 200, in test_native_log_truncation_nested_numeric_flags_rejected
+    self.assertIn(NAMES[0], self.audit()["rejected"])
+AssertionError: 'hcsn-s101-lr0.001' not found in {}
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.163s
+
+FAILED (failures=4)

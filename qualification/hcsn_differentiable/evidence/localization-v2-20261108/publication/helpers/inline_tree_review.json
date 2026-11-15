@@ -1,0 +1,37 @@
+{
+  "all_63_content_sha256_identical": true,
+  "all_63_normalized_tree_entries_identical": true,
+  "all_stage_merkle_map_inputs_identical": true,
+  "binary_blob_count": 2,
+  "encoding_claim": "Strict UTF-8 round-trip verified locally; remote complete-tree SHA and final raw-byte SHA256 checks remain mandatory",
+  "frozen_plan_file_count": 63,
+  "frozen_plan_stage_count": 7,
+  "github_writes": false,
+  "hashes": {
+    "native_publish.py": "df754d13a4841d8127881f91e19823715f5c33337ad4f76a36c4c968f561a88d",
+    "native_publish_inline_tree.py": "94ba6d816c1b1997ce6ca51f17be28437f5aed594ae3bf4a65053a04658c2e55",
+    "plan.json": "52e1e4baf0b45012031ff3d9d6cb9ec44c7d2cdffd6a4fc2e60d6403abfee253",
+    "retry_native_transport_inline_tree.py": "9afc06181bd8a0765d7b9e4fc270fc32ec0a84cb4ed2f7059b5cfcef0ee12ea2"
+  },
+  "inline_text_count": 61,
+  "journal": "journal-inline-tree-v1",
+  "official_api_source": "https://docs.github.com/en/rest/git/trees#create-a-tree",
+  "original_helper_function_AST_identical": true,
+  "post_validation_change": "Only transport classification label dial_failure replaced with network_failure; prior exact bytes reconstructed and checked",
+  "publication_executed": false,
+  "receipt": "receipt-inline-tree-v1.json",
+  "request_limit_claim": "No create-tree-specific body-byte limit found in cited official docs; no upload-limit guarantee claimed",
+  "serialized_tree_request_bytes_by_stage": [
+    17250,
+    16115,
+    61820,
+    33539,
+    27078,
+    55949,
+    332193
+  ],
+  "status": "reviewed_pre_execution",
+  "transport_fault_mock_cases_passed": 16,
+  "transport_log_root": "transport-recovery-inline-tree-v1",
+  "validation_scope": "AST-extracted per-file loops and isolated transport function with in-memory fake native runner; not an end-to-end execution"
+}
