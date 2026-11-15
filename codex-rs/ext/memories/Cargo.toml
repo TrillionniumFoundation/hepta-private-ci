@@ -9,6 +9,9 @@ name = "codex_memories_extension"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+hia-native = ["codex-utils-template/hia-native"]
+
 [lints]
 workspace = true
 

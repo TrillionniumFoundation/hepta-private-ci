@@ -5,6 +5,11 @@
 //! - `{{{{` for a literal `{{`
 //! - `}}}}` for a literal `}}`
 
+// BEGIN HIA TEMPLATE PARSE MODULE
+#[cfg(feature = "hia-native")]
+mod hia_native_parse;
+// END HIA TEMPLATE PARSE MODULE
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
@@ -119,6 +124,16 @@ pub struct Template {
 }
 
 impl Template {
+    // BEGIN HIA TEMPLATE PARSE NATIVE ENTRY
+    #[cfg(feature = "hia-native")]
+    pub fn parse(source: &str) -> Result<Self, TemplateParseError> {
+        hia_native_parse::parse(source)
+    }
+    // END HIA TEMPLATE PARSE NATIVE ENTRY
+
+    // BEGIN HIA TEMPLATE PARSE ORIGINAL GUARD
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA TEMPLATE PARSE ORIGINAL GUARD
     pub fn parse(source: &str) -> Result<Self, TemplateParseError> {
         let mut placeholders = BTreeSet::new();
         let mut segments = Vec::new();
@@ -220,6 +235,9 @@ where
         .map_err(Into::into)
 }
 
+// BEGIN HIA TEMPLATE PUSH LITERAL ORIGINAL GUARD
+#[cfg(not(feature = "hia-native"))]
+// END HIA TEMPLATE PUSH LITERAL ORIGINAL GUARD
 fn push_literal(segments: &mut Vec<Segment>, literal: &str) {
     if literal.is_empty() {
         return;
@@ -232,6 +250,9 @@ fn push_literal(segments: &mut Vec<Segment>, literal: &str) {
     }
 }
 
+// BEGIN HIA TEMPLATE PLACEHOLDER ORIGINAL GUARD
+#[cfg(not(feature = "hia-native"))]
+// END HIA TEMPLATE PLACEHOLDER ORIGINAL GUARD
 fn parse_placeholder(source: &str, start: usize) -> Result<(String, usize), TemplateParseError> {
     let placeholder_start = start + "{{".len();
     let mut cursor = placeholder_start;

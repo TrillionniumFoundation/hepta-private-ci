@@ -9,6 +9,9 @@ doctest = false
 name = "codex_models_manager"
 path = "src/lib.rs"
 
+[features]
+hia-native = ["codex-utils-template/hia-native"]
+
 [lints]
 workspace = true
 
