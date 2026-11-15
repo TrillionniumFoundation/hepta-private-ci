@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "source": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "parents": [
+    "82d36ec843a07936f03d69ec73e068e15e71212a",
+    "1cb195e590f7f5038a38625a943f259badea489a"
+  ],
+  "runs_observed_at": "2026-11-12T21:17:42.712Z",
+  "runs_total": 9,
+  "states": {
+    "native": {
+      "run_id": 43308682423,
+      "observed_at": "2026-11-12T21:17:53.149Z",
+      "total_jobs": 2,
+      "jobs": [
+        {
+          "job_id": 131498633907,
+          "name": "caller-proof",
+          "head_sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+          "status": "in_progress",
+          "conclusion": null,
+          "current_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ]
+        },
+        {
+          "job_id": 131498634442,
+          "name": "native",
+          "head_sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+          "status": "in_progress",
+          "conclusion": null,
+          "current_steps": [
+            "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd"
+          ]
+        }
+      ]
+    },
+    "shared": {
+      "run_id": 43308682376,
+      "observed_at": "2026-11-12T21:17:53.150Z",
+      "total_jobs": 1,
+      "jobs": [
+        {
+          "job_id": 131498639993,
+          "name": "owners",
+          "head_sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+          "status": "in_progress",
+          "conclusion": null,
+          "current_steps": [
+            "Build the original same-source inference helper"
+          ]
+        }
+      ]
+    },
+    "private": {
+      "run_id": 43308682359,
+      "observed_at": "2026-11-12T21:17:53.150Z",
+      "total_jobs": 1,
+      "jobs": [
+        {
+          "job_id": 131498633335,
+          "name": "ACL, anti-reparse, signed-owner durability and recovery on Windows",
+          "head_sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+          "status": "queued",
+          "conclusion": null,
+          "current_steps": []
+        }
+      ]
+    },
+    "blocking": {
+      "run_id": 43308682510,
+      "observed_at": "2026-11-12T21:17:53.150Z",
+      "total_jobs": 33,
+      "jobs": [
+        {
+          "job_id": 131499033100,
+          "name": "rust-ci / Rust format",
+          "head_sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+          "status": "in_progress",
+          "conclusion": null,
+          "current_steps": [
+            "Run dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489"
+          ]
+        }
+      ]
+    }
+  },
+  "payloads": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-initial-admission/COMMIT_API.json",
+      "git_blob_sha": "c3ee7c83d5546c582cd3b5382e66bbec2e8ac698",
+      "bytes": 2075,
+      "sha256": "d2615c93ad13b294dbcbbdb74a5c897b027cb5064037f701525ea95b689d097d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-initial-admission/RUNS_API.json",
+      "git_blob_sha": "cafc77220f2593b39ece5e4763823e28ea40ad03",
+      "bytes": 140670,
+      "sha256": "a946a0a6b82ddd3ee324c317ed652948ea10c7c4d0b8292dc8e13e01662192ed"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-initial-admission/NATIVE_JOBS_API.json",
+      "git_blob_sha": "791457aa781dea89113fecd73bbde172776c4a33",
+      "bytes": 5299,
+      "sha256": "6d5f948237c4c8219abd628832668cabe4869c6087e07211f09b8cb9b133e738"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-initial-admission/SHARED_JOBS_API.json",
+      "git_blob_sha": "01b1069d8533212554472179e2a5089ea68366a5",
+      "bytes": 3384,
+      "sha256": "7d568b541141f1cc4bbb1827720381f777432bfb15c8098cd9bf303906e466db"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-initial-admission/PRIVATE_JOBS_API.json",
+      "git_blob_sha": "b968f39a79d1d76e4c122870af9ad1354b11cbd6",
+      "bytes": 1091,
+      "sha256": "7727756c4f82339ee9ff5d8fb6a814819a0068b5c296c384c02b45293d250b51"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source2f-initial-admission/BLOCKING_JOBS_API.json",
+      "git_blob_sha": "04d8b99768a112042d067e783b008e1055272757",
+      "bytes": 59188,
+      "sha256": "5ddc0e79d065a77eed1c86c8a6169b8adb9a4d5a3562063938267a5ca6f6e718"
+    }
+  ],
+  "verification": "Every original API response saved byte-for-byte and read back by Git blob SHA; no JSON numeric reserialization of originals.",
+  "limitations": [
+    "This initial snapshot proves automatic admission only, not any future step result.",
+    "Native actual checkout content, method denominators, compiler results, formatter result and caller result remain pending original terminal records.",
+    "No workflow dispatch/rerun, native/Bazel invocation, actor or source/ref change was performed."
+  ]
+}

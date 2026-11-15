@@ -1,0 +1,318 @@
+﻿2026-11-12T07:13:41.2867924Z Current runner version: '2.338.2'
+2026-11-12T07:13:41.2903852Z ##[group]Runner Image Provisioner
+2026-11-12T07:13:41.2905318Z Hosted Compute Agent
+2026-11-12T07:13:41.2906341Z Version: 20261028.624
+2026-11-12T07:13:41.2907665Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T07:13:41.2909187Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T07:13:41.2910479Z Worker ID: {4e03be00-7f5c-47ab-b53c-6bf73fcda298}
+2026-11-12T07:13:41.2911710Z Region: eastus
+2026-11-12T07:13:41.2912691Z Cloud: Azure
+2026-11-12T07:13:41.2913590Z ##[endgroup]
+2026-11-12T07:13:41.2915902Z ##[group]Operating System
+2026-11-12T07:13:41.2917416Z Ubuntu
+2026-11-12T07:13:41.2918520Z 24.04.5
+2026-11-12T07:13:41.2919344Z LTS
+2026-11-12T07:13:41.2920248Z ##[endgroup]
+2026-11-12T07:13:41.2921307Z ##[group]Runner Image
+2026-11-12T07:13:41.2922330Z Image: ubuntu-24.04
+2026-11-12T07:13:41.2923380Z Version: 20261101.360.1
+2026-11-12T07:13:41.2925545Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T07:13:41.2928724Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T07:13:41.2930662Z ##[endgroup]
+2026-11-12T07:13:41.2932636Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T07:13:41.2935539Z Contents: read
+2026-11-12T07:13:41.2936673Z Metadata: read
+2026-11-12T07:13:41.2937975Z ##[endgroup]
+2026-11-12T07:13:41.2941125Z Secret source: Actions
+2026-11-12T07:13:41.2942635Z Cache mode: write
+2026-11-12T07:13:41.2943927Z Prepare workflow directory
+2026-11-12T07:13:41.3442368Z Prepare all required actions
+2026-11-12T07:13:41.3516416Z Getting action download info
+2026-11-12T07:13:41.5470655Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-12T07:13:41.7554896Z Complete job name: q24-temporal-reference
+2026-11-12T07:13:41.8492475Z ##[group]Run actions/checkout@v4
+2026-11-12T07:13:41.8493371Z with:
+2026-11-12T07:13:41.8493917Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:13:41.8497856Z   token: ***
+2026-11-12T07:13:41.8498306Z   ssh-strict: true
+2026-11-12T07:13:41.8498754Z   ssh-user: git
+2026-11-12T07:13:41.8499211Z   persist-credentials: true
+2026-11-12T07:13:41.8499708Z   clean: true
+2026-11-12T07:13:41.8500160Z   sparse-checkout-cone-mode: true
+2026-11-12T07:13:41.8500689Z   fetch-depth: 1
+2026-11-12T07:13:41.8501131Z   fetch-tags: false
+2026-11-12T07:13:41.8501589Z   show-progress: true
+2026-11-12T07:13:41.8502055Z   lfs: false
+2026-11-12T07:13:41.8502483Z   submodules: false
+2026-11-12T07:13:41.8502949Z   set-safe-directory: true
+2026-11-12T07:13:41.8503474Z   allow-unsafe-pr-checkout: false
+2026-11-12T07:13:41.8504276Z ##[endgroup]
+2026-11-12T07:13:42.1526576Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:13:42.1530950Z ##[group]Getting Git version info
+2026-11-12T07:13:42.1532925Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T07:13:42.1536032Z [command]/usr/bin/git version
+2026-11-12T07:13:42.1616155Z git version 2.56.0
+2026-11-12T07:13:42.1642833Z ##[endgroup]
+2026-11-12T07:13:42.1658392Z Temporarily overriding HOME='/home/runner/work/_temp/7f6e767b-7d04-4187-9072-ee98f0b0b50f' before making global git config changes
+2026-11-12T07:13:42.1662630Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T07:13:42.1666814Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:13:42.1721486Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T07:13:42.1726432Z ##[group]Initializing the repository
+2026-11-12T07:13:42.1731114Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:13:42.1853301Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T07:13:42.1856930Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T07:13:42.1861325Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T07:13:42.1864712Z hint: call:
+2026-11-12T07:13:42.1866478Z hint:
+2026-11-12T07:13:42.1868811Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T07:13:42.1871514Z hint:
+2026-11-12T07:13:42.1873612Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T07:13:42.1877423Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T07:13:42.1880190Z hint:
+2026-11-12T07:13:42.1881637Z hint: 	git branch -m <name>
+2026-11-12T07:13:42.1883263Z hint:
+2026-11-12T07:13:42.1885525Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T07:13:42.1888796Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T07:13:42.1895810Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:13:42.1936404Z ##[endgroup]
+2026-11-12T07:13:42.1939344Z ##[group]Disabling automatic garbage collection
+2026-11-12T07:13:42.1941814Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T07:13:42.1976716Z ##[endgroup]
+2026-11-12T07:13:42.1979415Z ##[group]Setting up auth
+2026-11-12T07:13:42.1984161Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T07:13:42.2030287Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T07:13:42.2465047Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T07:13:42.2534197Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T07:13:42.2786542Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T07:13:42.2841298Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T07:13:42.3119971Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T07:13:42.3177656Z ##[endgroup]
+2026-11-12T07:13:42.3180371Z ##[group]Fetching the repository
+2026-11-12T07:13:42.3194466Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +62fc7fbefa56172ca35d33059c49303392880c90:refs/remotes/pull/6192/merge
+2026-11-12T07:13:46.5177889Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T07:13:46.5179146Z  * [new ref]         62fc7fbefa56172ca35d33059c49303392880c90 -> pull/6192/merge
+2026-11-12T07:13:46.5183573Z ##[endgroup]
+2026-11-12T07:13:46.5184315Z ##[group]Determining the checkout info
+2026-11-12T07:13:46.5185855Z ##[endgroup]
+2026-11-12T07:13:46.5192745Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T07:13:46.5257737Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T07:13:46.5297687Z ##[group]Checking out the ref
+2026-11-12T07:13:46.5302180Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/6192/merge
+2026-11-12T07:13:47.1726459Z Note: switching to 'refs/remotes/pull/6192/merge'.
+2026-11-12T07:13:47.1727508Z 
+2026-11-12T07:13:47.1728043Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T07:13:47.1729306Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T07:13:47.1730421Z state without impacting any branches by switching back to a branch.
+2026-11-12T07:13:47.1731092Z 
+2026-11-12T07:13:47.1731956Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T07:13:47.1733427Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T07:13:47.1734428Z 
+2026-11-12T07:13:47.1735055Z   git switch -c <new-branch-name>
+2026-11-12T07:13:47.1736476Z 
+2026-11-12T07:13:47.1737382Z Or undo this operation with:
+2026-11-12T07:13:47.1738206Z 
+2026-11-12T07:13:47.1738810Z   git switch -
+2026-11-12T07:13:47.1739699Z 
+2026-11-12T07:13:47.1740584Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T07:13:47.1741620Z 
+2026-11-12T07:13:47.1742656Z HEAD is now at 62fc7fb Merge 1ac802f4b1196fe15c5d3ae730207ff585d41250 into e263e7b01ca051ebc8c15b87ea6b9721169ba22e
+2026-11-12T07:13:47.1750842Z ##[endgroup]
+2026-11-12T07:13:47.1809324Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T07:13:47.1843509Z 62fc7fbefa56172ca35d33059c49303392880c90
+2026-11-12T07:13:47.2099104Z ##[group]Run cargo test --locked -p codex-hepta-neuron --lib
+2026-11-12T07:13:47.2099682Z [36;1mcargo test --locked -p codex-hepta-neuron --lib[0m
+2026-11-12T07:13:47.2123790Z shell: /usr/bin/bash -e {0}
+2026-11-12T07:13:47.2124087Z ##[endgroup]
+2026-11-12T07:13:47.2931966Z info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+2026-11-12T07:13:47.5658499Z info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+2026-11-12T07:13:47.5702815Z info: downloading 6 components
+2026-11-12T07:13:56.4321665Z warn: the missing active toolchain `1.95.0-x86_64-unknown-linux-gnu` has been auto-installed
+2026-11-12T07:13:56.4322545Z warn: this might cause rustup commands to take longer time to finish than expected
+2026-11-12T07:13:56.4323497Z info: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`
+2026-11-12T07:13:56.5952299Z     Updating git repository `https://github.com/openai-oss-forks/crossterm`
+2026-11-12T07:13:57.9026182Z     Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`
+2026-11-12T07:13:58.0360873Z     Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`
+2026-11-12T07:13:58.4586651Z     Updating crates.io index
+2026-11-12T07:13:58.4972230Z     Updating git repository `https://github.com/dzbarsky/rules_rust`
+2026-11-12T07:14:03.6549192Z     Updating git repository `https://github.com/helix-editor/nucleo.git`
+2026-11-12T07:14:05.6651336Z  Downloading crates ...
+2026-11-12T07:14:05.7161991Z   Downloaded itoa v1.0.17
+2026-11-12T07:14:05.7181233Z   Downloaded cpufeatures v0.2.17
+2026-11-12T07:14:05.7198887Z   Downloaded digest v0.10.7
+2026-11-12T07:14:05.7218034Z   Downloaded generic-array v0.14.7
+2026-11-12T07:14:05.7234779Z   Downloaded proc-macro2 v1.0.106
+2026-11-12T07:14:05.7267691Z   Downloaded crypto-common v0.1.7
+2026-11-12T07:14:05.7277007Z   Downloaded cfg-if v1.0.4
+2026-11-12T07:14:05.7292618Z   Downloaded version_check v0.9.5
+2026-11-12T07:14:05.7305622Z   Downloaded block-buffer v0.10.4
+2026-11-12T07:14:05.7317462Z   Downloaded zmij v1.0.19
+2026-11-12T07:14:05.7336486Z   Downloaded quote v1.0.45
+2026-11-12T07:14:05.7365141Z   Downloaded yansi v1.0.1
+2026-11-12T07:14:05.7389123Z   Downloaded unicode-ident v1.0.22
+2026-11-12T07:14:05.7417457Z   Downloaded serde_derive v1.0.228
+2026-11-12T07:14:05.7447830Z   Downloaded memchr v2.8.1
+2026-11-12T07:14:05.7502147Z   Downloaded serde v1.0.228
+2026-11-12T07:14:05.7536738Z   Downloaded typenum v1.20.0
+2026-11-12T07:14:05.7571905Z   Downloaded pretty_assertions v1.4.1
+2026-11-12T07:14:05.7590129Z   Downloaded serde_core v1.0.228
+2026-11-12T07:14:05.7621619Z   Downloaded sha2 v0.10.9
+2026-11-12T07:14:05.7653473Z   Downloaded serde_json v1.0.149
+2026-11-12T07:14:05.7726296Z   Downloaded diff v0.1.13
+2026-11-12T07:14:05.7753653Z   Downloaded syn v2.0.117
+2026-11-12T07:14:05.8083471Z    Compiling version_check v0.9.5
+2026-11-12T07:14:05.8084063Z    Compiling proc-macro2 v1.0.106
+2026-11-12T07:14:05.8084610Z    Compiling typenum v1.20.0
+2026-11-12T07:14:05.8085126Z    Compiling unicode-ident v1.0.22
+2026-11-12T07:14:05.9018325Z    Compiling quote v1.0.45
+2026-11-12T07:14:06.0389138Z    Compiling generic-array v0.14.7
+2026-11-12T07:14:06.1488726Z    Compiling serde_core v1.0.228
+2026-11-12T07:14:06.1716932Z    Compiling zmij v1.0.19
+2026-11-12T07:14:06.3900545Z    Compiling serde v1.0.228
+2026-11-12T07:14:06.6098393Z    Compiling cpufeatures v0.2.17
+2026-11-12T07:14:06.8858740Z    Compiling syn v2.0.117
+2026-11-12T07:14:06.9178117Z    Compiling serde_json v1.0.149
+2026-11-12T07:14:07.0440366Z    Compiling cfg-if v1.0.4
+2026-11-12T07:14:07.1495099Z    Compiling crypto-common v0.1.7
+2026-11-12T07:14:07.1627904Z    Compiling block-buffer v0.10.4
+2026-11-12T07:14:07.2498238Z    Compiling digest v0.10.7
+2026-11-12T07:14:07.4208400Z    Compiling sha2 v0.10.9
+2026-11-12T07:14:07.5238407Z    Compiling memchr v2.8.1
+2026-11-12T07:14:07.8378208Z    Compiling itoa v1.0.17
+2026-11-12T07:14:07.9869222Z    Compiling codex-hepta-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-types)
+2026-11-12T07:14:08.2838267Z    Compiling yansi v1.0.1
+2026-11-12T07:14:08.6170568Z    Compiling diff v0.1.13
+2026-11-12T07:14:08.8894640Z    Compiling pretty_assertions v1.4.1
+2026-11-12T07:14:09.3883554Z    Compiling serde_derive v1.0.228
+2026-11-12T07:14:11.4037676Z    Compiling codex-hepta-infer-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core)
+2026-11-12T07:14:12.4095705Z    Compiling codex-hepta-neuron v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron)
+2026-11-12T07:14:15.2454328Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 18.79s
+2026-11-12T07:14:15.3986462Z      Running unittests src/lib.rs (target/debug/deps/codex_hepta_neuron-c6887f1545b3e572)
+2026-11-12T07:14:15.4009723Z 
+2026-11-12T07:14:15.4009984Z running 106 tests
+2026-11-12T07:14:15.4019049Z test deletion::tests::deletion_rebuild_is_fresh_generation_and_never_reuses_state ... ok
+2026-11-12T07:14:15.4019913Z test deletion::tests::deletion_rebuild_rejects_skipped_generation_and_missing_deletion ... ok
+2026-11-12T07:14:15.4021692Z test inference_control::tests::inference_control_receipt_maps_to_exact_local_runtime_evidence ... ok
+2026-11-12T07:14:15.4022745Z test inference_control::tests::corrupted_or_indeterminate_control_receipt_fails_closed ... ok
+2026-11-12T07:14:15.4061727Z test journal::anchor_tests::empty_replacement_is_not_initialized_when_history_was_acknowledged ... ok
+2026-11-12T07:14:15.4063168Z test journal::anchor_tests::anchored_reopen_preserves_the_exact_receipt_and_all_bytes ... ok
+2026-11-12T07:14:15.4075768Z test journal::anchor_tests::earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail ... ok
+2026-11-12T07:14:15.4100607Z test journal::anchor_tests::fully_rehashed_alternate_history_cannot_satisfy_the_trusted_anchor ... ok
+2026-11-12T07:14:15.4103292Z test journal::anchor_tests::lost_complete_acknowledged_frame_is_rejected_without_repair ... ok
+2026-11-12T07:14:15.4104907Z test journal::anchor_tests::malformed_anchor_rejects_before_file_mutation ... ok
+2026-11-12T07:14:15.4132158Z test journal::anchor_tests::matching_anchor_does_not_hide_corruption_in_a_later_full_frame ... ok
+2026-11-12T07:14:15.4231218Z test journal::anchor_tests::wrong_anchor_does_not_truncate_an_unacknowledged_tail ... ok
+2026-11-12T07:14:15.4233414Z test journal::segment_tests::missing_acknowledged_successor_frame_is_rejected_without_repair ... ok
+2026-11-12T07:14:15.4235219Z test journal::segment_tests::plasticity_anchor_queries_preserve_global_sequence_across_rollover ... ok
+2026-11-12T07:14:15.4236838Z test journal::segment_tests::successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix ... ok
+2026-11-12T07:14:15.4238273Z test journal::tests::child_process_commit_and_exit ... ok
+2026-11-12T07:14:15.4239716Z test journal::segment_tests::successor_segment_preserves_state_and_allows_exact_retry ... ok
+2026-11-12T07:14:15.4241104Z test journal::tests::changed_retry_and_stale_compare_and_swap_do_not_mutate_file ... ok
+2026-11-12T07:14:15.4242389Z test journal::tests::committed_checkpoint_and_receipt_survive_reopen ... ok
+2026-11-12T07:14:15.4255352Z test journal::tests::complete_unacknowledged_frame_is_reconciled_on_reopen ... ok
+2026-11-12T07:14:15.4271714Z test journal::tests::complete_corruption_is_rejected_without_truncation ... ok
+2026-11-12T07:14:15.4274928Z test journal::tests::equal_retry_after_later_commit_does_not_append ... ok
+2026-11-12T07:14:15.4291438Z test journal::tests::incomplete_header_and_excess_file_size_are_not_repaired ... ok
+2026-11-12T07:14:15.4301347Z test journal::tests::failed_recovery_releases_acquired_lock_before_journal_exists ... ok
+2026-11-12T07:14:15.4303677Z test journal::tests::independent_writer_is_fenced_and_lock_releases_on_drop ... ok
+2026-11-12T07:14:15.4325839Z test journal::tests::invalid_tick_and_record_cap_do_not_append ... ok
+2026-11-12T07:14:15.4337833Z test journal::tests::owner_drop_releases_lock_with_a_transient_duplicate_alive ... ok
+2026-11-12T07:14:15.4344684Z 
+2026-11-12T07:14:15.4348547Z running 1 test
+2026-11-12T07:14:15.4348963Z test journal::tests::valid_frame_checksum_cannot_hide_invalid_checkpoint_chain ... ok
+2026-11-12T07:14:15.4374490Z test journal::tests::write_error_requires_reopen_and_reconciliation ... ok
+2026-11-12T07:14:15.4380256Z test journal::tests::process_exit_without_destructors_releases_lock_and_keeps_committed_frame ... ok
+2026-11-12T07:14:15.4388643Z test plasticity::real_time_credit::tests::future_payload_is_excluded_but_foreign_boot_cannot_claim_future ... ok
+2026-11-12T07:14:15.4390446Z test plasticity::real_time_credit::tests::independent_clocks_and_proportional_time_units ... ok
+2026-11-12T07:14:15.4392239Z test plasticity::real_time_credit::tests::integer_exp_matches_independent_decimal90_round_half_even_vectors ... ok
+2026-11-12T07:14:15.4396952Z test plasticity::real_time_credit::tests::real_time_credit_reuses_native_routing_and_clip_order ... ok
+2026-11-12T07:14:15.4403201Z test plasticity::real_time_credit::tests::terminal_outcomes_and_full_integer_ranges_are_checked ... ok
+2026-11-12T07:14:15.4405574Z test journal::tests::wrong_generation_and_scope_do_not_reinitialize_journal ... ok
+2026-11-12T07:14:15.4411015Z test plasticity::temporal_credit::tests::duplicate_actions_targets_and_receipts_are_refused ... ok
+2026-11-12T07:14:15.4412420Z test plasticity::temporal_credit::tests::drift_in_model_owner_generation_source_or_checkpoint_fails_closed ... ok
+2026-11-12T07:14:15.4413667Z test plasticity::temporal_credit::tests::expired_lag_cannot_train ... ok
+2026-11-12T07:14:15.4419866Z test plasticity::temporal_credit::tests::feedback_preceding_action_is_always_rejected ... ok
+2026-11-12T07:14:15.4421309Z test plasticity::temporal_credit::tests::feedback_order_and_group_order_do_not_affect_digest ... ok
+2026-11-12T07:14:15.4422577Z test plasticity::temporal_credit::tests::frozen_evaluation_labels_are_never_eligible_for_training ... ok
+2026-11-12T07:14:15.4431757Z test plasticity::temporal_credit::tests::global_trust_region_is_enforced_after_timed_update ... ok
+2026-11-12T07:14:15.4437713Z test plasticity::temporal_credit::tests::input_traces_are_not_mutated_by_shadow_qualification ... ok
+2026-11-12T07:14:15.4439046Z test plasticity::temporal_credit::tests::invalid_group_projection_and_modulator_are_rejected ... ok
+2026-11-12T07:14:15.4442075Z test plasticity::temporal_credit::tests::no_feedback_is_an_explicit_missing_outcome_not_an_implicit_success ... ok
+2026-11-12T07:14:15.4443410Z test plasticity::temporal_credit::tests::partly_missing_feedback_is_counted_not_imputed ... ok
+2026-11-12T07:14:15.4444727Z test plasticity::temporal_credit::tests::q24_time_aligned_credit_has_exact_lag_three_and_shuffled_control ... ok
+2026-11-12T07:14:15.4446085Z test plasticity::temporal_credit::tests::stale_action_and_unknown_feedback_are_rejected ... ok
+2026-11-12T07:14:15.4447673Z test plasticity::temporal_credit::tests::scalar_projection_is_declared_different_from_matched_shuffled_control ... ok
+2026-11-12T07:14:15.4449028Z test plasticity::temporal_credit::tests::withheld_future_does_not_change_numerical_candidate ... ok
+2026-11-12T07:14:15.4450124Z test plasticity::tests::global_l1_trust_region_projects_without_changing_inputs ... ok
+2026-11-12T07:14:15.4451110Z test plasticity::tests::implicit_broadcast_and_overweight_rows_are_rejected ... ok
+2026-11-12T07:14:15.4452500Z test plasticity::tests::explicit_group_mapping_applies_positive_and_negative_modulation ... ok
+2026-11-12T07:14:15.4453841Z test plasticity::tests::zero_modulator_produces_zero_candidate_delta ... ok
+2026-11-12T07:14:15.4455239Z test population_v2::tests::distinct_temporal_and_activation_dimensions_use_population_then_global_competition ... ok
+2026-11-12T07:14:15.4456860Z test population_v2::tests::every_activation_requires_a_registered_temporal_projection ... ok
+2026-11-12T07:14:15.4458607Z test population_v2::tests::population_partition_must_be_complete_and_non_overlapping ... ok
+2026-11-12T07:14:15.4460434Z test population_v2::tests::population_profile_is_deterministic_and_supports_recurrent_successors ... ok
+2026-11-12T07:14:15.4461735Z test protocol::tests::canonical_runtime_config_roundtrip_rejects_unknown_fields ... ok
+2026-11-12T07:14:15.4462781Z test protocol::tests::canonical_signal_roundtrip_rejects_unknown_fields ... ok
+2026-11-12T07:14:15.4465724Z test protocol::tests::canonical_tick_receipt_projects_only_registered_resource_fields ... ok
+2026-11-12T07:14:15.4467372Z test protocol::tests::canonical_tick_input_roundtrip_rejects_unknown_fields ... ok
+2026-11-12T07:14:15.4472918Z test protocol::tests::checkpoint_is_derived_from_committed_state_and_roundtrips ... ok
+2026-11-12T07:14:15.4478582Z test qualification::tests::config_ablations_remove_only_the_named_mechanism ... ok
+2026-11-12T07:14:15.4485327Z test protocol::tests::checkpoint_publication_rejects_forged_owner_summary ... ok
+2026-11-12T07:14:15.4486562Z test qualification::tests::eligibility_and_modulator_ablations_are_explicit_and_deterministic ... ok
+2026-11-12T07:14:15.4488057Z test qualification::tests::resource_summary_rejects_mixed_host_profiles ... ok
+2026-11-12T07:14:15.4498814Z test qualification::tests::supplied_resource_samples_have_deterministic_percentiles_without_claiming_authority ... ok
+2026-11-12T07:14:15.4516719Z test runtime::tests::canonical_runtime_commits_model_bound_calibrated_signal_and_recovers ... ok
+2026-11-12T07:14:15.4527340Z test runtime::tests::collapse_or_ood_forces_abstention_without_granting_authority ... ok
+2026-11-12T07:14:15.4563175Z test runtime::tests::expired_calibration_advances_state_but_forces_fail_closed_abstention ... ok
+2026-11-12T07:14:15.4565906Z test runtime::tests::deletion_rebuild_starts_fresh_successor_generation_without_old_state ... ok
+2026-11-12T07:14:15.4575409Z test runtime::tests::model_identity_drift_rejects_before_checkpoint_mutation ... ok
+2026-11-12T07:14:15.4603062Z test runtime::tests::witness_failure_after_commit_reconciles_without_reinvoking_model ... ok
+2026-11-12T07:14:15.4650361Z test sparse::body_scope_tests::reopened_checkpoint_retains_body_scope_and_rejects_before_write ... ok
+2026-11-12T07:14:15.4659201Z test runtime::tests::runtime_rollover_and_chain_recovery_preserve_latest_witness ... ok
+2026-11-12T07:14:15.4660302Z test sparse::body_scope_tests::successor_rejects_body_scope_drift ... ok
+2026-11-12T07:14:15.4661537Z test sparse::tests::changed_config_is_rejected ... ok
+2026-11-12T07:14:15.4662503Z test sparse::tests::changed_scope_or_objective_is_rejected ... ok
+2026-11-12T07:14:15.4663490Z test sparse::tests::clock_regression_is_rejected ... ok
+2026-11-12T07:14:15.4664260Z test sparse::tests::duplicate_edges_and_row_norm_overflow_are_rejected ... ok
+2026-11-12T07:14:15.4669240Z test sparse::tests::damaged_checkpoint_is_rejected ... ok
+2026-11-12T07:14:15.4670003Z test sparse::tests::edge_order_does_not_change_config_or_output ... ok
+2026-11-12T07:14:15.4670743Z test sparse::tests::invalid_inhibition_is_rejected ... ok
+2026-11-12T07:14:15.4671574Z test sparse::tests::invalid_dimensions_and_extreme_top_k_fail_without_overflow ... ok
+2026-11-12T07:14:15.4682107Z test sparse::tests::lateral_inhibition_changes_winner ... ok
+2026-11-12T07:14:15.4684608Z test sparse::tests::missing_digest_invalid_width_and_unbounded_input_are_rejected ... ok
+2026-11-12T07:14:15.4694949Z test sparse::tests::replay_or_skipped_sequence_is_rejected ... ok
+2026-11-12T07:14:15.4696579Z test sparse::tests::saturation_and_eligibility_l1_projection_are_counted ... ok
+2026-11-12T07:14:15.4699378Z test sparse::tests::signed_multiply_rounds_half_to_even ... ok
+2026-11-12T07:14:15.4704437Z test sparse::tests::silent_input_has_zero_activation_with_nonnegative_thresholds ... ok
+2026-11-12T07:14:15.4706419Z test sparse::tests::supplied_numeric_values_are_bound_not_just_caller_digest ... ok
+2026-11-12T07:14:15.4709040Z test sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable ... ok
+2026-11-12T07:14:15.4714593Z test sparse::tests::ticks_advance_sequence_without_changing_artifact_generation ... ok
+2026-11-12T07:14:15.4716227Z test sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact ... ok
+2026-11-12T07:14:15.4717016Z test tests::generation_must_advance ... ok
+2026-11-12T07:14:15.4717950Z test tests::model_drift_is_rejected ... ok
+2026-11-12T07:14:15.4718822Z test tests::step_is_deterministic_and_authority_free ... ok
+2026-11-12T07:14:15.4720217Z test tests::width_drift_is_rejected ... ok
+2026-11-12T07:14:15.4737846Z test witness::tests::witness_capacity_and_independent_writer_are_bounded ... ok
+2026-11-12T07:14:15.4755331Z test witness::tests::witness_history_survives_reopen_and_fences_stale_cas ... ok
+2026-11-12T07:14:15.4779123Z test witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history ... ok
+2026-11-12T07:14:15.6108057Z test journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence ... ok
+2026-11-12T07:14:15.7135594Z test sparse::tests::long_replay_remains_bounded_and_immutable ... ok
+2026-11-12T07:14:15.7345023Z test journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor ... ok
+2026-11-12T07:14:15.7345846Z 
+2026-11-12T07:14:15.7346502Z test result: ok. 106 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+2026-11-12T07:14:15.7347572Z 
+2026-11-12T07:14:15.7951444Z Post job cleanup.
+2026-11-12T07:14:15.8863092Z [command]/usr/bin/git version
+2026-11-12T07:14:15.8911892Z git version 2.56.0
+2026-11-12T07:14:15.8956554Z Temporarily overriding HOME='/home/runner/work/_temp/9c27369c-1e13-4764-9864-49c6f922e763' before making global git config changes
+2026-11-12T07:14:15.8958222Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T07:14:15.8963109Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T07:14:15.9004150Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T07:14:15.9044199Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T07:14:15.9332613Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T07:14:15.9365901Z http.https://github.com/.extraheader
+2026-11-12T07:14:15.9380595Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-12T07:14:15.9433295Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T07:14:15.9734098Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T07:14:15.9785041Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T07:14:16.0231610Z Cleaning up orphan processes
+2026-11-12T07:14:16.0666901Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

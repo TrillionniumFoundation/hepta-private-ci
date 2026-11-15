@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "scope": "ordinary-user portable tool prerequisite only; no repo build/test",
+  "job_id": "1a1cf7b790b-2564-1a41",
+  "request_key": "owner-native-dotslash-preparation-862531d11598-v1",
+  "request_digest": "87ff33a21ee5c11158731c6cd056280c05f8fcdf65bd00b8e2f57566ba24c3b1",
+  "terminal_exit_code": 0,
+  "uid": 1000,
+  "euid": 1000,
+  "official_release_url": "https://github.com/meta/dotslash/releases/tag/v0.5.9",
+  "release_id": 307315086,
+  "asset_id": 392789322,
+  "archive_url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.tar.gz",
+  "archive_bytes": 775216,
+  "archive_sha256": "7400dd0dbdf05d3be4e604b62807eb1bcbaa0d1bced010d30746243759e0ac03",
+  "binary_path": "/home/qq/neuro-owner-tools-862531d11598/dotslash-0.5.9-v1/bin/dotslash",
+  "binary_bytes": 1642752,
+  "binary_sha256": "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936",
+  "observed_version": "DotSlash 0.5.9",
+  "version_exit_code": 0,
+  "no_sudo": true,
+  "native_build_or_test_started": false,
+  "artifacts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/prerequisites/dotslash-0.5.9/RESULT.json",
+      "kind": "original-file",
+      "bytes": 1213,
+      "sha256": "1868543cb18e5aef7bd7ba44e0541522e545efeb3bc09ae0f2a77dd9d73c71a0",
+      "git_blob_sha": "c4e6cbda9c7e1b41ab1c5c4057adc8efc7d5cc59"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/prerequisites/dotslash-0.5.9/stdout.log",
+      "kind": "original-process-output",
+      "bytes": 1099,
+      "sha256": "5b09e0474a8bca5cf214602114389b9f3d5d363d0f3458f91b61f2fabed49213",
+      "git_blob_sha": "44f20150a2a7e5156a3fa32dfd097e963dbbcde2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/prerequisites/dotslash-0.5.9/stderr.log",
+      "kind": "original-process-output",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/prerequisites/dotslash-0.5.9/process-status.observed.json",
+      "kind": "observed-tool-response",
+      "bytes": 732,
+      "sha256": "3fd85db1026df06fc8de70029796f20a82b4b9fe41fb49ea37eb1186bfb37ad4",
+      "git_blob_sha": "d5d9f2dfb6210db5daaaf06a2d770a9c6ab154b2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/prerequisites/dotslash-0.5.9/execution-request.json",
+      "kind": "exact-admitted-request",
+      "bytes": 3791,
+      "sha256": "5a49fb6c6cc10e70c59fc3ce761a54cda442b3e6f6cf70bf591c184237795840",
+      "git_blob_sha": "1f7aabe985ed1405e347bd26491191bd6cc8e43d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/prerequisites/dotslash-0.5.9/prepare-runner.py.txt",
+      "kind": "exact-admitted-script",
+      "bytes": 2717,
+      "sha256": "d41fff37ae369e7fb93274e71190d22f3bed4eac07bcef50eaba6e6c4f933ddb",
+      "git_blob_sha": "2626d478e65b307a351ba50cae8ea2c124064480"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/prerequisites/dotslash-0.5.9/official-release.observed.json",
+      "kind": "official-api-observation",
+      "bytes": 37645,
+      "sha256": "91c7ea9544b1c830fe9d7df7a0eea94e7caa26438ceeb5c78ad58e5117d69ec0",
+      "git_blob_sha": "7552a645a7658e650118da5b55ae1e23dbeccefc"
+    }
+  ]
+}

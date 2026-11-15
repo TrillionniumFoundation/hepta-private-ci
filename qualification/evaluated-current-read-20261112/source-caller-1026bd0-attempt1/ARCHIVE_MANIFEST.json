@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "expected_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+  "attempt": 1,
+  "job_id": "1a1cfa1d75d-2564-1a75",
+  "request_key": "owner6213-ai395-1026bd0-source-caller-862531d11598-v1",
+  "request_digest": "b7717c040817761d45deb85ba85d2e70b0719ea9838c85b1cb2986787de67287",
+  "original_result_status": "preparation_or_execution_failed",
+  "original_result_exit_code": 2,
+  "git_fetch_exit_code": 128,
+  "original_result_started_at": "2026-11-12T12:00:53.963206+00:00",
+  "original_result_finished_at": "2026-11-12T12:03:44.726956+00:00",
+  "failure_class": "Git transfer connection reset by peer / curl 56; incomplete pack",
+  "qualification_stages": [],
+  "source_inventory_taken": false,
+  "native_build_or_test_started": false,
+  "root_qualification_attempted": false,
+  "authoritative_terminal_status": "Read pending after direct h.process_status MCP timeout; original completed RESULT/stdout retained",
+  "recovery": "A separate exact-source v2 with fresh checkout/evidence/key has been prepared for root review; old request/logs are immutable and will not be retried or relabeled",
+  "artifacts": [
+    {
+      "kind": "original-file",
+      "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-1026-source-caller/RESULT.json",
+      "original_version": "66306:76589344:779:1794485024727412976:1794485024727412976",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/RESULT.json",
+      "bytes": 779,
+      "sha256": "9db97403e29daf66121b91c8e9457bdb2d482bd6ed8b746be97ec453dd5a522f",
+      "git_blob_sha": "df9c08e7b5fc41ab191a4ecfd32d821ccb75d47d"
+    },
+    {
+      "kind": "original-file",
+      "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-1026-source-caller/fetch.log",
+      "original_version": "66306:76589343:237:1794485024711945812:1794485024711945812",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/fetch.log",
+      "bytes": 237,
+      "sha256": "bc1b07c6d3e02bccfec017c42bd75c59d37d36ec8335d1eacf4cdc8e92a7aaa9",
+      "git_blob_sha": "875bdcb008102d3f8b1121e66cca113d3e40178e"
+    },
+    {
+      "kind": "original-file",
+      "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-1026-source-caller/clone.log",
+      "original_version": "66306:76589342:68:1794484853963832427:1794484853963832427",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/clone.log",
+      "bytes": 68,
+      "sha256": "e9fb6ad859dcc77684ac7fca6efe82cc15f4caf6737f8ec37cec196865c45f5b",
+      "git_blob_sha": "9b336c0d4524b191edbb676f97c3fd5beb5de977"
+    },
+    {
+      "kind": "original-process-output",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/stdout.log",
+      "bytes": 691,
+      "sha256": "962c5480243c9465f4e048cbb59684ae8e6c57a5b6cb70c73e72c672ae4e2b22",
+      "git_blob_sha": "a23c947da24ffd3038e26af92c2c5898653636aa"
+    },
+    {
+      "kind": "original-process-output",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "kind": "exact-admitted-request",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/execution-request.json",
+      "bytes": 8359,
+      "sha256": "030553e1c49c17d8166eae5dea92d0c61b39d9e0a88934347f068221ebbe23e6",
+      "git_blob_sha": "58fb29bef5a1d4082319a0f1913c84f5ac9247f3"
+    },
+    {
+      "kind": "exact-admitted-script",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/execution-runner.py.txt",
+      "bytes": 6981,
+      "sha256": "12f3261828782130fad74565a3b19477bb4ef5e87339481d24d0665dda8c431a",
+      "git_blob_sha": "03ccc0db8e8876380195b632ca6fb2f089932981"
+    },
+    {
+      "kind": "observed-tool-response",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/process-launch.observed.json",
+      "bytes": 9050,
+      "sha256": "11107e171ff09d039760f4b161357ffefc586e47f2eee3eec317ae1dfa8814a8",
+      "git_blob_sha": "89a4aa7d9edce25dcf4a479b96467c1ec3a9fe66"
+    },
+    {
+      "kind": "observed-tool-error",
+      "path": "qualification/evaluated-current-read-20261112/source-caller-1026bd0-attempt1/process-status-read-error.observed.json",
+      "bytes": 220,
+      "sha256": "3949a63082c431b4b853b9e79a3e7da46c57e2e0a7d6be3265ecdaf212449804",
+      "git_blob_sha": "7bda4c417c9d6366898e7627e3448b1061b62dec"
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "ancestor": "a4a1b5eb6cb45fc1182564e6b81026a2a2acf609",
+  "ours": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "theirs": "1cb195e590f7f5038a38625a943f259badea489a",
+  "original_blob_pins": {
+    "ancestor": {
+      "CALLERS": {
+        "git_blob_sha": "b56a7967f0ab444595704bb5995ae16007730c70",
+        "bytes": 1882184,
+        "sha256": "cb874ec8c9cda9fbb00190eb4be47e4f2cbff2c68afb846d592b0dc9c645eb4a"
+      },
+      "allowlist": {
+        "git_blob_sha": "a77dcc268033314ff2a51c8fa89aa0e474a72886",
+        "bytes": 12905,
+        "sha256": "6a73fb47671239729fab1faf2b39c12946ce02abd412230f1acf6b0887376d39"
+      }
+    },
+    "ours": {
+      "CALLERS": {
+        "git_blob_sha": "73fdfb4db43bee14530701784ab163a64dbb5956",
+        "bytes": 1895095,
+        "sha256": "5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f"
+      },
+      "allowlist": {
+        "git_blob_sha": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+        "bytes": 11847,
+        "sha256": "cbf36c921aa37e172e850985527a3582e6aa95e8740baca07cd6341180fbcb4a"
+      }
+    },
+    "theirs": {
+      "CALLERS": {
+        "git_blob_sha": "76908ded9658d8589cf98fea0623dc7a21d265b0",
+        "bytes": 1882653,
+        "sha256": "f470cd80f892e49a30c7295b0fe8dff2ccbcf760b5f373f02a1f588cac17827a"
+      },
+      "allowlist": {
+        "git_blob_sha": "cfab420d513590fc8dd7d2db3d6d118ea9b18eac",
+        "bytes": 13083,
+        "sha256": "213b87d23dac7e276be51c137cc839de151c71515a17e960f0f8030d8ad1c060"
+      }
+    }
+  },
+  "upstream_delta_only_two_metadata_paths": true,
+  "caller_line_edits": [
+    3217
+  ],
+  "before_count": 33,
+  "after_count": 40,
+  "ours_entire_block_byte_equal_to_theirs": true,
+  "ours_current_sole_pin": "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml",
+  "added_paths": [
+    "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+    "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+    "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+    "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+    "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+    "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs"
+  ],
+  "actual_callers": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "git_blob": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+      "bytes": 7210,
+      "sha256": "10ecb5252d75d1d31af71f424d4fc7c57ce4e58486062b23953ac9555010c676",
+      "actual_call_sites": [
+        {
+          "text": "        let channel = original_owner_command_channel_v1(",
+          "line": 99
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "git_blob": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+      "bytes": 4445,
+      "sha256": "439c9edad9175b82fb4298cc3b68feda8298ee16680736a3190f07ebaee6c449",
+      "actual_call_sites": [
+        {
+          "text": "        let mut channel = original_owner_command_channel_v1(",
+          "line": 39
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "git_blob": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+      "bytes": 9325,
+      "sha256": "d0b3994f8186631ea6e88c256e819644072244948922bf219889bf2f2db466ea",
+      "actual_call_sites": [
+        {
+          "text": "        let mut channel = original_owner_command_channel_v1(",
+          "line": 65
+        },
+        {
+          "text": "        let channel = original_owner_command_channel_v1(",
+          "line": 165
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "git_blob": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+      "bytes": 4792,
+      "sha256": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8",
+      "actual_call_sites": [
+        {
+          "text": "        let mut channel = original_owner_command_channel_v1(",
+          "line": 40
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "git_blob": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "bytes": 10825,
+      "sha256": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb",
+      "actual_call_sites": [
+        {
+          "text": "        let channel = original_owner_command_channel_v1(",
+          "line": 54
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "git_blob": "5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f",
+      "bytes": 10679,
+      "sha256": "3351b2bde358bbf965a683d67e25b19b68fee773dd07bad0be87cfc5c49ee2cc",
+      "actual_call_sites": [
+        {
+          "text": "        let channel = original_owner_command_channel_v1(",
+          "line": 56
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "git_blob": "6e849c4d06337f809bab785a8b934aca8f85e019",
+      "bytes": 3773,
+      "sha256": "b5f47358eedae703714b8abf8cdbef073ac9e4f4427683900da3a37395d972a4",
+      "actual_call_sites": [
+        {
+          "text": "        let mut channel = original_owner_command_channel_v1(",
+          "line": 37
+        }
+      ]
+    }
+  ],
+  "actual_call_site_count": 8,
+  "resolution": "retain prepared eight-path tree9ebc unchanged and add 1cb merge parent",
+  "no_execution": true,
+  "all_blockers_closed": false
+}

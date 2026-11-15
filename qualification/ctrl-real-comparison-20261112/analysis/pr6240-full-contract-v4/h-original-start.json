@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-I",
+      "-c",
+      "import sys; source=sys.stdin.read(); code=compile(source,'<ctrl6240-full-workflow-driver>','exec'); exec(code,{'__name__':'__main__','DRIVER_SOURCE':source})"
+    ],
+    "created_unix_ms": 1794481802677,
+    "cwd": "/home/qq",
+    "env_keys": [],
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "execution_mode": "operator",
+    "host": "ai395",
+    "id": "1a1cf734db5-2564-1a2c",
+    "idempotency_key": "neuro-ctrl6240-full-2411261-862531d11598-v4",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1cf734db5-2564-1a2c",
+    "request_digest": "222d30d85eabfe0bc5c9a0449a663970a680b300f59df14d16a7b4a7b69b3761",
+    "request_fingerprint": 2462678277100928523,
+    "ssh_target": "ai395-lan",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1cf734db5-2564-1a2c"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1cf734db5-2564-1a2c"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

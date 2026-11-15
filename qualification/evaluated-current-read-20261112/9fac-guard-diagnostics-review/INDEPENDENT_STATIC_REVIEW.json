@@ -1,0 +1,108 @@
+{
+  "kind": "complete static review of the helper row against original verifier schemas; NOT original Python execution",
+  "source_blob": "e1d4a1b8249a3107389447ed8dcac33117b679f2",
+  "verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+  "prior_review_limit": "previous marker/depth review omitted the minimum-two sequence schema and must not be treated as complete guard validation",
+  "schema": {
+    "row_object": true,
+    "path_string": true,
+    "required_nonempty_string_array": true,
+    "forbidden_nonempty_string_array": true,
+    "required_order_default_empty_list": true,
+    "required_function_order_array": true,
+    "all_items_objects": true
+  },
+  "required_missing": [],
+  "forbidden_hits": [],
+  "rules": [
+    {
+      "function": "fn new(",
+      "sequence_length": 4,
+      "all_sequence_elements_nonempty_strings": true,
+      "legal_unique_function": true,
+      "body_closed": true,
+      "nested_function_absent": true,
+      "sequence_ordered": true,
+      "top_level": [
+        {
+          "marker": "Self {\n            slot:",
+          "count": 1,
+          "depth": 1
+        }
+      ],
+      "literal_calls": []
+    },
+    {
+      "function": "fn try_take(",
+      "sequence_length": 8,
+      "all_sequence_elements_nonempty_strings": true,
+      "legal_unique_function": true,
+      "body_closed": true,
+      "nested_function_absent": true,
+      "sequence_ordered": true,
+      "top_level": [
+        {
+          "marker": "let value = {",
+          "count": 1,
+          "depth": 1
+        },
+        {
+          "marker": "Ok(ResidentLaneLease {",
+          "count": 1,
+          "depth": 1
+        }
+      ],
+      "literal_calls": []
+    },
+    {
+      "function": "fn state_mut(",
+      "sequence_length": 2,
+      "all_sequence_elements_nonempty_strings": true,
+      "legal_unique_function": true,
+      "body_closed": true,
+      "nested_function_absent": true,
+      "sequence_ordered": true,
+      "top_level": [
+        {
+          "marker": "self.value.as_deref_mut().ok_or(Error::CommitUncertain)",
+          "count": 1,
+          "depth": 1
+        }
+      ],
+      "literal_calls": []
+    },
+    {
+      "function": "fn drop(",
+      "sequence_length": 6,
+      "all_sequence_elements_nonempty_strings": true,
+      "legal_unique_function": true,
+      "body_closed": true,
+      "nested_function_absent": true,
+      "sequence_ordered": true,
+      "top_level": [
+        {
+          "marker": "let value = self.value.take()",
+          "count": 1,
+          "depth": 1
+        },
+        {
+          "marker": "let Ok(mut slot) = self.owner.slot.lock()",
+          "count": 1,
+          "depth": 1
+        },
+        {
+          "marker": "if slot.fenced || slot.value.is_some() || value.is_none()",
+          "count": 1,
+          "depth": 1
+        },
+        {
+          "marker": "slot.value = value",
+          "count": 1,
+          "depth": 1
+        }
+      ],
+      "literal_calls": []
+    }
+  ],
+  "validation": "NOT_RUN: no Python verifier, source suite or native test executed"
+}

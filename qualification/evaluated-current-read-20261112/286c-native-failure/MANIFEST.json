@@ -1,0 +1,147 @@
+{
+  "schema": "hepta.hosted-original-evidence.v1",
+  "source_sha": "286c567593ca6bb5e8cf4ee03602155526bf47ec",
+  "source_tree": "65269d8d380a4e0e772c8f0b726fbe8cdf5190ba",
+  "run": 43266970494,
+  "job": 131353000746,
+  "conclusion": "failure",
+  "whole_log": {
+    "bytes": 3745736,
+    "sha256": "9828bba3caf921719de67eece6a312b7d69a6076bd4b5ab6b8eeae761668f233",
+    "git_sha1": "75d97740b3b6ff1a70ef839b6931aabd25c3b7a3"
+  },
+  "parts_join": "concatenate native.job.log.part00..part11 raw bytes without separators",
+  "source_closure": 414,
+  "parser": 16,
+  "ordinary": {
+    "announced": 1738,
+    "passed": 1730,
+    "failed": 7,
+    "timed_out": 1,
+    "skipped_by_filter": 98,
+    "retries": 0,
+    "collector_failures": 8,
+    "junit_bytes": 433526,
+    "junit_sha256": "7c8e1a3d90df685430c4a03de9d34f97095391f0cf6e7617dc461abc53262c75"
+  },
+  "root_fix_fmt": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+  "claims_boundary": "Results belong only to exact 286c, not edaf. Expected-panic success output is not counted as failure. Final repeated failure section is not a retry.",
+  "items": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part00",
+      "sha": "2ccfa47d8b8216fe6d296ff18210c750e8247615",
+      "bytes": 340000,
+      "sha256": "ea4b42c36de6782944ce386913f6bab76eda89b6d00a7a6eaa6b79512f1d54a5",
+      "start": 0,
+      "end": 340000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part01",
+      "sha": "5a5ef99a5605cdd25d1587184aa929b5c5104170",
+      "bytes": 340000,
+      "sha256": "3e315d7be846ab3f35debfa93562a133066b7d073a4a49be4cdcea9c248df12d",
+      "start": 340000,
+      "end": 680000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part02",
+      "sha": "da629b7fb0824558d85d2d0de4f0736d48a49493",
+      "bytes": 340000,
+      "sha256": "fc807f1f516f8c82d399fc777792c96ef504b0968131bdcb4b9d4b590f58cef5",
+      "start": 680000,
+      "end": 1020000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part03",
+      "sha": "49ba9d9ce32a08e315e3147f6cbe020b26d75547",
+      "bytes": 340000,
+      "sha256": "46c07c5d350809c1f478321d8c1f208319816b0380f056012e17e62dc4e185d1",
+      "start": 1020000,
+      "end": 1360000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part04",
+      "sha": "19acbb7da53fa9db3ee6609162e62e646bf0ff3c",
+      "bytes": 340000,
+      "sha256": "98175c822e9ff36eade460cad2859412c0105f33ce8fc0f822fd114dfaa8acc1",
+      "start": 1360000,
+      "end": 1700000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part05",
+      "sha": "95b6259fa4cf5cd4437a65d91b959b44ea9637bc",
+      "bytes": 340000,
+      "sha256": "80c252ab93c56e536b4bb2178297e6ba81f9df8a25c0d641dcdd796d179bbc23",
+      "start": 1700000,
+      "end": 2040000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part06",
+      "sha": "dbc6a3321256084becb1b3bab1185bff1cc2b908",
+      "bytes": 340000,
+      "sha256": "4a12e69bbbddc533f111872fca00f9a27ddc3ffcbdc39568a4d3bb0d312bd808",
+      "start": 2040000,
+      "end": 2380000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part07",
+      "sha": "e4d8a014a5539023d23c7fc713580ea0c83cc9a7",
+      "bytes": 340000,
+      "sha256": "56a87e7b30e4d18aed54eb486be302860439b7ec31f95dd1b30128f5db380c0a",
+      "start": 2380000,
+      "end": 2720000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part08",
+      "sha": "5a49eaf852600055618c476db8e64ab74428865a",
+      "bytes": 340000,
+      "sha256": "0f520f1fdd7173cfa2b9bd0d1222343c06710048b79c17fc53137b49a1155504",
+      "start": 2720000,
+      "end": 3060000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part09",
+      "sha": "601ea12002cfed40891e18b737b6a8dd5384e517",
+      "bytes": 340000,
+      "sha256": "9a534f1982fb5b8b345e1aaf286fb750c8d7b54905e9f5e4dfdbbc4c33b3ef7a",
+      "start": 3060000,
+      "end": 3400000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part10",
+      "sha": "0dfc2c0c08c66657164a832c0ac9be8a39d17eb3",
+      "bytes": 340000,
+      "sha256": "5c163bb6eb5c8d25a8da4ae0b65edb405622f08c65503f3230546b15e720f9f6",
+      "start": 3400000,
+      "end": 3740000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/native.job.log.part11",
+      "sha": "4a17fa04116edffc506f12f7343a11a83acf1651",
+      "bytes": 5736,
+      "sha256": "ef89bf4017199cbee6ac717d371a7ee0c03321fac26c5e7c9ca5c2971466ed6f",
+      "start": 3740000,
+      "end": 3745736
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/failure-tail.original.log",
+      "sha": "f97364dc3003de9afadbb9d3fbe428049c39573e",
+      "bytes": 17698,
+      "sha256": "3e6f2a2552b9c0483bca71d94b40c2cc52960907584b86e29d578ecb28430c69",
+      "start": 3722011,
+      "end": 3739709
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/ordinary-records.original.jsonl",
+      "sha": "be9546898e3729d51651c9a7f6c4b59e2a39e076",
+      "bytes": 2960,
+      "sha256": "bd93026c7be14df0bd705789df2ba39a88dcfee64b5e348a2b630243a334e0ac"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/286c-native-failure/jobs.original.json",
+      "sha": "59da38a4ca84524f80cfee4a296167eb4c2ec58b",
+      "bytes": 6338,
+      "sha256": "5f8fc901e4ba0480ffa88eb779e5400343d366e5c39969a0a53acf19ca91f06d"
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "scope": "Original exact-source hosted native result; not scientific adoption or Root authorization",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_sha": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "run_id": 43297579480,
+  "job_id": 131459876749,
+  "conclusion": "failure",
+  "source_closure": {
+    "methods": 506,
+    "passed": 506,
+    "failed": 0,
+    "elapsed_seconds": 131.592
+  },
+  "parser": {
+    "methods": 16,
+    "passed": 16,
+    "failed": 0,
+    "elapsed_seconds": 0.129
+  },
+  "ordinary": {
+    "selected_methods": 1783,
+    "passed": 1768,
+    "failed_assertion_or_error": 10,
+    "sigabrt_stack_overflow": 4,
+    "timed_out": 1,
+    "nextest_failed_including_abort": 14,
+    "nextest_skipped_outside_selection": 100,
+    "retries": 0,
+    "test_elapsed_seconds": 711.029,
+    "wrapper_elapsed_seconds": 955.246614195,
+    "command_exit_code": 100
+  },
+  "junit_collector_from_original_job_log": {
+    "testcases": 1783,
+    "failures": 15,
+    "errors": 0,
+    "skipped_in_xml": 0,
+    "original_artifact_independently_downloaded": false
+  },
+  "subsequent_root_suite": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+  "subsequent_fix_and_format": "NOT_REACHED_AFTER_ORDINARY_FAILURE",
+  "source_identity": {
+    "before_after_clean": true,
+    "tracked_inventory_files": 15294,
+    "inventory_sha256": "45a9d14ed88566179a5792e1a980d9dec3dc129c9d7fb0073a63853b7406c09e",
+    "full_inventory_payload_independently_downloaded": false
+  },
+  "original_log": {
+    "job_id": 131459876749,
+    "bytes": 3842011,
+    "sha256": "2fa1c1754d8e5e3ff600915650bc17e09d7a71ce41795ffcf3f1b58f2c7b3529",
+    "git_blob_sha": "d65c69055773436a43f0a065a34d68fba6c36608",
+    "format": "exact decoded GitHub job log text including timestamps",
+    "concat_order": [
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part001.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part002.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part003.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part004.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part005.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part006.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part007.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part008.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part009.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part010.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part011.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part012.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part013.log.txt",
+      "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part014.log.txt"
+    ]
+  },
+  "artifact_as_reported_by_job": {
+    "id": 13981847772,
+    "bytes": 3846768,
+    "sha256": "791f2b7c6484f52aae7c99965245480acefb849617357e4e8f42b5c578bab746",
+    "members": 22,
+    "downloaded": false
+  },
+  "files": [
+    {
+      "name": "JOB.part001.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part001.log.txt",
+      "bytes": 290002,
+      "sha256": "75b983b2a75164eaba4e4ab242c25c80c48179083056b36502f8ac3571154a3c",
+      "git_blob_sha": "f2f889c63b4a8b56579f93ea3c5e72a8438ef1e6",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part002.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part002.log.txt",
+      "bytes": 290000,
+      "sha256": "e11a28736ce7c456ad4a4f341e029ed21b57cfb85067e8d4aa649f57cb7b1d0a",
+      "git_blob_sha": "329e374f75d8cb02025772188439cb88196fff57",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part003.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part003.log.txt",
+      "bytes": 290000,
+      "sha256": "77ac986a5d4ce4bf85592b63261c5fed019047647b9e05e8417613eba4f2b764",
+      "git_blob_sha": "88c29b4b933acd707ce9b66cb330edeb37ef7336",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part004.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part004.log.txt",
+      "bytes": 290000,
+      "sha256": "d853c377b9c2cb57e59c73f1bca81eb95aab60fe5c01ae114d81190fb17ae36e",
+      "git_blob_sha": "f7e475cff5b57a67b6164da8afae7f6ad0f8d490",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part005.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part005.log.txt",
+      "bytes": 290000,
+      "sha256": "61868617ebfeeed99e295eabd461448199ee08cd111b83c545ec36b3a7ee5583",
+      "git_blob_sha": "5c4e8bb479c018e96d5fbc81a54fead5290ec9f3",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part006.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part006.log.txt",
+      "bytes": 290000,
+      "sha256": "65ca5593ddd8bbdefe900b50ec6ca49b12250b79dbf07b5ff007226300dcd7ea",
+      "git_blob_sha": "1347a89374a3ff779e1f77709b06db0e4ba87157",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part007.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part007.log.txt",
+      "bytes": 290000,
+      "sha256": "f3cc213f468738917f97a481c775c771f4b4d5dec28962dd4b985643a980138f",
+      "git_blob_sha": "4deab3024f86e149547e36ecf9dbad8265e48c07",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part008.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part008.log.txt",
+      "bytes": 290026,
+      "sha256": "0545af118ae9f5ae83a23d0755562b768913007853cb74b9e644bde1e73aa2df",
+      "git_blob_sha": "42ceb26595bd3df395054114653b7bd77aa7c6a5",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part009.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part009.log.txt",
+      "bytes": 291926,
+      "sha256": "fadf283a3fc453d8e318ede7782a31bd09039739ac8e2045331b451691ace888",
+      "git_blob_sha": "b1eca92db30dba6b6e3577c4cd425c7ff8e32c3c",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part010.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part010.log.txt",
+      "bytes": 291218,
+      "sha256": "6f9506ff156d895f1979fd4673ddd8c75a1f948dae735867d37b474b31333f96",
+      "git_blob_sha": "f5a117f236a585263b48e15b9dc41b8f35523e7d",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part011.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part011.log.txt",
+      "bytes": 292409,
+      "sha256": "6929ac52d3d2af957ac5e0214076a373816c54adb607dc21b7d3244146d933d0",
+      "git_blob_sha": "f48026f5457d54fb1285be800425cb63fe2d2416",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part012.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part012.log.txt",
+      "bytes": 292480,
+      "sha256": "f000a1f6183fe33ed9dd6f47d3e0a33d08db5b2cdf8f69734ec36a4bdbd8db42",
+      "git_blob_sha": "13ed7a422e1fffdd96f0b14f0bfde8417f54e63c",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part013.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part013.log.txt",
+      "bytes": 292742,
+      "sha256": "457f82496954c20aa97e6214edeacac7ba90d489d80401e981fcf5d0a1a08388",
+      "git_blob_sha": "1d6d449beb5185583c9df2c02190dc6f4275db11",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOB.part014.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOB.part014.log.txt",
+      "bytes": 61208,
+      "sha256": "b285d89f51cec80c31d520de2f882207fd4f646953cf456b416c1e05dd37cb4c",
+      "git_blob_sha": "4184849c6eb908af63d6d34fd388fb951d96d4f8",
+      "origin": "contiguous decoded original GitHub job log"
+    },
+    {
+      "name": "JOBS.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/JOBS.json",
+      "bytes": 6338,
+      "sha256": "867414cd41fcb40d00db1e451e27a6049c626dc43da39e1d5778301e8c6a410d",
+      "git_blob_sha": "50a4e361cc5556021b00c8ff0e9b76c8710689d4",
+      "origin": "original GitHub Actions jobs API response, observed 2026-11-12T20:40:02.921Z"
+    },
+    {
+      "name": "SOURCE_CHECKOUT_FROM_JOBLOG.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_CHECKOUT_FROM_JOBLOG.json",
+      "bytes": 256,
+      "sha256": "bfd9e51503cb32d74953b2d840adb84939ffc8266338e9cd4e10c24dc410768a",
+      "git_blob_sha": "4c00365ed3e55cc0684b6ba9a9c79a60eb257bdf",
+      "origin": "original JSON payload line copied from timestamped job log, not independently downloaded artifact member",
+      "original_job_log_line": 9840
+    },
+    {
+      "name": "SOURCE_EXECUTION_FROM_JOBLOG.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_EXECUTION_FROM_JOBLOG.json",
+      "bytes": 1326,
+      "sha256": "a47e22d068971149a3ccfda102f9a1cddc5c37a78dd59e1008cf9038a6193a1f",
+      "git_blob_sha": "e84d33318fcbbed4086b5b94b73ca9f88c18d5bd",
+      "origin": "original JSON payload line copied from timestamped job log, not independently downloaded artifact member",
+      "original_job_log_line": 10370
+    },
+    {
+      "name": "HELPER_BUILD_FROM_JOBLOG.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/HELPER_BUILD_FROM_JOBLOG.json",
+      "bytes": 1499,
+      "sha256": "db24e2e94657a8be8f5eb116c8d2a838d8738585644d8574ab87976c5c546524",
+      "git_blob_sha": "4e8aa38346b6c34153d507bd5178a15663ff6a62",
+      "origin": "original JSON payload line copied from timestamped job log, not independently downloaded artifact member",
+      "original_job_log_line": 12165
+    },
+    {
+      "name": "SOURCE_BEFORE_TESTS_FROM_JOBLOG.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_BEFORE_TESTS_FROM_JOBLOG.json",
+      "bytes": 260,
+      "sha256": "c60c09cc3574a39b3fcdc4fa966df54df6fd383fb38327b4f0b6b0450a3f1ae7",
+      "git_blob_sha": "3979542f0f6d08fa09b1d4dbcb5339de1e748998",
+      "origin": "original JSON payload line copied from timestamped job log, not independently downloaded artifact member",
+      "original_job_log_line": 12187
+    },
+    {
+      "name": "ORDINARY_EXECUTION_FROM_JOBLOG.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/ORDINARY_EXECUTION_FROM_JOBLOG.json",
+      "bytes": 1629,
+      "sha256": "2e6625572af3327abcd9175334eb912a4edb6929a914bf2a73d3212f46e37abe",
+      "git_blob_sha": "13881f1e0b8dbe725b7bacff3b4a18e8dcc24f2b",
+      "origin": "original JSON payload line copied from timestamped job log, not independently downloaded artifact member",
+      "original_job_log_line": 32365
+    },
+    {
+      "name": "ORDINARY_JUNIT_FROM_JOBLOG.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/ORDINARY_JUNIT_FROM_JOBLOG.json",
+      "bytes": 1079,
+      "sha256": "55383fc87d4257d581bbabb6f9849e5f00ef58e9c240408e208e4687f932a56f",
+      "git_blob_sha": "30ddde21a7ca181a8c5748f8c260cee8c4d6e1aa",
+      "origin": "original JSON payload line copied from timestamped job log, not independently downloaded artifact member",
+      "original_job_log_line": 32366
+    },
+    {
+      "name": "SOURCE_FINAL_FROM_JOBLOG.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/SOURCE_FINAL_FROM_JOBLOG.json",
+      "bytes": 253,
+      "sha256": "e6a6b994449092d91c2a29d8b2c9a269fb7beac75dbc9b45cae033d07299832d",
+      "git_blob_sha": "c46a8337cacf4ea31617ef4b85b0b76d01f3ae2d",
+      "origin": "original JSON payload line copied from timestamped job log, not independently downloaded artifact member",
+      "original_job_log_line": 32368
+    },
+    {
+      "name": "METHOD_RESULTS.jsonl",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/METHOD_RESULTS.jsonl",
+      "bytes": 568015,
+      "sha256": "7a7ce751812cd407c1697813e77eabf3fd8790128253056bccfd0b83a20f05fb",
+      "git_blob_sha": "84b852a3e7e5ec2ebec0ef9ae70c6f5454468eeb",
+      "origin": "derived unique (crate, fully qualified method) nextest status index; occurrences point to original log lines"
+    },
+    {
+      "name": "FAILURES_ORIGINAL_EXCERPT.log.txt",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/FAILURES_ORIGINAL_EXCERPT.log.txt",
+      "bytes": 30014,
+      "sha256": "63fe814adb1dc912a222648497de6c8e0de9e06c1274146e7ca2df8e2a5e60b5",
+      "git_blob_sha": "5c908ff80c03b1186d75522dee07ecfa730ab116",
+      "origin": "unaltered contiguous original decoded job log excerpt",
+      "first_line": 32101,
+      "last_line": 32363
+    },
+    {
+      "name": "FAILURE_INDEX.json",
+      "path": "qualification/evaluated-current-read-20261112/source53-native-failure/FAILURE_INDEX.json",
+      "bytes": 10252,
+      "sha256": "7720e6e47ac6904486e0198363100ed1dd28c9599d760a68fd43c21f6191b056",
+      "git_blob_sha": "b50243596e212d21bf49a5dbd41e1cfb6d4ab356",
+      "origin": "derived failure index with original fully qualified identities and source log lines"
+    }
+  ],
+  "readback": {
+    "verified": 25,
+    "whole_string_equal": true,
+    "sha256": "2fa1c1754d8e5e3ff600915650bc17e09d7a71ce41795ffcf3f1b58f2c7b3529"
+  },
+  "counting_notes": [
+    "Nextest terminal status lines appear in both progress and final output; METHOD_RESULTS deduplicates by complete crate and fully qualified method identity, retaining both line positions.",
+    "The four SIGABRT stack overflows are part of nextest's 14 failed methods and JUnit's 15 failures; one additional method timed out.",
+    "Original JSON payload lines preserve exact bytes including nanosecond integers; they are not reserialized artifact files.",
+    "Unrelated panic text in passing negative tests is not counted as a failed method.",
+    "No result is transferred from source84 or other sources."
+  ]
+}

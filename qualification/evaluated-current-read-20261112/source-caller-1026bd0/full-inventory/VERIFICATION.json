@@ -1,0 +1,57 @@
+{
+  "gzip_bytes": 777704,
+  "gzip_sha256": "a9a65b8ff183f5f359e64ca6179ba9d6de760aede16d841a1d078eb3dd2b4cc8",
+  "gap_free_original_spans": 32,
+  "gzip_flags": 0,
+  "decoded_bytes": 2739429,
+  "decoded_sha256": "8de3eb210fd92cbf1810930ce7a86cca766689ca188386d3a8bdde677a21e6e2",
+  "gzip_crc32": "92b91083",
+  "deflate_blocks": 37,
+  "decoder_reference_blob": "3a42efacae76ecb8522ed90e9204cccfe72d8255",
+  "json_type": "array",
+  "json_keys": null,
+  "json_length": 15046,
+  "raw_original_gzip_preserved": true,
+  "raw_original_json_not_reserialized": true,
+  "tests_or_jobs_started": false,
+  "actors_started": 0,
+  "unique_paths": 15046,
+  "duplicate_paths": 0,
+  "selected_original_inventory_records": [
+    {
+      "bytes": 12803,
+      "mode": "100644",
+      "path": ".github/blob-size-allowlist.txt",
+      "sha256": "007182d5c7e351e5d227b732706a520d2ef8b5dafdd059c6877dd22b1e17cb18"
+    },
+    {
+      "bytes": 1108372,
+      "mode": "100644",
+      "path": "CALLERS.toml",
+      "sha256": "64153616508ffa8319f06cdf209dba5b1b19d4f6dc202293cfe286c8dafbbf02"
+    },
+    {
+      "bytes": 38402,
+      "mode": "100644",
+      "path": "scripts/verify_hepta_callers.py",
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    }
+  ],
+  "source_claim_from_original_handoff": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-1026-source-caller-v2/source-after.files.json.gz",
+  "original_captured_stat": {
+    "ctime_ns": "1794487123682982529",
+    "inode": "76589385",
+    "mtime_ns": "1794487123682982529"
+  },
+  "original_source_inventory_is_after_snapshot": true,
+  "original_file_was_not_written_or_recomputed": true,
+  "remote_read_scope": "Existing create-only base64 transfer files of the original source-after gzip; no process_start, test, actor, config or source mutation.",
+  "new_read_operations": 1,
+  "continued_existing_read_operations": 1,
+  "transport_timeout_count": 1,
+  "timeout_resolution": "Same original completed operation, same offset212992 and same limit16384 returned immutable matching page on one subsequent read.",
+  "original_jobs_replayed": 0,
+  "candidate_results_inferred": false,
+  "source_identity_limit": "The 1026 source association comes from the original handoff and run evidence. This transfer does not qualify the later a96 merge candidate or prove execution from inventory alone."
+}

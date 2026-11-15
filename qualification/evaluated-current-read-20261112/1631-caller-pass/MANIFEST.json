@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.original-caller-job-archive.v1",
+  "source_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "source_tree": "55f93e74a4f5e3c570e1cd837cb9998998d1dadc",
+  "run_id": 43243479903,
+  "job_id": 131269839839,
+  "job_status": {
+    "id": 131269839839,
+    "name": "caller-proof",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 43243479903,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Verify the full caller inventory and retain original execution",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Retain complete caller proof evidence",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      }
+    ]
+  },
+  "complete_job_log": {
+    "bytes": 2142662,
+    "sha256": "2f55384b7af3b01633ccd932c1ebade829f4c417d8bdc9bbdc9692b67bb4d212",
+    "parts": [
+      {
+        "index": 0,
+        "path": "qualification/evaluated-current-read-20261112/1631-caller-pass/job-131269839839.log.part-00.txt",
+        "blob": "1dd3624e41b5c8bb178eb6d95a7546fd14ceb2b9",
+        "offset": 0,
+        "bytes": 350000,
+        "sha256": "224d556b6e20f2a6d1dccf60144c911591d51a7105cccb186ef03f01e7840f05"
+      },
+      {
+        "index": 1,
+        "path": "qualification/evaluated-current-read-20261112/1631-caller-pass/job-131269839839.log.part-01.txt",
+        "blob": "80f2bc0104ae065f7db8c084d419f169679cd425",
+        "offset": 350000,
+        "bytes": 350000,
+        "sha256": "d56823bdda77ec5353cb74e1892606ef2187b6865978b3b224b21dc32772489f"
+      },
+      {
+        "index": 2,
+        "path": "qualification/evaluated-current-read-20261112/1631-caller-pass/job-131269839839.log.part-02.txt",
+        "blob": "ba9b94f603f7d31684aa93c20fb982561ce0e308",
+        "offset": 700000,
+        "bytes": 350000,
+        "sha256": "a0d49746cb3738c5626d1ec8299983f8047ec40b88aa4c6ef16b36ca970be340"
+      },
+      {
+        "index": 3,
+        "path": "qualification/evaluated-current-read-20261112/1631-caller-pass/job-131269839839.log.part-03.txt",
+        "blob": "7b134ee2054b2c9fa5bc7dfc6ede40d9a92f6a3f",
+        "offset": 1050000,
+        "bytes": 350000,
+        "sha256": "5e33055d2480429f5e80c49be7b1bb36ff0b33481db168a7a7d6abcb4c1a36df"
+      },
+      {
+        "index": 4,
+        "path": "qualification/evaluated-current-read-20261112/1631-caller-pass/job-131269839839.log.part-04.txt",
+        "blob": "2eeebbbf810d2f072096b888c70894ffb8585e04",
+        "offset": 1400000,
+        "bytes": 350000,
+        "sha256": "d5c02ff63a7f2db390174d5499bc856953acfac6e72f58dae7d685ce1ebfba44"
+      },
+      {
+        "index": 5,
+        "path": "qualification/evaluated-current-read-20261112/1631-caller-pass/job-131269839839.log.part-05.txt",
+        "blob": "b4fad8842850155a74fc55671e94631e370e2d73",
+        "offset": 1750000,
+        "bytes": 350000,
+        "sha256": "c72bc4a175012aeea9965b5caed0cf4bf7a8d1cba597ee54ca4fe6a0404c6930"
+      },
+      {
+        "index": 6,
+        "path": "qualification/evaluated-current-read-20261112/1631-caller-pass/job-131269839839.log.part-06.txt",
+        "blob": "9407429168e504ce69b31fa488d2b5dcc86ea60c",
+        "offset": 2100000,
+        "bytes": 42662,
+        "sha256": "cdcad6bf88cfc9f39d54bc7cddea8af6c4a562c10fc2857b02d0ca39d0781bf4"
+      }
+    ],
+    "concatenation": "Join raw UTF-8 bytes in index order with no separators."
+  },
+  "scope": "Original exact-source caller proof only. This does not upgrade ordinary/Root/scientific qualification or a later source candidate.",
+  "artifact_metadata_from_log": {
+    "id": 13957298816,
+    "name": "daemon-learning-caller-proof-1631e01fd086f79bef8bf19bd6fe5859565b7976-1",
+    "bytes": 21737,
+    "sha256": "e7f28c242989fec6aca49eba5adbae41b526a33e916473ade674bbac6ba07a73"
+  }
+}

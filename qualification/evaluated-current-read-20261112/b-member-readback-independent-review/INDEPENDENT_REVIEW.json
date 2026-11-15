@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.b-member-readback-independent-static-review.v1",
+  "reviewer": "/root/replay_perception_research",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "candidate_tree": "f5952294ad9399c5b751576a419987241997ef0e",
+  "candidate_manifest_blob": "318554479f297f01f2e615f283ea752c280c75bc",
+  "scope": "Final eight-path candidate only. Actual sources, original owner implementations and tests were independently read; no Rust, fmt, Clippy, native, source suite, whole caller scan, Bazel, h, actor, commit, ref or push was executed.",
+  "conclusion": "NO_CONCRETE_STATIC_BLOCKER_FOUND. Suitable for the parent to integrate and run the original gates. This is not a compilation, latency, native success or production owner assembly result.",
+  "findings": [],
+  "checks": [
+    {
+      "topic": "Single-call ownership, cancellation and source identity",
+      "sources": [
+        "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+        "f5f74bba8822b567ec732225226d1e5dd2d2ec41"
+      ],
+      "observations": [
+        "ReadbackMembers is created only by the new private readonly Host call. It owns pins cloned from each actual member Trainer Arc and Qualification config; no endpoint, source owner, signer or journal is reopened.",
+        "Every invocation receives a new Arc<()> call identity and a new member-vector allocation. The proof borrows that invocation, is not Clone/serde, and is not stored on Host or returned as evidence.",
+        "begin consumes admission by CAS; read replaces the cursor with Refused before validation or await. A rejected or cancelled slot cannot be retried through the same proof. finish consumes the proof and requires Complete plus exact call-identity Arc and source-allocation Arc.",
+        "The new readback_call rejects an already composed ReadbackMembers source; the existing call method also rejects that variant. There is no nested or cross-request proof creation path.",
+        "The actual Host retains its existing owner mutex, complete-response fence and original retained-receipt equality checks. The candidate adds no guard across await and no reentrant owner callback."
+      ]
+    },
+    {
+      "topic": "All member configuration fields and namespace binding",
+      "sources": [
+        "514d6cbf873acddb19c7e4540d198e3a498fe084",
+        "3c8f28b3121936b6cf54dff190a055d72ada0a9e",
+        "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206"
+      ],
+      "observations": [
+        "require_member_source first invokes unchanged require_source, which compares the actual client object pointer, complete Training snapshot, frozen scope, original Training signature, Generator principal and original verifier trust/scope/objective digests.",
+        "It additionally compares complete plan, execution namespace, Qualification namespace, Evaluator principal, retention receipt digests, unlearning digest, Product evidence and execution evidence.",
+        "The exact ProductQualificationContextV1 has four fields: generator, evaluator, retention_receipt_digests and unlearning_receipt_digest. Every field is covered. Every QualificationConfig field is compared directly or through the pre-existing verifier digest identity contract; this is not a claim of arbitrary verifier object identity.",
+        "Every logical slot still verifies the original Generator signature at current time. finish authenticates every member at the final common time. The original physical first and last read also require the returned full signature to equal the original pin."
+      ]
+    },
+    {
+      "topic": "Ordered physical slots and unchanged original tails",
+      "sources": [
+        "07c68b6971721515ad819544d9cc8dc442a20336",
+        "49f23508db7805fc7fec663af10269f39fa3a271",
+        "a193092ffd45d4c894999b126072f6d9c48fb7b2",
+        "91a3a5b87a1746d1cb4178cc652f9480574986c1",
+        "0416c8965a3cb48e60568ac48b3f1c25dffd19a1"
+      ],
+      "observations": [
+        "Each panel read has two ordered passes of primary then retention members. Each member pass has the existing prepare and finish_readback Training slots. Two panel reads around the actual receipt read make 8 slots per member.",
+        "For m members, width=2m, member=(slot mod width)/2 and local_slot=2*floor(slot/width)+(slot mod 2). For exactly 8m slots this visits local slots 0..7 once for each member. Only original local 0 and 7 perform Trainer transport reads, at their original positions.",
+        "m>=2 and checked 8m bound make 2m, indexing and slot increments safe for every privately constructed proof. A completed proof cannot advance to another slot.",
+        "Every original Source/cohort and physical Cell before/after read, original execution and Qualification journal read, original qualification seal and before/after panel equality remain in the called implementations.",
+        "The actual ReceiptOwner middle primary Trainer read is preserved. The final real receipt journal read still follows all panel I/O, and final time, proof, panel, signer, signed receipt and retained full-response checks remain in their original order."
+      ]
+    },
+    {
+      "topic": "Execute and Bound preservation",
+      "sources": [
+        "0b328d77083060c943234ae0d8bf68088474bd6f",
+        "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+        "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+        "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+        "90b880ff4446600afc669fe36fca7437232fd04e"
+      ],
+      "observations": [
+        "Host Execute selects the same original call method. Individual Execute remains Individual and performs all old physical reads; no pre-signing check is moved to after commit.",
+        "Readback on an existing Bound source delegates to the same original call. Bound slot 0/final-slot transport, actual Trainer identity, immutable pin authentication and finish identity remain equivalent.",
+        "Original from_original_training_readback, require_source and authenticate function text is byte-identical. The consuming Bound factory is wholly unchanged.",
+        "After substituting only the new action-based call selection, the entire read_original_completion function equals the base function. Other host runtime behavior is not changed."
+      ]
+    },
+    {
+      "topic": "Rust visibility, ownership and lifetimes",
+      "observations": [
+        "The new concrete Member alias exactly matches the concrete FileAnchorWitnessStore Host panel. Private config access occurs within descendants of the original qualification-owner module, not through a new public getter.",
+        "The member vector owns cloned configs and original Arc handles, so constructing it does not retain a borrow of Owners across the later mutable panel read. The proof borrows only the local Call. The immutable pin borrow ends before cursor mutation.",
+        "The match arms return compatible borrowed Pin values; Vec collect is constrained by ReadbackMembers(Arc<Vec<Pin>>). Existing Bound pins already carry the same underlying Send/Sync field types.",
+        "New helper methods are in cfg(test) modules. The test helper holds the existing std mutex only in spawn_blocking while using the original runtime block_on. New tests explicitly import pretty_assertions macros. No concrete type, privacy or borrow failure was found statically."
+      ]
+    },
+    {
+      "topic": "Three actual mechanical regressions, counts and cleanup",
+      "sources": [
+        "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+        "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+        "a5afcbc3ad370d28dd6752a96313e7a24eb8ed7a",
+        "c45505b07af09894ff697030bcb57838e4bc5a43",
+        "a2fefd967723c342e51784b0b0aafbadff4fbfb6",
+        "a69bfe96936d66872316958bd098a02b3323e3bd"
+      ],
+      "observations": [
+        "The positive case executes the real B once, makes fourteen separate readback requests on the same original finite peers, compares the full original receipt and original/upstream bytes each time, rejects a second Execute, then checks command count 15 and original Trainer counts [54,38]. The formula is setup [2,2] + Execute [10,8] + 14*[3,2]. The old primary demand was 138, beyond its unchanged 128-frame fixture budget.",
+        "The lifecycle test uses two distinct member Arcs with equal Training signatures, and rejects a cross-call proof, repeated begin, incomplete finish, a wrong actual member, changed Qualification namespace, same-call replacement source allocation and an extra slot. It checks original bytes and exact counts [7,7] = setup2 + one partial physical read + two complete calls of2 per peer.",
+        "The withdrawal test pauses after the first actual panel, uses the original BFixture::withdraw_target -> actual Source owner withdraw_source(run), then resumes. The second panel fails, incomplete finish refuses, and panel remains fenced. Original evaluator files stay byte-identical while real upstream bytes change.",
+        "Subsequent actual Host commands preserve first PredecessorUnavailable followed by fenced CommitUncertain, each exactly one command frame. Counts [3,3] are setup2 + the first panel physical read1 per member; rejection occurs before new member-tail Trainer I/O.",
+        "Worker host Arcs are dropped by the completed blocking tasks before fixture.finish, command clients are explicitly closed and original threads joined. HostFixture finish drops Host before joining the original member peers and then shuts down original owners. The withdrawal resume is sent before propagating a withdrawal error; dropping the channel also releases a blocked receiver.",
+        "The unchanged finite fixture really loops at most 128 requests and checks original operation/request ID/receipt digest. The two member peers have separate counters. These remain explicit same-process test custody; no ordinary production assembly or Root authority is claimed."
+      ]
+    },
+    {
+      "topic": "CALLERS, QA and exact pins",
+      "observations": [
+        "All eight base/post leaves were independently read and hashed, and both base-tree and candidate-tree path bindings were read from Git trees.",
+        "All 628 old boundary objects and their relative order are equal. The only 629th boundary is readback_call with the actual Host as its sole product caller. Original privileged IDs are preserved; only that exact ID is added.",
+        "All 429 protected-file occurrences were compared without collapsing duplicate paths. Only the existing Host and proof entries change. Existing forbidden lists and whole-file requirements remain; function guards increase 1349->1351.",
+        "A separate local textual check found every ordered marker and top-level depth of all 18 affected function guards in the actual candidate source. This is not execution of the repository checker or mutation test suite.",
+        "Original QA methods 6 are retained plus one readonly-member method. Existing owner/tail/signature/transport rejection checks remain. The actual exact53 Host service SHA256 d076b90cf0cfbb8a059681aa590b7a353b1d81df2bf440aa584e71ddb81e3640 and receipt-owner b69a53d8048deba5ef0f36bdb92f0d85362ff5e783ba9301ee74e6f35d5be4c7 match independently read bytes.",
+        "The allowlist has exactly one replacement: prior CALLERS SHA256 -> actual final 1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a. All other allowlist bytes are unchanged and there is one active CALLERS line."
+      ]
+    }
+  ],
+  "static_per_connection_counts_not_execution": {
+    "Individual_successful_Readback": {
+      "primary_before": 9,
+      "primary_after": 3,
+      "each_retention_before": 8,
+      "each_retention_after": 2
+    },
+    "Individual_Execute_unchanged": {
+      "primary": 10,
+      "each_retention": 8
+    },
+    "Bound_unchanged": {
+      "Execute_shared_Trainer": 4,
+      "Readback_shared_Trainer": 3
+    },
+    "existing_host_tests_expected_totals": [
+      {
+        "method": "original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+        "old": [
+          34,
+          30
+        ],
+        "new": [
+          19,
+          15
+        ],
+        "reason": "A missing receipt read is a half call (old4/new1 per member), plus one unchanged Execute and two complete readonly calls."
+      },
+      {
+        "method": "original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+        "old": [
+          10,
+          10
+        ],
+        "new": [
+          4,
+          4
+        ],
+        "reason": "Setup2 plus two incomplete readonly panel calls, old4/new1 each."
+      }
+    ],
+    "new_methods_and_totals": {
+      "original_evaluation_member_readback_keeps_full_original_bytes_below_peer_bound": [
+        54,
+        38
+      ],
+      "original_evaluation_member_proof_refuses_partial_cross_call_source_and_extra_slots": [
+        7,
+        7
+      ],
+      "original_evaluation_member_readback_refuses_actual_source_withdrawal_inside_call": [
+        3,
+        3
+      ]
+    }
+  },
+  "required_next_validation_and_limits": [
+    "Run original formatting, compile/Clippy, full source/caller gates and all relevant native tests on the integrated source. No Rust formatting success is asserted here.",
+    "The three new tests and unchanged Bound tests must execute; a static count or newly added assertion is not a completed runtime result.",
+    "Original frame/lifetime policies and caps are unchanged: Host command keeps its original policy, and nested Evidence retains its existing policy. No endpoint is exchanged for a fresh budget.",
+    "This Individual-only improvement leaves production Bound Readback3/Execute4 and the documented Version-only 210+30R demand unchanged. Whole bridge <=128 remains OPEN.",
+    "No throughput, latency, 600ms failure cause, actual cap-exhaustion resolution, trained-model improvement, scientific benefit or formal owner decision is inferred."
+  ],
+  "status": {
+    "rustfmt": "NOT_RUN",
+    "Rust_compile_or_test": "NOT_RUN",
+    "Clippy": "NOT_RUN",
+    "repository_source_suite": "NOT_RUN",
+    "full_caller_scan": "NOT_RUN",
+    "Bazel": "NOT_RUN",
+    "h_calls": 0,
+    "actor_calls": 0,
+    "ref_changes": 0,
+    "research_outcome": "HOLD",
+    "owner_decision": null
+  }
+}

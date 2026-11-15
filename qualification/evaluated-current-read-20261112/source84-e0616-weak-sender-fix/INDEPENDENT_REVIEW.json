@@ -1,0 +1,68 @@
+{
+  "schema": "hepta.e0616-independent-static-review.v1",
+  "source_parent": "84ee9c2ed0db8b20b792634d775f9b4f97a34578",
+  "candidate_manifest": "d1083684c3cdd2bf900d48848cd64b28817b1385",
+  "status": "NO_SPECIFIC_STATIC_BLOCKER_FOUND_NOT_COMPILED_NOT_FMT_NOT_EXECUTED",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime.rs",
+      "base": "edaca64612927bfd04a41faac7331f4965acc623",
+      "post": "022ca082e2846c4c969f883c53f591b4400b8282",
+      "post_sha256": "ace4fd0d4ac2cf8218333bbc42cc7c3605d1608a5c40462b75dac2ff33963c45",
+      "post_bytes": 17603,
+      "exact_forward_and_inverse_edit": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "base": "734b249c7cc0ac37209ed9d47f53072ca58a956e",
+      "post": "37446dfe1c2bb22db40b995a8a4c00db69c1665e",
+      "post_sha256": "b1a41815873567dd6d9fbd0a297faa6172ccb690be83b1df09ba2a93e736c85a",
+      "post_bytes": 14196,
+      "exact_forward_and_inverse_edit": true
+    }
+  ],
+  "module_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blob": "52877e53e769277a0bdf2bafd33054629ac97218",
+      "bytes": 72278,
+      "sha256": "9e37aad01df37d27a279581f9fe5535d392bbc267eed99ef8c07703bc9c4b69e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_tests.rs",
+      "blob": "30d620356c2922a5282850afa0f801b860116b12",
+      "bytes": 23103,
+      "sha256": "399eafc471da9ec9279e93fc0783f7bed6af8dd9fdced2e0bdd7b56b60c1e451"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence_tests.rs",
+      "blob": "1816edb724629e7b566817fda9e61ed057309778",
+      "bytes": 29456,
+      "sha256": "77d2a578eaf6879b38379334ed241dd8332c1c217f0df1c5e629c0e8c884897c"
+    }
+  ],
+  "findings": [
+    "The runtime handle is defined in neuron_generation_runtime; its sender field remains private.",
+    "GenerationCommand is already pub(crate), so the pub(crate) accessor's WeakSender<GenerationCommand> return type has compatible crate visibility.",
+    "mpsc is tokio::sync::mpsc; the accessor return type and the unchanged GenerationFiles field are the identical WeakSender type.",
+    "neuron_generation_runtime_tests.rs includes runtime_test_support below the defining module; learning_iteration_generation_evidence_tests.rs independently includes that source in the evidence test subtree, where direct access to the private field is invalid. This conclusion uses the include source, not a duplicate_mod warning.",
+    "The accessor is compiled only under cfg(test). Removing exactly this new block reproduces the full original runtime source byte for byte. The production sender visibility and runtime graph are unchanged.",
+    "The helper edit changes only handle.sender.downgrade() to handle.qualification_file_sender(); the returned weak sender does not extend the original owner service's strong-sender lifetime.",
+    "GenerationFiles::read still upgrades only within its pre-await block, performs the same bounded try_send, maps Full/Closed identically, then drops the strong sender before awaiting the same oneshot receiver.",
+    "No new external API, owner custody, production permission, request type, timeout, capacity, retry, test method, or altered expected result is introduced."
+  ],
+  "observed_failure_source": {
+    "local_raw_log": "/workspace/scratch/862531d11598/evidence_work/SOURCE84_JOB_131446361407.log",
+    "observed": "E0616 at neuron_generation_runtime_test_support.rs:53 handle.sender.downgrade()",
+    "scope": "Read the relevant original diagnostic; did not independently claim compilation of the postimage."
+  },
+  "remaining": [
+    "Actual formatter/compiler and existing tests must run on the exact new source; this static review does not replace those gates."
+  ],
+  "new_execution": {
+    "tests": 0,
+    "actor": 0,
+    "native": 0
+  },
+  "source_or_ref_mutations": []
+}

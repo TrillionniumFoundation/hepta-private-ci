@@ -1,0 +1,258 @@
+{
+  "schema": 1,
+  "kind": "independent_root_full_original_log_verification",
+  "observed_at_utc": "2026-11-12 16:59:26 UTC",
+  "source_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "source_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "native": {
+    "bytes": 3745971,
+    "sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+    "exact_original_equal": true,
+    "job_id": 131309678676,
+    "ordinary": {
+      "tests_run": 1738,
+      "passed": 1726,
+      "failed": 11,
+      "timed_out": 1,
+      "skipped_outside_run": 98,
+      "junit_total": 1738,
+      "junit_failures": 12,
+      "junit_errors": 0,
+      "junit_skipped": 0,
+      "retries": 0,
+      "command_exit_code": 100,
+      "workflow_exit_code": 1,
+      "overall_timeout": false
+    },
+    "source_closure": {
+      "passed": 414,
+      "failed": 0
+    },
+    "parser": {
+      "passed": 16,
+      "failed": 0
+    },
+    "root_suite": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+    "scoped_fix_and_fmt": "NOT_RUN_AFTER_ORDINARY_FAILURE",
+    "source_final": {
+      "files": 15220,
+      "inventory_sha256": "13e4b1096b278319d9af39bcf2f11e319ce7d32d3c59a832c984cf923e9c267b",
+      "dirty": false,
+      "full_inventory_retrieval": "NOT_PERFORMED; original job log records hash, not full inventory bytes."
+    }
+  },
+  "caller": {
+    "bytes": 2145300,
+    "sha256": "edae7bf327161cfc19fcd391a682708fafab14e1365186e0408e5319c7f801b4",
+    "exact_original_equal": true,
+    "job_id": 131309678429,
+    "boundary_count": 541,
+    "privileged_inventory_count": 541,
+    "protected_record_count": 390,
+    "rust_files_scanned": 6604,
+    "authority_granted": false
+  },
+  "checks": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/FAILURE_INDEX.json",
+      "sha": "3d9e6598abd60bb22af198b74d3210492e9dcc86",
+      "bytes": 31490,
+      "sha256": "26de288caf1aa91c72dc9ed089f1c6bf8a8d2e6f4d8b5a54c2d8b281109d64bb",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/MANIFEST.json",
+      "sha": "b81b0f3318f970567e70738e75cc45f9d77cc100",
+      "bytes": 16585,
+      "sha256": "45c5f6d3f630cb9cf9234022bb58c1ca0f4ad07a844e3aaa46137c416dc3adc5",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/jobs.original.json",
+      "sha": "c2c7197f5145013b5cd99a02e6dab73e84199482",
+      "bytes": 6619,
+      "sha256": "510c74abb7c45754fd4677d06f2500af1bc11aa0d89f1910fc02377483bb566c",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part00",
+      "sha": "48a896a0c3a61b2033a33cef72584e6c4a402d9a",
+      "bytes": 350000,
+      "sha256": "c3ccf4e6ef3e743f6a62ed55eb044ea69156b0b5aca3df7e610ee1c9dca48559",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part01",
+      "sha": "69f546e4bc5250d17032afa38a9826a853b8d3ff",
+      "bytes": 350000,
+      "sha256": "d1f9745e631f6e1ccf64f586172fbc55e261dc33771458dd621ab5952095cd7b",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part02",
+      "sha": "1a334c0354fbdcb5d5227767f87288ccca26c3a3",
+      "bytes": 350000,
+      "sha256": "21e846ca2aa8425220c358254ce4af46a887ec5738e896c967e5608dc3bcf7fa",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part03",
+      "sha": "002ee9656fd434ee6752a62012c34cd25dbfb148",
+      "bytes": 350000,
+      "sha256": "32d66ede67d56376fff42e29c93ca6e928d4a601bce566a1deac1e7a3bec34c9",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part04",
+      "sha": "f9867e5795006428ea188951a36e98651218684b",
+      "bytes": 350000,
+      "sha256": "8a30ee414aee85a780a5523d5b6778f5cd64b8490863c1895a5615385dfd7785",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part05",
+      "sha": "0751174e4f4ddbb700213ac9c3468ef4f7cc52e8",
+      "bytes": 350000,
+      "sha256": "c72e7e0ac09aaafc20d0343d7bd55571ff75e70b390d22f48641dd9537b92c34",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part06",
+      "sha": "74e78b30e770b71759a3c4ec83b04a2378eec976",
+      "bytes": 350000,
+      "sha256": "a08e2c345aec54e352b55609174645e816f536c0f85f978d716d71b9331eac28",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part07",
+      "sha": "e2fa639701931c0045cdb5a30219d6b99849d06e",
+      "bytes": 350000,
+      "sha256": "c2dc1ff1645f0e75d01b3465f6ac9eba8b4941758b3082fb7dd844774f44de20",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part08",
+      "sha": "5f43e7c16dbe94bda7210ea36762b2530e72856d",
+      "bytes": 349999,
+      "sha256": "4d3bbac63a22063dba76ab67306500cf433f2141231b0968cba984dbd617f2c8",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part09",
+      "sha": "55e75ace46f6c7ee97c7629e48fdbf9ebfae4f15",
+      "bytes": 350000,
+      "sha256": "83e271778103eed09f828ddbd8da487e3ad3f48c09936b1b45e564cb6d167a32",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-native-failure/native.job.log.part10",
+      "sha": "3e31c4a39c31065b193aaaca3c623059b97cae60",
+      "bytes": 245972,
+      "sha256": "60c0ecf7fca5b0877c1839a01903fff51a560bfe7c8ecc801269581344cba012",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/MANIFEST.json",
+      "sha": "0cdc83f5f2be7dd688c95b44b810d23ad15b222f",
+      "bytes": 9456,
+      "sha256": "e6ef66db8ff4ff5f923106edb9cb1d88e497beb24c9350d08cea5422daf60166",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part00",
+      "sha": "d063debe1ae28c0c5d09ed439c08ad0130d8f58f",
+      "bytes": 350000,
+      "sha256": "dedee59bbcecb64ecef69a9ecb8d3a4fe63f1e89d11a3841e394b620e46f48fe",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part01",
+      "sha": "00a4d35c3a0be3e6b9dbf857ea9d1ead81d2f6f2",
+      "bytes": 350000,
+      "sha256": "100426c7a5889a06f9f44cb171d2dc6695bdfa9f621dcc7fa478b83d99b132f3",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part02",
+      "sha": "2740500a5be331b3b809c391416d70e8a5d55dd4",
+      "bytes": 350000,
+      "sha256": "7588d6bbec463aa96fb2c2562fde59ae75e8a906bc64cb3ae13aec976f2faf58",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part03",
+      "sha": "7ddf2daafd5d6668875dc1251ba5dfb0197c7248",
+      "bytes": 350000,
+      "sha256": "289dc57f9576ed24d1c67e0374a4933460de4c4a3df9d8c990e9379ef356e1dc",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part04",
+      "sha": "33c8d608dc2c51d67f4c50482022f19f332bab91",
+      "bytes": 350000,
+      "sha256": "49a6d7db82f3b3ec2a39391cf79ad63c70c093ee6bc5f716c880f42a064976f5",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part05",
+      "sha": "a1a25bc922353e5f735d678da206839110f17192",
+      "bytes": 350000,
+      "sha256": "f64b5c331e0d214714c6453454c669e9740b8ff45fb6ac063b8017dde3259552",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/caller.job.log.part06",
+      "sha": "acecbc2585b809c3ebd5cac9c9f6ab38996018bb",
+      "bytes": 45300,
+      "sha256": "776d928f9aaf226861220cd209f785a4621206583325e8ed377dbaab0bfd5b31",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-caller-pass/jobs.original.json",
+      "sha": "da6a10658291529fa9b7084641cf9bb01cf1c746",
+      "bytes": 6294,
+      "sha256": "2c90eb1a44ed4dc580f7c09192ad9593c1031c691f0bf6f1421ff36d0ec3b6aa",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-static-review/INDEPENDENT_REVIEW.json",
+      "sha": "46d6c32cbdeca65a99ecb9cd2348316b5dc7645c",
+      "bytes": 6871,
+      "sha256": "bbddc70e4fafbf51288ffb5faa44937ae648e5bdb86413892f901402b833ae02",
+      "git_verified": true,
+      "size_verified": true
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-static-review/MANIFEST.json",
+      "sha": "1101c5d8f6781f0d41a3f7a16f0b26e1f2485d69",
+      "bytes": 620,
+      "sha256": "7a39122c9c8f0944c42ee4d81b185f3e43f7ae183305e07647ae23056b4f458a",
+      "git_verified": true,
+      "size_verified": true
+    }
+  ],
+  "limits": "Original full logs and all archive leaves independently fetched; original BOM and newline bytes preserved; exact originals reconstructed. 9fac whole ZIP, JUnit XML and full source inventory not separately fetched. No previous result transfer, research actor dispatch or owner authority."
+}

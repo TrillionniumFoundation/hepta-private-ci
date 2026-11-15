@@ -1,0 +1,12 @@
+diff --git a/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs b/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs
+--- a/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs
++++ b/codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs
+@@ -5,6 +5,8 @@ use std::path::Path;
+ use std::time::SystemTime;
+ use std::time::UNIX_EPOCH;
+ 
++use pretty_assertions::assert_eq;
++
+ use super::*;
+ 
+ pub(super) struct OriginalPublicationReadbackFixture {

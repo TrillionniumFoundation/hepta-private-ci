@@ -1,0 +1,137 @@
+{
+  "schema": "hepta.root-fixture-integration-review.v1",
+  "fixed": {
+    "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+    "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "base_tree": "57558558841da4a3209164d0033b903a553205d6"
+  },
+  "independent_git_blobs_read": 23,
+  "checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "post": {
+        "blob_sha": "d4d927027d1a23d8a2b61ab6c9470773fcfecb92",
+        "bytes": 23957,
+        "sha256": "cf2847521dc4a2ff5dba43cc3a0e0eec724fb1d858fc036a9f05c6ab886c0949"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 78,
+        "theirs": 76,
+        "post": 78
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "post": {
+        "blob_sha": "fcf8819ba26b451c0d5dd978c375dec9b2312838",
+        "bytes": 4901,
+        "sha256": "22f1bcbc7e50bcbe4e3ea0e0732840f40b443de3dd43688c0af5ddfc29599ee3"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 0,
+        "theirs": 0,
+        "post": 0
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "post": {
+        "blob_sha": "e79c335decb6283335ee60afcdfd76c68db1bd2a",
+        "bytes": 20290,
+        "sha256": "717989ff369c95862e1f728d9a1022e7c894d1ab4a37716361183382c9a39ac9"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 46,
+        "theirs": 46,
+        "post": 46
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "post": {
+        "blob_sha": "bc1eaa7628ac840ca9ee51e4a2f93f3b70541e64",
+        "bytes": 13432,
+        "sha256": "956415acbe1737f3edccb84e009e53413530a69c7c36850532ce1d285ac9a3de"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 11,
+        "theirs": 11,
+        "post": 11
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "post": {
+        "blob_sha": "bd394bc80915f0cedd71792ee04e90df5d45a8f1",
+        "bytes": 15520,
+        "sha256": "acf64d1b659757bc62ffb46faf6e228a6b49e7af5b80bd1cd3bbddc2ef88909d"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 30,
+        "theirs": 30,
+        "post": 30
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "post": {
+        "blob_sha": "86b78a362f7244c06393e8b013750cc824c4e3cf",
+        "bytes": 17415,
+        "sha256": "253bdd820fc6750daf52d1560e2d94f79b5629c68c4cb160b03cfd8c78512d0b"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 4,
+        "theirs": 4,
+        "post": 4
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "post": {
+        "blob_sha": "e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a",
+        "bytes": 7072,
+        "sha256": "2a0ee970718403be404f4c4393690ca011de0e092492c25dadbb741aedf2f14d"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 0,
+        "theirs": 0,
+        "post": 0
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "post": {
+        "blob_sha": "94f7031daabce5873329350758545227235c5656",
+        "bytes": 10396,
+        "sha256": "a911a9fa0b928a8f5cf61a68c45c6afb05c9bfcb56c2bf746f3bd606baabf551"
+      },
+      "union_function_names_preserved": true,
+      "union_path_modules_preserved": true,
+      "assert_counts": {
+        "ours": 27,
+        "theirs": 27,
+        "post": 27
+      }
+    }
+  ],
+  "original_three_c_test_methods_present": true,
+  "c_asserts": 46,
+  "diagnostics": "Support86b78a and production7b64 matched by actual root source review. Callback uses bounded8event buffer; exchange returns before flush; original128/500ms/300s and errors preserved.",
+  "scope": "Static name/module/byte and semantic review; not format/compile/native execution.",
+  "status": "STATIC_NOT_RUN"
+}

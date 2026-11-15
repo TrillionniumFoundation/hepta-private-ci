@@ -1,0 +1,1896 @@
+﻿2026-11-12T21:29:11.7279319Z Current runner version: '2.338.2'
+2026-11-12T21:29:11.7304763Z ##[group]Runner Image Provisioner
+2026-11-12T21:29:11.7305675Z Hosted Compute Agent
+2026-11-12T21:29:11.7306523Z Version: 20261103.629
+2026-11-12T21:29:11.7307280Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-12T21:29:11.7308093Z Build Date: 2026-11-03T17:26:59Z
+2026-11-12T21:29:11.7308879Z Worker ID: {c7fbfcf5-29c0-4406-9a9f-0d0395ca9f51}
+2026-11-12T21:29:11.7309645Z Region: westus
+2026-11-12T21:29:11.7310186Z Cloud: Azure
+2026-11-12T21:29:11.7310810Z ##[endgroup]
+2026-11-12T21:29:11.7312661Z ##[group]Operating System
+2026-11-12T21:29:11.7313484Z Ubuntu
+2026-11-12T21:29:11.7314022Z 24.04.5
+2026-11-12T21:29:11.7314534Z LTS
+2026-11-12T21:29:11.7315137Z ##[endgroup]
+2026-11-12T21:29:11.7315707Z ##[group]Runner Image
+2026-11-12T21:29:11.7316791Z Image: ubuntu-24.04
+2026-11-12T21:29:11.7317458Z Version: 20261111.370.1
+2026-11-12T21:29:11.7318801Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.370/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T21:29:11.7320422Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.370
+2026-11-12T21:29:11.7321539Z ##[endgroup]
+2026-11-12T21:29:11.7322638Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T21:29:11.7325225Z Contents: read
+2026-11-12T21:29:11.7325856Z Metadata: read
+2026-11-12T21:29:11.7326870Z ##[endgroup]
+2026-11-12T21:29:11.7329430Z Secret source: Actions
+2026-11-12T21:29:11.7330404Z Cache mode: write
+2026-11-12T21:29:11.7331519Z Prepare workflow directory
+2026-11-12T21:29:11.7694539Z Prepare all required actions
+2026-11-12T21:29:11.7770595Z Getting action download info
+2026-11-12T21:29:12.1398905Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T21:29:12.3370042Z Download action repository 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f' (SHA:bbbca2ddaa5d8feaa63e36b76fdaad77386f024f)
+2026-11-12T21:29:12.5532038Z Download action repository 'actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7' (SHA:668228422ae6a00e4ad889ee87cd7109ec5666a7)
+2026-11-12T21:29:12.9387231Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/6213/merge (1749a97b4c7d5cc76245025b1721e831365c8296)
+2026-11-12T21:29:12.9392484Z Complete job name: Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu
+2026-11-12T21:29:13.0442184Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T21:29:13.0443391Z with:
+2026-11-12T21:29:13.0443907Z   persist-credentials: false
+2026-11-12T21:29:13.0444585Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:13.0448848Z   token: ***
+2026-11-12T21:29:13.0449333Z   ssh-strict: true
+2026-11-12T21:29:13.0449810Z   ssh-user: git
+2026-11-12T21:29:13.0450273Z   clean: true
+2026-11-12T21:29:13.0450763Z   sparse-checkout-cone-mode: true
+2026-11-12T21:29:13.0451339Z   fetch-depth: 1
+2026-11-12T21:29:13.0451809Z   fetch-tags: false
+2026-11-12T21:29:13.0452552Z   show-progress: true
+2026-11-12T21:29:13.0453414Z   lfs: false
+2026-11-12T21:29:13.0454238Z   submodules: false
+2026-11-12T21:29:13.0455110Z   set-safe-directory: true
+2026-11-12T21:29:13.0456855Z ##[endgroup]
+2026-11-12T21:29:13.6294777Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:13.6299481Z ##[group]Getting Git version info
+2026-11-12T21:29:13.6302172Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T21:29:13.6305825Z [command]/usr/bin/git version
+2026-11-12T21:29:13.6381867Z git version 2.56.1
+2026-11-12T21:29:13.6410464Z ##[endgroup]
+2026-11-12T21:29:13.6427149Z Temporarily overriding HOME='/home/runner/work/_temp/3df1fd86-3ace-4ec6-9dac-dae649c9331e' before making global git config changes
+2026-11-12T21:29:13.6432127Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T21:29:13.6436766Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:13.6808736Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T21:29:13.6819242Z ##[group]Initializing the repository
+2026-11-12T21:29:13.6825815Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:13.6952569Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T21:29:13.6955979Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T21:29:13.6960455Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T21:29:13.6963354Z hint: call:
+2026-11-12T21:29:13.6964864Z hint:
+2026-11-12T21:29:13.6967612Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T21:29:13.6970556Z hint:
+2026-11-12T21:29:13.6973396Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T21:29:13.6978130Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T21:29:13.6981824Z hint:
+2026-11-12T21:29:13.6983992Z hint: 	git branch -m <name>
+2026-11-12T21:29:13.6986977Z hint:
+2026-11-12T21:29:13.6989337Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T21:29:13.6994313Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T21:29:13.7002333Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:13.7112621Z ##[endgroup]
+2026-11-12T21:29:13.7116296Z ##[group]Disabling automatic garbage collection
+2026-11-12T21:29:13.7119174Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T21:29:13.7169958Z ##[endgroup]
+2026-11-12T21:29:13.7172975Z ##[group]Setting up auth
+2026-11-12T21:29:13.7175300Z Removing SSH command configuration
+2026-11-12T21:29:13.7179532Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T21:29:13.7256292Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T21:29:13.7862325Z Removing HTTP extra header
+2026-11-12T21:29:13.7872533Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T21:29:13.7924281Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T21:29:13.8200728Z Removing includeIf entries pointing to credentials config files
+2026-11-12T21:29:13.8205053Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T21:29:13.8247466Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T21:29:13.8536490Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T21:29:13.8597125Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:13.8641884Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:13.8683221Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:13.8807256Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:13.8813764Z ##[endgroup]
+2026-11-12T21:29:13.8815485Z ##[group]Fetching the repository
+2026-11-12T21:29:13.8819316Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1749a97b4c7d5cc76245025b1721e831365c8296:refs/remotes/pull/6213/merge
+2026-11-12T21:29:22.0792665Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:22.0793427Z  * [new ref]           1749a97b4c7d5cc76245025b1721e831365c8296 -> pull/6213/merge
+2026-11-12T21:29:22.0799500Z ##[endgroup]
+2026-11-12T21:29:22.0800117Z ##[group]Determining the checkout info
+2026-11-12T21:29:22.0800858Z ##[endgroup]
+2026-11-12T21:29:22.0809441Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T21:29:22.0879926Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T21:29:22.0919307Z ##[group]Checking out the ref
+2026-11-12T21:29:22.0924150Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/6213/merge
+2026-11-12T21:29:23.1194736Z Updating files:  89% (13724/15296)
+2026-11-12T21:29:23.1315796Z Updating files:  90% (13767/15296)
+2026-11-12T21:29:23.1403531Z Updating files:  91% (13920/15296)
+2026-11-12T21:29:23.1515087Z Updating files:  92% (14073/15296)
+2026-11-12T21:29:23.1672631Z Updating files:  93% (14226/15296)
+2026-11-12T21:29:23.1892818Z Updating files:  94% (14379/15296)
+2026-11-12T21:29:23.2125231Z Updating files:  95% (14532/15296)
+2026-11-12T21:29:23.2271734Z Updating files:  96% (14685/15296)
+2026-11-12T21:29:23.2389715Z Updating files:  97% (14838/15296)
+2026-11-12T21:29:23.2495879Z Updating files:  98% (14991/15296)
+2026-11-12T21:29:23.2623548Z Updating files:  99% (15144/15296)
+2026-11-12T21:29:23.2624543Z Updating files: 100% (15296/15296)
+2026-11-12T21:29:23.2625277Z Updating files: 100% (15296/15296), done.
+2026-11-12T21:29:23.2782483Z Note: switching to 'refs/remotes/pull/6213/merge'.
+2026-11-12T21:29:23.2783319Z 
+2026-11-12T21:29:23.2784130Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T21:29:23.2785330Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T21:29:23.2786668Z state without impacting any branches by switching back to a branch.
+2026-11-12T21:29:23.2787352Z 
+2026-11-12T21:29:23.2787792Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T21:29:23.2789311Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T21:29:23.2789990Z 
+2026-11-12T21:29:23.2790245Z   git switch -c <new-branch-name>
+2026-11-12T21:29:23.2790608Z 
+2026-11-12T21:29:23.2790860Z Or undo this operation with:
+2026-11-12T21:29:23.2791244Z 
+2026-11-12T21:29:23.2791414Z   git switch -
+2026-11-12T21:29:23.2791679Z 
+2026-11-12T21:29:23.2791968Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T21:29:23.2792383Z 
+2026-11-12T21:29:23.2792853Z HEAD is now at 1749a97b Merge 0a5c31b73667b3922d89643cf18f0482fa9a1b87 into 1cb195e590f7f5038a38625a943f259badea489a
+2026-11-12T21:29:23.2837365Z ##[endgroup]
+2026-11-12T21:29:23.2891684Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T21:29:23.2926911Z 1749a97b4c7d5cc76245025b1721e831365c8296
+2026-11-12T21:29:23.2937433Z ##[group]Removing auth
+2026-11-12T21:29:23.2938002Z Removing SSH command configuration
+2026-11-12T21:29:23.2943142Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T21:29:23.2988808Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T21:29:23.3252753Z Removing HTTP extra header
+2026-11-12T21:29:23.3258711Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T21:29:23.3304551Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T21:29:23.3568374Z Removing includeIf entries pointing to credentials config files
+2026-11-12T21:29:23.3573914Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T21:29:23.3611498Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T21:29:23.3612691Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T21:29:23.3613951Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T21:29:23.3614901Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T21:29:23.3625518Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T21:29:23.3662468Z /home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.3676643Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.3723385Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T21:29:23.3759143Z /home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.3769585Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.3813875Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T21:29:23.3850216Z /github/runner_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.3862085Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.3923152Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T21:29:23.3961144Z /github/runner_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.3971894Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config
+2026-11-12T21:29:23.4021883Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T21:29:23.4308689Z Removing credentials config '/home/runner/work/_temp/git-credentials-fc70d4f6-a4b7-4050-a917-3b1ed1871b53.config'
+2026-11-12T21:29:23.4319002Z ##[endgroup]
+2026-11-12T21:29:23.4666013Z Prepare all required actions
+2026-11-12T21:29:23.4666850Z Getting action download info
+2026-11-12T21:29:23.6205696Z ##[group]Run ./.github/actions/prepare-bazel-ci
+2026-11-12T21:29:23.6206405Z with:
+2026-11-12T21:29:23.6206833Z   target: x86_64-unknown-linux-gnu
+2026-11-12T21:29:23.6207150Z   cache-scope: bazel-test
+2026-11-12T21:29:23.6207406Z ##[endgroup]
+2026-11-12T21:29:23.6265408Z ##[start-action display=Set up Bazel CI;id=prepare_bazel.setup_bazel]
+2026-11-12T21:29:23.6347377Z Prepare all required actions
+2026-11-12T21:29:23.6347882Z Getting action download info
+2026-11-12T21:29:23.7689897Z Download action repository 'bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86' (SHA:c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86)
+2026-11-12T21:29:24.2481413Z ##[group]Run ./.github/actions/setup-bazel-ci
+2026-11-12T21:29:24.2481740Z with:
+2026-11-12T21:29:24.2481970Z   target: x86_64-unknown-linux-gnu
+2026-11-12T21:29:24.2482249Z ##[endgroup]
+2026-11-12T21:29:24.2488537Z ##[start-action display=Run ./.github/actions/setup-ci;id=prepare_bazel.setup_bazel.setup_ci]
+2026-11-12T21:29:24.2579957Z Prepare all required actions
+2026-11-12T21:29:24.2580436Z Getting action download info
+2026-11-12T21:29:24.4009528Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-12T21:29:24.5941775Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-12T21:29:24.9765024Z ##[group]Run ./.github/actions/setup-ci
+2026-11-12T21:29:24.9765324Z ##[endgroup]
+2026-11-12T21:29:24.9774352Z ##[start-action display=Configure Dev Drive (Windows);id=prepare_bazel.setup_bazel.setup_ci.__run]
+2026-11-12T21:29:24.9793868Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:24.9796539Z ##[start-action display=Configure CI build root (Unix);id=prepare_bazel.setup_bazel.setup_ci.__run_2]
+2026-11-12T21:29:24.9833199Z ##[group]Run echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
+2026-11-12T21:29:24.9833739Z [36;1mecho "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"[0m
+2026-11-12T21:29:24.9857233Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:24.9857626Z ##[endgroup]
+2026-11-12T21:29:24.9941657Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_2;outcome=success;conclusion=success;duration_ms=14]
+2026-11-12T21:29:24.9944054Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=prepare_bazel.setup_bazel.setup_ci.__run_3]
+2026-11-12T21:29:24.9965702Z ##[group]Run sudo sysctl -w kernel.unprivileged_userns_clone=1
+2026-11-12T21:29:24.9966530Z [36;1msudo sysctl -w kernel.unprivileged_userns_clone=1[0m
+2026-11-12T21:29:24.9967212Z [36;1mif sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then[0m
+2026-11-12T21:29:24.9967826Z [36;1m  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0[0m
+2026-11-12T21:29:24.9968205Z [36;1mfi[0m
+2026-11-12T21:29:24.9987432Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:24.9987791Z env:
+2026-11-12T21:29:24.9988234Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:24.9988713Z ##[endgroup]
+2026-11-12T21:29:25.0098802Z kernel.unprivileged_userns_clone = 1
+2026-11-12T21:29:25.0578198Z kernel.apparmor_restrict_unprivileged_userns = 0
+2026-11-12T21:29:25.0595914Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_3;outcome=success;conclusion=success;duration_ms=65]
+2026-11-12T21:29:25.0599176Z ##[start-action display=Configure CI build paths;id=prepare_bazel.setup_bazel.setup_ci.configure_ci_build_paths]
+2026-11-12T21:29:25.0619859Z ##[group]Run set -euo pipefail
+2026-11-12T21:29:25.0620191Z [36;1mset -euo pipefail[0m
+2026-11-12T21:29:25.0620592Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-12T21:29:25.0621352Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-12T21:29:25.0621881Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-12T21:29:25.0622284Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-12T21:29:25.0622602Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-12T21:29:25.0622975Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-12T21:29:25.0623396Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-12T21:29:25.0623996Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-12T21:29:25.0624541Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-12T21:29:25.0624870Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-12T21:29:25.0625117Z [36;1m[0m
+2026-11-12T21:29:25.0625316Z [36;1mbuild_dirs=([0m
+2026-11-12T21:29:25.0625553Z [36;1m  "$bazel_output_base"[0m
+2026-11-12T21:29:25.0625816Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-12T21:29:25.0626359Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-12T21:29:25.0626772Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-12T21:29:25.0627052Z [36;1m  "$cargo_target_dir"[0m
+2026-11-12T21:29:25.0627473Z [36;1m  "$tmp"[0m
+2026-11-12T21:29:25.0627668Z [36;1m)[0m
+2026-11-12T21:29:25.0627876Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-12T21:29:25.0628259Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-12T21:29:25.0628742Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-12T21:29:25.0629097Z [36;1m[0m
+2026-11-12T21:29:25.0629287Z [36;1m{[0m
+2026-11-12T21:29:25.0629522Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-12T21:29:25.0629866Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-12T21:29:25.0630237Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-12T21:29:25.0630640Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-12T21:29:25.0631061Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-12T21:29:25.0631461Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-12T21:29:25.0631760Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-12T21:29:25.0632009Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-12T21:29:25.0632239Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-12T21:29:25.0651724Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:25.0652071Z env:
+2026-11-12T21:29:25.0652305Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:25.0652601Z ##[endgroup]
+2026-11-12T21:29:25.0733395Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=13]
+2026-11-12T21:29:25.0738781Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=prepare_bazel.setup_bazel.setup_ci.__run_4]
+2026-11-12T21:29:25.0758441Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-12T21:29:25.0758956Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-12T21:29:25.0776811Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:25.0777161Z env:
+2026-11-12T21:29:25.0777398Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:25.0777795Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:25.0778213Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:25.0778574Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:25.0779009Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:25.0779612Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:25.0780154Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:25.0780503Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.0780793Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.0781210Z ##[endgroup]
+2026-11-12T21:29:25.0824787Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_4;outcome=success;conclusion=success;duration_ms=8]
+2026-11-12T21:29:25.0827406Z ##[start-action display=Install DotSlash;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash]
+2026-11-12T21:29:25.0889577Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-12T21:29:25.0890056Z env:
+2026-11-12T21:29:25.0890303Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:25.0890725Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:25.0891159Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:25.0891573Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:25.0892037Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:25.0892651Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:25.0893228Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:25.0893602Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.0893921Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.0894384Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:25.0894662Z ##[endgroup]
+2026-11-12T21:29:25.0916919Z ##[start-action display=Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.configure]
+2026-11-12T21:29:25.0938217Z ##[group]Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT
+2026-11-12T21:29:25.0938860Z [36;1mecho platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT[0m
+2026-11-12T21:29:25.0942298Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-12T21:29:25.0961344Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:25.0962151Z env:
+2026-11-12T21:29:25.0962508Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:25.0963138Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:25.0963714Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:25.0964177Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:25.0964835Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:25.0965610Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:25.0966668Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:25.0967160Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.0967590Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.0968064Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:25.0984801Z ##[endgroup]
+2026-11-12T21:29:25.6282772Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=536]
+2026-11-12T21:29:25.6290599Z ##[start-action display=Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin";id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run]
+2026-11-12T21:29:25.6312251Z ##[group]Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin"
+2026-11-12T21:29:25.6312732Z [36;1mmkdir -p "/home/runner/work/_temp/install-dotslash/bin"[0m
+2026-11-12T21:29:25.6334245Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:25.6334596Z env:
+2026-11-12T21:29:25.6334822Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:25.6335232Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:25.6335651Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:25.6336011Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:25.6337111Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:25.6337725Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:25.6338294Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:25.6338656Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.6338943Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.6339222Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:25.6339475Z ##[endgroup]
+2026-11-12T21:29:25.6400328Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=10]
+2026-11-12T21:29:25.6405641Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2]
+2026-11-12T21:29:25.6426772Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \
+2026-11-12T21:29:25.6427693Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \[0m
+2026-11-12T21:29:25.6430851Z [36;1m--header "authorization: ***" \[0m
+2026-11-12T21:29:25.6431289Z [36;1m--output "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-12T21:29:25.6431765Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-12T21:29:25.6450585Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:25.6450933Z env:
+2026-11-12T21:29:25.6451169Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:25.6451569Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:25.6451999Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:25.6452353Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:25.6452795Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:25.6453421Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:25.6453971Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:25.6454328Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.6454611Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:25.6454887Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:25.6455140Z ##[endgroup]
+2026-11-12T21:29:26.0204752Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=379]
+2026-11-12T21:29:26.0210863Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/";id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3]
+2026-11-12T21:29:26.0234897Z ##[group]Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"
+2026-11-12T21:29:26.0235822Z [36;1mtar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"[0m
+2026-11-12T21:29:26.0261999Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:26.0262567Z env:
+2026-11-12T21:29:26.0262942Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:26.0263611Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:26.0264328Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:26.0264947Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:26.0265710Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:26.0266844Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:26.0267751Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:26.0268553Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0269016Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0269460Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:26.0269893Z ##[endgroup]
+2026-11-12T21:29:26.0339767Z dotslash
+2026-11-12T21:29:26.0471549Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3;outcome=success;conclusion=success;duration_ms=25]
+2026-11-12T21:29:26.0476883Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -O >"/home/runner/work/_temp/install-dotslash/bin/dotslash.exe" --force-local;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4]
+2026-11-12T21:29:26.0481938Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:26.0485126Z ##[start-action display=Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5]
+2026-11-12T21:29:26.0504692Z ##[group]Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-12T21:29:26.0505237Z [36;1mecho "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-12T21:29:26.0525586Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:26.0525944Z env:
+2026-11-12T21:29:26.0526451Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:26.0526868Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:26.0527298Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:26.0527652Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:26.0528095Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:26.0528687Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:26.0529231Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:26.0529577Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0529862Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0530136Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:26.0530398Z ##[endgroup]
+2026-11-12T21:29:26.0580213Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=9]
+2026-11-12T21:29:26.0582935Z ##[start-action display=Run dotslash --version;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6]
+2026-11-12T21:29:26.0601923Z ##[group]Run dotslash --version
+2026-11-12T21:29:26.0602227Z [36;1mdotslash --version[0m
+2026-11-12T21:29:26.0623586Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:26.0623963Z env:
+2026-11-12T21:29:26.0624215Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:26.0624642Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:26.0625104Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:26.0625519Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:26.0625988Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:26.0626938Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:26.0627515Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:26.0627896Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0628213Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0628515Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:26.0628789Z ##[endgroup]
+2026-11-12T21:29:26.0682605Z DotSlash 0.5.9
+2026-11-12T21:29:26.0692063Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=10]
+2026-11-12T21:29:26.0705534Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=987]
+2026-11-12T21:29:26.0708532Z ##[start-action display=Install just;id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action]
+2026-11-12T21:29:26.0759201Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-12T21:29:26.0759590Z with:
+2026-11-12T21:29:26.0759784Z   tool: just@1.51.0
+2026-11-12T21:29:26.0759992Z   checksum: true
+2026-11-12T21:29:26.0760201Z   fallback: cargo-binstall
+2026-11-12T21:29:26.0760432Z env:
+2026-11-12T21:29:26.0760650Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:26.0761041Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:26.0761450Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:26.0761815Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:26.0762253Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:26.0762876Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:26.0763419Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:26.0763982Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0764272Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0764550Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:26.0764808Z ##[endgroup]
+2026-11-12T21:29:26.0769295Z ##[start-action display=Run set -eu;id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run]
+2026-11-12T21:29:26.0788816Z ##[group]Run set -eu
+2026-11-12T21:29:26.0789093Z [36;1mset -eu[0m
+2026-11-12T21:29:26.0789327Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-12T21:29:26.0789685Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-12T21:29:26.0790143Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-12T21:29:26.0790607Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-12T21:29:26.0790961Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-12T21:29:26.0791277Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-12T21:29:26.0791594Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-12T21:29:26.0791917Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-12T21:29:26.0792182Z [36;1m    else[0m
+2026-11-12T21:29:26.0792396Z [36;1m      apk --no-cache add bash[0m
+2026-11-12T21:29:26.0792655Z [36;1m    fi[0m
+2026-11-12T21:29:26.0792862Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-12T21:29:26.0793111Z [36;1m  else[0m
+2026-11-12T21:29:26.0793372Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-12T21:29:26.0793701Z [36;1m    exit 1[0m
+2026-11-12T21:29:26.0794000Z [36;1m  fi[0m
+2026-11-12T21:29:26.0794299Z [36;1mfi[0m
+2026-11-12T21:29:26.0823851Z shell: /usr/bin/sh -e {0}
+2026-11-12T21:29:26.0824388Z env:
+2026-11-12T21:29:26.0824717Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:26.0825286Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:26.0825842Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:26.0826593Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:26.0827299Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:26.0847144Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:26.0848126Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:26.0848695Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0849025Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0849324Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:26.0849590Z ##[endgroup]
+2026-11-12T21:29:26.0908020Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=13]
+2026-11-12T21:29:26.0913171Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run_2]
+2026-11-12T21:29:26.0932480Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-12T21:29:26.0932968Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-12T21:29:26.0952325Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:26.0952663Z env:
+2026-11-12T21:29:26.0952883Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:26.0953286Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:26.0953701Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:26.0954053Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:26.0954487Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:26.0955091Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:26.0955633Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:26.0955977Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0956530Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:26.0957011Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:26.0957276Z   INPUT_TOOL: just@1.51.0
+2026-11-12T21:29:26.0957508Z   INPUT_CHECKSUM: true
+2026-11-12T21:29:26.0957743Z   INPUT_FALLBACK: cargo-binstall
+2026-11-12T21:29:26.0960099Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-12T21:29:26.0960354Z   ACTION_USER_AGENT:  ()
+2026-11-12T21:29:26.0960578Z ##[endgroup]
+2026-11-12T21:29:26.1164253Z info: host platform: x86_64_linux
+2026-11-12T21:29:26.1278382Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-12T21:29:26.1279131Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-12T21:29:26.1303860Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-12T21:29:26.1650834Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T21:29:26.4185600Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-12T21:29:26.5410579Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-12T21:29:26.5413350Z + cargo-binstall binstall -V
+2026-11-12T21:29:26.5423579Z 1.15.11
+2026-11-12T21:29:26.5581457Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-12T21:29:28.4967808Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-12T21:29:28.4968405Z  INFO This will install the following binaries:
+2026-11-12T21:29:28.4968749Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-12T21:29:28.4969062Z  INFO Installing binaries...
+2026-11-12T21:29:28.4984738Z  INFO Done in 1.954556316s
+2026-11-12T21:29:28.5005530Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=2409]
+2026-11-12T21:29:28.5011507Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action;outcome=success;conclusion=success;duration_ms=2430]
+2026-11-12T21:29:28.5014380Z ##[start-action display=Make DotSlash available in PATH (Unix);id=prepare_bazel.setup_bazel.setup_ci.__run_5]
+2026-11-12T21:29:28.5037563Z ##[group]Run if [[ -w /usr/local/bin ]]; then
+2026-11-12T21:29:28.5037947Z [36;1mif [[ -w /usr/local/bin ]]; then[0m
+2026-11-12T21:29:28.5038281Z [36;1m  cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-12T21:29:28.5038589Z [36;1melse[0m
+2026-11-12T21:29:28.5038852Z [36;1m  sudo cp "$(which dotslash)" /usr/local/bin[0m
+2026-11-12T21:29:28.5039164Z [36;1mfi[0m
+2026-11-12T21:29:28.5059559Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:28.5059928Z env:
+2026-11-12T21:29:28.5060178Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:28.5060795Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:28.5061251Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:28.5061631Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:28.5062106Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:28.5062726Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:28.5063293Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:28.5063666Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:28.5063971Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:28.5064271Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:28.5064546Z ##[endgroup]
+2026-11-12T21:29:28.5147381Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_5;outcome=success;conclusion=success;duration_ms=13]
+2026-11-12T21:29:28.5149632Z ##[start-action display=Make DotSlash available in PATH (Windows);id=prepare_bazel.setup_bazel.setup_ci.__run_6]
+2026-11-12T21:29:28.5153865Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_6;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:28.5157179Z ##[start-action display=Enable Git long paths (Windows);id=prepare_bazel.setup_bazel.setup_ci.__run_7]
+2026-11-12T21:29:28.5163511Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_7;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:28.5188565Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci;outcome=success;conclusion=success;duration_ms=4269]
+2026-11-12T21:29:28.5190598Z ##[start-action display=Set up Bazel;id=prepare_bazel.setup_bazel.__bazel-contrib_setup-bazel]
+2026-11-12T21:29:28.5237753Z ##[group]Run bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+2026-11-12T21:29:28.5238175Z with:
+2026-11-12T21:29:28.5238382Z   bazelisk-version: 1.28.1
+2026-11-12T21:29:28.5238662Z   output-base: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:28.5238971Z   bazelisk-cache: false
+2026-11-12T21:29:28.5239190Z   cache-save: true
+2026-11-12T21:29:28.5239395Z   cache-version: 1
+2026-11-12T21:29:28.5239595Z   disk-cache: false
+2026-11-12T21:29:28.5239799Z   module-root: .
+2026-11-12T21:29:28.5240026Z   repository-cache: false
+2026-11-12T21:29:28.5242255Z   token: ***
+2026-11-12T21:29:28.5242453Z env:
+2026-11-12T21:29:28.5242668Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:28.5243069Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:28.5243479Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:28.5243836Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:28.5244270Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:28.5244870Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:28.5245441Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:28.5245794Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:28.5246357Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:28.5246677Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:28.5246931Z ##[endgroup]
+2026-11-12T21:29:28.6795326Z ##[group]Configure Bazel
+2026-11-12T21:29:28.6796336Z Configuration:
+2026-11-12T21:29:28.6796878Z {
+2026-11-12T21:29:28.6797274Z   "baseCacheKey": "setup-bazel-1-linux-x64",
+2026-11-12T21:29:28.6797810Z   "cacheSave": true,
+2026-11-12T21:29:28.6798193Z   "bazeliskCache": {
+2026-11-12T21:29:28.6798585Z     "enabled": false,
+2026-11-12T21:29:28.6798959Z     "files": [
+2026-11-12T21:29:28.6799322Z       "./.bazelversion"
+2026-11-12T21:29:28.6799698Z     ],
+2026-11-12T21:29:28.6800029Z     "name": "bazelisk",
+2026-11-12T21:29:28.6800434Z     "paths": [
+2026-11-12T21:29:28.6800815Z       "/home/runner/.cache/bazelisk"
+2026-11-12T21:29:28.6801271Z     ]
+2026-11-12T21:29:28.6801579Z   },
+2026-11-12T21:29:28.6801917Z   "bazeliskVersion": "1.28.1",
+2026-11-12T21:29:28.6802660Z   "bazelrc": [],
+2026-11-12T21:29:28.6803031Z   "diskCache": {
+2026-11-12T21:29:28.6803393Z     "enabled": false,
+2026-11-12T21:29:28.6803777Z     "files": [
+2026-11-12T21:29:28.6804125Z       "./MODULE.bazel",
+2026-11-12T21:29:28.6804540Z       "./WORKSPACE.bazel",
+2026-11-12T21:29:28.6805049Z       "./WORKSPACE.bzlmod",
+2026-11-12T21:29:28.6805550Z       "./WORKSPACE",
+2026-11-12T21:29:28.6806014Z       "./**/BUILD.bazel",
+2026-11-12T21:29:28.6806693Z       "./**/BUILD"
+2026-11-12T21:29:28.6807045Z     ],
+2026-11-12T21:29:28.6807368Z     "name": "disk",
+2026-11-12T21:29:28.6807724Z     "paths": [
+2026-11-12T21:29:28.6808108Z       "/home/runner/.cache/bazel-disk"
+2026-11-12T21:29:28.6808574Z     ]
+2026-11-12T21:29:28.6808887Z   },
+2026-11-12T21:29:28.6809211Z   "externalCache": {},
+2026-11-12T21:29:28.6809586Z   "paths": {
+2026-11-12T21:29:28.6810040Z     "bazelExternal": "/home/runner/.cache/codex-ci/o/external",
+2026-11-12T21:29:28.6810716Z     "bazelOutputBase": "/home/runner/.cache/codex-ci/o",
+2026-11-12T21:29:28.6811250Z     "bazelrc": [
+2026-11-12T21:29:28.6811592Z       "/home/runner/.bazelrc"
+2026-11-12T21:29:28.6811969Z     ]
+2026-11-12T21:29:28.6812284Z   },
+2026-11-12T21:29:28.6812462Z   "os": {
+2026-11-12T21:29:28.6812825Z     "arch": "x64",
+2026-11-12T21:29:28.6813033Z     "platform": "linux"
+2026-11-12T21:29:28.6813243Z   },
+2026-11-12T21:29:28.6813423Z   "repositoryCache": {
+2026-11-12T21:29:28.6813639Z     "enabled": false,
+2026-11-12T21:29:28.6813841Z     "files": [
+2026-11-12T21:29:28.6814034Z       "./MODULE.bazel",
+2026-11-12T21:29:28.6814255Z       "./WORKSPACE.bazel",
+2026-11-12T21:29:28.6814485Z       "./WORKSPACE.bzlmod",
+2026-11-12T21:29:28.6814715Z       "./WORKSPACE"
+2026-11-12T21:29:28.6814905Z     ],
+2026-11-12T21:29:28.6815088Z     "name": "repository",
+2026-11-12T21:29:28.6815302Z     "paths": [
+2026-11-12T21:29:28.6815511Z       "/home/runner/.cache/bazel-repo"
+2026-11-12T21:29:28.6815762Z     ]
+2026-11-12T21:29:28.6815924Z   }
+2026-11-12T21:29:28.6816339Z }
+2026-11-12T21:29:28.6816779Z ##[endgroup]
+2026-11-12T21:29:28.6817128Z ##[group]Setup Bazelisk
+2026-11-12T21:29:29.8131549Z ##[endgroup]
+2026-11-12T21:29:29.8250415Z ##[end-action id=prepare_bazel.setup_bazel.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=1305]
+2026-11-12T21:29:29.8253671Z ##[start-action display=Configure Bazel repository cache;id=prepare_bazel.setup_bazel.configure_bazel_repository_cache]
+2026-11-12T21:29:29.8275180Z ##[group]Run "repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+2026-11-12T21:29:29.8276531Z [36;1m"repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append[0m
+2026-11-12T21:29:29.8342450Z shell: /usr/bin/pwsh -command ". '{0}'"
+2026-11-12T21:29:29.8342749Z env:
+2026-11-12T21:29:29.8342984Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:29.8343414Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:29.8343873Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:29.8344255Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:29.8344719Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:29.8345390Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:29.8345981Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:29.8346636Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:29.8346938Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:29.8347225Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:29.8349984Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:29.8350262Z ##[endgroup]
+2026-11-12T21:29:34.7198812Z ##[end-action id=prepare_bazel.setup_bazel.configure_bazel_repository_cache;outcome=success;conclusion=success;duration_ms=4894]
+2026-11-12T21:29:34.7201710Z ##[start-action display=Expose MSVC SDK environment (Windows);id=prepare_bazel.setup_bazel.__run]
+2026-11-12T21:29:34.7205814Z ##[end-action id=prepare_bazel.setup_bazel.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:34.7208567Z ##[start-action display=Compute cache-stable Windows Bazel PATH;id=prepare_bazel.setup_bazel.__run_2]
+2026-11-12T21:29:34.7212163Z ##[end-action id=prepare_bazel.setup_bazel.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:34.7219378Z ##[end-action id=prepare_bazel.setup_bazel;outcome=success;conclusion=success;duration_ms=11095]
+2026-11-12T21:29:34.7221674Z ##[start-action display=Configure fail-closed release lockdown root;id=prepare_bazel.__run]
+2026-11-12T21:29:34.7225225Z ##[end-action id=prepare_bazel.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:34.7908487Z ##[start-action display=Compute bazel repository cache key;id=prepare_bazel.cache_bazel_repository_key]
+2026-11-12T21:29:34.7929504Z ##[group]Run echo "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"
+2026-11-12T21:29:34.7930334Z [36;1mecho "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"[0m
+2026-11-12T21:29:34.7931296Z [36;1mecho "repository-cache-restore-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-" >> "${GITHUB_OUTPUT}"[0m
+2026-11-12T21:29:34.7951993Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:34.7952360Z env:
+2026-11-12T21:29:34.7952611Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:34.7953032Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:34.7953497Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:34.7953887Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:34.7954361Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:34.7954992Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:34.7955558Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:34.7955928Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:34.7956511Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:34.7956833Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:34.7959321Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:34.7959616Z   CACHE_SCOPE: bazel-test
+2026-11-12T21:29:34.7959898Z   TARGET: x86_64-unknown-linux-gnu
+2026-11-12T21:29:34.7960320Z   CACHE_HASH: 4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T21:29:34.7960754Z ##[endgroup]
+2026-11-12T21:29:34.8011332Z ##[end-action id=prepare_bazel.cache_bazel_repository_key;outcome=success;conclusion=success;duration_ms=10]
+2026-11-12T21:29:34.8013484Z ##[start-action display=Restore bazel repository cache;id=prepare_bazel.cache_bazel_repository_restore]
+2026-11-12T21:29:34.8048633Z ##[group]Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-12T21:29:34.8049032Z with:
+2026-11-12T21:29:34.8049302Z   path: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:34.8049959Z   key: bazel-cache-bazel-test-x86_64-unknown-linux-gnu-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T21:29:34.8050659Z   restore-keys: bazel-cache-bazel-test-x86_64-unknown-linux-gnu-
+
+2026-11-12T21:29:34.8051034Z   enableCrossOsArchive: false
+2026-11-12T21:29:34.8051289Z   fail-on-cache-miss: false
+2026-11-12T21:29:34.8051523Z   lookup-only: false
+2026-11-12T21:29:34.8051728Z env:
+2026-11-12T21:29:34.8051945Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:34.8052350Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:34.8052764Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:34.8053119Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:34.8053555Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:34.8054298Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:34.8054852Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:34.8055205Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:34.8055487Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:34.8055761Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:34.8058449Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:34.8058701Z ##[endgroup]
+2026-11-12T21:29:35.1779850Z Cache not found for input keys: bazel-cache-bazel-test-x86_64-unknown-linux-gnu-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0, bazel-cache-bazel-test-x86_64-unknown-linux-gnu-
+2026-11-12T21:29:35.1852043Z ##[end-action id=prepare_bazel.cache_bazel_repository_restore;outcome=success;conclusion=success;duration_ms=383]
+2026-11-12T21:29:35.1854707Z ##[start-action display=Set up Bazel execution logs;id=prepare_bazel.__run_2]
+2026-11-12T21:29:35.1874804Z ##[group]Run mkdir -p "${RUNNER_TEMP}/bazel-execution-logs"
+2026-11-12T21:29:35.1875268Z [36;1mmkdir -p "${RUNNER_TEMP}/bazel-execution-logs"[0m
+2026-11-12T21:29:35.1875835Z [36;1mecho "CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=${RUNNER_TEMP}/bazel-execution-logs" >> "${GITHUB_ENV}"[0m
+2026-11-12T21:29:35.1897223Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:35.1897592Z env:
+2026-11-12T21:29:35.1897844Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:35.1898273Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:35.1898711Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:35.1899100Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:35.1899576Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:35.1900216Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:35.1900817Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:35.1901191Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:35.1901506Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:35.1901811Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:35.1904208Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:35.1904484Z ##[endgroup]
+2026-11-12T21:29:35.1967314Z ##[end-action id=prepare_bazel.__run_2;outcome=success;conclusion=success;duration_ms=11]
+2026-11-12T21:29:35.2019622Z ##[group]Run python3 .github/scripts/rusty_v8_bazel.py check-module-bazel
+2026-11-12T21:29:35.2020164Z [36;1mpython3 .github/scripts/rusty_v8_bazel.py check-module-bazel[0m
+2026-11-12T21:29:35.2020554Z [36;1mjust test-github-scripts[0m
+2026-11-12T21:29:35.2038605Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:35.2038936Z env:
+2026-11-12T21:29:35.2039157Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:35.2039566Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:35.2039982Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:35.2040338Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:35.2040773Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:35.2041383Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:35.2041967Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:35.2042320Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:35.2042603Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:35.2042875Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:35.2045188Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:35.2045589Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:29:35.2046009Z ##[endgroup]
+2026-11-12T21:29:35.2683723Z /home/runner/work/hepta-private-ci/hepta-private-ci/MODULE.bazel rusty_v8 150.4.0 checksums match /home/runner/work/hepta-private-ci/hepta-private-ci/third_party/v8/rusty_v8_150_4_0.sha256
+2026-11-12T21:29:35.2796428Z python3 -m unittest discover -s /home/runner/work/hepta-private-ci/hepta-private-ci/.github/scripts -p 'test_*.py'
+2026-11-12T21:29:39.1226565Z /home/runner/.cache/codex-ci/tmp/tmpokl5rmtk/librusty_v8_ptrcomp_sandbox_release_aarch64-apple-darwin.a.gz
+2026-11-12T21:29:39.1228125Z /home/runner/.cache/codex-ci/tmp/tmpokl5rmtk/src_binding_ptrcomp_sandbox_release_aarch64-apple-darwin.rs
+2026-11-12T21:29:39.1229477Z /home/runner/.cache/codex-ci/tmp/tmpokl5rmtk/rusty_v8_ptrcomp_sandbox_release_aarch64-apple-darwin.sha256
+2026-11-12T21:29:39.1230287Z /home/runner/.cache/codex-ci/tmp/tmpoerw0476/rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.lib.gz
+2026-11-12T21:29:39.1231030Z /home/runner/.cache/codex-ci/tmp/tmpoerw0476/src_binding_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.rs
+2026-11-12T21:29:39.1231761Z /home/runner/.cache/codex-ci/tmp/tmpoerw0476/rusty_v8_ptrcomp_sandbox_release_x86_64-pc-windows-msvc.sha256
+2026-11-12T21:29:39.1233488Z {"id": "original", "package": "owner", "exitCode": 100, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": false, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0}
+2026-11-12T21:29:39.1235231Z Starting 1 tests across 1 binary (99 tests skipped)
+2026-11-12T21:29:39.1235546Z PASS [ 0.1s] (1/1) owner original
+2026-11-12T21:29:39.1237292Z {"id": "second", "package": "owner", "exitCode": 0, "expectedTestCount": 1, "selectedTestCount": 1, "observedTests": ["original"], "missingRequiredTests": [], "nonPassingTests": [], "selectionMatches": true, "passed": true, "command": ["just", "test", "--locked", "-p", "owner", "--lib", "--cargo-profile", "dev-small", "-E", "test(=original)", "--test-threads", "1", "--no-tests", "fail", "--retries", "0"], "durationSeconds": 0.0}
+2026-11-12T21:29:39.1238801Z Starting 1 tests across 1 binary (99 tests skipped)
+2026-11-12T21:29:39.1239114Z PASS [ 0.1s] (1/1) owner original
+2026-11-12T21:29:39.1260853Z .................................................................................................................
+2026-11-12T21:29:39.1261986Z ----------------------------------------------------------------------
+2026-11-12T21:29:39.1262541Z Ran 113 tests in 3.612s
+2026-11-12T21:29:39.1262761Z 
+2026-11-12T21:29:39.1262877Z OK
+2026-11-12T21:29:39.1442678Z ##[group]Run ./scripts/check-module-bazel-lock.sh
+2026-11-12T21:29:39.1443117Z [36;1m./scripts/check-module-bazel-lock.sh[0m
+2026-11-12T21:29:39.1463036Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:39.1463388Z env:
+2026-11-12T21:29:39.1463619Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:29:39.1464021Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:29:39.1464439Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:29:39.1464797Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:29:39.1465253Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:29:39.1465850Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:29:39.1466695Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:29:39.1467049Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:39.1467387Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:29:39.1467666Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:39.1470189Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:39.1470598Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:29:39.1471020Z ##[endgroup]
+2026-11-12T21:29:39.1878008Z BuildBuddy key unavailable; using local Bazel configuration.
+2026-11-12T21:29:39.1906782Z 2026/11/12 21:29:39 Downloading https://releases.bazel.build/9.3.0/release/bazel-9.3.0-linux-x86_64...
+2026-11-12T21:29:39.5785633Z Extracting Bazel installation...
+2026-11-12T21:29:40.2015795Z Starting local Bazel server (9.3.0) and connecting to it...
+2026-11-12T21:29:41.7694406Z INFO: Invocation ID: 9bc6fc5a-1332-4179-9152-eca722d314a5
+2026-11-12T21:29:42.0877183Z  no actions running
+2026-11-12T21:29:43.1394523Z  no actions running
+2026-11-12T21:29:44.1341426Z  no actions running
+2026-11-12T21:29:46.0593986Z  no actions running
+2026-11-12T21:29:47.0661644Z  no actions running
+2026-11-12T21:29:48.0938516Z  no actions running
+2026-11-12T21:29:49.1249752Z  no actions running
+2026-11-12T21:29:49.8102933Z WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:29:49.8104647Z WARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:29:49.8106893Z WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:29:50.1344281Z  no actions running
+2026-11-12T21:29:51.1809305Z  no actions running
+2026-11-12T21:29:52.1947264Z  no actions running
+2026-11-12T21:29:53.2007275Z  no actions running
+2026-11-12T21:29:54.3047225Z  no actions running
+2026-11-12T21:29:55.3817381Z  no actions running
+2026-11-12T21:29:56.5468366Z  no actions running
+2026-11-12T21:29:56.9317570Z DEBUG: /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:29:56.9347375Z WARNING: A well-known crate annotation exists for zstd-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:29:56.9348512Z 
+2026-11-12T21:29:56.9376669Z ```
+2026-11-12T21:29:56.9406781Z bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
+2026-11-12T21:29:56.9436400Z 
+2026-11-12T21:29:56.9436910Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:29:56.9437496Z crate.annotation(
+2026-11-12T21:29:56.9437891Z     crate = "zstd-sys",
+2026-11-12T21:29:56.9438330Z     gen_build_script = "off",
+2026-11-12T21:29:56.9438776Z     deps = ["@zstd"],
+2026-11-12T21:29:56.9439152Z )
+2026-11-12T21:29:56.9439862Z ```
+2026-11-12T21:29:56.9440067Z 
+2026-11-12T21:29:56.9440432Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:29:56.9440967Z 
+2026-11-12T21:29:56.9441100Z ```
+2026-11-12T21:29:56.9441427Z crate.annotation(
+2026-11-12T21:29:56.9441814Z     crate = "zstd-sys",
+2026-11-12T21:29:56.9442228Z     gen_build_script = "on",
+2026-11-12T21:29:56.9442648Z )
+2026-11-12T21:29:56.9442953Z ```
+2026-11-12T21:29:57.2347364Z DEBUG: /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:29:57.2377334Z WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:29:57.2406423Z 
+2026-11-12T21:29:57.2406590Z ```
+2026-11-12T21:29:57.2407004Z bazel_dep(name = "libgit2", version = "1.9.1")
+2026-11-12T21:29:57.2407390Z 
+2026-11-12T21:29:57.2407678Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:29:57.2408272Z crate.annotation(
+2026-11-12T21:29:57.2408656Z     crate = "libgit2-sys",
+2026-11-12T21:29:57.2409066Z     gen_build_script = "off",
+2026-11-12T21:29:57.2409497Z     deps = ["@libgit2"],
+2026-11-12T21:29:57.2409856Z )
+2026-11-12T21:29:57.2410132Z ```
+2026-11-12T21:29:57.2410298Z 
+2026-11-12T21:29:57.2410632Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:29:57.2411128Z 
+2026-11-12T21:29:57.2411253Z ```
+2026-11-12T21:29:57.2411553Z crate.annotation(
+2026-11-12T21:29:57.2411903Z     crate = "libgit2-sys",
+2026-11-12T21:29:57.2412300Z     gen_build_script = "on",
+2026-11-12T21:29:57.2412694Z )
+2026-11-12T21:29:57.2412974Z ```
+2026-11-12T21:29:57.2413611Z DEBUG: /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:29:57.2437338Z WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:29:57.2466439Z 
+2026-11-12T21:29:57.2466597Z ```
+2026-11-12T21:29:57.2467052Z bazel_dep(name = "libssh2", version = "1.11.1.bcr.1")
+2026-11-12T21:29:57.2467495Z 
+2026-11-12T21:29:57.2467791Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:29:57.2468386Z crate.annotation(
+2026-11-12T21:29:57.2468761Z     crate = "libssh2-sys",
+2026-11-12T21:29:57.2469266Z     gen_build_script = "off",
+2026-11-12T21:29:57.2496665Z     deps = ["@libssh2"],
+2026-11-12T21:29:57.2526604Z )
+2026-11-12T21:29:57.2543614Z ```
+2026-11-12T21:29:57.2566449Z 
+2026-11-12T21:29:57.2596850Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:29:57.2626381Z 
+2026-11-12T21:29:57.2656448Z ```
+2026-11-12T21:29:57.2716541Z crate.annotation(
+2026-11-12T21:29:57.2717362Z     crate = "libssh2-sys",
+2026-11-12T21:29:57.2746735Z     gen_build_script = "on",
+2026-11-12T21:29:57.2806498Z )
+2026-11-12T21:29:57.2836660Z ```
+2026-11-12T21:29:57.5468694Z  no actions running
+2026-11-12T21:29:59.1429648Z  no actions running
+2026-11-12T21:30:00.3187149Z  no actions running
+2026-11-12T21:30:00.3493294Z <root> (codex@_)
+2026-11-12T21:30:00.3493657Z 
+2026-11-12T21:30:00.4198182Z ##[group]Run sudo apt-get update
+2026-11-12T21:30:00.4198749Z [36;1msudo apt-get update[0m
+2026-11-12T21:30:00.4199394Z [36;1msudo apt-get install -y --no-install-recommends openssh-client[0m
+2026-11-12T21:30:00.4200121Z [36;1mtest -x /usr/bin/ssh-keygen[0m
+2026-11-12T21:30:00.4200746Z [36;1mdpkg-query -W -f='${Package} ${Version}\n' openssh-client[0m
+2026-11-12T21:30:00.4201401Z [36;1msha256sum /usr/bin/ssh-keygen[0m
+2026-11-12T21:30:00.4229347Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:30:00.4229938Z env:
+2026-11-12T21:30:00.4230321Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:30:00.4231044Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:30:00.4231773Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:30:00.4232409Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:30:00.4233260Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:30:00.4234354Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:30:00.4235331Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:30:00.4235951Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:30:00.4236710Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:30:00.4237198Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:30:00.4241793Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:30:00.4242521Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:30:00.4243293Z ##[endgroup]
+2026-11-12T21:30:00.5350111Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-12T21:30:00.5531245Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-12T21:30:00.6533709Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [697 kB]
+2026-11-12T21:30:00.6811724Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [767 kB]
+2026-11-12T21:30:00.7049936Z Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+2026-11-12T21:30:00.7058280Z Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-12T21:30:00.7140713Z Get:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-12T21:30:00.7143516Z Get:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-12T21:30:00.8163791Z Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1450 kB]
+2026-11-12T21:30:00.8249886Z Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [315 kB]
+2026-11-12T21:30:00.8255963Z Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1711 kB]
+2026-11-12T21:30:00.8347685Z Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [344 kB]
+2026-11-12T21:30:00.8387719Z Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1883 kB]
+2026-11-12T21:30:00.8468452Z Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [430 kB]
+2026-11-12T21:30:00.9287841Z Get:15 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1195 kB]
+2026-11-12T21:30:00.9345955Z Get:16 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [238 kB]
+2026-11-12T21:30:00.9364380Z Get:17 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1228 kB]
+2026-11-12T21:30:00.9418891Z Get:18 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [248 kB]
+2026-11-12T21:30:00.9879551Z Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1788 kB]
+2026-11-12T21:30:00.9954760Z Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [411 kB]
+2026-11-12T21:30:04.5235821Z Fetched 13.1 MB in 1s (9486 kB/s)
+2026-11-12T21:30:05.7008187Z Reading package lists...
+2026-11-12T21:30:05.7391523Z Reading package lists...
+2026-11-12T21:30:05.9522160Z Building dependency tree...
+2026-11-12T21:30:05.9529869Z Reading state information...
+2026-11-12T21:30:06.1115767Z openssh-client is already the newest version (1:9.6p1-3ubuntu13.20).
+2026-11-12T21:30:06.1116565Z 0 upgraded, 0 newly installed, 0 to remove and 16 not upgraded.
+2026-11-12T21:30:06.1250326Z openssh-client 1:9.6p1-3ubuntu13.20
+2026-11-12T21:30:06.1272462Z f0b9e19ffa077d62ef6795a44d50c721f03456067a874395e015ec69c276dca6  /usr/bin/ssh-keygen
+2026-11-12T21:30:06.1309325Z ##[group]Run bazel_targets=(
+2026-11-12T21:30:06.1309663Z [36;1mbazel_targets=([0m
+2026-11-12T21:30:06.1309913Z [36;1m  //...[0m
+2026-11-12T21:30:06.1310285Z [36;1m  # Keep standalone V8 library targets out of the ordinary Bazel CI[0m
+2026-11-12T21:30:06.1310772Z [36;1m  # path. V8 consumers under `//codex-rs/...` still participate[0m
+2026-11-12T21:30:06.1311165Z [36;1m  # transitively through `//...`.[0m
+2026-11-12T21:30:06.1311464Z [36;1m  -//third_party/v8:all[0m
+2026-11-12T21:30:06.1311765Z [36;1m  -//codex-rs/v8-poc:v8-poc-unit-tests[0m
+2026-11-12T21:30:06.1312061Z [36;1m)[0m
+2026-11-12T21:30:06.1312250Z [36;1m[0m
+2026-11-12T21:30:06.1312470Z [36;1mif [[ "${RUNNER_OS}" == "Linux" ]]; then[0m
+2026-11-12T21:30:06.1312876Z [36;1m  # This target runs in the required native step immediately below.[0m
+2026-11-12T21:30:06.1313464Z [36;1m  bazel_targets+=(-//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests)[0m
+2026-11-12T21:30:06.1313977Z [36;1mfi[0m
+2026-11-12T21:30:06.1314165Z [36;1m[0m
+2026-11-12T21:30:06.1314364Z [36;1mbazel_wrapper_args=([0m
+2026-11-12T21:30:06.1314646Z [36;1m  --print-failed-action-summary[0m
+2026-11-12T21:30:06.1314966Z [36;1m  --print-failed-test-logs[0m
+2026-11-12T21:30:06.1315224Z [36;1m)[0m
+2026-11-12T21:30:06.1315428Z [36;1mbazel_test_args=([0m
+2026-11-12T21:30:06.1315659Z [36;1m  test[0m
+2026-11-12T21:30:06.1315911Z [36;1m  --test_tag_filters=-argument-comment-lint[0m
+2026-11-12T21:30:06.1316536Z [36;1m  --test_verbose_timeout_warnings[0m
+2026-11-12T21:30:06.1316862Z [36;1m  --build_metadata=COMMIT_SHA=${GITHUB_SHA}[0m
+2026-11-12T21:30:06.1317153Z [36;1m)[0m
+2026-11-12T21:30:06.1317378Z [36;1m./.github/scripts/run-bazel-ci.sh \[0m
+2026-11-12T21:30:06.1317675Z [36;1m  "${bazel_wrapper_args[@]}" \[0m
+2026-11-12T21:30:06.1317934Z [36;1m  -- \[0m
+2026-11-12T21:30:06.1318140Z [36;1m  "${bazel_test_args[@]}" \[0m
+2026-11-12T21:30:06.1318393Z [36;1m  -- \[0m
+2026-11-12T21:30:06.1318602Z [36;1m  "${bazel_targets[@]}"[0m
+2026-11-12T21:30:06.1338328Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:30:06.1338681Z env:
+2026-11-12T21:30:06.1338906Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:30:06.1339311Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:30:06.1339744Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:30:06.1340113Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:30:06.1340556Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:30:06.1341184Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43310500072-test
+2026-11-12T21:30:06.1341728Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:30:06.1342078Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:30:06.1342367Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:30:06.1342651Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:30:06.1345034Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:30:06.1345457Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:30:06.1346372Z   BUILDBUDDY_API_KEY: ***
+2026-11-12T21:30:06.1346635Z ##[endgroup]
+2026-11-12T21:30:06.1430084Z BuildBuddy API key is available; using remote Bazel configuration.
+2026-11-12T21:30:06.1787513Z Using generic BuildBuddy configuration: buildbuddy-generic-rbe.
+2026-11-12T21:30:06.3839432Z WARNING: option '--remote_download_outputs' was expanded from both option '--remote_download_toplevel' (source /home/runner/work/hepta-private-ci/hepta-private-ci/.bazelrc) and option '--remote_download_minimal' (source expanded from --config=ci-linux)
+2026-11-12T21:30:06.3847391Z INFO: Invocation ID: 5053dfa3-ff6a-4bf5-9565-225203f473f1
+2026-11-12T21:30:06.3848572Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/5053dfa3-ff6a-4bf5-9565-225203f473f1
+2026-11-12T21:30:06.5433718Z Computing main repo mapping: 
+2026-11-12T21:30:06.7443608Z WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:30:06.7447316Z WARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:30:06.7450819Z WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:30:07.5459760Z Computing main repo mapping: 
+2026-11-12T21:30:08.4263626Z Loading: 
+2026-11-12T21:30:08.4386702Z Loading: 4 packages loaded
+2026-11-12T21:30:09.5497836Z Loading: 21 packages loaded
+2026-11-12T21:30:09.5498286Z     currently loading: codex-rs/v8-poc ... (194 packages)
+2026-11-12T21:30:10.0929789Z DEBUG: /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:30:10.0931288Z WARNING: A well-known crate annotation exists for zstd-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:30:10.0932220Z 
+2026-11-12T21:30:10.0932535Z ```
+2026-11-12T21:30:10.0933103Z bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
+2026-11-12T21:30:10.0933703Z 
+2026-11-12T21:30:10.0934202Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:30:10.0935021Z crate.annotation(
+2026-11-12T21:30:10.0935607Z     crate = "zstd-sys",
+2026-11-12T21:30:10.0936464Z     gen_build_script = "off",
+2026-11-12T21:30:10.0937147Z     deps = ["@zstd"],
+2026-11-12T21:30:10.0937750Z )
+2026-11-12T21:30:10.0938358Z ```
+2026-11-12T21:30:10.0938731Z 
+2026-11-12T21:30:10.0939283Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:30:10.0940041Z 
+2026-11-12T21:30:10.0940365Z ```
+2026-11-12T21:30:10.0940888Z crate.annotation(
+2026-11-12T21:30:10.0941497Z     crate = "zstd-sys",
+2026-11-12T21:30:10.0942102Z     gen_build_script = "on",
+2026-11-12T21:30:10.0942713Z )
+2026-11-12T21:30:10.0943236Z ```
+2026-11-12T21:30:10.2348452Z DEBUG: /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:30:10.2352870Z WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:30:10.2353974Z 
+2026-11-12T21:30:10.2354305Z ```
+2026-11-12T21:30:10.2355007Z bazel_dep(name = "libgit2", version = "1.9.1")
+2026-11-12T21:30:10.2355594Z 
+2026-11-12T21:30:10.2356328Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:30:10.2357184Z crate.annotation(
+2026-11-12T21:30:10.2357778Z     crate = "libgit2-sys",
+2026-11-12T21:30:10.2358416Z     gen_build_script = "off",
+2026-11-12T21:30:10.2359059Z     deps = ["@libgit2"],
+2026-11-12T21:30:10.2359644Z )
+2026-11-12T21:30:10.2360165Z ```
+2026-11-12T21:30:10.2360543Z 
+2026-11-12T21:30:10.2361064Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:30:10.2362140Z 
+2026-11-12T21:30:10.2362416Z ```
+2026-11-12T21:30:10.2362898Z crate.annotation(
+2026-11-12T21:30:10.2363461Z     crate = "libgit2-sys",
+2026-11-12T21:30:10.2364059Z     gen_build_script = "on",
+2026-11-12T21:30:10.2364624Z )
+2026-11-12T21:30:10.2365065Z ```
+2026-11-12T21:30:10.2369099Z DEBUG: /home/runner/.cache/codex-ci/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:30:10.2370600Z WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:30:10.2371577Z 
+2026-11-12T21:30:10.2371983Z ```
+2026-11-12T21:30:10.2372672Z bazel_dep(name = "libssh2", version = "1.11.1.bcr.1")
+2026-11-12T21:30:10.2373105Z 
+2026-11-12T21:30:10.2373380Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:30:10.2373970Z crate.annotation(
+2026-11-12T21:30:10.2374660Z     crate = "libssh2-sys",
+2026-11-12T21:30:10.2375106Z     gen_build_script = "off",
+2026-11-12T21:30:10.2375540Z     deps = ["@libssh2"],
+2026-11-12T21:30:10.2375916Z )
+2026-11-12T21:30:10.2376457Z ```
+2026-11-12T21:30:10.2376636Z 
+2026-11-12T21:30:10.2376972Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:30:10.2377478Z 
+2026-11-12T21:30:10.2377611Z ```
+2026-11-12T21:30:10.2377909Z crate.annotation(
+2026-11-12T21:30:10.2378274Z     crate = "libssh2-sys",
+2026-11-12T21:30:10.2378683Z     gen_build_script = "on",
+2026-11-12T21:30:10.2379077Z )
+2026-11-12T21:30:10.2379364Z ```
+2026-11-12T21:30:10.5527537Z Loading: 22 packages loaded
+2026-11-12T21:30:10.5537538Z     currently loading: codex-rs/v8-poc ... (193 packages)
+2026-11-12T21:30:11.5599374Z Analyzing: 1058 targets (219 packages loaded)
+2026-11-12T21:30:11.6945302Z Analyzing: 1058 targets (221 packages loaded, 11 targets configured)
+2026-11-12T21:30:11.7270342Z Analyzing: 1058 targets (221 packages loaded, 11 targets configured)
+2026-11-12T21:30:11.7306479Z 
+2026-11-12T21:30:12.7467391Z Analyzing: 1058 targets (234 packages loaded, 724 targets configured)
+2026-11-12T21:30:12.7530911Z [1 / 1] no actions running
+2026-11-12T21:30:13.7397363Z Analyzing: 1058 targets (294 packages loaded, 7346 targets configured)
+2026-11-12T21:30:13.7447127Z [1 / 1] no actions running
+2026-11-12T21:30:14.7956538Z Analyzing: 1058 targets (301 packages loaded, 9832 targets configured)
+2026-11-12T21:30:14.8054281Z [1 / 1] no actions running
+2026-11-12T21:30:15.8148766Z Analyzing: 1058 targets (330 packages loaded, 10698 targets configured)
+2026-11-12T21:30:15.8167264Z [1 / 1] no actions running
+2026-11-12T21:30:16.8197391Z Analyzing: 1058 targets (347 packages loaded, 11176 targets configured)
+2026-11-12T21:30:16.8271554Z [1 / 1] no actions running
+2026-11-12T21:30:17.8263923Z Analyzing: 1058 targets (364 packages loaded, 12688 targets configured)
+2026-11-12T21:30:17.8297094Z [1 / 1] no actions running
+2026-11-12T21:30:18.8333264Z Analyzing: 1058 targets (388 packages loaded, 14967 targets configured)
+2026-11-12T21:30:18.8356965Z [1 / 1] no actions running
+2026-11-12T21:30:19.8415052Z Analyzing: 1058 targets (410 packages loaded, 16673 targets configured)
+2026-11-12T21:30:19.8455291Z [1 / 1] no actions running
+2026-11-12T21:30:20.8538821Z Analyzing: 1058 targets (432 packages loaded, 18687 targets configured)
+2026-11-12T21:30:20.8567071Z [1 / 1] no actions running
+2026-11-12T21:30:21.8601511Z Analyzing: 1058 targets (464 packages loaded, 20794 targets configured)
+2026-11-12T21:30:21.8632980Z [1 / 1] no actions running
+2026-11-12T21:30:22.8857640Z Analyzing: 1058 targets (493 packages loaded, 21836 targets configured)
+2026-11-12T21:30:22.8858434Z [1 / 1] no actions running
+2026-11-12T21:30:23.8969100Z Analyzing: 1058 targets (519 packages loaded, 23306 targets configured)
+2026-11-12T21:30:23.8996850Z [1 / 1] no actions running
+2026-11-12T21:30:24.8994980Z Analyzing: 1058 targets (546 packages loaded, 24138 targets configured)
+2026-11-12T21:30:24.9044220Z [1 / 1] no actions running
+2026-11-12T21:30:25.9048893Z Analyzing: 1058 targets (574 packages loaded, 26517 targets configured)
+2026-11-12T21:30:25.9076918Z [1 / 1] no actions running
+2026-11-12T21:30:26.9228655Z Analyzing: 1058 targets (604 packages loaded, 37916 targets configured)
+2026-11-12T21:30:26.9277750Z [1 / 2] checking cached actions
+2026-11-12T21:30:27.9345882Z Analyzing: 1058 targets (659 packages loaded, 39577 targets configured)
+2026-11-12T21:30:27.9394664Z [1 / 2] checking cached actions
+2026-11-12T21:30:28.9308364Z Analyzing: 1058 targets (691 packages loaded, 41744 targets configured)
+2026-11-12T21:30:28.9356837Z [1 / 2] checking cached actions
+2026-11-12T21:30:29.9994378Z Analyzing: 1058 targets (722 packages loaded, 43048 targets configured)
+2026-11-12T21:30:29.9995565Z [2 / 2] no actions running
+2026-11-12T21:30:31.0038030Z Analyzing: 1058 targets (759 packages loaded, 44088 targets configured)
+2026-11-12T21:30:31.0039534Z [2 / 2] no actions running
+2026-11-12T21:30:32.0763705Z Analyzing: 1058 targets (785 packages loaded, 45079 targets configured)
+2026-11-12T21:30:32.0787500Z [2 / 2] no actions running
+2026-11-12T21:30:33.0867707Z Analyzing: 1058 targets (817 packages loaded, 45972 targets configured)
+2026-11-12T21:30:33.0907245Z [2 / 2] no actions running
+2026-11-12T21:30:34.0992566Z Analyzing: 1058 targets (857 packages loaded, 47130 targets configured)
+2026-11-12T21:30:34.0993337Z [2 / 2] no actions running
+2026-11-12T21:30:35.1067544Z Analyzing: 1058 targets (888 packages loaded, 48511 targets configured)
+2026-11-12T21:30:35.1082398Z [2 / 2] no actions running
+2026-11-12T21:30:36.1164851Z Analyzing: 1058 targets (931 packages loaded, 49846 targets configured)
+2026-11-12T21:30:36.1165846Z [2 / 2] no actions running
+2026-11-12T21:30:37.1243762Z Analyzing: 1058 targets (961 packages loaded, 51116 targets configured)
+2026-11-12T21:30:37.1265836Z [2 / 2] no actions running
+2026-11-12T21:30:38.1317397Z Analyzing: 1058 targets (989 packages loaded, 51706 targets configured)
+2026-11-12T21:30:38.1376827Z [2 / 2] no actions running
+2026-11-12T21:30:39.1307839Z Analyzing: 1058 targets (1023 packages loaded, 53544 targets configured)
+2026-11-12T21:30:39.1317272Z [2 / 2] no actions running
+2026-11-12T21:30:40.1417310Z Analyzing: 1058 targets (1068 packages loaded, 55297 targets configured)
+2026-11-12T21:30:40.1428545Z [2 / 2] no actions running
+2026-11-12T21:30:41.1427869Z Analyzing: 1058 targets (1105 packages loaded, 56318 targets configured)
+2026-11-12T21:30:41.1456543Z [2 / 2] no actions running
+2026-11-12T21:30:42.1937938Z Analyzing: 1058 targets (1141 packages loaded, 57371 targets configured)
+2026-11-12T21:30:42.2007477Z [2 / 2] no actions running
+2026-11-12T21:30:43.1973152Z Analyzing: 1058 targets (1155 packages loaded, 57977 targets configured)
+2026-11-12T21:30:43.2027556Z [3 / 5] checking cached actions
+2026-11-12T21:30:44.2077529Z Analyzing: 1058 targets (1165 packages loaded, 58935 targets configured)
+2026-11-12T21:30:44.2106790Z [3 / 5] checking cached actions
+2026-11-12T21:30:45.2177306Z Analyzing: 1058 targets (1185 packages loaded, 59504 targets configured)
+2026-11-12T21:30:45.2178240Z [3 / 5] checking cached actions
+2026-11-12T21:30:46.2275612Z Analyzing: 1058 targets (1224 packages loaded, 60727 targets configured)
+2026-11-12T21:30:46.2297588Z [3 / 5] checking cached actions
+2026-11-12T21:30:47.3339230Z Analyzing: 1058 targets (1271 packages loaded, 61806 targets configured)
+2026-11-12T21:30:47.3418453Z [3 / 5] checking cached actions
+2026-11-12T21:30:48.3367472Z Analyzing: 1058 targets (1307 packages loaded, 63064 targets configured)
+2026-11-12T21:30:48.3368322Z [3 / 5] checking cached actions
+2026-11-12T21:30:49.3354373Z Analyzing: 1058 targets (1339 packages loaded, 67284 targets configured)
+2026-11-12T21:30:49.3355694Z [5 / 5] no actions running
+2026-11-12T21:30:50.4010397Z Analyzing: 1058 targets (1352 packages loaded, 68310 targets configured)
+2026-11-12T21:30:50.4036861Z [5 / 5] no actions running
+2026-11-12T21:30:51.4097466Z Analyzing: 1058 targets (1361 packages loaded, 71591 targets configured)
+2026-11-12T21:30:51.4156915Z [5 / 5] no actions running
+2026-11-12T21:30:52.4401665Z Analyzing: 1058 targets (1378 packages loaded, 73822 targets configured)
+2026-11-12T21:30:52.4428486Z [5 / 5] no actions running
+2026-11-12T21:30:53.4704031Z Analyzing: 1058 targets (1403 packages loaded, 77221 targets configured)
+2026-11-12T21:30:53.4748481Z [5 / 5] no actions running
+2026-11-12T21:30:54.5777279Z Analyzing: 1058 targets (1440 packages loaded, 81890 targets configured)
+2026-11-12T21:30:54.5806007Z [5 / 5] no actions running
+2026-11-12T21:30:55.5823914Z Analyzing: 1058 targets (1451 packages loaded, 82136 targets configured)
+2026-11-12T21:30:55.5836759Z [5 / 5] no actions running
+2026-11-12T21:30:56.5805326Z Analyzing: 1058 targets (1482 packages loaded, 85057 targets configured)
+2026-11-12T21:30:56.5806769Z [5 / 5] no actions running
+2026-11-12T21:30:57.5837248Z Analyzing: 1058 targets (1492 packages loaded, 94502 targets configured)
+2026-11-12T21:30:57.5897209Z [5 / 5] no actions running
+2026-11-12T21:30:58.5844011Z Analyzing: 1058 targets (1501 packages loaded, 96175 targets configured)
+2026-11-12T21:30:58.5844923Z [5 / 5] no actions running
+2026-11-12T21:30:59.7713970Z Analyzing: 1058 targets (1511 packages loaded, 98232 targets configured)
+2026-11-12T21:30:59.7719868Z [5 / 5] no actions running
+2026-11-12T21:31:01.5834475Z Analyzing: 1058 targets (1517 packages loaded, 102146 targets configured)
+2026-11-12T21:31:01.5835794Z [5 / 5] no actions running
+2026-11-12T21:31:02.5874378Z Analyzing: 1058 targets (1529 packages loaded, 105026 targets configured)
+2026-11-12T21:31:02.5899563Z [5 / 5] no actions running
+2026-11-12T21:31:03.5948467Z Analyzing: 1058 targets (1531 packages loaded, 107738 targets configured)
+2026-11-12T21:31:03.5950172Z [5 / 5] no actions running
+2026-11-12T21:31:04.6747608Z Analyzing: 1058 targets (1536 packages loaded, 111276 targets configured)
+2026-11-12T21:31:04.6777007Z [5 / 5] no actions running
+2026-11-12T21:31:07.0697765Z Analyzing: 1058 targets (1537 packages loaded, 123703 targets configured, 81 aspect applications)
+2026-11-12T21:31:07.0717058Z [5 / 5] no actions running
+2026-11-12T21:31:08.0811237Z Analyzing: 1058 targets (1544 packages loaded, 128672 targets configured, 91 aspect applications)
+2026-11-12T21:31:08.0917177Z [5 / 5] no actions running
+2026-11-12T21:31:09.1137770Z Analyzing: 1058 targets (1569 packages loaded, 131248 targets configured, 120 aspect applications)
+2026-11-12T21:31:09.1167193Z [5 / 5] no actions running
+2026-11-12T21:31:10.2587782Z Analyzing: 1058 targets (1573 packages loaded, 131543 targets configured, 131 aspect applications)
+2026-11-12T21:31:10.2743344Z [150 / 624] checking cached actions
+2026-11-12T21:31:11.9180151Z Analyzing: 1058 targets (1576 packages loaded, 131924 targets configured, 131 aspect applications)
+2026-11-12T21:31:11.9393574Z [153 / 624] Copying files to directory external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory [for tool]; 0s remote, remote-cache ... (288 actions, 0 running)
+2026-11-12T21:31:12.3940201Z Analyzing: 1058 targets (1578 packages loaded, 132564 targets configured, 131 aspect applications)
+2026-11-12T21:31:12.4039557Z [214 / 624] [Prepa] Compiling 3rd_party/libc/glibc/stdlib/at_quick_exit.c [for tool] ... (269 actions, 0 running)
+2026-11-12T21:31:13.3929958Z Analyzing: 1058 targets (1584 packages loaded, 133928 targets configured, 131 aspect applications)
+2026-11-12T21:31:13.3947428Z [339 / 624] [Prepa] Compiling compiler-rt/lib/builtins/truncxfbf2.c [for tool] ... (145 actions, 0 running)
+2026-11-12T21:31:14.3957477Z Analyzing: 1058 targets (1585 packages loaded, 136175 targets configured, 134 aspect applications)
+2026-11-12T21:31:14.3987560Z [490 / 624] Compiling compiler-rt/lib/builtins/mulsf3.c [for tool]; 1s remote, remote-cache ... (7 actions, 0 running)
+2026-11-12T21:31:15.6037585Z Analyzing: 1058 targets (1585 packages loaded, 137926 targets configured, 153 aspect applications)
+2026-11-12T21:31:15.6127606Z [497 / 624] Compiling compiler-rt/lib/builtins/fixtfsi.c [for tool]; 2s remote, remote-cache
+2026-11-12T21:31:16.6048728Z Analyzing: 1058 targets (1585 packages loaded, 138894 targets configured, 153 aspect applications)
+2026-11-12T21:31:16.6098977Z [513 / 624] [Prepa] Compiling lib/malloca.c [for tool] ... (93 actions, 0 running)
+2026-11-12T21:31:18.5965417Z Analyzing: 1058 targets (1585 packages loaded, 139558 targets configured, 153 aspect applications)
+2026-11-12T21:31:18.5989826Z [605 / 624] Compiling lib/wcrtomb.c [for tool]; 1s remote, remote-cache
+2026-11-12T21:31:19.5984109Z Analyzing: 1058 targets (1586 packages loaded, 141987 targets configured, 153 aspect applications)
+2026-11-12T21:31:19.6037133Z [624 / 624] no actions running
+2026-11-12T21:31:20.6897901Z Analyzing: 1058 targets (1592 packages loaded, 144845 targets configured, 153 aspect applications)
+2026-11-12T21:31:20.6945182Z [624 / 624] no actions running
+2026-11-12T21:31:21.7051079Z Analyzing: 1058 targets (1597 packages loaded, 147870 targets configured, 153 aspect applications)
+2026-11-12T21:31:21.7097557Z [624 / 624] no actions running
+2026-11-12T21:31:23.0727580Z Analyzing: 1058 targets (1599 packages loaded, 149021 targets configured, 153 aspect applications)
+2026-11-12T21:31:23.0807158Z [624 / 624] no actions running
+2026-11-12T21:31:24.5818756Z Analyzing: 1058 targets (1600 packages loaded, 152501 targets configured, 180 aspect applications)
+2026-11-12T21:31:24.5820119Z [624 / 624] no actions running
+2026-11-12T21:31:27.6672426Z Analyzing: 1058 targets (1601 packages loaded, 169279 targets configured, 192 aspect applications)
+2026-11-12T21:31:27.6717106Z [624 / 624] no actions running
+2026-11-12T21:31:29.4227448Z Analyzing: 1058 targets (1601 packages loaded, 176050 targets configured, 223 aspect applications)
+2026-11-12T21:31:29.4316855Z [624 / 624] no actions running
+2026-11-12T21:31:30.7058620Z Analyzing: 1058 targets (1603 packages loaded, 183282 targets configured, 295 aspect applications)
+2026-11-12T21:31:30.7086899Z [624 / 624] no actions running
+2026-11-12T21:31:36.1221385Z Analyzing: 1058 targets (1603 packages loaded, 203515 targets configured, 476 aspect applications)
+2026-11-12T21:31:36.1277416Z [624 / 624] no actions running
+2026-11-12T21:31:37.0339831Z Analyzing: 1058 targets (1603 packages loaded, 203703 targets configured, 476 aspect applications)
+2026-11-12T21:31:37.0713006Z [995 / 1,586] [Prepa] Compiling compiler-rt/lib/builtins/muldc3.c [for tool] ... (271 actions, 0 running)
+2026-11-12T21:31:38.0029875Z Analyzing: 1058 targets (1603 packages loaded, 203900 targets configured, 476 aspect applications)
+2026-11-12T21:31:38.0182129Z [1,168 / 1,586] [Prepa] Compiling compiler-rt/lib/builtins/muldc3.c [for tool] ... (326 actions, 0 running)
+2026-11-12T21:31:39.0527585Z Analyzing: 1058 targets (1603 packages loaded, 204303 targets configured, 476 aspect applications)
+2026-11-12T21:31:39.0577750Z [1,530 / 1,586] Compiling libcxx/src/atomic.cpp [for tool]; 1s remote, remote-cache ... (21 actions, 0 running)
+2026-11-12T21:31:40.1367552Z Analyzing: 1058 targets (1603 packages loaded, 205262 targets configured, 476 aspect applications)
+2026-11-12T21:31:40.1393647Z [1,549 / 1,586] Compiling compiler-rt/lib/builtins/umodti3.c [for tool]; 2s remote, remote-cache ... (7 actions, 0 running)
+2026-11-12T21:31:41.1584521Z Analyzing: 1058 targets (1603 packages loaded, 205860 targets configured, 476 aspect applications)
+2026-11-12T21:31:41.1753175Z [1,762 / 2,170] Writing script external/llvm++llvm+llvm-project/libcxx/libcxx.cppmap [for tool]; 0s local ... (221 actions, 2 running)
+2026-11-12T21:31:42.1427498Z Analyzing: 1058 targets (1603 packages loaded, 206296 targets configured, 476 aspect applications)
+2026-11-12T21:31:42.1429125Z [2,130 / 2,189] Compiling compiler-rt/lib/builtins/absvsi2.c; 4s remote, remote-cache ... (7 actions, 0 running)
+2026-11-12T21:31:43.7117319Z Analyzing: 1058 targets (1603 packages loaded, 208202 targets configured, 476 aspect applications)
+2026-11-12T21:31:43.7167776Z [2,212 / 2,260] 7 / 178 tests; Compiling compiler-rt/lib/builtins/truncsfbf2.c [for tool]; 2s remote, remote-cache
+2026-11-12T21:31:44.7142833Z Analyzing: 1058 targets (1603 packages loaded, 208942 targets configured, 476 aspect applications)
+2026-11-12T21:31:44.7227300Z [2,259 / 2,263] 10 / 178 tests; Compiling Rust bin //codex-rs/bwrap:bwrap (1 file); 0s remote, remote-cache
+2026-11-12T21:31:45.7146365Z Analyzing: 1058 targets (1603 packages loaded, 209353 targets configured, 476 aspect applications)
+2026-11-12T21:31:45.7431396Z [2,285 / 2,322] 10 / 179 tests; Writing repo mapping manifest for //codex-rs/utils/cargo-bin:cargo-bin-lookup_result-test; 0s local ... (7 actions, 1 running)
+2026-11-12T21:31:46.7295933Z Analyzing: 1058 targets (1603 packages loaded, 209860 targets configured, 476 aspect applications)
+2026-11-12T21:31:46.7828071Z [2,358 / 2,376] 12 / 182 tests; Compiling Rust bin //codex-rs/bwrap:bwrap (1 file); 0s remote, remote-cache ... (5 actions, 1 running)
+2026-11-12T21:31:47.8018443Z Analyzing: 1058 targets (1603 packages loaded, 210208 targets configured, 476 aspect applications)
+2026-11-12T21:31:47.8043531Z [2,536 / 2,543] 21 / 191 tests; Compiling Rust bin //codex-rs/stdio-to-uds:codex-stdio-to-uds (2 files); 0s remote, remote-cache ... (2 actions, 0 running)
+2026-11-12T21:31:49.7931480Z Analyzing: 1058 targets (1603 packages loaded, 210325 targets configured, 476 aspect applications)
+2026-11-12T21:31:49.7957487Z [2,921 / 5,938] 24 / 195 tests; Writing script external/llvm++glibc+glibc_x86_64-linux-gnu.2.28/glibc_abi_note_/glibc_abi_note.cppmap [for tool]; 0s local ... (333 actions, 1 running)
+2026-11-12T21:31:49.8122474Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/vcruntime140.def:
+2026-11-12T21:31:49.8137026Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/vcruntime140.def.in_undecorated:4:
+2026-11-12T21:31:49.8164183Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:49.8189073Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:49.8217924Z       |                     ^
+2026-11-12T21:31:49.8239117Z       |                     //
+2026-11-12T21:31:49.8295284Z 1 warning generated.
+2026-11-12T21:31:49.8442885Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/winhvplatform.def:
+2026-11-12T21:31:49.8538817Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/winhvplatform.def.in_undecorated:1:
+2026-11-12T21:31:49.8574401Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:49.8606529Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:49.8644696Z       |                     ^
+2026-11-12T21:31:49.8680885Z       |                     //
+2026-11-12T21:31:49.8716793Z 1 warning generated.
+2026-11-12T21:31:49.8747166Z Analyzing: 1058 targets (1603 packages loaded, 210384 targets configured, 476 aspect applications)
+2026-11-12T21:31:49.8749200Z [3,184 / 6,024] 24 / 200 tests; Writing script external/llvm++glibc+glibc_x86_64-linux-gnu.2.28/glibc_abi_note_/glibc_abi_note.cppmap [for tool]; 0s local ... (356 actions, 5 running)
+2026-11-12T21:31:49.9277979Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/ntdll.def:
+2026-11-12T21:31:49.9329435Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/ntdll.def.in_undecorated:1:
+2026-11-12T21:31:49.9357511Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:49.9389719Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:49.9412243Z       |                     ^
+2026-11-12T21:31:49.9428586Z       |                     //
+2026-11-12T21:31:49.9472741Z 1 warning generated.
+2026-11-12T21:31:49.9701795Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr120.def:
+2026-11-12T21:31:49.9777956Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr120.def.in_undecorated:2255:
+2026-11-12T21:31:49.9872334Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:49.9965556Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:49.9996790Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0021437Z       |                     ^
+2026-11-12T21:31:50.0022120Z       |                     //
+2026-11-12T21:31:50.0022731Z 1 warning generated.
+2026-11-12T21:31:50.0023552Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr80.def:
+2026-11-12T21:31:50.0025721Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr80.def.in_undecorated:1505:
+2026-11-12T21:31:50.0027925Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:50.0029520Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0030762Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0031326Z       |                     ^
+2026-11-12T21:31:50.0031886Z       |                     //
+2026-11-12T21:31:50.0032427Z 1 warning generated.
+2026-11-12T21:31:50.0033176Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/ntdllcrt.def:
+2026-11-12T21:31:50.0035051Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/ntdllcrt.def.in_undecorated:1:
+2026-11-12T21:31:50.0037705Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0045033Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0045684Z       |                     ^
+2026-11-12T21:31:50.0046516Z       |                     //
+2026-11-12T21:31:50.0047122Z 1 warning generated.
+2026-11-12T21:31:50.0047885Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcrt.def:
+2026-11-12T21:31:50.0049700Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/msvcrt.def.in_undecorated:4:
+2026-11-12T21:31:50.0052024Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0053306Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0053898Z       |                     ^
+2026-11-12T21:31:50.0054472Z       |                     //
+2026-11-12T21:31:50.0055078Z 1 warning generated.
+2026-11-12T21:31:50.0055839Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr120d.def:
+2026-11-12T21:31:50.0057812Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr120d.def.in_undecorated:2320:
+2026-11-12T21:31:50.0059813Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:50.0061518Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0063116Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0063893Z       |                     ^
+2026-11-12T21:31:50.0064477Z       |                     //
+2026-11-12T21:31:50.0065045Z 1 warning generated.
+2026-11-12T21:31:50.0065771Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr100.def:
+2026-11-12T21:31:50.0068153Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr100.def.in_undecorated:1875:
+2026-11-12T21:31:50.0070460Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:50.0072056Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0073312Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0073902Z       |                     ^
+2026-11-12T21:31:50.0074480Z       |                     //
+2026-11-12T21:31:50.0075063Z 1 warning generated.
+2026-11-12T21:31:50.0137562Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr90d.def:
+2026-11-12T21:31:50.0190824Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr90d.def.in_undecorated:1556:
+2026-11-12T21:31:50.0219592Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:50.0230806Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0287011Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0297513Z       |                     ^
+2026-11-12T21:31:50.0316743Z       |                     //
+2026-11-12T21:31:50.0353979Z 1 warning generated.
+2026-11-12T21:31:50.0507285Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr110.def:
+2026-11-12T21:31:50.0509372Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr110.def.in_undecorated:2017:
+2026-11-12T21:31:50.0537157Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:50.0567210Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0570128Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0596543Z       |                     ^
+2026-11-12T21:31:50.0626573Z       |                     //
+2026-11-12T21:31:50.0656639Z 1 warning generated.
+2026-11-12T21:31:50.0657463Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr110d.def:
+2026-11-12T21:31:50.0689120Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr110d.def.in_undecorated:2082:
+2026-11-12T21:31:50.0716953Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:50.0747712Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.0749107Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.0779103Z       |                     ^
+2026-11-12T21:31:50.0810565Z       |                     //
+2026-11-12T21:31:50.0836699Z 1 warning generated.
+2026-11-12T21:31:50.0866872Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr100d.def:
+2026-11-12T21:31:50.0868785Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr100d.def.in_undecorated:1940:
+2026-11-12T21:31:50.0982436Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:50.1025674Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.1066984Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.1137854Z       |                     ^
+2026-11-12T21:31:50.1206727Z       |                     //
+2026-11-12T21:31:50.1266744Z 1 warning generated.
+2026-11-12T21:31:50.1333657Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/api-ms-win-crt-time-l1-1-0.def:
+2026-11-12T21:31:50.1381288Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/api-ms-win-crt-time-l1-1-0.def.in_undecorated:5:
+2026-11-12T21:31:50.1437291Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.1506855Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.1532367Z       |                     ^
+2026-11-12T21:31:50.1581393Z       |                     //
+2026-11-12T21:31:50.1668992Z 1 warning generated.
+2026-11-12T21:31:50.1757360Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/api-ms-win-crt-filesystem-l1-1-0.def:
+2026-11-12T21:31:50.1809493Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/api-ms-win-crt-filesystem-l1-1-0.def.in_undecorated:5:
+2026-11-12T21:31:50.1867445Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.1896839Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.1956780Z       |                     ^
+2026-11-12T21:31:50.2016730Z       |                     //
+2026-11-12T21:31:50.2046704Z 1 warning generated.
+2026-11-12T21:31:50.2077274Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/api-ms-win-crt-runtime-l1-1-0.def:
+2026-11-12T21:31:50.2125059Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/api-ms-win-crt-runtime-l1-1-0.def.in_undecorated:5:
+2026-11-12T21:31:50.2197271Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.2226709Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.2256692Z       |                     ^
+2026-11-12T21:31:50.2308519Z       |                     //
+2026-11-12T21:31:50.2408069Z 1 warning generated.
+2026-11-12T21:31:50.2437182Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/kernel32.def:
+2026-11-12T21:31:50.2517702Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/kernel32.def.in_undecorated:1:
+2026-11-12T21:31:50.2599940Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.2665278Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.2706508Z       |                     ^
+2026-11-12T21:31:50.2746931Z       |                     //
+2026-11-12T21:31:50.2917693Z 1 warning generated.
+2026-11-12T21:31:50.3075451Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/api-ms-win-crt-private-l1-1-0.def:
+2026-11-12T21:31:50.3232407Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/api-ms-win-crt-private-l1-1-0.def.in_undecorated:5:
+2026-11-12T21:31:50.3241003Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.3242397Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.3243028Z       |                     ^
+2026-11-12T21:31:50.3243622Z       |                     //
+2026-11-12T21:31:50.3244225Z 1 warning generated.
+2026-11-12T21:31:50.3245001Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr120_app.def:
+2026-11-12T21:31:50.3247447Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/msvcr120_app.def.in_undecorated:9:
+2026-11-12T21:31:50.3249736Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.3251371Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.3251981Z       |                     ^
+2026-11-12T21:31:50.3252550Z       |                     //
+2026-11-12T21:31:50.3253132Z 1 warning generated.
+2026-11-12T21:31:50.3254036Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/api-ms-win-crt-math-l1-1-0.def:
+2026-11-12T21:31:50.3256498Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/api-ms-win-crt-math-l1-1-0.def.in_undecorated:5:
+2026-11-12T21:31:50.3258876Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.3260078Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.3260646Z       |                     ^
+2026-11-12T21:31:50.3261458Z       |                     //
+2026-11-12T21:31:50.3262046Z 1 warning generated.
+2026-11-12T21:31:50.3262753Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/clbcatq.def:
+2026-11-12T21:31:50.3264524Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/clbcatq.def.in_undecorated:1:
+2026-11-12T21:31:50.3266960Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.3268205Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.3268779Z       |                     ^
+2026-11-12T21:31:50.3269339Z       |                     //
+2026-11-12T21:31:50.3269890Z 1 warning generated.
+2026-11-12T21:31:50.3270649Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/vcruntime140_app.def:
+2026-11-12T21:31:50.3272592Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/vcruntime140_app.def.in_undecorated:4:
+2026-11-12T21:31:50.3274905Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.3276445Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.3277095Z       |                     ^
+2026-11-12T21:31:50.3277778Z       |                     //
+2026-11-12T21:31:50.3278430Z 1 warning generated.
+2026-11-12T21:31:50.4980647Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/vcruntime140d.def:
+2026-11-12T21:31:50.5013168Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/vcruntime140d.def.in_undecorated:4:
+2026-11-12T21:31:50.5028399Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.5125516Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.5247632Z       |                     ^
+2026-11-12T21:31:50.5413796Z       |                     //
+2026-11-12T21:31:50.5465191Z 1 warning generated.
+2026-11-12T21:31:50.5711681Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/ws2_32.def:
+2026-11-12T21:31:50.5902043Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/ws2_32.def.in_undecorated:1:
+2026-11-12T21:31:50.6122935Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.6332279Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.6444737Z       |                     ^
+2026-11-12T21:31:50.6531747Z       |                     //
+2026-11-12T21:31:50.6583460Z 1 warning generated.
+2026-11-12T21:31:50.7979039Z Analyzing: 1058 targets (1603 packages loaded, 210470 targets configured, 476 aspect applications)
+2026-11-12T21:31:50.7997982Z [3,548 / 6,034] 24 / 202 tests; Expanding template external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/ole32.def.in_undecorated; 1s local ... (709 actions, 2 running)
+2026-11-12T21:31:50.8458561Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/oleaut32.def:
+2026-11-12T21:31:50.8624428Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/oleaut32.def.in_undecorated:1:
+2026-11-12T21:31:50.8776755Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:50.8850543Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:50.8989431Z       |                     ^
+2026-11-12T21:31:50.9042250Z       |                     //
+2026-11-12T21:31:50.9255845Z 1 warning generated.
+2026-11-12T21:31:51.0193730Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr80d.def:
+2026-11-12T21:31:51.0288178Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr80d.def.in_undecorated:1577:
+2026-11-12T21:31:51.0477436Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:51.0618160Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:51.0667144Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:51.0787234Z       |                     ^
+2026-11-12T21:31:51.0816931Z       |                     //
+2026-11-12T21:31:51.0891082Z 1 warning generated.
+2026-11-12T21:31:51.1009703Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/msvcr90.def:
+2026-11-12T21:31:51.1148249Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib64/msvcr90.def.in_undecorated:1490:
+2026-11-12T21:31:51.1267341Z In file included from external/llvm++mingw+mingw/mingw-w64-crt/def-include/crt-aliases.def.in:1:
+2026-11-12T21:31:51.1488020Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:51.1627542Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:51.1857101Z       |                     ^
+2026-11-12T21:31:51.1941526Z       |                     //
+2026-11-12T21:31:51.2077704Z 1 warning generated.
+2026-11-12T21:31:51.2137624Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/api-ms-win-crt-convert-l1-1-0.def:
+2026-11-12T21:31:51.2215766Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/api-ms-win-crt-convert-l1-1-0.def.in_undecorated:5:
+2026-11-12T21:31:51.2271516Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:51.2311548Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:51.2437347Z       |                     ^
+2026-11-12T21:31:51.2437893Z       |                     //
+2026-11-12T21:31:51.2526976Z 1 warning generated.
+2026-11-12T21:31:51.2647226Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/advapi32.def:
+2026-11-12T21:31:51.2698518Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/advapi32.def.in_undecorated:1:
+2026-11-12T21:31:51.2807706Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:51.2902214Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:51.2947482Z       |                     ^
+2026-11-12T21:31:51.3107105Z       |                     //
+2026-11-12T21:31:51.3168396Z 1 warning generated.
+2026-11-12T21:31:51.4037386Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/ole32.def:
+2026-11-12T21:31:51.4160071Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/ole32.def.in_undecorated:1:
+2026-11-12T21:31:51.4269183Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:51.4336939Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:51.4547197Z       |                     ^
+2026-11-12T21:31:51.4587453Z       |                     //
+2026-11-12T21:31:51.4719405Z 1 warning generated.
+2026-11-12T21:31:51.8043560Z Analyzing: 1058 targets (1603 packages loaded, 210599 targets configured, 476 aspect applications)
+2026-11-12T21:31:51.8158110Z [4,069 / 6,115] 24 / 206 tests; Compiling Rust bin //codex-rs/stdio-to-uds:codex-stdio-to-uds (2 files); 1s remote, remote-cache ... (793 actions, 1 running)
+2026-11-12T21:31:52.1808654Z INFO: From MingwGenerateDef external/llvm++mingw+mingw/user32.def:
+2026-11-12T21:31:52.1898123Z In file included from bazel-out/windows_x86_64_gnullvm-fastbuild-ST-04af25446861/bin/external/llvm++mingw+mingw/external/llvm++mingw+mingw/mingw-w64-crt/lib-common/user32.def.in_undecorated:1:
+2026-11-12T21:31:52.2254107Z external/llvm++mingw+mingw/mingw-w64-crt/def-include/func.def.in:59:21: warning: extra tokens at end of #ifndef directive [-Wextra-tokens]
+2026-11-12T21:31:52.2349529Z    59 | #ifndef F_X86_NATIVE(x)
+2026-11-12T21:31:52.2477157Z       |                     ^
+2026-11-12T21:31:52.2577039Z       |                     //
+2026-11-12T21:31:52.2627343Z 1 warning generated.
+2026-11-12T21:31:52.8455839Z Analyzing: 1058 targets (1603 packages loaded, 210724 targets configured, 476 aspect applications)
+2026-11-12T21:31:52.8524440Z [4,871 / 6,115] 24 / 206 tests; Compiling Rust bin //codex-rs/stdio-to-uds:codex-stdio-to-uds (2 files); 2s remote, remote-cache ... (796 actions, 2 running)
+2026-11-12T21:31:53.8027684Z Analyzing: 1058 targets (1603 packages loaded, 210890 targets configured, 476 aspect applications)
+2026-11-12T21:31:53.8117957Z [5,321 / 6,118] 24 / 206 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__inotify-sys-0.1.8//:_bs ... (705 actions, 0 running)
+2026-11-12T21:31:54.8013326Z Analyzing: 1058 targets (1603 packages loaded, 211126 targets configured, 476 aspect applications)
+2026-11-12T21:31:54.8097921Z [5,604 / 6,120] 24 / 206 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__inotify-sys-0.1.8//:_bs ... (432 actions, 0 running)
+2026-11-12T21:31:55.8075570Z Analyzing: 1058 targets (1603 packages loaded, 211292 targets configured, 476 aspect applications)
+2026-11-12T21:31:55.8158434Z [5,924 / 6,120] 24 / 206 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__inotify-sys-0.1.8//:_bs; 4s ... (115 actions, 0 running)
+2026-11-12T21:31:56.8039506Z Analyzing: 1058 targets (1603 packages loaded, 211910 targets configured, 476 aspect applications)
+2026-11-12T21:31:56.8059097Z [6,211 / 6,229] 45 / 217 tests; Compiling mingw-w64-crt/complex/ctanf.c; 2s remote, remote-cache ... (8 actions, 0 running)
+2026-11-12T21:31:57.8146701Z Analyzing: 1058 targets (1603 packages loaded, 212518 targets configured, 511 aspect applications)
+2026-11-12T21:31:57.8219644Z [6,373 / 6,397] 52 / 226 tests; Writing repo mapping manifest for //codex-rs/hepta-fleet:hepta-fleet-leased; 0s local ... (9 actions, 1 running)
+2026-11-12T21:31:58.8317941Z Analyzing: 1058 targets (1603 packages loaded, 212919 targets configured, 511 aspect applications)
+2026-11-12T21:31:58.8632951Z [6,579 / 6,787] 74 / 251 tests; Writing repo mapping manifest for //codex-rs/execpolicy:codex-execpolicy; 0s local ... (23 actions, 4 running)
+2026-11-12T21:31:59.8434173Z Analyzing: 1058 targets (1603 packages loaded, 213016 targets configured, 672 aspect applications)
+2026-11-12T21:31:59.8469919Z [6,807 / 6,825] 77 / 253 tests; Compiling Rust bin //codex-rs/hepta-fleet:hepta-fleet-leased (19 files); 0s remote, remote-cache ... (7 actions, 1 running)
+2026-11-12T21:32:00.8679266Z Analyzing: 1058 targets (1603 packages loaded, 213188 targets configured, 741 aspect applications)
+2026-11-12T21:32:00.8748211Z [7,006 / 8,870] 78 / 263 tests; Compiling Rust bin //codex-rs/hepta-fleet:hepta-fleet-leased (19 files); 1s remote, remote-cache ... (20 actions, 16 running)
+2026-11-12T21:32:01.8717446Z Analyzing: 1058 targets (1603 packages loaded, 213211 targets configured, 870 aspect applications)
+2026-11-12T21:32:01.8904235Z [7,288 / 9,599] 79 / 264 tests; Compiling Rust bin //codex-rs/hepta-fleet:hepta-fleet-leased (19 files); 2s remote, remote-cache ... (5 actions, 3 running)
+2026-11-12T21:32:02.9169885Z Analyzing: 1058 targets (1603 packages loaded, 213230 targets configured, 993 aspect applications)
+2026-11-12T21:32:03.0204077Z [7,482 / 9,629] 81 / 268 tests; Compiling Rust bin //codex-rs/hepta-fleet:hepta-fleet-leased (19 files); 3s remote, remote-cache ... (12 actions, 3 running)
+2026-11-12T21:32:03.1302181Z INFO: From Generating Rust bindings for ../rules_rs++crate+crates__aws-lc-sys-0.46.0/include/rust_wrapper.h [for tool]:
+2026-11-12T21:32:03.1369951Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:32:03.1426867Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:32:03.1477076Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:32:03.1552156Z clang diag: external/llvm++glibc+glibc_headers_x86_64-linux-gnu.2.28/include/features.h:381:4: warning: _FORTIFY_SOURCE requires compiling with optimization (-O) [-W#warnings]
+2026-11-12T21:32:03.1625703Z INFO: From Generating Rust bindings for ../rules_rs++crate+crates__aws-lc-sys-0.46.0/include/rust_wrapper.h:
+2026-11-12T21:32:03.1627175Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:32:03.1686963Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:32:03.1763258Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:32:03.8767671Z Analyzing: 1058 targets (1603 packages loaded, 213259 targets configured, 1006 aspect applications)
+2026-11-12T21:32:03.8818422Z [7,710 / 9,632] 81 / 268 tests; Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test (1 file); 2s remote, remote-cache ... (798 actions, 2 running)
+2026-11-12T21:32:04.8779568Z Analyzing: 1058 targets (1603 packages loaded, 213275 targets configured, 1006 aspect applications)
+2026-11-12T21:32:04.8848414Z [8,056 / 9,632] 81 / 268 tests; Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test (1 file); 3s remote, remote-cache ... (800 actions, 2 running)
+2026-11-12T21:32:05.9023659Z Analyzing: 1058 targets (1603 packages loaded, 213320 targets configured, 1006 aspect applications)
+2026-11-12T21:32:05.9230022Z [8,607 / 17,958] 81 / 277 tests; Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test (1 file); 4s remote, remote-cache ... (759 actions, 5 running)
+2026-11-12T21:32:06.8947995Z Analyzing: 1058 targets (1603 packages loaded, 213376 targets configured, 1006 aspect applications)
+2026-11-12T21:32:06.9279033Z [9,469 / 18,249] 81 / 277 tests; Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test (1 file); 5s remote, remote-cache ... (788 actions, 2 running)
+2026-11-12T21:32:07.8911158Z Analyzing: 1058 targets (1603 packages loaded, 213417 targets configured, 1006 aspect applications)
+2026-11-12T21:32:07.9107818Z [10,068 / 18,456] 81 / 309 tests; Compiling Rust bin //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test (1 file); 6s remote, remote-cache ... (798 actions, 2 running)
+2026-11-12T21:32:08.8990839Z Analyzing: 1058 targets (1603 packages loaded, 213479 targets configured, 1006 aspect applications)
+2026-11-12T21:32:08.9137856Z [10,522 / 18,675] 81 / 341 tests; Writing repo mapping manifest for @@rules_rs++crate+crates__ruma-common-0.20.2//:_bs_ [for tool]; 0s local ... (788 actions, 1 running)
+2026-11-12T21:32:09.9910092Z Analyzing: 1058 targets (1603 packages loaded, 213517 targets configured, 1006 aspect applications)
+2026-11-12T21:32:09.9998275Z [10,949 / 18,997] 81 / 358 tests; Writing repo mapping manifest for //codex-rs/hepta-automation:hepta-automation-action_skill_act1-test; 0s local ... (791 actions, 3 running)
+2026-11-12T21:32:10.9712680Z Analyzing: 1058 targets (1603 packages loaded, 213549 targets configured, 1006 aspect applications)
+2026-11-12T21:32:10.9871495Z [11,368 / 19,213] 81 / 379 tests; Writing repo mapping manifest for //codex-rs/cloud-tasks-client:cloud-tasks-client-unit-tests; 0s local ... (751 actions, 1 running)
+2026-11-12T21:32:11.6967766Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T21:32:11.7057841Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:11.7101456Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:11.7133038Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:11.7166004Z   147 |   }
+2026-11-12T21:32:11.7199986Z       |   ^
+2026-11-12T21:32:11.7482076Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T21:32:11.7483920Z    32 |     __m_.lock();
+2026-11-12T21:32:11.7563778Z       |          ^
+2026-11-12T21:32:11.7691140Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T21:32:11.7867581Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:11.7987306Z       |                           ^
+2026-11-12T21:32:11.8218017Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:32:11.8347335Z   138 |       impl.lock();
+2026-11-12T21:32:11.8503889Z       |            ^
+2026-11-12T21:32:11.8598463Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:11.8673998Z   151 |       impl.unlock();
+2026-11-12T21:32:11.8794633Z       |            ^
+2026-11-12T21:32:11.8908690Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T21:32:11.8987775Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:32:11.9071252Z       |                                                                         ^
+2026-11-12T21:32:11.9180192Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T21:32:11.9292233Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:11.9357441Z       |                           ^
+2026-11-12T21:32:11.9477487Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:11.9584908Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:11.9698190Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:11.9756824Z   119 |   }
+2026-11-12T21:32:11.9862051Z       |   ^
+2026-11-12T21:32:12.0006005Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T21:32:12.0127162Z   310 |     __m_->lock_shared();
+2026-11-12T21:32:12.0166629Z       |           ^
+2026-11-12T21:32:12.0268271Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T21:32:12.0395952Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:12.0504303Z       |                           ^
+2026-11-12T21:32:12.0557182Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:32:12.0787818Z   111 |       impl.lock_shared();
+2026-11-12T21:32:12.0878139Z       |            ^
+2026-11-12T21:32:12.0957954Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:12.1084690Z   123 |       impl.unlock_shared();
+2026-11-12T21:32:12.1313426Z       |            ^
+2026-11-12T21:32:12.1406555Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T21:32:12.1650476Z   332 |       __m_->unlock_shared();
+2026-11-12T21:32:12.1762993Z       |             ^
+2026-11-12T21:32:12.1886504Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T21:32:12.2049074Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:12.2174197Z       |                           ^
+2026-11-12T21:32:12.2293209Z 4 warnings generated.
+2026-11-12T21:32:12.2371354Z Analyzing: 1058 targets (1603 packages loaded, 213570 targets configured, 1006 aspect applications)
+2026-11-12T21:32:12.2547937Z [11,763 / 19,282] 81 / 395 tests; Writing repo mapping manifest for //codex-rs/exec-server:exec-server-deferred_environment-test; 0s local ... (461 actions, 4 running)
+2026-11-12T21:32:12.2723935Z INFO: From Compiling llvm/lib/Support/ThreadPool.cpp [for tool]:
+2026-11-12T21:32:12.2875293Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:12.2999346Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:12.3118148Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:12.3224221Z   147 |   }
+2026-11-12T21:32:12.3457056Z       |   ^
+2026-11-12T21:32:12.3619929Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock' requested here
+2026-11-12T21:32:12.3671052Z    32 |     __m_.lock();
+2026-11-12T21:32:12.3852211Z       |          ^
+2026-11-12T21:32:12.4088024Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::lock_guard' requested here
+2026-11-12T21:32:12.4217898Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:12.4627069Z       |                           ^
+2026-11-12T21:32:12.4847629Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:32:12.4991246Z   138 |       impl.lock();
+2026-11-12T21:32:12.5170102Z       |            ^
+2026-11-12T21:32:12.5312563Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:12.5547259Z   151 |       impl.unlock();
+2026-11-12T21:32:12.5685389Z       |            ^
+2026-11-12T21:32:12.5930196Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T21:32:12.6033573Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:32:12.6161656Z       |                                                                         ^
+2026-11-12T21:32:12.6438919Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T21:32:12.6643262Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:32:12.6882222Z       |                           ^
+2026-11-12T21:32:12.7183899Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:32:12.7399357Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:32:12.7421318Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:12.7487085Z   119 |   }
+2026-11-12T21:32:12.7646572Z       |   ^
+2026-11-12T21:32:12.7748488Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T21:32:12.7847919Z   310 |     __m_->lock_shared();
+2026-11-12T21:32:12.7917459Z       |           ^
+2026-11-12T21:32:12.8099099Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T21:32:12.8242903Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:12.8313100Z       |                           ^
+2026-11-12T21:32:12.8377762Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:32:12.8489606Z   111 |       impl.lock_shared();
+2026-11-12T21:32:12.8607110Z       |            ^
+2026-11-12T21:32:12.8704266Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:12.8881512Z   123 |       impl.unlock_shared();
+2026-11-12T21:32:12.8982425Z       |            ^
+2026-11-12T21:32:12.9177794Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T21:32:12.9228877Z   332 |       __m_->unlock_shared();
+2026-11-12T21:32:12.9269824Z       |             ^
+2026-11-12T21:32:12.9378152Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T21:32:12.9437203Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:32:12.9517107Z       |                           ^
+2026-11-12T21:32:12.9577554Z 4 warnings generated.
+2026-11-12T21:32:12.9677692Z Analyzing: 1058 targets (1603 packages loaded, 213582 targets configured, 1006 aspect applications)
+2026-11-12T21:32:12.9749474Z [12,183 / 19,323] 84 / 405 tests; Compiling crypto/bn/bn_rand.c; 5s remote, remote-cache ... (126 actions, 0 running)
+2026-11-12T21:32:14.7257334Z Analyzing: 1058 targets (1603 packages loaded, 213584 targets configured, 1006 aspect applications)
+2026-11-12T21:32:14.7287435Z [12,478 / 19,341] 92 / 408 tests; Compiling crypto/evp/legacy_ripemd.c; 6s remote, remote-cache ... (32 actions, 0 running)
+2026-11-12T21:32:15.7277412Z Analyzing: 1058 targets (1603 packages loaded, 213584 targets configured, 1006 aspect applications)
+2026-11-12T21:32:15.7337112Z [12,501 / 19,341] 92 / 408 tests; Compiling crypto/ml_dsa/ml_dsa_key.c; 6s remote, remote-cache ... (9 actions, 0 running)
+2026-11-12T21:32:16.7287540Z Analyzing: 1058 targets (1603 packages loaded, 213584 targets configured, 1006 aspect applications)
+2026-11-12T21:32:16.7317325Z [12,865 / 19,341] 92 / 408 tests; Compiling crypto/x509/v3_ia5.c; 6s remote, remote-cache ... (103 actions, 0 running)
+2026-11-12T21:32:17.7587669Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:17.7955421Z [13,056 / 24,764] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 4s remote, remote-cache ... (117 actions, 0 running)
+2026-11-12T21:32:18.7319292Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:18.7597927Z [14,079 / 25,485] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 0s remote, remote-cache ... (382 actions, 1 running)
+2026-11-12T21:32:20.0578058Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:20.0685818Z [14,691 / 25,991] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 1s remote, remote-cache ... (484 actions, 1 running)
+2026-11-12T21:32:20.7432889Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:20.7618028Z [15,175 / 25,991] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 2s remote, remote-cache ... (570 actions, 1 running)
+2026-11-12T21:32:20.8466492Z INFO: From Compiling llvm/lib/IR/PassRegistry.cpp [for tool]:
+2026-11-12T21:32:20.8612250Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:32:20.9199862Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:32:20.9393047Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:20.9697254Z   119 |   }
+2026-11-12T21:32:20.9830866Z       |   ^
+2026-11-12T21:32:20.9934583Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock_shared' requested here
+2026-11-12T21:32:21.0117433Z   310 |     __m_->lock_shared();
+2026-11-12T21:32:21.0367163Z       |           ^
+2026-11-12T21:32:21.0509810Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::shared_lock' requested here
+2026-11-12T21:32:21.0611548Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:32:21.0748958Z       |                                ^
+2026-11-12T21:32:21.1164675Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:32:21.1406791Z   111 |       impl.lock_shared();
+2026-11-12T21:32:21.1597218Z       |            ^
+2026-11-12T21:32:21.1598594Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:21.1740933Z   123 |       impl.unlock_shared();
+2026-11-12T21:32:21.1858969Z       |            ^
+2026-11-12T21:32:21.1938458Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock_shared' requested here
+2026-11-12T21:32:21.2267918Z   332 |       __m_->unlock_shared();
+2026-11-12T21:32:21.2530161Z       |             ^
+2026-11-12T21:32:21.2782915Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::~shared_lock' requested here
+2026-11-12T21:32:21.2959402Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:32:21.3437158Z       |                                ^
+2026-11-12T21:32:21.3767587Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:32:21.4087580Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:32:21.4291603Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:21.4527322Z   147 |   }
+2026-11-12T21:32:21.4777212Z       |   ^
+2026-11-12T21:32:21.5110513Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock' requested here
+2026-11-12T21:32:21.5237666Z    32 |     __m_.lock();
+2026-11-12T21:32:21.5567187Z       |          ^
+2026-11-12T21:32:21.5737280Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::lock_guard' requested here
+2026-11-12T21:32:21.5793935Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:32:21.5794843Z       |                                ^
+2026-11-12T21:32:21.5795739Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:32:21.5797205Z   138 |       impl.lock();
+2026-11-12T21:32:21.5797576Z       |            ^
+2026-11-12T21:32:21.5798634Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:21.5799770Z   151 |       impl.unlock();
+2026-11-12T21:32:21.5800138Z       |            ^
+2026-11-12T21:32:21.5801384Z bazel-out/rbe_platform-fastbuild-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock' requested here
+2026-11-12T21:32:21.5802597Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:32:21.5803087Z       |                                                                         ^
+2026-11-12T21:32:21.5803930Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::~lock_guard' requested here
+2026-11-12T21:32:21.5804745Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:32:21.5805056Z       |                                ^
+2026-11-12T21:32:21.5805309Z 4 warnings generated.
+2026-11-12T21:32:21.7852131Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:21.8034035Z [15,685 / 28,553] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 3s remote, remote-cache ... (670 actions, 2 running)
+2026-11-12T21:32:22.7567764Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:22.7828210Z [16,538 / 29,639] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 4s remote, remote-cache ... (791 actions, 1 running)
+2026-11-12T21:32:23.0211732Z INFO: From Compiling llvm/lib/IR/PassRegistry.cpp [for tool]:
+2026-11-12T21:32:23.0489885Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:32:23.0742110Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:32:23.0983455Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:23.1137318Z   119 |   }
+2026-11-12T21:32:23.1264384Z       |   ^
+2026-11-12T21:32:23.1438577Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock_shared' requested here
+2026-11-12T21:32:23.1655207Z   310 |     __m_->lock_shared();
+2026-11-12T21:32:23.1907417Z       |           ^
+2026-11-12T21:32:23.2019544Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::shared_lock' requested here
+2026-11-12T21:32:23.2228281Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:32:23.2387380Z       |                                ^
+2026-11-12T21:32:23.2507997Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:32:23.2657543Z   111 |       impl.lock_shared();
+2026-11-12T21:32:23.2778109Z       |            ^
+2026-11-12T21:32:23.2881084Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:23.3007440Z   123 |       impl.unlock_shared();
+2026-11-12T21:32:23.3179641Z       |            ^
+2026-11-12T21:32:23.3198542Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock_shared' requested here
+2026-11-12T21:32:23.3227349Z   332 |       __m_->unlock_shared();
+2026-11-12T21:32:23.3256994Z       |             ^
+2026-11-12T21:32:23.3264450Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::~shared_lock' requested here
+2026-11-12T21:32:23.3266741Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:32:23.3267503Z       |                                ^
+2026-11-12T21:32:23.3268409Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:32:23.3269649Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:32:23.3271453Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:23.3272895Z   147 |   }
+2026-11-12T21:32:23.3273367Z       |   ^
+2026-11-12T21:32:23.3275089Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock' requested here
+2026-11-12T21:32:23.3277228Z    32 |     __m_.lock();
+2026-11-12T21:32:23.3277774Z       |          ^
+2026-11-12T21:32:23.3279152Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::lock_guard' requested here
+2026-11-12T21:32:23.3280763Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:32:23.3281439Z       |                                ^
+2026-11-12T21:32:23.3282505Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:32:23.3284223Z   138 |       impl.lock();
+2026-11-12T21:32:23.3284781Z       |            ^
+2026-11-12T21:32:23.3286030Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:23.3287749Z   151 |       impl.unlock();
+2026-11-12T21:32:23.3288321Z       |            ^
+2026-11-12T21:32:23.3290108Z bazel-out/rbe_platform-opt-exec/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock' requested here
+2026-11-12T21:32:23.3292239Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:32:23.3293214Z       |                                                                         ^
+2026-11-12T21:32:23.3295089Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::~lock_guard' requested here
+2026-11-12T21:32:23.3296992Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:32:23.3297684Z       |                                ^
+2026-11-12T21:32:23.3298289Z 4 warnings generated.
+2026-11-12T21:32:23.7577596Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:23.7858282Z [17,549 / 29,656] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 5s remote, remote-cache ... (780 actions, 1 running)
+2026-11-12T21:32:24.7397449Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:24.7524171Z [18,409 / 29,666] 92 / 408 tests; Compiling Rust bin //codex-rs/hepta-runtime:hepta-runtime-unit-tests-bin (9 files); 6s remote, remote-cache ... (794 actions, 1 running)
+2026-11-12T21:32:25.7905109Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:25.7993233Z [19,027 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__native-tls-0.2.18//:_bs; 6s ... (797 actions, 0 running)
+2026-11-12T21:32:26.7663239Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:26.7737797Z [19,261 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__native-tls-0.2.18//:_bs; 7s ... (795 actions, 0 running)
+2026-11-12T21:32:27.7538068Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:27.7577006Z [19,473 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__native-tls-0.2.18//:_bs; 8s ... (789 actions, 0 running)
+2026-11-12T21:32:28.7914472Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:28.8217260Z [19,649 / 29,667] 92 / 408 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__openssl-0.10.81//:openssl v0.10.81 (60 files); 9s ... (789 actions, 0 running)
+2026-11-12T21:32:29.8318440Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:29.8525777Z [19,867 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 4s ... (795 actions, 0 running)
+2026-11-12T21:32:30.8267645Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:30.8304105Z [20,052 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 5s ... (797 actions, 0 running)
+2026-11-12T21:32:31.8327931Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:31.8489847Z [20,218 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 6s ... (793 actions, 0 running)
+2026-11-12T21:32:32.8457475Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:32.8587837Z [20,394 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 7s ... (799 actions, 0 running)
+2026-11-12T21:32:33.0337560Z INFO: From Compiling src/filesystem/filesystem_clock.cpp:
+2026-11-12T21:32:33.0589233Z external/+git_repository+rusty_v8_libcxx/src/filesystem/filesystem_clock.cpp:35:5: warning: '_LIBCPP_LIBC_LLVM_LIBC' is not defined, evaluates to 0 [-Wundef]
+2026-11-12T21:32:33.0661314Z    35 | #if _LIBCPP_LIBC_LLVM_LIBC
+2026-11-12T21:32:33.0949579Z       |     ^
+2026-11-12T21:32:33.1182395Z 1 warning generated.
+2026-11-12T21:32:33.7637398Z INFO: From Compiling source/common/brkeng.cpp [for tool]:
+2026-11-12T21:32:33.7729846Z In file included from external/v8++git_repository+icu/source/common/brkeng.cpp:32:
+2026-11-12T21:32:33.7808207Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:33.7836916Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.7838174Z   233 |     }
+2026-11-12T21:32:33.7838647Z       |     ^
+2026-11-12T21:32:33.7839343Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.7845381Z   232 |         m->lock();
+2026-11-12T21:32:33.7897074Z       |            ^
+2026-11-12T21:32:33.7927713Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.7929333Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.7956844Z       |                                                             ^
+2026-11-12T21:32:33.7986765Z 2 warnings generated.
+2026-11-12T21:32:33.9027670Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:33.9187955Z [20,583 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 8s ... (792 actions, 0 running)
+2026-11-12T21:32:34.0617302Z INFO: From Compiling source/common/brkiter.cpp [for tool]:
+2026-11-12T21:32:34.0757499Z In file included from external/v8++git_repository+icu/source/common/brkiter.cpp:37:
+2026-11-12T21:32:34.0838253Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.0917458Z   233 |     }
+2026-11-12T21:32:34.1047244Z       |     ^
+2026-11-12T21:32:34.1218694Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.1287323Z   232 |         m->lock();
+2026-11-12T21:32:34.1358617Z       |            ^
+2026-11-12T21:32:34.1479426Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.1647496Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.1757456Z       |                                                             ^
+2026-11-12T21:32:34.1971640Z 2 warnings generated.
+2026-11-12T21:32:34.3697290Z INFO: From Compiling src/any.cpp:
+2026-11-12T21:32:34.3758243Z external/+git_repository+rusty_v8_libcxx/src/any.cpp:17:5: warning: '_LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION' is not defined, evaluates to 0 [-Wundef]
+2026-11-12T21:32:34.3907587Z    17 | #if _LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION < 7
+2026-11-12T21:32:34.4047222Z       |     ^
+2026-11-12T21:32:34.4147675Z 1 warning generated.
+2026-11-12T21:32:34.9028202Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:34.9218217Z [20,762 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 9s ... (798 actions, 0 running)
+2026-11-12T21:32:35.8977515Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:35.9049641Z [20,914 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 10s ... (795 actions, 0 running)
+2026-11-12T21:32:36.2007836Z INFO: From Compiling source/i18n/anytrans.cpp:
+2026-11-12T21:32:36.2027197Z In file included from external/v8++git_repository+icu/source/i18n/anytrans.cpp:22:
+2026-11-12T21:32:36.2117975Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:36.2191823Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:36.2257569Z   233 |     }
+2026-11-12T21:32:36.2377333Z       |     ^
+2026-11-12T21:32:36.2467491Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:36.2527203Z   232 |         m->lock();
+2026-11-12T21:32:36.2617232Z       |            ^
+2026-11-12T21:32:36.2669043Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:36.2679063Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:36.2682428Z       |                                                             ^
+2026-11-12T21:32:36.2683258Z 2 warnings generated.
+2026-11-12T21:32:36.9071443Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:36.9257947Z [21,079 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__rustix-0.38.44//:_bs_x86_64-unknown-linux-gnu [for tool]; 11s ... (799 actions, 0 running)
+2026-11-12T21:32:36.9811070Z INFO: From Compiling source/common/brkeng.cpp:
+2026-11-12T21:32:36.9842568Z In file included from external/v8++git_repository+icu/source/common/brkeng.cpp:32:
+2026-11-12T21:32:36.9882316Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:37.0046018Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:37.0085073Z   233 |     }
+2026-11-12T21:32:37.0207233Z       |     ^
+2026-11-12T21:32:37.0247313Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:37.0317956Z   232 |         m->lock();
+2026-11-12T21:32:37.0425228Z       |            ^
+2026-11-12T21:32:37.0593195Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:37.0793105Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:37.0892980Z       |                                                             ^
+2026-11-12T21:32:37.1068776Z 2 warnings generated.
+2026-11-12T21:32:37.1221189Z INFO: From Compiling source/common/caniter.cpp [for tool]:
+2026-11-12T21:32:37.1332758Z In file included from external/v8++git_repository+icu/source/common/caniter.cpp:23:
+2026-11-12T21:32:37.1447437Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:37.1523881Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:37.1638004Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:37.1737279Z   233 |     }
+2026-11-12T21:32:37.1797194Z       |     ^
+2026-11-12T21:32:37.1857572Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:37.1947295Z   232 |         m->lock();
+2026-11-12T21:32:37.2018304Z       |            ^
+2026-11-12T21:32:37.2117826Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:37.2302960Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:37.2453294Z       |                                                             ^
+2026-11-12T21:32:37.2627117Z 2 warnings generated.
+2026-11-12T21:32:37.7157628Z INFO: From Compiling source/common/characterproperties.cpp [for tool]:
+2026-11-12T21:32:37.7221324Z In file included from external/v8++git_repository+icu/source/common/characterproperties.cpp:18:
+2026-11-12T21:32:37.7237208Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:37.7284507Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:37.7327066Z   233 |     }
+2026-11-12T21:32:37.7377113Z       |     ^
+2026-11-12T21:32:37.7447450Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:37.7518870Z   232 |         m->lock();
+2026-11-12T21:32:37.7564342Z       |            ^
+2026-11-12T21:32:37.7648182Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:37.7737909Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:37.7739699Z       |                                                             ^
+2026-11-12T21:32:37.7852745Z 2 warnings generated.
+2026-11-12T21:32:37.8077595Z INFO: From Compiling source/i18n/astro.cpp:
+2026-11-12T21:32:37.8087196Z In file included from external/v8++git_repository+icu/source/i18n/astro.cpp:19:
+2026-11-12T21:32:37.8137998Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:37.8235002Z   233 |     }
+2026-11-12T21:32:37.8326876Z       |     ^
+2026-11-12T21:32:37.8339735Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:37.8468985Z   232 |         m->lock();
+2026-11-12T21:32:37.8597975Z       |            ^
+2026-11-12T21:32:37.8650772Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:37.8737695Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:37.8798021Z       |                                                             ^
+2026-11-12T21:32:37.8911199Z 2 warnings generated.
+2026-11-12T21:32:37.9089746Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:37.9155532Z [21,236 / 29,667] 92 / 408 tests; [Prepa] Generating inspector files @@v8+//:generated_inspector_files; 11s ... (797 actions, 0 running)
+2026-11-12T21:32:38.0248330Z INFO: From Compiling src/chrono.cpp:
+2026-11-12T21:32:38.0297945Z external/+git_repository+rusty_v8_libcxx/src/chrono.cpp:33:5: warning: '_LIBCPP_LIBC_LLVM_LIBC' is not defined, evaluates to 0 [-Wundef]
+2026-11-12T21:32:38.0360155Z    33 | #if _LIBCPP_LIBC_LLVM_LIBC
+2026-11-12T21:32:38.0418534Z       |     ^
+2026-11-12T21:32:38.0613377Z 1 warning generated.
+2026-11-12T21:32:38.5440101Z INFO: From Compiling src/condition_variable_destructor.cpp:
+2026-11-12T21:32:38.5608259Z external/+git_repository+rusty_v8_libcxx/src/condition_variable_destructor.cpp:17:5: warning: '_LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION' is not defined, evaluates to 0 [-Wundef]
+2026-11-12T21:32:38.5747535Z    17 | #if _LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION < 9 || !_LIBCPP_HAS_TRIVIAL_CONDVAR_DESTRUCTION
+2026-11-12T21:32:38.5883344Z       |     ^
+2026-11-12T21:32:38.5883982Z 1 warning generated.
+2026-11-12T21:32:38.9397979Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:38.9581495Z [21,405 / 29,667] 92 / 408 tests; [Prepa] Generating inspector files @@v8+//:generated_inspector_files; 12s ... (795 actions, 0 running)
+2026-11-12T21:32:39.1549029Z INFO: From Compiling src/error_category.cpp:
+2026-11-12T21:32:39.1658178Z external/+git_repository+rusty_v8_libcxx/src/error_category.cpp:13:5: warning: '_LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION' is not defined, evaluates to 0 [-Wundef]
+2026-11-12T21:32:39.1727610Z    13 |     _LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION < 4
+2026-11-12T21:32:39.1756954Z       |     ^
+2026-11-12T21:32:39.1816994Z 1 warning generated.
+2026-11-12T21:32:39.3757228Z INFO: From Compiling src/charconv.cpp:
+2026-11-12T21:32:39.3915789Z external/+git_repository+rusty_v8_libcxx/src/charconv.cpp:17:5: warning: '_LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION' is not defined, evaluates to 0 [-Wundef]
+2026-11-12T21:32:39.4057379Z    17 | #if _LIBCPP_AVAILABILITY_MINIMUM_HEADER_VERSION < 15
+2026-11-12T21:32:39.4348494Z       |     ^
+2026-11-12T21:32:39.4522004Z 1 warning generated.
+2026-11-12T21:32:39.5187224Z INFO: From Compiling source/common/brkiter.cpp:
+2026-11-12T21:32:39.5477740Z In file included from external/v8++git_repository+icu/source/common/brkiter.cpp:37:
+2026-11-12T21:32:39.5591612Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:39.5637299Z   233 |     }
+2026-11-12T21:32:39.5890674Z       |     ^
+2026-11-12T21:32:39.6047597Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:39.6211524Z   232 |         m->lock();
+2026-11-12T21:32:39.6311510Z       |            ^
+2026-11-12T21:32:39.6347797Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:39.6357161Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:39.6358839Z       |                                                             ^
+2026-11-12T21:32:39.6359354Z 2 warnings generated.
+2026-11-12T21:32:39.9061862Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:39.9187779Z [21,589 / 29,667] 92 / 408 tests; [Prepa] Running Cargo build script @@rules_rs++crate+crates__sentry-0.46.2//:_bs; 11s ... (796 actions, 0 running)
+2026-11-12T21:32:40.8637602Z INFO: From Compiling source/i18n/brktrans.cpp:
+2026-11-12T21:32:40.8727352Z In file included from external/v8++git_repository+icu/source/i18n/brktrans.cpp:27:
+2026-11-12T21:32:40.8757689Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:40.8817855Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:40.8882277Z   233 |     }
+2026-11-12T21:32:40.8910188Z       |     ^
+2026-11-12T21:32:40.8958383Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:40.9026997Z   232 |         m->lock();
+2026-11-12T21:32:40.9147097Z       |            ^
+2026-11-12T21:32:40.9177609Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:40.9259418Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:40.9377229Z       |                                                             ^
+2026-11-12T21:32:40.9436992Z 2 warnings generated.
+2026-11-12T21:32:40.9497415Z Analyzing: 1058 targets (1603 packages loaded, 213594 targets configured, 1006 aspect applications)
+2026-11-12T21:32:40.9527722Z [21,741 / 29,667] 92 / 408 tests; [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__native-tls-0.2.18//:native-tls v0.2.18 (6 files); 11s ... (800 actions, 0 running)
+2026-11-12T21:32:41.1437766Z INFO: From Compiling source/common/emojiprops.cpp [for tool]:
+2026-11-12T21:32:41.1662592Z In file included from external/v8++git_repository+icu/source/common/emojiprops.cpp:17:
+2026-11-12T21:32:41.1717990Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:41.1811357Z   233 |     }
+2026-11-12T21:32:41.1887120Z       |     ^
+2026-11-12T21:32:41.1957937Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:41.2103355Z   232 |         m->lock();
+2026-11-12T21:32:41.2136877Z       |            ^
+2026-11-12T21:32:41.2196452Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:41.2197966Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:41.2257163Z       |                                                             ^
+2026-11-12T21:32:41.2484364Z 2 warnings generated.
+2026-11-12T21:32:41.2534951Z INFO: From Compiling source/common/caniter.cpp:
+2026-11-12T21:32:41.2567715Z In file included from external/v8++git_repository+icu/source/common/caniter.cpp:23:
+2026-11-12T21:32:41.2597092Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:41.2748981Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:41.2794681Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:41.2896632Z   233 |     }
+2026-11-12T21:32:41.2947078Z       |     ^
+2026-11-12T21:32:41.3137533Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:41.3226549Z   232 |         m->lock();
+2026-11-12T21:32:41.3330350Z       |            ^
+2026-11-12T21:32:41.3480569Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:41.3622683Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:41.3768775Z       |                                                             ^
+2026-11-12T21:32:41.3848977Z 2 warnings generated.
+2026-11-12T21:32:41.4707605Z INFO: From Compiling source/common/characterproperties.cpp:
+2026-11-12T21:32:41.5052732Z In file included from external/v8++git_repository+icu/source/common/characterproperties.cpp:18:
+2026-11-12T21:32:41.5118081Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:41.5261681Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:41.5476772Z   233 |     }
+2026-11-12T21:32:41.5563568Z       |     ^
+2026-11-12T21:32:41.5587338Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:41.5606732Z   232 |         m->lock();
+2026-11-12T21:32:41.5625565Z       |            ^
+2026-11-12T21:32:41.5627201Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_orde

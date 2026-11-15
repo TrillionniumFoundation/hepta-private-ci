@@ -1,0 +1,330 @@
+{
+  "schema": "hepta.v-calibration-root-arithmetic.v1",
+  "execution_source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "archive_commit": "928a2603a7911cb5e8db439b7b814b9e033b6007",
+  "mode_results": [
+    {
+      "mode": "frozen",
+      "original_export_sha256": "1fd00505b3d59e5a6755603d93d0ebd7634b311a71588ee7b1809ae1fc608910",
+      "original_export_bytes": 2358610,
+      "planned_pairs": 126,
+      "fit_rows": 72,
+      "raw_dimensions": 47,
+      "minimum_matches_exactly": true,
+      "maximum_matches_exactly": true,
+      "planned_calibration": 54,
+      "known_calibration": 54,
+      "admitted": 45,
+      "rejected": 9,
+      "rejected_sources": 7,
+      "all_admitted_source_groups": 18,
+      "cell_source_counts": {
+        "[false,false,1]": 9,
+        "[false,false,3]": 9
+      },
+      "rejected_rows": [
+        {
+          "pair_id": "p0073",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0073",
+          "source_id": "merchant-16ac5095cbab37d6a4beeecd",
+          "coordinates": [
+            {
+              "coordinate": 34,
+              "value": 0.044342417269945145,
+              "minimum": 0.04559677094221115,
+              "maximum": 1
+            }
+          ]
+        },
+        {
+          "pair_id": "p0094",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0094",
+          "source_id": "merchant-d5edfe942c45361da38fc849",
+          "coordinates": [
+            {
+              "coordinate": 16,
+              "value": 0.8065587282180786,
+              "minimum": -0.939179003238678,
+              "maximum": 0.7981781959533691
+            },
+            {
+              "coordinate": 19,
+              "value": 0.8445595502853394,
+              "minimum": -0.8544260859489441,
+              "maximum": 0.8275715112686157
+            }
+          ]
+        },
+        {
+          "pair_id": "p0098",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0098",
+          "source_id": "merchant-7b3647263d44c496a5e484a2",
+          "coordinates": [
+            {
+              "coordinate": 22,
+              "value": 0.8907217383384705,
+              "minimum": -0.8041679859161377,
+              "maximum": 0.8751459121704102
+            }
+          ]
+        },
+        {
+          "pair_id": "p0100",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0100",
+          "source_id": "merchant-9fa2f6563cdeebc029a0c464",
+          "coordinates": [
+            {
+              "coordinate": 34,
+              "value": 0.0430217906832695,
+              "minimum": 0.04559677094221115,
+              "maximum": 1
+            }
+          ]
+        },
+        {
+          "pair_id": "p0101",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0101",
+          "source_id": "merchant-9fa2f6563cdeebc029a0c464",
+          "coordinates": [
+            {
+              "coordinate": 5,
+              "value": -0.9066125750541687,
+              "minimum": -0.9061121940612793,
+              "maximum": 0.886525571346283
+            }
+          ]
+        },
+        {
+          "pair_id": "p0107",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0107",
+          "source_id": "merchant-aed2f9f0bb5b67ff098bf209",
+          "coordinates": [
+            {
+              "coordinate": 5,
+              "value": -0.9183475375175476,
+              "minimum": -0.9061121940612793,
+              "maximum": 0.886525571346283
+            },
+            {
+              "coordinate": 21,
+              "value": 0.6353017091751099,
+              "minimum": -0.4464662969112396,
+              "maximum": 0.6198399066925049
+            }
+          ]
+        },
+        {
+          "pair_id": "p0110",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0110",
+          "source_id": "merchant-203f77bf803003c33121fe35",
+          "coordinates": [
+            {
+              "coordinate": 21,
+              "value": 0.6779042482376099,
+              "minimum": -0.4464662969112396,
+              "maximum": 0.6198399066925049
+            }
+          ]
+        },
+        {
+          "pair_id": "p0112",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0112",
+          "source_id": "merchant-2d4f59a602bd0c185e8606af",
+          "coordinates": [
+            {
+              "coordinate": 1,
+              "value": 0.9219256043434143,
+              "minimum": -0.9667892456054688,
+              "maximum": 0.9129244685173035
+            },
+            {
+              "coordinate": 16,
+              "value": 0.815360426902771,
+              "minimum": -0.939179003238678,
+              "maximum": 0.7981781959533691
+            },
+            {
+              "coordinate": 18,
+              "value": 0.9071825742721558,
+              "minimum": -0.9668505191802979,
+              "maximum": 0.8996025323867798
+            },
+            {
+              "coordinate": 19,
+              "value": 0.8507335186004639,
+              "minimum": -0.8544260859489441,
+              "maximum": 0.8275715112686157
+            },
+            {
+              "coordinate": 21,
+              "value": -0.4538893699645996,
+              "minimum": -0.4464662969112396,
+              "maximum": 0.6198399066925049
+            }
+          ]
+        },
+        {
+          "pair_id": "p0113",
+          "decision_id": "abd758471346454dd1b4967fc8839b0b80a5dcf270b8684dfb501c6b780c140b:p0113",
+          "source_id": "merchant-2d4f59a602bd0c185e8606af",
+          "coordinates": [
+            {
+              "coordinate": 5,
+              "value": -0.9096182584762573,
+              "minimum": -0.9061121940612793,
+              "maximum": 0.886525571346283
+            }
+          ]
+        }
+      ],
+      "complete_recomputed": false,
+      "original_complete": false,
+      "independent_root_arithmetic": true
+    },
+    {
+      "mode": "adapted",
+      "original_export_sha256": "290d93428109f08906b6db69567c02c50f8c2760738124f8c71e77fe3e4f1ec6",
+      "original_export_bytes": 2350217,
+      "planned_pairs": 126,
+      "fit_rows": 72,
+      "raw_dimensions": 47,
+      "minimum_matches_exactly": true,
+      "maximum_matches_exactly": true,
+      "planned_calibration": 54,
+      "known_calibration": 54,
+      "admitted": 47,
+      "rejected": 7,
+      "rejected_sources": 7,
+      "all_admitted_source_groups": 18,
+      "cell_source_counts": {
+        "[false,false,1]": 9,
+        "[false,false,3]": 9
+      },
+      "rejected_rows": [
+        {
+          "pair_id": "p0079",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0079",
+          "source_id": "merchant-75b47ee8168019293e1cf32b",
+          "coordinates": [
+            {
+              "coordinate": 13,
+              "value": 0.8506913781166077,
+              "minimum": -0.8859497308731079,
+              "maximum": 0.8126106858253479
+            },
+            {
+              "coordinate": 18,
+              "value": 0.8477358222007751,
+              "minimum": -0.9575867056846619,
+              "maximum": 0.8293153047561646
+            },
+            {
+              "coordinate": 19,
+              "value": 0.76739501953125,
+              "minimum": -0.8292630314826965,
+              "maximum": 0.749003529548645
+            }
+          ]
+        },
+        {
+          "pair_id": "p0094",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0094",
+          "source_id": "merchant-d5edfe942c45361da38fc849",
+          "coordinates": [
+            {
+              "coordinate": 16,
+              "value": 0.7650898098945618,
+              "minimum": -0.920149564743042,
+              "maximum": 0.7610929608345032
+            },
+            {
+              "coordinate": 19,
+              "value": 0.7756906151771545,
+              "minimum": -0.8292630314826965,
+              "maximum": 0.749003529548645
+            }
+          ]
+        },
+        {
+          "pair_id": "p0098",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0098",
+          "source_id": "merchant-7b3647263d44c496a5e484a2",
+          "coordinates": [
+            {
+              "coordinate": 22,
+              "value": 0.8738152384757996,
+              "minimum": -0.7222830653190613,
+              "maximum": 0.868251383304596
+            }
+          ]
+        },
+        {
+          "pair_id": "p0107",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0107",
+          "source_id": "merchant-aed2f9f0bb5b67ff098bf209",
+          "coordinates": [
+            {
+              "coordinate": 5,
+              "value": -0.899480938911438,
+              "minimum": -0.8903844356536865,
+              "maximum": 0.7939639091491699
+            }
+          ]
+        },
+        {
+          "pair_id": "p0110",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0110",
+          "source_id": "merchant-203f77bf803003c33121fe35",
+          "coordinates": [
+            {
+              "coordinate": 21,
+              "value": 0.6968660950660706,
+              "minimum": -0.43811318278312683,
+              "maximum": 0.6687629222869873
+            }
+          ]
+        },
+        {
+          "pair_id": "p0113",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0113",
+          "source_id": "merchant-2d4f59a602bd0c185e8606af",
+          "coordinates": [
+            {
+              "coordinate": 5,
+              "value": -0.8969440460205078,
+              "minimum": -0.8903844356536865,
+              "maximum": 0.7939639091491699
+            }
+          ]
+        },
+        {
+          "pair_id": "p0118",
+          "decision_id": "144c1a0ec2d9a50505c4637290e77b883889a2cb6bc15db4ad77a4ec8e9f0a14:p0118",
+          "source_id": "merchant-6d5a1b2fed9d08df4291eb49",
+          "coordinates": [
+            {
+              "coordinate": 13,
+              "value": -0.886126697063446,
+              "minimum": -0.8859497308731079,
+              "maximum": 0.8126106858253479
+            },
+            {
+              "coordinate": 14,
+              "value": -0.8361234068870544,
+              "minimum": -0.8246031999588013,
+              "maximum": 0.6330782175064087
+            }
+          ]
+        }
+      ],
+      "complete_recomputed": false,
+      "original_complete": false,
+      "independent_root_arithmetic": true
+    }
+  ],
+  "all_original_input_raw_sha256_match": true,
+  "no_policy_or_native_admission_executed": true,
+  "no_actor_executions": true,
+  "owner_decision": null,
+  "status": "HOLD"
+}

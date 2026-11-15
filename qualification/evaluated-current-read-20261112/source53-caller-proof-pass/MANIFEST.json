@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "source_commit": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "source_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "run_id": 43297579480,
+  "job_id": 131459876292,
+  "status": "completed",
+  "conclusion": "success",
+  "started_at": "2026-11-12T20:10:16Z",
+  "completed_at": "2026-11-12T21:26:45Z",
+  "jobs_api_observed_at": "2026-11-12T21:28:26.938Z",
+  "source_binding_original_lines": [
+    "2026-11-12T20:10:18.6974935Z   SOURCE_SHA: 53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+    "2026-11-12T20:10:18.6975763Z   TESTED_SHA: 53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+    "2026-11-12T20:15:20.7466610Z HEAD is now at 53b3227a8d Fix the observed test-helper visibility, formatter and source-pin failures",
+    "2026-11-12T20:15:20.9491856Z   SOURCE_SHA: 53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+    "2026-11-12T20:15:20.9492207Z   TESTED_SHA: 53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+    "2026-11-12T21:26:41.2637267Z   SOURCE_SHA: 53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+    "2026-11-12T21:26:41.2637385Z   TESTED_SHA: 53b3227a8dff5af9e39ecef6356cfce702d80b1c"
+  ],
+  "receipt": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "authorityGranted": false,
+    "boundaries": 628,
+    "privileged_inventory": 628,
+    "protected_file_rows": 429,
+    "rust_files_scanned": 6670,
+    "self_test": "PASS_HEPTA_CALLER_PROOF_SELF_TEST"
+  },
+  "full_decoded_job_log": {
+    "job_id": 131459876292,
+    "bytes": 2231898,
+    "sha256": "52aeff79d2c5c20e0d901b49b9b33c162eaa626ea52a9b865179ba504449a938",
+    "git_blob_sha": "a8c72f8bd4540661eac2e5dc4008222ef3884be5"
+  },
+  "concatenate_in_order": [
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part01",
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part02",
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part03",
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part04",
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part05",
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part06",
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part07",
+    "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part08"
+  ],
+  "receipt_derivation": {
+    "original_line_range": [
+      9646,
+      16964
+    ],
+    "bom_before_timestamp_count": 1,
+    "transformation": "strip original per-line timestamp and optional preceding U+FEFF; append one LF",
+    "part_count": 8
+  },
+  "original_artifact_upload_observation": {
+    "id": 13985162874,
+    "bytes": 24314,
+    "sha256": "2464de7fba8bb510ae35d5bc7e04d2b9d60c67082eda38cddcfc17dc6a2b3a00",
+    "downloaded": false
+  },
+  "payloads": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part01",
+      "bytes": 290002,
+      "sha256": "e8075bd5538857e7583be37c07153205ae507ec63b5b4b273685dbd7a843bdc2",
+      "git_blob_sha": "9a5149238dbaef5806563c059a60d123105859d1",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part02",
+      "bytes": 290000,
+      "sha256": "78dcbdbdbbb3a0fcbc837da6726180e4b72aa4c9d0b33f5e0d17bc11a0d0b7e8",
+      "git_blob_sha": "1d8e86a524d5fa5744c93fc6a6aa660f9a99030d",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part03",
+      "bytes": 290000,
+      "sha256": "958f756591cdf8c267ad17ee1a460dc98d8c688cac9f397e256fac7de7c36982",
+      "git_blob_sha": "8f29318027e63df0a7099df37a23f53be8f32911",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part04",
+      "bytes": 290000,
+      "sha256": "86efb562e0f94c2d8541efc7cb9c07dcb4b5029bc0bae8a49dc91147f86cfb46",
+      "git_blob_sha": "3cb28e367b0f0c918cce51964e22c761f4efdcda",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part05",
+      "bytes": 290000,
+      "sha256": "033f73418660a5ace242d56fd330d7f4eb86d8e8fd9f9ae586629aba7ef0fa7b",
+      "git_blob_sha": "d69b7620d3a751b3ac793321b32ecfa42bc595f4",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part06",
+      "bytes": 290000,
+      "sha256": "174fa732dc36e134d912e585faccdf93e3a1a6055016bb50be415d1340be6b3b",
+      "git_blob_sha": "e1191e46d23cbc0afb814eabd044b37ef8e61163",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part07",
+      "bytes": 290000,
+      "sha256": "d51d7f5d53bfea3fc094b4f0134813e0009012775b186c7ee2a42272a18bcf79",
+      "git_blob_sha": "14c7619ce50ebc43e78c912b4ee0ee303f8363b4",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOB.log.part08",
+      "bytes": 201896,
+      "sha256": "b1faa4867e5c9c19c442c26ff9347ada50f5734890dedaa7c55dee52f93e19af",
+      "git_blob_sha": "f0fdd4f85503982e892cab7878134d28b9b68a54",
+      "origin": "unaltered contiguous decoded original GitHub job log bytes"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/JOBS_API.json",
+      "bytes": 6619,
+      "sha256": "1c2a491c597191dfece50fd9cd4c048a25f4247f4d1094d050fad75c74b148db",
+      "git_blob_sha": "b514474dadd09e626ba5576e9eceec8e59b22d9a",
+      "origin": "original GitHub jobs API terminal response text"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source53-caller-proof-pass/CALLER_RECEIPT_FROM_JOBLOG.json",
+      "bytes": 298929,
+      "sha256": "a4bf36ae65291b5b2ac12ee5de7ed47b1acf5578f9046098d48602bb94abc0f7",
+      "git_blob_sha": "d0b6f85c41bb6eb647d931b552352627b1b9b209",
+      "origin": "derived by removing only timestamp prefixes and any BOM directly before a log timestamp; not artifact contents"
+    }
+  ],
+  "verification": {
+    "all_original_payloads_read_back_equal": true,
+    "all_payload_git_sha_equal": true,
+    "concatenated_original_log_equal": true,
+    "full_bytes": 2231898,
+    "full_sha256": "52aeff79d2c5c20e0d901b49b9b33c162eaa626ea52a9b865179ba504449a938"
+  },
+  "scope": [
+    "The source53 caller gate independently completed successfully; its source53 ordinary native and shared failures remain failures.",
+    "The deterministic logical receipt bytes happen to equal the source84 receipt, but this archive derives them separately from source53's original log and binds the actual source53 checkout and terminal job.",
+    "No result is transferred to source2f, source0a or another candidate. Caller success grants no authority and does not substitute for native/Root/scientific qualification.",
+    "No artifact member was reconstructed or downloaded, and no workflow was dispatched, cancelled or rerun."
+  ]
+}

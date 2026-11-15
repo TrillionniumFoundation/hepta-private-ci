@@ -15,6 +15,7 @@ use codex_hepta_types::StableId;
 
 use crate::SparseCheckpoint;
 
+pub mod real_time_credit;
 mod temporal_credit;
 
 pub use temporal_credit::TemporalCreditArmV1;

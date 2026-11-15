@@ -1,0 +1,102 @@
+{
+  "scope": "Full TOML schema/count/union parse plus 16 scoped protected checks using exact original verifier/source bytes; not full source/native gate",
+  "callers": {
+    "bytes": 1895095,
+    "git": "73fdfb4db43bee14530701784ab163a64dbb5956",
+    "sha256": "5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f"
+  },
+  "counts": {
+    "boundaries": 628,
+    "protected_rows": 429,
+    "unique_protected_paths": 355,
+    "function_guard_rows": 1349,
+    "unique_path_function": 1310
+  },
+  "parent_union": true,
+  "sole_allow_pin": true,
+  "exact_inputs": 18,
+  "verifier_git": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+  "verifier_sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+  "scoped_results": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "rows": 1,
+      "result": "PASS"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_read.rs",
+      "rows": 1,
+      "result": "PASS"
+    }
+  ]
+}

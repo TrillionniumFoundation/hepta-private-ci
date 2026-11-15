@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "job_id": 131310622818,
+  "derived_only": true,
+  "full_original_parts": [
+    "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622818.job.log.part00",
+    "qualification/evaluated-current-read-20261112/9fac-windows-original-failures/131310622818.job.log.part01"
+  ],
+  "excerpts": [
+    {
+      "line": 3204,
+      "block": "Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy\r\n\r\n\r\nfailures:\r\n    remote_windows_sandbox_process_accepts_process_write\r\n\r\ntest result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.15s\r\n\r"
+    },
+    {
+      "line": 3305,
+      "block": "thread 'owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion' (5712) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n\r\n---- owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged stdout ----\r\n\r\nthread 'owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged' (1660) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r"
+    },
+    {
+      "line": 3311,
+      "block": "thread 'owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged' (1660) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing stdout ----\r\n\r\nthread 'owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing' (936) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3316,
+      "block": "thread 'owner_service::publication_readback_tests::original_publication_readback_observes_lost_reply_without_republishing' (936) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage stdout ----\r\n\r\nthread 'owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage' (1952) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3321,
+      "block": "thread 'owner_service::publication_readback_tests::original_publication_readback_refuses_actual_checkpoint_or_current_damage' (1952) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation stdout ----\r\n\r\nthread 'owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation' (5608) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3326,
+      "block": "thread 'owner_service::publication_readback_tests::original_publication_readback_refuses_missing_or_changed_expected_operation' (5608) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp stdout ----\r\n\r\nthread 'owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp' (3316) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3331,
+      "block": "thread 'owner_service::publication_readback_tests::original_publication_readback_uses_live_clock_not_an_old_request_timestamp' (3316) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n---- owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan stdout ----\r\n\r\nthread 'owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan' (9556) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r"
+    },
+    {
+      "line": 3336,
+      "block": "thread 'owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan' (9556) panicked at hepta-learning-artifacts/src\\test_support.rs:11:27:\r\noriginal bytes: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }\r\n\r\n\r\nfailures:\r\n    owner_service::publication_readback_tests::original_publication_readback_bounds_the_actual_transaction_scan\r\n    owner_service::publication_readback_tests::original_publication_readback_cold_reopens_exact_pending_without_completion\r\n    owner_service::publication_readback_tests::original_publication_readback_leaves_pending_and_recovery_block_unchanged\r"
+    },
+    {
+      "line": 3555,
+      "block": "thread 'agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints' (8) panicked at core/src\\agent\\control_tests.rs:2765:5:\r\nbounded fork should not inject child instructions before its canonical context rebuild\r\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\r\n\r\n\r\nfailures:\r\n    agent::control::tests::spawn_agent_fork_last_n_turns_strips_parent_usage_hints\r\n\r"
+    }
+  ]
+}

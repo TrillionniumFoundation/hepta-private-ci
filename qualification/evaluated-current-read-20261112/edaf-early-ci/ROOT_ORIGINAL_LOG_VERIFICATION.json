@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.exact-edaf-early-ci.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "observed_at_utc": "2026-11-12 17:35:16 UTC",
+  "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "actual_blocking_checkout": "0b2238e70dfcbdb47635e454aea0f39ab25d7c0d",
+  "checkout_tree_equal_source": true,
+  "blocking_run": 43267839274,
+  "logs": [
+    {
+      "name": "fmt",
+      "job": 131356894589,
+      "conclusion": "success",
+      "bytes": 133649,
+      "sha256": "b01240a9db898e64d46669688018b02697f554334429d8586193461cafd64295",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/fmt.job.log",
+          "bytes": 133649,
+          "sha256": "b01240a9db898e64d46669688018b02697f554334429d8586193461cafd64295",
+          "git_blob_sha": "878a06fe3a17d8d5ac0b61a43ff1336ff4321a2b",
+          "start_byte": 0,
+          "end_byte_exclusive": 133649
+        }
+      ],
+      "original_full_log_fetched_by_root": true,
+      "complete_bytes_reassembled_before_storage": true
+    },
+    {
+      "name": "fence",
+      "job": 131356473762,
+      "conclusion": "failure",
+      "bytes": 9222,
+      "sha256": "ed46a8e0e8f8b8b2781349a903dd3af0bb2d12bc41cd4677c8419d8ab2bc8538",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/fence.job.log",
+          "bytes": 9222,
+          "sha256": "ed46a8e0e8f8b8b2781349a903dd3af0bb2d12bc41cd4677c8419d8ab2bc8538",
+          "git_blob_sha": "51fe55903ee5f24b0e138a265602732fd64324b2",
+          "start_byte": 0,
+          "end_byte_exclusive": 9222
+        }
+      ],
+      "original_full_log_fetched_by_root": true,
+      "complete_bytes_reassembled_before_storage": true
+    },
+    {
+      "name": "clippy",
+      "job": 131356685420,
+      "conclusion": "success",
+      "bytes": 1234285,
+      "sha256": "086e17026c162090f333f8a18b5aeca2eb0f51384d19f477b7e976479ba54364",
+      "parts": [
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part00",
+          "bytes": 350000,
+          "sha256": "89cde74c47bb5023aedf38be6725823461b6aa6127211c5d8db1c808e6daba9d",
+          "git_blob_sha": "11e0c609b1990f0d17ff1e604e9a42ac4ea21600",
+          "start_byte": 0,
+          "end_byte_exclusive": 350000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part01",
+          "bytes": 350000,
+          "sha256": "8ac007e0f0ffab8467ffd93a5947d2bf3b1d5ac906d9c24cf4587fc9917ebc5e",
+          "git_blob_sha": "5cbcff6cdbdc00f754fad4dc33d5ea79c7008ae2",
+          "start_byte": 350000,
+          "end_byte_exclusive": 700000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part02",
+          "bytes": 350000,
+          "sha256": "2c3b87891760add20fc9ccf1b09c539e90bc1c9e2e74ff677180d4c73d73350a",
+          "git_blob_sha": "c6c6cf18ce459d8c38e6f1676d47cab0ae7441f0",
+          "start_byte": 700000,
+          "end_byte_exclusive": 1050000
+        },
+        {
+          "path": "qualification/evaluated-current-read-20261112/edaf-early-ci/clippy.job.log.part03",
+          "bytes": 184285,
+          "sha256": "9c366c1718018a450b8a016e8aa0bb6bed74134a03fa4087b66023abe4ecc2e9",
+          "git_blob_sha": "b438cd832bdb0f010fc3ce8db5771e975632afcc",
+          "start_byte": 1050000,
+          "end_byte_exclusive": 1234285
+        }
+      ],
+      "original_full_log_fetched_by_root": true,
+      "complete_bytes_reassembled_before_storage": true
+    }
+  ],
+  "fence": {
+    "first_step": true,
+    "checkout_reached": false,
+    "blob_checker_reached": false,
+    "error": "local_control_inventory_unavailable",
+    "precise_unavailable_input": null,
+    "root_cause_proven": false,
+    "mode": "audit",
+    "pin": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+    "debug_success_causality_claimed": false
+  },
+  "native_whole_suite": "IN_PROGRESS",
+  "caller_full_inventory": "IN_PROGRESS",
+  "prior_results_transferred": false,
+  "owner_decision": null
+}

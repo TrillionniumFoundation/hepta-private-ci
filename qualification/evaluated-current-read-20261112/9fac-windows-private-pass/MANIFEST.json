@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "run_id": 43254705684,
+  "job_id": 131309688525,
+  "bytes": 376573,
+  "sha256": "3156c97691ae5f18928a90579808effdfff642df5016e859cbf353804a6d63a9",
+  "git_blob_sha": "778a442f53c4a41baa7c2c83137a3ed4a63d6837",
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/original.job.log.part00",
+      "bytes": 350000,
+      "sha256": "8121722dfd7b45702658fca60fb891603d98205e4c0d1cb0b9e83a9adea52042",
+      "git_blob_sha": "1a184c7e68b17451630b620520e227b2e256bc9b",
+      "start_byte": 0,
+      "end_byte_exclusive": 350000
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/9fac-windows-private-pass/original.job.log.part01",
+      "bytes": 26573,
+      "sha256": "7a2852278f1964968ab71cf1a82ebb251de5a195187c76b946328c1546c4874a",
+      "git_blob_sha": "035dbf26ba3d12fdd47ba9581eb1a5f3fdbae068",
+      "start_byte": 350000,
+      "end_byte_exclusive": 376573
+    }
+  ],
+  "reconstruction": "Concatenate listed parts without added bytes. Original JSON records are extracted verbatim plus a storage final LF; original nanosecond timestamps are never parsed/re-emitted.",
+  "actual_learning_cohort": {
+    "tests": 36,
+    "passed": 36,
+    "errors": 0,
+    "failures": 0,
+    "skipped_in_xml": 0,
+    "retries": 0,
+    "selected_out": 597
+  },
+  "other_groups_separate": [
+    {
+      "passed": 15,
+      "selected_out": 5
+    },
+    {
+      "passed": 2,
+      "selected_out": 26
+    },
+    {
+      "passed": 3,
+      "selected_out": 147
+    },
+    {
+      "passed": 2,
+      "selected_out": 148
+    },
+    {
+      "passed": 12,
+      "selected_out": 340
+    }
+  ],
+  "scope": "Windows private-state job only. Full original job log verified; whole artifact ZIPs and original XML file bytes not separately fetched. This does not establish Linux-only evaluated CURRENT, full ordinary native, original Root custody or overall Windows Bazel success."
+}

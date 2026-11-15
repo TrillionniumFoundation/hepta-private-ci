@@ -1,0 +1,180 @@
+{
+  "schema": "hepta.model-material-count-fix-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "base_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "code_bare_tree": "9d77309549da9637e9ab3f9489ed2655278d4048",
+  "patch_blob": "b933a10a2b8b8e89961a2e760cd6e6916fc6ec4a",
+  "patch_sha256": "efa444c741284982e39f225705ad115d1255ab899eb4e0dda3d17999c5540307",
+  "delta": {
+    "paths": 4,
+    "additions": 98,
+    "deletions": 2,
+    "new_test_methods": 0,
+    "existing_three_native_methods_preserved": true
+  },
+  "status": {
+    "source_review": "STATIC",
+    "github_postimages": "READ_BACK_BYTE_IDENTICAL",
+    "format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native_regressions": "NOT_RUN",
+    "source_guards": "NOT_RUN",
+    "branch_ref_mutation": false,
+    "actor_dispatch": false
+  },
+  "actual_failure_evidence": {
+    "run": 43254705812,
+    "job": 131309678676,
+    "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "failure_index_blob": "3d9e6598abd60bb22af198b74d3210492e9dcc86",
+    "complete_native_manifest_blob": "b81b0f3318f970567e70738e75cc45f9d77cc100",
+    "native_log_sha256": "f98ec2b7790efae1808fbc4696e3f6fc5a59bc81aeedf6e1e811a3994f4ea6cc",
+    "failures": [
+      {
+        "method": "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+        "observed": "Error: original Evaluation effect is uncertain; read the original operation",
+        "seconds": 13.85
+      },
+      {
+        "method": "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+        "observed": "Error: original Evaluation effect is uncertain; read the original operation",
+        "seconds": 43.718
+      },
+      {
+        "method": "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+        "observed": "assertion failed: close(client, peer).is_err()",
+        "line": 303,
+        "seconds": 29.514
+      }
+    ]
+  },
+  "root_cause": {
+    "producer": "Product product_qualification_commitment_bytes (v4) calls push_ids for failed_metrics and snapshot_ids; push_ids emits an eight-byte big-endian u64 list count.",
+    "consumer": "Original model material member::verify used Reader::ids at both positions. ids consumes a four-byte u32 count, so the remaining four count bytes are misinterpreted as the next identifier/field. Valid original Qualification therefore fails its exact field checks.",
+    "distinct_protocol": "Independent request/decision v1 uses closure::push_id_vec with u32 list counts. Its Reader::ids path and all existing count/id/bytes methods remain byte-for-byte unchanged.",
+    "propagation": "Original host export calls verify::material after real Panel CURRENT and original completed receipt checks. Begin maps an export failure to wire Uncertain; the client reports CommitUncertain. No native original-cause instrumentation was available, so this causal proof is static source analysis rather than a new observed run.",
+    "third_failure": "The test-only pause previously signalled after any first response, including Uncertain. The client could already reject Begin, then close cleanly before Finish. The new precondition signals withdrawal only after actual Page index=0/offset=0; the original close(client,peer).is_err assertion and Finish reread stay unchanged."
+  },
+  "implementation": {
+    "reader": "Private ids_u64 uses checked usize conversion, original maximum 1024 identifiers, remaining four-byte-prefix reachability, then the unchanged id() parser (length <=128, UTF8, StableId). No alternative-width fallback.",
+    "callsites": "Only the two Qualification v4 fields switch to ids_u64.",
+    "regression": "Existing real material/preimage test receives original completed Panel export. It locates both producer u64 lists via independent primitive reads, checks each exact list with ids_u64, rejects a seven-byte truncated count, changes only each count within the complete original material (+1,1025,u64::MAX), and rejects a four-byte count substitution preserving every identifier and other original field. No extra owner I/O or synthetic owner receipt.",
+    "limits": "Original signature/identity comparisons, canonical material bytes, deadlines, page size/maximum, 128-frame cap, roles, original first-withdrawal error mapping, and three test methods remain unchanged."
+  },
+  "source_bindings": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "bytes": 39047,
+      "sha256": "19d794ead41cbf3d230255a2bfdd96c5e793f1f86600d4404d8c6ca8b97350af",
+      "blob": "3c8f28b3121936b6cf54dff190a055d72ada0a9e"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "bytes": 40523,
+      "sha256": "147e5d80a5efc4587c67de53b65fd1b42c52841907e2ed5b0439c46cf65daa7c",
+      "blob": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+      "blob": "8768614e0da009a3ea5deba932c4a62e6694d79b",
+      "bytes": 7347,
+      "sha256": "e2c9a3665d67019763846fa2b9a290bdea0c6bcbace77ddd73f543eef3a3c2db"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+      "blob": "8e93d95c099a6cd433dfe0277bb86663400e8163",
+      "bytes": 8506,
+      "sha256": "46e51e113254ae4482019a243098bed661aa063e94aa4724d3bf281773091c22"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "blob": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+      "bytes": 12053,
+      "sha256": "eedd8c08d5123b86888cefaee90e0d12048e2e6a00141083248f6dfb652e4fed"
+    }
+  ],
+  "guards": {
+    "callers_blob": "13d9f42390e529bb1712d9358a2e42a1c3ead802",
+    "callers_changed": false,
+    "external_original_owner_callers_added": 0,
+    "changed_files_matched_in_callers": 0,
+    "allowlist_changed": false,
+    "note": "Exact CALLERS has no changed codec/member path or qualification.ids marker and no external owner caller is added. No checker, accepted caller set or allowlist entry is changed. Execution of the full source gates remains NOT_RUN.",
+    "static_qa_scan": {
+      "reviewer": "/root/repository_research_audit",
+      "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+      "path": "qa/b4-no-bypass",
+      "python_files_read": 56,
+      "source_closure_files": 53,
+      "read_failures": 0,
+      "needles": [
+        "model_material_codec",
+        "model_material_member",
+        "qualification.ids",
+        "ids_u64",
+        "Reader::ids"
+      ],
+      "matches": 0,
+      "scope": "Limited actual-source text scan, not an executed QA pass or a claim about all repository files.",
+      "manifest_blob": "f526151458d8e32f8e8481e5cc204778c535f4c8",
+      "manifest_sha256": "79dc14cfb20ba916d52f64ffb1bedc835075f2732ba60ae5a616cb2d25a2cd3e",
+      "manifest_readback_verified": true
+    }
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "base_blob": "8b083bb62da5506b29a9eaadd7b1b059d799a128",
+      "post_blob": "2faee4cacb7f58b63efc46e821ee36a744a59751",
+      "bytes": 8815,
+      "sha256": "923b9c75463b3f548b50411fa71334ff23d01af298dc8dbab5f10d091cab3e8b",
+      "lines": 250,
+      "base_bytes": 8235,
+      "base_sha256": "d35ae398da651c7d1a75acac6de5a5fde116d5b4085987dc804c1694d40185c9",
+      "postimage_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "base_blob": "adc26468ecd874b9aaf5d32beac21dfa4ecc30a9",
+      "post_blob": "40d2c6d4ae804cdf0a582bfde4d32b9412e4e32c",
+      "bytes": 11030,
+      "sha256": "b26d35c97617a284d90646d9df638b406f053de61e48e65f72d5cf19b6184c54",
+      "lines": 313,
+      "base_bytes": 11022,
+      "base_sha256": "b6928800b4a9192745c4f1942b5de17c08ce8b2550b3ffa890defba5b1332b46",
+      "postimage_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "base_blob": "d1dedb4b386ac822833e265ecd3192e000848730",
+      "post_blob": "447de9525d154c5a8d1bc9bef472b5ff1b7e9ed4",
+      "bytes": 23392,
+      "sha256": "c5474be07f9d3f08a5b5731f991b1a14c4f0d5cb49810b113ff20d31e8ce1a45",
+      "lines": 563,
+      "base_bytes": 20112,
+      "base_sha256": "090a5a485aa4b6c01be9cdf516292c1bef5099c88f0d63e71a0b0a546d6daee1",
+      "postimage_readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service_support_tests.rs",
+      "base_blob": "4c3063ecd9da813de7ef4b5b57bac4d16c27deee",
+      "post_blob": "6c02579cfc05f35c2252d501c1b7cfd096b4c4d1",
+      "bytes": 6497,
+      "sha256": "a297111c1e321835d832239fee6066efcae57a1681ca944510fcf42462894871",
+      "lines": 164,
+      "base_bytes": 6034,
+      "base_sha256": "7dab4ab4b46422a14042761a1f9769c61bdf0d8f3711dd3f80a2ff0492c5c4cb",
+      "postimage_readback_verified": true
+    }
+  ],
+  "independent_static_review": {
+    "reviewer": "/root/replay_perception_research",
+    "code_tree": "9d77309549da9637e9ab3f9489ed2655278d4048",
+    "reviewed": "All four complete base/post sources plus original Product and closure producers and material verify; eight Git object identities and four postimage SHA256 values checked.",
+    "result": "No new static blocker found. Qualification mutation reaches member::verify; first-page barrier preserves actual Finish/close check.",
+    "format": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native": "NOT_RUN"
+  }
+}

@@ -1,0 +1,230 @@
+2026-11-12T20:30:45.4436590Z read message from stdout: Notification(JSONRPCNotification { method: "remoteControl/status/changed", params: Some(Object {"status": String("disabled"), "serverName": String("sjc20-bb658-998c51ae-f39d-4227-b1b5-770fe89afb3a-8EEF68000A76.local"), "installationId": String("66c2f187-fba1-4a40-9adf-b8b385b5a57b"), "environmentId": Null}) })
+2026-11-12T20:30:45.4477860Z [mcp stderr] [2m2026-11-12T20:28:30.338807Z[0m [33m WARN[0m [2mcodex_models_manager::model_info[0m[2m:[0m Unknown model mock-model is used. This will use fallback model metadata.
+2026-11-12T20:30:45.4499910Z read message from stdout: Response(JSONRPCResponse { id: Integer(1), result: Object {"thread": Object {"id": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "extra": Null, "sessionId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "forkedFromId": Null, "parentThreadId": Null, "preview": String(""), "ephemeral": Bool(false), "section": Null, "sectionEnteredAt": Null, "projectId": Null, "historyMode": String("legacy"), "modelProvider": String("mock_provider"), "createdAt": Number(1794515310), "updatedAt": Number(1794515310), "recencyAt": Number(1794515310), "status": Object {"type": String("idle")}, "path": String("/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmp1GQtZU/sessions/2026/11/12/rollout-2026-11-12T20-28-30-01a1d172-96fa-7799-9403-3b50547f2d8b.jsonl"), "cwd": String("/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmp1GQtZU"), "cliVersion": String("0.0.0"), "source": String("vscode"), "canAcceptDirectInput": Bool(true), "threadSource": Null, "agentNickname": Null, "agentRole": Null, "gitInfo": Null, "name": Null, "turns": Array []}, "model": String("mock-model"), "modelProvider": String("mock_provider"), "serviceTier": Null, "cwd": String("/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmp1GQtZU"), "runtimeWorkspaceRoots": Array [String("/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmpKt9LBf")], "instructionSources": Array [], "approvalPolicy": String("never"), "approvalsReviewer": String("user"), "sandbox": Object {"type": String("workspaceWrite"), "writableRoots": Array [String("/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmpKt9LBf")], "networkAccess": Bool(false), "excludeTmpdirEnvVar": Bool(true), "excludeSlashTmp": Bool(true)}, "activePermissionProfile": Object {"id": String("workspace"), "extends": Null}, "reasoningEffort": Null, "multiAgentMode": String("explicitRequestOnly")} })
+2026-11-12T20:30:45.4531370Z writing message to stdin: Request(JSONRPCRequest { id: Integer(2), method: "turn/start", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "clientUserMessageId": Null, "input": Array [Object {"type": String("text"), "text": String("Use $demo-plugin:deploy"), "text_elements": Array []}], "responsesapiClientMetadata": Null, "additionalContext": Null, "environments": Null, "cwd": Null, "runtimeWorkspaceRoots": Null, "approvalPolicy": Null, "approvalsReviewer": Null, "sandboxPolicy": Null, "permissions": Null, "model": Null, "effort": Null, "summary": Null, "personality": Null, "outputSchema": Null, "collaborationMode": Null, "multiAgentMode": Null}), trace: None })
+2026-11-12T20:30:45.4540920Z in read_stream_until_response_message(Integer(2))
+2026-11-12T20:30:45.4552710Z read message from stdout: Notification(JSONRPCNotification { method: "thread/started", params: Some(Object {"thread": Object {"id": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "extra": Null, "sessionId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "forkedFromId": Null, "parentThreadId": Null, "preview": String(""), "ephemeral": Bool(false), "section": Null, "sectionEnteredAt": Null, "projectId": Null, "historyMode": String("legacy"), "modelProvider": String("mock_provider"), "createdAt": Number(1794515310), "updatedAt": Number(1794515310), "recencyAt": Number(1794515310), "status": Object {"type": String("idle")}, "path": String("/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmp1GQtZU/sessions/2026/11/12/rollout-2026-11-12T20-28-30-01a1d172-96fa-7799-9403-3b50547f2d8b.jsonl"), "cwd": String("/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmp1GQtZU"), "cliVersion": String("0.0.0"), "source": String("vscode"), "canAcceptDirectInput": Bool(true), "threadSource": Null, "agentNickname": Null, "agentRole": Null, "gitInfo": Null, "name": Null, "turns": Array []}}) })
+2026-11-12T20:30:45.4568490Z [mcp stderr] [2m2026-11-12T20:28:30.675078Z[0m [33m WARN[0m [2mcodex_models_manager::model_info[0m[2m:[0m Unknown model mock-model is used. This will use fallback model metadata.
+2026-11-12T20:30:45.4576210Z read message from stdout: Notification(JSONRPCNotification { method: "warning", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "message": String("Model metadata for `mock-model` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.")}) })
+2026-11-12T20:30:45.4583700Z read message from stdout: Response(JSONRPCResponse { id: Integer(2), result: Object {"turn": Object {"id": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "items": Array [], "itemsView": String("notLoaded"), "status": String("inProgress"), "error": Null, "startedAt": Null, "completedAt": Null, "durationMs": Null}} })
+2026-11-12T20:30:45.4587060Z in read_stream_until_notification_message(turn/completed)
+2026-11-12T20:30:45.4590510Z read message from stdout: Notification(JSONRPCNotification { method: "thread/status/changed", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "status": Object {"type": String("active"), "activeFlags": Array []}}) })
+2026-11-12T20:30:45.4596160Z read message from stdout: Notification(JSONRPCNotification { method: "turn/started", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turn": Object {"id": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "items": Array [], "itemsView": String("notLoaded"), "status": String("inProgress"), "error": Null, "startedAt": Number(1794515310), "completedAt": Null, "durationMs": Null}}) })
+2026-11-12T20:30:45.4604280Z [mcp stderr] [2m2026-11-12T20:28:31.231626Z[0m [33m WARN[0m [2mcodex_mcp_extension::executor_plugin::discovery[0m[2m:[0m exec-server capability discovery warning [3mselected_root[0m[2m=[0m"demo-plugin@1" [3mwarning[0m[2m=[0m"failed to scan capability path file:///var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmpKt9LBf/plugin/skills/denied: Operation not permitted (os error 1)"
+2026-11-12T20:30:45.4612230Z read message from stdout: Notification(JSONRPCNotification { method: "warning", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "message": String("failed to scan capability path file:///var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmpKt9LBf/plugin/skills/denied: Operation not permitted (os error 1)")}) })
+2026-11-12T20:30:45.4621440Z read message from stdout: Notification(JSONRPCNotification { method: "item/started", params: Some(Object {"item": Object {"type": String("userMessage"), "id": String("01a1d172-9b10-753f-aa94-b3ad5b4f2290"), "clientId": Null, "content": Array [Object {"type": String("text"), "text": String("Use $demo-plugin:deploy"), "text_elements": Array []}]}, "threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "startedAtMs": Number(1794515311376)}) })
+2026-11-12T20:30:45.4631160Z read message from stdout: Notification(JSONRPCNotification { method: "item/completed", params: Some(Object {"item": Object {"type": String("userMessage"), "id": String("01a1d172-9b10-753f-aa94-b3ad5b4f2290"), "clientId": Null, "content": Array [Object {"type": String("text"), "text": String("Use $demo-plugin:deploy"), "text_elements": Array []}]}, "threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "completedAtMs": Number(1794515311376)}) })
+2026-11-12T20:30:45.4642050Z read message from stdout: Notification(JSONRPCNotification { method: "thread/tokenUsage/updated", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "tokenUsage": Object {"total": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "last": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "modelContextWindow": Number(258400)}}) })
+2026-11-12T20:30:45.4653970Z read message from stdout: Notification(JSONRPCNotification { method: "account/rateLimits/updated", params: Some(Object {"rateLimits": Object {"limitId": String("codex"), "limitName": Null, "primary": Null, "secondary": Null, "credits": Null, "individualLimit": Null, "spendControlReached": Null, "planType": Null, "rateLimitReachedType": Null}}) })
+2026-11-12T20:30:45.4665460Z read message from stdout: Notification(JSONRPCNotification { method: "thread/tokenUsage/updated", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "tokenUsage": Object {"total": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "last": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "modelContextWindow": Number(258400)}}) })
+2026-11-12T20:30:45.4675700Z read message from stdout: Notification(JSONRPCNotification { method: "account/rateLimits/updated", params: Some(Object {"rateLimits": Object {"limitId": String("codex"), "limitName": Null, "primary": Null, "secondary": Null, "credits": Null, "individualLimit": Null, "spendControlReached": Null, "planType": Null, "rateLimitReachedType": Null}}) })
+2026-11-12T20:30:45.4685060Z [mcp stderr] [2m2026-11-12T20:28:31.531943Z[0m [33m WARN[0m [2mcodex_skills_extension::tools::read[0m[2m:[0m skills.read provider request failed [3merror[0m[2m=[0mfailed to read executor skill resource skill://demo-plugin@1/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmpKt9LBf/plugin/skills/deploy/references/details.md through the authorized sandbox [3mturn_id[0m[2m=[0m01a1d172-9851-7083-9b32-7194e0a83ddd [3mcall_id[0m[2m=[0mreference [3mresource[0m[2m=[0m"skill://demo-plugin@1/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/.tmpKt9LBf/plugin/skills/deploy/references/details.md"
+2026-11-12T20:30:45.4692620Z [mcp stderr] [2m2026-11-12T20:28:31.532418Z[0m [31mERROR[0m [2mcodex_core::tools::router[0m[2m:[0m [3merror[0m[2m=[0mfailed to read skill resource
+2026-11-12T20:30:45.4700250Z read message from stdout: Notification(JSONRPCNotification { method: "thread/tokenUsage/updated", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "tokenUsage": Object {"total": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "last": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "modelContextWindow": Number(258400)}}) })
+2026-11-12T20:30:45.4708890Z read message from stdout: Notification(JSONRPCNotification { method: "account/rateLimits/updated", params: Some(Object {"rateLimits": Object {"limitId": String("codex"), "limitName": Null, "primary": Null, "secondary": Null, "credits": Null, "individualLimit": Null, "spendControlReached": Null, "planType": Null, "rateLimitReachedType": Null}}) })
+2026-11-12T20:30:45.4716380Z read message from stdout: Notification(JSONRPCNotification { method: "item/started", params: Some(Object {"item": Object {"type": String("agentMessage"), "id": String("msg-done"), "text": String("Done"), "phase": Null, "memoryCitation": Null, "delivery": Null}, "threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "startedAtMs": Number(1794515311559)}) })
+2026-11-12T20:30:45.4724770Z read message from stdout: Notification(JSONRPCNotification { method: "item/completed", params: Some(Object {"item": Object {"type": String("agentMessage"), "id": String("msg-done"), "text": String("Done"), "phase": Null, "memoryCitation": Null, "delivery": Null}, "threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "completedAtMs": Number(1794515311559)}) })
+2026-11-12T20:30:45.4738230Z read message from stdout: Notification(JSONRPCNotification { method: "thread/tokenUsage/updated", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turnId": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "tokenUsage": Object {"total": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "last": Object {"totalTokens": Number(0), "inputTokens": Number(0), "cachedInputTokens": Number(0), "cacheWriteInputTokens": Number(0), "outputTokens": Number(0), "reasoningOutputTokens": Number(0)}, "modelContextWindow": Number(258400)}}) })
+2026-11-12T20:30:45.4746210Z read message from stdout: Notification(JSONRPCNotification { method: "account/rateLimits/updated", params: Some(Object {"rateLimits": Object {"limitId": String("codex"), "limitName": Null, "primary": Null, "secondary": Null, "credits": Null, "individualLimit": Null, "spendControlReached": Null, "planType": Null, "rateLimitReachedType": Null}}) })
+2026-11-12T20:30:45.4752730Z read message from stdout: Notification(JSONRPCNotification { method: "thread/status/changed", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "status": Object {"type": String("idle")}}) })
+2026-11-12T20:30:45.4759450Z read message from stdout: Notification(JSONRPCNotification { method: "turn/completed", params: Some(Object {"threadId": String("01a1d172-96fa-7799-9403-3b50547f2d8b"), "turn": Object {"id": String("01a1d172-9851-7083-9b32-7194e0a83ddd"), "items": Array [Object {"type": String("agentMessage"), "id": String("msg-done"), "text": String("Done"), "phase": Null, "memoryCitation": Null, "delivery": Null}], "itemsView": String("summary"), "status": String("completed"), "error": Null, "startedAt": Number(1794515310), "completedAt": Number(1794515311), "durationMs": Number(889)}}) })
+2026-11-12T20:30:45.4764350Z Error: expected ident at line 1 column 3
+2026-11-12T20:30:45.4764770Z 
+2026-11-12T20:30:45.4764780Z 
+2026-11-12T20:30:45.4764920Z failures:
+2026-11-12T20:30:45.4766530Z     suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted
+2026-11-12T20:30:45.4767730Z 
+2026-11-12T20:30:45.4768970Z test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 70.36s
+2026-11-12T20:30:45.4769770Z 
+2026-11-12T20:30:45.4771070Z ##[endgroup]
+2026-11-12T20:30:45.4774150Z ##[group]Bazel test log tail for //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test
+2026-11-12T20:30:45.4775660Z exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+2026-11-12T20:30:45.4777930Z Executing tests from //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test
+2026-11-12T20:30:45.4779380Z -----------------------------------------------------------------------------
+2026-11-12T20:30:45.4779940Z 
+2026-11-12T20:30:45.4780100Z running 2 tests
+2026-11-12T20:30:45.4780630Z test supervisord_child_entry ... ok
+2026-11-12T20:30:45.4781740Z test five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes ... FAILED
+2026-11-12T20:30:45.4783440Z 
+2026-11-12T20:30:45.4783930Z failures:
+2026-11-12T20:30:45.4784210Z 
+2026-11-12T20:30:45.4786190Z ---- five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes stdout ----
+2026-11-12T20:30:45.4789850Z Error: invalid supervisor value: supervisord returned an invalid bounded response
+2026-11-12T20:30:45.4790950Z 
+2026-11-12T20:30:45.4790950Z 
+2026-11-12T20:30:45.4791130Z failures:
+2026-11-12T20:30:45.4792080Z     five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes
+2026-11-12T20:30:45.4794420Z 
+2026-11-12T20:30:45.4795400Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 59.14s
+2026-11-12T20:30:45.4796790Z 
+2026-11-12T20:30:45.4797670Z ##[endgroup]
+2026-11-12T20:30:45.4799200Z ##[group]Bazel test log tail for //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test
+2026-11-12T20:30:45.4801080Z exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+2026-11-12T20:30:45.4802480Z Executing tests from //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test
+2026-11-12T20:30:45.4805150Z -----------------------------------------------------------------------------
+2026-11-12T20:30:45.4806140Z 
+2026-11-12T20:30:45.4806350Z running 3 tests
+2026-11-12T20:30:45.4807320Z test prepare_old_version_fixture ... ignored, requires the source-bound old-version fixture producer
+2026-11-12T20:30:45.4809260Z test reopen_old_version_fixture ... ignored, requires the independently retained old-version fixture
+2026-11-12T20:30:45.4812000Z test encrypted_state_identity_session_and_queues_survive_restart ... FAILED
+2026-11-12T20:30:45.4813300Z 
+2026-11-12T20:30:45.4813580Z failures:
+2026-11-12T20:30:45.4814330Z 
+2026-11-12T20:30:45.4815440Z ---- encrypted_state_identity_session_and_queues_survive_restart stdout ----
+2026-11-12T20:30:45.4817440Z production reopen failed after 12.712110031s: Initialization { stage: "login_or_restore.build.timeout", source: Some(Elapsed(())) }
+2026-11-12T20:30:45.4819620Z Error: Initialization { stage: "login_or_restore.build.timeout", source: Some(Elapsed(())) }
+2026-11-12T20:30:45.4820640Z 
+2026-11-12T20:30:45.4820650Z 
+2026-11-12T20:30:45.4821750Z failures:
+2026-11-12T20:30:45.4823460Z     encrypted_state_identity_session_and_queues_survive_restart
+2026-11-12T20:30:45.4824330Z 
+2026-11-12T20:30:45.4825680Z test result: FAILED. 0 passed; 1 failed; 2 ignored; 0 measured; 0 filtered out; finished in 47.68s
+2026-11-12T20:30:45.4828360Z 
+2026-11-12T20:30:45.4829400Z ##[endgroup]
+2026-11-12T20:30:45.5754670Z ##[error]Process completed with exit code 3.
+2026-11-12T20:30:45.8504720Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T20:30:45.8510670Z with:
+2026-11-12T20:30:45.8511110Z   name: bazel-execution-logs-test-x86_64-apple-darwin
+2026-11-12T20:30:45.8511780Z   path: /Users/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:30:45.8512360Z   if-no-files-found: ignore
+2026-11-12T20:30:45.8512780Z   compression-level: 6
+2026-11-12T20:30:45.8513160Z   overwrite: false
+2026-11-12T20:30:45.8513530Z   include-hidden-files: false
+2026-11-12T20:30:45.8513950Z   archive: true
+2026-11-12T20:30:45.8514350Z env:
+2026-11-12T20:30:45.8514720Z   CI_BUILD_ROOT: /Users/runner/.cache/codex-ci
+2026-11-12T20:30:45.8515450Z   CODEX_REPO_ROOT: /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:30:45.8516240Z   BAZEL_OUTPUT_BASE: /Users/runner/.cache/codex-ci/o
+2026-11-12T20:30:45.8516910Z   BAZEL_OUTPUT_USER_ROOT: /Users/runner/.cache/codex-ci/b
+2026-11-12T20:30:45.8517940Z   BAZEL_REPOSITORY_CACHE: /Users/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:30:45.8519180Z   BAZEL_REPO_CONTENTS_CACHE: /Users/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:30:45.8520270Z   CARGO_TARGET_DIR: /Users/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:30:45.8520930Z   TEMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:30:45.8521450Z   TMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:30:45.8521970Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:30:45.8631250Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:30:45.8632400Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /Users/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:30:45.8633320Z ##[endgroup]
+2026-11-12T20:30:47.0902980Z With the provided path, there will be 1 file uploaded
+2026-11-12T20:30:47.0907230Z Artifact name is valid!
+2026-11-12T20:30:47.0909180Z Root directory input is valid!
+2026-11-12T20:30:47.4635760Z Uploading artifact: bazel-execution-logs-test-x86_64-apple-darwin.zip
+2026-11-12T20:30:47.4661310Z Beginning upload of artifact content to blob storage
+2026-11-12T20:30:49.2367760Z Uploaded bytes 8388608
+2026-11-12T20:30:49.3619050Z Uploaded bytes 10626422
+2026-11-12T20:30:49.4393550Z Finished uploading artifact content to blob storage!
+2026-11-12T20:30:49.4395590Z SHA256 digest of uploaded artifact is 508cdf17f20c14702629d402d39e098a0a0bc707d2ca3d37bd23bd57b3ec6567
+2026-11-12T20:30:49.4397230Z Finalizing artifact upload
+2026-11-12T20:30:50.0445860Z Artifact bazel-execution-logs-test-x86_64-apple-darwin successfully finalized. Artifact ID 13982165548
+2026-11-12T20:30:50.0451480Z Artifact bazel-execution-logs-test-x86_64-apple-darwin has been successfully uploaded! Final size is 10626422 bytes. Artifact ID is 13982165548
+2026-11-12T20:30:50.0458360Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43297579660/artifacts/13982165548
+2026-11-12T20:30:50.0806520Z ##[group]Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-12T20:30:50.0807370Z with:
+2026-11-12T20:30:50.0807970Z   path: /Users/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:30:50.0809280Z   key: bazel-cache-bazel-test-x86_64-apple-darwin-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T20:30:50.0810500Z   enableCrossOsArchive: false
+2026-11-12T20:30:50.0810970Z env:
+2026-11-12T20:30:50.0811390Z   CI_BUILD_ROOT: /Users/runner/.cache/codex-ci
+2026-11-12T20:30:50.0812250Z   CODEX_REPO_ROOT: /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:30:50.0813130Z   BAZEL_OUTPUT_BASE: /Users/runner/.cache/codex-ci/o
+2026-11-12T20:30:50.0813910Z   BAZEL_OUTPUT_USER_ROOT: /Users/runner/.cache/codex-ci/b
+2026-11-12T20:30:50.0814890Z   BAZEL_REPOSITORY_CACHE: /Users/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:30:50.0816260Z   BAZEL_REPO_CONTENTS_CACHE: /Users/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:30:50.0817430Z   CARGO_TARGET_DIR: /Users/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:30:50.0818180Z   TEMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:30:50.0818810Z   TMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:30:50.0819380Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:30:50.0824630Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:30:50.0825470Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /Users/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:30:50.0826380Z ##[endgroup]
+2026-11-12T20:30:50.3853720Z [command]/usr/local/bin/gtar --posix -cf cache.tzst --exclude cache.tzst -P -C /Users/runner/work/hepta-private-ci/hepta-private-ci --files-from manifest.txt --delay-directory-restore --use-compress-program zstdmt
+2026-11-12T20:31:28.1336030Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:29.1316770Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:30.1372160Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:31.4356390Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:32.4357200Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:33.4830020Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:34.4844840Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:35.4887970Z Sent 0 of 1066306639 (0.0%), 0.0 MBs/sec
+2026-11-12T20:31:36.4879930Z Sent 402653184 of 1066306639 (37.8%), 41.0 MBs/sec
+2026-11-12T20:31:37.4923090Z Sent 469762048 of 1066306639 (44.1%), 43.2 MBs/sec
+2026-11-12T20:31:38.4961110Z Sent 469762048 of 1066306639 (44.1%), 39.4 MBs/sec
+2026-11-12T20:31:39.4979920Z Sent 469762048 of 1066306639 (44.1%), 36.2 MBs/sec
+2026-11-12T20:31:40.4987570Z Sent 469762048 of 1066306639 (44.1%), 33.5 MBs/sec
+2026-11-12T20:31:41.4973290Z Sent 603979776 of 1066306639 (56.6%), 40.1 MBs/sec
+2026-11-12T20:31:42.4979170Z Sent 671088640 of 1066306639 (62.9%), 41.6 MBs/sec
+2026-11-12T20:31:43.4977510Z Sent 671088640 of 1066306639 (62.9%), 39.1 MBs/sec
+2026-11-12T20:31:44.4978980Z Sent 797871183 of 1066306639 (74.8%), 43.8 MBs/sec
+2026-11-12T20:31:45.4981920Z Sent 797871183 of 1066306639 (74.8%), 41.4 MBs/sec
+2026-11-12T20:31:46.4988000Z Sent 797871183 of 1066306639 (74.8%), 39.3 MBs/sec
+2026-11-12T20:31:47.4989340Z Sent 797871183 of 1066306639 (74.8%), 37.3 MBs/sec
+2026-11-12T20:31:48.5003120Z Sent 797871183 of 1066306639 (74.8%), 35.6 MBs/sec
+2026-11-12T20:31:49.4997830Z Sent 797871183 of 1066306639 (74.8%), 34.0 MBs/sec
+2026-11-12T20:31:50.2241910Z Sent 1066306639 of 1066306639 (100.0%), 44.0 MBs/sec
+2026-11-12T20:31:50.5250490Z Cache saved with key: bazel-cache-bazel-test-x86_64-apple-darwin-4ce2f8ef36f31c4c2e1f1633b6bea8fa281df0bd9fdb2577477da9db44b872c0
+2026-11-12T20:31:50.5597250Z Prepare all required actions
+2026-11-12T20:31:50.5726060Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T20:31:50.5726720Z env:
+2026-11-12T20:31:50.5727290Z   CI_BUILD_ROOT: /Users/runner/.cache/codex-ci
+2026-11-12T20:31:50.5728260Z   CODEX_REPO_ROOT: /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:31:50.5729150Z   BAZEL_OUTPUT_BASE: /Users/runner/.cache/codex-ci/o
+2026-11-12T20:31:50.5730050Z   BAZEL_OUTPUT_USER_ROOT: /Users/runner/.cache/codex-ci/b
+2026-11-12T20:31:50.5731030Z   BAZEL_REPOSITORY_CACHE: /Users/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:31:50.5732340Z   BAZEL_REPO_CONTENTS_CACHE: /Users/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:31:50.5733520Z   CARGO_TARGET_DIR: /Users/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:31:50.5734310Z   TEMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:31:50.5734900Z   TMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:31:50.5735660Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:31:50.5741100Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:31:50.5741940Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /Users/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:31:50.5742830Z ##[endgroup]
+2026-11-12T20:31:50.5787610Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T20:31:50.5857280Z ##[group]Run set -euo pipefail
+2026-11-12T20:31:50.5866380Z [36;1mset -euo pipefail[0m
+2026-11-12T20:31:50.5867100Z [36;1m[0m
+2026-11-12T20:31:50.5868320Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T20:31:50.5869850Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T20:31:50.5871040Z [36;1m  exit 0[0m
+2026-11-12T20:31:50.5871580Z [36;1mfi[0m
+2026-11-12T20:31:50.5871980Z [36;1m[0m
+2026-11-12T20:31:50.5872780Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T20:31:50.5873760Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T20:31:50.5874280Z [36;1mexit 1[0m
+2026-11-12T20:31:51.7217920Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T20:31:51.7218540Z env:
+2026-11-12T20:31:51.7219220Z   CI_BUILD_ROOT: /Users/runner/.cache/codex-ci
+2026-11-12T20:31:51.7220000Z   CODEX_REPO_ROOT: /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:31:51.7221010Z   BAZEL_OUTPUT_BASE: /Users/runner/.cache/codex-ci/o
+2026-11-12T20:31:51.7221700Z   BAZEL_OUTPUT_USER_ROOT: /Users/runner/.cache/codex-ci/b
+2026-11-12T20:31:51.7222610Z   BAZEL_REPOSITORY_CACHE: /Users/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T20:31:51.7223830Z   BAZEL_REPO_CONTENTS_CACHE: /Users/runner/.cache/codex-ci/bazel-repo-contents-cache-43297579660-test
+2026-11-12T20:31:51.7226950Z   CARGO_TARGET_DIR: /Users/runner/.cache/codex-ci/cargo-target
+2026-11-12T20:31:51.7227760Z   TEMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:31:51.7228330Z   TMP: /Users/runner/.cache/codex-ci/tmp
+2026-11-12T20:31:51.7229170Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:31:51.7235850Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:31:51.7236740Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /Users/runner/work/_temp/bazel-execution-logs
+2026-11-12T20:31:51.7237600Z ##[endgroup]
+2026-11-12T20:31:53.0427370Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=2463]
+2026-11-12T20:31:53.0870340Z Post job cleanup.
+2026-11-12T20:31:53.0880830Z ##[start-action display=Set up Bazel;id=__a3e4403a-4272-472e-8f0d-704df8838bfb.__bazel-contrib_setup-bazel]
+2026-11-12T20:31:53.1017860Z Post job cleanup.
+2026-11-12T20:31:53.5086700Z ##[end-action id=__a3e4403a-4272-472e-8f0d-704df8838bfb.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=420]
+2026-11-12T20:31:53.5411200Z Post job cleanup.
+2026-11-12T20:31:53.7534950Z [command]/usr/local/bin/git version
+2026-11-12T20:31:53.7656820Z git version 2.55.0
+2026-11-12T20:31:53.7717500Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/e55fb4a0-472a-4d5c-a12f-301936206666/.gitconfig'
+2026-11-12T20:31:53.7751640Z Temporarily overriding HOME='/Users/runner/work/_temp/e55fb4a0-472a-4d5c-a12f-301936206666' before making global git config changes
+2026-11-12T20:31:53.7753320Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T20:31:53.7758440Z [command]/usr/local/bin/git config --global --add safe.directory /Users/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T20:31:53.7914210Z Removing SSH command configuration
+2026-11-12T20:31:53.7925850Z [command]/usr/local/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T20:31:53.8046420Z [command]/usr/local/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T20:31:53.9934110Z Removing HTTP extra header
+2026-11-12T20:31:53.9940660Z [command]/usr/local/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T20:31:54.0055640Z [command]/usr/local/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T20:31:54.1693270Z Removing includeIf entries pointing to credentials config files
+2026-11-12T20:31:54.1705300Z [command]/usr/local/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T20:31:54.1851200Z [command]/usr/local/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T20:31:54.3799830Z Cleaning up orphan processes
+2026-11-12T20:31:54.7323900Z Terminate orphan process: pid (3630) (java)

@@ -1,0 +1,1028 @@
+{
+  "schema": "hepta.evaluated-current.canonical-a96-integration-review.v1",
+  "ancestor": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+  "ours": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "upstream": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+  "suggested_commit_parents": [
+    "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+  ],
+  "upstream_tree": "f96bebefbc1e7d8187efadb62f88d524cdd18451",
+  "candidate_code_tree": "9281fae831d016aec213e95341bf0788ae1ffd0b",
+  "git_ref_mutated": false,
+  "candidate_executed": {
+    "source_suite": false,
+    "observer_parser": false,
+    "caller_selftest": false,
+    "full_caller_verify": false,
+    "rustfmt": false,
+    "native_compile": false,
+    "native_tests": false
+  },
+  "postimages": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "post_blob": "c723279063258b677a5feecebf788d782205c1a8",
+      "bytes": 16270,
+      "sha256": "421ffcda54e1e23547c636464f71b0ba1d651f582465941ce90e7b629bdf9b39",
+      "upstream_blob": "ab97ea7713fe060932345c5f8a30810ff92df7e0",
+      "ours_blob": "b207f9bf99365f63f65326c80be43b7219d119a1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "post_blob": "7659699dbf3517e232bdab92449d4c86846fbece",
+      "bytes": 9926,
+      "sha256": "b9f6c508db0fd9be679132b6311091a49e238701306f4d660e83015d7897ccd2",
+      "upstream_blob": "4615bd9040ea5522dbbda5ac3a9da698a63f87cd",
+      "ours_blob": "8e011f1d7e4c9b0f58e797bf4520acaf7987af3f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs",
+      "post_blob": "630863456336eb5e90ef4e1f62d4abbf20086f59",
+      "bytes": 8307,
+      "sha256": "3a85ebdef45f5de3b408f2fcdcfd3715047fd6f828b71a67690a6f343a433712",
+      "upstream_blob": "b4ad6a28ee6f7bf839bc8d029440e4c1b86be33a",
+      "ours_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_read_tests.rs",
+      "post_blob": "431f3743032b047ab738e649e43e4db94a9dfd24",
+      "bytes": 4356,
+      "sha256": "b3702d9ebe86a1a093a0152032b3d41485cb7ecba9615cbaeb2ee7d4bd19de86",
+      "upstream_blob": null,
+      "ours_blob": "2c9d23e02cb8bc0069c1411e846960e416a9dce3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_current_positive_tests.rs",
+      "post_blob": "be937fcf611a99aa20c7368ef32479bdb304144d",
+      "bytes": 5174,
+      "sha256": "992e0e3bdfb02f4b059820c7fe961d9f8c998e305e85f48f851b8e37c339567e",
+      "upstream_blob": null,
+      "ours_blob": "b500835023c268bf7253049bc2264e93d5117b75"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context_tests.rs",
+      "post_blob": "b696b8b740c09705e37872c6a723d8fd3d5779b3",
+      "bytes": 5383,
+      "sha256": "54aa67e450b3af3ed1169795041e3b322d2a2c964bc046b0d879e39bdd90fbda",
+      "upstream_blob": "31839e7d688471e97945493bf77f08c0b1fc3ce8",
+      "ours_blob": "f8235bff86212e46d82a354e01fb9efaadbd04c5"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "post_blob": "c18327a1b6ed3a437bdbbee8e6c110f8212d535b",
+      "bytes": 21961,
+      "sha256": "029934c429a79f095fbe620ff2c7bf07e45cf76459ffac7f575a1ee6f3ce1a18",
+      "upstream_blob": "000b30f33d64ded1d803484679d0df3ccfbc06c3",
+      "ours_blob": "f01bc644bea8a29e6c72e19f39855d11a214eef9"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+      "post_blob": "e6bb60716905a5eca08f54dd8d90d8f6086ad3d2",
+      "bytes": 17403,
+      "sha256": "8bccc0d63999c2b0ebbad62ceaf33e97201a0e6f4b6c3a547dc828f05053724e",
+      "upstream_blob": "6cc790be198095cf1c9891d6fc4a4ce063b56b7c",
+      "ours_blob": "133424ed5a03d6f695f771e514065b2448a21024"
+    }
+  ],
+  "preserved_fixes": [
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "base_blob": "49a99d7093dbabe467b2dc5053a597f4df320078",
+      "post_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+      "bytes": 29352,
+      "sha256": "714c24854884dadce4ab731a9d3cf455bcb9efb04981e2ed32499e1d183a0e4b",
+      "old_count": 3,
+      "new_count": 8,
+      "original_outside_tuple_unchanged": true,
+      "actual_unique_methods": [
+        "original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+        "original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+        "original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows",
+        "original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows",
+        "original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes",
+        "original_evaluation_provider_refuses_renewed_original_signatures",
+        "original_evaluation_provider_expired_training_signature_permanently_fences_readback",
+        "original_evaluation_provider_zero_support_consumes_holdout_once"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "original_blob": "d4d777123a8010b0d8295b7b92f0a66194303ab2",
+      "original_bytes": 8303,
+      "original_sha256": "298bd0608a42faf70392ca2a5534d881a59ad2c142b9dfbfdc64cf83bdc6c00c",
+      "post_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+      "post_bytes": 8338,
+      "post_sha256": "4c97d448da9ff38b5d5d9f12aded6955d8e0328beec68d33afaff16747150022",
+      "only_change": "Explicit pretty_assertions::assert_eq import and separating blank line",
+      "no_assertions_or_behavior_changed": true,
+      "actual_failure_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+      "actual_failure_job": 131167901028,
+      "postimage_compile_tested": false,
+      "parent_compile_reproduced": false
+    }
+  ],
+  "canonical_manifest": {
+    "callers_blob": "222d9867d37bf8883e0a86f224f3d9a79f6e372a",
+    "callers_sha256": "07bb70760a33aa9c65488938a93e00ba891a89ac086463e5a28e55b7a68eebdf",
+    "allowlist_blob": "fb736ed76a3cd13450ad41831eeda6056fb1da14",
+    "boundary_count": 541,
+    "protected_file_count": 389,
+    "changes": "Only 12 old product_callers rows preserve 22 actual edges from ours; canonical a96 boundaries, inventory, protected rules remain. Separate timing review."
+  },
+  "restored_canonical_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "ours_blob": "9b1febb259a50cb02d144af610da65ebf2a700bc",
+      "upstream_blob": "3dbd154ed4558c310625f57138c41aedaa182cc7",
+      "reason": "Obsolete private ReadContext/original_read_proof integration is replaced by actual a96 opaque ReadProfile APIs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "ours_blob": "ba5bb57fb48ec0983050436b48e1b69874c50deb",
+      "upstream_blob": "ffd7af2ce29ea5fe489c45a61a21b13ab45a61ac",
+      "reason": "Obsolete private ReadContext/original_read_proof integration is replaced by actual a96 opaque ReadProfile APIs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "ours_blob": "4f54135d674c79a95bb9ce420ce6cdb6bcf66ea8",
+      "upstream_blob": "5f13b084585c882cf016dc1d7e8e3afaa4b89d89",
+      "reason": "Obsolete private ReadContext/original_read_proof integration is replaced by actual a96 opaque ReadProfile APIs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "ours_blob": "a038c6f253ea25a0e6adc8fdb0242f9cea2c6421",
+      "upstream_blob": "facfbd75b7a94c7d40f1ddea9d1cfd207f2357cc",
+      "reason": "Obsolete private ReadContext/original_read_proof integration is replaced by actual a96 opaque ReadProfile APIs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_support_tests.rs",
+      "ours_blob": "e12e83e3e98fb798da5182367a0f13fcb993077e",
+      "upstream_blob": "96c2e18be1761e4c81da04bf5081a1bd57313305",
+      "reason": "Obsolete private ReadContext/original_read_proof integration is replaced by actual a96 opaque ReadProfile APIs."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "ours_blob": "b5a3ab5372bc80a9d75d756b0d7cf802e0c2324c",
+      "upstream_blob": "f4c8b85909503ca1ca19c1b8345b6e753499d7a6",
+      "reason": "Obsolete private ReadContext/original_read_proof integration is replaced by actual a96 opaque ReadProfile APIs."
+    }
+  ],
+  "retained_ours_qualification_paths": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/DIAGNOSTIC.original.json",
+      "sha": "675aa78e24d8976594277b9702362cd9304ee7c6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/PARTIAL_EVALUATOR_THREE.original.json",
+      "sha": "6a31405533f930a645f42db8556a4d520b2fe5fd"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/PARTIAL_FIRST_NINE.original.json",
+      "sha": "b6da05ded4e7e0f5f918cfee2eebe66ebb01e28b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/QA_EXPECTED_CHANGE_MANIFEST.json",
+      "sha": "6ba684022b27dd225a01cd8941e1a8206b0418d3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/REVIEW.md",
+      "sha": "468ea93d809e1144e74b1b6b57430cc069532cfc"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/ROOT_REVIEW.json",
+      "sha": "5ef2059b1ed64d9fe5e8b145e20f5ab1f9e4feb7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-closure-639f894/source-contract-620.original.log",
+      "sha": "15331b3b4446b0b312aa01d0e8378e05516ded7c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_094958b.patch",
+      "sha": "78bc416f407685b4c3f7837055f246bd0dabd35a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/CALLERS_MANIFEST.json",
+      "sha": "ee97a90a3d578cb35fdfa002d97b43d93750adf7"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/REVIEW.json",
+      "sha": "513faf278cd46bee7ffbaa36598ea9c3cf021a15"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-094958b/RUST_QA_MANIFEST.json",
+      "sha": "3e331137fe79ee69bd6fa8c9275127dad1c48343"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/CALLERS.patch",
+      "sha": "f4d9f4265473564e98471c01b8e0b4efaef4a403"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/CALLERS_MANIFEST.json",
+      "sha": "59beb037035ec65306d9d4cebc0aba195b867226"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/MERGE_REVIEW.json",
+      "sha": "4b082366c3448328cb38f3d8e39a487becfa6e3e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/QA_SEMANTIC_FIX.patch",
+      "sha": "b9b18bd5a1938f14fb8b3408cc07eb9c523ad6f5"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/README.md",
+      "sha": "ef7098f483f89ef7bd9e21c8682f1c13c0f6249d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-b29869e/ROOT_REVIEW.json",
+      "sha": "e263b507dff75ad92f0b632e591b550946475fa1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ARCHIVE_PATH_MAPPING.json",
+      "sha": "610e12362f2b80a5ce84155e5d59432415561532"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/REVIEW.md",
+      "sha": "86cc5b8798c25b5f3fd50be0df6520bcb05c2a91"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_FAILURE_ARTIFACT_VERIFICATION.json",
+      "sha": "df2bd5ed5037c329e19dbe721161471c1d796987"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/merge-cc22a69/ROOT_MERGE_REVIEW.json",
+      "sha": "232acd56250f3ad31d589f15f7e78ee151d4bb59"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/RESULT.json",
+      "sha": "3d58b69cde15b68323338308a35bb12b6deb6c60"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-process-status.json",
+      "sha": "2e005918c5e5e17bc27798788b4e69e28ee6814d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stderr.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/h-stdout.log",
+      "sha": "8b592dcc2387e6de10b66d249bf9fe8749646cb1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/request.json",
+      "sha": "c5ff4ab3636fdfeb1ffa269b200afd823656965a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/native-prerequisite-0e4617b/runner-source.py.txt",
+      "sha": "6edce2921a94f368a693f0b59be35986d0a6c9c1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/MANIFEST.json",
+      "sha": "5b012219aa8500cd51938d5d2ca4913acd02a372"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/QA_CALLER_TUPLE_PATCH.json",
+      "sha": "2ddf878ad9847b0caa503219422ecf2af09e5051"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/RESULT.json",
+      "sha": "70e4ef5969d6976ef25d9ea9c6891064338376af"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/checkout.log",
+      "sha": "8cd3238636feaa959d451a39c02a55c6aaedef7f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/clone.log",
+      "sha": "428c747c1ea7dce76557f490f16cc02724a37f89"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/fetch.log",
+      "sha": "c2a242ce5f0759c8c6665c919de832c2688fadb9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-process-status.json",
+      "sha": "d8ab60d2ab4ee7f69a8654899c5e08bfaa04f153"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stderr.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/h-stdout.log",
+      "sha": "cbe1c239856b619e32391efeedcd271e795c43e6"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json",
+      "sha": "fdf49c589f04e150918907cccdea83ea04a72c5e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.json.17980b1ecead46888a444bdefe7461de.log",
+      "sha": "0fccacdbd2607ee95827fde5a265c7b14ad75a99"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/owner-evidence-parser.runner.log",
+      "sha": "f690904e880369d2723f7768eccea3e4c18cc960"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/request.json",
+      "sha": "0657236a7b85596dbe98c6053c4fa1bd1d4e5ea1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/runner-source.py.txt",
+      "sha": "03ccc0db8e8876380195b632ca6fb2f089932981"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-after.json",
+      "sha": "84233191d6a9a4399f29c7363b7ac40ba749ef8f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-before.json",
+      "sha": "84233191d6a9a4399f29c7363b7ac40ba749ef8f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json",
+      "sha": "2c55c638584e35d30bf717e668b6bb76ee0b52e9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-0e4617b/source-closure.json.56308c689d864f00bdf925b09746249b.log",
+      "sha": "eb56c3f7fa7d9d51cf6b757c3d9ff3d59bf3a228"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/failure-and-fix.json",
+      "sha": "8d2257609d5db03e27e103d6b4a15ea06e2faf01"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-closure-7efec4f/source-closure.log",
+      "sha": "1af98380c333490ff1f619844fbd74c0ae523893"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.json",
+      "sha": "e6a5fe8ae695a79a8ec1a0d465bae14bdf2eab8d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/windows-compiler-failure-60606b-job131050705734.log",
+      "sha": "418e9f80472bf27a9fbc0ccb80e29b7d70c8327c"
+    }
+  ],
+  "retained_upstream_qualification_paths": [
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/ARTIFACTS.json",
+      "sha": "a7212c137c86b92e9c10b6cb477bb41d90d99697"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/FAILURE_RESPONSE_MAP.json",
+      "sha": "7548c95803959f04ff7292f3417aba241e5e8bad"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/PACKAGE_MAP.json",
+      "sha": "be5e4c6399f5d19a27906239e11cfd5415cd4fbc"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/PACKAGING_NOTE.md",
+      "sha": "ea779ba121475b4267e965b92294c7b0ff30c30c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/PREVIOUS_PACKAGES.json",
+      "sha": "dc256248d0487c0fcca58914641d12cdc31cd611"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/PROGRESS.json",
+      "sha": "8475235bf9741fe8e93af350606e8b5533d983fc"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/README.md",
+      "sha": "58ecf8a2d2f077f3034ff8cf6c21237921eb9c44"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/UNPACKAGED_REFERENCES.json",
+      "sha": "35ac04b562ea0111d32d17ff92aafdc67e40558c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/VERIFICATION.json",
+      "sha": "9a7a4aa5dd5794eeec94fe7ae7be16ec46ed9c99"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-provider-native-failures-521-v1/MANIFEST.json",
+      "sha": "bc2b319a2fe01b862cfda63259b455cfce4f221c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-provider-native-failures-521-v1/provider-fixture-and-expiry.patch",
+      "sha": "bbda2e0e98e6e395ac13771b4d4a59dc4093b2e2"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-provider-native-failures-521-v2/MANIFEST.json",
+      "sha": "f77c6e998a87456dd4211adbbb677df1a69f6a4f"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-provider-native-failures-521-v2/REPORT.md",
+      "sha": "32b109f3d3975fd6ad6e34efd93dd8ef0f36e3ca"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-provider-native-failures-521-v2/provider-fixture-and-expiry-v2.patch",
+      "sha": "0a2180ae43720f9ea33acf34f2791f8bcb793546"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/LOCAL_QA_RESULT.json",
+      "sha": "584e5ba3241d66c7f44c0e780592ec07580ff38d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/MANIFEST.json",
+      "sha": "171496ba66be2bc46713bc9ecefe43a5c472f245"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/REPORT.md",
+      "sha": "b076bc6540f6b5c4520e70429709618999ead3f0"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/desktop-full-index-bootstrap.py",
+      "sha": "291c8d4b6f668ba8dbf69e2345424f5c9be7f29a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/desktop-full-index-boundary-request.json",
+      "sha": "5068f5146c9fe09d9bceb7dd4d5307e558db1e8b"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/VERIFIED_MANIFEST.json",
+      "sha": "df245b89bba9c16293e766554e3f86b64d76ea0a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/after-pass.json",
+      "sha": "1fb8897aed6d0fda3dca73d25dc4570622e6d04c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/before-failure.json",
+      "sha": "40923f8abaac136a7d01b365877bf91bb581d574"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/manifest-delta.json",
+      "sha": "dc792a37ab0b5dd7946ed1e6422eec525df9fa47"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/metadata-after.json",
+      "sha": "48af5ee8c937a5a0bb238ed5c77d2450976f1055"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/metadata-before.json",
+      "sha": "48af5ee8c937a5a0bb238ed5c77d2450976f1055"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/original-sdk-payload.exact.json",
+      "sha": "7d291c9f95a3020a54ed074f82ee8fbd6c16b335"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/result.json",
+      "sha": "40f849ac3c7aebf35f34ca831864d9332effc192"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/sourcebound-check.json",
+      "sha": "9052740afa04a62578a6352e75ff26f811728328"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/sourcebound-check.log",
+      "sha": "093bd0f88f4342cbc66a4eb302810528f09f9680"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/terminal-pty-read.json",
+      "sha": "bfd6b846228c73aaf16fe64f7ebb9082c966e604"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/execution-readback/unregistered-callers-rejected.json",
+      "sha": "73154f777a2d81f5202cb257ba6487717cac179e"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/full-index-boundary-check.py",
+      "sha": "1e4b7e30c25fc2329288de6e48d8d27e3bc9c10b"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/candidate-sourcebound-caller-cc22-v1/source-bound-training-readback-caller.patch",
+      "sha": "709496adbfed27510ac0f29adbb5dd3880152d1c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/failed-cases-complete.json",
+      "sha": "37eaa7aa4fa210f792dea1028cd916197a74e61c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/failure-excerpts-readback.json",
+      "sha": "216abeffcbf71bbd6a95d3b7e837d9fad54f2d0e"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/failure-next-use.readback.json",
+      "sha": "198db92007fd30519457164b7b293e9b920010b2"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/failure-provider-timeout.readback.json",
+      "sha": "1ac78fa6831b647a3bc00d9fa5dd40466f4e4a16"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/focused-xml-chunk-0-readback.json",
+      "sha": "c3eedbb1512b92dc78a9e32807cd60d971312736"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/focused-xml-chunk-131072-readback.json",
+      "sha": "f46208f98beaecb9ec3f49fc353ae6e754f8bf2f"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/focused-xml-chunk-65536-readback.json",
+      "sha": "1824bdcaa63a9a7e4e03ddcce3a083c140a3d292"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/focused-xml-metadata-readback.json",
+      "sha": "af2841d1a2648c4b661995a10590a20ebe3d64f8"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/focused-xml-transfer-manifest.json",
+      "sha": "2eb7cf444fd38e7173ace41f07a4142c629aa499"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/focused.raw.log",
+      "sha": "a2b53c4be3cb55ae829a0c4ec6fe41f5fb0da6b6"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/helper-large-artifact-info.json",
+      "sha": "9d43a899154bcfa4ba22d49b20baa0a514c2e7ad"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/helper-originals-manifest.json",
+      "sha": "92c82c5abec14cf20a338a30f86d66d22acca90d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/helper-raw-originals-manifest.json",
+      "sha": "cf6f11d9bc7d4d61f11bd7188ef8967d4d3a272e"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/helper-raw-readback.json",
+      "sha": "dcfda4e1537d0aa842e3ece9c53b14d5abca8f4a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/helper-readback.json",
+      "sha": "f115a48baa839a371671c9a5c9c61cb85066de27"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/focused-launch.json",
+      "sha": "587fe188ff7dfff4dcd69c996ad89c8faec64e47"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/helper-build.json",
+      "sha": "f27ffcc7c3abf77f76ab42eff30fcb18b80d6a3e"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/helper-build.json.10677d443c99412b998496ff0e70c24f.log",
+      "sha": "82982ac4aad1179c98ede4c1ec84bb7c5d44beff"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/helper-verification-before.json",
+      "sha": "a9cfeda6c2178d16d37f08983965e20934814eea"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/helper-verification-before.json.2de2b98d72cc4b7fa3effa4b6ebd35e0.log",
+      "sha": "3e78caa6d8fc0225cbb4f15cde05b8ecd7a81de6"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "sha": "169644dddf563c288d3aa2460e55141b76ac2d24"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/helpers/env.json",
+      "sha": "365b31998505eae3b07645764aab31dd359738dd"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/helpers/manifest.json",
+      "sha": "815cd00369145ae7e8e28f54748a1d7feb7fc23a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/native-cc22a69972d0-focused-v1/driver-result.json",
+      "sha": "45390e34d393bb0cd05c526f35d4e6b64232a31f"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/native-cc22a69972d0-focused-v1/focused.json",
+      "sha": "39a2d47dc01f9e7dc94a31d5d1f3164335dc1a3d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/native-cc22a69972d0-focused-v1/focused.xml",
+      "sha": "eddd684969ea76e5579d5d1039cae3b0ac9e6199"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/native-cc22a69972d0-focused-v1/source-after.json",
+      "sha": "0252cd7ff38628ae65f0afe3d3c325bd4e66eec1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/native-cc22a69972d0-focused-v1/source-before.json",
+      "sha": "0252cd7ff38628ae65f0afe3d3c325bd4e66eec1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/native-launch-cc22a69972d0-focused-v1/nine-named-cases-coverage.json",
+      "sha": "a5da90bcf0ea07af7f7d5c7806a2e3cfad310ee4"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/originals/native-launch-cc22a69972d0-focused-v1/result.json",
+      "sha": "8d184d073473a62695f2b0cec5e566b15050b5a9"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/raw-prefix-p1.readback.json",
+      "sha": "abc4ffb50a73a313dd27c6c528acc3c8469bcf29"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/raw-prefix-p2.readback.json",
+      "sha": "392e97af866dfeb6c000012c939c48dc8a589ae5"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/raw-prefix-p3.readback.json",
+      "sha": "e902cef4f29af17d467f964661fa006e85d5ee74"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/rawlog-reconstruction.json",
+      "sha": "41e91f6da88bb9f2707ed43f070d2987ce0298d4"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-left-component-0.bin",
+      "sha": "729b0f8c2737fd484d290c69d99a4681381252f8"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-left-component-1.bin",
+      "sha": "4bce84fd14a7766139a8a0eea1532b78033f52a9"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-right-component-0.bin",
+      "sha": "a55050a560cfdb2eabe08a60c14e586b76b3fae9"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-assert-right-component-1.bin",
+      "sha": "1d71441ac3989d253ccaf560c6bcdcd10c66d81d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-byte-diff-a.readback.json",
+      "sha": "a1af9360e21791a7047af079e0b8a29ba8f1f6bc"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-byte-diff-b.readback.json",
+      "sha": "33633ecdcfba84dd6a74a035326f3aa546319705"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/selector-expiry-byte-diff-summary.json",
+      "sha": "0f2e99f3d0b478a36e0bb650cad58360ed192bde"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/stack-overflow-24-cases.json",
+      "sha": "ff25f6f65673d428259051f052ecd0a1bd040afa"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/terminal-originals-manifest.json",
+      "sha": "c47e582c78ecef6b44a3f034b628d312afacf1d7"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/terminal-pty-receipt.json",
+      "sha": "28f91f5d7cf06030ea14ff5888d71cedc606d8d7"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-focused-review/terminal-small-readback.json",
+      "sha": "fac05caa559453eb4138fbf0bed21d94287126fe"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/REPORT.json",
+      "sha": "3204f79f698cfdd8249455089e008ff8df00c487"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/gdb-h-view-readback.json",
+      "sha": "2d28eb7bf056d31578ebad3cddc590b7b7823bd0"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/gdb.raw.log",
+      "sha": "8b83cea203091406de6a1224d4bdedf718d5d4ed"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals-manifest.json",
+      "sha": "cdf0a44efb2b192dd27f0f5a4d5de663da9b910c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/debug-admission.json",
+      "sha": "72e5105c6c9826505d1789cd686765a3695a5aac"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/environment.json",
+      "sha": "e9b25f6b28cf8f8590c1318fce7bb14444b8c0d7"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/gdb-events.json",
+      "sha": "97a6b7d2c7cc94fbc6996582a1776d98ab51b22d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/invocation.json",
+      "sha": "cf0be4cac84385f3d3f0c44b81845ece652507b0"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/result.json",
+      "sha": "c0d8843c89862c964350c2b3afb5c6660908a919"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/runner-invocation.json",
+      "sha": "a75d8f97d8217ec55388a0f4a8c42a019df58300"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/single-case.json",
+      "sha": "67d28a329e912c19fd1b9b53c5e666aadf8e3079"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/source-after.json",
+      "sha": "0252cd7ff38628ae65f0afe3d3c325bd4e66eec1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/originals/source-before.json",
+      "sha": "0252cd7ff38628ae65f0afe3d3c325bd4e66eec1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/single-case-h-view-readback.json",
+      "sha": "8b5c5e0c549c6730a3bf537ac99dd3e073674a42"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/single-case.raw.log",
+      "sha": "e75679ae3d05fbfe3e4e1519bb3e29602f517f19"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/terminal-pty-receipt.json",
+      "sha": "5a24d3266eef95f93c78cae96387971b4fc4922c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-cc22-stack-diagnostic-v1/terminal-readback.json",
+      "sha": "bd1367e373f0670bed04715867b5c690adff0928"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/EXPIRY_PATCH_MANIFEST.json",
+      "sha": "ef305ed282720cc29efa6089aedf4454c02a2c7a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/INSPECTED_SOURCE_MANIFEST.json",
+      "sha": "ed363ec04dfb49aff7d16c85e16bfe13b20a9bba"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/RETEST_CASES.json",
+      "sha": "684d94e36e942aa50490f7a94728073d301d9b54"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/REVIEW.json",
+      "sha": "b84eda601cec17c1b75dde97b8ab2233103e7308"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/SOURCE_MANIFEST.json",
+      "sha": "aaa72cef29848cd51ff6dc6d93d645408bad7d0c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/WITHDRAWAL_DIAGNOSTIC_MANIFEST.json",
+      "sha": "dbc4a2a2f3b41f543b5fd401157a66a16ae4fc73"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/expiry-window-tests.patch",
+      "sha": "71832610dec19e6ea608edbe6ad010262d80e4de"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-command-failures-cc22-v1/withdrawal-diagnostic-after-expiry.patch",
+      "sha": "e8b2895ead3943f8518c832da9842cf8b461e77a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/before-format-manifest.json",
+      "sha": "5f858e7f9c8c81fc72dd335f87e420eac723735d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/deep-stage-markers-formatted.patch",
+      "sha": "349691497587b2167b03328499888a768ea2b8f6"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/deep-stage-markers-prefmt.patch",
+      "sha": "349691497587b2167b03328499888a768ea2b8f6"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/format-method-provenance.json",
+      "sha": "cd8659871ed3ce83567d75121ecffb825d69c79d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/format-only.patch",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/input-manifest.json",
+      "sha": "a38646e4210448a346aa6dfdf75d99a77913add2"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/manifest.json",
+      "sha": "1daf06ed8debc65a71f66e77a82abb0491c85bfc"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/rustfmt-launch.json",
+      "sha": "af65c87f0fe7cccc070cccb3b36487f49896f54c"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/rustfmt.raw.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/terminal-pty-receipt.json",
+      "sha": "fb90a37475fa1319298dd1b0fcb0753861be22e0"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/toolchain-steps.json",
+      "sha": "a760c2ca7af44b29a29a85ca4e2de15fdbe17651"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-deep-stage-markers-521-v1/actual-format/verified-transfer-manifest.json",
+      "sha": "59a6099dfaaec5f42ff49985f4fc0975822ca049"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/BASE_IDENTITIES.json",
+      "sha": "915a4255b769962a454c7baf5563e87e8b2241b9"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/INTEGRATION_CHECKS.json",
+      "sha": "245b13026f13bb11e60116441d3fc6a69f9962ad"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/MANIFEST.json",
+      "sha": "a882fa7bc4fc783836112bef2ee4772ab98848e7"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/REPORT.md",
+      "sha": "57cd05473200cede3540819ff00945eb0760eb7b"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/SHA256SUMS",
+      "sha": "7c162e7b8c9f1fef76af481c0a57495653bf05e5"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/checks/combined-patch-roundtrip.json",
+      "sha": "05c876afc347144f6444de036ece04a928bd1b3d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/checks/patch-application.json",
+      "sha": "0aad43a1ab303221f701291cb4ed5493dcb10d07"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/checks/provider-three-way.json",
+      "sha": "37d0e7b18477815b6b56d6c6aa75062bd2a8f85e"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/checks/provider-three-way.stderr",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/checks/source-name-audit/FETCHED_IDENTITIES.json",
+      "sha": "65bcf1a781460a34e9c3df068697401d31230c65"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/checks/source-name-audit/RESULT.json",
+      "sha": "49ebac07ca00a92264eb5c6b2a210917fcdd2e39"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-integration-v1/native-failures-integration-v1.patch",
+      "sha": "8e11f9a645e64db0cd7cdc2e8f3ee626457f99d1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/BASE_639_INDEX.json",
+      "sha": "7dd0a22efc94a0743adb4ae8c9dcacf35c6b99b0"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/COMMIT_PLAN.json",
+      "sha": "e5130ea6b37a5facce3da5d5a3b0644336b49525"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/READBACK_INDEX.json",
+      "sha": "899a38efb8fbe7fa991f9b781c92bad09ba26fb1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/VERIFIED_MANIFEST.json",
+      "sha": "1803177b7435af97f768c40676bd59355f9860d2"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/before-format-manifest.json",
+      "sha": "c0429e0908317020c48d85a33f28b08cd8f6ffa1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/branch-base-639.commit.tool-result.json",
+      "sha": "fd517f3ac01b8c813ae09b69fa950545f0a96805"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/combined-native-failure-fixes.patch",
+      "sha": "eb0c63fe9f800cb0102ed4cf25f94d706c28f709"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/format-only.patch",
+      "sha": "d5b41d3e328bb45a3c6a10d990d0e9090b2e4a42"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/manifest.json",
+      "sha": "0b4fd47c416b6510fed8e18362d7d60a568032d3"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/pty-output.raw.log",
+      "sha": "250098d60056b0e5d69a93a49b11f206aedc6d94"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/pty-terminal.decoded.json",
+      "sha": "e73469a4fb3a676931dd2b25f95cef90d9d9a7f1"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/pty-terminal.tool-result.json",
+      "sha": "18e6871435b32fd0c7c2ff42807485534e974f14"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/rustfmt-launch.json",
+      "sha": "4ab78adf988bdcfc23bca3a585d48fe6bb1ace75"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/rustfmt.raw.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-failures-sixfile-formatted-v1/toolchain-steps.json",
+      "sha": "a760c2ca7af44b29a29a85ca4e2de15fdbe17651"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v1/MANIFEST.json",
+      "sha": "6746265d4e02ae7c70169673bd21e6f906f8e327"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v1/REVIEW.json",
+      "sha": "5e551e9ac56efceded8a7762131c50cf9da7bd0a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v1/SOURCE_MANIFEST.json",
+      "sha": "2b5bd2e27ae5df17312189a94004b4a51c21794d"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v1/shared-panel-future-cuts.patch",
+      "sha": "4c7fda31121a0c0a6581e8c39d5e1688ee439f41"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v2/STATIC_REQUEST_REVIEW.json",
+      "sha": "c3e145e87956476499dc5b2781070d40bf0a61ac"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v2/h-static-prologue-request.json",
+      "sha": "59b8232cc3a8388b8fb437ed5c06a3f5313b7569"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v2/panel_frame_static_driver.py",
+      "sha": "201f04317de33ec0f480774ac2fc8d25b2e3800e"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v2/static-failure/MANIFEST.json",
+      "sha": "36827cd432a0c118d4fc4cd20c3a751521a6c298"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v2/static-failure/original-sdk-payload.exact.json",
+      "sha": "efae0ca7f82d9de2e5d1a1d8ee4275b576bf4e78"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v2/static-failure/readback-tool-page.json",
+      "sha": "4a96d0b81fa2962d6e45b495d21bb4c0c1e89a5a"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-stack-fixtures-521-v2/static-failure/result.json",
+      "sha": "496e1183281e565035ba89d16a1f7c947339dc73"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-timeout-split-v1/manifest.json",
+      "sha": "8cd010249124707dd75942cb2f77676bc225f868"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/native-timeout-split-v1/provider-timeout-only.patch",
+      "sha": "21fb7bac9aad1bf2b3216fbe841370298311d499"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/recovery-audit/desktop-native-cc22-gdb-diagnostic-v1-request.json",
+      "sha": "6753db52656c6918f0d80172c8e42ebe8567c517"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/recovery-audit/native_cc22_gdb_diagnostic_v1.py",
+      "sha": "5070506e58e3444c0a290873f3f14e6ee40fbac4"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/root-native-sevenfile-review/PUBLISHED.json",
+      "sha": "61cc59e6b899270dfa7d19109849c1950c143744"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/root-native-sevenfile-review/SIX_FILE_REVIEW.json",
+      "sha": "ac6db091949c00a5b884e34b42d6a8744f6c595b"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/root-native-sevenfile-review/STATIC_DIAGNOSTIC_TERMINAL.json",
+      "sha": "ba9fbf3ab4e605ed93748ae57a9f35ceebe21637"
+    },
+    {
+      "path": "qualification/learn-native-failures-037c-cc22/verify_package.py",
+      "sha": "8a92b49386e26cde1de866f2cf11c8c18f36e61d"
+    }
+  ],
+  "static_checks": {
+    "unique_function_marker_checks": 28,
+    "markers_in_actual_function": true,
+    "proof_gate_executed": false,
+    "independent_review": "replay agent read four principal postimages; no static API/privacy/refusal blocker. This is not compilation or execution."
+  },
+  "warnings": [
+    "Historical 1026 source398/parser16/caller PASS does not transfer to candidate.",
+    "Historical 1026 Linux ordinary compilation failed E0659 before any Rust test; new import is unexecuted.",
+    "Historical 1026 Windows selected36 passed only that Windows scope.",
+    "CURRENT positive uses existing same-process fixture transport and test issuers, not cross-UID/Root restart/ordinary C execution or scientific gain.",
+    "Retention T/E peers are original connections read at publication boundaries and once at finish; CURRENT reads do not issue extra T/E IO."
+  ]
+}

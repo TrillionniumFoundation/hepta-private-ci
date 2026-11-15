@@ -1,0 +1,2281 @@
+fo = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T21:34:12.2717467Z     |                        ^^^^^^^^^^
+2026-11-12T21:34:12.2717683Z 
+2026-11-12T21:34:12.2718021Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2719232Z   --> app-server/tests\suite\v2\mcp_server_elicitation.rs:67:18
+2026-11-12T21:34:12.2719710Z    |
+2026-11-12T21:34:12.2719976Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T21:34:12.2720543Z    |                  ^^^^^^^^^^
+2026-11-12T21:34:12.2720997Z 
+2026-11-12T21:34:12.2721363Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2722071Z    --> app-server/tests\suite\v2\mcp_server_elicitation.rs:989:27
+2026-11-12T21:34:12.2722554Z     |
+2026-11-12T21:34:12.2722853Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:12.2723245Z     |                           ^^^^^^^^^^
+2026-11-12T21:34:12.2723494Z 
+2026-11-12T21:34:12.2723851Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2724597Z    --> app-server/tests\suite\v2\mcp_server_elicitation.rs:990:9
+2026-11-12T21:34:12.2725051Z     |
+2026-11-12T21:34:12.2725481Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:34:12.2726025Z     |         ^^^^^^^^^^
+2026-11-12T21:34:12.2726215Z 
+2026-11-12T21:34:12.2726576Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2727307Z   --> app-server/tests\suite\v2\mcp_server_status.rs:45:18
+2026-11-12T21:34:12.2727753Z    |
+2026-11-12T21:34:12.2728023Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T21:34:12.2728378Z    |                  ^^^^^^^^^^
+2026-11-12T21:34:12.2728605Z 
+2026-11-12T21:34:12.2728971Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2729686Z    --> app-server/tests\suite\v2\mcp_server_status.rs:823:27
+2026-11-12T21:34:12.2730097Z     |
+2026-11-12T21:34:12.2730384Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:12.2731034Z     |                           ^^^^^^^^^^
+2026-11-12T21:34:12.2731293Z 
+2026-11-12T21:34:12.2731650Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2732364Z    --> app-server/tests\suite\v2\mcp_server_status.rs:824:9
+2026-11-12T21:34:12.2732801Z     |
+2026-11-12T21:34:12.2733353Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T21:34:12.2733995Z     |         ^^^^^^^^^^
+2026-11-12T21:34:12.2734189Z 
+2026-11-12T21:34:12.2734536Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2735240Z    --> app-server/tests\suite\v2\mcp_server_status.rs:857:27
+2026-11-12T21:34:12.2735675Z     |
+2026-11-12T21:34:12.2735952Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:12.2736298Z     |                           ^^^^^^^^^^
+2026-11-12T21:34:12.2736524Z 
+2026-11-12T21:34:12.2736843Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2737511Z    --> app-server/tests\suite\v2\mcp_server_status.rs:858:9
+2026-11-12T21:34:12.2737924Z     |
+2026-11-12T21:34:12.2738168Z 858 |         ServerInfo::new(
+2026-11-12T21:34:12.2738463Z     |         ^^^^^^^^^^
+2026-11-12T21:34:12.2738659Z 
+2026-11-12T21:34:12.2739004Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2739656Z   --> app-server/tests\suite\v2\mcp_tool.rs:69:18
+2026-11-12T21:34:12.2740056Z    |
+2026-11-12T21:34:12.2740306Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T21:34:12.2740630Z    |                  ^^^^^^^^^^
+2026-11-12T21:34:12.2741123Z 
+2026-11-12T21:34:12.2741480Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2742160Z     --> app-server/tests\suite\v2\mcp_tool.rs:1265:27
+2026-11-12T21:34:12.2742564Z      |
+2026-11-12T21:34:12.2742854Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:12.2743247Z      |                           ^^^^^^^^^^
+2026-11-12T21:34:12.2743494Z 
+2026-11-12T21:34:12.2744168Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.2744878Z     --> app-server/tests\suite\v2\mcp_tool.rs:1266:9
+2026-11-12T21:34:12.2745436Z      |
+2026-11-12T21:34:12.2745893Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:34:12.2746459Z      |         ^^^^^^^^^^
+2026-11-12T21:34:12.2746645Z 
+2026-11-12T21:34:12.2747665Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.3112796Z   --> app-server/tests\suite\v2\plugin_install.rs:46:18
+2026-11-12T21:34:12.3407391Z    |
+2026-11-12T21:34:12.3778803Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:34:12.4044432Z    |                  ^^^^^^^^^^
+2026-11-12T21:34:12.4362220Z 
+2026-11-12T21:34:12.4682421Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.5002291Z     --> app-server/tests\suite\v2\plugin_install.rs:2330:27
+2026-11-12T21:34:12.5233696Z      |
+2026-11-12T21:34:12.5661300Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:12.6427800Z      |                           ^^^^^^^^^^
+2026-11-12T21:34:12.6816231Z 
+2026-11-12T21:34:12.7146348Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:12.7536536Z     --> app-server/tests\suite\v2\plugin_install.rs:2331:9
+2026-11-12T21:34:12.8076064Z      |
+2026-11-12T21:34:12.8456367Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:34:12.8933871Z      |         ^^^^^^^^^^
+2026-11-12T21:34:12.9564842Z 
+2026-11-12T21:34:13.0165836Z warning: 23 warnings emitted
+2026-11-12T21:34:13.0983177Z 
+2026-11-12T21:34:13.2007489Z [6,510 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 27s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:13.4515328Z [6,516 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 28s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:14.7165583Z [6,516 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 29s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:16.0330536Z [6,516 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 30s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:16.8228573Z [6,516 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 31s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:17.8338688Z [6,516 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 32s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:18.9737810Z [6,529 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 33s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:21.9083987Z [6,529 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 36s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:34:22.0508957Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server (49 files):
+2026-11-12T21:34:22.1631743Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:22.2845073Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:34:22.3494268Z    |
+2026-11-12T21:34:22.4857791Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:34:22.6092520Z    |                  ^^^^^^^^^^
+2026-11-12T21:34:22.7078423Z    |
+2026-11-12T21:34:22.8465069Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:34:22.8467613Z 
+2026-11-12T21:34:22.8861641Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:23.0000535Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:34:23.0529196Z    |
+2026-11-12T21:34:23.1333997Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:23.1844087Z    |                           ^^^^^^^^^^
+2026-11-12T21:34:23.2374254Z 
+2026-11-12T21:34:23.2804225Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:23.3333203Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:34:23.3803655Z    |
+2026-11-12T21:34:23.4182348Z 82 |         ServerInfo::new(
+2026-11-12T21:34:23.4700254Z    |         ^^^^^^^^^^
+2026-11-12T21:34:23.5135335Z 
+2026-11-12T21:34:23.5579188Z warning: 3 warnings emitted
+2026-11-12T21:34:23.6113104Z 
+2026-11-12T21:34:23.6603640Z [6,533 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 37s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:24.2270033Z [6,533 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 38s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:25.2194465Z [6,536 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 39s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:26.4405704Z [6,536 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 41s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:34:27.3919701Z [6,540 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 42s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:34:28.4996633Z [6,540 / 6,915] Compiling Rust bin //codex-rs/network-proxy:network-proxy-unit-tests-bin (39 files); 43s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:34:29.5303038Z [6,543 / 6,915] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 11s remote-cache, local ... (28 actions, 4 running)
+2026-11-12T21:34:30.4357749Z [6,543 / 6,915] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 12s remote-cache, local ... (28 actions, 4 running)
+2026-11-12T21:34:31.5988252Z [6,543 / 6,915] Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files); 13s remote-cache, local ... (28 actions, 5 running)
+2026-11-12T21:34:32.2023852Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files):
+2026-11-12T21:34:32.2284108Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:32.2421852Z   --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:34:32.2683610Z    |
+2026-11-12T21:34:32.3013547Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:34:32.3334588Z    |                  ^^^^^^^^^^
+2026-11-12T21:34:32.3656604Z    |
+2026-11-12T21:34:32.3850826Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:34:32.4259485Z 
+2026-11-12T21:34:32.4573764Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:32.4947582Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:34:32.5408508Z     |
+2026-11-12T21:34:32.5878317Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:32.6293257Z     |                           ^^^^^^^^^^
+2026-11-12T21:34:32.6596264Z 
+2026-11-12T21:34:32.6940602Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:32.7908572Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:34:32.8709551Z     |
+2026-11-12T21:34:32.9644548Z 241 |         ServerInfo::new(
+2026-11-12T21:34:33.0313855Z     |         ^^^^^^^^^^
+2026-11-12T21:34:33.1138015Z 
+2026-11-12T21:34:33.1818291Z warning: 3 warnings emitted
+2026-11-12T21:34:33.2338794Z 
+2026-11-12T21:34:33.5228748Z [6,551 / 6,915] Clippy //codex-rs/tui:tui; 6s remote-cache, local ... (26 actions, 4 running)
+2026-11-12T21:34:34.6922555Z [6,551 / 6,915] Clippy //codex-rs/tui:tui; 7s remote-cache, local ... (26 actions, 4 running)
+2026-11-12T21:34:35.6806872Z [6,555 / 6,915] Clippy //codex-rs/tui:tui; 8s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:34:36.6322306Z [6,555 / 6,915] Clippy //codex-rs/tui:tui; 9s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:34:37.2497609Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files):
+2026-11-12T21:34:37.2501492Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:37.2626209Z   --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:34:37.2695584Z    |
+2026-11-12T21:34:37.2826887Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:34:37.2945464Z    |                  ^^^^^^^^^^
+2026-11-12T21:34:37.3015556Z    |
+2026-11-12T21:34:37.3145873Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:34:37.3268457Z 
+2026-11-12T21:34:37.3336310Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:37.3463763Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:34:37.3546532Z     |
+2026-11-12T21:34:37.3590936Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:34:37.3591795Z     |                           ^^^^^^^^^^
+2026-11-12T21:34:37.3606892Z 
+2026-11-12T21:34:37.3607809Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:34:37.3651371Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:34:37.3669983Z     |
+2026-11-12T21:34:37.3791690Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:34:37.3808364Z     |                           ^^^^^^^^^^
+2026-11-12T21:34:37.3809159Z 
+2026-11-12T21:34:37.3809491Z warning: 3 warnings emitted
+2026-11-12T21:34:37.3896853Z 
+2026-11-12T21:34:37.6400888Z [6,559 / 6,915] Clippy //codex-rs/tui:tui; 10s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:34:38.6539232Z [6,559 / 6,915] Clippy //codex-rs/tui:tui; 11s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:34:42.3660744Z [6,559 / 6,915] Clippy //codex-rs/tui:tui; 15s remote-cache, local ... (24 actions, 5 running)
+2026-11-12T21:34:43.7463618Z [6,561 / 6,915] Clippy //codex-rs/tui:tui; 16s remote-cache, local ... (23 actions, 4 running)
+2026-11-12T21:34:44.7684850Z [6,561 / 6,915] Clippy //codex-rs/tui:tui; 17s remote-cache, local ... (23 actions, 4 running)
+2026-11-12T21:34:45.7551926Z [6,561 / 6,915] Clippy //codex-rs/tui:tui; 18s remote-cache, local ... (23 actions, 4 running)
+2026-11-12T21:34:46.8083982Z [6,561 / 6,915] Clippy //codex-rs/tui:tui; 19s remote-cache, local ... (23 actions, 5 running)
+2026-11-12T21:34:47.8308879Z [6,565 / 6,915] Clippy //codex-rs/tui:tui; 20s remote-cache, local ... (22 actions, 4 running)
+2026-11-12T21:34:48.9241771Z [6,567 / 6,915] Clippy //codex-rs/tui:tui; 21s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:34:49.8630154Z [6,568 / 6,915] Clippy //codex-rs/tui:tui; 22s remote-cache, local ... (20 actions, 4 running)
+2026-11-12T21:34:53.9017340Z [6,568 / 6,915] Clippy //codex-rs/tui:tui; 26s remote-cache, local ... (20 actions, 4 running)
+2026-11-12T21:34:54.8934853Z [6,568 / 6,915] Clippy //codex-rs/tui:tui; 27s remote-cache, local ... (20 actions, 4 running)
+2026-11-12T21:34:55.9047013Z [6,568 / 6,915] Clippy //codex-rs/tui:tui; 28s remote-cache, local ... (20 actions, 4 running)
+2026-11-12T21:35:00.9980079Z [6,568 / 6,915] Clippy //codex-rs/tui:tui; 33s remote-cache, local ... (20 actions, 4 running)
+2026-11-12T21:35:04.6093169Z [6,568 / 6,915] Clippy //codex-rs/tui:tui; 37s remote-cache, local ... (20 actions, 5 running)
+2026-11-12T21:35:04.7555560Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd:
+2026-11-12T21:35:04.7579757Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:35:04.7608234Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:35:04.7731381Z    |
+2026-11-12T21:35:04.7753411Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:35:04.7805931Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:04.7808981Z    |
+2026-11-12T21:35:04.7902159Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:04.8024983Z 
+2026-11-12T21:35:04.8073823Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:35:04.8097135Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:35:04.8131689Z   |
+2026-11-12T21:35:04.8221941Z 4 | impl AgentdConfig {
+2026-11-12T21:35:04.8356977Z   | ----------------- method in this implementation
+2026-11-12T21:35:04.8449926Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:35:04.8453457Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:04.8542306Z   |
+2026-11-12T21:35:04.8592729Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:04.8593367Z 
+2026-11-12T21:35:04.8712349Z warning: method `require_decision` is never used
+2026-11-12T21:35:04.8769601Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:35:04.8771945Z     |
+2026-11-12T21:35:04.8862109Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:35:04.8868505Z     | ----------------------------------- method in this implementation
+2026-11-12T21:35:04.9032024Z ...
+2026-11-12T21:35:04.9054606Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:35:04.9094538Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:04.9099123Z 
+2026-11-12T21:35:04.9182307Z warning: function `require_decision` is never used
+2026-11-12T21:35:04.9352684Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:35:04.9419754Z     |
+2026-11-12T21:35:04.9432072Z 443 | pub(super) fn require_decision(
+2026-11-12T21:35:04.9467063Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:04.9467491Z 
+2026-11-12T21:35:04.9467826Z warning: method `require_original_input` is never used
+2026-11-12T21:35:04.9468544Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:35:04.9501796Z    |
+2026-11-12T21:35:04.9671729Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:35:04.9752655Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:35:04.9776413Z ...
+2026-11-12T21:35:04.9828443Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:35:04.9829071Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:04.9839524Z 
+2026-11-12T21:35:04.9992472Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:35:05.0072535Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:35:05.0099562Z    |
+2026-11-12T21:35:05.0162694Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:35:05.0312533Z    |                 ----------------------- variant in this enum
+2026-11-12T21:35:05.0392218Z 11 |     HostStageOwners,
+2026-11-12T21:35:05.0422270Z 12 |     OriginalObjective,
+2026-11-12T21:35:05.0465771Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:05.0466367Z    |
+2026-11-12T21:35:05.0467236Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:35:05.0482043Z 
+2026-11-12T21:35:05.0632770Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:35:05.0712560Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:35:05.0749530Z    |
+2026-11-12T21:35:05.0812548Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:35:05.1029677Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:35:05.1222419Z ...
+2026-11-12T21:35:05.1357867Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:35:05.1391984Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:05.1542139Z 
+2026-11-12T21:35:05.1650132Z warning: method `original_model_commitments` is never used
+2026-11-12T21:35:05.1680505Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:35:05.1681665Z   |
+2026-11-12T21:35:05.1682187Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:35:05.1683007Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:35:05.1710910Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:35:05.1870001Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:05.1972141Z 
+2026-11-12T21:35:05.2002136Z warning: variant `Notes` is never constructed
+2026-11-12T21:35:05.2031927Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:35:05.2190000Z     |
+2026-11-12T21:35:05.2292770Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:35:05.2321944Z     |      ------------------------- variant in this enum
+2026-11-12T21:35:05.2328173Z 632 |     Full,
+2026-11-12T21:35:05.2328726Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:35:05.2614168Z     |     ^^^^^
+2026-11-12T21:35:05.2619347Z 
+2026-11-12T21:35:05.2621158Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:35:05.2641725Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:35:05.2655600Z     |
+2026-11-12T21:35:05.2656670Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:35:05.2657849Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:05.2660424Z 
+2026-11-12T21:35:05.2660840Z warning: method `close_expired_original` is never used
+2026-11-12T21:35:05.2671736Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:35:05.2705877Z     |
+2026-11-12T21:35:05.2706417Z   3 | impl AgentdTextRequests {
+2026-11-12T21:35:05.2707020Z     | ----------------------- method in this implementation
+2026-11-12T21:35:05.2708589Z ...
+2026-11-12T21:35:05.2709338Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:35:05.2710583Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:05.2711886Z 
+2026-11-12T21:35:05.2712283Z warning: this function has too many arguments (8/7)
+2026-11-12T21:35:05.2985503Z    --> codex-rs/hepta-agentd/src\cell_q24_dataset.rs:193:5
+2026-11-12T21:35:05.3012788Z     |
+2026-11-12T21:35:05.3042726Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:35:05.3051763Z 194 | |         &mut self,
+2026-11-12T21:35:05.3323413Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:35:05.3374141Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:35:05.3422033Z ...   |
+2026-11-12T21:35:05.3671042Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:35:05.3702282Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:35:05.3741896Z     | |________________________________________________________________^
+2026-11-12T21:35:05.3751628Z     |
+2026-11-12T21:35:05.4001779Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:35:05.4022163Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:35:05.4061523Z 
+2026-11-12T21:35:05.4072193Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:35:05.4322799Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:508:36
+2026-11-12T21:35:05.4349229Z     |
+2026-11-12T21:35:05.4381885Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:35:05.4389950Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:35:05.4652497Z     |
+2026-11-12T21:35:05.4670297Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:35:05.4702077Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:35:05.4711512Z 
+2026-11-12T21:35:05.4972482Z warning: 13 warnings emitted
+2026-11-12T21:35:05.4999241Z 
+2026-11-12T21:35:05.9598566Z [6,569 / 6,915] Clippy //codex-rs/tui:tui; 38s remote-cache, local ... (19 actions, 4 running)
+2026-11-12T21:35:09.7541611Z [6,569 / 6,915] Clippy //codex-rs/tui:tui; 42s remote-cache, local ... (19 actions, 5 running)
+2026-11-12T21:35:09.8036497Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib:
+2026-11-12T21:35:09.8038228Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:35:09.8038998Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:35:09.8186780Z    |
+2026-11-12T21:35:09.8348562Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:35:09.8358326Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.8360674Z    |
+2026-11-12T21:35:09.8506970Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:09.8516122Z 
+2026-11-12T21:35:09.8676764Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:35:09.8686123Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:35:09.8826592Z   |
+2026-11-12T21:35:09.8836429Z 4 | impl AgentdConfig {
+2026-11-12T21:35:09.8956604Z   | ----------------- method in this implementation
+2026-11-12T21:35:09.8958462Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:35:09.8959055Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.9006147Z   |
+2026-11-12T21:35:09.9112129Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:35:09.9143957Z 
+2026-11-12T21:35:09.9145403Z warning: method `require_decision` is never used
+2026-11-12T21:35:09.9156272Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:35:09.9177915Z     |
+2026-11-12T21:35:09.9192228Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:35:09.9293098Z     | ----------------------------------- method in this implementation
+2026-11-12T21:35:09.9316666Z ...
+2026-11-12T21:35:09.9338008Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:35:09.9466562Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.9476110Z 
+2026-11-12T21:35:09.9510984Z warning: function `require_decision` is never used
+2026-11-12T21:35:09.9511873Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:35:09.9520108Z     |
+2026-11-12T21:35:09.9520616Z 443 | pub(super) fn require_decision(
+2026-11-12T21:35:09.9639128Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.9655752Z 
+2026-11-12T21:35:09.9704065Z warning: method `require_original_input` is never used
+2026-11-12T21:35:09.9704964Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:35:09.9794955Z    |
+2026-11-12T21:35:09.9796481Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:35:09.9797282Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:35:09.9881363Z ...
+2026-11-12T21:35:09.9882213Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:35:09.9890513Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:09.9892705Z 
+2026-11-12T21:35:09.9895996Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:35:09.9911742Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:35:09.9926980Z    |
+2026-11-12T21:35:09.9957307Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:35:10.0006439Z    |                 ----------------------- variant in this enum
+2026-11-12T21:35:10.0016549Z 11 |     HostStageOwners,
+2026-11-12T21:35:10.0101307Z 12 |     OriginalObjective,
+2026-11-12T21:35:10.0102654Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:10.0106187Z    |
+2026-11-12T21:35:10.0109473Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:35:10.0113317Z 
+2026-11-12T21:35:10.0114280Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:35:10.0117247Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:35:10.0118891Z    |
+2026-11-12T21:35:10.0120381Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:35:10.0123099Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:35:10.0125952Z ...
+2026-11-12T21:35:10.0127087Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:35:10.0128638Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:10.0130040Z 
+2026-11-12T21:35:10.0130850Z warning: method `original_model_commitments` is never used
+2026-11-12T21:35:10.0133476Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:35:10.0136165Z   |
+2026-11-12T21:35:10.0138283Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:35:10.0141421Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:35:10.0143512Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:35:10.0146209Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:10.0147027Z 
+2026-11-12T21:35:10.0148372Z warning: variant `Notes` is never constructed
+2026-11-12T21:35:10.0150460Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:35:10.0152039Z     |
+2026-11-12T21:35:10.0153687Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:35:10.0155828Z     |      ------------------------- variant in this enum
+2026-11-12T21:35:10.0157431Z 632 |     Full,
+2026-11-12T21:35:10.0159320Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:35:10.0161452Z     |     ^^^^^
+2026-11-12T21:35:10.0162759Z 
+2026-11-12T21:35:10.0164478Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:35:10.0166988Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:35:10.0167580Z     |
+2026-11-12T21:35:10.0169323Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:35:10.0171721Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:10.0172652Z 
+2026-11-12T21:35:10.0174083Z warning: method `close_expired_original` is never used
+2026-11-12T21:35:10.0176987Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:35:10.0178997Z     |
+2026-11-12T21:35:10.0180472Z   3 | impl AgentdTextRequests {
+2026-11-12T21:35:10.0182401Z     | ----------------------- method in this implementation
+2026-11-12T21:35:10.0183952Z ...
+2026-11-12T21:35:10.0186313Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:35:10.0187241Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:35:10.0188663Z 
+2026-11-12T21:35:10.0189497Z warning: this function has too many arguments (8/7)
+2026-11-12T21:35:10.0192060Z    --> codex-rs/hepta-agentd/src\cell_q24_dataset.rs:193:5
+2026-11-12T21:35:10.0194084Z     |
+2026-11-12T21:35:10.0195677Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:35:10.0486628Z 194 | |         &mut self,
+2026-11-12T21:35:10.0645055Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:35:10.0670402Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:35:10.0806558Z ...   |
+2026-11-12T21:35:10.0936997Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:35:10.0977452Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:35:10.0996059Z     | |________________________________________________________________^
+2026-11-12T21:35:10.1126699Z     |
+2026-11-12T21:35:10.1253309Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:35:10.1306325Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:35:10.1315939Z 
+2026-11-12T21:35:10.1456830Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:35:10.1576899Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:508:36
+2026-11-12T21:35:10.1580906Z     |
+2026-11-12T21:35:10.1581514Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:35:10.1582307Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:35:10.1582944Z     |
+2026-11-12T21:35:10.1583804Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:35:10.1626805Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:35:10.1635926Z 
+2026-11-12T21:35:10.1778259Z warning: 13 warnings emitted
+2026-11-12T21:35:10.1896257Z 
+2026-11-12T21:35:11.0469971Z [6,570 / 6,915] Clippy //codex-rs/tui:tui; 43s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:13.0307274Z [6,570 / 6,915] Clippy //codex-rs/tui:tui; 45s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:14.0294258Z [6,570 / 6,915] Clippy //codex-rs/tui:tui; 46s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:16.0748435Z [6,570 / 6,915] Clippy //codex-rs/tui:tui; 48s remote-cache, local ... (18 actions, 4 running)
+2026-11-12T21:35:18.4842171Z [6,570 / 6,915] Clippy //codex-rs/tui:tui; 51s remote-cache, local ... (18 actions, 5 running)
+2026-11-12T21:35:19.1325828Z INFO: From Clippy //codex-rs/tui:tui:
+2026-11-12T21:35:19.1369273Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:19.1689250Z   --> codex-rs/tui/src\dynamic_tools_mcp.rs:33:18
+2026-11-12T21:35:19.1716533Z    |
+2026-11-12T21:35:19.2034596Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:35:19.2159945Z    |                  ^^^^^^^^^^
+2026-11-12T21:35:19.2269737Z    |
+2026-11-12T21:35:19.2387436Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:35:19.2494142Z 
+2026-11-12T21:35:19.2506659Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:19.2633415Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:188:27
+2026-11-12T21:35:19.2732970Z     |
+2026-11-12T21:35:19.2752018Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:35:19.2894783Z     |                           ^^^^^^^^^^
+2026-11-12T21:35:19.3048639Z 
+2026-11-12T21:35:19.3272330Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:19.3489262Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:189:9
+2026-11-12T21:35:19.3664276Z     |
+2026-11-12T21:35:19.3754198Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:35:19.4061700Z     |         ^^^^^^^^^^
+2026-11-12T21:35:19.4341648Z 
+2026-11-12T21:35:19.4402362Z warning: 3 warnings emitted
+2026-11-12T21:35:19.4540185Z 
+2026-11-12T21:35:20.1620427Z [6,571 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 48s remote-cache, local ... (17 actions, 5 running)
+2026-11-12T21:35:21.1435783Z [6,577 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 49s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:35:22.2019893Z [6,577 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 50s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:35:25.3362787Z [6,577 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 53s remote-cache, local ... (15 actions, 4 running)
+2026-11-12T21:35:28.4032405Z [6,577 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 56s remote-cache, local ... (15 actions, 5 running)
+2026-11-12T21:35:30.5291955Z [6,577 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 58s remote-cache, local ... (15 actions, 5 running)
+2026-11-12T21:35:31.6211326Z [6,577 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 59s remote-cache, local ... (15 actions, 5 running)
+2026-11-12T21:35:32.6808995Z [6,579 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 60s remote-cache, local ... (14 actions, 4 running)
+2026-11-12T21:35:38.1368613Z [6,579 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 65s remote-cache, local ... (14 actions, 4 running)
+2026-11-12T21:35:43.6332466Z [6,579 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 71s remote-cache, local ... (14 actions, 4 running)
+2026-11-12T21:35:51.8254031Z [6,579 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 79s remote-cache, local ... (14 actions, 4 running)
+2026-11-12T21:35:56.5126642Z [6,579 / 6,915] Compiling Rust rlib //codex-rs/tui:tui (490 files); 84s remote-cache, local ... (14 actions, 5 running)
+2026-11-12T21:35:57.1652081Z INFO: From Compiling Rust rlib //codex-rs/tui:tui (490 files):
+2026-11-12T21:35:57.1854014Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:57.2954337Z   --> codex-rs/tui/src\dynamic_tools_mcp.rs:33:18
+2026-11-12T21:35:57.3063226Z    |
+2026-11-12T21:35:57.3281916Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:35:57.3411768Z    |                  ^^^^^^^^^^
+2026-11-12T21:35:57.3621350Z    |
+2026-11-12T21:35:57.3733541Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:35:57.4029912Z 
+2026-11-12T21:35:57.4052062Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:57.4329565Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:188:27
+2026-11-12T21:35:57.4382282Z     |
+2026-11-12T21:35:57.5327082Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:35:57.6887119Z     |                           ^^^^^^^^^^
+2026-11-12T21:35:57.7366955Z 
+2026-11-12T21:35:57.7718513Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:35:57.7882381Z    --> codex-rs/tui/src\dynamic_tools_mcp.rs:189:9
+2026-11-12T21:35:57.8148135Z     |
+2026-11-12T21:35:57.8208368Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:35:57.8478015Z     |         ^^^^^^^^^^
+2026-11-12T21:35:57.8547047Z 
+2026-11-12T21:35:57.8808017Z warning: 3 warnings emitted
+2026-11-12T21:35:57.8886919Z 
+2026-11-12T21:35:57.9107889Z [6,581 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 39s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:35:58.8711882Z [6,581 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 40s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:36:09.4046808Z [6,581 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 50s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:36:10.5261349Z [6,581 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 51s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:36:10.6152733Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-test-lib:
+2026-11-12T21:36:10.6731573Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:36:10.7294752Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:36:10.7928914Z    |
+2026-11-12T21:36:10.8514026Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:36:10.8923152Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:10.9454383Z    |
+2026-11-12T21:36:10.9863085Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:36:10.9863651Z 
+2026-11-12T21:36:10.9863875Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:36:10.9864458Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:36:10.9864935Z   |
+2026-11-12T21:36:10.9865224Z 4 | impl AgentdConfig {
+2026-11-12T21:36:10.9866045Z   | ----------------- method in this implementation
+2026-11-12T21:36:10.9867007Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:36:10.9867438Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:10.9868038Z   |
+2026-11-12T21:36:10.9868420Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:36:10.9868830Z 
+2026-11-12T21:36:10.9869000Z warning: method `require_decision` is never used
+2026-11-12T21:36:10.9869528Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:36:10.9870007Z     |
+2026-11-12T21:36:10.9870312Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:36:10.9870832Z     | ----------------------------------- method in this implementation
+2026-11-12T21:36:10.9871294Z ...
+2026-11-12T21:36:10.9871984Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:36:11.0512834Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:36:11.0841753Z 
+2026-11-12T21:36:11.1193022Z warning: function `require_decision` is never used
+2026-11-12T21:36:11.1695599Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:36:11.2114821Z     |
+2026-11-12T21:36:11.2642998Z 443 | pub(super) fn require_decision(
+2026-11-12T21:36:11.3308912Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:36:11.3973809Z 
+2026-11-12T21:36:11.4583907Z warning: method `require_original_input` is never used
+2026-11-12T21:36:11.5125548Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:36:11.5745035Z    |
+2026-11-12T21:36:11.6228372Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:36:11.6833796Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:36:11.6884447Z ...
+2026-11-12T21:36:11.7558532Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:36:11.8362676Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:11.9068461Z 
+2026-11-12T21:36:11.9708775Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:36:12.0359176Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:36:12.0797061Z    |
+2026-11-12T21:36:12.1448740Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:36:12.1798678Z    |                 ----------------------- variant in this enum
+2026-11-12T21:36:12.2418648Z 11 |     HostStageOwners,
+2026-11-12T21:36:12.2858218Z 12 |     OriginalObjective,
+2026-11-12T21:36:12.3230396Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:12.3748639Z    |
+2026-11-12T21:36:12.4354836Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:36:12.4903681Z 
+2026-11-12T21:36:12.5530254Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:36:12.6126866Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:36:12.6632899Z    |
+2026-11-12T21:36:12.7138534Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:36:12.7707374Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:36:12.8177185Z ...
+2026-11-12T21:36:12.8537987Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:36:12.9091243Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:12.9562309Z 
+2026-11-12T21:36:13.0213589Z warning: method `original_model_commitments` is never used
+2026-11-12T21:36:13.0731214Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:36:13.1239541Z   |
+2026-11-12T21:36:13.1702785Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:36:13.2433001Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:36:13.2776594Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:36:13.3322840Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:13.3808722Z 
+2026-11-12T21:36:13.3838493Z warning: variant `Notes` is never constructed
+2026-11-12T21:36:13.3840872Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:36:13.4372711Z     |
+2026-11-12T21:36:13.4874582Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:36:13.5566099Z     |      ------------------------- variant in this enum
+2026-11-12T21:36:13.6564000Z 632 |     Full,
+2026-11-12T21:36:13.7287607Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:36:13.8114068Z     |     ^^^^^
+2026-11-12T21:36:13.8450653Z 
+2026-11-12T21:36:13.9044705Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:36:13.9567877Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:36:13.9760926Z     |
+2026-11-12T21:36:14.0631870Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:36:14.1330117Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:14.1999127Z 
+2026-11-12T21:36:14.2440332Z warning: method `close_expired_original` is never used
+2026-11-12T21:36:14.3271930Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:36:14.3799522Z     |
+2026-11-12T21:36:14.3991940Z   3 | impl AgentdTextRequests {
+2026-11-12T21:36:14.4400810Z     | ----------------------- method in this implementation
+2026-11-12T21:36:14.4798479Z ...
+2026-11-12T21:36:14.5295976Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:36:14.5487094Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:14.5739635Z 
+2026-11-12T21:36:14.6211973Z warning: this function has too many arguments (8/7)
+2026-11-12T21:36:14.6591430Z    --> codex-rs/hepta-agentd/src\cell_q24_dataset.rs:193:5
+2026-11-12T21:36:14.7001246Z     |
+2026-11-12T21:36:14.7691463Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:36:14.8073432Z 194 | |         &mut self,
+2026-11-12T21:36:14.8172236Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:36:14.8237583Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:36:14.8691712Z ...   |
+2026-11-12T21:36:14.8915406Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:36:14.9371336Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:36:14.9514279Z     | |________________________________________________________________^
+2026-11-12T21:36:15.0021132Z     |
+2026-11-12T21:36:15.0148369Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:36:15.0501259Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:36:15.0501791Z 
+2026-11-12T21:36:15.0821609Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:36:15.1141272Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:508:36
+2026-11-12T21:36:15.1581283Z     |
+2026-11-12T21:36:15.1911317Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:36:15.2018902Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:36:15.2261109Z     |
+2026-11-12T21:36:15.2561869Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:36:15.2654188Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:36:15.2910357Z 
+2026-11-12T21:36:15.2989500Z warning: 13 warnings emitted
+2026-11-12T21:36:15.3291028Z 
+2026-11-12T21:36:15.3404901Z [6,582 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 53s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:36:15.3659358Z [6,582 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 54s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:36:15.3671267Z [6,582 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 55s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:36:15.3847081Z [6,582 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 56s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:36:16.3902747Z [6,582 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 57s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:36:17.4424592Z [6,583 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 58s remote-cache, local ... (28 actions, 4 running)
+2026-11-12T21:36:17.9400198Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-test-lib (967 files):
+2026-11-12T21:36:17.9455391Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:36:17.9665126Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:36:17.9788619Z    |
+2026-11-12T21:36:17.9993002Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:36:18.0108597Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.0315316Z    |
+2026-11-12T21:36:18.0430466Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:36:18.0518117Z 
+2026-11-12T21:36:18.0645410Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:36:18.0748777Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:36:18.0749367Z   |
+2026-11-12T21:36:18.0838664Z 4 | impl AgentdConfig {
+2026-11-12T21:36:18.0965582Z   | ----------------- method in this implementation
+2026-11-12T21:36:18.0989091Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:36:18.0989865Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.1069219Z   |
+2026-11-12T21:36:18.1070627Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:36:18.1164874Z 
+2026-11-12T21:36:18.1202048Z warning: method `require_decision` is never used
+2026-11-12T21:36:18.1203103Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:36:18.1285491Z     |
+2026-11-12T21:36:18.1389204Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:36:18.1489386Z     | ----------------------------------- method in this implementation
+2026-11-12T21:36:18.1522773Z ...
+2026-11-12T21:36:18.1523815Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:36:18.1609415Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.1708223Z 
+2026-11-12T21:36:18.1709816Z warning: function `require_decision` is never used
+2026-11-12T21:36:18.1815712Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:36:18.1929512Z     |
+2026-11-12T21:36:18.2028911Z 443 | pub(super) fn require_decision(
+2026-11-12T21:36:18.2030512Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.2134906Z 
+2026-11-12T21:36:18.2249589Z warning: method `require_original_input` is never used
+2026-11-12T21:36:18.2349061Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:36:18.2459283Z    |
+2026-11-12T21:36:18.2565651Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:36:18.2668836Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:36:18.2669839Z ...
+2026-11-12T21:36:18.2779646Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:36:18.2885416Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.2988133Z 
+2026-11-12T21:36:18.3007729Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:36:18.3209533Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:36:18.3308489Z    |
+2026-11-12T21:36:18.3426737Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:36:18.3529463Z    |                 ----------------------- variant in this enum
+2026-11-12T21:36:18.3626936Z 11 |     HostStageOwners,
+2026-11-12T21:36:18.3748682Z 12 |     OriginalObjective,
+2026-11-12T21:36:18.3749377Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.3749919Z    |
+2026-11-12T21:36:18.3751308Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:36:18.3752271Z 
+2026-11-12T21:36:18.3752715Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:36:18.3753910Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:36:18.3754659Z    |
+2026-11-12T21:36:18.3755218Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:36:18.3755952Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:36:18.3756630Z ...
+2026-11-12T21:36:18.3757171Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:36:18.3758187Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.3758650Z 
+2026-11-12T21:36:18.3759007Z warning: method `original_model_commitments` is never used
+2026-11-12T21:36:18.3759896Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:36:18.3760667Z   |
+2026-11-12T21:36:18.3761243Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:36:18.3762146Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:36:18.3762954Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:36:18.3763554Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.3763975Z 
+2026-11-12T21:36:18.3764247Z warning: variant `Notes` is never constructed
+2026-11-12T21:36:18.3765178Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:36:18.3765769Z     |
+2026-11-12T21:36:18.3766227Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:36:18.3766851Z     |      ------------------------- variant in this enum
+2026-11-12T21:36:18.3767705Z 632 |     Full,
+2026-11-12T21:36:18.3768270Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:36:18.3768909Z     |     ^^^^^
+2026-11-12T21:36:18.3769183Z 
+2026-11-12T21:36:18.3769597Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:36:18.3770382Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:36:18.3770961Z     |
+2026-11-12T21:36:18.3771495Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:36:18.3772147Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.3772529Z 
+2026-11-12T21:36:18.3772861Z warning: method `close_expired_original` is never used
+2026-11-12T21:36:18.3773606Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:36:18.3774266Z     |
+2026-11-12T21:36:18.3774744Z   3 | impl AgentdTextRequests {
+2026-11-12T21:36:18.3775342Z     | ----------------------- method in this implementation
+2026-11-12T21:36:18.3775929Z ...
+2026-11-12T21:36:18.3776407Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:36:18.3777025Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:36:18.3778004Z 
+2026-11-12T21:36:18.3778322Z warning: 11 warnings emitted
+2026-11-12T21:36:18.3778674Z 
+2026-11-12T21:36:18.3886790Z [6,584 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 59s remote-cache, local ... (27 actions, 4 running)
+2026-11-12T21:36:19.4377360Z [6,584 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 60s remote-cache, local ... (27 actions, 5 running)
+2026-11-12T21:36:20.5995869Z [6,584 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 61s remote-cache, local ... (27 actions, 5 running)
+2026-11-12T21:36:21.6143663Z [6,584 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 63s remote-cache, local ... (27 actions, 5 running)
+2026-11-12T21:36:22.5964675Z [6,589 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 64s remote-cache, local ... (26 actions, 4 running)
+2026-11-12T21:36:23.6299999Z [6,589 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 65s remote-cache, local ... (26 actions, 5 running)
+2026-11-12T21:36:24.6607943Z [6,592 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 66s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:36:25.7249611Z [6,592 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 67s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:36:27.7217056Z [6,592 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 69s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:36:32.7449774Z [6,592 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 74s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:36:33.8098887Z [6,592 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 75s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:36:34.9565635Z [6,592 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 76s remote-cache, local ... (25 actions, 4 running)
+2026-11-12T21:36:38.1352338Z [6,592 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 79s remote-cache, local ... (25 actions, 5 running)
+2026-11-12T21:36:40.3254837Z [6,593 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 81s remote-cache, local ... (28 actions, 4 running)
+2026-11-12T21:36:42.0290120Z [6,599 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 83s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:36:52.4818110Z [6,599 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 93s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:36:54.5472918Z [6,599 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 95s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:36:56.6218576Z [6,599 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 98s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:36:57.6656539Z [6,599 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 99s remote-cache, local ... (24 actions, 4 running)
+2026-11-12T21:37:01.6323249Z [6,599 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 103s remote-cache, local ... (24 actions, 5 running)
+2026-11-12T21:37:01.9779538Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib (971 files):
+2026-11-12T21:37:02.0045172Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:37:02.0188664Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:37:02.0368360Z    |
+2026-11-12T21:37:02.0508687Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:37:02.0552783Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:02.0596180Z    |
+2026-11-12T21:37:02.0810821Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:37:02.0908346Z 
+2026-11-12T21:37:02.1268580Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:37:02.1298592Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:37:02.1586325Z   |
+2026-11-12T21:37:02.1618777Z 4 | impl AgentdConfig {
+2026-11-12T21:37:02.1658353Z   | ----------------- method in this implementation
+2026-11-12T21:37:02.1950836Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:37:02.2223523Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:02.2298264Z   |
+2026-11-12T21:37:02.2558615Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:37:02.2627753Z 
+2026-11-12T21:37:02.2878629Z warning: method `require_decision` is never used
+2026-11-12T21:37:02.2948397Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:37:02.3214728Z     |
+2026-11-12T21:37:02.3358389Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:37:02.3538486Z     | ----------------------------------- method in this implementation
+2026-11-12T21:37:02.3678293Z ...
+2026-11-12T21:37:02.3878452Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:37:02.4006767Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:37:02.4257752Z 
+2026-11-12T21:37:02.4528486Z warning: function `require_decision` is never used
+2026-11-12T21:37:02.4614999Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:37:02.4878388Z     |
+2026-11-12T21:37:02.4948446Z 443 | pub(super) fn require_decision(
+2026-11-12T21:37:02.5198432Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:37:02.5311954Z 
+2026-11-12T21:37:02.5518480Z warning: method `require_original_input` is never used
+2026-11-12T21:37:02.5686629Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:37:02.5687388Z    |
+2026-11-12T21:37:02.5857581Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:37:02.6007500Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:37:02.6217305Z ...
+2026-11-12T21:37:02.6357264Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:37:02.6549369Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:02.6596517Z 
+2026-11-12T21:37:02.6722041Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:37:02.6933231Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:37:02.7052786Z    |
+2026-11-12T21:37:02.7282948Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:37:02.7628635Z    |                 ----------------------- variant in this enum
+2026-11-12T21:37:02.7937208Z 11 |     HostStageOwners,
+2026-11-12T21:37:02.8034674Z 12 |     OriginalObjective,
+2026-11-12T21:37:02.8319296Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:02.8357142Z    |
+2026-11-12T21:37:02.8656083Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:37:02.8682254Z 
+2026-11-12T21:37:02.8975517Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:37:02.9025510Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:37:02.9303101Z    |
+2026-11-12T21:37:02.9364659Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:37:02.9634965Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:37:02.9704489Z ...
+2026-11-12T21:37:02.9955409Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:37:03.0024975Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:03.0289846Z 
+2026-11-12T21:37:03.0357028Z warning: method `original_model_commitments` is never used
+2026-11-12T21:37:03.0610557Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:37:03.0627965Z   |
+2026-11-12T21:37:03.0834684Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:37:03.0940636Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:37:03.1013493Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:37:03.1071599Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:03.1259754Z 
+2026-11-12T21:37:03.1386390Z warning: variant `Notes` is never constructed
+2026-11-12T21:37:03.1580927Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:37:03.1630004Z     |
+2026-11-12T21:37:03.1816602Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:37:03.1966367Z     |      ------------------------- variant in this enum
+2026-11-12T21:37:03.2150165Z 632 |     Full,
+2026-11-12T21:37:03.2290361Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:37:03.2470258Z     |     ^^^^^
+2026-11-12T21:37:03.2609854Z 
+2026-11-12T21:37:03.2920497Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:37:03.3220539Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:37:03.3249771Z     |
+2026-11-12T21:37:03.3550643Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:37:03.3569791Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:03.3879717Z 
+2026-11-12T21:37:03.3924038Z warning: method `close_expired_original` is never used
+2026-11-12T21:37:03.4200585Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:37:03.4345004Z     |
+2026-11-12T21:37:03.4610108Z   3 | impl AgentdTextRequests {
+2026-11-12T21:37:03.4611097Z     | ----------------------- method in this implementation
+2026-11-12T21:37:03.4611618Z ...
+2026-11-12T21:37:03.4611976Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:37:03.4612706Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:03.4613022Z 
+2026-11-12T21:37:03.4613162Z warning: 11 warnings emitted
+2026-11-12T21:37:03.4613416Z 
+2026-11-12T21:37:03.4613995Z [6,600 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 104s remote-cache, local ... (23 actions, 4 running)
+2026-11-12T21:37:09.0683062Z [6,600 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 110s remote-cache, local ... (23 actions, 5 running)
+2026-11-12T21:37:10.8308377Z [6,602 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 112s remote-cache, local ... (22 actions, 4 running)
+2026-11-12T21:37:11.8802939Z [6,606 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 113s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:37:12.8798189Z [6,606 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 114s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:37:13.9307005Z [6,606 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 115s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:37:17.1382683Z [6,606 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 118s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:37:19.2367635Z [6,606 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 120s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:37:23.4501452Z [6,606 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 124s remote-cache, local ... (21 actions, 4 running)
+2026-11-12T21:37:25.7973945Z [6,606 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 127s remote-cache, local ... (21 actions, 5 running)
+2026-11-12T21:37:26.9577472Z [6,607 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 128s remote-cache, local ... (28 actions, 5 running)
+2026-11-12T21:37:27.3109358Z INFO: From Compiling Rust rlib //codex-rs/hepta-agentd:hepta-agentd (966 files):
+2026-11-12T21:37:27.3258944Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:37:27.3510135Z   --> codex-rs/hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:37:27.3843473Z    |
+2026-11-12T21:37:27.4170135Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:37:27.4499012Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.4683795Z    |
+2026-11-12T21:37:27.4989073Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:37:27.4998087Z 
+2026-11-12T21:37:27.5098427Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:37:27.5106106Z  --> codex-rs/hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:37:27.5148690Z   |
+2026-11-12T21:37:27.5225430Z 4 | impl AgentdConfig {
+2026-11-12T21:37:27.5230380Z   | ----------------- method in this implementation
+2026-11-12T21:37:27.5230929Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:37:27.5231355Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5231695Z   |
+2026-11-12T21:37:27.5232059Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:37:27.5233180Z 
+2026-11-12T21:37:27.5233381Z warning: method `require_decision` is never used
+2026-11-12T21:37:27.5233949Z    --> codex-rs/hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:37:27.5234433Z     |
+2026-11-12T21:37:27.5234746Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:37:27.5235256Z     | ----------------------------------- method in this implementation
+2026-11-12T21:37:27.5235714Z ...
+2026-11-12T21:37:27.5235978Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:37:27.5236324Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5236563Z 
+2026-11-12T21:37:27.5236746Z warning: function `require_decision` is never used
+2026-11-12T21:37:27.5237456Z    --> codex-rs/hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:37:27.5238233Z     |
+2026-11-12T21:37:27.5238894Z 443 | pub(super) fn require_decision(
+2026-11-12T21:37:27.5239270Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5239706Z 
+2026-11-12T21:37:27.5239901Z warning: method `require_original_input` is never used
+2026-11-12T21:37:27.5240502Z   --> codex-rs/hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:37:27.5241001Z    |
+2026-11-12T21:37:27.5241504Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:37:27.5242272Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:37:27.5242872Z ...
+2026-11-12T21:37:27.5243242Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:37:27.5243765Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5244025Z 
+2026-11-12T21:37:27.5244310Z warning: variant `OriginalObjective` is never constructed
+2026-11-12T21:37:27.5245004Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:12:5
+2026-11-12T21:37:27.5245601Z    |
+2026-11-12T21:37:27.5245955Z 10 | pub(super) enum CircuitLearningSourceV1 {
+2026-11-12T21:37:27.5246480Z    |                 ----------------------- variant in this enum
+2026-11-12T21:37:27.5247025Z 11 |     HostStageOwners,
+2026-11-12T21:37:27.5247404Z 12 |     OriginalObjective,
+2026-11-12T21:37:27.5248072Z    |     ^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5248431Z    |
+2026-11-12T21:37:27.5249217Z    = note: `CircuitLearningSourceV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:37:27.5249994Z 
+2026-11-12T21:37:27.5250281Z warning: method `with_original_circuit_learning_delivery` is never used
+2026-11-12T21:37:27.5251088Z   --> codex-rs/hepta-agentd/src\learning_iteration_delivery_runtime.rs:27:19
+2026-11-12T21:37:27.5251684Z    |
+2026-11-12T21:37:27.5252077Z 23 | impl LearningIterationRuntimeBootstrapV1 {
+2026-11-12T21:37:27.5252693Z    | ---------------------------------------- method in this implementation
+2026-11-12T21:37:27.5253228Z ...
+2026-11-12T21:37:27.5253611Z 27 |     pub(crate) fn with_original_circuit_learning_delivery(
+2026-11-12T21:37:27.5254243Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5254522Z 
+2026-11-12T21:37:27.5254765Z warning: method `original_model_commitments` is never used
+2026-11-12T21:37:27.5255411Z  --> codex-rs/hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:37:27.5255981Z   |
+2026-11-12T21:37:27.5256338Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:37:27.5257011Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:37:27.5257866Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:37:27.5258285Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5258549Z 
+2026-11-12T21:37:27.5258702Z warning: variant `Notes` is never constructed
+2026-11-12T21:37:27.5259148Z    --> codex-rs/hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:37:27.5259527Z     |
+2026-11-12T21:37:27.5259807Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:37:27.5260230Z     |      ------------------------- variant in this enum
+2026-11-12T21:37:27.5260612Z 632 |     Full,
+2026-11-12T21:37:27.5260960Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:37:27.5261336Z     |     ^^^^^
+2026-11-12T21:37:27.5261478Z 
+2026-11-12T21:37:27.5261696Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:37:27.5262235Z    --> codex-rs/hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:37:27.5262612Z     |
+2026-11-12T21:37:27.5262915Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:37:27.5263349Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5263612Z 
+2026-11-12T21:37:27.5263913Z warning: method `close_expired_original` is never used
+2026-11-12T21:37:27.5264564Z    --> codex-rs/hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:37:27.5265354Z     |
+2026-11-12T21:37:27.5265697Z   3 | impl AgentdTextRequests {
+2026-11-12T21:37:27.5266150Z     | ----------------------- method in this implementation
+2026-11-12T21:37:27.5266805Z ...
+2026-11-12T21:37:27.5267197Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:37:27.5268020Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:27.5268299Z 
+2026-11-12T21:37:27.5268498Z warning: 11 warnings emitted
+2026-11-12T21:37:27.5268744Z 
+2026-11-12T21:37:27.9440942Z [6,608 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 129s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:29.4733093Z [6,610 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 131s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:34.5474181Z [6,610 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 136s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:36.3749085Z [6,610 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 137s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:37:37.6403018Z [6,611 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 139s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:38.6156165Z [6,612 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 140s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:39.6494639Z [6,613 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 141s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:40.6134321Z [6,613 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 142s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:41.5191892Z INFO: From Compiling Rust rlib //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host (37 files):
+2026-11-12T21:37:41.5194069Z warning: unused import: `std::io::Read`
+2026-11-12T21:37:41.5221440Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-12T21:37:41.5235068Z    |
+2026-11-12T21:37:41.5236833Z 10 | use std::io::Read;
+2026-11-12T21:37:41.5262641Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:37:41.5313098Z    |
+2026-11-12T21:37:41.5335558Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:37:41.5353245Z 
+2026-11-12T21:37:41.5390009Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-12T21:37:41.5496368Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-12T21:37:41.5530935Z    |
+2026-11-12T21:37:41.5551549Z 22 | use tokio::io::AsyncReadExt;
+2026-11-12T21:37:41.5569619Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:41.5658128Z 
+2026-11-12T21:37:41.5764486Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-12T21:37:41.5962302Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-12T21:37:41.6295327Z    |
+2026-11-12T21:37:41.6321004Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-12T21:37:41.6439577Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:41.6523192Z 
+2026-11-12T21:37:41.6573936Z warning: unused import: `tokio::time::timeout`
+2026-11-12T21:37:41.6637286Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-12T21:37:41.6646164Z    |
+2026-11-12T21:37:41.6705858Z 24 | use tokio::time::timeout;
+2026-11-12T21:37:41.6810259Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:41.6956699Z 
+2026-11-12T21:37:41.6966541Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-12T21:37:41.6967366Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-12T21:37:41.7026152Z    |
+2026-11-12T21:37:41.7184391Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-12T21:37:41.7280774Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:41.7286151Z    |
+2026-11-12T21:37:41.7286641Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:37:41.7287088Z 
+2026-11-12T21:37:41.7287338Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-12T21:37:41.7289806Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-12T21:37:41.7290507Z    |
+2026-11-12T21:37:41.7290907Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-12T21:37:41.7291618Z    |       ^^^^^^^^^^^^^^^^
+2026-11-12T21:37:41.7291893Z 
+2026-11-12T21:37:41.7292103Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-12T21:37:41.7292826Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-12T21:37:41.7293410Z    |
+2026-11-12T21:37:41.7293803Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-12T21:37:41.7294302Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:41.7294568Z 
+2026-11-12T21:37:41.7294780Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-12T21:37:41.7295892Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-12T21:37:41.7346376Z    |
+2026-11-12T21:37:41.7463165Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-12T21:37:41.7606959Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:37:41.7616054Z 
+2026-11-12T21:37:41.7666424Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-12T21:37:41.7788479Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-12T21:37:41.7927134Z    |
+2026-11-12T21:37:41.7927563Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-12T21:37:41.7928158Z    |            ---------------------- fields in this struct
+2026-11-12T21:37:41.7928712Z 60 |     issuer_socket: PathBuf,
+2026-11-12T21:37:41.7929201Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:37:41.7929565Z 61 |     issuer_uid: u32,
+2026-11-12T21:37:41.7929972Z    |     ^^^^^^^^^^
+2026-11-12T21:37:41.7930394Z 62 |     issuer_timeout: Duration,
+2026-11-12T21:37:41.7930852Z    |     ^^^^^^^^^^^^^^
+2026-11-12T21:37:41.7931114Z 
+2026-11-12T21:37:41.7931343Z warning: struct `IssuerRequest` is never constructed
+2026-11-12T21:37:41.7932085Z    --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-12T21:37:41.7932790Z     |
+2026-11-12T21:37:41.7933189Z 170 | struct IssuerRequest {
+2026-11-12T21:37:41.7933633Z     |        ^^^^^^^^^^^^^
+2026-11-12T21:37:41.7933851Z 
+2026-11-12T21:37:41.7933992Z warning: 10 warnings emitted
+2026-11-12T21:37:41.7934217Z 
+2026-11-12T21:37:41.7934688Z [6,615 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 143s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:43.6468109Z [6,615 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 145s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:44.9371738Z [6,615 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 146s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:37:46.3271091Z [6,615 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 147s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:37:47.4915381Z [6,618 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 149s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:48.6770240Z [6,619 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 150s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:49.6861798Z [6,620 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 151s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:50.7563648Z [6,620 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 152s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:51.7435158Z [6,621 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 153s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:52.7858473Z [6,621 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 154s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:53.8009511Z [6,621 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 155s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:54.8307803Z [6,621 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 156s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:57.9315728Z [6,621 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 159s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:37:58.9743844Z [6,622 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 160s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:00.0095005Z [6,622 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 161s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:01.0264689Z [6,623 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 162s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:02.0411974Z [6,623 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 163s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:03.0689414Z [6,623 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 164s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:04.1118416Z [6,625 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 165s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:05.1498320Z [6,625 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 166s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:06.3453468Z [6,625 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 167s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:07.9990493Z [6,626 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 169s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:09.1328102Z [6,627 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 170s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:10.1328360Z [6,628 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 171s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:11.3305335Z [6,628 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 172s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:13.4005785Z [6,628 / 6,915] Clippy //codex-rs/tui:tui-unit-tests-bin; 174s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:13.5543782Z INFO: From Clippy //codex-rs/tui:tui-unit-tests-bin:
+2026-11-12T21:38:13.5663860Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:38:13.5733273Z   --> tui/src\dynamic_tools_mcp.rs:33:18
+2026-11-12T21:38:13.5763160Z    |
+2026-11-12T21:38:13.5834518Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:38:13.5854061Z    |                  ^^^^^^^^^^
+2026-11-12T21:38:13.5863042Z    |
+2026-11-12T21:38:13.6061572Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:38:13.6203494Z 
+2026-11-12T21:38:13.6244223Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:38:13.6383003Z    --> tui/src\dynamic_tools_mcp.rs:188:27
+2026-11-12T21:38:13.6384260Z     |
+2026-11-12T21:38:13.6472704Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:38:13.6523090Z     |                           ^^^^^^^^^^
+2026-11-12T21:38:13.6562989Z 
+2026-11-12T21:38:13.6571696Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:38:13.6793133Z    --> tui/src\dynamic_tools_mcp.rs:189:9
+2026-11-12T21:38:13.6842952Z     |
+2026-11-12T21:38:13.6883733Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:38:13.6906305Z     |         ^^^^^^^^^^
+2026-11-12T21:38:13.6907166Z 
+2026-11-12T21:38:13.6907742Z warning: 3 warnings emitted
+2026-11-12T21:38:13.7001626Z 
+2026-11-12T21:38:15.3237391Z [6,630 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 111s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:16.3648397Z [6,631 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 112s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:17.3464537Z [6,631 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 113s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:18.3617232Z [6,632 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 114s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:19.3565111Z [6,633 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 115s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:20.4541945Z [6,635 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 116s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:21.4205181Z [6,636 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 117s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:22.4378295Z [6,636 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 118s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:23.4872308Z [6,639 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 119s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:27.5672001Z [6,639 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 123s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:28.0924292Z INFO: From Compiling Rust rlib //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib (37 files):
+2026-11-12T21:38:28.1056491Z warning: unused import: `std::io::Read`
+2026-11-12T21:38:28.1080425Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-12T21:38:28.1095504Z    |
+2026-11-12T21:38:28.1107521Z 10 | use std::io::Read;
+2026-11-12T21:38:28.1116316Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:38:28.1117214Z    |
+2026-11-12T21:38:28.1118706Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:28.1192010Z 
+2026-11-12T21:38:28.1448109Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-12T21:38:28.1466312Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-12T21:38:28.1796944Z    |
+2026-11-12T21:38:28.1946641Z 22 | use tokio::io::AsyncReadExt;
+2026-11-12T21:38:28.2162456Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2206908Z 
+2026-11-12T21:38:28.2266370Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-12T21:38:28.2279751Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-12T21:38:28.2280547Z    |
+2026-11-12T21:38:28.2538809Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-12T21:38:28.2581511Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2587297Z 
+2026-11-12T21:38:28.2587749Z warning: unused import: `tokio::time::timeout`
+2026-11-12T21:38:28.2592161Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-12T21:38:28.2593730Z    |
+2026-11-12T21:38:28.2609279Z 24 | use tokio::time::timeout;
+2026-11-12T21:38:28.2618751Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2624544Z 
+2026-11-12T21:38:28.2635060Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-12T21:38:28.2637033Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-12T21:38:28.2639026Z    |
+2026-11-12T21:38:28.2642210Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-12T21:38:28.2645005Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2650158Z    |
+2026-11-12T21:38:28.2651410Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:28.2657796Z 
+2026-11-12T21:38:28.2658373Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-12T21:38:28.2668908Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-12T21:38:28.2679207Z    |
+2026-11-12T21:38:28.2685151Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-12T21:38:28.2694002Z    |       ^^^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2698328Z 
+2026-11-12T21:38:28.2698727Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-12T21:38:28.2699621Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-12T21:38:28.2700130Z    |
+2026-11-12T21:38:28.2724433Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-12T21:38:28.2730989Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2734513Z 
+2026-11-12T21:38:28.2743117Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-12T21:38:28.2745881Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-12T21:38:28.2753652Z    |
+2026-11-12T21:38:28.2758015Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-12T21:38:28.2762205Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2764232Z 
+2026-11-12T21:38:28.2778700Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-12T21:38:28.2789591Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-12T21:38:28.2790877Z    |
+2026-11-12T21:38:28.2792306Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-12T21:38:28.2797058Z    |            ---------------------- fields in this struct
+2026-11-12T21:38:28.2797956Z 60 |     issuer_socket: PathBuf,
+2026-11-12T21:38:28.2799474Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:38:28.2801708Z 61 |     issuer_uid: u32,
+2026-11-12T21:38:28.2802774Z    |     ^^^^^^^^^^
+2026-11-12T21:38:28.2804885Z 62 |     issuer_timeout: Duration,
+2026-11-12T21:38:28.2817321Z    |     ^^^^^^^^^^^^^^
+2026-11-12T21:38:28.2823805Z 
+2026-11-12T21:38:28.2837227Z warning: struct `IssuerRequest` is never constructed
+2026-11-12T21:38:28.2843572Z    --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-12T21:38:28.2849479Z     |
+2026-11-12T21:38:28.2852779Z 170 | struct IssuerRequest {
+2026-11-12T21:38:28.2854454Z     |        ^^^^^^^^^^^^^
+2026-11-12T21:38:28.2863241Z 
+2026-11-12T21:38:28.2864449Z warning: 10 warnings emitted
+2026-11-12T21:38:28.2867129Z 
+2026-11-12T21:38:29.4882356Z [6,642 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 125s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:30.4798229Z [6,643 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 126s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:31.5555744Z [6,643 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 127s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:32.4847208Z [6,644 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 128s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:33.5175310Z [6,644 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 129s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:34.5975818Z [6,644 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 131s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:35.6456778Z [6,644 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 132s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:36.5431069Z [6,647 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 133s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:37.6132794Z [6,647 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 134s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:38.7175389Z [6,647 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 135s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:39.7452380Z [6,647 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 136s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:43.9630918Z [6,647 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 140s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:44.1343517Z INFO: From Clippy //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin:
+2026-11-12T21:38:44.1412816Z warning: unused import: `std::io::Read`
+2026-11-12T21:38:44.1492650Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-12T21:38:44.1782895Z    |
+2026-11-12T21:38:44.2182979Z 10 | use std::io::Read;
+2026-11-12T21:38:44.2514991Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:38:44.2856575Z    |
+2026-11-12T21:38:44.3024507Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:44.3363373Z 
+2026-11-12T21:38:44.3575112Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-12T21:38:44.3725435Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-12T21:38:44.3803506Z    |
+2026-11-12T21:38:44.3925269Z 22 | use tokio::io::AsyncReadExt;
+2026-11-12T21:38:44.3962660Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:44.3963381Z 
+2026-11-12T21:38:44.3963798Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-12T21:38:44.3964539Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-12T21:38:44.4090983Z    |
+2026-11-12T21:38:44.4543121Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-12T21:38:44.4607129Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:44.5129633Z 
+2026-11-12T21:38:44.5315661Z warning: unused import: `tokio::time::timeout`
+2026-11-12T21:38:44.5623130Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-12T21:38:44.5864529Z    |
+2026-11-12T21:38:44.6134561Z 24 | use tokio::time::timeout;
+2026-11-12T21:38:44.6427552Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:44.6549079Z 
+2026-11-12T21:38:44.6796093Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-12T21:38:44.6984756Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-12T21:38:44.6994223Z    |
+2026-11-12T21:38:44.7230026Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-12T21:38:44.7304049Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:44.7377798Z    |
+2026-11-12T21:38:44.7613058Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:44.7646238Z 
+2026-11-12T21:38:44.7941393Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-12T21:38:44.7970621Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-12T21:38:44.7979176Z    |
+2026-11-12T21:38:44.7984040Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-12T21:38:44.7993003Z    |       ^^^^^^^^^^^^^^^^
+2026-11-12T21:38:44.7997793Z 
+2026-11-12T21:38:44.8001980Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-12T21:38:44.8007979Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-12T21:38:44.8011836Z    |
+2026-11-12T21:38:44.8015278Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-12T21:38:44.8023246Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:44.8026888Z 
+2026-11-12T21:38:44.8032127Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-12T21:38:44.8035364Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-12T21:38:44.8042136Z    |
+2026-11-12T21:38:44.8044557Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-12T21:38:44.8051785Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:44.8061779Z 
+2026-11-12T21:38:44.8130313Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-12T21:38:44.8257418Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-12T21:38:44.8367926Z    |
+2026-11-12T21:38:44.8514203Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-12T21:38:44.8722230Z    |            ---------------------- fields in this struct
+2026-11-12T21:38:44.8741610Z 60 |     issuer_socket: PathBuf,
+2026-11-12T21:38:44.9058870Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:38:44.9229864Z 61 |     issuer_uid: u32,
+2026-11-12T21:38:44.9385469Z    |     ^^^^^^^^^^
+2026-11-12T21:38:44.9474626Z 62 |     issuer_timeout: Duration,
+2026-11-12T21:38:44.9846059Z    |     ^^^^^^^^^^^^^^
+2026-11-12T21:38:44.9944766Z 
+2026-11-12T21:38:45.0354049Z warning: struct `IssuerRequest` is never constructed
+2026-11-12T21:38:45.0657716Z    --> hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-12T21:38:45.0944503Z     |
+2026-11-12T21:38:45.0986093Z 170 | struct IssuerRequest {
+2026-11-12T21:38:45.1000173Z     |        ^^^^^^^^^^^^^
+2026-11-12T21:38:45.1162663Z 
+2026-11-12T21:38:45.1203117Z warning: function `install_final_revalidation_test_hook` is never used
+2026-11-12T21:38:45.1235702Z    --> hepta-infer-worker-host/src\native_app_server.rs:104:4
+2026-11-12T21:38:45.1334589Z     |
+2026-11-12T21:38:45.1394106Z 104 | fn install_final_revalidation_test_hook(hook: std::sync::Arc<FinalRevalidationTestHook>) {
+2026-11-12T21:38:45.1578969Z     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:45.1618981Z 
+2026-11-12T21:38:45.1800435Z warning: 11 warnings emitted
+2026-11-12T21:38:45.1870973Z 
+2026-11-12T21:38:45.1970511Z [6,648 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 141s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:45.9828411Z [6,650 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 142s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:48.0575801Z [6,650 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 144s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:49.0578217Z [6,652 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 145s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:50.7573779Z [6,652 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 147s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:50.7683631Z INFO: From Clippy //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib:
+2026-11-12T21:38:50.7811456Z warning: unused import: `std::io::Read`
+2026-11-12T21:38:50.8036250Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-12T21:38:50.8140638Z    |
+2026-11-12T21:38:50.8366393Z 10 | use std::io::Read;
+2026-11-12T21:38:50.8473429Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:38:50.8612995Z    |
+2026-11-12T21:38:50.8933669Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:50.9112793Z 
+2026-11-12T21:38:50.9253406Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-12T21:38:50.9476743Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-12T21:38:50.9500924Z    |
+2026-11-12T21:38:50.9604091Z 22 | use tokio::io::AsyncReadExt;
+2026-11-12T21:38:50.9923748Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:50.9924266Z 
+2026-11-12T21:38:51.0263460Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-12T21:38:51.0361393Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-12T21:38:51.0864046Z    |
+2026-11-12T21:38:51.1072748Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-12T21:38:51.1480738Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:51.1821057Z 
+2026-11-12T21:38:51.2131388Z warning: unused import: `tokio::time::timeout`
+2026-11-12T21:38:51.2373865Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-12T21:38:51.2473262Z    |
+2026-11-12T21:38:51.2793685Z 24 | use tokio::time::timeout;
+2026-11-12T21:38:51.2883449Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:51.3085890Z 
+2026-11-12T21:38:51.3302737Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-12T21:38:51.3310760Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-12T21:38:51.3460631Z    |
+2026-11-12T21:38:51.3541931Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-12T21:38:51.3548467Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:51.3581404Z    |
+2026-11-12T21:38:51.3709683Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:51.3742924Z 
+2026-11-12T21:38:51.3790167Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-12T21:38:51.3935010Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-12T21:38:51.4058803Z    |
+2026-11-12T21:38:51.4216137Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-12T21:38:51.4449143Z    |       ^^^^^^^^^^^^^^^^
+2026-11-12T21:38:51.4538154Z 
+2026-11-12T21:38:51.4795547Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-12T21:38:51.4920509Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-12T21:38:51.4986622Z    |
+2026-11-12T21:38:51.5065112Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-12T21:38:51.5359146Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:51.5405373Z 
+2026-11-12T21:38:51.5427258Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-12T21:38:51.5487521Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-12T21:38:51.5544845Z    |
+2026-11-12T21:38:51.5765396Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-12T21:38:51.5818696Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:51.5844745Z 
+2026-11-12T21:38:51.5872889Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-12T21:38:51.6333761Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-12T21:38:51.6444888Z    |
+2026-11-12T21:38:51.6707150Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-12T21:38:51.7017419Z    |            ---------------------- fields in this struct
+2026-11-12T21:38:51.7160154Z 60 |     issuer_socket: PathBuf,
+2026-11-12T21:38:51.7189682Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:38:51.7582889Z 61 |     issuer_uid: u32,
+2026-11-12T21:38:51.7711947Z    |     ^^^^^^^^^^
+2026-11-12T21:38:51.8172100Z 62 |     issuer_timeout: Duration,
+2026-11-12T21:38:51.8482580Z    |     ^^^^^^^^^^^^^^
+2026-11-12T21:38:51.8788747Z 
+2026-11-12T21:38:51.9108468Z warning: struct `IssuerRequest` is never constructed
+2026-11-12T21:38:51.9287349Z    --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-12T21:38:51.9757044Z     |
+2026-11-12T21:38:52.0082471Z 170 | struct IssuerRequest {
+2026-11-12T21:38:52.0288506Z     |        ^^^^^^^^^^^^^
+2026-11-12T21:38:52.0471893Z 
+2026-11-12T21:38:52.0697373Z warning: 10 warnings emitted
+2026-11-12T21:38:52.1009885Z 
+2026-11-12T21:38:52.1673886Z [6,657 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 148s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:53.2043702Z [6,657 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 149s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:54.2982067Z [6,659 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 150s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:55.2880800Z [6,659 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 151s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:38:56.3775257Z [6,659 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 152s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:38:56.5264792Z INFO: From Compiling Rust bin //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests-bin (37 files):
+2026-11-12T21:38:56.5986139Z warning: unused import: `std::io::Read`
+2026-11-12T21:38:56.6827291Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-12T21:38:56.7383714Z    |
+2026-11-12T21:38:56.8149681Z 10 | use std::io::Read;
+2026-11-12T21:38:56.8834034Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:38:56.9334584Z    |
+2026-11-12T21:38:56.9809974Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:57.0199219Z 
+2026-11-12T21:38:57.0818677Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-12T21:38:57.1626301Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-12T21:38:57.2714789Z    |
+2026-11-12T21:38:57.3250616Z 22 | use tokio::io::AsyncReadExt;
+2026-11-12T21:38:57.4057916Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:57.4659641Z 
+2026-11-12T21:38:57.5305216Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-12T21:38:57.6436262Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-12T21:38:57.7529767Z    |
+2026-11-12T21:38:57.8286162Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-12T21:38:57.9373779Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:58.0034758Z 
+2026-11-12T21:38:58.0881720Z warning: unused import: `tokio::time::timeout`
+2026-11-12T21:38:58.1254070Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-12T21:38:58.2314585Z    |
+2026-11-12T21:38:58.3124588Z 24 | use tokio::time::timeout;
+2026-11-12T21:38:58.3940963Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:58.4720214Z 
+2026-11-12T21:38:58.5637461Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-12T21:38:58.6409408Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-12T21:38:58.7481907Z    |
+2026-11-12T21:38:58.8179503Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-12T21:38:58.9139951Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:38:58.9915680Z    |
+2026-11-12T21:38:59.0647116Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:38:59.1557284Z 
+2026-11-12T21:38:59.2202892Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-12T21:38:59.3261830Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-12T21:38:59.3942530Z    |
+2026-11-12T21:38:59.4811661Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-12T21:38:59.5631334Z    |       ^^^^^^^^^^^^^^^^
+2026-11-12T21:38:59.6614865Z 
+2026-11-12T21:38:59.7486041Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-12T21:38:59.8457555Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-12T21:38:59.9746773Z    |
+2026-11-12T21:39:00.0826964Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-12T21:39:00.1552396Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:00.2644176Z 
+2026-11-12T21:39:00.3818106Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-12T21:39:00.4614498Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-12T21:39:00.5631539Z    |
+2026-11-12T21:39:00.6410487Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-12T21:39:00.7428787Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:00.8326178Z 
+2026-11-12T21:39:00.8833302Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-12T21:39:01.0081655Z   --> hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-12T21:39:01.1126161Z    |
+2026-11-12T21:39:01.1972187Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-12T21:39:01.2515646Z    |            ---------------------- fields in this struct
+2026-11-12T21:39:01.3408208Z 60 |     issuer_socket: PathBuf,
+2026-11-12T21:39:01.4077077Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:39:01.4896301Z 61 |     issuer_uid: u32,
+2026-11-12T21:39:01.5556614Z    |     ^^^^^^^^^^
+2026-11-12T21:39:01.6262307Z 62 |     issuer_timeout: Duration,
+2026-11-12T21:39:01.6971577Z    |     ^^^^^^^^^^^^^^
+2026-11-12T21:39:01.7678573Z 
+2026-11-12T21:39:01.8327255Z warning: struct `IssuerRequest` is never constructed
+2026-11-12T21:39:01.8855060Z    --> hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-12T21:39:01.9668328Z     |
+2026-11-12T21:39:02.0360283Z 170 | struct IssuerRequest {
+2026-11-12T21:39:02.1027462Z     |        ^^^^^^^^^^^^^
+2026-11-12T21:39:02.1792171Z 
+2026-11-12T21:39:02.2228785Z warning: function `install_final_revalidation_test_hook` is never used
+2026-11-12T21:39:02.2859617Z    --> hepta-infer-worker-host/src\native_app_server.rs:104:4
+2026-11-12T21:39:02.3539057Z     |
+2026-11-12T21:39:02.3929229Z 104 | fn install_final_revalidation_test_hook(hook: std::sync::Arc<FinalRevalidationTestHook>) {
+2026-11-12T21:39:02.4693793Z     |    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:02.5267595Z 
+2026-11-12T21:39:02.5771917Z warning: 11 warnings emitted
+2026-11-12T21:39:02.6383363Z 
+2026-11-12T21:39:02.7016199Z [6,663 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 153s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:02.7803216Z [6,667 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 154s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:02.8364112Z [6,670 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 155s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:02.9052751Z [6,670 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 157s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:02.9925599Z [6,670 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 159s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:03.8782258Z [6,671 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 160s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:04.9756875Z [6,672 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 161s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:06.0672006Z [6,672 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 162s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:09.4814991Z [6,672 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 165s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:12.1302279Z [6,672 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 168s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:13.9713975Z [6,673 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 170s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:20.0401675Z [6,673 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 176s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:21.5852891Z [6,675 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 177s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:28.9340869Z [6,675 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 185s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:30.1383224Z [6,676 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 186s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:33.0968276Z [6,676 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 189s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:34.3734991Z [6,677 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 190s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:35.5863783Z [6,678 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 191s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:37.5927953Z [6,678 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 194s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:38.6875772Z [6,679 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 195s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:39.7089604Z [6,679 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 196s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:40.6899609Z [6,679 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 197s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:41.7358889Z [6,683 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 198s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:42.8922690Z [6,683 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 199s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:43.8943898Z [6,683 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 200s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:44.8779914Z [6,683 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 201s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:47.3642892Z [6,683 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 203s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:47.3893789Z INFO: From Clippy //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host:
+2026-11-12T21:39:47.4094229Z warning: unused import: `std::io::Read`
+2026-11-12T21:39:47.4709068Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:10:5
+2026-11-12T21:39:47.5039206Z    |
+2026-11-12T21:39:47.5194238Z 10 | use std::io::Read;
+2026-11-12T21:39:47.5455464Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:39:47.5574638Z    |
+2026-11-12T21:39:47.5807234Z    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:39:47.5908287Z 
+2026-11-12T21:39:47.6248651Z warning: unused import: `tokio::io::AsyncReadExt`
+2026-11-12T21:39:47.6374079Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:22:5
+2026-11-12T21:39:47.6460563Z    |
+2026-11-12T21:39:47.6734704Z 22 | use tokio::io::AsyncReadExt;
+2026-11-12T21:39:47.6832294Z    |     ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:47.7242577Z 
+2026-11-12T21:39:47.7439262Z warning: unused import: `tokio::io::AsyncWriteExt`
+2026-11-12T21:39:47.7486395Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:23:5
+2026-11-12T21:39:47.7690105Z    |
+2026-11-12T21:39:47.7780323Z 23 | use tokio::io::AsyncWriteExt;
+2026-11-12T21:39:47.7951896Z    |     ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:47.8130060Z 
+2026-11-12T21:39:47.8399480Z warning: unused import: `tokio::time::timeout`
+2026-11-12T21:39:47.8675055Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:24:5
+2026-11-12T21:39:47.8893492Z    |
+2026-11-12T21:39:47.9038586Z 24 | use tokio::time::timeout;
+2026-11-12T21:39:47.9302583Z    |     ^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:47.9619046Z 
+2026-11-12T21:39:48.0055057Z warning: constant `AUTHORITY_PORT_OPERATION` is never used
+2026-11-12T21:39:48.0198299Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:30:7
+2026-11-12T21:39:48.0402027Z    |
+2026-11-12T21:39:48.0628945Z 30 | const AUTHORITY_PORT_OPERATION: &str = "runtime.codex.turn_start";
+2026-11-12T21:39:48.0795522Z    |       ^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:48.1070745Z    |
+2026-11-12T21:39:48.1181681Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:39:48.1205481Z 
+2026-11-12T21:39:48.1710003Z warning: constant `MAX_CONFIG_BYTES` is never used
+2026-11-12T21:39:48.1766700Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:31:7
+2026-11-12T21:39:48.1949404Z    |
+2026-11-12T21:39:48.2087831Z 31 | const MAX_CONFIG_BYTES: usize = 64 * 1024;
+2026-11-12T21:39:48.2236584Z    |       ^^^^^^^^^^^^^^^^
+2026-11-12T21:39:48.2510618Z 
+2026-11-12T21:39:48.2677326Z warning: constant `MAX_REQUEST_BYTES` is never used
+2026-11-12T21:39:48.2842599Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:32:7
+2026-11-12T21:39:48.3056256Z    |
+2026-11-12T21:39:48.3212948Z 32 | const MAX_REQUEST_BYTES: usize = 16 * 1024;
+2026-11-12T21:39:48.3391312Z    |       ^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:48.3554185Z 
+2026-11-12T21:39:48.3909470Z warning: constant `MAX_RESPONSE_BYTES` is never used
+2026-11-12T21:39:48.3998367Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:33:7
+2026-11-12T21:39:48.4238331Z    |
+2026-11-12T21:39:48.4386525Z 33 | const MAX_RESPONSE_BYTES: usize = 64 * 1024;
+2026-11-12T21:39:48.4878062Z    |       ^^^^^^^^^^^^^^^^^^
+2026-11-12T21:39:48.5111512Z 
+2026-11-12T21:39:48.5226131Z warning: fields `issuer_socket`, `issuer_uid`, and `issuer_timeout` are never read
+2026-11-12T21:39:48.5614555Z   --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:60:5
+2026-11-12T21:39:48.5894336Z    |
+2026-11-12T21:39:48.6144585Z 59 | pub struct UnixFinalUseAuthorizer {
+2026-11-12T21:39:48.6375198Z    |            ---------------------- fields in this struct
+2026-11-12T21:39:48.6604511Z 60 |     issuer_socket: PathBuf,
+2026-11-12T21:39:48.6840962Z    |     ^^^^^^^^^^^^^
+2026-11-12T21:39:48.7075484Z 61 |     issuer_uid: u32,
+2026-11-12T21:39:48.7403333Z    |     ^^^^^^^^^^
+2026-11-12T21:39:48.7616846Z 62 |     issuer_timeout: Duration,
+2026-11-12T21:39:48.7754559Z    |     ^^^^^^^^^^^^^^
+2026-11-12T21:39:48.8006839Z 
+2026-11-12T21:39:48.8068857Z warning: struct `IssuerRequest` is never constructed
+2026-11-12T21:39:48.8216780Z    --> codex-rs/hepta-infer-worker-host/src\final_use_authorizer.rs:170:8
+2026-11-12T21:39:48.8314903Z     |
+2026-11-12T21:39:48.8426955Z 170 | struct IssuerRequest {
+2026-11-12T21:39:48.8493538Z     |        ^^^^^^^^^^^^^
+2026-11-12T21:39:48.8546442Z 
+2026-11-12T21:39:48.8550991Z warning: 10 warnings emitted
+2026-11-12T21:39:48.8598183Z 
+2026-11-12T21:39:48.8805892Z [6,684 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 205s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:50.0318882Z [6,684 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 206s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:39:51.8761080Z [6,685 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 208s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:52.8955142Z [6,685 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 209s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:53.8869014Z [6,685 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 210s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:54.8902210Z [6,685 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 211s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:55.9339861Z [6,686 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 212s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:56.9584317Z [6,686 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 213s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:39:57.9848177Z [6,686 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 214s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:04.6753870Z [6,686 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 221s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:40:06.3919155Z [6,686 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 222s remote-cache, local ... (30 actions, 6 running)
+2026-11-12T21:40:07.4695258Z [6,690 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 223s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:09.1601229Z [6,690 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 225s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:12.4150920Z [6,690 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 228s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:40:15.7615040Z INFO: From Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files):
+2026-11-12T21:40:15.8345587Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:40:15.9110845Z   --> tui/src\dynamic_tools_mcp.rs:33:18
+2026-11-12T21:40:15.9818917Z    |
+2026-11-12T21:40:16.0532832Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:40:16.1376464Z    |                  ^^^^^^^^^^
+2026-11-12T21:40:16.1866322Z    |
+2026-11-12T21:40:16.2462669Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:40:16.3062131Z 
+2026-11-12T21:40:16.3703074Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:40:16.4466665Z    --> tui/src\dynamic_tools_mcp.rs:188:27
+2026-11-12T21:40:16.5052847Z     |
+2026-11-12T21:40:16.5794271Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:40:16.6320930Z     |                           ^^^^^^^^^^
+2026-11-12T21:40:16.6859616Z 
+2026-11-12T21:40:16.7460977Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:40:16.7960370Z    --> tui/src\dynamic_tools_mcp.rs:189:9
+2026-11-12T21:40:16.8410295Z     |
+2026-11-12T21:40:16.8860975Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:40:16.9260934Z     |         ^^^^^^^^^^
+2026-11-12T21:40:16.9874323Z 
+2026-11-12T21:40:17.0311682Z warning: 3 warnings emitted
+2026-11-12T21:40:17.0669259Z 
+2026-11-12T21:40:17.1320712Z [6,690 / 6,915] Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files); 233s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:40:17.7660756Z [6,691 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 39s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:18.8034884Z [6,691 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 40s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:21.3375484Z [6,691 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 43s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:40:22.9022251Z [6,692 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 44s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:23.9324425Z [6,692 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 45s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:24.9493645Z [6,692 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 46s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:26.9342974Z [6,692 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 48s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:30.8519539Z [6,692 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 52s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:40:31.9769569Z [6,695 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 54s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:33.7360597Z [6,696 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 55s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:35.0623049Z [6,696 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 57s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:36.0387045Z [6,697 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 58s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:37.1130432Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 59s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:38.0736262Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 60s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:40.2038330Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 62s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:43.3467069Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 65s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:45.5167755Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 67s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:48.3603035Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 70s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:54.0369858Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 75s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:56.1721173Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 78s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:40:57.2143700Z [6,698 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 79s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:40:58.2609078Z [6,699 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 80s remote-cache, local ... (29 actions, 4 running)
+2026-11-12T21:40:59.2596931Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 81s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:00.2839928Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 82s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:01.4523008Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 83s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:02.4110483Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 84s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:08.4271422Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 90s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:10.1094271Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 92s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:11.4357908Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 93s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:14.9804827Z [6,702 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 97s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:41:15.5533195Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files):
+2026-11-12T21:41:15.5776816Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T21:41:15.6034682Z    --> hepta-agentd/src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T21:41:15.6096450Z     |
+2026-11-12T21:41:15.6356901Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T21:41:15.6422426Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:15.6622241Z     |
+2026-11-12T21:41:15.6713200Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:15.6836223Z 
+2026-11-12T21:41:15.7033128Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:41:15.7157035Z   --> hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:41:15.7352725Z    |
+2026-11-12T21:41:15.7476808Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:41:15.7702764Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:15.7796128Z 
+2026-11-12T21:41:15.8036577Z warning: unused import: `crate::RunPhase`
+2026-11-12T21:41:15.8116759Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-12T21:41:15.8356499Z    |
+2026-11-12T21:41:15.8574718Z 43 | use crate::RunPhase;
+2026-11-12T21:41:15.8691713Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T21:41:15.8923185Z 
+2026-11-12T21:41:15.9012834Z warning: variable does not need to be mutable
+2026-11-12T21:41:15.9077085Z    --> hepta-agentd/src\prompt_runtime_tests.rs:795:10
+2026-11-12T21:41:15.9246385Z     |
+2026-11-12T21:41:15.9336058Z 795 |     let (mut store, initial) =
+2026-11-12T21:41:15.9396198Z     |          ----^^^^^
+2026-11-12T21:41:15.9566542Z     |          |
+2026-11-12T21:41:15.9572295Z     |          help: remove this `mut`
+2026-11-12T21:41:15.9655755Z     |
+2026-11-12T21:41:15.9716548Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:15.9885951Z 
+2026-11-12T21:41:15.9902439Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:41:15.9972558Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:41:16.0036154Z   |
+2026-11-12T21:41:16.0080855Z 4 | impl AgentdConfig {
+2026-11-12T21:41:16.0225812Z   | ----------------- method in this implementation
+2026-11-12T21:41:16.0398702Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:41:16.0578381Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.0679981Z   |
+2026-11-12T21:41:16.0730287Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:16.0869497Z 
+2026-11-12T21:41:16.0910576Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:41:16.0938337Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:41:16.1009833Z     |
+2026-11-12T21:41:16.1050073Z  84 | impl LedgerFixture {
+2026-11-12T21:41:16.1200630Z     | ------------------ associated items in this implementation
+2026-11-12T21:41:16.1224877Z ...
+2026-11-12T21:41:16.1230846Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:41:16.1232424Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.1235661Z ...
+2026-11-12T21:41:16.1246788Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:41:16.1254910Z     |                   ^^^^^
+2026-11-12T21:41:16.1256380Z 
+2026-11-12T21:41:16.1260376Z warning: function `append_decision` is never used
+2026-11-12T21:41:16.1272509Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:41:16.1280619Z     |
+2026-11-12T21:41:16.1286293Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:41:16.1297432Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.1299797Z 
+2026-11-12T21:41:16.1301699Z warning: function `closure` is never used
+2026-11-12T21:41:16.1310276Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:41:16.1319004Z     |
+2026-11-12T21:41:16.1326274Z 212 | pub(super) fn closure(
+2026-11-12T21:41:16.1330771Z     |               ^^^^^^^
+2026-11-12T21:41:16.1335163Z 
+2026-11-12T21:41:16.1344493Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:41:16.1353251Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:41:16.1357170Z    |
+2026-11-12T21:41:16.1363058Z 84 | impl LedgerFixture {
+2026-11-12T21:41:16.1411059Z    | ------------------ associated function in this implementation
+2026-11-12T21:41:16.1543257Z ...
+2026-11-12T21:41:16.1723643Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:41:16.1922923Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.1974209Z 
+2026-11-12T21:41:16.2060537Z warning: function `original_evaluation_source` is never used
+2026-11-12T21:41:16.2271061Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T21:41:16.2290150Z   |
+2026-11-12T21:41:16.2350520Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T21:41:16.2400376Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.2450668Z 
+2026-11-12T21:41:16.2600689Z warning: method `require_decision` is never used
+2026-11-12T21:41:16.2609966Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:41:16.2670680Z     |
+2026-11-12T21:41:16.2730930Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:41:16.2770521Z     | ----------------------------------- method in this implementation
+2026-11-12T21:41:16.2773303Z ...
+2026-11-12T21:41:16.2813382Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:41:16.2942268Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.2990614Z 
+2026-11-12T21:41:16.3050590Z warning: function `require_decision` is never used
+2026-11-12T21:41:16.3100279Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:41:16.3147089Z     |
+2026-11-12T21:41:16.3149751Z 443 | pub(super) fn require_decision(
+2026-11-12T21:41:16.3193842Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.3196109Z 
+2026-11-12T21:41:16.3431879Z warning: method `require_original_input` is never used
+2026-11-12T21:41:16.3672618Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:41:16.3896729Z    |
+2026-11-12T21:41:16.4120701Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:41:16.4340699Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:41:16.4580428Z ...
+2026-11-12T21:41:16.4780336Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:41:16.5076851Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:16.5236703Z 
+2026-11-12T21:41:16.5469689Z warning: field `at` is never read
+2026-11-12T21:41:16.5810825Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:41:16.6072520Z    |
+2026-11-12T21:41:16.6220583Z 91 | pub(super) struct Fixture {
+2026-11-12T21:41:16.6483112Z    |                   ------- field in this struct
+2026-11-12T21:41:16.6734377Z 92 |     root: PathBuf,
+2026-11-12T21:41:16.7089455Z 93 |     pub(super) at: u64,
+2026-11-12T21:41:16.7368040Z    |                ^^
+2026-11-12T21:41:16.7498648Z 
+2026-11-12T21:41:16.7786274Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T21:41:16.8048905Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T21:41:16.8389005Z     |
+2026-11-12T21:41:16.8662316Z 108 | enum MaterialFixtureProfile {
+2026-11-12T21:41:16.8780394Z     |      ---------------------- variants in this enum
+2026-11-12T21:41:16.9048926Z 109 |     NoUpdate,
+2026-11-12T21:41:16.9289095Z 110 |     CandidatePages,
+2026-11-12T21:41:16.9429056Z     |     ^^^^^^^^^^^^^^
+2026-11-12T21:41:16.9779309Z 111 |     CandidateMaximumPages,
+2026-11-12T21:41:17.0069061Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:17.0332106Z     |
+2026-11-12T21:41:17.0515094Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:41:17.0767170Z 
+2026-11-12T21:41:17.1096080Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T21:41:17.1449121Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T21:41:17.1726398Z     |
+2026-11-12T21:41:17.1986108Z 114 | impl Fixture {
+2026-11-12T21:41:17.2165601Z     | ------------ associated functions in this implementation
+2026-11-12T21:41:17.2495456Z ...
+2026-11-12T21:41:17.2725112Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T21:41:17.3015525Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T21:41:17.3325218Z ...
+2026-11-12T21:41:17.3515846Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T21:41:17.3734829Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:17.3994783Z ...
+2026-11-12T21:41:17.4295483Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T21:41:17.4475412Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:17.4734784Z 
+2026-11-12T21:41:17.5055432Z warning: method `set_test_clock` is never used
+2026-11-12T21:41:17.5359300Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T21:41:17.5417209Z     |
+2026-11-12T21:41:17.5735049Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T21:41:17.5825162Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:41:17.6075302Z ...
+2026-11-12T21:41:17.6242125Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T21:41:17.6694443Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T21:41:17.7002819Z 
+2026-11-12T21:41:17.7245681Z warning: fields `executions` and `now` are never read
+2026-11-12T21:41:17.7385096Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T21:41:17.7624837Z    |
+2026-11-12T21:41:17.7885314Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T21:41:17.8055362Z    |                   --------------- fields in this struct
+2026-11-12T21:41:17.8335137Z ...
+2026-11-12T21:41:17.8655008Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T21:41:17.8974635Z    |     ^^^^^^^^^^
+2026-11-12T21:41:17.9294960Z 63 |     now: u64,
+2026-11-12T21:41:17.9523905Z    |     ^^^
+2026-11-12T21:41:17.9719697Z 
+2026-11-12T21:41:17.9954817Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T21:41:18.0198945Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T21:41:18.0375069Z     |
+2026-11-12T21:41:18.0691877Z  66 | impl LearningFixture {
+2026-11-12T21:41:18.0910575Z     | -------------------- methods in this implementation
+2026-11-12T21:41:18.1250443Z ...
+2026-11-12T21:41:18.1676960Z 241 |     pub(crate) fn with_training(
+2026-11-12T21:41:18.2140389Z     |                   ^^^^^^^^^^^^^
+2026-11-12T21:41:18.2520517Z ...
+2026-11-12T21:41:18.2870805Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T21:41:18.2889672Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:18.2890048Z 
+2026-11-12T21:41:18.2890304Z warning: method `original_model_commitments` is never used
+2026-11-12T21:41:18.2891441Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:41:18.2892000Z   |
+2026-11-12T21:41:18.2892403Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:41:18.2893106Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:41:18.2893759Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:41:18.2894586Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:18.2894872Z 
+2026-11-12T21:41:18.2895046Z warning: variant `Notes` is never constructed
+2026-11-12T21:41:18.2895505Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:41:18.2895852Z     |
+2026-11-12T21:41:18.2896149Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:41:18.2896606Z     |      ------------------------- variant in this enum
+2026-11-12T21:41:18.2897016Z 632 |     Full,
+2026-11-12T21:41:18.2897384Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:41:18.2897813Z     |     ^^^^^
+2026-11-12T21:41:18.2897969Z 
+2026-11-12T21:41:18.2898252Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:41:18.2899233Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:41:18.2899638Z     |
+2026-11-12T21:41:18.2900009Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:41:18.2900475Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:18.2900743Z 
+2026-11-12T21:41:18.2901162Z warning: method `circuit_learning_source` is never used
+2026-11-12T21:41:18.2901693Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T21:41:18.2902094Z    |
+2026-11-12T21:41:18.2902343Z 49 | impl AgentdState {
+2026-11-12T21:41:18.2902715Z    | ---------------- method in this implementation
+2026-11-12T21:41:18.2903135Z ...
+2026-11-12T21:41:18.2903524Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T21:41:18.2904083Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:18.2904362Z 
+2026-11-12T21:41:18.2906462Z warning: method `close_expired_original` is never used
+2026-11-12T21:41:18.2907380Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:41:18.2908152Z     |
+2026-11-12T21:41:18.2908676Z   3 | impl AgentdTextRequests {
+2026-11-12T21:41:18.2909113Z     | ----------------------- method in this implementation
+2026-11-12T21:41:18.2909553Z ...
+2026-11-12T21:41:18.2909877Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:41:18.2910314Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:18.2910599Z 
+2026-11-12T21:41:18.2910737Z warning: 24 warnings emitted
+2026-11-12T21:41:18.2910968Z 
+2026-11-12T21:41:18.2911656Z [6,705 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 40s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:18.2913129Z [6,705 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 41s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:18.6137043Z [6,707 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 42s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:20.6271064Z [6,707 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 44s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:41:21.6159216Z [6,709 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 45s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:22.6394305Z [6,712 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 46s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:23.6575494Z [6,713 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 47s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:24.6518276Z [6,713 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 48s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:25.6611937Z [6,714 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 49s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:26.6982899Z [6,714 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 50s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:29.7407447Z [6,714 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 53s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:30.7623935Z [6,714 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 54s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:41:30.8194894Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin:
+2026-11-12T21:41:30.8304356Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T21:41:30.8343972Z    --> hepta-agentd/src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T21:41:30.8484118Z     |
+2026-11-12T21:41:30.8524259Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T21:41:30.8623998Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:30.8663637Z     |
+2026-11-12T21:41:30.8804129Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:30.8843610Z 
+2026-11-12T21:41:30.8901530Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:41:30.8943263Z   --> hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:41:30.8979561Z    |
+2026-11-12T21:41:30.8997755Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:41:30.9077861Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:30.9132318Z 
+2026-11-12T21:41:30.9133060Z warning: unused import: `crate::RunPhase`
+2026-11-12T21:41:30.9164772Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-12T21:41:30.9263320Z    |
+2026-11-12T21:41:30.9303765Z 43 | use crate::RunPhase;
+2026-11-12T21:41:30.9421458Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T21:41:30.9489456Z 
+2026-11-12T21:41:30.9503795Z warning: file is loaded as a module multiple times: `codex-rs/hepta-agentd/src\circuit_credit_ledger_test_support.rs`
+2026-11-12T21:41:30.9583816Z   |
+2026-11-12T21:41:30.9623996Z   = help: replace all but one `mod` item with `use` items
+2026-11-12T21:41:30.9646436Z   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+2026-11-12T21:41:30.9823839Z   = note: `#[warn(clippy::duplicate_mod)]` on by default
+2026-11-12T21:41:30.9903325Z 
+2026-11-12T21:41:30.9944049Z warning: variable does not need to be mutable
+2026-11-12T21:41:30.9979776Z    --> hepta-agentd/src\prompt_runtime_tests.rs:795:10
+2026-11-12T21:41:31.0113887Z     |
+2026-11-12T21:41:31.0143609Z 795 |     let (mut store, initial) =
+2026-11-12T21:41:31.0223923Z     |          ----^^^^^
+2026-11-12T21:41:31.0263886Z     |          |
+2026-11-12T21:41:31.0433478Z     |          help: remove this `mut`
+2026-11-12T21:41:31.0463660Z     |
+2026-11-12T21:41:31.0543391Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:31.0544000Z 
+2026-11-12T21:41:31.0544439Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:41:31.0583944Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:41:31.0754000Z   |
+2026-11-12T21:41:31.0783725Z 4 | impl AgentdConfig {
+2026-11-12T21:41:31.0864150Z   | ----------------- method in this implementation
+2026-11-12T21:41:31.0904252Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:41:31.0994612Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.1107113Z   |
+2026-11-12T21:41:31.1183934Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:31.1223515Z 
+2026-11-12T21:41:31.1390518Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:41:31.1424436Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:41:31.1504337Z     |
+2026-11-12T21:41:31.1539284Z  84 | impl LedgerFixture {
+2026-11-12T21:41:31.1720299Z     | ------------------ associated items in this implementation
+2026-11-12T21:41:31.1739615Z ...
+2026-11-12T21:41:31.1820028Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:41:31.1869617Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.2047763Z ...
+2026-11-12T21:41:31.2059518Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:41:31.2060704Z     |                   ^^^^^
+2026-11-12T21:41:31.2061763Z 
+2026-11-12T21:41:31.2062102Z warning: function `append_decision` is never used
+2026-11-12T21:41:31.2201376Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:41:31.2430288Z     |
+2026-11-12T21:41:31.2620483Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:41:31.2750002Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.2939476Z 
+2026-11-12T21:41:31.3010243Z warning: function `closure` is never used
+2026-11-12T21:41:31.3070316Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:41:31.3117459Z     |
+2026-11-12T21:41:31.3154068Z 212 | pub(super) fn closure(
+2026-11-12T21:41:31.3154654Z     |               ^^^^^^^
+2026-11-12T21:41:31.3155027Z 
+2026-11-12T21:41:31.3155429Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:41:31.3390626Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:41:31.3437566Z    |
+2026-11-12T21:41:31.3701651Z 84 | impl LedgerFixture {
+2026-11-12T21:41:31.3709357Z    | ------------------ associated function in this implementation
+2026-11-12T21:41:31.3716073Z ...
+2026-11-12T21:41:31.3723516Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:41:31.3726975Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.3729799Z 
+2026-11-12T21:41:31.3730775Z warning: function `original_evaluation_source` is never used
+2026-11-12T21:41:31.3734499Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T21:41:31.3738245Z   |
+2026-11-12T21:41:31.3743517Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T21:41:31.3747954Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.3755611Z 
+2026-11-12T21:41:31.3759889Z warning: method `require_decision` is never used
+2026-11-12T21:41:31.3765008Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:41:31.3766694Z     |
+2026-11-12T21:41:31.3770365Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:41:31.3771641Z     | ----------------------------------- method in this implementation
+2026-11-12T21:41:31.3772377Z ...
+2026-11-12T21:41:31.3773151Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:41:31.3775796Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.3789351Z 
+2026-11-12T21:41:31.3813974Z warning: function `require_decision` is never used
+2026-11-12T21:41:31.3831211Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:41:31.3851258Z     |
+2026-11-12T21:41:31.3867780Z 443 | pub(super) fn require_decision(
+2026-11-12T21:41:31.3896354Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.3935990Z 
+2026-11-12T21:41:31.3964498Z warning: method `require_original_input` is never used
+2026-11-12T21:41:31.4009710Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:41:31.4017810Z    |
+2026-11-12T21:41:31.4072704Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:41:31.4116482Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:41:31.4134761Z ...
+2026-11-12T21:41:31.4181164Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:41:31.4209764Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.4210245Z 
+2026-11-12T21:41:31.4210494Z warning: field `at` is never read
+2026-11-12T21:41:31.4211108Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:41:31.4239552Z    |
+2026-11-12T21:41:31.4246991Z 91 | pub(super) struct Fixture {
+2026-11-12T21:41:31.4319889Z    |                   ------- field in this struct
+2026-11-12T21:41:31.4379928Z 92 |     root: PathBuf,
+2026-11-12T21:41:31.4560259Z 93 |     pub(super) at: u64,
+2026-11-12T21:41:31.4566998Z    |                ^^
+2026-11-12T21:41:31.4639194Z 
+2026-11-12T21:41:31.4700130Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T21:41:31.4786549Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T21:41:31.4850514Z     |
+2026-11-12T21:41:31.4879707Z 108 | enum MaterialFixtureProfile {
+2026-11-12T21:41:31.4889542Z     |      ---------------------- variants in this enum
+2026-11-12T21:41:31.4957139Z 109 |     NoUpdate,
+2026-11-12T21:41:31.5019545Z 110 |     CandidatePages,
+2026-11-12T21:41:31.5166783Z     |     ^^^^^^^^^^^^^^
+2026-11-12T21:41:31.5168112Z 111 |     CandidateMaximumPages,
+2026-11-12T21:41:31.5168691Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.5169198Z     |
+2026-11-12T21:41:31.5210178Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:41:31.5287010Z 
+2026-11-12T21:41:31.5340404Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T21:41:31.5520636Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T21:41:31.5529578Z     |
+2026-11-12T21:41:31.5607767Z 114 | impl Fixture {
+2026-11-12T21:41:31.5700526Z     | ------------ associated functions in this implementation
+2026-11-12T21:41:31.5840106Z ...
+2026-11-12T21:41:31.5849655Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T21:41:31.5929701Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.6019693Z ...
+2026-11-12T21:41:31.6160280Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T21:41:31.6169618Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.6232836Z ...
+2026-11-12T21:41:31.6233780Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T21:41:31.6339880Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.6483149Z 
+2026-11-12T21:41:31.6495545Z warning: method `set_test_clock` is never used
+2026-11-12T21:41:31.6575801Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T21:41:31.6616949Z     |
+2026-11-12T21:41:31.6617855Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T21:41:31.6665333Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:41:31.6770010Z ...
+2026-11-12T21:41:31.6787655Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T21:41:31.6806462Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T21:41:31.6820316Z 
+2026-11-12T21:41:31.6841227Z warning: fields `executions` and `now` are never read
+2026-11-12T21:41:31.6849158Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T21:41:31.7011939Z    |
+2026-11-12T21:41:31.7104791Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T21:41:31.7107273Z    |                   --------------- fields in this struct
+2026-11-12T21:41:31.7130640Z ...
+2026-11-12T21:41:31.7135517Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T21:41:31.7137407Z    |     ^^^^^^^^^^
+2026-11-12T21:41:31.7156738Z 63 |     now: u64,
+2026-11-12T21:41:31.7331110Z    |     ^^^
+2026-11-12T21:41:31.7430218Z 
+2026-11-12T21:41:31.7451303Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T21:41:31.7477073Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T21:41:31.7508588Z     |
+2026-11-12T21:41:31.7510334Z  66 | impl LearningFixture {
+2026-11-12T21:41:31.7516195Z     | -------------------- methods in this implementation
+2026-11-12T21:41:31.7518157Z ...
+2026-11-12T21:41:31.7561597Z 241 |     pub(crate) fn with_training(
+2026-11-12T21:41:31.7708441Z     |                   ^^^^^^^^^^^^^
+2026-11-12T21:41:31.7869496Z ...
+2026-11-12T21:41:31.7895834Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T21:41:31.7931795Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.7940813Z 
+2026-11-12T21:41:31.7950562Z warning: method `original_model_commitments` is never used
+2026-11-12T21:41:31.8211739Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:41:31.8319818Z   |
+2026-11-12T21:41:31.8457643Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:41:31.8767248Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:41:31.9097074Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:41:31.9160231Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:31.9426572Z 
+2026-11-12T21:41:31.9486875Z warning: variant `Notes` is never constructed
+2026-11-12T21:41:31.9756760Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:41:31.9812371Z     |
+2026-11-12T21:41:31.9890144Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:41:32.0170991Z     |      ------------------------- variant in this enum
+2026-11-12T21:41:32.0221004Z 632 |     Full,
+2026-11-12T21:41:32.0491086Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:41:32.0541183Z     |     ^^^^^
+2026-11-12T21:41:32.0816834Z 
+2026-11-12T21:41:32.0861191Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:41:32.1171441Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:41:32.1300816Z     |
+2026-11-12T21:41:32.1430714Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:41:32.1623143Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:32.1710536Z 
+2026-11-12T21:41:32.1793572Z warning: method `circuit_learning_source` is never used
+2026-11-12T21:41:32.1967698Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T21:41:32.2039080Z    |
+2026-11-12T21:41:32.2289420Z 49 | impl AgentdState {
+2026-11-12T21:41:32.2449780Z    | ---------------- method in this implementation
+2026-11-12T21:41:32.2676144Z ...
+2026-11-12T21:41:32.3009553Z 81 |     pub(crate) fn circuit_learning_source(&self) -> Option<&StableId> {
+2026-11-12T21:41:32.3235480Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:32.3509239Z 
+2026-11-12T21:41:32.3586029Z warning: method `close_expired_original` is never used
+2026-11-12T21:41:32.3849473Z    --> hepta-agentd/src\text_session_requests.rs:127:25
+2026-11-12T21:41:32.3898834Z     |
+2026-11-12T21:41:32.3979407Z   3 | impl AgentdTextRequests {
+2026-11-12T21:41:32.4309568Z     | ----------------------- method in this implementation
+2026-11-12T21:41:32.4534154Z ...
+2026-11-12T21:41:32.4716881Z 127 |     pub(crate) async fn close_expired_original(
+2026-11-12T21:41:32.4867471Z     |                         ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:32.4991942Z 
+2026-11-12T21:41:32.5239214Z warning: this function has too many arguments (8/7)
+2026-11-12T21:41:32.5318237Z    --> hepta-agentd/src\cell_q24_dataset.rs:193:5
+2026-11-12T21:41:32.5607750Z     |
+2026-11-12T21:41:32.5877320Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:41:32.6141325Z 194 | |         &mut self,
+2026-11-12T21:41:32.6371526Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:41:32.6648524Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:41:32.6930293Z ...   |
+2026-11-12T21:41:32.7230635Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:41:32.7317760Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:41:32.7361911Z     | |________________________________________________________________^
+2026-11-12T21:41:32.7643559Z     |
+2026-11-12T21:41:32.7832769Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:41:32.8130595Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:41:32.8259754Z 
+2026-11-12T21:41:32.8530675Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:41:32.8810839Z    --> hepta-agentd/src\circuit_task_source_codec.rs:508:36
+2026-11-12T21:41:32.8979854Z     |
+2026-11-12T21:41:32.9265608Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:41:32.9640310Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:41:33.0166417Z     |
+2026-11-12T21:41:33.0375624Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:41:33.0805295Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:41:33.1044731Z 
+2026-11-12T21:41:33.1400101Z warning: 27 warnings emitted
+2026-11-12T21:41:33.1755385Z 
+2026-11-12T21:41:33.1940952Z [6,715 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 55s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:33.2247116Z [6,715 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 56s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:33.8388546Z [6,718 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 57s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:41:34.8501040Z [6,721 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 58s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:35.9312567Z [6,721 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 59s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:36.9558953Z [6,721 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 60s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:38.0196402Z [6,721 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 62s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:39.0909927Z [6,721 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 63s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:40.1559930Z [6,722 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 64s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:45.5645536Z [6,722 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 69s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:41:46.5274870Z [6,724 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 70s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:49.7766524Z [6,724 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 73s remote-cache, local ... (30 actions, 4 running)
+2026-11-12T21:41:51.5973435Z [6,724 / 6,915] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files); 75s remote-cache, local ... (30 actions, 5 running)
+2026-11-12T21:41:51.7780617Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin:
+2026-11-12T21:41:51.8453365Z warning: unused import: `original_evaluation::original_evaluation_source`
+2026-11-12T21:41:51.9054399Z    --> hepta-agentd/src\cell_q24_dataset_source_test_support.rs:219:16
+2026-11-12T21:41:51.9442502Z     |
+2026-11-12T21:41:51.9567799Z 219 | pub(crate) use original_evaluation::original_evaluation_source;
+2026-11-12T21:41:52.0292512Z     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:52.0498554Z     |
+2026-11-12T21:41:52.1558449Z     = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:52.1932247Z 
+2026-11-12T21:41:52.2072731Z warning: unused import: `source::CircuitTaskPolicyProjectionV1`
+2026-11-12T21:41:52.2086065Z   --> hepta-agentd/src\circuit_task.rs:34:16
+2026-11-12T21:41:52.2086513Z    |
+2026-11-12T21:41:52.2471270Z 34 | pub(crate) use source::CircuitTaskPolicyProjectionV1;
+2026-11-12T21:41:52.2977614Z    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:52.3311211Z 
+2026-11-12T21:41:52.3908154Z warning: unused import: `crate::RunPhase`
+2026-11-12T21:41:52.4473755Z   --> hepta-agentd/src\state_isolation_tests.rs:43:5
+2026-11-12T21:41:52.4796972Z    |
+2026-11-12T21:41:52.5244508Z 43 | use crate::RunPhase;
+2026-11-12T21:41:52.5735780Z    |     ^^^^^^^^^^^^^^^
+2026-11-12T21:41:52.6219613Z 
+2026-11-12T21:41:52.7058866Z warning: file is loaded as a module multiple times: `codex-rs/hepta-agentd/src\circuit_credit_ledger_test_support.rs`
+2026-11-12T21:41:52.7156877Z   |
+2026-11-12T21:41:52.7990237Z   = help: replace all but one `mod` item with `use` items
+2026-11-12T21:41:52.8512475Z   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+2026-11-12T21:41:52.8896991Z   = note: `#[warn(clippy::duplicate_mod)]` on by default
+2026-11-12T21:41:52.9639629Z 
+2026-11-12T21:41:52.9974969Z warning: variable does not need to be mutable
+2026-11-12T21:41:53.0580857Z    --> hepta-agentd/src\prompt_runtime_tests.rs:795:10
+2026-11-12T21:41:53.0977498Z     |
+2026-11-12T21:41:53.1723737Z 795 |     let (mut store, initial) =
+2026-11-12T21:41:53.1870715Z     |          ----^^^^^
+2026-11-12T21:41:53.2576252Z     |          |
+2026-11-12T21:41:53.2888300Z     |          help: remove this `mut`
+2026-11-12T21:41:53.3364982Z     |
+2026-11-12T21:41:53.3791208Z     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:53.3842578Z 
+2026-11-12T21:41:53.3844609Z warning: method `with_desktop_objective` is never used
+2026-11-12T21:41:53.4176335Z  --> hepta-agentd/src\config_desktop.rs:5:19
+2026-11-12T21:41:53.4327618Z   |
+2026-11-12T21:41:53.4596333Z 4 | impl AgentdConfig {
+2026-11-12T21:41:53.4596892Z   | ----------------- method in this implementation
+2026-11-12T21:41:53.5049871Z 5 |     pub(crate) fn with_desktop_objective(
+2026-11-12T21:41:53.5247843Z   |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:53.5677507Z   |
+2026-11-12T21:41:53.6141432Z   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:41:53.6283071Z 
+2026-11-12T21:41:53.6734253Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:41:53.6993113Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:41:53.7365686Z     |
+2026-11-12T21:41:53.7498521Z  84 | impl LedgerFixture {
+2026-11-12T21:41:53.7985713Z     | ------------------ associated items in this implementation
+2026-11-12T21:41:53.8238691Z ...
+2026-11-12T21:41:53.8369438Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:41:53.8665582Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:53.8956086Z ...
+2026-11-12T21:41:53.9053922Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:41:53.9316158Z     |                   ^^^^^
+2026-11-12T21:41:53.9575252Z 
+2026-11-12T21:41:53.9641685Z warning: function `append_decision` is never used
+2026-11-12T21:41:53.9906077Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:41:54.0065458Z     |
+2026-11-12T21:41:54.0276076Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:41:54.0406631Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:41:54.0651548Z 
+2026-11-12T21:41:54.0835666Z warning: function `closure` is never used
+2026-11-12T21:41:54.1163792Z    --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:41:54.1265530Z     |
+2026-11-12T21:41:54.1280463Z 212 | pub(super) fn closure(
+2026-11-12T21:41:54.1586226Z     |               ^^^^^^^
+2026-11-12T21:41:54.1765903Z 
+2026-11-12T21:41:54.1941572Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:41:54.2231791Z   --> hepta-agentd/src\circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:41:54.2329376Z    |
+2026-11-12T21:41:54.2581258Z 84 | impl LedgerFixture {
+2026-11-12T21:41:54.2661228Z    | ------------------ associated function in this implementation
+2026-11-12T21:41:54.2937532Z ...
+2026-11-12T21:41:54.3263435Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:41:54.3652947Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:54.3697489Z 
+2026-11-12T21:41:54.4048833Z warning: function `original_evaluation_source` is never used
+2026-11-12T21:41:54.4064399Z  --> hepta-agentd/src\circuit_original_evaluation_task_support_tests.rs:6:21
+2026-11-12T21:41:54.4132915Z   |
+2026-11-12T21:41:54.4383432Z 6 | pub(crate) async fn original_evaluation_source(
+2026-11-12T21:41:54.4617663Z   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:54.4824785Z 
+2026-11-12T21:41:54.4962758Z warning: method `require_decision` is never used
+2026-11-12T21:41:54.5244975Z    --> hepta-agentd/src\circuit_task_source.rs:136:19
+2026-11-12T21:41:54.5393014Z     |
+2026-11-12T21:41:54.5530956Z 104 | impl CircuitTaskSourcePublicationV1 {
+2026-11-12T21:41:54.5659693Z     | ----------------------------------- method in this implementation
+2026-11-12T21:41:54.5774345Z ...
+2026-11-12T21:41:54.5813114Z 136 |     pub(crate) fn require_decision(
+2026-11-12T21:41:54.6029678Z     |                   ^^^^^^^^^^^^^^^^
+2026-11-12T21:41:54.6082000Z 
+2026-11-12T21:41:54.6135780Z warning: function `require_decision` is never used
+2026-11-12T21:41:54.6355663Z    --> hepta-agentd/src\circuit_task_source_codec.rs:443:15
+2026-11-12T21:41:54.6465630Z     |
+2026-11-12T21:41:54.6765581Z 443 | pub(super) fn require_decision(
+2026-11-12T21:41:54.6815345Z     |               ^^^^^^^^^^^^^^^^
+2026-11-12T21:41:54.7085127Z 
+2026-11-12T21:41:54.7135605Z warning: method `require_original_input` is never used
+2026-11-12T21:41:54.7178992Z   --> hepta-agentd/src\circuit_task_source_readback.rs:41:19
+2026-11-12T21:41:54.7475502Z    |
+2026-11-12T21:41:54.7760912Z 37 | impl<W: AnchorWitnessStore> CircuitTaskSourceReadbackV1<W> {
+2026-11-12T21:41:54.7887421Z    | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:41:54.8184970Z ...
+2026-11-12T21:41:54.8214339Z 41 |     pub(crate) fn require_original_input(
+2026-11-12T21:41:54.8278005Z    |                   ^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:54.8510677Z 
+2026-11-12T21:41:54.8821294Z warning: field `at` is never read
+2026-11-12T21:41:54.9029361Z   --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:41:54.9151470Z    |
+2026-11-12T21:41:54.9277900Z 91 | pub(super) struct Fixture {
+2026-11-12T21:41:54.9471259Z    |                   ------- field in this struct
+2026-11-12T21:41:54.9671120Z 92 |     root: PathBuf,
+2026-11-12T21:41:54.9801451Z 93 |     pub(super) at: u64,
+2026-11-12T21:41:54.9990983Z    |                ^^
+2026-11-12T21:41:55.0121172Z 
+2026-11-12T21:41:55.0311315Z warning: variants `CandidatePages` and `CandidateMaximumPages` are never constructed
+2026-11-12T21:41:55.0471169Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:110:5
+2026-11-12T21:41:55.0630711Z     |
+2026-11-12T21:41:55.0725118Z 108 | enum MaterialFixtureProfile {
+2026-11-12T21:41:55.0810891Z     |      ---------------------- variants in this enum
+2026-11-12T21:41:55.1011390Z 109 |     NoUpdate,
+2026-11-12T21:41:55.1130692Z 110 |     CandidatePages,
+2026-11-12T21:41:55.1217177Z     |     ^^^^^^^^^^^^^^
+2026-11-12T21:41:55.1236145Z 111 |     CandidateMaximumPages,
+2026-11-12T21:41:55.1471279Z     |     ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:55.1642283Z     |
+2026-11-12T21:41:55.1781477Z     = note: `MaterialFixtureProfile` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+2026-11-12T21:41:55.1870443Z 
+2026-11-12T21:41:55.2107536Z warning: associated functions `candidate_pages`, `candidate_maximum_pages`, and `candidate_pages_for_evaluation_profile` are never used
+2026-11-12T21:41:55.2369756Z    --> hepta-agentd/src\cell_q24_material_receipt_support_tests.rs:124:14
+2026-11-12T21:41:55.2428342Z     |
+2026-11-12T21:41:55.2697972Z 114 | impl Fixture {
+2026-11-12T21:41:55.2748050Z     | ------------ associated functions in this implementation
+2026-11-12T21:41:55.2903649Z ...
+2026-11-12T21:41:55.3067719Z 124 |     async fn candidate_pages() -> anyhow::Result<Self> {
+2026-11-12T21:41:55.3068374Z     |              ^^^^^^^^^^^^^^^
+2026-11-12T21:41:55.3178635Z ...
+2026-11-12T21:41:55.3388921Z 129 |     async fn candidate_maximum_pages() -> anyhow::Result<Self> {
+2026-11-12T21:41:55.3507870Z     |              ^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:55.3708711Z ...
+2026-11-12T21:41:55.3828577Z 138 |     async fn candidate_pages_for_evaluation_profile(
+2026-11-12T21:41:55.4028358Z     |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:55.4287853Z 
+2026-11-12T21:41:55.4510137Z warning: method `set_test_clock` is never used
+2026-11-12T21:41:55.4658992Z    --> hepta-agentd/src\cell_q24_model_proposal.rs:306:19
+2026-11-12T21:41:55.4728370Z     |
+2026-11-12T21:41:55.5028478Z 119 | impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
+2026-11-12T21:41:55.5058969Z     | ---------------------------------------------------------- method in this implementation
+2026-11-12T21:41:55.5371697Z ...
+2026-11-12T21:41:55.5417725Z 306 |     pub(crate) fn set_test_clock(
+2026-11-12T21:41:55.5737897Z     |                   ^^^^^^^^^^^^^^
+2026-11-12T21:41:55.5877234Z 
+2026-11-12T21:41:55.6058978Z warning: fields `executions` and `now` are never read
+2026-11-12T21:41:55.6198795Z   --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:62:5
+2026-11-12T21:41:55.6388139Z    |
+2026-11-12T21:41:55.6527832Z 54 | pub(crate) struct LearningFixture {
+2026-11-12T21:41:55.6604614Z    |                   --------------- fields in this struct
+2026-11-12T21:41:55.6834265Z ...
+2026-11-12T21:41:55.6923906Z 62 |     executions: LockedFileProductEvaluationExecutionStoreV1,
+2026-11-12T21:41:55.7004654Z    |     ^^^^^^^^^^
+2026-11-12T21:41:55.7243717Z 63 |     now: u64,
+2026-11-12T21:41:55.7353659Z    |     ^^^
+2026-11-12T21:41:55.7383480Z 
+2026-11-12T21:41:55.7584220Z warning: methods `with_training` and `stage_attestation` are never used
+2026-11-12T21:41:55.7688561Z    --> hepta-agentd/src\neuron_cell_learning_evaluation_tests.rs:241:19
+2026-11-12T21:41:55.7764575Z     |
+2026-11-12T21:41:55.7909169Z  66 | impl LearningFixture {
+2026-11-12T21:41:55.7913251Z     | -------------------- methods in this implementation
+2026-11-12T21:41:55.7957769Z ...
+2026-11-12T21:41:55.8006744Z 241 |     pub(crate) fn with_training(
+2026-11-12T21:41:55.8063493Z     |                   ^^^^^^^^^^^^^
+2026-11-12T21:41:55.8254453Z ...
+2026-11-12T21:41:55.8383664Z 497 |     pub(crate) fn stage_attestation(
+2026-11-12T21:41:55.8703551Z     |                   ^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:55.8793237Z 
+2026-11-12T21:41:55.8843680Z warning: method `original_model_commitments` is never used
+2026-11-12T21:41:55.9120851Z  --> hepta-agentd/src\neuron_cell_evaluation_material_projection.rs:7:19
+2026-11-12T21:41:55.9144704Z   |
+2026-11-12T21:41:55.9176875Z 6 | impl<S: FinalHoldoutCasStoreV1> CellEvaluationRunnerV1<S> {
+2026-11-12T21:41:55.9294667Z   | --------------------------------------------------------- method in this implementation
+2026-11-12T21:41:55.9484124Z 7 |     pub(crate) fn original_model_commitments(
+2026-11-12T21:41:55.9623617Z   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:55.9841207Z 
+2026-11-12T21:41:55.9893658Z warning: variant `Notes` is never constructed
+2026-11-12T21:41:55.9943288Z    --> hepta-agentd/src\runtime.rs:633:5
+2026-11-12T21:41:56.0133629Z     |
+2026-11-12T21:41:56.0170377Z 631 | enum OperationReconcileProfile {
+2026-11-12T21:41:56.0213501Z     |      ------------------------- variant in this enum
+2026-11-12T21:41:56.0263331Z 632 |     Full,
+2026-11-12T21:41:56.0453758Z 633 |     Notes(crate::AgentdNotesObjectiveConfig),
+2026-11-12T21:41:56.0493806Z     |     ^^^^^
+2026-11-12T21:41:56.0532981Z 
+2026-11-12T21:41:56.0590328Z warning: function `run_notes_operation_reconciler` is never used
+2026-11-12T21:41:56.0773657Z    --> hepta-agentd/src\runtime.rs:650:21
+2026-11-12T21:41:56.0813223Z     |
+2026-11-12T21:41:56.0853393Z 650 | pub(crate) async fn run_notes_operation_reconciler(
+2026-11-12T21:41:56.0921338Z     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:41:56.1093149Z 
+2026-11-12T21:41:56.1130373Z warning: method `circuit_learning_source` is never used
+2026-11-12T21:41:56.1173575Z   --> hepta-agentd/src\state_circuit_task.rs:81:19
+2026-11-12T21:41:56.1243535Z    |
+2026-11-12T21:41:56.1410597Z 49 | impl Agent

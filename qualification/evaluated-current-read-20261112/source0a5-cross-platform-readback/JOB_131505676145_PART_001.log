@@ -1,0 +1,1873 @@
+epository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.7202705Z   233 |     }
+2026-11-12T21:32:33.7396368Z       |     ^
+2026-11-12T21:32:33.7696428Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.7742310Z   232 |         m->lock();
+2026-11-12T21:32:33.8011095Z       |            ^
+2026-11-12T21:32:33.8143100Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8192679Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8213174Z       |                                                             ^
+2026-11-12T21:32:33.8214175Z 2 warnings generated.
+2026-11-12T21:32:33.8215384Z INFO: From Compiling source/common/propname.cpp [for tool]:
+2026-11-12T21:32:33.8216566Z In file included from external/v8++git_repository+icu/source/common/propname.cpp:18:
+2026-11-12T21:32:33.8218200Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8219541Z   233 |     }
+2026-11-12T21:32:33.8222555Z       |     ^
+2026-11-12T21:32:33.8223573Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8224588Z   232 |         m->lock();
+2026-11-12T21:32:33.8225409Z       |            ^
+2026-11-12T21:32:33.8226851Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8228930Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8229853Z       |                                                             ^
+2026-11-12T21:32:33.8230605Z 2 warnings generated.
+2026-11-12T21:32:33.8231288Z INFO: From Compiling source/common/uresbund.cpp:
+2026-11-12T21:32:33.8232319Z In file included from external/v8++git_repository+icu/source/common/uresbund.cpp:35:
+2026-11-12T21:32:33.8233552Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:33.8235711Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8237109Z   233 |     }
+2026-11-12T21:32:33.8237678Z       |     ^
+2026-11-12T21:32:33.8238574Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8239567Z   232 |         m->lock();
+2026-11-12T21:32:33.8240177Z       |            ^
+2026-11-12T21:32:33.8241567Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8243301Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8244222Z       |                                                             ^
+2026-11-12T21:32:33.8244959Z 2 warnings generated.
+2026-11-12T21:32:33.8245931Z INFO: From Compiling source/common/brkiter.cpp [for tool]:
+2026-11-12T21:32:33.8247045Z In file included from external/v8++git_repository+icu/source/common/brkiter.cpp:37:
+2026-11-12T21:32:33.8248672Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8249531Z   233 |     }
+2026-11-12T21:32:33.8250056Z       |     ^
+2026-11-12T21:32:33.8250748Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8251401Z   232 |         m->lock();
+2026-11-12T21:32:33.8251856Z       |            ^
+2026-11-12T21:32:33.8252690Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8256735Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8257521Z       |                                                             ^
+2026-11-12T21:32:33.8258568Z 2 warnings generated.
+2026-11-12T21:32:33.8259017Z INFO: From Compiling source/common/uprops.cpp:
+2026-11-12T21:32:33.8260126Z In file included from external/v8++git_repository+icu/source/common/uprops.cpp:36:
+2026-11-12T21:32:33.8261050Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:33.8262337Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8263393Z   233 |     }
+2026-11-12T21:32:33.8263697Z       |     ^
+2026-11-12T21:32:33.8264297Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8265050Z   232 |         m->lock();
+2026-11-12T21:32:33.8265687Z       |            ^
+2026-11-12T21:32:33.8266763Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8268621Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8269323Z       |                                                             ^
+2026-11-12T21:32:33.8269836Z 2 warnings generated.
+2026-11-12T21:32:33.8270333Z INFO: From Compiling source/common/uprops.cpp [for tool]:
+2026-11-12T21:32:33.8271174Z In file included from external/v8++git_repository+icu/source/common/uprops.cpp:36:
+2026-11-12T21:32:33.8272130Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:33.8273391Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8274399Z   233 |     }
+2026-11-12T21:32:33.8274681Z       |     ^
+2026-11-12T21:32:33.8275480Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8276194Z   232 |         m->lock();
+2026-11-12T21:32:33.8276560Z       |            ^
+2026-11-12T21:32:33.8277841Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8279240Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8279928Z       |                                                             ^
+2026-11-12T21:32:33.8280443Z 2 warnings generated.
+2026-11-12T21:32:33.8280934Z INFO: From Compiling source/i18n/smpdtfmt.cpp [for tool]:
+2026-11-12T21:32:33.8281717Z In file included from external/v8++git_repository+icu/source/i18n/smpdtfmt.cpp:60:
+2026-11-12T21:32:33.8282648Z In file included from external/v8++git_repository+icu/source/i18n/olsontz.h:21:
+2026-11-12T21:32:33.8283917Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8284904Z   233 |     }
+2026-11-12T21:32:33.8285464Z       |     ^
+2026-11-12T21:32:33.8286072Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8286810Z   232 |         m->lock();
+2026-11-12T21:32:33.8287181Z       |            ^
+2026-11-12T21:32:33.8288264Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8289688Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8290310Z       |                                                             ^
+2026-11-12T21:32:33.8290803Z 2 warnings generated.
+2026-11-12T21:32:33.8291292Z INFO: From Compiling source/common/caniter.cpp [for tool]:
+2026-11-12T21:32:33.8292109Z In file included from external/v8++git_repository+icu/source/common/caniter.cpp:23:
+2026-11-12T21:32:33.8293108Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:33.8294306Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:33.8295809Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8296853Z   233 |     }
+2026-11-12T21:32:33.8297168Z       |     ^
+2026-11-12T21:32:33.8297765Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8298522Z   232 |         m->lock();
+2026-11-12T21:32:33.8298861Z       |            ^
+2026-11-12T21:32:33.8299942Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8301433Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8302095Z       |                                                             ^
+2026-11-12T21:32:33.8302601Z 2 warnings generated.
+2026-11-12T21:32:33.8303160Z INFO: From Compiling source/i18n/sharedbreakiterator.cpp [for tool]:
+2026-11-12T21:32:33.8304121Z In file included from external/v8++git_repository+icu/source/i18n/sharedbreakiterator.cpp:13:
+2026-11-12T21:32:33.8305399Z In file included from external/v8++git_repository+icu/source/i18n/sharedbreakiterator.h:15:
+2026-11-12T21:32:33.8306378Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:33.8307665Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8308660Z   233 |     }
+2026-11-12T21:32:33.8308967Z       |     ^
+2026-11-12T21:32:33.8309528Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8310227Z   232 |         m->lock();
+2026-11-12T21:32:33.8310570Z       |            ^
+2026-11-12T21:32:33.8311650Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8313231Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8313907Z       |                                                             ^
+2026-11-12T21:32:33.8314398Z 2 warnings generated.
+2026-11-12T21:32:33.8314890Z INFO: From Compiling source/common/filteredbrk.cpp [for tool]:
+2026-11-12T21:32:33.8315953Z In file included from external/v8++git_repository+icu/source/common/filteredbrk.cpp:23:
+2026-11-12T21:32:33.8317299Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8318356Z   233 |     }
+2026-11-12T21:32:33.8318659Z       |     ^
+2026-11-12T21:32:33.8319256Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:33.8320012Z   232 |         m->lock();
+2026-11-12T21:32:33.8320364Z       |            ^
+2026-11-12T21:32:33.8321487Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:33.8322844Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:33.8323521Z       |                                                             ^
+2026-11-12T21:32:33.8324038Z 2 warnings generated.
+2026-11-12T21:32:34.0696074Z INFO: From Compiling source/common/locdspnm.cpp [for tool]:
+2026-11-12T21:32:34.0876693Z In file included from external/v8++git_repository+icu/source/common/locdspnm.cpp:25:
+2026-11-12T21:32:34.0908346Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:34.0936615Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.0965729Z   233 |     }
+2026-11-12T21:32:34.0996506Z       |     ^
+2026-11-12T21:32:34.1006723Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.1028611Z   232 |         m->lock();
+2026-11-12T21:32:34.1055683Z       |            ^
+2026-11-12T21:32:34.1086830Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.1228942Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.1288959Z       |                                                             ^
+2026-11-12T21:32:34.1433272Z 2 warnings generated.
+2026-11-12T21:32:34.1603511Z INFO: From Compiling source/common/characterproperties.cpp:
+2026-11-12T21:32:34.1740853Z In file included from external/v8++git_repository+icu/source/common/characterproperties.cpp:18:
+2026-11-12T21:32:34.1787784Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:34.1816915Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.1966359Z   233 |     }
+2026-11-12T21:32:34.1973936Z       |     ^
+2026-11-12T21:32:34.1996349Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.2026035Z   232 |         m->lock();
+2026-11-12T21:32:34.2137841Z       |            ^
+2026-11-12T21:32:34.2448282Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.2610727Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.2619189Z       |                                                             ^
+2026-11-12T21:32:34.2695955Z 2 warnings generated.
+2026-11-12T21:32:34.2726211Z INFO: From Compiling source/common/brkeng.cpp [for tool]:
+2026-11-12T21:32:34.2826260Z In file included from external/v8++git_repository+icu/source/common/brkeng.cpp:32:
+2026-11-12T21:32:34.2926162Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:34.3026675Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.3074521Z   233 |     }
+2026-11-12T21:32:34.3133329Z       |     ^
+2026-11-12T21:32:34.3248305Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.3372972Z   232 |         m->lock();
+2026-11-12T21:32:34.3516899Z       |            ^
+2026-11-12T21:32:34.3739845Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.3875497Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.4057367Z       |                                                             ^
+2026-11-12T21:32:34.4085415Z 2 warnings generated.
+2026-11-12T21:32:34.4231998Z INFO: From Compiling source/common/locid.cpp [for tool]:
+2026-11-12T21:32:34.4332377Z In file included from external/v8++git_repository+icu/source/common/locid.cpp:51:
+2026-11-12T21:32:34.4423680Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:34.4506901Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.4529497Z   233 |     }
+2026-11-12T21:32:34.4646621Z       |     ^
+2026-11-12T21:32:34.4778345Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.5017069Z   232 |         m->lock();
+2026-11-12T21:32:34.5136129Z       |            ^
+2026-11-12T21:32:34.5247380Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.5343075Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.5434086Z       |                                                             ^
+2026-11-12T21:32:34.5508199Z 2 warnings generated.
+2026-11-12T21:32:34.5565940Z INFO: From Compiling source/i18n/translit.cpp [for tool]:
+2026-11-12T21:32:34.5626025Z In file included from external/v8++git_repository+icu/source/i18n/translit.cpp:50:
+2026-11-12T21:32:34.5629639Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:34.5800692Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.5940113Z   233 |     }
+2026-11-12T21:32:34.6045752Z       |     ^
+2026-11-12T21:32:34.6106168Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.6183469Z   232 |         m->lock();
+2026-11-12T21:32:34.6388333Z       |            ^
+2026-11-12T21:32:34.6461352Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.6523561Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.6605876Z       |                                                             ^
+2026-11-12T21:32:34.6826254Z 2 warnings generated.
+2026-11-12T21:32:34.7063783Z INFO: From Compiling source/common/ustr_cnv.cpp [for tool]:
+2026-11-12T21:32:34.7416472Z In file included from external/v8++git_repository+icu/source/common/ustr_cnv.cpp:29:
+2026-11-12T21:32:34.7428560Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.7527302Z   233 |     }
+2026-11-12T21:32:34.7649740Z       |     ^
+2026-11-12T21:32:34.7687901Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.7785941Z   232 |         m->lock();
+2026-11-12T21:32:34.7823600Z       |            ^
+2026-11-12T21:32:34.7899864Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.7954084Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.8016006Z       |                                                             ^
+2026-11-12T21:32:34.8076036Z 2 warnings generated.
+2026-11-12T21:32:34.8079559Z INFO: From Compiling source/common/locdistance.cpp [for tool]:
+2026-11-12T21:32:34.8127114Z In file included from external/v8++git_repository+icu/source/common/locdistance.cpp:19:
+2026-11-12T21:32:34.8140390Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.8147107Z   233 |     }
+2026-11-12T21:32:34.8240394Z       |     ^
+2026-11-12T21:32:34.8266259Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.8275943Z   232 |         m->lock();
+2026-11-12T21:32:34.8307266Z       |            ^
+2026-11-12T21:32:34.8309921Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.8423706Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.8596936Z       |                                                             ^
+2026-11-12T21:32:34.8618359Z 2 warnings generated.
+2026-11-12T21:32:34.8674459Z INFO: From Compiling source/common/normalizer2.cpp [for tool]:
+2026-11-12T21:32:34.8859418Z In file included from external/v8++git_repository+icu/source/common/normalizer2.cpp:29:
+2026-11-12T21:32:34.8896311Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:34.9057034Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:34.9288337Z   233 |     }
+2026-11-12T21:32:34.9316334Z       |     ^
+2026-11-12T21:32:34.9382699Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:34.9526197Z   232 |         m->lock();
+2026-11-12T21:32:34.9559192Z       |            ^
+2026-11-12T21:32:34.9607977Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:34.9814347Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:34.9977068Z       |                                                             ^
+2026-11-12T21:32:35.0044221Z 2 warnings generated.
+2026-11-12T21:32:35.0156658Z INFO: From Compiling source/i18n/dtfmtsym.cpp [for tool]:
+2026-11-12T21:32:35.0214894Z In file included from external/v8++git_repository+icu/source/i18n/dtfmtsym.cpp:38:
+2026-11-12T21:32:35.0279065Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.0290054Z   233 |     }
+2026-11-12T21:32:35.0332436Z       |     ^
+2026-11-12T21:32:35.0464200Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.0505852Z   232 |         m->lock();
+2026-11-12T21:32:35.0575505Z       |            ^
+2026-11-12T21:32:35.0841786Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.0922898Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.1124501Z       |                                                             ^
+2026-11-12T21:32:35.1227483Z 2 warnings generated.
+2026-11-12T21:32:35.1291680Z INFO: From Compiling source/i18n/smpdtfmt.cpp:
+2026-11-12T21:32:35.1383363Z In file included from external/v8++git_repository+icu/source/i18n/smpdtfmt.cpp:60:
+2026-11-12T21:32:35.1426027Z In file included from external/v8++git_repository+icu/source/i18n/olsontz.h:21:
+2026-11-12T21:32:35.1471365Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.1582711Z   233 |     }
+2026-11-12T21:32:35.1585861Z       |     ^
+2026-11-12T21:32:35.1589212Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.1728670Z   232 |         m->lock();
+2026-11-12T21:32:35.1776807Z       |            ^
+2026-11-12T21:32:35.2067604Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.2307349Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.2462653Z       |                                                             ^
+2026-11-12T21:32:35.2541858Z 2 warnings generated.
+2026-11-12T21:32:35.2607719Z INFO: From Compiling source/common/normalizer2impl.cpp [for tool]:
+2026-11-12T21:32:35.2620534Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.cpp:37:
+2026-11-12T21:32:35.2680200Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.2684528Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.2705766Z   233 |     }
+2026-11-12T21:32:35.2735782Z       |     ^
+2026-11-12T21:32:35.2744872Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.2926038Z   232 |         m->lock();
+2026-11-12T21:32:35.2996549Z       |            ^
+2026-11-12T21:32:35.3197340Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.3256418Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.3423873Z       |                                                             ^
+2026-11-12T21:32:35.3551305Z 2 warnings generated.
+2026-11-12T21:32:35.3644766Z INFO: From Compiling source/i18n/datefmt.cpp [for tool]:
+2026-11-12T21:32:35.3698044Z In file included from external/v8++git_repository+icu/source/i18n/datefmt.cpp:33:
+2026-11-12T21:32:35.3806292Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.3988705Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.4026261Z   233 |     }
+2026-11-12T21:32:35.4105958Z       |     ^
+2026-11-12T21:32:35.4187240Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.4222640Z   232 |         m->lock();
+2026-11-12T21:32:35.4376031Z       |            ^
+2026-11-12T21:32:35.4422274Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.4607848Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.4646229Z       |                                                             ^
+2026-11-12T21:32:35.4806210Z 2 warnings generated.
+2026-11-12T21:32:35.4836035Z INFO: From Compiling source/common/usprep.cpp [for tool]:
+2026-11-12T21:32:35.4867356Z In file included from external/v8++git_repository+icu/source/common/usprep.cpp:29:
+2026-11-12T21:32:35.4976656Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.5068497Z   233 |     }
+2026-11-12T21:32:35.5176549Z       |     ^
+2026-11-12T21:32:35.5218596Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.5296075Z   232 |         m->lock();
+2026-11-12T21:32:35.5365841Z       |            ^
+2026-11-12T21:32:35.5596904Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.5890723Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.6288178Z       |                                                             ^
+2026-11-12T21:32:35.6498910Z 2 warnings generated.
+2026-11-12T21:32:35.6580593Z INFO: From Compiling source/common/emojiprops.cpp [for tool]:
+2026-11-12T21:32:35.6646874Z In file included from external/v8++git_repository+icu/source/common/emojiprops.cpp:17:
+2026-11-12T21:32:35.6666723Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.6685843Z   233 |     }
+2026-11-12T21:32:35.6715690Z       |     ^
+2026-11-12T21:32:35.6739568Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.6755687Z   232 |         m->lock();
+2026-11-12T21:32:35.6775752Z       |            ^
+2026-11-12T21:32:35.6838125Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.6852407Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.7106961Z       |                                                             ^
+2026-11-12T21:32:35.7260663Z 2 warnings generated.
+2026-11-12T21:32:35.7348780Z INFO: From Compiling source/i18n/ucln_in.cpp [for tool]:
+2026-11-12T21:32:35.7486361Z In file included from external/v8++git_repository+icu/source/i18n/ucln_in.cpp:21:
+2026-11-12T21:32:35.7556278Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.7586502Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.7591696Z   233 |     }
+2026-11-12T21:32:35.7670702Z       |     ^
+2026-11-12T21:32:35.7733209Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.7785722Z   232 |         m->lock();
+2026-11-12T21:32:35.7815774Z       |            ^
+2026-11-12T21:32:35.7846814Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.7856233Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.7885644Z       |                                                             ^
+2026-11-12T21:32:35.7918913Z 2 warnings generated.
+2026-11-12T21:32:35.8010838Z INFO: From Compiling source/i18n/timezone.cpp:
+2026-11-12T21:32:35.8122369Z In file included from external/v8++git_repository+icu/source/i18n/timezone.cpp:82:
+2026-11-12T21:32:35.8246434Z In file included from external/v8++git_repository+icu/source/i18n/olsontz.h:21:
+2026-11-12T21:32:35.8362467Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8517812Z   233 |     }
+2026-11-12T21:32:35.8603560Z       |     ^
+2026-11-12T21:32:35.8611083Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8622704Z   232 |         m->lock();
+2026-11-12T21:32:35.8626106Z       |            ^
+2026-11-12T21:32:35.8627581Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8629060Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8629770Z       |                                                             ^
+2026-11-12T21:32:35.8630272Z 2 warnings generated.
+2026-11-12T21:32:35.8630761Z INFO: From Compiling source/common/locutil.cpp [for tool]:
+2026-11-12T21:32:35.8631581Z In file included from external/v8++git_repository+icu/source/common/locutil.cpp:21:
+2026-11-12T21:32:35.8632910Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8633926Z   233 |     }
+2026-11-12T21:32:35.8634260Z       |     ^
+2026-11-12T21:32:35.8634865Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8635839Z   232 |         m->lock();
+2026-11-12T21:32:35.8636229Z       |            ^
+2026-11-12T21:32:35.8637352Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8638795Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8639496Z       |                                                             ^
+2026-11-12T21:32:35.8640011Z 2 warnings generated.
+2026-11-12T21:32:35.8640415Z INFO: From Compiling source/common/ustr_cnv.cpp:
+2026-11-12T21:32:35.8641205Z In file included from external/v8++git_repository+icu/source/common/ustr_cnv.cpp:29:
+2026-11-12T21:32:35.8642603Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8643909Z   233 |     }
+2026-11-12T21:32:35.8644210Z       |     ^
+2026-11-12T21:32:35.8644831Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8645761Z   232 |         m->lock();
+2026-11-12T21:32:35.8646116Z       |            ^
+2026-11-12T21:32:35.8647268Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8648583Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8649250Z       |                                                             ^
+2026-11-12T21:32:35.8649723Z 2 warnings generated.
+2026-11-12T21:32:35.8650200Z INFO: From Compiling source/common/loadednormalizer2impl.cpp:
+2026-11-12T21:32:35.8651084Z In file included from external/v8++git_repository+icu/source/common/loadednormalizer2impl.cpp:25:
+2026-11-12T21:32:35.8652097Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.8653343Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8654347Z   233 |     }
+2026-11-12T21:32:35.8654662Z       |     ^
+2026-11-12T21:32:35.8685558Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8686335Z   232 |         m->lock();
+2026-11-12T21:32:35.8686716Z       |            ^
+2026-11-12T21:32:35.8687853Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8689283Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8689991Z       |                                                             ^
+2026-11-12T21:32:35.8690525Z 2 warnings generated.
+2026-11-12T21:32:35.8690970Z INFO: From Compiling source/i18n/tznames_impl.cpp:
+2026-11-12T21:32:35.8692171Z In file included from external/v8++git_repository+icu/source/i18n/tznames_impl.cpp:24:
+2026-11-12T21:32:35.8693166Z In file included from external/v8++git_repository+icu/source/i18n/tznames_impl.h:28:
+2026-11-12T21:32:35.8694479Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8695724Z   233 |     }
+2026-11-12T21:32:35.8696036Z       |     ^
+2026-11-12T21:32:35.8696631Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8697370Z   232 |         m->lock();
+2026-11-12T21:32:35.8697766Z       |            ^
+2026-11-12T21:32:35.8698863Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8700287Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8701002Z       |                                                             ^
+2026-11-12T21:32:35.8701504Z 2 warnings generated.
+2026-11-12T21:32:35.8701935Z INFO: From Compiling source/i18n/dtfmtsym.cpp:
+2026-11-12T21:32:35.8702661Z In file included from external/v8++git_repository+icu/source/i18n/dtfmtsym.cpp:38:
+2026-11-12T21:32:35.8703976Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8705040Z   233 |     }
+2026-11-12T21:32:35.8705559Z       |     ^
+2026-11-12T21:32:35.8706172Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8706864Z   232 |         m->lock();
+2026-11-12T21:32:35.8707237Z       |            ^
+2026-11-12T21:32:35.8708327Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8709943Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8710607Z       |                                                             ^
+2026-11-12T21:32:35.8711105Z 2 warnings generated.
+2026-11-12T21:32:35.8711537Z INFO: From Compiling source/i18n/tridpars.cpp:
+2026-11-12T21:32:35.8712279Z In file included from external/v8++git_repository+icu/source/i18n/tridpars.cpp:19:
+2026-11-12T21:32:35.8713197Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.8714467Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8738070Z   233 |     }
+2026-11-12T21:32:35.8738385Z       |     ^
+2026-11-12T21:32:35.8738972Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8739718Z   232 |         m->lock();
+2026-11-12T21:32:35.8740077Z       |            ^
+2026-11-12T21:32:35.8741212Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8742688Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8743361Z       |                                                             ^
+2026-11-12T21:32:35.8743873Z 2 warnings generated.
+2026-11-12T21:32:35.8744297Z INFO: From Compiling source/i18n/datefmt.cpp:
+2026-11-12T21:32:35.8744992Z In file included from external/v8++git_repository+icu/source/i18n/datefmt.cpp:33:
+2026-11-12T21:32:35.8746119Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.8747436Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8748503Z   233 |     }
+2026-11-12T21:32:35.8748799Z       |     ^
+2026-11-12T21:32:35.8749596Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8750345Z   232 |         m->lock();
+2026-11-12T21:32:35.8750696Z       |            ^
+2026-11-12T21:32:35.8751818Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8753250Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8753940Z       |                                                             ^
+2026-11-12T21:32:35.8754455Z 2 warnings generated.
+2026-11-12T21:32:35.8754933Z INFO: From Compiling source/i18n/tznames_impl.cpp [for tool]:
+2026-11-12T21:32:35.8755994Z In file included from external/v8++git_repository+icu/source/i18n/tznames_impl.cpp:24:
+2026-11-12T21:32:35.8756982Z In file included from external/v8++git_repository+icu/source/i18n/tznames_impl.h:28:
+2026-11-12T21:32:35.8758309Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8759383Z   233 |     }
+2026-11-12T21:32:35.8759684Z       |     ^
+2026-11-12T21:32:35.8760261Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8760965Z   232 |         m->lock();
+2026-11-12T21:32:35.8761327Z       |            ^
+2026-11-12T21:32:35.8762405Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8763778Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8764470Z       |                                                             ^
+2026-11-12T21:32:35.8764968Z 2 warnings generated.
+2026-11-12T21:32:35.8795900Z INFO: From Compiling source/i18n/translit.cpp:
+2026-11-12T21:32:35.8796684Z In file included from external/v8++git_repository+icu/source/i18n/translit.cpp:50:
+2026-11-12T21:32:35.8797585Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.8798839Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8799864Z   233 |     }
+2026-11-12T21:32:35.8800185Z       |     ^
+2026-11-12T21:32:35.8800793Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8801536Z   232 |         m->lock();
+2026-11-12T21:32:35.8801914Z       |            ^
+2026-11-12T21:32:35.8803006Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8804409Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8805296Z       |                                                             ^
+2026-11-12T21:32:35.8805812Z 2 warnings generated.
+2026-11-12T21:32:35.8806308Z INFO: From Compiling source/common/rbbitblb.cpp [for tool]:
+2026-11-12T21:32:35.8807122Z In file included from external/v8++git_repository+icu/source/common/rbbitblb.cpp:19:
+2026-11-12T21:32:35.8808083Z In file included from external/v8++git_repository+icu/source/common/rbbitblb.h:23:
+2026-11-12T21:32:35.8808987Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T21:32:35.8810305Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8811307Z   233 |     }
+2026-11-12T21:32:35.8811614Z       |     ^
+2026-11-12T21:32:35.8812190Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8812962Z   232 |         m->lock();
+2026-11-12T21:32:35.8813332Z       |            ^
+2026-11-12T21:32:35.8814624Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8816191Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8816866Z       |                                                             ^
+2026-11-12T21:32:35.8817355Z 2 warnings generated.
+2026-11-12T21:32:35.8817764Z INFO: From Compiling source/i18n/tzgnames.cpp:
+2026-11-12T21:32:35.8818484Z In file included from external/v8++git_repository+icu/source/i18n/tzgnames.cpp:27:
+2026-11-12T21:32:35.8819364Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.8820669Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8821713Z   233 |     }
+2026-11-12T21:32:35.8822019Z       |     ^
+2026-11-12T21:32:35.8822606Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8823325Z   232 |         m->lock();
+2026-11-12T21:32:35.8823671Z       |            ^
+2026-11-12T21:32:35.8824785Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8856469Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8857162Z       |                                                             ^
+2026-11-12T21:32:35.8857655Z 2 warnings generated.
+2026-11-12T21:32:35.8858052Z INFO: From Compiling source/i18n/tzfmt.cpp:
+2026-11-12T21:32:35.8858741Z In file included from external/v8++git_repository+icu/source/i18n/tzfmt.cpp:30:
+2026-11-12T21:32:35.8860010Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8861251Z   233 |     }
+2026-11-12T21:32:35.8861558Z       |     ^
+2026-11-12T21:32:35.8862153Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8862889Z   232 |         m->lock();
+2026-11-12T21:32:35.8863248Z       |            ^
+2026-11-12T21:32:35.8864354Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8865916Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8866587Z       |                                                             ^
+2026-11-12T21:32:35.8867083Z 2 warnings generated.
+2026-11-12T21:32:35.8867475Z INFO: From Compiling source/i18n/astro.cpp:
+2026-11-12T21:32:35.8868159Z In file included from external/v8++git_repository+icu/source/i18n/astro.cpp:19:
+2026-11-12T21:32:35.8869456Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8870482Z   233 |     }
+2026-11-12T21:32:35.8870778Z       |     ^
+2026-11-12T21:32:35.8871366Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8872092Z   232 |         m->lock();
+2026-11-12T21:32:35.8872447Z       |            ^
+2026-11-12T21:32:35.8873532Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8874929Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8875815Z       |                                                             ^
+2026-11-12T21:32:35.8876314Z 2 warnings generated.
+2026-11-12T21:32:35.8876777Z INFO: From Compiling source/common/servls.cpp [for tool]:
+2026-11-12T21:32:35.8877570Z In file included from external/v8++git_repository+icu/source/common/servls.cpp:18:
+2026-11-12T21:32:35.8878689Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:35.8879580Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.8880461Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.8881356Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.8882623Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8883631Z   233 |     }
+2026-11-12T21:32:35.8883936Z       |     ^
+2026-11-12T21:32:35.8884547Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8915572Z   232 |         m->lock();
+2026-11-12T21:32:35.8915957Z       |            ^
+2026-11-12T21:32:35.8917072Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8918459Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8919126Z       |                                                             ^
+2026-11-12T21:32:35.8919630Z 2 warnings generated.
+2026-11-12T21:32:35.8920081Z INFO: From Compiling source/i18n/gender.cpp [for tool]:
+2026-11-12T21:32:35.8920824Z In file included from external/v8++git_repository+icu/source/i18n/gender.cpp:31:
+2026-11-12T21:32:35.8921735Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.8922990Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8924255Z   233 |     }
+2026-11-12T21:32:35.8924562Z       |     ^
+2026-11-12T21:32:35.8925395Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8926143Z   232 |         m->lock();
+2026-11-12T21:32:35.8926507Z       |            ^
+2026-11-12T21:32:35.8927597Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8928977Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8929660Z       |                                                             ^
+2026-11-12T21:32:35.8930155Z 2 warnings generated.
+2026-11-12T21:32:35.8930848Z Analyzing: 1296 targets (1399 packages loaded, 213663 targets configured, 1476 aspect applications)
+2026-11-12T21:32:35.8932181Z [19,418 / 27,460] Compiling Rust bin //codex-rs/http-client:custom_ca_probe (27 files); 6s remote, remote-cache ... (791 actions, 14 running)
+2026-11-12T21:32:35.8933233Z INFO: From Compiling source/i18n/buddhcal.cpp:
+2026-11-12T21:32:35.8933968Z In file included from external/v8++git_repository+icu/source/i18n/buddhcal.cpp:23:
+2026-11-12T21:32:35.8935465Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8936490Z   233 |     }
+2026-11-12T21:32:35.8936793Z       |     ^
+2026-11-12T21:32:35.8937384Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8938125Z   232 |         m->lock();
+2026-11-12T21:32:35.8938487Z       |            ^
+2026-11-12T21:32:35.8939596Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8941001Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8941672Z       |                                                             ^
+2026-11-12T21:32:35.8942251Z 2 warnings generated.
+2026-11-12T21:32:35.8942938Z INFO: From Compiling source/common/rbbidata.cpp [for tool]:
+2026-11-12T21:32:35.8943780Z In file included from external/v8++git_repository+icu/source/common/rbbidata.cpp:16:
+2026-11-12T21:32:35.8944719Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T21:32:35.8976302Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8977333Z   233 |     }
+2026-11-12T21:32:35.8977635Z       |     ^
+2026-11-12T21:32:35.8978242Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8978974Z   232 |         m->lock();
+2026-11-12T21:32:35.8979325Z       |            ^
+2026-11-12T21:32:35.8980446Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8981820Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8982487Z       |                                                             ^
+2026-11-12T21:32:35.8982987Z 2 warnings generated.
+2026-11-12T21:32:35.8983455Z INFO: From Compiling source/i18n/tznames.cpp [for tool]:
+2026-11-12T21:32:35.8984243Z In file included from external/v8++git_repository+icu/source/i18n/tznames.cpp:19:
+2026-11-12T21:32:35.8985388Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.8986700Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8987733Z   233 |     }
+2026-11-12T21:32:35.8988089Z       |     ^
+2026-11-12T21:32:35.8988697Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.8989626Z   232 |         m->lock();
+2026-11-12T21:32:35.8989989Z       |            ^
+2026-11-12T21:32:35.8991097Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.8992530Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.8993232Z       |                                                             ^
+2026-11-12T21:32:35.8993739Z 2 warnings generated.
+2026-11-12T21:32:35.8994216Z INFO: From Compiling source/common/servlk.cpp [for tool]:
+2026-11-12T21:32:35.8995032Z In file included from external/v8++git_repository+icu/source/common/servlk.cpp:18:
+2026-11-12T21:32:35.8996205Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:35.8997119Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.8998040Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.8998975Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9000300Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9001355Z   233 |     }
+2026-11-12T21:32:35.9001668Z       |     ^
+2026-11-12T21:32:35.9002274Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9003035Z   232 |         m->lock();
+2026-11-12T21:32:35.9003409Z       |            ^
+2026-11-12T21:32:35.9004536Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9036231Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9036938Z       |                                                             ^
+2026-11-12T21:32:35.9037442Z 2 warnings generated.
+2026-11-12T21:32:35.9037882Z INFO: From Compiling source/common/locdistance.cpp:
+2026-11-12T21:32:35.9038884Z In file included from external/v8++git_repository+icu/source/common/locdistance.cpp:19:
+2026-11-12T21:32:35.9040263Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9041299Z   233 |     }
+2026-11-12T21:32:35.9041605Z       |     ^
+2026-11-12T21:32:35.9042273Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9043014Z   232 |         m->lock();
+2026-11-12T21:32:35.9043374Z       |            ^
+2026-11-12T21:32:35.9095300Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9096769Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9097476Z       |                                                             ^
+2026-11-12T21:32:35.9097981Z 2 warnings generated.
+2026-11-12T21:32:35.9098458Z INFO: From Compiling source/i18n/ucol_res.cpp [for tool]:
+2026-11-12T21:32:35.9099263Z In file included from external/v8++git_repository+icu/source/i18n/ucol_res.cpp:44:
+2026-11-12T21:32:35.9100260Z In file included from external/v8++git_repository+icu/source/i18n/collationtailoring.h:24:
+2026-11-12T21:32:35.9101277Z In file included from external/v8++git_repository+icu/source/i18n/collationsettings.h:23:
+2026-11-12T21:32:35.9102286Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.9103623Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9104640Z   233 |     }
+2026-11-12T21:32:35.9104955Z       |     ^
+2026-11-12T21:32:35.9106117Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9106851Z   232 |         m->lock();
+2026-11-12T21:32:35.9107212Z       |            ^
+2026-11-12T21:32:35.9108302Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9109727Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9110407Z       |                                                             ^
+2026-11-12T21:32:35.9110910Z 2 warnings generated.
+2026-11-12T21:32:35.9111375Z INFO: From Compiling source/common/rbbi.cpp [for tool]:
+2026-11-12T21:32:35.9112139Z In file included from external/v8++git_repository+icu/source/common/rbbi.cpp:34:
+2026-11-12T21:32:35.9113039Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T21:32:35.9114329Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9145608Z   233 |     }
+2026-11-12T21:32:35.9145940Z       |     ^
+2026-11-12T21:32:35.9146574Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9147314Z   232 |         m->lock();
+2026-11-12T21:32:35.9147680Z       |            ^
+2026-11-12T21:32:35.9148808Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9150217Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9150884Z       |                                                             ^
+2026-11-12T21:32:35.9151381Z 2 warnings generated.
+2026-11-12T21:32:35.9151807Z INFO: From Compiling source/common/locdspnm.cpp:
+2026-11-12T21:32:35.9152571Z In file included from external/v8++git_repository+icu/source/common/locdspnm.cpp:25:
+2026-11-12T21:32:35.9153507Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9154968Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9156193Z   233 |     }
+2026-11-12T21:32:35.9156501Z       |     ^
+2026-11-12T21:32:35.9157095Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9157830Z   232 |         m->lock();
+2026-11-12T21:32:35.9158207Z       |            ^
+2026-11-12T21:32:35.9159303Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9160699Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9161373Z       |                                                             ^
+2026-11-12T21:32:35.9161870Z 2 warnings generated.
+2026-11-12T21:32:35.9162338Z INFO: From Compiling source/common/rbbistbl.cpp [for tool]:
+2026-11-12T21:32:35.9163166Z In file included from external/v8++git_repository+icu/source/common/rbbistbl.cpp:25:
+2026-11-12T21:32:35.9164465Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9165673Z   233 |     }
+2026-11-12T21:32:35.9165969Z       |     ^
+2026-11-12T21:32:35.9166574Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9167306Z   232 |         m->lock();
+2026-11-12T21:32:35.9167663Z       |            ^
+2026-11-12T21:32:35.9168755Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9170364Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9171029Z       |                                                             ^
+2026-11-12T21:32:35.9171566Z 2 warnings generated.
+2026-11-12T21:32:35.9172038Z INFO: From Compiling source/i18n/astro.cpp [for tool]:
+2026-11-12T21:32:35.9172788Z In file included from external/v8++git_repository+icu/source/i18n/astro.cpp:19:
+2026-11-12T21:32:35.9174081Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9205365Z   233 |     }
+2026-11-12T21:32:35.9205710Z       |     ^
+2026-11-12T21:32:35.9206332Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9207071Z   232 |         m->lock();
+2026-11-12T21:32:35.9207434Z       |            ^
+2026-11-12T21:32:35.9208552Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9209951Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9210633Z       |                                                             ^
+2026-11-12T21:32:35.9211140Z 2 warnings generated.
+2026-11-12T21:32:35.9211622Z INFO: From Compiling source/i18n/tzfmt.cpp [for tool]:
+2026-11-12T21:32:35.9212364Z In file included from external/v8++git_repository+icu/source/i18n/tzfmt.cpp:30:
+2026-11-12T21:32:35.9213633Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9214667Z   233 |     }
+2026-11-12T21:32:35.9214970Z       |     ^
+2026-11-12T21:32:35.9215759Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9216499Z   232 |         m->lock();
+2026-11-12T21:32:35.9216868Z       |            ^
+2026-11-12T21:32:35.9217970Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9219566Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9220266Z       |                                                             ^
+2026-11-12T21:32:35.9220768Z 2 warnings generated.
+2026-11-12T21:32:35.9221252Z INFO: From Compiling source/i18n/gregocal.cpp [for tool]:
+2026-11-12T21:32:35.9222037Z In file included from external/v8++git_repository+icu/source/i18n/gregocal.cpp:49:
+2026-11-12T21:32:35.9223333Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9224383Z   233 |     }
+2026-11-12T21:32:35.9224690Z       |     ^
+2026-11-12T21:32:35.9225637Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9226416Z   232 |         m->lock();
+2026-11-12T21:32:35.9226783Z       |            ^
+2026-11-12T21:32:35.9227920Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9229332Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9230008Z       |                                                             ^
+2026-11-12T21:32:35.9230493Z 2 warnings generated.
+2026-11-12T21:32:35.9230975Z INFO: From Compiling source/i18n/timezone.cpp [for tool]:
+2026-11-12T21:32:35.9231775Z In file included from external/v8++git_repository+icu/source/i18n/timezone.cpp:82:
+2026-11-12T21:32:35.9232703Z In file included from external/v8++git_repository+icu/source/i18n/olsontz.h:21:
+2026-11-12T21:32:35.9233998Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9265507Z   233 |     }
+2026-11-12T21:32:35.9265826Z       |     ^
+2026-11-12T21:32:35.9266454Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9267195Z   232 |         m->lock();
+2026-11-12T21:32:35.9267556Z       |            ^
+2026-11-12T21:32:35.9268697Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9270093Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9270768Z       |                                                             ^
+2026-11-12T21:32:35.9271270Z 2 warnings generated.
+2026-11-12T21:32:35.9271718Z INFO: From Compiling source/i18n/udat.cpp [for tool]:
+2026-11-12T21:32:35.9272438Z In file included from external/v8++git_repository+icu/source/i18n/udat.cpp:30:
+2026-11-12T21:32:35.9273686Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9274735Z   233 |     }
+2026-11-12T21:32:35.9275037Z       |     ^
+2026-11-12T21:32:35.9275831Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9276559Z   232 |         m->lock();
+2026-11-12T21:32:35.9276919Z       |            ^
+2026-11-12T21:32:35.9278014Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9279384Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9280065Z       |                                                             ^
+2026-11-12T21:32:35.9280549Z 2 warnings generated.
+2026-11-12T21:32:35.9280958Z INFO: From Compiling source/i18n/ucol_res.cpp:
+2026-11-12T21:32:35.9281670Z In file included from external/v8++git_repository+icu/source/i18n/ucol_res.cpp:44:
+2026-11-12T21:32:35.9282664Z In file included from external/v8++git_repository+icu/source/i18n/collationtailoring.h:24:
+2026-11-12T21:32:35.9283878Z In file included from external/v8++git_repository+icu/source/i18n/collationsettings.h:23:
+2026-11-12T21:32:35.9284869Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.9286432Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9287486Z   233 |     }
+2026-11-12T21:32:35.9287785Z       |     ^
+2026-11-12T21:32:35.9288368Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9289091Z   232 |         m->lock();
+2026-11-12T21:32:35.9289467Z       |            ^
+2026-11-12T21:32:35.9290558Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9292009Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9292685Z       |                                                             ^
+2026-11-12T21:32:35.9293180Z 2 warnings generated.
+2026-11-12T21:32:35.9293579Z INFO: From Compiling source/i18n/tznames.cpp:
+2026-11-12T21:32:35.9294267Z In file included from external/v8++git_repository+icu/source/i18n/tznames.cpp:19:
+2026-11-12T21:32:35.9295288Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9296523Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9297489Z   233 |     }
+2026-11-12T21:32:35.9297780Z       |     ^
+2026-11-12T21:32:35.9298363Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9299257Z   232 |         m->lock();
+2026-11-12T21:32:35.9299609Z       |            ^
+2026-11-12T21:32:35.9300646Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9302019Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9302681Z       |                                                             ^
+2026-11-12T21:32:35.9303177Z 2 warnings generated.
+2026-11-12T21:32:35.9303617Z INFO: From Compiling source/common/emojiprops.cpp:
+2026-11-12T21:32:35.9304405Z In file included from external/v8++git_repository+icu/source/common/emojiprops.cpp:17:
+2026-11-12T21:32:35.9305918Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9306980Z   233 |     }
+2026-11-12T21:32:35.9307290Z       |     ^
+2026-11-12T21:32:35.9307922Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9308696Z   232 |         m->lock();
+2026-11-12T21:32:35.9309079Z       |            ^
+2026-11-12T21:32:35.9310221Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9311959Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9312623Z       |                                                             ^
+2026-11-12T21:32:35.9313118Z 2 warnings generated.
+2026-11-12T21:32:35.9313575Z INFO: From Compiling source/common/serv.cpp [for tool]:
+2026-11-12T21:32:35.9314329Z In file included from external/v8++git_repository+icu/source/common/serv.cpp:15:
+2026-11-12T21:32:35.9315456Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.9316390Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.9317302Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9318771Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9319798Z   233 |     }
+2026-11-12T21:32:35.9320110Z       |     ^
+2026-11-12T21:32:35.9320711Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9321431Z   232 |         m->lock();
+2026-11-12T21:32:35.9321785Z       |            ^
+2026-11-12T21:32:35.9322879Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9324294Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9324960Z       |                                                             ^
+2026-11-12T21:32:35.9325694Z 2 warnings generated.
+2026-11-12T21:32:35.9326131Z INFO: From Compiling source/common/rbbidata.cpp:
+2026-11-12T21:32:35.9326905Z In file included from external/v8++git_repository+icu/source/common/rbbidata.cpp:16:
+2026-11-12T21:32:35.9327821Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T21:32:35.9329095Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9330110Z   233 |     }
+2026-11-12T21:32:35.9330405Z       |     ^
+2026-11-12T21:32:35.9330987Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9331746Z   232 |         m->lock();
+2026-11-12T21:32:35.9332100Z       |            ^
+2026-11-12T21:32:35.9333158Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9334776Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9335666Z       |                                                             ^
+2026-11-12T21:32:35.9336146Z 2 warnings generated.
+2026-11-12T21:32:35.9336588Z INFO: From Compiling source/common/propname.cpp:
+2026-11-12T21:32:35.9337352Z In file included from external/v8++git_repository+icu/source/common/propname.cpp:18:
+2026-11-12T21:32:35.9338690Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9339725Z   233 |     }
+2026-11-12T21:32:35.9340021Z       |     ^
+2026-11-12T21:32:35.9340602Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9341318Z   232 |         m->lock();
+2026-11-12T21:32:35.9341671Z       |            ^
+2026-11-12T21:32:35.9342824Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9344238Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9344912Z       |                                                             ^
+2026-11-12T21:32:35.9345611Z 2 warnings generated.
+2026-11-12T21:32:35.9346096Z INFO: From Compiling source/common/resbund.cpp [for tool]:
+2026-11-12T21:32:35.9346908Z In file included from external/v8++git_repository+icu/source/common/resbund.cpp:55:
+2026-11-12T21:32:35.9347833Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9349110Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9350109Z   233 |     }
+2026-11-12T21:32:35.9350394Z       |     ^
+2026-11-12T21:32:35.9350984Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9351718Z   232 |         m->lock();
+2026-11-12T21:32:35.9352076Z       |            ^
+2026-11-12T21:32:35.9353341Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9354728Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9355614Z       |                                                             ^
+2026-11-12T21:32:35.9356098Z 2 warnings generated.
+2026-11-12T21:32:35.9356563Z INFO: From Compiling source/i18n/hebrwcal.cpp [for tool]:
+2026-11-12T21:32:35.9357341Z In file included from external/v8++git_repository+icu/source/i18n/hebrwcal.cpp:24:
+2026-11-12T21:32:35.9358635Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9359694Z   233 |     }
+2026-11-12T21:32:35.9359995Z       |     ^
+2026-11-12T21:32:35.9360581Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9361481Z   232 |         m->lock();
+2026-11-12T21:32:35.9361855Z       |            ^
+2026-11-12T21:32:35.9362929Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9364320Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9364984Z       |                                                             ^
+2026-11-12T21:32:35.9365684Z 2 warnings generated.
+2026-11-12T21:32:35.9366076Z INFO: From Compiling source/i18n/coll.cpp:
+2026-11-12T21:32:35.9366756Z In file included from external/v8++git_repository+icu/source/i18n/coll.cpp:51:
+2026-11-12T21:32:35.9367666Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9368850Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9369800Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9371065Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9372115Z   233 |     }
+2026-11-12T21:32:35.9372420Z       |     ^
+2026-11-12T21:32:35.9373018Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9373766Z   232 |         m->lock();
+2026-11-12T21:32:35.9374124Z       |            ^
+2026-11-12T21:32:35.9375462Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9376837Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9377503Z       |                                                             ^
+2026-11-12T21:32:35.9377997Z 2 warnings generated.
+2026-11-12T21:32:35.9378478Z INFO: From Compiling source/i18n/buddhcal.cpp [for tool]:
+2026-11-12T21:32:35.9379255Z In file included from external/v8++git_repository+icu/source/i18n/buddhcal.cpp:23:
+2026-11-12T21:32:35.9380526Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9381568Z   233 |     }
+2026-11-12T21:32:35.9381864Z       |     ^
+2026-11-12T21:32:35.9382450Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9383178Z   232 |         m->lock();
+2026-11-12T21:32:35.9383536Z       |            ^
+2026-11-12T21:32:35.9384625Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9386230Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9387221Z       |                                                             ^
+2026-11-12T21:32:35.9387729Z 2 warnings generated.
+2026-11-12T21:32:35.9388229Z INFO: From Compiling source/i18n/indiancal.cpp [for tool]:
+2026-11-12T21:32:35.9389025Z In file included from external/v8++git_repository+icu/source/i18n/indiancal.cpp:16:
+2026-11-12T21:32:35.9389928Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9391224Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9392249Z   233 |     }
+2026-11-12T21:32:35.9392546Z       |     ^
+2026-11-12T21:32:35.9393137Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9393852Z   232 |         m->lock();
+2026-11-12T21:32:35.9394206Z       |            ^
+2026-11-12T21:32:35.9395529Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9396940Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9397599Z       |                                                             ^
+2026-11-12T21:32:35.9398094Z 2 warnings generated.
+2026-11-12T21:32:35.9398620Z INFO: From Compiling source/common/static_unicode_sets.cpp [for tool]:
+2026-11-12T21:32:35.9399532Z In file included from external/v8++git_repository+icu/source/common/static_unicode_sets.cpp:13:
+2026-11-12T21:32:35.9400894Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9401899Z   233 |     }
+2026-11-12T21:32:35.9402198Z       |     ^
+2026-11-12T21:32:35.9402780Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9403715Z   232 |         m->lock();
+2026-11-12T21:32:35.9404066Z       |            ^
+2026-11-12T21:32:35.9405369Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9406773Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9407452Z       |                                                             ^
+2026-11-12T21:32:35.9407938Z 2 warnings generated.
+2026-11-12T21:32:35.9408413Z INFO: From Compiling source/i18n/collationbuilder.cpp:
+2026-11-12T21:32:35.9409235Z In file included from external/v8++git_repository+icu/source/i18n/collationbuilder.cpp:37:
+2026-11-12T21:32:35.9410219Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9411207Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9412165Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9413474Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9414514Z   233 |     }
+2026-11-12T21:32:35.9414809Z       |     ^
+2026-11-12T21:32:35.9415633Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9416377Z   232 |         m->lock();
+2026-11-12T21:32:35.9416713Z       |            ^
+2026-11-12T21:32:35.9417805Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9419177Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9419855Z       |                                                             ^
+2026-11-12T21:32:35.9420377Z 2 warnings generated.
+2026-11-12T21:32:35.9420847Z INFO: From Compiling source/i18n/chnsecal.cpp [for tool]:
+2026-11-12T21:32:35.9421825Z In file included from external/v8++git_repository+icu/source/i18n/chnsecal.cpp:24:
+2026-11-12T21:32:35.9423139Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9424181Z   233 |     }
+2026-11-12T21:32:35.9424488Z       |     ^
+2026-11-12T21:32:35.9425306Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9426052Z   232 |         m->lock();
+2026-11-12T21:32:35.9426412Z       |            ^
+2026-11-12T21:32:35.9427514Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9428920Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9429602Z       |                                                             ^
+2026-11-12T21:32:35.9430097Z 2 warnings generated.
+2026-11-12T21:32:35.9430603Z INFO: From Compiling source/common/sharedobject.cpp [for tool]:
+2026-11-12T21:32:35.9431441Z In file included from external/v8++git_repository+icu/source/common/sharedobject.cpp:10:
+2026-11-12T21:32:35.9432392Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.9433684Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9434746Z   233 |     }
+2026-11-12T21:32:35.9435038Z       |     ^
+2026-11-12T21:32:35.9435840Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9436570Z   232 |         m->lock();
+2026-11-12T21:32:35.9436915Z       |            ^
+2026-11-12T21:32:35.9438220Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9439616Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9440270Z       |                                                             ^
+2026-11-12T21:32:35.9440755Z 2 warnings generated.
+2026-11-12T21:32:35.9441169Z INFO: From Compiling source/i18n/japancal.cpp:
+2026-11-12T21:32:35.9441893Z In file included from external/v8++git_repository+icu/source/i18n/japancal.cpp:36:
+2026-11-12T21:32:35.9443236Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9444271Z   233 |     }
+2026-11-12T21:32:35.9444572Z       |     ^
+2026-11-12T21:32:35.9445374Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9446097Z   232 |         m->lock();
+2026-11-12T21:32:35.9446454Z       |            ^
+2026-11-12T21:32:35.9447544Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9448918Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9449595Z       |                                                             ^
+2026-11-12T21:32:35.9450082Z 2 warnings generated.
+2026-11-12T21:32:35.9450482Z INFO: From Compiling source/i18n/coleitr.cpp:
+2026-11-12T21:32:35.9451169Z In file included from external/v8++git_repository+icu/source/i18n/coleitr.cpp:38:
+2026-11-12T21:32:35.9452142Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9453115Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9454056Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9455702Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9456729Z   233 |     }
+2026-11-12T21:32:35.9457024Z       |     ^
+2026-11-12T21:32:35.9457606Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9458345Z   232 |         m->lock();
+2026-11-12T21:32:35.9458697Z       |            ^
+2026-11-12T21:32:35.9459762Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9461161Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9461818Z       |                                                             ^
+2026-11-12T21:32:35.9462298Z 2 warnings generated.
+2026-11-12T21:32:35.9462718Z INFO: From Compiling source/common/rbbirb.cpp:
+2026-11-12T21:32:35.9463462Z In file included from external/v8++git_repository+icu/source/common/rbbirb.cpp:35:
+2026-11-12T21:32:35.9464357Z In file included from external/v8++git_repository+icu/source/common/rbbitblb.h:23:
+2026-11-12T21:32:35.9465470Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T21:32:35.9466756Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9467751Z   233 |     }
+2026-11-12T21:32:35.9468053Z       |     ^
+2026-11-12T21:32:35.9468652Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9469376Z   232 |         m->lock();
+2026-11-12T21:32:35.9469732Z       |            ^
+2026-11-12T21:32:35.9470799Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9472461Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9473130Z       |                                                             ^
+2026-11-12T21:32:35.9473628Z 2 warnings generated.
+2026-11-12T21:32:35.9474050Z INFO: From Compiling source/i18n/hebrwcal.cpp:
+2026-11-12T21:32:35.9474765Z In file included from external/v8++git_repository+icu/source/i18n/hebrwcal.cpp:24:
+2026-11-12T21:32:35.9476241Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9477269Z   233 |     }
+2026-11-12T21:32:35.9477558Z       |     ^
+2026-11-12T21:32:35.9478130Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9478828Z   232 |         m->lock();
+2026-11-12T21:32:35.9479164Z       |            ^
+2026-11-12T21:32:35.9480273Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9481612Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9482264Z       |                                                             ^
+2026-11-12T21:32:35.9482776Z 2 warnings generated.
+2026-11-12T21:32:35.9483231Z INFO: From Compiling source/i18n/coptccal.cpp [for tool]:
+2026-11-12T21:32:35.9483987Z In file included from external/v8++git_repository+icu/source/i18n/coptccal.cpp:15:
+2026-11-12T21:32:35.9485411Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9486442Z   233 |     }
+2026-11-12T21:32:35.9486737Z       |     ^
+2026-11-12T21:32:35.9487318Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9488022Z   232 |         m->lock();
+2026-11-12T21:32:35.9488382Z       |            ^
+2026-11-12T21:32:35.9489679Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9491081Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9491805Z       |                                                             ^
+2026-11-12T21:32:35.9492293Z 2 warnings generated.
+2026-11-12T21:32:35.9492707Z INFO: From Compiling source/i18n/indiancal.cpp:
+2026-11-12T21:32:35.9493432Z In file included from external/v8++git_repository+icu/source/i18n/indiancal.cpp:16:
+2026-11-12T21:32:35.9494359Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9495811Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9496859Z   233 |     }
+2026-11-12T21:32:35.9497170Z       |     ^
+2026-11-12T21:32:35.9497770Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9498513Z   232 |         m->lock();
+2026-11-12T21:32:35.9498870Z       |            ^
+2026-11-12T21:32:35.9499987Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9501402Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9502082Z       |                                                             ^
+2026-11-12T21:32:35.9502586Z 2 warnings generated.
+2026-11-12T21:32:35.9503124Z INFO: From Compiling source/i18n/collationruleparser.cpp [for tool]:
+2026-11-12T21:32:35.9504068Z In file included from external/v8++git_repository+icu/source/i18n/collationruleparser.cpp:30:
+2026-11-12T21:32:35.9505307Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9506515Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9507479Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9508736Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9509752Z   233 |     }
+2026-11-12T21:32:35.9510057Z       |     ^
+2026-11-12T21:32:35.9510653Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9511373Z   232 |         m->lock();
+2026-11-12T21:32:35.9511729Z       |            ^
+2026-11-12T21:32:35.9512832Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9514186Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9514858Z       |                                                             ^
+2026-11-12T21:32:35.9515955Z 2 warnings generated.
+2026-11-12T21:32:35.9516423Z INFO: From Compiling source/i18n/collationiterator.cpp:
+2026-11-12T21:32:35.9517247Z In file included from external/v8++git_repository+icu/source/i18n/collationiterator.cpp:25:
+2026-11-12T21:32:35.9518277Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9519258Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9520217Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9521419Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9522443Z   233 |     }
+2026-11-12T21:32:35.9522739Z       |     ^
+2026-11-12T21:32:35.9523316Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9524011Z   232 |         m->lock();
+2026-11-12T21:32:35.9524563Z       |            ^
+2026-11-12T21:32:35.9525878Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9527251Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9527898Z       |                                                             ^
+2026-11-12T21:32:35.9528411Z 2 warnings generated.
+2026-11-12T21:32:35.9528934Z INFO: From Compiling source/i18n/collationfastlatin.cpp [for tool]:
+2026-11-12T21:32:35.9529800Z In file included from external/v8++git_repository+icu/source/i18n/collationfastlatin.cpp:19:
+2026-11-12T21:32:35.9530804Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9531775Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9532731Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9533970Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9535002Z   233 |     }
+2026-11-12T21:32:35.9535483Z       |     ^
+2026-11-12T21:32:35.9536070Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9536770Z   232 |         m->lock();
+2026-11-12T21:32:35.9537129Z       |            ^
+2026-11-12T21:32:35.9538206Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9539575Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9540411Z       |                                                             ^
+2026-11-12T21:32:35.9540879Z 2 warnings generated.
+2026-11-12T21:32:35.9541337Z INFO: From Compiling source/common/ucase.cpp [for tool]:
+2026-11-12T21:32:35.9542158Z In file included from external/v8++git_repository+icu/source/common/ucase.cpp:29:
+2026-11-12T21:32:35.9543401Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9544435Z   233 |     }
+2026-11-12T21:32:35.9544725Z       |     ^
+2026-11-12T21:32:35.9545489Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9546207Z   232 |         m->lock();
+2026-11-12T21:32:35.9546567Z       |            ^
+2026-11-12T21:32:35.9547613Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9548989Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9549631Z       |                                                             ^
+2026-11-12T21:32:35.9550106Z 2 warnings generated.
+2026-11-12T21:32:35.9550576Z INFO: From Compiling source/i18n/collationtailoring.cpp:
+2026-11-12T21:32:35.9551416Z In file included from external/v8++git_repository+icu/source/i18n/collationtailoring.cpp:24:
+2026-11-12T21:32:35.9552382Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9553373Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9554279Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9555744Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9556735Z   233 |     }
+2026-11-12T21:32:35.9557046Z       |     ^
+2026-11-12T21:32:35.9557606Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9558299Z   232 |         m->lock();
+2026-11-12T21:32:35.9558842Z       |            ^
+2026-11-12T21:32:35.9559935Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9561353Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9562038Z       |                                                             ^
+2026-11-12T21:32:35.9562530Z 2 warnings generated.
+2026-11-12T21:32:35.9562955Z INFO: From Compiling source/i18n/chnsecal.cpp:
+2026-11-12T21:32:35.9563702Z In file included from external/v8++git_repository+icu/source/i18n/chnsecal.cpp:24:
+2026-11-12T21:32:35.9564991Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9566219Z   233 |     }
+2026-11-12T21:32:35.9566536Z       |     ^
+2026-11-12T21:32:35.9567142Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9567872Z   232 |         m->lock();
+2026-11-12T21:32:35.9568240Z       |            ^
+2026-11-12T21:32:35.9569345Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9570728Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9571406Z       |                                                             ^
+2026-11-12T21:32:35.9571890Z 2 warnings generated.
+2026-11-12T21:32:35.9572370Z INFO: From Compiling source/i18n/collationdatareader.cpp:
+2026-11-12T21:32:35.9573262Z In file included from external/v8++git_repository+icu/source/i18n/collationdatareader.cpp:23:
+2026-11-12T21:32:35.9574471Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9575681Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9576651Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9577883Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9578853Z   233 |     }
+2026-11-12T21:32:35.9579155Z       |     ^
+2026-11-12T21:32:35.9579737Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9580459Z   232 |         m->lock();
+2026-11-12T21:32:35.9580818Z       |            ^
+2026-11-12T21:32:35.9581958Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9583387Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9584063Z       |                                                             ^
+2026-11-12T21:32:35.9584542Z 2 warnings generated.
+2026-11-12T21:32:35.9584952Z INFO: From Compiling source/i18n/calendar.cpp:
+2026-11-12T21:32:35.9585902Z In file included from external/v8++git_repository+icu/source/i18n/calendar.cpp:55:
+2026-11-12T21:32:35.9586824Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:35.9587716Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.9588612Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.9589524Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9590829Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9591859Z   233 |     }
+2026-11-12T21:32:35.9592176Z       |     ^
+2026-11-12T21:32:35.9592962Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9593733Z   232 |         m->lock();
+2026-11-12T21:32:35.9594115Z       |            ^
+2026-11-12T21:32:35.9595460Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9596782Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9597467Z       |                                                             ^
+2026-11-12T21:32:35.9597953Z 2 warnings generated.
+2026-11-12T21:32:35.9598419Z INFO: From Compiling source/i18n/collationfastlatin.cpp:
+2026-11-12T21:32:35.9599285Z In file included from external/v8++git_repository+icu/source/i18n/collationfastlatin.cpp:19:
+2026-11-12T21:32:35.9600305Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9601284Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9602246Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9603494Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9604517Z   233 |     }
+2026-11-12T21:32:35.9604827Z       |     ^
+2026-11-12T21:32:35.9605614Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9606359Z   232 |         m->lock();
+2026-11-12T21:32:35.9606734Z       |            ^
+2026-11-12T21:32:35.9607867Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9609445Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9610140Z       |                                                             ^
+2026-11-12T21:32:35.9610640Z 2 warnings generated.
+2026-11-12T21:32:35.9611077Z INFO: From Compiling source/common/normlzr.cpp:
+2026-11-12T21:32:35.9611842Z In file included from external/v8++git_repository+icu/source/common/normlzr.cpp:23:
+2026-11-12T21:32:35.9612857Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9613810Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9615288Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9616308Z   233 |     }
+2026-11-12T21:32:35.9616610Z       |     ^
+2026-11-12T21:32:35.9617218Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9617976Z   232 |         m->lock();
+2026-11-12T21:32:35.9618339Z       |            ^
+2026-11-12T21:32:35.9619459Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9620858Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9621523Z       |                                                             ^
+2026-11-12T21:32:35.9622022Z 2 warnings generated.
+2026-11-12T21:32:35.9622475Z INFO: From Compiling source/i18n/coll.cpp [for tool]:
+2026-11-12T21:32:35.9623226Z In file included from external/v8++git_repository+icu/source/i18n/coll.cpp:51:
+2026-11-12T21:32:35.9624156Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9625344Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9626330Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9627770Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9628825Z   233 |     }
+2026-11-12T21:32:35.9629126Z       |     ^
+2026-11-12T21:32:35.9629715Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9630460Z   232 |         m->lock();
+2026-11-12T21:32:35.9630815Z       |            ^
+2026-11-12T21:32:35.9631909Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9633348Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9634031Z       |                                                             ^
+2026-11-12T21:32:35.9634528Z 2 warnings generated.
+2026-11-12T21:32:35.9635252Z INFO: From Compiling source/i18n/collationbuilder.cpp [for tool]:
+2026-11-12T21:32:35.9636195Z In file included from external/v8++git_repository+icu/source/i18n/collationbuilder.cpp:37:
+2026-11-12T21:32:35.9637193Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9638161Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9639127Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9640391Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9641411Z   233 |     }
+2026-11-12T21:32:35.9641709Z       |     ^
+2026-11-12T21:32:35.9642370Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9643117Z   232 |         m->lock();
+2026-11-12T21:32:35.9643673Z       |            ^
+2026-11-12T21:32:35.9644824Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9646409Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9647046Z       |                                                             ^
+2026-11-12T21:32:35.9647507Z 2 warnings generated.
+2026-11-12T21:32:35.9647954Z INFO: From Compiling source/i18n/japancal.cpp [for tool]:
+2026-11-12T21:32:35.9648721Z In file included from external/v8++git_repository+icu/source/i18n/japancal.cpp:36:
+2026-11-12T21:32:35.9649997Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9651016Z   233 |     }
+2026-11-12T21:32:35.9651319Z       |     ^
+2026-11-12T21:32:35.9651920Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9652665Z   232 |         m->lock();
+2026-11-12T21:32:35.9653034Z       |            ^
+2026-11-12T21:32:35.9654139Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9655746Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9656443Z       |                                                             ^
+2026-11-12T21:32:35.9656936Z 2 warnings generated.
+2026-11-12T21:32:35.9657445Z INFO: From Compiling source/i18n/collationfastlatinbuilder.cpp:
+2026-11-12T21:32:35.9658394Z In file included from external/v8++git_repository+icu/source/i18n/collationfastlatinbuilder.cpp:31:
+2026-11-12T21:32:35.9659458Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9660445Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9661401Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9662853Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9663894Z   233 |     }
+2026-11-12T21:32:35.9664203Z       |     ^
+2026-11-12T21:32:35.9664798Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9665724Z   232 |         m->lock();
+2026-11-12T21:32:35.9666095Z       |            ^
+2026-11-12T21:32:35.9667204Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9668620Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9669291Z       |                                                             ^
+2026-11-12T21:32:35.9669787Z 2 warnings generated.
+2026-11-12T21:32:35.9670274Z INFO: From Compiling source/i18n/collationroot.cpp [for tool]:
+2026-11-12T21:32:35.9671163Z In file included from external/v8++git_repository+icu/source/i18n/collationroot.cpp:21:
+2026-11-12T21:32:35.9672185Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9673168Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9674140Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9675595Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9676656Z   233 |     }
+2026-11-12T21:32:35.9676965Z       |     ^
+2026-11-12T21:32:35.9677568Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9678299Z   232 |         m->lock();
+2026-11-12T21:32:35.9678852Z       |            ^
+2026-11-12T21:32:35.9680097Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9681972Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9682784Z       |                                                             ^
+2026-11-12T21:32:35.9683554Z 2 warnings generated.
+2026-11-12T21:32:35.9684133Z INFO: From Compiling source/common/locutil.cpp:
+2026-11-12T21:32:35.9684999Z In file included from external/v8++git_repository+icu/source/common/locutil.cpp:21:
+2026-11-12T21:32:35.9686810Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9708016Z   233 |     }
+2026-11-12T21:32:35.9708348Z       |     ^
+2026-11-12T21:32:35.9708968Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9709735Z   232 |         m->lock();
+2026-11-12T21:32:35.9710108Z       |            ^
+2026-11-12T21:32:35.9711245Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9712655Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9713332Z       |                                                             ^
+2026-11-12T21:32:35.9713836Z 2 warnings generated.
+2026-11-12T21:32:35.9714241Z INFO: From Compiling source/i18n/usearch.cpp:
+2026-11-12T21:32:35.9714976Z In file included from external/v8++git_repository+icu/source/i18n/usearch.cpp:20:
+2026-11-12T21:32:35.9716183Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9717170Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9718452Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9719729Z   233 |     }
+2026-11-12T21:32:35.9720170Z       |     ^
+2026-11-12T21:32:35.9720780Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9721521Z   232 |         m->lock();
+2026-11-12T21:32:35.9721883Z       |            ^
+2026-11-12T21:32:35.9722976Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9724378Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9725063Z       |                                                             ^
+2026-11-12T21:32:35.9725775Z 2 warnings generated.
+2026-11-12T21:32:35.9726210Z INFO: From Compiling source/common/ucnv_io.cpp:
+2026-11-12T21:32:35.9726966Z In file included from external/v8++git_repository+icu/source/common/ucnv_io.cpp:39:
+2026-11-12T21:32:35.9728248Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9729294Z   233 |     }
+2026-11-12T21:32:35.9729597Z       |     ^
+2026-11-12T21:32:35.9730199Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9730943Z   232 |         m->lock();
+2026-11-12T21:32:35.9731313Z       |            ^
+2026-11-12T21:32:35.9732399Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9733782Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9734462Z       |                                                             ^
+2026-11-12T21:32:35.9735353Z 2 warnings generated.
+2026-11-12T21:32:35.9735775Z INFO: From Compiling source/i18n/uregex.cpp:
+2026-11-12T21:32:35.9736499Z In file included from external/v8++git_repository+icu/source/i18n/uregex.cpp:25:
+2026-11-12T21:32:35.9737772Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9738804Z   233 |     }
+2026-11-12T21:32:35.9739123Z       |     ^
+2026-11-12T21:32:35.9739724Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9740468Z   232 |         m->lock();
+2026-11-12T21:32:35.9740840Z       |            ^
+2026-11-12T21:32:35.9741941Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9743415Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9744107Z       |                                                             ^
+2026-11-12T21:32:35.9744610Z 2 warnings generated.
+2026-11-12T21:32:35.9745048Z INFO: From Compiling source/common/resbund.cpp:
+2026-11-12T21:32:35.9745986Z In file included from external/v8++git_repository+icu/source/common/resbund.cpp:55:
+2026-11-12T21:32:35.9746915Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9748206Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9749246Z   233 |     }
+2026-11-12T21:32:35.9749547Z       |     ^
+2026-11-12T21:32:35.9750140Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9750886Z   232 |         m->lock();
+2026-11-12T21:32:35.9751249Z       |            ^
+2026-11-12T21:32:35.9752347Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9753959Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9754647Z       |                                                             ^
+2026-11-12T21:32:35.9755343Z 2 warnings generated.
+2026-11-12T21:32:35.9755848Z INFO: From Compiling source/i18n/collationdata.cpp [for tool]:
+2026-11-12T21:32:35.9756708Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.cpp:23:
+2026-11-12T21:32:35.9757681Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9758675Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9759630Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9760923Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9761982Z   233 |     }
+2026-11-12T21:32:35.9762302Z       |     ^
+2026-11-12T21:32:35.9762918Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9763665Z   232 |         m->lock();
+2026-11-12T21:32:35.9764039Z       |            ^
+2026-11-12T21:32:35.9765368Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9766790Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9767491Z       |                                                             ^
+2026-11-12T21:32:35.9767999Z 2 warnings generated.
+2026-11-12T21:32:35.9768428Z INFO: From Compiling source/common/servlk.cpp:
+2026-11-12T21:32:35.9769192Z In file included from external/v8++git_repository+icu/source/common/servlk.cpp:18:
+2026-11-12T21:32:35.9770332Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:35.9771238Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.9772169Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.9773096Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9774379Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9775655Z   233 |     }
+2026-11-12T21:32:35.9775963Z       |     ^
+2026-11-12T21:32:35.9776554Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9777317Z   232 |         m->lock();
+2026-11-12T21:32:35.9777684Z       |            ^
+2026-11-12T21:32:35.9778821Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9780253Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9780943Z       |                                                             ^
+2026-11-12T21:32:35.9781452Z 2 warnings generated.
+2026-11-12T21:32:35.9781933Z INFO: From Compiling source/i18n/csdetect.cpp [for tool]:
+2026-11-12T21:32:35.9782748Z In file included from external/v8++git_repository+icu/source/i18n/csdetect.cpp:22:
+2026-11-12T21:32:35.9784057Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9785325Z   233 |     }
+2026-11-12T21:32:35.9785652Z       |     ^
+2026-11-12T21:32:35.9786268Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9787021Z   232 |         m->lock();
+2026-11-12T21:32:35.9787397Z       |            ^
+2026-11-12T21:32:35.9788659Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9790053Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9790716Z       |                                                             ^
+2026-11-12T21:32:35.9791208Z 2 warnings generated.
+2026-11-12T21:32:35.9791624Z INFO: From Compiling source/common/ucln_cmn.cpp:
+2026-11-12T21:32:35.9792422Z In file included from external/v8++git_repository+icu/source/common/ucln_cmn.cpp:20:
+2026-11-12T21:32:35.9793364Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9794640Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9795924Z   233 |     }
+2026-11-12T21:32:35.9796235Z       |     ^
+2026-11-12T21:32:35.9796848Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9797589Z   232 |         m->lock();
+2026-11-12T21:32:35.9797954Z       |            ^
+2026-11-12T21:32:35.9799067Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9800490Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9801170Z       |                                                             ^
+2026-11-12T21:32:35.9801678Z 2 warnings generated.
+2026-11-12T21:32:35.9802104Z INFO: From Compiling source/i18n/measfmt.cpp:
+2026-11-12T21:32:35.9802481Z In file included from external/v8++git_repository+icu/source/i18n/measfmt.cpp:32:
+2026-11-12T21:32:35.9802845Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9803571Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9803896Z   233 |     }
+2026-11-12T21:32:35.9804024Z       |     ^
+2026-11-12T21:32:35.9804440Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9804576Z   232 |         m->lock();
+2026-11-12T21:32:35.9804705Z       |            ^
+2026-11-12T21:32:35.9805824Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9806147Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9806338Z       |                                                             ^
+2026-11-12T21:32:35.9806480Z 2 warnings generated.
+2026-11-12T21:32:35.9806714Z INFO: From Compiling source/i18n/collationcompare.cpp:
+2026-11-12T21:32:35.9807147Z In file included from external/v8++git_repository+icu/source/i18n/collationcompare.cpp:22:
+2026-11-12T21:32:35.9807563Z In file included from external/v8++git_repository+icu/source/i18n/collationiterator.h:23:
+2026-11-12T21:32:35.9807965Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9808377Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9808733Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9809474Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9809593Z   233 |     }
+2026-11-12T21:32:35.9809718Z       |     ^
+2026-11-12T21:32:35.9810132Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9810263Z   232 |         m->lock();
+2026-11-12T21:32:35.9810389Z       |            ^
+2026-11-12T21:32:35.9811291Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9811810Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9812010Z       |                                                             ^
+2026-11-12T21:32:35.9812162Z 2 warnings generated.
+2026-11-12T21:32:35.9812420Z INFO: From Compiling source/common/ucnv_io.cpp [for tool]:
+2026-11-12T21:32:35.9812808Z In file included from external/v8++git_repository+icu/source/common/ucnv_io.cpp:39:
+2026-11-12T21:32:35.9813549Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9813671Z   233 |     }
+2026-11-12T21:32:35.9813798Z       |     ^
+2026-11-12T21:32:35.9814211Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9814347Z   232 |         m->lock();
+2026-11-12T21:32:35.9814482Z       |            ^
+2026-11-12T21:32:35.9815584Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9815917Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9816097Z       |                                                             ^
+2026-11-12T21:32:35.9816238Z 2 warnings generated.
+2026-11-12T21:32:35.9816425Z INFO: From Compiling source/common/serv.cpp:
+2026-11-12T21:32:35.9816782Z In file included from external/v8++git_repository+icu/source/common/serv.cpp:15:
+2026-11-12T21:32:35.9817143Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.9817510Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.9817847Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9818783Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9818909Z   233 |     }
+2026-11-12T21:32:35.9819025Z       |     ^
+2026-11-12T21:32:35.9819450Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9819587Z   232 |         m->lock();
+2026-11-12T21:32:35.9819704Z       |            ^
+2026-11-12T21:32:35.9820592Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9820916Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9821096Z       |                                                             ^
+2026-11-12T21:32:35.9821239Z 2 warnings generated.
+2026-11-12T21:32:35.9821494Z INFO: From Compiling source/i18n/collationsettings.cpp:
+2026-11-12T21:32:35.9821931Z In file included from external/v8++git_repository+icu/source/i18n/collationsettings.cpp:21:
+2026-11-12T21:32:35.9822334Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9822754Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9823103Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9823834Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9823962Z   233 |     }
+2026-11-12T21:32:35.9824089Z       |     ^
+2026-11-12T21:32:35.9824496Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9824637Z   232 |         m->lock();
+2026-11-12T21:32:35.9824761Z       |            ^
+2026-11-12T21:32:35.9825888Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9826404Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9826597Z       |                                                             ^
+2026-11-12T21:32:35.9826734Z 2 warnings generated.
+2026-11-12T21:32:35.9827037Z INFO: From Compiling source/i18n/collationsettings.cpp [for tool]:
+2026-11-12T21:32:35.9827476Z In file included from external/v8++git_repository+icu/source/i18n/collationsettings.cpp:21:
+2026-11-12T21:32:35.9827861Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9828273Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9828629Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9829370Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9829499Z   233 |     }
+2026-11-12T21:32:35.9829625Z       |     ^
+2026-11-12T21:32:35.9830044Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9830185Z   232 |         m->lock();
+2026-11-12T21:32:35.9830315Z       |            ^
+2026-11-12T21:32:35.9831220Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9831547Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9831731Z       |                                                             ^
+2026-11-12T21:32:35.9831873Z 2 warnings generated.
+2026-11-12T21:32:35.9832073Z INFO: From Compiling source/common/rbbitblb.cpp:
+2026-11-12T21:32:35.9832725Z In file included from external/v8++git_repository+icu/source/common/rbbitblb.cpp:19:
+2026-11-12T21:32:35.9833109Z In file included from external/v8++git_repository+icu/source/common/rbbitblb.h:23:
+2026-11-12T21:32:35.9833468Z In file included from external/v8++git_repository+icu/source/common/rbbidata.h:56:
+2026-11-12T21:32:35.9834211Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9834342Z   233 |     }
+2026-11-12T21:32:35.9834456Z       |     ^
+2026-11-12T21:32:35.9834872Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9835011Z   232 |         m->lock();
+2026-11-12T21:32:35.9835340Z       |            ^
+2026-11-12T21:32:35.9836249Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9836588Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9836769Z       |                                                             ^
+2026-11-12T21:32:35.9836917Z 2 warnings generated.
+2026-11-12T21:32:35.9837190Z INFO: From Compiling source/i18n/uspoof_impl.cpp [for tool]:
+2026-11-12T21:32:35.9837576Z In file included from external/v8++git_repository+icu/source/i18n/uspoof_impl.cpp:19:
+2026-11-12T21:32:35.9838298Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9838424Z   233 |     }
+2026-11-12T21:32:35.9838540Z       |     ^
+2026-11-12T21:32:35.9838960Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9839100Z   232 |         m->lock();
+2026-11-12T21:32:35.9839220Z       |            ^
+2026-11-12T21:32:35.9840117Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9840639Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9840838Z       |                                                             ^
+2026-11-12T21:32:35.9840975Z 2 warnings generated.
+2026-11-12T21:32:35.9841208Z INFO: From Compiling source/i18n/measunit_extra.cpp:
+2026-11-12T21:32:35.9841638Z In file included from external/v8++git_repository+icu/source/i18n/measunit_extra.cpp:24:
+2026-11-12T21:32:35.9842449Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9842579Z   233 |     }
+2026-11-12T21:32:35.9842706Z       |     ^
+2026-11-12T21:32:35.9843129Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9843268Z   232 |         m->lock();
+2026-11-12T21:32:35.9843396Z       |            ^
+2026-11-12T21:32:35.9844323Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9844654Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9844847Z       |                                                             ^
+2026-11-12T21:32:35.9844983Z 2 warnings generated.
+2026-11-12T21:32:35.9845470Z INFO: From Compiling source/i18n/messageformat2_parser.cpp:
+2026-11-12T21:32:35.9845950Z In file included from external/v8++git_repository+icu/source/i18n/messageformat2_parser.cpp:17:
+2026-11-12T21:32:35.9846682Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9846812Z   233 |     }
+2026-11-12T21:32:35.9846937Z       |     ^
+2026-11-12T21:32:35.9847351Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9847746Z   232 |         m->lock();
+2026-11-12T21:32:35.9847875Z       |            ^
+2026-11-12T21:32:35.9848819Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9849169Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9849355Z       |                                                             ^
+2026-11-12T21:32:35.9849498Z 2 warnings generated.
+2026-11-12T21:32:35.9849752Z INFO: From Compiling source/common/ucnv_bld.cpp [for tool]:
+2026-11-12T21:32:35.9850145Z In file included from external/v8++git_repository+icu/source/common/ucnv_bld.cpp:32:
+2026-11-12T21:32:35.9850504Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9851221Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9851361Z   233 |     }
+2026-11-12T21:32:35.9851504Z       |     ^
+2026-11-12T21:32:35.9851956Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9852102Z   232 |         m->lock();
+2026-11-12T21:32:35.9852229Z       |            ^
+2026-11-12T21:32:35.9853195Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9853528Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9853725Z       |                                                             ^
+2026-11-12T21:32:35.9853865Z 2 warnings generated.
+2026-11-12T21:32:35.9854087Z INFO: From Compiling source/common/rbbistbl.cpp:
+2026-11-12T21:32:35.9854498Z In file included from external/v8++git_repository+icu/source/common/rbbistbl.cpp:25:
+2026-11-12T21:32:35.9855475Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9855864Z   233 |     }
+2026-11-12T21:32:35.9856011Z       |     ^
+2026-11-12T21:32:35.9856439Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9856584Z   232 |         m->lock();
+2026-11-12T21:32:35.9856720Z       |            ^
+2026-11-12T21:32:35.9857644Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9857976Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9858159Z       |                                                             ^
+2026-11-12T21:32:35.9858304Z 2 warnings generated.
+2026-11-12T21:32:35.9858523Z INFO: From Compiling source/common/sharedobject.cpp:
+2026-11-12T21:32:35.9858928Z In file included from external/v8++git_repository+icu/source/common/sharedobject.cpp:10:
+2026-11-12T21:32:35.9859333Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.9860070Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9860200Z   233 |     }
+2026-11-12T21:32:35.9860321Z       |     ^
+2026-11-12T21:32:35.9860721Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9860857Z   232 |         m->lock();
+2026-11-12T21:32:35.9860986Z       |            ^
+2026-11-12T21:32:35.9861876Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9862205Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9862594Z       |                                                             ^
+2026-11-12T21:32:35.9862732Z 2 warnings generated.
+2026-11-12T21:32:35.9862964Z INFO: From Compiling source/i18n/collationsets.cpp:
+2026-11-12T21:32:35.9863378Z In file included from external/v8++git_repository+icu/source/i18n/collationsets.cpp:23:
+2026-11-12T21:32:35.9863773Z In file included from external/v8++git_repository+icu/source/i18n/collationdata.h:24:
+2026-11-12T21:32:35.9864199Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9864552Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9865575Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9865695Z   233 |     }
+2026-11-12T21:32:35.9865817Z       |     ^
+2026-11-12T21:32:35.9866225Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9866371Z   232 |         m->lock();
+2026-11-12T21:32:35.9866498Z       |            ^
+2026-11-12T21:32:35.9867383Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9867700Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9867885Z       |                                                             ^
+2026-11-12T21:32:35.9868023Z 2 warnings generated.
+2026-11-12T21:32:35.9868261Z INFO: From Compiling source/common/uinit.cpp [for tool]:
+2026-11-12T21:32:35.9868633Z In file included from external/v8++git_repository+icu/source/common/uinit.cpp:24:
+2026-11-12T21:32:35.9869351Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9869468Z   233 |     }
+2026-11-12T21:32:35.9869602Z       |     ^
+2026-11-12T21:32:35.9870001Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9870357Z   232 |         m->lock();
+2026-11-12T21:32:35.9870491Z       |            ^
+2026-11-12T21:32:35.9871365Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9871683Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9871871Z       |                                                             ^
+2026-11-12T21:32:35.9872020Z 2 warnings generated.
+2026-11-12T21:32:35.9872257Z INFO: From Compiling source/common/uloc.cpp [for tool]:
+2026-11-12T21:32:35.9872631Z In file included from external/v8++git_repository+icu/source/common/uloc.cpp:48:
+2026-11-12T21:32:35.9873371Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9873511Z   233 |     }
+2026-11-12T21:32:35.9873629Z       |     ^
+2026-11-12T21:32:35.9874067Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9874208Z   232 |         m->lock();
+2026-11-12T21:32:35.9874329Z       |            ^
+2026-11-12T21:32:35.9875454Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9875790Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9875975Z       |                                                             ^
+2026-11-12T21:32:35.9876126Z 2 warnings generated.
+2026-11-12T21:32:35.9876341Z INFO: From Compiling source/common/servrbf.cpp:
+2026-11-12T21:32:35.9876731Z In file included from external/v8++git_repository+icu/source/common/servrbf.cpp:18:
+2026-11-12T21:32:35.9877294Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:35.9877668Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.9878033Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.9878383Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9879112Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9879233Z   233 |     }
+2026-11-12T21:32:35.9879360Z       |     ^
+2026-11-12T21:32:35.9879779Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9879903Z   232 |         m->lock();
+2026-11-12T21:32:35.9880036Z       |            ^
+2026-11-12T21:32:35.9880932Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9881262Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9881442Z       |                                                             ^
+2026-11-12T21:32:35.9881586Z 2 warnings generated.
+2026-11-12T21:32:35.9881857Z INFO: From Compiling source/common/ucnvmbcs.cpp [for tool]:
+2026-11-12T21:32:35.9882240Z In file included from external/v8++git_repository+icu/source/common/ucnvmbcs.cpp:61:
+2026-11-12T21:32:35.9882973Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9883102Z   233 |     }
+2026-11-12T21:32:35.9883219Z       |     ^
+2026-11-12T21:32:35.9883635Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9883772Z   232 |         m->lock();
+2026-11-12T21:32:35.9883893Z       |            ^
+2026-11-12T21:32:35.9884953Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9885472Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9885658Z       |                                                             ^
+2026-11-12T21:32:35.9885795Z 2 warnings generated.
+2026-11-12T21:32:35.9886068Z INFO: From Compiling source/common/uloc_keytype.cpp [for tool]:
+2026-11-12T21:32:35.9886466Z In file included from external/v8++git_repository+icu/source/common/uloc_keytype.cpp:24:
+2026-11-12T21:32:35.9887170Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9887295Z   233 |     }
+2026-11-12T21:32:35.9887396Z       |     ^
+2026-11-12T21:32:35.9887771Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9887916Z   232 |         m->lock();
+2026-11-12T21:32:35.9888035Z       |            ^
+2026-11-12T21:32:35.9888944Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9889267Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9889458Z       |                                                             ^
+2026-11-12T21:32:35.9889596Z 2 warnings generated.
+2026-11-12T21:32:35.9889920Z INFO: From Compiling source/i18n/messageformat2_parser.cpp [for tool]:
+2026-11-12T21:32:35.9890378Z In file included from external/v8++git_repository+icu/source/i18n/messageformat2_parser.cpp:17:
+2026-11-12T21:32:35.9891080Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9891391Z   233 |     }
+2026-11-12T21:32:35.9891512Z       |     ^
+2026-11-12T21:32:35.9891915Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9892061Z   232 |         m->lock();
+2026-11-12T21:32:35.9892189Z       |            ^
+2026-11-12T21:32:35.9893056Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9893406Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9893592Z       |                                                             ^
+2026-11-12T21:32:35.9893730Z 2 warnings generated.
+2026-11-12T21:32:35.9893944Z INFO: From Compiling source/common/ucnv_bld.cpp:
+2026-11-12T21:32:35.9894342Z In file included from external/v8++git_repository+icu/source/common/ucnv_bld.cpp:32:
+2026-11-12T21:32:35.9894691Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9895630Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9895794Z   233 |     }
+2026-11-12T21:32:35.9895953Z       |     ^
+2026-11-12T21:32:35.9896331Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9896455Z   232 |         m->lock();
+2026-11-12T21:32:35.9896566Z       |            ^
+2026-11-12T21:32:35.9897433Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9897754Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9897938Z       |                                                             ^
+2026-11-12T21:32:35.9898074Z 2 warnings generated.
+2026-11-12T21:32:35.9898324Z INFO: From Compiling source/common/unistr.cpp [for tool]:
+2026-11-12T21:32:35.9898725Z In file included from external/v8++git_repository+icu/source/common/unistr.cpp:36:
+2026-11-12T21:32:35.9899646Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9899785Z   233 |     }
+2026-11-12T21:32:35.9899913Z       |     ^
+2026-11-12T21:32:35.9900333Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9900472Z   232 |         m->lock();
+2026-11-12T21:32:35.9900600Z       |            ^
+2026-11-12T21:32:35.9901519Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9901844Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9902031Z       |                                                             ^
+2026-11-12T21:32:35.9902177Z 2 warnings generated.
+2026-11-12T21:32:35.9902431Z INFO: From Compiling source/common/ucurr.cpp [for tool]:
+2026-11-12T21:32:35.9902823Z In file included from external/v8++git_repository+icu/source/common/ucurr.cpp:30:
+2026-11-12T21:32:35.9903566Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9903694Z   233 |     }
+2026-11-12T21:32:35.9903819Z       |     ^
+2026-11-12T21:32:35.9904240Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9904378Z   232 |         m->lock();
+2026-11-12T21:32:35.9904505Z       |            ^
+2026-11-12T21:32:35.9905601Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9905930Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9906301Z       |                                                             ^
+2026-11-12T21:32:35.9906445Z 2 warnings generated.
+2026-11-12T21:32:35.9906711Z INFO: From Compiling source/common/unormcmp.cpp [for tool]:
+2026-11-12T21:32:35.9907112Z In file included from external/v8++git_repository+icu/source/common/unormcmp.cpp:30:
+2026-11-12T21:32:35.9907531Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9907894Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9908646Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9908777Z   233 |     }
+2026-11-12T21:32:35.9908896Z       |     ^
+2026-11-12T21:32:35.9909329Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9909472Z   232 |         m->lock();
+2026-11-12T21:32:35.9909602Z       |            ^
+2026-11-12T21:32:35.9910535Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9910873Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9911065Z       |                                                             ^
+2026-11-12T21:32:35.9911214Z 2 warnings generated.
+2026-11-12T21:32:35.9911416Z INFO: From Compiling source/i18n/coptccal.cpp:
+2026-11-12T21:32:35.9911799Z In file included from external/v8++git_repository+icu/source/i18n/coptccal.cpp:15:
+2026-11-12T21:32:35.9912555Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9912678Z   233 |     }
+2026-11-12T21:32:35.9912808Z       |     ^
+2026-11-12T21:32:35.9913238Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9913377Z   232 |         m->lock();
+2026-11-12T21:32:35.9913506Z       |            ^
+2026-11-12T21:32:35.9914596Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9914925Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9915307Z       |                                                             ^
+2026-11-12T21:32:35.9915462Z 2 warnings generated.
+2026-11-12T21:32:35.9915700Z INFO: From Compiling source/common/unifiedcache.cpp:
+2026-11-12T21:32:35.9916138Z In file included from external/v8++git_repository+icu/source/common/unifiedcache.cpp:13:
+2026-11-12T21:32:35.9916551Z In file included from external/v8++git_repository+icu/source/common/unifiedcache.h:20:
+2026-11-12T21:32:35.9916951Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.9917724Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9917859Z   233 |     }
+2026-11-12T21:32:35.9917979Z       |     ^
+2026-11-12T21:32:35.9918408Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9918548Z   232 |         m->lock();
+2026-11-12T21:32:35.9918670Z       |            ^
+2026-11-12T21:32:35.9919595Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9919924Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9920114Z       |                                                             ^
+2026-11-12T21:32:35.9920254Z 2 warnings generated.
+2026-11-12T21:32:35.9920467Z INFO: From Compiling source/common/servslkf.cpp:
+2026-11-12T21:32:35.9921048Z In file included from external/v8++git_repository+icu/source/common/servslkf.cpp:18:
+2026-11-12T21:32:35.9921428Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:35.9921789Z In file included from external/v8++git_repository+icu/source/common/serv.h:35:
+2026-11-12T21:32:35.9922173Z In file included from external/v8++git_repository+icu/source/common/servnotf.h:31:
+2026-11-12T21:32:35.9922529Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9923289Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9923418Z   233 |     }
+2026-11-12T21:32:35.9923540Z       |     ^
+2026-11-12T21:32:35.9923970Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9924110Z   232 |         m->lock();
+2026-11-12T21:32:35.9924242Z       |            ^
+2026-11-12T21:32:35.9925323Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9925655Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9925833Z       |                                                             ^
+2026-11-12T21:32:35.9925976Z 2 warnings generated.
+2026-11-12T21:32:35.9926234Z INFO: From Compiling source/common/udata.cpp [for tool]:
+2026-11-12T21:32:35.9926607Z In file included from external/v8++git_repository+icu/source/common/udata.cpp:34:
+2026-11-12T21:32:35.9926968Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9927707Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9927839Z   233 |     }
+2026-11-12T21:32:35.9927961Z       |     ^
+2026-11-12T21:32:35.9928377Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9928693Z   232 |         m->lock();
+2026-11-12T21:32:35.9928825Z       |            ^
+2026-11-12T21:32:35.9929737Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9930062Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9930245Z       |                                                             ^
+2026-11-12T21:32:35.9930392Z 2 warnings generated.
+2026-11-12T21:32:35.9930617Z INFO: From Compiling source/i18n/number_fluent.cpp:
+2026-11-12T21:32:35.9931028Z In file included from external/v8++git_repository+icu/source/i18n/number_fluent.cpp:12:
+2026-11-12T21:32:35.9931766Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9931912Z   233 |     }
+2026-11-12T21:32:35.9932026Z       |     ^
+2026-11-12T21:32:35.9932452Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9932592Z   232 |         m->lock();
+2026-11-12T21:32:35.9932713Z       |            ^
+2026-11-12T21:32:35.9933578Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9933907Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9934090Z       |                                                             ^
+2026-11-12T21:32:35.9934243Z 2 warnings generated.
+2026-11-12T21:32:35.9934459Z INFO: From Compiling source/common/ucnvmbcs.cpp:
+2026-11-12T21:32:35.9934842Z In file included from external/v8++git_repository+icu/source/common/ucnvmbcs.cpp:61:
+2026-11-12T21:32:35.9936032Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9936177Z   233 |     }
+2026-11-12T21:32:35.9936298Z       |     ^
+2026-11-12T21:32:35.9936722Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9936864Z   232 |         m->lock();
+2026-11-12T21:32:35.9936987Z       |            ^
+2026-11-12T21:32:35.9937873Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9938181Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9938363Z       |                                                             ^
+2026-11-12T21:32:35.9938499Z 2 warnings generated.
+2026-11-12T21:32:35.9938700Z INFO: From Compiling source/common/uinit.cpp:
+2026-11-12T21:32:35.9939091Z In file included from external/v8++git_repository+icu/source/common/uinit.cpp:24:
+2026-11-12T21:32:35.9939839Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9939970Z   233 |     }
+2026-11-12T21:32:35.9940097Z       |     ^
+2026-11-12T21:32:35.9940516Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9940655Z   232 |         m->lock();
+2026-11-12T21:32:35.9940783Z       |            ^
+2026-11-12T21:32:35.9941684Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9942009Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9942257Z       |                                                             ^
+2026-11-12T21:32:35.9942405Z 2 warnings generated.
+2026-11-12T21:32:35.9942611Z INFO: From Compiling source/i18n/gregocal.cpp:
+2026-11-12T21:32:35.9943187Z In file included from external/v8++git_repository+icu/source/i18n/gregocal.cpp:49:
+2026-11-12T21:32:35.9943934Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9944068Z   233 |     }
+2026-11-12T21:32:35.9944194Z       |     ^
+2026-11-12T21:32:35.9944606Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9944748Z   232 |         m->lock();
+2026-11-12T21:32:35.9944878Z       |            ^
+2026-11-12T21:32:35.9945984Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9946300Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9946490Z       |                                                             ^
+2026-11-12T21:32:35.9946623Z 2 warnings generated.
+2026-11-12T21:32:35.9946901Z INFO: From Compiling source/i18n/number_fluent.cpp [for tool]:
+2026-11-12T21:32:35.9947289Z In file included from external/v8++git_repository+icu/source/i18n/number_fluent.cpp:12:
+2026-11-12T21:32:35.9948009Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9948124Z   233 |     }
+2026-11-12T21:32:35.9948247Z       |     ^
+2026-11-12T21:32:35.9948657Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9948788Z   232 |         m->lock();
+2026-11-12T21:32:35.9948915Z       |            ^
+2026-11-12T21:32:35.9949813Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9950298Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9950495Z       |                                                             ^
+2026-11-12T21:32:35.9950640Z 2 warnings generated.
+2026-11-12T21:32:35.9950863Z INFO: From Compiling source/common/uniset_props.cpp:
+2026-11-12T21:32:35.9951283Z In file included from external/v8++git_repository+icu/source/common/uniset_props.cpp:38:
+2026-11-12T21:32:35.9951707Z In file included from external/v8++git_repository+icu/source/common/normalizer2impl.h:32:
+2026-11-12T21:32:35.9952066Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:32:35.9952819Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9952946Z   233 |     }
+2026-11-12T21:32:35.9953071Z       |     ^
+2026-11-12T21:32:35.9953490Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9953640Z   232 |         m->lock();
+2026-11-12T21:32:35.9953770Z       |            ^
+2026-11-12T21:32:35.9954682Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9955013Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9955414Z       |                                                             ^
+2026-11-12T21:32:35.9955547Z 2 warnings generated.
+2026-11-12T21:32:35.9955748Z INFO: From Compiling source/common/uloc.cpp:
+2026-11-12T21:32:35.9956132Z In file included from external/v8++git_repository+icu/source/common/uloc.cpp:48:
+2026-11-12T21:32:35.9956881Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9957011Z   233 |     }
+2026-11-12T21:32:35.9957145Z       |     ^
+2026-11-12T21:32:35.9957565Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9957704Z   232 |         m->lock();
+2026-11-12T21:32:35.9958005Z       |            ^
+2026-11-12T21:32:35.9958938Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9959274Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9959464Z       |                                                             ^
+2026-11-12T21:32:35.9959604Z 2 warnings generated.
+2026-11-12T21:32:35.9959876Z INFO: From Compiling source/i18n/number_decimfmtprops.cpp:
+2026-11-12T21:32:35.9960344Z In file included from external/v8++git_repository+icu/source/i18n/number_decimfmtprops.cpp:9:
+2026-11-12T21:32:35.9961095Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9961236Z   233 |     }
+2026-11-12T21:32:35.9961363Z       |     ^
+2026-11-12T21:32:35.9961835Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9961976Z   232 |         m->lock();
+2026-11-12T21:32:35.9962109Z       |            ^
+2026-11-12T21:32:35.9963043Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9963364Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9963554Z       |                                                             ^
+2026-11-12T21:32:35.9963701Z 2 warnings generated.
+2026-11-12T21:32:35.9963907Z INFO: From Compiling source/common/unames.cpp:
+2026-11-12T21:32:35.9964307Z In file included from external/v8++git_repository+icu/source/common/unames.cpp:27:
+2026-11-12T21:32:35.9965910Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9966043Z   233 |     }
+2026-11-12T21:32:35.9966167Z       |     ^
+2026-11-12T21:32:35.9966588Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9966716Z   232 |         m->lock();
+2026-11-12T21:32:35.9966841Z       |            ^
+2026-11-12T21:32:35.9967737Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9968058Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9968251Z       |                                                             ^
+2026-11-12T21:32:35.9968394Z 2 warnings generated.
+2026-11-12T21:32:35.9968631Z INFO: From Compiling source/i18n/number_modifiers.cpp:
+2026-11-12T21:32:35.9969060Z In file included from external/v8++git_repository+icu/source/i18n/number_modifiers.cpp:8:
+2026-11-12T21:32:35.9969815Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9969941Z   233 |     }
+2026-11-12T21:32:35.9970065Z       |     ^
+2026-11-12T21:32:35.9970480Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9970615Z   232 |         m->lock();
+2026-11-12T21:32:35.9970744Z       |            ^
+2026-11-12T21:32:35.9971646Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9971974Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9972179Z       |                                                             ^
+2026-11-12T21:32:35.9972323Z 2 warnings generated.
+2026-11-12T21:32:35.9972553Z INFO: From Compiling source/i18n/number_longnames.cpp:
+2026-11-12T21:32:35.9973140Z In file included from external/v8++git_repository+icu/source/i18n/number_longnames.cpp:23:
+2026-11-12T21:32:35.9973561Z In file included from external/v8++git_repository+icu/source/i18n/sharedpluralrules.h:15:
+2026-11-12T21:32:35.9973948Z In file included from external/v8++git_repository+icu/source/common/sharedobject.h:16:
+2026-11-12T21:32:35.9974671Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9974798Z   233 |     }
+2026-11-12T21:32:35.9974924Z       |     ^
+2026-11-12T21:32:35.9975548Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9975683Z   232 |         m->lock();
+2026-11-12T21:32:35.9975805Z       |            ^
+2026-11-12T21:32:35.9976691Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9977032Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9977224Z       |                                                             ^
+2026-11-12T21:32:35.9977361Z 2 warnings generated.
+2026-11-12T21:32:35.9977595Z INFO: From Compiling source/common/uloc_keytype.cpp:
+2026-11-12T21:32:35.9978007Z In file included from external/v8++git_repository+icu/source/common/uloc_keytype.cpp:24:
+2026-11-12T21:32:35.9978748Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9978871Z   233 |     }
+2026-11-12T21:32:35.9978994Z       |     ^
+2026-11-12T21:32:35.9979409Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9979540Z   232 |         m->lock();
+2026-11-12T21:32:35.9979863Z       |            ^
+2026-11-12T21:32:35.9980775Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9981093Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9981283Z       |                                                             ^
+2026-11-12T21:32:35.9981425Z 2 warnings generated.
+2026-11-12T21:32:35.9981615Z INFO: From Compiling source/common/umutex.cpp:
+2026-11-12T21:32:35.9982000Z In file included from external/v8++git_repository+icu/source/common/umutex.cpp:23:
+2026-11-12T21:32:35.9982740Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9982862Z   233 |     }
+2026-11-12T21:32:35.9982987Z       |     ^
+2026-11-12T21:32:35.9983409Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:32:35.9983548Z   232 |         m->lock();
+2026-11-12T21:32:35.9983681Z       |            ^
+2026-11-12T21:32:35.9984586Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:32:35.9984899Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:32:35.9985300Z       |                                                             ^
+2026-11-12T21:32:35.9985453Z 2 warnings generated.
+2026-11-12T21:32:35.9985828Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files):
+2026-11-12T21:32:35.9986258Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:32:35.9986532Z   --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:32:35.9986651Z    |
+2026-11-12T21:32:35.9986818Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:32:35.9986961Z    |                  ^^^^^^^^^^
+2026-11-12T21:32:35.9987080Z    |
+2026-11-12T21:32:35.9987269Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:32:35.9987451Z 
+2026-11-12T21:32:35.9987888Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:32:35.9988165Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:32:35.9988287Z     |
+2026-11-12T21:32:35.9988470Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:32:35.9988614Z     |                           ^^^^^^^^^^
+2026-11-12T21:32:35.9988621Z 
+2026-11-12T21:32:35.9989028Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:32:35.9989292Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:32:35.9989446Z     |
+2026-11-12T21:32:35.9989687Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:32:35.9989827Z     |                           ^^^^^^^^^^
+2026-11-12T21:32:35.9989841Z 
+2026-11-12T21:32:35.9989992Z warning: 3 warnings emitted
+2026-11-12T21:32:35.9989998Z 
+2026-11-12T21:32:35.9990227Z INFO: From Compiling source/i18n/numfmt.cpp [for tool]:
+2026-11-12T21:32:35.9990595Z In file included from external/v8++git_repository+icu/source/i18n/numfmt.cpp:47:
+2026-11-12T21:32:35.9990966Z In file included from external/v8++git_repository+icu/source/common/servloc.h:37:
+2026-11-12T21:32:35.9991306Z In file included from external/v8++git_repository+icu/source/common/serv

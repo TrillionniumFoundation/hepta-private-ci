@@ -1,0 +1,941 @@
+import _frozen_importlib # frozen
+import _imp # builtin
+import '_thread' # <class '_frozen_importlib.BuiltinImporter'>
+import '_warnings' # <class '_frozen_importlib.BuiltinImporter'>
+import '_weakref' # <class '_frozen_importlib.BuiltinImporter'>
+import '_io' # <class '_frozen_importlib.BuiltinImporter'>
+import 'marshal' # <class '_frozen_importlib.BuiltinImporter'>
+import 'posix' # <class '_frozen_importlib.BuiltinImporter'>
+import '_frozen_importlib_external' # <class '_frozen_importlib.FrozenImporter'>
+# installing zipimport hook
+import 'time' # <class '_frozen_importlib.BuiltinImporter'>
+import 'zipimport' # <class '_frozen_importlib.FrozenImporter'>
+# installed zipimport hook
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/__init__.cpython-312.pyc'
+import '_codecs' # <class '_frozen_importlib.BuiltinImporter'>
+import 'codecs' # <class '_frozen_importlib.FrozenImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/aliases.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/aliases.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/aliases.cpython-312.pyc'
+import 'encodings.aliases' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a33e92e0>
+import 'encodings' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a33e8950>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/utf_8.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/utf_8.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/utf_8.cpython-312.pyc'
+import 'encodings.utf_8' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a33eb860>
+import '_signal' # <class '_frozen_importlib.BuiltinImporter'>
+import '_abc' # <class '_frozen_importlib.BuiltinImporter'>
+import 'abc' # <class '_frozen_importlib.FrozenImporter'>
+import 'io' # <class '_frozen_importlib.FrozenImporter'>
+import '_stat' # <class '_frozen_importlib.BuiltinImporter'>
+import 'stat' # <class '_frozen_importlib.FrozenImporter'>
+import '_collections_abc' # <class '_frozen_importlib.FrozenImporter'>
+import 'genericpath' # <class '_frozen_importlib.FrozenImporter'>
+import 'posixpath' # <class '_frozen_importlib.FrozenImporter'>
+import 'os' # <class '_frozen_importlib.FrozenImporter'>
+import '_sitebuiltins' # <class '_frozen_importlib.FrozenImporter'>
+Processing global site-packages
+Adding directory: '/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages'
+Processing .pth file: '/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/distutils-precedence.pth'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/utf_8_sig.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/utf_8_sig.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/encodings/__pycache__/utf_8_sig.cpython-312.pyc'
+import 'encodings.utf_8_sig' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3202030>
+# /home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/_distutils_hack/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/_distutils_hack/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/_distutils_hack/__pycache__/__init__.cpython-312.pyc'
+import '_distutils_hack' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3202de0>
+Processing user site-packages
+Processing global site-packages
+Adding directory: '/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages'
+Processing .pth file: '/home/qq/hepta-smollm2-weight-research-20261103/ci-env/lib/python3.12/site-packages/distutils-precedence.pth'
+import 'site' # <class '_frozen_importlib.FrozenImporter'>
+Python 3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/importlib/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/importlib/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/importlib/__pycache__/__init__.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/warnings.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/warnings.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/warnings.cpython-312.pyc'
+import 'warnings' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3203920>
+import 'importlib' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3202690>
+import 'importlib.machinery' # <class '_frozen_importlib.FrozenImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/importlib/__pycache__/_abc.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/importlib/_abc.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/importlib/__pycache__/_abc.cpython-312.pyc'
+import 'importlib._abc' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32388f0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/types.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/types.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/types.cpython-312.pyc'
+import 'types' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32389b0>
+import 'importlib.util' # <class '_frozen_importlib.FrozenImporter'>
+import 'runpy' # <class '_frozen_importlib.FrozenImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/__init__.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/result.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/result.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/result.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/traceback.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/traceback.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/traceback.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/collections/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/collections/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/collections/__pycache__/__init__.cpython-312.pyc'
+import 'itertools' # <class '_frozen_importlib.BuiltinImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/keyword.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/keyword.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/keyword.cpython-312.pyc'
+import 'keyword' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3274710>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/operator.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/operator.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/operator.cpython-312.pyc'
+import '_operator' # <class '_frozen_importlib.BuiltinImporter'>
+import 'operator' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3274d70>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/reprlib.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/reprlib.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/reprlib.cpython-312.pyc'
+import 'reprlib' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3275700>
+import '_collections' # <class '_frozen_importlib.BuiltinImporter'>
+import 'collections' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3254140>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/collections/__pycache__/abc.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/collections/abc.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/collections/__pycache__/abc.cpython-312.pyc'
+import 'collections.abc' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3254740>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/linecache.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/linecache.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/linecache.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/functools.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/functools.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/functools.cpython-312.pyc'
+import '_functools' # <class '_frozen_importlib.BuiltinImporter'>
+import 'functools' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3254b60>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/tokenize.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/tokenize.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/tokenize.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/__init__.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/enum.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/enum.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/enum.cpython-312.pyc'
+import 'enum' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a329a6f0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_compiler.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/_compiler.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_compiler.cpython-312.pyc'
+import '_sre' # <class '_frozen_importlib.BuiltinImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_parser.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/_parser.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_parser.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_constants.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/_constants.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_constants.cpython-312.pyc'
+import 're._constants' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32d84a0>
+import 're._parser' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32bb050>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_casefix.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/_casefix.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/re/__pycache__/_casefix.cpython-312.pyc'
+import 're._casefix' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a329a5d0>
+import 're._compiler' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32b9730>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/copyreg.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/copyreg.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/copyreg.cpython-312.pyc'
+import 'copyreg' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32d9730>
+import 're' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3299a90>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/token.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/token.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/token.cpython-312.pyc'
+import 'token' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32d9a90>
+import '_tokenize' # <class '_frozen_importlib.BuiltinImporter'>
+import 'tokenize' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3276f30>
+import 'linecache' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32546b0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/textwrap.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/textwrap.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/textwrap.cpython-312.pyc'
+import 'textwrap' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3277a10>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/contextlib.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/contextlib.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/contextlib.cpython-312.pyc'
+import 'contextlib' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32ed6a0>
+import 'traceback' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a323a000>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/util.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/util.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/util.cpython-312.pyc'
+import 'unittest.util' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32ef9b0>
+import 'unittest.result' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3239820>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/case.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/case.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/case.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/difflib.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/difflib.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/difflib.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/heapq.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/heapq.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/heapq.cpython-312.pyc'
+import '_heapq' # <class '_frozen_importlib.BuiltinImporter'>
+import 'heapq' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3149670>
+import 'difflib' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a311f0e0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/pprint.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/pprint.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/pprint.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/dataclasses.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/dataclasses.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/dataclasses.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/copy.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/copy.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/copy.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/weakref.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/weakref.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/weakref.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/_weakrefset.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/_weakrefset.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/_weakrefset.cpython-312.pyc'
+import '_weakrefset' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a31669f0>
+import 'weakref' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a31654f0>
+import 'copy' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3164f50>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/inspect.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/inspect.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/inspect.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/ast.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/ast.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/ast.cpython-312.pyc'
+import '_ast' # <class '_frozen_importlib.BuiltinImporter'>
+import 'ast' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a318fec0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/dis.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/dis.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/dis.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/opcode.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/opcode.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/opcode.cpython-312.pyc'
+import '_opcode' # <class '_frozen_importlib.BuiltinImporter'>
+import 'opcode' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a31eeed0>
+import 'dis' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a31b0f80>
+import 'inspect' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3167800>
+import 'dataclasses' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a314b200>
+import 'pprint' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3149f40>
+import 'unittest.case' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a311c3b0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/suite.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/suite.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/suite.cpython-312.pyc'
+import 'unittest.suite' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a311cd40>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/loader.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/loader.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/loader.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/fnmatch.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/fnmatch.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/fnmatch.cpython-312.pyc'
+import 'fnmatch' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30393d0>
+import 'unittest.loader' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30389b0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/main.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/main.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/main.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/argparse.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/argparse.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/argparse.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/gettext.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/gettext.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/gettext.cpython-312.pyc'
+import 'gettext' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3075370>
+import 'argparse' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a303a1e0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/runner.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/runner.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/runner.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/signals.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/signals.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/signals.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/signal.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/signal.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/signal.cpython-312.pyc'
+import 'signal' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30944a0>
+import 'unittest.signals' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3077fe0>
+import 'unittest.runner' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a303b980>
+import 'unittest.main' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3039a30>
+import 'unittest' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3238b60>
+# code object from /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__main__.py
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/locale.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/locale.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/locale.cpython-312.pyc'
+import '_locale' # <class '_frozen_importlib.BuiltinImporter'>
+import 'locale' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a3094590>
+import 'errno' # <class '_frozen_importlib.BuiltinImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/shutil.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/shutil.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/shutil.cpython-312.pyc'
+import 'zlib' # <class '_frozen_importlib.BuiltinImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/bz2.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/bz2.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/bz2.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/_compression.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/_compression.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/_compression.cpython-312.pyc'
+import '_compression' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30b6ea0>
+import '_bz2' # <class '_frozen_importlib.BuiltinImporter'>
+import 'bz2' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30b63f0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/lzma.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/lzma.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/lzma.cpython-312.pyc'
+import '_lzma' # <class '_frozen_importlib.BuiltinImporter'>
+import 'lzma' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30b7560>
+import 'shutil' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30a7f50>
+# code object from /home/qq/neuro-ctrl6240-full-2411261-862531d11598-v1/checkout/scripts/ndu_real_runtime/__init__.py
+import 'ndu_real_runtime' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30e0e30>
+# code object from /home/qq/neuro-ctrl6240-full-2411261-862531d11598-v1/checkout/scripts/ndu_real_runtime/test_candidate_coverage.py
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/__init__.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/decoder.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/decoder.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/decoder.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/scanner.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/scanner.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/scanner.cpython-312.pyc'
+import '_json' # <class '_frozen_importlib.BuiltinImporter'>
+import 'json.scanner' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30e14c0>
+import 'json.decoder' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30e0440>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/encoder.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/encoder.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/json/__pycache__/encoder.cpython-312.pyc'
+import 'json.encoder' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30e1700>
+import 'json' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a32389e0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/pathlib.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/pathlib.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/pathlib.cpython-312.pyc'
+import 'ntpath' # <class '_frozen_importlib.FrozenImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/urllib/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/urllib/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/urllib/__pycache__/__init__.cpython-312.pyc'
+import 'urllib' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30fd070>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/urllib/__pycache__/parse.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/urllib/parse.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/urllib/__pycache__/parse.cpython-312.pyc'
+import 'math' # <class '_frozen_importlib.BuiltinImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/ipaddress.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/ipaddress.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/ipaddress.cpython-312.pyc'
+import 'ipaddress' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30fffb0>
+import 'urllib.parse' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30fd190>
+import 'pathlib' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30e2180>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/subprocess.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/subprocess.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/subprocess.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/threading.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/threading.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/threading.cpython-312.pyc'
+import 'threading' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2f7d8b0>
+import 'fcntl' # <class '_frozen_importlib.BuiltinImporter'>
+import '_posixsubprocess' # <class '_frozen_importlib.BuiltinImporter'>
+import 'select' # <class '_frozen_importlib.BuiltinImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/selectors.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/selectors.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/selectors.cpython-312.pyc'
+import 'selectors' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2fa0fb0>
+import 'subprocess' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30fcc50>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/tempfile.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/tempfile.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/tempfile.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/random.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/random.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/random.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/bisect.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/bisect.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/bisect.cpython-312.pyc'
+import '_bisect' # <class '_frozen_importlib.BuiltinImporter'>
+import 'bisect' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2fc55e0>
+import '_random' # <class '_frozen_importlib.BuiltinImporter'>
+import '_sha2' # <class '_frozen_importlib.BuiltinImporter'>
+import 'random' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2fa3a10>
+import 'tempfile' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2f37d70>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/mock.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/mock.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/unittest/__pycache__/mock.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/__init__.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_events.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/base_events.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_events.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/__pycache__/__init__.cpython-312.pyc'
+import 'concurrent' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e11310>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/__pycache__/__init__.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/__pycache__/_base.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/_base.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/concurrent/futures/__pycache__/_base.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/logging/__pycache__/__init__.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/logging/__init__.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/logging/__pycache__/__init__.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/string.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/string.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/string.cpython-312.pyc'
+import '_string' # <class '_frozen_importlib.BuiltinImporter'>
+import 'string' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e3de50>
+import 'atexit' # <class '_frozen_importlib.BuiltinImporter'>
+import 'logging' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e12810>
+import 'concurrent.futures._base' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e116d0>
+import 'concurrent.futures' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e11460>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/socket.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/socket.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/socket.cpython-312.pyc'
+import '_socket' # <class '_frozen_importlib.BuiltinImporter'>
+import 'array' # <class '_frozen_importlib.BuiltinImporter'>
+import 'socket' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e118b0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/ssl.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/ssl.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/ssl.cpython-312.pyc'
+import '_ssl' # <class '_frozen_importlib.BuiltinImporter'>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/base64.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/base64.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/base64.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/struct.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/struct.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/struct.cpython-312.pyc'
+import '_struct' # <class '_frozen_importlib.BuiltinImporter'>
+import 'struct' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d049b0>
+import 'binascii' # <class '_frozen_importlib.BuiltinImporter'>
+import 'base64' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2eaf5f0>
+import 'ssl' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e3ffe0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/constants.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/constants.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/constants.cpython-312.pyc'
+import 'asyncio.constants' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e86240>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/coroutines.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/coroutines.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/coroutines.cpython-312.pyc'
+import 'asyncio.coroutines' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2e861b0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/events.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/events.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/events.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/contextvars.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/contextvars.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/contextvars.cpython-312.pyc'
+import '_contextvars' # <class '_frozen_importlib.BuiltinImporter'>
+import 'contextvars' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d06c60>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/format_helpers.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/format_helpers.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/format_helpers.cpython-312.pyc'
+import 'asyncio.format_helpers' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d07680>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_futures.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/base_futures.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_futures.cpython-312.pyc'
+import 'asyncio.base_futures' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d1cb30>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/exceptions.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/exceptions.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/exceptions.cpython-312.pyc'
+import 'asyncio.exceptions' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d1cec0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_tasks.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/base_tasks.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_tasks.cpython-312.pyc'
+import 'asyncio.base_tasks' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d1d2b0>
+import '_asyncio' # <class '_frozen_importlib.BuiltinImporter'>
+import 'asyncio.events' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d05cd0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/futures.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/futures.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/futures.cpython-312.pyc'
+import 'asyncio.futures' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d1d550>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/protocols.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/protocols.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/protocols.cpython-312.pyc'
+import 'asyncio.protocols' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d1dc70>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/sslproto.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/sslproto.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/sslproto.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/transports.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/transports.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/transports.cpython-312.pyc'
+import 'asyncio.transports' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d1f770>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/log.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/log.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/log.cpython-312.pyc'
+import 'asyncio.log' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d483e0>
+import 'asyncio.sslproto' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d1df70>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/staggered.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/staggered.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/staggered.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/locks.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/locks.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/locks.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/mixins.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/mixins.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/mixins.cpython-312.pyc'
+import 'asyncio.mixins' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d49fd0>
+import 'asyncio.locks' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d48cb0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/tasks.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/tasks.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/tasks.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/timeouts.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/timeouts.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/timeouts.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/typing.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/typing.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/typing.cpython-312.pyc'
+import '_typing' # <class '_frozen_importlib.BuiltinImporter'>
+import 'typing' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d4bfb0>
+import 'asyncio.timeouts' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d4b830>
+import 'asyncio.tasks' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d4a1b0>
+import 'asyncio.staggered' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d489b0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/trsock.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/trsock.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/trsock.cpython-312.pyc'
+import 'asyncio.trsock' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2d48e00>
+import 'asyncio.base_events' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2ff6150>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/runners.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/runners.cpython-312.pyc'
+import 'asyncio.runners' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2ff6720>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/queues.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/queues.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/queues.cpython-312.pyc'
+import 'asyncio.queues' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2dafef0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/streams.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/streams.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/streams.cpython-312.pyc'
+import 'asyncio.streams' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2de0830>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/subprocess.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/subprocess.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/subprocess.cpython-312.pyc'
+import 'asyncio.subprocess' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2de1b50>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/taskgroups.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/taskgroups.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/taskgroups.cpython-312.pyc'
+import 'asyncio.taskgroups' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2de2300>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/threads.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/threads.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/threads.cpython-312.pyc'
+import 'asyncio.threads' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2de27e0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/unix_events.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/unix_events.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/unix_events.cpython-312.pyc'
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_subprocess.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/base_subprocess.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/base_subprocess.cpython-312.pyc'
+import 'asyncio.base_subprocess' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2c04dd0>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/selector_events.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/selector_events.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/__pycache__/selector_events.cpython-312.pyc'
+import 'asyncio.selector_events' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2c05fa0>
+import 'asyncio.unix_events' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2de2870>
+import 'asyncio' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2ff5e20>
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/pkgutil.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/pkgutil.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/pkgutil.cpython-312.pyc'
+import 'pkgutil' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2de2fc0>
+import 'unittest.mock' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2fc5be0>
+# code object from /home/qq/neuro-ctrl6240-full-2411261-862531d11598-v1/checkout/scripts/ndu_real_runtime/candidate_coverage.py
+# /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/hashlib.cpython-312.pyc matches /home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/hashlib.py
+# code object from '/home/qq/hepta-smollm2-weight-research-20261103/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/__pycache__/hashlib.cpython-312.pyc'
+import '_hashlib' # <class '_frozen_importlib.BuiltinImporter'>
+import '_blake2' # <class '_frozen_importlib.BuiltinImporter'>
+import 'hashlib' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2ff4cb0>
+import 'ndu_real_runtime.candidate_coverage' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a2fc7680>
+import 'ndu_real_runtime.test_candidate_coverage' # <_frozen_importlib_external.SourceFileLoader object at 0x7952a30e0fb0>
+test_all_producer_bindings_are_required_on_every_record (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_all_producer_bindings_are_required_on_every_record) ... ok
+test_bad_indices_and_counts_do_not_create_false_coverage (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_bad_indices_and_counts_do_not_create_false_coverage) ... ok
+test_cap_saturation_requires_original_count_to_prove_truncation (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_cap_saturation_requires_original_count_to_prove_truncation) ... ok
+test_conflicting_state_or_reused_observation_is_rejected (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_conflicting_state_or_reused_observation_is_rejected) ... ok
+test_empty_candidates_remain_in_the_quality_denominator (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_empty_candidates_remain_in_the_quality_denominator) ... ok
+test_invalid_role_is_rejected_before_opening_records (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_invalid_role_is_rejected_before_opening_records) ... ok
+test_manifest_source_and_input_tampering_are_rejected (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_manifest_source_and_input_tampering_are_rejected) ... ok
+test_missing_source_or_registered_state_never_disappears (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_missing_source_or_registered_state_never_disappears) ... ok
+test_pinned_cli_and_create_only_redacted_report (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_pinned_cli_and_create_only_redacted_report) ... FAIL
+test_roles_identity_and_unregistered_states_are_rejected (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_roles_identity_and_unregistered_states_are_rejected) ... ok
+test_source_balancing_and_duplicate_state_invariance (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_source_balancing_and_duplicate_state_invariance) ... ok
+test_unknown_labels_selection_and_explicit_abstention_differ (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_unknown_labels_selection_and_explicit_abstention_differ) ... ok
+
+======================================================================
+FAIL: test_pinned_cli_and_create_only_redacted_report (ndu_real_runtime.test_candidate_coverage.CandidateCoverageTests.test_pinned_cli_and_create_only_redacted_report)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/neuro-ctrl6240-full-2411261-862531d11598-v1/checkout/scripts/ndu_real_runtime/test_candidate_coverage.py", line 247, in test_pinned_cli_and_create_only_redacted_report
+    self.assertEqual((first.returncode, first.stderr), (0, ""))
+AssertionError: Tuples differ: (0, 'import _frozen_importlib # frozen\nimport[27595 chars]s\n') != (0, '')
+
+First differing element 1:
+'import _frozen_importlib # frozen\nimport[27594 chars]ks\n'
+''
+
+Diff is 30586 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.023s
+
+FAILED (failures=1)
+# clear sys.path_importer_cache
+# clear sys.path_hooks
+# clear builtins._
+# clear sys.path
+# clear sys.argv
+# clear sys.ps1
+# clear sys.ps2
+# clear sys.last_exc
+# clear sys.last_type
+# clear sys.last_value
+# clear sys.last_traceback
+# clear sys.__interactivehook__
+# clear sys.meta_path
+# restore sys.stdin
+# restore sys.stdout
+# restore sys.stderr
+# cleanup[2] removing sys
+# cleanup[2] removing builtins
+# cleanup[2] removing _frozen_importlib
+# cleanup[2] removing _imp
+# cleanup[2] removing _thread
+# cleanup[2] removing _warnings
+# cleanup[2] removing _weakref
+# cleanup[2] removing _io
+# cleanup[2] removing marshal
+# cleanup[2] removing posix
+# cleanup[2] removing _frozen_importlib_external
+# cleanup[2] removing time
+# cleanup[2] removing zipimport
+# cleanup[2] removing _codecs
+# cleanup[2] removing codecs
+# cleanup[2] removing encodings.aliases
+# cleanup[2] removing encodings
+# cleanup[2] removing encodings.utf_8
+# cleanup[2] removing _signal
+# cleanup[2] removing _abc
+# cleanup[2] removing abc
+# cleanup[2] removing io
+# cleanup[2] removing __main__
+# destroy __main__
+# cleanup[2] removing _stat
+# cleanup[2] removing stat
+# cleanup[2] removing _collections_abc
+# cleanup[2] removing genericpath
+# cleanup[2] removing posixpath
+# cleanup[2] removing os.path
+# cleanup[2] removing os
+# cleanup[2] removing _sitebuiltins
+# cleanup[2] removing encodings.utf_8_sig
+# cleanup[2] removing _distutils_hack
+# destroy _distutils_hack
+# cleanup[2] removing site
+# destroy site
+# cleanup[2] removing importlib._bootstrap
+# cleanup[2] removing importlib._bootstrap_external
+# cleanup[2] removing warnings
+# cleanup[2] removing importlib
+# cleanup[2] removing importlib.machinery
+# cleanup[2] removing importlib._abc
+# cleanup[2] removing types
+# cleanup[2] removing importlib.util
+# cleanup[2] removing runpy
+# destroy runpy
+# cleanup[2] removing itertools
+# cleanup[2] removing keyword
+# cleanup[2] removing _operator
+# cleanup[2] removing operator
+# cleanup[2] removing reprlib
+# cleanup[2] removing _collections
+# cleanup[2] removing collections
+# cleanup[2] removing collections.abc
+# cleanup[2] removing _functools
+# cleanup[2] removing functools
+# cleanup[2] removing enum
+# cleanup[2] removing _sre
+# cleanup[2] removing re._constants
+# cleanup[2] removing re._parser
+# cleanup[2] removing re._casefix
+# cleanup[2] removing re._compiler
+# cleanup[2] removing copyreg
+# cleanup[2] removing re
+# cleanup[2] removing token
+# cleanup[2] removing _tokenize
+# cleanup[2] removing tokenize
+# cleanup[2] removing linecache
+# cleanup[2] removing textwrap
+# cleanup[2] removing contextlib
+# cleanup[2] removing traceback
+# cleanup[2] removing unittest.util
+# cleanup[2] removing unittest.result
+# cleanup[2] removing _heapq
+# cleanup[2] removing heapq
+# cleanup[2] removing difflib
+# cleanup[2] removing _weakrefset
+# destroy _weakrefset
+# cleanup[2] removing weakref
+# cleanup[2] removing copy
+# cleanup[2] removing _ast
+# destroy _ast
+# cleanup[2] removing ast
+# cleanup[2] removing _opcode
+# cleanup[2] removing opcode
+# destroy opcode
+# cleanup[2] removing dis
+# cleanup[2] removing inspect
+# cleanup[2] removing dataclasses
+# cleanup[2] removing pprint
+# cleanup[2] removing unittest.case
+# cleanup[2] removing unittest.suite
+# cleanup[2] removing fnmatch
+# cleanup[2] removing unittest.loader
+# cleanup[2] removing gettext
+# destroy gettext
+# cleanup[2] removing argparse
+# cleanup[2] removing signal
+# cleanup[2] removing unittest.signals
+# cleanup[2] removing unittest.runner
+# cleanup[2] removing unittest.main
+# destroy unittest.main
+# cleanup[2] removing unittest
+# cleanup[2] removing _locale
+# cleanup[2] removing locale
+# cleanup[2] removing errno
+# cleanup[2] removing zlib
+# cleanup[2] removing _compression
+# cleanup[2] removing _bz2
+# cleanup[2] removing bz2
+# destroy bz2
+# cleanup[2] removing _lzma
+# cleanup[2] removing lzma
+# destroy lzma
+# cleanup[2] removing shutil
+# cleanup[2] removing ndu_real_runtime
+# destroy ndu_real_runtime
+# cleanup[2] removing _json
+# cleanup[2] removing json.scanner
+# cleanup[2] removing json.decoder
+# cleanup[2] removing json.encoder
+# cleanup[2] removing json
+# cleanup[2] removing ntpath
+# cleanup[2] removing urllib
+# destroy urllib
+# cleanup[2] removing math
+# cleanup[2] removing ipaddress
+# cleanup[2] removing urllib.parse
+# destroy urllib.parse
+# cleanup[2] removing pathlib
+# destroy pathlib
+# cleanup[2] removing threading
+# cleanup[2] removing fcntl
+# cleanup[2] removing _posixsubprocess
+# cleanup[2] removing select
+# cleanup[2] removing selectors
+# cleanup[2] removing subprocess
+# cleanup[2] removing _bisect
+# cleanup[2] removing bisect
+# destroy bisect
+# cleanup[2] removing _random
+# cleanup[2] removing _sha2
+# cleanup[2] removing random
+# destroy random
+# cleanup[2] removing tempfile
+# cleanup[2] removing concurrent
+# cleanup[2] removing _string
+# cleanup[2] removing string
+# destroy string
+# cleanup[2] removing atexit
+# cleanup[2] removing logging
+# cleanup[2] removing concurrent.futures._base
+# cleanup[2] removing concurrent.futures
+# cleanup[2] removing _socket
+# cleanup[2] removing array
+# cleanup[2] removing socket
+# cleanup[2] removing _ssl
+# cleanup[2] removing _struct
+# cleanup[2] removing struct
+# cleanup[2] removing binascii
+# cleanup[2] removing base64
+# cleanup[2] removing ssl
+# cleanup[2] removing asyncio.constants
+# cleanup[2] removing asyncio.coroutines
+# cleanup[2] removing _contextvars
+# cleanup[2] removing contextvars
+# cleanup[2] removing asyncio.format_helpers
+# cleanup[2] removing asyncio.base_futures
+# cleanup[2] removing asyncio.exceptions
+# cleanup[2] removing asyncio.base_tasks
+# cleanup[2] removing _asyncio
+# cleanup[2] removing asyncio.events
+# cleanup[2] removing asyncio.futures
+# cleanup[2] removing asyncio.protocols
+# cleanup[2] removing asyncio.transports
+# cleanup[2] removing asyncio.log
+# cleanup[2] removing asyncio.sslproto
+# cleanup[2] removing asyncio.mixins
+# cleanup[2] removing asyncio.locks
+# cleanup[2] removing _typing
+# cleanup[2] removing typing
+# destroy typing
+# cleanup[2] removing asyncio.timeouts
+# cleanup[2] removing asyncio.tasks
+# cleanup[2] removing asyncio.staggered
+# cleanup[2] removing asyncio.trsock
+# cleanup[2] removing asyncio.base_events
+# cleanup[2] removing asyncio.runners
+# cleanup[2] removing asyncio.queues
+# cleanup[2] removing asyncio.streams
+# cleanup[2] removing asyncio.subprocess
+# cleanup[2] removing asyncio.taskgroups
+# cleanup[2] removing asyncio.threads
+# cleanup[2] removing asyncio.base_subprocess
+# cleanup[2] removing asyncio.selector_events
+# cleanup[2] removing asyncio.unix_events
+# cleanup[2] removing asyncio
+# cleanup[2] removing pkgutil
+# cleanup[2] removing unittest.mock
+# cleanup[2] removing _hashlib
+# cleanup[2] removing _blake2
+# cleanup[2] removing hashlib
+# cleanup[2] removing ndu_real_runtime.candidate_coverage
+# cleanup[2] removing ndu_real_runtime.test_candidate_coverage
+# destroy ndu_real_runtime.test_candidate_coverage
+# destroy _sitebuiltins
+# destroy unittest.signals
+# destroy unittest.mock
+# destroy difflib
+# destroy dataclasses
+# destroy copy
+# destroy keyword
+# destroy unittest.case
+# destroy unittest.suite
+# destroy unittest.util
+# destroy unittest.loader
+# destroy unittest.runner
+# destroy unittest.result
+# destroy zlib
+# destroy _bz2
+# destroy _compression
+# destroy _lzma
+# destroy tempfile
+# destroy unittest
+# destroy ndu_real_runtime.candidate_coverage
+# destroy json.decoder
+# destroy json.encoder
+# destroy json.scanner
+# destroy _json
+# destroy fnmatch
+# destroy ipaddress
+# destroy ntpath
+# destroy shutil
+# destroy pprint
+# destroy pkgutil
+# destroy zipimport
+# destroy argparse
+# destroy hashlib
+# destroy json
+# destroy _hashlib
+# destroy _blake2
+# cleanup[3] wiping asyncio
+# destroy asyncio.log
+# destroy asyncio.runners
+# destroy asyncio.queues
+# destroy asyncio.subprocess
+# destroy asyncio.taskgroups
+# destroy asyncio.threads
+# destroy asyncio.unix_events
+# cleanup[3] wiping asyncio.selector_events
+# cleanup[3] wiping asyncio.base_subprocess
+# cleanup[3] wiping asyncio.streams
+# cleanup[3] wiping asyncio.base_events
+# destroy asyncio.sslproto
+# destroy asyncio.staggered
+# destroy asyncio.trsock
+# cleanup[3] wiping asyncio.tasks
+# destroy asyncio.base_tasks
+# destroy asyncio.timeouts
+# cleanup[3] wiping _typing
+# cleanup[3] wiping asyncio.locks
+# cleanup[3] wiping asyncio.mixins
+# cleanup[3] wiping asyncio.transports
+# cleanup[3] wiping asyncio.protocols
+# cleanup[3] wiping asyncio.futures
+# destroy concurrent
+# destroy concurrent.futures
+# cleanup[3] wiping asyncio.events
+# cleanup[3] wiping _asyncio
+# cleanup[3] wiping asyncio.exceptions
+# cleanup[3] wiping asyncio.base_futures
+# destroy asyncio.format_helpers
+# cleanup[3] wiping contextvars
+# cleanup[3] wiping _contextvars
+# destroy _contextvars
+# cleanup[3] wiping asyncio.coroutines
+# cleanup[3] wiping asyncio.constants
+# cleanup[3] wiping ssl
+# destroy base64
+# cleanup[3] wiping binascii
+# cleanup[3] wiping struct
+# cleanup[3] wiping _struct
+# cleanup[3] wiping _ssl
+# cleanup[3] wiping socket
+# cleanup[3] wiping array
+# cleanup[3] wiping _socket
+# cleanup[3] wiping concurrent.futures._base
+# destroy logging
+# cleanup[3] wiping atexit
+# cleanup[3] wiping _string
+# cleanup[3] wiping _sha2
+# cleanup[3] wiping _random
+# cleanup[3] wiping _bisect
+# cleanup[3] wiping subprocess
+# destroy locale
+# cleanup[3] wiping selectors
+# cleanup[3] wiping select
+# cleanup[3] wiping _posixsubprocess
+# destroy _posixsubprocess
+# cleanup[3] wiping fcntl
+# destroy fcntl
+# cleanup[3] wiping threading
+# cleanup[3] wiping math
+# cleanup[3] wiping errno
+# cleanup[3] wiping _locale
+# cleanup[3] wiping signal
+# cleanup[3] wiping inspect
+# destroy ast
+# destroy dis
+# destroy importlib
+# destroy token
+# cleanup[3] wiping _opcode
+# cleanup[3] wiping weakref
+# cleanup[3] wiping heapq
+# cleanup[3] wiping _heapq
+# cleanup[3] wiping traceback
+# destroy textwrap
+# cleanup[3] wiping contextlib
+# cleanup[3] wiping linecache
+# destroy tokenize
+# cleanup[3] wiping _tokenize
+# cleanup[3] wiping re
+# destroy re._constants
+# destroy re._casefix
+# destroy re._compiler
+# cleanup[3] wiping copyreg
+# cleanup[3] wiping re._parser
+# cleanup[3] wiping _sre
+# cleanup[3] wiping enum
+# cleanup[3] wiping functools
+# cleanup[3] wiping _functools
+# cleanup[3] wiping collections.abc
+# cleanup[3] wiping collections
+# destroy collections.abc
+# cleanup[3] wiping _collections
+# cleanup[3] wiping reprlib
+# cleanup[3] wiping operator
+# cleanup[3] wiping _operator
+# cleanup[3] wiping itertools
+# cleanup[3] wiping importlib.util
+# cleanup[3] wiping types
+# cleanup[3] wiping importlib._abc
+# cleanup[3] wiping importlib.machinery
+# cleanup[3] wiping warnings
+# cleanup[3] wiping importlib._bootstrap_external
+# cleanup[3] wiping importlib._bootstrap
+# cleanup[3] wiping encodings.utf_8_sig
+# cleanup[3] wiping os
+# destroy posixpath
+# cleanup[3] wiping genericpath
+# cleanup[3] wiping _collections_abc
+# cleanup[3] wiping stat
+# cleanup[3] wiping _stat
+# destroy _stat
+# cleanup[3] wiping io
+# destroy abc
+# cleanup[3] wiping _abc
+# cleanup[3] wiping _signal
+# destroy _signal
+# cleanup[3] wiping encodings.utf_8
+# cleanup[3] wiping encodings
+# destroy codecs
+# destroy encodings.aliases
+# destroy encodings.utf_8
+# destroy encodings.utf_8_sig
+# cleanup[3] wiping _codecs
+# cleanup[3] wiping time
+# cleanup[3] wiping _frozen_importlib_external
+# cleanup[3] wiping posix
+# cleanup[3] wiping marshal
+# destroy marshal
+# cleanup[3] wiping _io
+# cleanup[3] wiping _weakref
+# cleanup[3] wiping _warnings
+# cleanup[3] wiping _thread
+# cleanup[3] wiping _imp
+# cleanup[3] wiping _frozen_importlib
+# cleanup[3] wiping sys
+# cleanup[3] wiping builtins
+# destroy sys.monitoring
+# destroy _thread
+# destroy _socket
+# destroy inspect
+# destroy asyncio
+# destroy _asyncio
+# destroy _collections
+# destroy genericpath
+# destroy re._parser
+# destroy array
+# destroy encodings
+# destroy _collections_abc
+# destroy _locale
+# destroy linecache
+# destroy reprlib
+# destroy asyncio.base_futures
+# destroy select
+# destroy _heapq
+# destroy heapq
+# destroy asyncio.mixins
+# destroy _functools
+# destroy _io
+# destroy _opcode
+# destroy _imp
+# destroy _frozen_importlib_external
+# destroy importlib.machinery
+# destroy importlib._abc
+# destroy importlib.util
+# destroy ssl
+# destroy asyncio.locks
+# destroy contextvars
+# destroy enum
+# destroy asyncio.protocols
+# destroy asyncio.streams
+# destroy errno
+# destroy selectors
+# destroy signal
+# destroy socket
+# destroy stat
+# destroy subprocess
+# destroy asyncio.base_events
+# destroy asyncio.base_subprocess
+# destroy asyncio.constants
+# destroy asyncio.coroutines
+# destroy asyncio.events
+# destroy asyncio.exceptions
+# destroy asyncio.futures
+# destroy asyncio.selector_events
+# destroy asyncio.tasks
+# destroy asyncio.transports
+# destroy copyreg
+# destroy contextlib
+# destroy functools
+# destroy operator
+# destroy types
+# destroy _typing
+# destroy _tokenize
+# destroy concurrent.futures._base
+# destroy _ssl
+# destroy struct
+# destroy binascii
+# destroy _struct
+# clear sys.meta_path
+# clear sys.modules
+# destroy _frozen_importlib
+# destroy _warnings
+# destroy math
+# destroy _bisect
+# destroy os
+# destroy io
+# destroy traceback
+# destroy warnings
+# destroy weakref
+# destroy collections
+# destroy threading
+# destroy atexit
+# destroy _random
+# destroy time
+# destroy _weakref
+# destroy _operator
+# destroy _sha2
+# destroy _abc
+# destroy _sre
+# destroy _string
+# destroy re
+# destroy sys
+# destroy _codecs
+# destroy itertools
+# destroy builtins
+# destroy posix
+# clear sys.audit hooks

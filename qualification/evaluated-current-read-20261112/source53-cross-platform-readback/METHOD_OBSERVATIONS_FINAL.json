@@ -1,0 +1,164 @@
+{
+  "schema": "hepta.original-method-observations.v1",
+  "source_head": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "run_id": 43297579660,
+  "jobs": [
+    {
+      "job_id": 131460490666,
+      "original_target_summary_line": "2026-11-12T20:25:02.6769997Z Executed 35 out of 144 tests: 92 tests pass, 1 fails locally, and 51 were skipped.\r",
+      "final_target_rows": [
+        "2026-11-12T20:25:02.6749298Z //codex-rs/exec-server:exec-server-exec_process-test                     FAILED in 1.1s\r"
+      ],
+      "failed_method_names_from_original_stdout_blocks": [
+        "remote_windows_sandbox_process_accepts_process_write"
+      ],
+      "original_method_group_summary_lines": [
+        "2026-11-12T20:21:44.5251518Z test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.51s\r"
+      ],
+      "scope": "Original group lines before first final target summary. Original flaky attempts retained; duplicate methods are not new samples. Later diagnostic replay excluded. Target totals include cache hits."
+    },
+    {
+      "job_id": 131460489235,
+      "original_target_summary_line": "2026-11-12T20:33:14.3341639Z Executed 60 out of 151 tests: 106 tests pass, 3 fail locally, and 42 were skipped.\r",
+      "final_target_rows": [
+        "2026-11-12T20:33:14.3069708Z //codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 1.4s\r",
+        "2026-11-12T20:33:14.3074927Z //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 104.2s\r",
+        "2026-11-12T20:33:14.3130208Z //codex-rs/app-server:app-server-all-test                                FAILED in 6 out of 20 in 163.5s\r"
+      ],
+      "failed_method_names_from_original_stdout_blocks": [
+        "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+        "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+        "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite",
+        "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+        "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+        "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+        "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "unified_exec::tests::restricted_token_rejects_managed_network_before_spawn",
+        "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+        "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+        "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+        "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image"
+      ],
+      "original_method_group_summary_lines": [
+        "2026-11-12T20:28:51.2673385Z test result: FAILED. 80 passed; 2 failed; 1 ignored; 0 measured; 103 filtered out; finished in 1.56s\r",
+        "2026-11-12T20:28:51.3120259Z test result: FAILED. 76 passed; 10 failed; 0 ignored; 0 measured; 100 filtered out; finished in 0.21s\r",
+        "2026-11-12T20:28:51.3231046Z test result: FAILED. 13 passed; 2 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.02s\r",
+        "2026-11-12T20:33:03.0941868Z test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 80.21s\r",
+        "2026-11-12T20:33:03.1139821Z test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 53.38s\r",
+        "2026-11-12T20:33:03.1344648Z test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 52.03s\r",
+        "2026-11-12T20:33:13.9452384Z test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 74.14s\r",
+        "2026-11-12T20:33:14.0038901Z test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 69.93s\r",
+        "2026-11-12T20:33:14.0466316Z test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 66.32s\r"
+      ],
+      "scope": "Original group lines before first final target summary. Original flaky attempts retained; duplicate methods are not new samples. Later diagnostic replay excluded. Target totals include cache hits."
+    },
+    {
+      "job_id": 131460489338,
+      "original_target_summary_line": "2026-11-12T20:28:25.9573105Z Executed 43 out of 147 tests: 101 tests pass, 1 fails locally, and 45 were skipped.\r",
+      "final_target_rows": [
+        "2026-11-12T20:28:25.9556593Z //codex-rs/tui:tui-unit-tests                                            FAILED in 3 out of 10 in 65.8s\r"
+      ],
+      "failed_method_names_from_original_stdout_blocks": [
+        "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery"
+      ],
+      "original_method_group_summary_lines": [
+        "2026-11-12T20:28:25.6228572Z test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 3702 filtered out; finished in 21.20s\r",
+        "2026-11-12T20:28:25.6292643Z test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 3703 filtered out; finished in 2.98s\r",
+        "2026-11-12T20:28:25.6427195Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 3.55s\r",
+        "2026-11-12T20:28:25.6549276Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 10.59s\r",
+        "2026-11-12T20:28:25.6611592Z test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 5.39s\r",
+        "2026-11-12T20:28:25.6684226Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 11.49s\r",
+        "2026-11-12T20:28:25.6763500Z test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 3702 filtered out; finished in 7.89s\r",
+        "2026-11-12T20:28:25.6850958Z test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 3703 filtered out; finished in 1.16s\r",
+        "2026-11-12T20:28:25.6967854Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 1.57s\r",
+        "2026-11-12T20:28:25.7124551Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 0.46s\r",
+        "2026-11-12T20:28:25.7360543Z test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.22s\r",
+        "2026-11-12T20:28:25.7433482Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 3.17s\r",
+        "2026-11-12T20:28:25.7478022Z test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 3702 filtered out; finished in 9.01s\r",
+        "2026-11-12T20:28:25.7499539Z test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 3703 filtered out; finished in 1.36s\r",
+        "2026-11-12T20:28:25.7528792Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 1.93s\r",
+        "2026-11-12T20:28:25.7563806Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 0.46s\r",
+        "2026-11-12T20:28:25.7594212Z test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.22s\r",
+        "2026-11-12T20:28:25.7630220Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 2.98s\r"
+      ],
+      "scope": "Original group lines before first final target summary. Original flaky attempts retained; duplicate methods are not new samples. Later diagnostic replay excluded. Target totals include cache hits."
+    },
+    {
+      "job_id": 131460489270,
+      "original_target_summary_line": "2026-11-12T20:30:00.6490730Z Executed 51 out of 143 tests: 108 tests pass, 2 fail locally, and 33 were skipped.\r",
+      "final_target_rows": [
+        "2026-11-12T20:30:00.6448806Z //codex-rs/exec-server:exec-server-file_system_windows-test              FAILED in 5.4s\r",
+        "2026-11-12T20:30:00.6451087Z //codex-rs/core:core-all-test                                            FAILED in 12 out of 24 in 113.6s\r"
+      ],
+      "failed_method_names_from_original_stdout_blocks": [
+        "file_system_operations_can_reject_junctions_in_any_path_component::test_case_1_local",
+        "file_system_operations_can_reject_junctions_in_any_path_component::test_case_2_remote",
+        "file_system_remote_fs_helper_respects_windows_sandbox_write_policy",
+        "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_1_local",
+        "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_2_remote",
+        "shared::file_system_create_directory_creates_nested_directories::test_case_5_local_sandboxed_no_follow",
+        "shared::file_system_create_directory_creates_nested_directories::test_case_6_remote_sandboxed_no_follow",
+        "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_1_local",
+        "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_2_remote",
+        "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_3_local_sandboxed",
+        "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_4_remote_sandboxed",
+        "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_1_local",
+        "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_2_remote",
+        "shared::file_system_walk_honors_read_sandbox::test_case_1_local",
+        "shared::file_system_walk_honors_read_sandbox::test_case_2_remote",
+        "shared::file_system_write_file_writes_bytes::test_case_5_local_sandboxed_no_follow",
+        "shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow",
+        "suite::workspace_roots::workspace_roots_allow_file_and_command_writes",
+        "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace",
+        "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root"
+      ],
+      "original_method_group_summary_lines": [
+        "2026-11-12T20:21:54.9012770Z test result: FAILED. 40 passed; 17 failed; 2 ignored; 0 measured; 0 filtered out; finished in 5.27s\r",
+        "2026-11-12T20:29:20.6097396Z test result: ok. 72 passed; 0 failed; 5 ignored; 0 measured; 1049 filtered out; finished in 37.99s\r",
+        "2026-11-12T20:29:20.6104437Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1125 filtered out; finished in 2.17s\r",
+        "2026-11-12T20:29:20.6250574Z test result: ok. 72 passed; 0 failed; 5 ignored; 0 measured; 1049 filtered out; finished in 45.98s\r",
+        "2026-11-12T20:29:20.6255752Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1125 filtered out; finished in 2.63s\r",
+        "2026-11-12T20:29:20.6872412Z test result: ok. 72 passed; 0 failed; 5 ignored; 0 measured; 1049 filtered out; finished in 41.56s\r",
+        "2026-11-12T20:29:20.6881780Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1125 filtered out; finished in 2.75s\r",
+        "2026-11-12T20:29:25.0428526Z test result: FAILED. 67 passed; 1 failed; 1 ignored; 0 measured; 1057 filtered out; finished in 46.72s\r",
+        "2026-11-12T20:29:25.0479834Z test result: FAILED. 67 passed; 1 failed; 1 ignored; 0 measured; 1057 filtered out; finished in 38.57s\r",
+        "2026-11-12T20:29:25.0529528Z test result: FAILED. 67 passed; 1 failed; 1 ignored; 0 measured; 1057 filtered out; finished in 35.49s\r",
+        "2026-11-12T20:30:00.1181397Z test result: FAILED. 60 passed; 1 failed; 2 ignored; 0 measured; 1063 filtered out; finished in 106.35s\r",
+        "2026-11-12T20:30:00.4199776Z test result: FAILED. 60 passed; 1 failed; 2 ignored; 0 measured; 1063 filtered out; finished in 103.98s\r",
+        "2026-11-12T20:30:00.6171654Z test result: FAILED. 60 passed; 1 failed; 2 ignored; 0 measured; 1063 filtered out; finished in 30.71s\r"
+      ],
+      "scope": "Original group lines before first final target summary. Original flaky attempts retained; duplicate methods are not new samples. Later diagnostic replay excluded. Target totals include cache hits."
+    },
+    {
+      "job_id": 131460489183,
+      "original_target_summary_line": "2026-11-12T20:29:55.2686600Z Executed 26 out of 584 tests: 409 tests pass, 3 fail locally, and 172 were skipped.",
+      "final_target_rows": [
+        "2026-11-12T20:29:55.1887350Z //codex-rs/app-server:app-server-all-test                 (14/20 cached) FAILED in 6 out of 20 in 162.9s",
+        "2026-11-12T20:29:55.2658520Z //codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test        FAILED in 59.4s",
+        "2026-11-12T20:29:55.2673790Z //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test FAILED in 48.2s"
+      ],
+      "failed_method_names_from_original_stdout_blocks": [
+        "encrypted_state_identity_session_and_queues_survive_restart",
+        "five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_changes",
+        "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+        "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference"
+      ],
+      "original_method_group_summary_lines": [
+        "2026-11-12T20:19:26.4898480Z test result: FAILED. 0 passed; 1 failed; 2 ignored; 0 measured; 0 filtered out; finished in 47.68s",
+        "2026-11-12T20:26:41.3730310Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 59.14s",
+        "2026-11-12T20:29:29.8577860Z test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 127.39s",
+        "2026-11-12T20:29:29.8993890Z test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 78.42s",
+        "2026-11-12T20:29:29.9440380Z test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 70.36s",
+        "2026-11-12T20:29:49.7375620Z test result: FAILED. 72 passed; 1 failed; 0 ignored; 0 measured; 948 filtered out; finished in 152.49s",
+        "2026-11-12T20:29:49.7824690Z test result: FAILED. 72 passed; 1 failed; 0 ignored; 0 measured; 948 filtered out; finished in 84.08s",
+        "2026-11-12T20:29:49.8284760Z test result: FAILED. 72 passed; 1 failed; 0 ignored; 0 measured; 948 filtered out; finished in 80.32s"
+      ],
+      "scope": "Original group lines before first final target summary. Original flaky attempts retained; duplicate methods are not new samples. Later diagnostic replay excluded. Target totals include cache hits."
+    }
+  ]
+}

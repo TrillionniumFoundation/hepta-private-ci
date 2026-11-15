@@ -1,0 +1,1723 @@
+﻿2026-11-12T21:29:13.6556262Z Current runner version: '2.338.2'
+2026-11-12T21:29:13.6827748Z ##[group]Runner Image Provisioner
+2026-11-12T21:29:13.6828618Z Hosted Compute Agent
+2026-11-12T21:29:13.6829123Z Version: 20261103.629
+2026-11-12T21:29:13.6829668Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-12T21:29:13.6830338Z Build Date: 2026-11-03T17:26:59Z
+2026-11-12T21:29:13.6830936Z Worker ID: {a3c1a848-61b4-48a2-a6e3-c9ddba282c7c}
+2026-11-12T21:29:13.6831605Z Region: westus3
+2026-11-12T21:29:13.6832068Z Cloud: Azure
+2026-11-12T21:29:13.6832511Z ##[endgroup]
+2026-11-12T21:29:13.6833884Z ##[group]Operating System
+2026-11-12T21:29:13.6834927Z Microsoft Windows Server 2025
+2026-11-12T21:29:13.6835560Z 10.0.26100
+2026-11-12T21:29:13.6836095Z Datacenter
+2026-11-12T21:29:13.6836558Z ##[endgroup]
+2026-11-12T21:29:13.6837122Z ##[group]Runner Image
+2026-11-12T21:29:13.6837711Z Image: windows-2025-vs2026
+2026-11-12T21:29:13.6838270Z Version: 20261103.298.1
+2026-11-12T21:29:13.6839873Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261103.298/images/windows/Windows2025-VS2026-Readme.md
+2026-11-12T21:29:13.6841425Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261103.298
+2026-11-12T21:29:13.6842310Z ##[endgroup]
+2026-11-12T21:29:13.6843424Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T21:29:13.6845499Z Contents: read
+2026-11-12T21:29:13.6846033Z Metadata: read
+2026-11-12T21:29:13.6846516Z ##[endgroup]
+2026-11-12T21:29:13.6848676Z Secret source: Actions
+2026-11-12T21:29:13.6849523Z Cache mode: write
+2026-11-12T21:29:13.6850118Z Prepare workflow directory
+2026-11-12T21:29:13.8220463Z Prepare all required actions
+2026-11-12T21:29:13.8273593Z Getting action download info
+2026-11-12T21:29:14.1730195Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-12T21:29:14.3379249Z Download action repository 'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f' (SHA:bbbca2ddaa5d8feaa63e36b76fdaad77386f024f)
+2026-11-12T21:29:14.5562007Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/6213/merge (1749a97b4c7d5cc76245025b1721e831365c8296)
+2026-11-12T21:29:14.5568348Z Complete job name: Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4
+2026-11-12T21:29:14.7318772Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-12T21:29:14.7320382Z with:
+2026-11-12T21:29:14.7320764Z   persist-credentials: false
+2026-11-12T21:29:14.7321287Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:14.7325754Z   token: ***
+2026-11-12T21:29:14.7326105Z   ssh-strict: true
+2026-11-12T21:29:14.7326447Z   ssh-user: git
+2026-11-12T21:29:14.7326779Z   clean: true
+2026-11-12T21:29:14.7327153Z   sparse-checkout-cone-mode: true
+2026-11-12T21:29:14.7327587Z   fetch-depth: 1
+2026-11-12T21:29:14.7327950Z   fetch-tags: false
+2026-11-12T21:29:14.7328305Z   show-progress: true
+2026-11-12T21:29:14.7328703Z   lfs: false
+2026-11-12T21:29:14.7329040Z   submodules: false
+2026-11-12T21:29:14.7329397Z   set-safe-directory: true
+2026-11-12T21:29:14.7330200Z ##[endgroup]
+2026-11-12T21:29:14.8866021Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:14.8868020Z ##[group]Getting Git version info
+2026-11-12T21:29:14.8868747Z Working directory is 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-12T21:29:15.1690804Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-12T21:29:15.7177146Z git version 2.56.0.windows.4
+2026-11-12T21:29:15.7240252Z ##[endgroup]
+2026-11-12T21:29:15.7260408Z Temporarily overriding HOME='D:\a\_temp\38ddf15b-dbaf-431f-b905-8cea6718ee4f' before making global git config changes
+2026-11-12T21:29:15.7261435Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T21:29:15.7271847Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:15.8864897Z Deleting the contents of 'D:\a\hepta-private-ci\hepta-private-ci'
+2026-11-12T21:29:15.8871391Z ##[group]Initializing the repository
+2026-11-12T21:29:15.8880951Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:16.0309000Z Initialized empty Git repository in D:/a/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T21:29:16.0378279Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:16.1446890Z ##[endgroup]
+2026-11-12T21:29:16.1447431Z ##[group]Disabling automatic garbage collection
+2026-11-12T21:29:16.1457263Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-11-12T21:29:16.1888806Z ##[endgroup]
+2026-11-12T21:29:16.1889895Z ##[group]Setting up auth
+2026-11-12T21:29:16.1890429Z Removing SSH command configuration
+2026-11-12T21:29:16.1902033Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T21:29:16.2329050Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-12T21:29:18.5871836Z Removing HTTP extra header
+2026-11-12T21:29:18.5884396Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T21:29:18.6296791Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-12T21:29:19.2286278Z Removing includeIf entries pointing to credentials config files
+2026-11-12T21:29:19.2311035Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T21:29:19.2723060Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-12T21:29:19.9137549Z [command]"C:\Program Files\Git\bin\git.exe" config --file D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-11-12T21:29:19.9557180Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:19.9987815Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:20.0564925Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:20.1003490Z [command]"C:\Program Files\Git\bin\git.exe" config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:20.1429149Z ##[endgroup]
+2026-11-12T21:29:20.1429819Z ##[group]Fetching the repository
+2026-11-12T21:29:20.1444843Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +1749a97b4c7d5cc76245025b1721e831365c8296:refs/remotes/pull/6213/merge
+2026-11-12T21:29:23.4871493Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T21:29:23.4874070Z  * [new ref]           1749a97b4c7d5cc76245025b1721e831365c8296 -> pull/6213/merge
+2026-11-12T21:29:23.4924913Z ##[endgroup]
+2026-11-12T21:29:23.4925329Z ##[group]Determining the checkout info
+2026-11-12T21:29:23.4925881Z ##[endgroup]
+2026-11-12T21:29:23.4937269Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-11-12T21:29:23.5579239Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-11-12T21:29:23.6091156Z ##[group]Checking out the ref
+2026-11-12T21:29:23.6101121Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/6213/merge
+2026-11-12T21:29:24.8828672Z Updating files:  23% (3529/15296)
+2026-11-12T21:29:24.9203360Z Updating files:  24% (3672/15296)
+2026-11-12T21:29:24.9613706Z Updating files:  25% (3824/15296)
+2026-11-12T21:29:25.0056770Z Updating files:  26% (3977/15296)
+2026-11-12T21:29:25.0413355Z Updating files:  27% (4130/15296)
+2026-11-12T21:29:25.0765253Z Updating files:  28% (4283/15296)
+2026-11-12T21:29:25.1573602Z Updating files:  29% (4436/15296)
+2026-11-12T21:29:25.1889785Z Updating files:  30% (4589/15296)
+2026-11-12T21:29:25.2630022Z Updating files:  31% (4742/15296)
+2026-11-12T21:29:25.3246974Z Updating files:  32% (4895/15296)
+2026-11-12T21:29:25.3622409Z Updating files:  33% (5048/15296)
+2026-11-12T21:29:25.3999491Z Updating files:  34% (5201/15296)
+2026-11-12T21:29:25.4365873Z Updating files:  35% (5354/15296)
+2026-11-12T21:29:25.4760321Z Updating files:  36% (5507/15296)
+2026-11-12T21:29:25.5146156Z Updating files:  37% (5660/15296)
+2026-11-12T21:29:25.5541198Z Updating files:  38% (5813/15296)
+2026-11-12T21:29:25.5970697Z Updating files:  39% (5966/15296)
+2026-11-12T21:29:25.6433322Z Updating files:  40% (6119/15296)
+2026-11-12T21:29:25.6829322Z Updating files:  41% (6272/15296)
+2026-11-12T21:29:25.6858917Z Updating files:  41% (6413/15296)
+2026-11-12T21:29:25.7301580Z Updating files:  42% (6425/15296)
+2026-11-12T21:29:25.7764731Z Updating files:  43% (6578/15296)
+2026-11-12T21:29:25.8196897Z Updating files:  44% (6731/15296)
+2026-11-12T21:29:25.8578299Z Updating files:  45% (6884/15296)
+2026-11-12T21:29:25.8994175Z Updating files:  46% (7037/15296)
+2026-11-12T21:29:25.9364244Z Updating files:  47% (7190/15296)
+2026-11-12T21:29:25.9805594Z Updating files:  48% (7343/15296)
+2026-11-12T21:29:26.0215847Z Updating files:  49% (7496/15296)
+2026-11-12T21:29:26.2923681Z Updating files:  50% (7648/15296)
+2026-11-12T21:29:26.3384332Z Updating files:  51% (7801/15296)
+2026-11-12T21:29:26.3766722Z Updating files:  52% (7954/15296)
+2026-11-12T21:29:26.4201705Z Updating files:  53% (8107/15296)
+2026-11-12T21:29:26.4587591Z Updating files:  54% (8260/15296)
+2026-11-12T21:29:26.4953814Z Updating files:  55% (8413/15296)
+2026-11-12T21:29:26.5338464Z Updating files:  56% (8566/15296)
+2026-11-12T21:29:26.5764632Z Updating files:  57% (8719/15296)
+2026-11-12T21:29:26.6317593Z Updating files:  58% (8872/15296)
+2026-11-12T21:29:26.6648147Z Updating files:  59% (9025/15296)
+2026-11-12T21:29:26.6952685Z Updating files:  60% (9178/15296)
+2026-11-12T21:29:26.7006125Z Updating files:  60% (9308/15296)
+2026-11-12T21:29:26.7369025Z Updating files:  61% (9331/15296)
+2026-11-12T21:29:26.7677753Z Updating files:  62% (9484/15296)
+2026-11-12T21:29:26.7992556Z Updating files:  63% (9637/15296)
+2026-11-12T21:29:26.8353839Z Updating files:  64% (9790/15296)
+2026-11-12T21:29:26.8748218Z Updating files:  65% (9943/15296)
+2026-11-12T21:29:26.9012627Z Updating files:  66% (10096/15296)
+2026-11-12T21:29:26.9251337Z Updating files:  67% (10249/15296)
+2026-11-12T21:29:26.9654780Z Updating files:  68% (10402/15296)
+2026-11-12T21:29:27.0086396Z Updating files:  69% (10555/15296)
+2026-11-12T21:29:27.0400511Z Updating files:  70% (10708/15296)
+2026-11-12T21:29:27.0696923Z Updating files:  71% (10861/15296)
+2026-11-12T21:29:27.1025508Z Updating files:  72% (11014/15296)
+2026-11-12T21:29:27.1413425Z Updating files:  73% (11167/15296)
+2026-11-12T21:29:27.1801297Z Updating files:  74% (11320/15296)
+2026-11-12T21:29:27.2496627Z Updating files:  75% (11472/15296)
+2026-11-12T21:29:27.2881854Z Updating files:  76% (11625/15296)
+2026-11-12T21:29:27.3252720Z Updating files:  77% (11778/15296)
+2026-11-12T21:29:27.3686269Z Updating files:  78% (11931/15296)
+2026-11-12T21:29:27.4284885Z Updating files:  79% (12084/15296)
+2026-11-12T21:29:27.6067017Z Updating files:  80% (12237/15296)
+2026-11-12T21:29:27.6475074Z Updating files:  81% (12390/15296)
+2026-11-12T21:29:27.7020408Z Updating files:  82% (12543/15296)
+2026-11-12T21:29:27.7043554Z Updating files:  83% (12696/15296)
+2026-11-12T21:29:27.7623462Z Updating files:  83% (12704/15296)
+2026-11-12T21:29:27.8020402Z Updating files:  84% (12849/15296)
+2026-11-12T21:29:27.8943233Z Updating files:  85% (13002/15296)
+2026-11-12T21:29:27.9282664Z Updating files:  86% (13155/15296)
+2026-11-12T21:29:27.9584339Z Updating files:  87% (13308/15296)
+2026-11-12T21:29:28.0026766Z Updating files:  88% (13461/15296)
+2026-11-12T21:29:28.0788410Z Updating files:  89% (13614/15296)
+2026-11-12T21:29:28.1215440Z Updating files:  90% (13767/15296)
+2026-11-12T21:29:28.1559601Z Updating files:  91% (13920/15296)
+2026-11-12T21:29:28.1963131Z Updating files:  92% (14073/15296)
+2026-11-12T21:29:28.2503961Z Updating files:  93% (14226/15296)
+2026-11-12T21:29:28.3162130Z Updating files:  94% (14379/15296)
+2026-11-12T21:29:28.3898368Z Updating files:  95% (14532/15296)
+2026-11-12T21:29:28.4374599Z Updating files:  96% (14685/15296)
+2026-11-12T21:29:28.4826239Z Updating files:  97% (14838/15296)
+2026-11-12T21:29:28.5232669Z Updating files:  98% (14991/15296)
+2026-11-12T21:29:28.5675339Z Updating files:  99% (15144/15296)
+2026-11-12T21:29:28.5675761Z Updating files: 100% (15296/15296)
+2026-11-12T21:29:28.5676128Z Updating files: 100% (15296/15296), done.
+2026-11-12T21:29:28.5976451Z Note: switching to 'refs/remotes/pull/6213/merge'.
+2026-11-12T21:29:28.5976866Z 
+2026-11-12T21:29:28.5977148Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T21:29:28.5978207Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T21:29:28.5978958Z state without impacting any branches by switching back to a branch.
+2026-11-12T21:29:28.5979404Z 
+2026-11-12T21:29:28.5979646Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T21:29:28.5980302Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T21:29:28.5980658Z 
+2026-11-12T21:29:28.5980871Z   git switch -c <new-branch-name>
+2026-11-12T21:29:28.5981101Z 
+2026-11-12T21:29:28.5981246Z Or undo this operation with:
+2026-11-12T21:29:28.5981805Z 
+2026-11-12T21:29:28.5981944Z   git switch -
+2026-11-12T21:29:28.5982135Z 
+2026-11-12T21:29:28.5982432Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T21:29:28.5982873Z 
+2026-11-12T21:29:28.5983355Z HEAD is now at 1749a97b Merge 0a5c31b73667b3922d89643cf18f0482fa9a1b87 into 1cb195e590f7f5038a38625a943f259badea489a
+2026-11-12T21:29:28.6182152Z ##[endgroup]
+2026-11-12T21:29:28.6647053Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-11-12T21:29:28.7017211Z 1749a97b4c7d5cc76245025b1721e831365c8296
+2026-11-12T21:29:28.7071203Z ##[group]Removing auth
+2026-11-12T21:29:28.7071599Z Removing SSH command configuration
+2026-11-12T21:29:28.7081129Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T21:29:28.7506012Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-12T21:29:29.4895378Z Removing HTTP extra header
+2026-11-12T21:29:29.4906809Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T21:29:29.5344240Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-12T21:29:30.1557710Z Removing includeIf entries pointing to credentials config files
+2026-11-12T21:29:30.1565659Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T21:29:30.1941943Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T21:29:30.1945312Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T21:29:30.1945766Z includeif.gitdir:/github/workspace/.git.path
+2026-11-12T21:29:30.1946098Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T21:29:30.1997029Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T21:29:30.2403540Z D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.2459713Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.2879673Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T21:29:30.3234080Z D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.3287732Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.3735376Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-12T21:29:30.4101204Z /github/runner_temp/git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.4155319Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.4592011Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-12T21:29:30.4953269Z /github/runner_temp/git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.5006942Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config
+2026-11-12T21:29:30.5478803Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-12T21:29:31.1974487Z Removing credentials config 'D:\a\_temp\git-credentials-f833eeed-565d-4923-b9bd-7a0947a31531.config'
+2026-11-12T21:29:31.1989179Z ##[endgroup]
+2026-11-12T21:29:31.2627698Z Prepare all required actions
+2026-11-12T21:29:31.2628957Z Getting action download info
+2026-11-12T21:29:31.3941676Z Download action repository 'actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7' (SHA:668228422ae6a00e4ad889ee87cd7109ec5666a7)
+2026-11-12T21:29:31.5790549Z ##[group]Run ./.github/actions/prepare-bazel-ci
+2026-11-12T21:29:31.5790859Z with:
+2026-11-12T21:29:31.5791069Z   target: x86_64-pc-windows-msvc
+2026-11-12T21:29:31.5791317Z   cache-scope: bazel-test
+2026-11-12T21:29:31.5791519Z ##[endgroup]
+2026-11-12T21:29:31.5856862Z ##[start-action display=Set up Bazel CI;id=prepare_bazel.setup_bazel]
+2026-11-12T21:29:31.6210156Z Prepare all required actions
+2026-11-12T21:29:31.6210888Z Getting action download info
+2026-11-12T21:29:31.7559146Z Download action repository 'bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86' (SHA:c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86)
+2026-11-12T21:29:32.4926168Z ##[group]Run ./.github/actions/setup-bazel-ci
+2026-11-12T21:29:32.4926498Z with:
+2026-11-12T21:29:32.4926705Z   target: x86_64-pc-windows-msvc
+2026-11-12T21:29:32.4926922Z ##[endgroup]
+2026-11-12T21:29:32.4932782Z ##[start-action display=Run ./.github/actions/setup-ci;id=prepare_bazel.setup_bazel.setup_ci]
+2026-11-12T21:29:32.5137567Z Prepare all required actions
+2026-11-12T21:29:32.5138057Z Getting action download info
+2026-11-12T21:29:32.6804954Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-12T21:29:32.9150325Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-12T21:29:33.5859446Z ##[group]Run ./.github/actions/setup-ci
+2026-11-12T21:29:33.5859745Z ##[endgroup]
+2026-11-12T21:29:33.5870233Z ##[start-action display=Configure Dev Drive (Windows);id=prepare_bazel.setup_bazel.setup_ci.__run]
+2026-11-12T21:29:33.6041047Z ##[group]Run ./.github/scripts/setup-dev-drive.ps1
+2026-11-12T21:29:33.6041533Z [36;1m./.github/scripts/setup-dev-drive.ps1[0m
+2026-11-12T21:29:33.6839227Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-12T21:29:33.6839588Z ##[endgroup]
+2026-11-12T21:29:34.2486590Z Using existing Dev Drive at D:
+2026-11-12T21:29:34.3180182Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run;outcome=success;conclusion=success;duration_ms=730]
+2026-11-12T21:29:34.3183106Z ##[start-action display=Configure CI build root (Unix);id=prepare_bazel.setup_bazel.setup_ci.__run_2]
+2026-11-12T21:29:34.3191060Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:34.3193204Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=prepare_bazel.setup_bazel.setup_ci.__run_3]
+2026-11-12T21:29:34.3197253Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:34.3199298Z ##[start-action display=Configure CI build paths;id=prepare_bazel.setup_bazel.setup_ci.configure_ci_build_paths]
+2026-11-12T21:29:34.3337731Z ##[group]Run set -euo pipefail
+2026-11-12T21:29:34.3338053Z [36;1mset -euo pipefail[0m
+2026-11-12T21:29:34.3338447Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-12T21:29:34.3338949Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-12T21:29:34.3339404Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-12T21:29:34.3339801Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-12T21:29:34.3340078Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-12T21:29:34.3340365Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-12T21:29:34.3340743Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-12T21:29:34.3342947Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-12T21:29:34.3343487Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-12T21:29:34.3343777Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-12T21:29:34.3343995Z [36;1m[0m
+2026-11-12T21:29:34.3344166Z [36;1mbuild_dirs=([0m
+2026-11-12T21:29:34.3344388Z [36;1m  "$bazel_output_base"[0m
+2026-11-12T21:29:34.3344617Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-12T21:29:34.3344858Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-12T21:29:34.3345099Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-12T21:29:34.3345339Z [36;1m  "$cargo_target_dir"[0m
+2026-11-12T21:29:34.3345546Z [36;1m  "$tmp"[0m
+2026-11-12T21:29:34.3345725Z [36;1m)[0m
+2026-11-12T21:29:34.3345898Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-12T21:29:34.3346222Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-12T21:29:34.3346639Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-12T21:29:34.3346954Z [36;1m[0m
+2026-11-12T21:29:34.3347111Z [36;1m{[0m
+2026-11-12T21:29:34.3347328Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-12T21:29:34.3347638Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-12T21:29:34.3347966Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-12T21:29:34.3348500Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-12T21:29:34.3348881Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-12T21:29:34.3349244Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-12T21:29:34.3349521Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-12T21:29:34.3349840Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-12T21:29:34.3350089Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-12T21:29:34.3363593Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:34.3363966Z env:
+2026-11-12T21:29:34.3364142Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:34.3364329Z ##[endgroup]
+2026-11-12T21:29:34.5706203Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=250]
+2026-11-12T21:29:34.5711683Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=prepare_bazel.setup_bazel.setup_ci.__run_4]
+2026-11-12T21:29:34.5872352Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-12T21:29:34.5872811Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-12T21:29:34.5886632Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:34.5887019Z env:
+2026-11-12T21:29:34.5887199Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:34.5887450Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:34.5887757Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:34.5887994Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:34.5888253Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:34.5888716Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:34.5889148Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:34.5889371Z   TEMP: D:/tmp
+2026-11-12T21:29:34.5889553Z   TMP: D:/tmp
+2026-11-12T21:29:34.5889731Z ##[endgroup]
+2026-11-12T21:29:34.6582896Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_4;outcome=success;conclusion=success;duration_ms=87]
+2026-11-12T21:29:34.6585709Z ##[start-action display=Install DotSlash;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash]
+2026-11-12T21:29:34.6761660Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-12T21:29:34.6762053Z env:
+2026-11-12T21:29:34.6762220Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:34.6762465Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:34.6762790Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:34.6763005Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:34.6763926Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:34.6764383Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:34.6764815Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:34.6765054Z   TEMP: D:/tmp
+2026-11-12T21:29:34.6765239Z   TMP: D:/tmp
+2026-11-12T21:29:34.6765427Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:34.6765664Z ##[endgroup]
+2026-11-12T21:29:34.6806795Z ##[start-action display=Run echo platform=windows >> $GITHUB_OUTPUT;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.configure]
+2026-11-12T21:29:34.6953828Z ##[group]Run echo platform=windows >> $GITHUB_OUTPUT
+2026-11-12T21:29:34.6954192Z [36;1mecho platform=windows >> $GITHUB_OUTPUT[0m
+2026-11-12T21:29:34.6957829Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-12T21:29:34.6972319Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:34.6972686Z env:
+2026-11-12T21:29:34.6972861Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:34.6973117Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:34.6973617Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:34.6973843Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:34.6974115Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:34.6974561Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:34.6974988Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:34.6975224Z   TEMP: D:/tmp
+2026-11-12T21:29:34.6975399Z   TMP: D:/tmp
+2026-11-12T21:29:34.6975601Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:34.6975830Z ##[endgroup]
+2026-11-12T21:29:35.5073183Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=826]
+2026-11-12T21:29:35.5077846Z ##[start-action display=Run mkdir -p "D:\a\_temp/install-dotslash/bin";id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run]
+2026-11-12T21:29:35.5215957Z ##[group]Run mkdir -p "D:\a\_temp/install-dotslash/bin"
+2026-11-12T21:29:35.5216357Z [36;1mmkdir -p "D:\a\_temp/install-dotslash/bin"[0m
+2026-11-12T21:29:35.5230190Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:35.5230577Z env:
+2026-11-12T21:29:35.5230756Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:35.5231017Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:35.5231335Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:35.5231552Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:35.5231815Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:35.5232253Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:35.5232673Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:35.5232923Z   TEMP: D:/tmp
+2026-11-12T21:29:35.5233108Z   TMP: D:/tmp
+2026-11-12T21:29:35.5233298Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:35.5233513Z ##[endgroup]
+2026-11-12T21:29:35.5864320Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=78]
+2026-11-12T21:29:35.5872060Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2]
+2026-11-12T21:29:35.6048776Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \
+2026-11-12T21:29:35.6049552Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-windows.v0.5.9.tar.gz \[0m
+2026-11-12T21:29:35.6052841Z [36;1m--header "authorization: ***" \[0m
+2026-11-12T21:29:35.6053185Z [36;1m--output "D:\a\_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-12T21:29:35.6053768Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-12T21:29:35.6070130Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:35.6070508Z env:
+2026-11-12T21:29:35.6070700Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:35.6070962Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:35.6071266Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:35.6071470Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:35.6071725Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:35.6099611Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:35.6100483Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:35.6100922Z   TEMP: D:/tmp
+2026-11-12T21:29:35.6101260Z   TMP: D:/tmp
+2026-11-12T21:29:35.6102254Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:35.6102745Z ##[endgroup]
+2026-11-12T21:29:36.2515004Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=664]
+2026-11-12T21:29:36.2519864Z ##[start-action display=Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -C "D:\a\_temp/install-dotslash/bin/";id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3]
+2026-11-12T21:29:36.2523991Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:36.2527610Z ##[start-action display=Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4]
+2026-11-12T21:29:36.2667042Z ##[group]Run tar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local
+2026-11-12T21:29:36.2667888Z [36;1mtar xvf "D:\a\_temp/install-dotslash/dotslash.tar.gz" -O >"D:\a\_temp/install-dotslash/bin/dotslash.exe" --force-local[0m
+2026-11-12T21:29:36.2681325Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:36.2681730Z env:
+2026-11-12T21:29:36.2681945Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:36.2682224Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:36.2682532Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:36.2682757Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:36.2683013Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:36.2683465Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:36.2683900Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:36.2684135Z   TEMP: D:/tmp
+2026-11-12T21:29:36.2684307Z   TMP: D:/tmp
+2026-11-12T21:29:36.2684495Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:36.2684721Z ##[endgroup]
+2026-11-12T21:29:36.4465477Z dotslash.exe
+2026-11-12T21:29:36.4665385Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4;outcome=success;conclusion=success;duration_ms=213]
+2026-11-12T21:29:36.4671540Z ##[start-action display=Run echo "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5]
+2026-11-12T21:29:36.4869893Z ##[group]Run echo "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-12T21:29:36.4870618Z [36;1mecho "D:\a\_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-12T21:29:36.4887207Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:36.4887580Z env:
+2026-11-12T21:29:36.4887772Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:36.4888051Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:36.4888358Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:36.4888568Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:36.4888819Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:36.4889440Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:36.4890210Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:36.4890458Z   TEMP: D:/tmp
+2026-11-12T21:29:36.4890647Z   TMP: D:/tmp
+2026-11-12T21:29:36.4890832Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:36.4891077Z ##[endgroup]
+2026-11-12T21:29:36.5363646Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=69]
+2026-11-12T21:29:36.5368352Z ##[start-action display=Run dotslash --version;id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6]
+2026-11-12T21:29:36.5512614Z ##[group]Run dotslash --version
+2026-11-12T21:29:36.5512947Z [36;1mdotslash --version[0m
+2026-11-12T21:29:36.5532352Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:36.5532804Z env:
+2026-11-12T21:29:36.5533004Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:36.5533332Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:36.5533692Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:36.5533939Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:36.5534243Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:36.5534765Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:36.5536098Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:36.5536402Z   TEMP: D:/tmp
+2026-11-12T21:29:36.5536608Z   TMP: D:/tmp
+2026-11-12T21:29:36.5536825Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:36.5537098Z ##[endgroup]
+2026-11-12T21:29:36.6229278Z DotSlash 0.5.9
+2026-11-12T21:29:36.6319113Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=94]
+2026-11-12T21:29:36.6333652Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=1974]
+2026-11-12T21:29:36.6336170Z ##[start-action display=Install just;id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action]
+2026-11-12T21:29:36.6506714Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-12T21:29:36.6507086Z with:
+2026-11-12T21:29:36.6507270Z   tool: just@1.51.0
+2026-11-12T21:29:36.6507444Z   checksum: true
+2026-11-12T21:29:36.6507648Z   fallback: cargo-binstall
+2026-11-12T21:29:36.6507871Z env:
+2026-11-12T21:29:36.6508032Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:36.6508277Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:36.6508578Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:36.6508793Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:36.6509046Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:36.6509492Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:36.6509905Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:36.6510129Z   TEMP: D:/tmp
+2026-11-12T21:29:36.6510310Z   TMP: D:/tmp
+2026-11-12T21:29:36.6510500Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:36.6510729Z ##[endgroup]
+2026-11-12T21:29:36.6515709Z ##[start-action display=Run set -eu;id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run]
+2026-11-12T21:29:36.6519519Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:36.6522888Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run_2]
+2026-11-12T21:29:36.6663457Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-12T21:29:36.6663937Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-12T21:29:36.6677590Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:36.6677961Z env:
+2026-11-12T21:29:36.6678143Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:36.6679106Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:36.6679428Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:36.6679638Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:36.6679886Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:36.6680335Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:36.6680766Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:36.6680990Z   TEMP: D:/tmp
+2026-11-12T21:29:36.6681164Z   TMP: D:/tmp
+2026-11-12T21:29:36.6681345Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:36.6681575Z   INPUT_TOOL: just@1.51.0
+2026-11-12T21:29:36.6681829Z   INPUT_CHECKSUM: true
+2026-11-12T21:29:36.6682038Z   INPUT_FALLBACK: cargo-binstall
+2026-11-12T21:29:36.6684760Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-12T21:29:36.6684982Z   ACTION_USER_AGENT:  ()
+2026-11-12T21:29:36.6685182Z ##[endgroup]
+2026-11-12T21:29:36.8440313Z info: host platform: x86_64_windows
+2026-11-12T21:29:36.8931602Z info: cargo is located at /c/Users/runneradmin/.cargo/bin/cargo
+2026-11-12T21:29:37.4350189Z ##[warning]just@1.51.0 for 'x86_64_windows' is not supported; fallback to cargo-binstall
+2026-11-12T21:29:37.4351037Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-12T21:29:37.5309878Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-12T21:29:38.4761539Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-pc-windows-msvc.zip
+2026-11-12T21:29:38.8420732Z info: verifying sha256 checksum for cargo-binstall-x86_64-pc-windows-msvc.zip
+2026-11-12T21:29:39.5790003Z info: cargo-binstall installed at /c/Users/runneradmin/.cargo/bin/cargo-binstall.exe
+2026-11-12T21:29:39.5927447Z + cargo-binstall.exe binstall -V
+2026-11-12T21:29:39.6202331Z 1.15.11
+2026-11-12T21:29:39.7205305Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-12T21:29:49.2624649Z  WARN The package just v1.51.0 (x86_64-pc-windows-msvc) has been downloaded from github.com
+2026-11-12T21:29:49.2625722Z  INFO This will install the following binaries:
+2026-11-12T21:29:49.2626669Z  INFO   - just.exe => C:\Users\runneradmin\.cargo\bin\just.exe
+2026-11-12T21:29:49.2627361Z  INFO Installing binaries...
+2026-11-12T21:29:49.2661110Z  INFO Done in 9.6050516s
+2026-11-12T21:29:49.2862539Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=12633]
+2026-11-12T21:29:49.2868292Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__taiki-e_install-action;outcome=success;conclusion=success;duration_ms=12653]
+2026-11-12T21:29:49.2870762Z ##[start-action display=Make DotSlash available in PATH (Unix);id=prepare_bazel.setup_bazel.setup_ci.__run_5]
+2026-11-12T21:29:49.2874765Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_5;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:49.2876640Z ##[start-action display=Make DotSlash available in PATH (Windows);id=prepare_bazel.setup_bazel.setup_ci.__run_6]
+2026-11-12T21:29:49.3016898Z ##[group]Run Copy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"
+2026-11-12T21:29:49.3018262Z [36;1mCopy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"[0m
+2026-11-12T21:29:49.3108787Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-12T21:29:49.3109205Z env:
+2026-11-12T21:29:49.3109403Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:49.3110151Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:49.3110525Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:49.3110776Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:49.3111041Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:49.3111484Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:49.3111917Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:49.3112405Z   TEMP: D:/tmp
+2026-11-12T21:29:49.3112589Z   TMP: D:/tmp
+2026-11-12T21:29:49.3112804Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:49.3113030Z ##[endgroup]
+2026-11-12T21:29:49.7181519Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_6;outcome=success;conclusion=success;duration_ms=430]
+2026-11-12T21:29:49.7184080Z ##[start-action display=Enable Git long paths (Windows);id=prepare_bazel.setup_bazel.setup_ci.__run_7]
+2026-11-12T21:29:49.7331127Z ##[group]Run git config --global core.longpaths true
+2026-11-12T21:29:49.7331521Z [36;1mgit config --global core.longpaths true[0m
+2026-11-12T21:29:49.7401048Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-12T21:29:49.7401389Z env:
+2026-11-12T21:29:49.7401598Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:49.7401868Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:49.7402176Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:49.7402395Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:49.7402672Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:49.7403122Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:49.7403564Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:49.7404008Z   TEMP: D:/tmp
+2026-11-12T21:29:49.7404193Z   TMP: D:/tmp
+2026-11-12T21:29:49.7404387Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:49.7404618Z ##[endgroup]
+2026-11-12T21:29:50.1575185Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci.__run_7;outcome=success;conclusion=success;duration_ms=439]
+2026-11-12T21:29:50.1604941Z ##[end-action id=prepare_bazel.setup_bazel.setup_ci;outcome=success;conclusion=success;duration_ms=17667]
+2026-11-12T21:29:50.1607148Z ##[start-action display=Set up Bazel;id=prepare_bazel.setup_bazel.__bazel-contrib_setup-bazel]
+2026-11-12T21:29:50.1878631Z ##[group]Run bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+2026-11-12T21:29:50.1879559Z with:
+2026-11-12T21:29:50.1879786Z   bazelisk-version: 1.28.1
+2026-11-12T21:29:50.1880003Z   output-base: D:/o
+2026-11-12T21:29:50.1880200Z   bazelisk-cache: false
+2026-11-12T21:29:50.1880407Z   cache-save: true
+2026-11-12T21:29:50.1880595Z   cache-version: 1
+2026-11-12T21:29:50.1880800Z   disk-cache: false
+2026-11-12T21:29:50.1880990Z   module-root: .
+2026-11-12T21:29:50.1881177Z   repository-cache: false
+2026-11-12T21:29:50.1883847Z   token: ***
+2026-11-12T21:29:50.1884025Z env:
+2026-11-12T21:29:50.1884206Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:50.1884461Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:50.1884772Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:50.1885000Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:50.1885274Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:50.1885726Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:50.1886155Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:50.1886404Z   TEMP: D:/tmp
+2026-11-12T21:29:50.1886573Z   TMP: D:/tmp
+2026-11-12T21:29:50.1886767Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:50.1886995Z ##[endgroup]
+2026-11-12T21:29:50.4050766Z ##[group]Configure Bazel
+2026-11-12T21:29:50.4051254Z Configuration:
+2026-11-12T21:29:50.4051593Z {
+2026-11-12T21:29:50.4051939Z   "baseCacheKey": "setup-bazel-1-win32-x64",
+2026-11-12T21:29:50.4052428Z   "cacheSave": true,
+2026-11-12T21:29:50.4052745Z   "bazeliskCache": {
+2026-11-12T21:29:50.4053036Z     "enabled": false,
+2026-11-12T21:29:50.4053333Z     "files": [
+2026-11-12T21:29:50.4053627Z       "./.bazelversion"
+2026-11-12T21:29:50.4053931Z     ],
+2026-11-12T21:29:50.4054195Z     "name": "bazelisk",
+2026-11-12T21:29:50.4054529Z     "paths": [
+2026-11-12T21:29:50.4054903Z       "C:/Users/runneradmin/AppData/Local/bazelisk"
+2026-11-12T21:29:50.4055376Z     ]
+2026-11-12T21:29:50.4055624Z   },
+2026-11-12T21:29:50.4055909Z   "bazeliskVersion": "1.28.1",
+2026-11-12T21:29:50.4056292Z   "bazelrc": [],
+2026-11-12T21:29:50.4057005Z   "diskCache": {
+2026-11-12T21:29:50.4057349Z     "enabled": false,
+2026-11-12T21:29:50.4057663Z     "files": [
+2026-11-12T21:29:50.4057943Z       "./MODULE.bazel",
+2026-11-12T21:29:50.4058260Z       "./WORKSPACE.bazel",
+2026-11-12T21:29:50.4058642Z       "./WORKSPACE.bzlmod",
+2026-11-12T21:29:50.4058981Z       "./WORKSPACE",
+2026-11-12T21:29:50.4059332Z       "./**/BUILD.bazel",
+2026-11-12T21:29:50.4059663Z       "./**/BUILD"
+2026-11-12T21:29:50.4059951Z     ],
+2026-11-12T21:29:50.4060215Z     "name": "disk",
+2026-11-12T21:29:50.4060528Z     "paths": [
+2026-11-12T21:29:50.4060814Z       "D:/o-disk"
+2026-11-12T21:29:50.4061100Z     ]
+2026-11-12T21:29:50.4061367Z   },
+2026-11-12T21:29:50.4061649Z   "externalCache": {},
+2026-11-12T21:29:50.4061968Z   "paths": {
+2026-11-12T21:29:50.4062292Z     "bazelExternal": "D:/o/external",
+2026-11-12T21:29:50.4062715Z     "bazelOutputBase": "D:/o",
+2026-11-12T21:29:50.4063084Z     "bazelrc": [
+2026-11-12T21:29:50.4063438Z       "C:/Users/runneradmin/.bazelrc"
+2026-11-12T21:29:50.4063832Z     ]
+2026-11-12T21:29:50.4064076Z   },
+2026-11-12T21:29:50.4064322Z   "os": {
+2026-11-12T21:29:50.4064579Z     "arch": "x64",
+2026-11-12T21:29:50.4064851Z     "platform": "win32"
+2026-11-12T21:29:50.4065543Z   },
+2026-11-12T21:29:50.4065819Z   "repositoryCache": {
+2026-11-12T21:29:50.4066170Z     "enabled": false,
+2026-11-12T21:29:50.4066470Z     "files": [
+2026-11-12T21:29:50.4066757Z       "./MODULE.bazel",
+2026-11-12T21:29:50.4067101Z       "./WORKSPACE.bazel",
+2026-11-12T21:29:50.4067453Z       "./WORKSPACE.bzlmod",
+2026-11-12T21:29:50.4067767Z       "./WORKSPACE"
+2026-11-12T21:29:50.4068017Z     ],
+2026-11-12T21:29:50.4068294Z     "name": "repository",
+2026-11-12T21:29:50.4068604Z     "paths": [
+2026-11-12T21:29:50.4068858Z       "D:/o-repo"
+2026-11-12T21:29:50.4069134Z     ]
+2026-11-12T21:29:50.4069369Z   }
+2026-11-12T21:29:50.4069606Z }
+2026-11-12T21:29:50.4070559Z ##[endgroup]
+2026-11-12T21:29:50.4071138Z ##[group]Setup Bazelisk
+2026-11-12T21:29:51.7497924Z ##[endgroup]
+2026-11-12T21:29:51.7668437Z ##[end-action id=prepare_bazel.setup_bazel.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=1606]
+2026-11-12T21:29:51.7670924Z ##[start-action display=Configure Bazel repository cache;id=prepare_bazel.setup_bazel.configure_bazel_repository_cache]
+2026-11-12T21:29:51.7884810Z ##[group]Run "repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+2026-11-12T21:29:51.7885676Z [36;1m"repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append[0m
+2026-11-12T21:29:51.7958603Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-12T21:29:51.7959533Z env:
+2026-11-12T21:29:51.7959716Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:51.7959988Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:51.7960294Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:51.7960524Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:51.7961873Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:51.7962366Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:51.7962826Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:51.7963065Z   TEMP: D:/tmp
+2026-11-12T21:29:51.7963243Z   TMP: D:/tmp
+2026-11-12T21:29:51.7963431Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:51.7966313Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:51.7966528Z ##[endgroup]
+2026-11-12T21:29:52.1862459Z ##[end-action id=prepare_bazel.setup_bazel.configure_bazel_repository_cache;outcome=success;conclusion=success;duration_ms=419]
+2026-11-12T21:29:52.1864891Z ##[start-action display=Expose MSVC SDK environment (Windows);id=prepare_bazel.setup_bazel.__run]
+2026-11-12T21:29:52.2006587Z ##[group]Run # Bazel exec-side Rust build scripts do not reliably inherit the MSVC developer
+2026-11-12T21:29:52.2007426Z [36;1m# Bazel exec-side Rust build scripts do not reliably inherit the MSVC developer[0m
+2026-11-12T21:29:52.2007961Z [36;1m# shell on GitHub-hosted Windows runners, so discover the latest VS install and[0m
+2026-11-12T21:29:52.2008465Z [36;1m# ask `VsDevCmd.bat` to materialize the x64/x64 compiler + SDK environment.[0m
+2026-11-12T21:29:52.2009001Z [36;1m$vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"[0m
+2026-11-12T21:29:52.2009401Z [36;1mif (-not (Test-Path $vswhere)) {[0m
+2026-11-12T21:29:52.2009675Z [36;1m  throw "vswhere.exe not found"[0m
+2026-11-12T21:29:52.2009919Z [36;1m}[0m
+2026-11-12T21:29:52.2010086Z [36;1m[0m
+2026-11-12T21:29:52.2010639Z [36;1m$installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null[0m
+2026-11-12T21:29:52.2011249Z [36;1mif (-not $installPath) {[0m
+2026-11-12T21:29:52.2011596Z [36;1m  throw "Could not locate a Visual Studio installation with VC tools"[0m
+2026-11-12T21:29:52.2011946Z [36;1m}[0m
+2026-11-12T21:29:52.2012114Z [36;1m[0m
+2026-11-12T21:29:52.2012542Z [36;1m$vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'[0m
+2026-11-12T21:29:52.2013127Z [36;1mif (-not (Test-Path $vsDevCmd)) {[0m
+2026-11-12T21:29:52.2013622Z [36;1m  throw "VsDevCmd.bat not found at $vsDevCmd"[0m
+2026-11-12T21:29:52.2013896Z [36;1m}[0m
+2026-11-12T21:29:52.2014081Z [36;1m[0m
+2026-11-12T21:29:52.2014391Z [36;1m# Keep the export surface explicit: these are the paths and SDK roots that the[0m
+2026-11-12T21:29:52.2014926Z [36;1m# MSVC toolchain probes need later when Bazel runs Windows exec-platform build[0m
+2026-11-12T21:29:52.2015333Z [36;1m# scripts such as `aws-lc-sys`.[0m
+2026-11-12T21:29:52.2015593Z [36;1m$varsToExport = @([0m
+2026-11-12T21:29:52.2015832Z [36;1m  'INCLUDE',[0m
+2026-11-12T21:29:52.2016039Z [36;1m  'LIB',[0m
+2026-11-12T21:29:52.2016218Z [36;1m  'LIBPATH',[0m
+2026-11-12T21:29:52.2016417Z [36;1m  'PATH',[0m
+2026-11-12T21:29:52.2016622Z [36;1m  'UCRTVersion',[0m
+2026-11-12T21:29:52.2016857Z [36;1m  'UniversalCRTSdkDir',[0m
+2026-11-12T21:29:52.2017098Z [36;1m  'VCINSTALLDIR',[0m
+2026-11-12T21:29:52.2017338Z [36;1m  'VCToolsInstallDir',[0m
+2026-11-12T21:29:52.2017584Z [36;1m  'WindowsLibPath',[0m
+2026-11-12T21:29:52.2017813Z [36;1m  'WindowsSdkBinPath',[0m
+2026-11-12T21:29:52.2018047Z [36;1m  'WindowsSdkDir',[0m
+2026-11-12T21:29:52.2018270Z [36;1m  'WindowsSDKLibVersion',[0m
+2026-11-12T21:29:52.2018527Z [36;1m  'WindowsSDKVersion'[0m
+2026-11-12T21:29:52.2018752Z [36;1m)[0m
+2026-11-12T21:29:52.2018926Z [36;1m$requiredVars = @([0m
+2026-11-12T21:29:52.2019136Z [36;1m  'INCLUDE',[0m
+2026-11-12T21:29:52.2019329Z [36;1m  'LIB',[0m
+2026-11-12T21:29:52.2019514Z [36;1m  'LIBPATH',[0m
+2026-11-12T21:29:52.2019717Z [36;1m  'UniversalCRTSdkDir',[0m
+2026-11-12T21:29:52.2019960Z [36;1m  'VCToolsInstallDir',[0m
+2026-11-12T21:29:52.2020190Z [36;1m  'WindowsSdkDir'[0m
+2026-11-12T21:29:52.2020396Z [36;1m)[0m
+2026-11-12T21:29:52.2020561Z [36;1m[0m
+2026-11-12T21:29:52.2020860Z [36;1m# `VsDevCmd.bat` is a batch file, so invoke it under `cmd.exe`, suppress its[0m
+2026-11-12T21:29:52.2021345Z [36;1m# banner, then dump the resulting environment with `set`. Re-export only the[0m
+2026-11-12T21:29:52.2021861Z [36;1m# approved keys into `GITHUB_ENV` so later steps inherit the same MSVC context.[0m
+2026-11-12T21:29:52.2022368Z [36;1m# Windows environment names are case-insensitive, but Git Bash variable lookup[0m
+2026-11-12T21:29:52.2022881Z [36;1m# is not. Normalize every accepted key to the canonical spelling above before[0m
+2026-11-12T21:29:52.2023274Z [36;1m# handing it to the shell wrapper.[0m
+2026-11-12T21:29:52.2023701Z [36;1m$envLines = & cmd.exe /c ('"{0}" -no_logo -arch=x64 -host_arch=x64 >nul && set' -f $vsDevCmd)[0m
+2026-11-12T21:29:52.2024121Z [36;1mif ($LASTEXITCODE -ne 0) {[0m
+2026-11-12T21:29:52.2025220Z [36;1m  throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"[0m
+2026-11-12T21:29:52.2025563Z [36;1m}[0m
+2026-11-12T21:29:52.2025742Z [36;1m[0m
+2026-11-12T21:29:52.2026024Z [36;1m# PowerShell hashtable keys are case-insensitive, matching Windows[0m
+2026-11-12T21:29:52.2026515Z [36;1m# environment semantics while retaining the canonical key chosen above.[0m
+2026-11-12T21:29:52.2026900Z [36;1m$exportedValues = @{}[0m
+2026-11-12T21:29:52.2027151Z [36;1mforeach ($line in $envLines) {[0m
+2026-11-12T21:29:52.2027426Z [36;1m  if ($line -notmatch '^(.*?)=(.*)$') {[0m
+2026-11-12T21:29:52.2027703Z [36;1m    continue[0m
+2026-11-12T21:29:52.2028023Z [36;1m  }[0m
+2026-11-12T21:29:52.2028195Z [36;1m[0m
+2026-11-12T21:29:52.2028384Z [36;1m  $inputName = $matches[1][0m
+2026-11-12T21:29:52.2028623Z [36;1m  $value = $matches[2][0m
+2026-11-12T21:29:52.2028874Z [36;1m  $canonicalName = $varsToExport |[0m
+2026-11-12T21:29:52.2029173Z [36;1m    Where-Object { $_ -ieq $inputName } |[0m
+2026-11-12T21:29:52.2029474Z [36;1m    Select-Object -First 1[0m
+2026-11-12T21:29:52.2029740Z [36;1m  if ($null -eq $canonicalName) {[0m
+2026-11-12T21:29:52.2029992Z [36;1m    continue[0m
+2026-11-12T21:29:52.2030185Z [36;1m  }[0m
+2026-11-12T21:29:52.2030348Z [36;1m[0m
+2026-11-12T21:29:52.2030589Z [36;1m  if ($exportedValues.ContainsKey($canonicalName) -and[0m
+2026-11-12T21:29:52.2031120Z [36;1m      $exportedValues[$canonicalName] -cne $value) {[0m
+2026-11-12T21:29:52.2031542Z [36;1m    throw "VsDevCmd.bat returned conflicting values for $canonicalName"[0m
+2026-11-12T21:29:52.2031905Z [36;1m  }[0m
+2026-11-12T21:29:52.2032130Z [36;1m  $exportedValues[$canonicalName] = $value[0m
+2026-11-12T21:29:52.2032409Z [36;1m}[0m
+2026-11-12T21:29:52.2032715Z [36;1m[0m
+2026-11-12T21:29:52.2033187Z [36;1m$missingVars = @([0m
+2026-11-12T21:29:52.2033425Z [36;1m  $requiredVars | Where-Object {[0m
+2026-11-12T21:29:52.2033737Z [36;1m    -not $exportedValues.ContainsKey($_) -or[0m
+2026-11-12T21:29:52.2034106Z [36;1m    [string]::IsNullOrWhiteSpace($exportedValues[$_])[0m
+2026-11-12T21:29:52.2034411Z [36;1m  }[0m
+2026-11-12T21:29:52.2034608Z [36;1m)[0m
+2026-11-12T21:29:52.2034812Z [36;1mif ($missingVars.Count -ne 0) {[0m
+2026-11-12T21:29:52.2035224Z [36;1m  throw "VsDevCmd.bat did not provide required variables: $($missingVars -join ', ')"[0m
+2026-11-12T21:29:52.2035621Z [36;1m}[0m
+2026-11-12T21:29:52.2035781Z [36;1m[0m
+2026-11-12T21:29:52.2036003Z [36;1mforeach ($canonicalName in $varsToExport) {[0m
+2026-11-12T21:29:52.2036345Z [36;1m  if ($exportedValues.ContainsKey($canonicalName)) {[0m
+2026-11-12T21:29:52.2036709Z [36;1m    "$canonicalName=$($exportedValues[$canonicalName])" |[0m
+2026-11-12T21:29:52.2037108Z [36;1m      Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append[0m
+2026-11-12T21:29:52.2037439Z [36;1m  }[0m
+2026-11-12T21:29:52.2037608Z [36;1m}[0m
+2026-11-12T21:29:52.2111908Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-12T21:29:52.2112255Z env:
+2026-11-12T21:29:52.2112465Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:52.2112738Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:52.2113051Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:52.2113273Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:52.2113549Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:52.2113997Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:52.2114435Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:52.2114679Z   TEMP: D:/tmp
+2026-11-12T21:29:52.2114857Z   TMP: D:/tmp
+2026-11-12T21:29:52.2115059Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:52.2118395Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:52.2118636Z ##[endgroup]
+2026-11-12T21:29:58.6337014Z ##[end-action id=prepare_bazel.setup_bazel.__run;outcome=success;conclusion=success;duration_ms=6447]
+2026-11-12T21:29:58.6339315Z ##[start-action display=Compute cache-stable Windows Bazel PATH;id=prepare_bazel.setup_bazel.__run_2]
+2026-11-12T21:29:58.6532049Z ##[group]Run ./.github/scripts/compute-bazel-windows-path.ps1
+2026-11-12T21:29:58.6532499Z [36;1m./.github/scripts/compute-bazel-windows-path.ps1[0m
+2026-11-12T21:29:58.6606886Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-11-12T21:29:58.6607256Z env:
+2026-11-12T21:29:58.6607440Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:58.6607712Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:58.6608024Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:58.6608247Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:58.6608541Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:58.6608983Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:58.6609414Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:58.6609644Z   TEMP: D:/tmp
+2026-11-12T21:29:58.6609820Z   TMP: D:/tmp
+2026-11-12T21:29:58.6610010Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:58.6612768Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:58.6614802Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T21:29:58.6618045Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T21:29:58.6620474Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T21:29:58.6638416Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T21:29:58.6652770Z   UCRTVersion: 10.0.26100.0
+2026-11-12T21:29:58.6653060Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:29:58.6653472Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T21:29:58.6654007Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T21:29:58.6654758Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T21:29:58.6655397Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T21:29:58.6655770Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:29:58.6656092Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T21:29:58.6656341Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T21:29:58.6656570Z ##[endgroup]
+2026-11-12T21:29:59.1570085Z Derived CODEX_BAZEL_WINDOWS_PATH entries:
+2026-11-12T21:29:59.1589161Z   C:\Program Files\PowerShell\7
+2026-11-12T21:29:59.1595796Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64
+2026-11-12T21:29:59.1601793Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages
+2026-11-12T21:29:59.1609646Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow
+2026-11-12T21:29:59.1615966Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer
+2026-11-12T21:29:59.1623771Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn
+2026-11-12T21:29:59.1629821Z   C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\
+2026-11-12T21:29:59.1636240Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools
+2026-11-12T21:29:59.1642944Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector
+2026-11-12T21:29:59.1648951Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console
+2026-11-12T21:29:59.1654089Z   C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64
+2026-11-12T21:29:59.1660268Z   C:\Program Files (x86)\Windows Kits\10\bin\\x64
+2026-11-12T21:29:59.1666135Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64
+2026-11-12T21:29:59.1672062Z   C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T21:29:59.1679009Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\
+2026-11-12T21:29:59.1686084Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\
+2026-11-12T21:29:59.1693035Z   C:\mingw64\bin
+2026-11-12T21:29:59.1700323Z   C:\Program Files\Git\bin
+2026-11-12T21:29:59.1706312Z   C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts
+2026-11-12T21:29:59.1713023Z   C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-11-12T21:29:59.1718465Z   C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin
+2026-11-12T21:29:59.1724877Z   C:\Windows\system32
+2026-11-12T21:29:59.1731050Z   C:\Windows
+2026-11-12T21:29:59.1736482Z   C:\Windows\System32\Wbem
+2026-11-12T21:29:59.1741899Z   C:\Windows\System32\WindowsPowerShell\v1.0\
+2026-11-12T21:29:59.1749099Z   C:\Windows\System32\OpenSSH\
+2026-11-12T21:29:59.1755288Z   C:\Program Files\PowerShell\7\
+2026-11-12T21:29:59.1761038Z   C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\
+2026-11-12T21:29:59.1767367Z   C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager
+2026-11-12T21:29:59.1774006Z   C:\Program Files\Git\cmd
+2026-11-12T21:29:59.1780060Z   C:\Program Files\Git\ucrt64\bin
+2026-11-12T21:29:59.1786438Z   C:\Program Files\Git\usr\bin
+2026-11-12T21:29:59.1792888Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin
+2026-11-12T21:29:59.1798724Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin
+2026-11-12T21:29:59.1805567Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+2026-11-12T21:29:59.1810893Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe
+2026-11-12T21:29:59.1816928Z   C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T21:29:59.1823597Z   C:\Program Files\nodejs
+2026-11-12T21:29:59.1830698Z   C:\msys64\mingw64\bin
+2026-11-12T21:29:59.1836685Z   C:\msys64\ucrt64\bin
+2026-11-12T21:29:59.1843078Z   C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T21:29:59.2414416Z ##[end-action id=prepare_bazel.setup_bazel.__run_2;outcome=success;conclusion=success;duration_ms=607]
+2026-11-12T21:29:59.2424978Z ##[end-action id=prepare_bazel.setup_bazel;outcome=success;conclusion=success;duration_ms=27656]
+2026-11-12T21:29:59.2427422Z ##[start-action display=Configure fail-closed release lockdown root;id=prepare_bazel.__run]
+2026-11-12T21:29:59.2430950Z ##[end-action id=prepare_bazel.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-12T21:29:59.3582787Z ##[start-action display=Compute bazel repository cache key;id=prepare_bazel.cache_bazel_repository_key]
+2026-11-12T21:29:59.3726619Z ##[group]Run echo "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"
+2026-11-12T21:29:59.3727376Z [36;1mecho "repository-cache-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-${CACHE_HASH}" >> "${GITHUB_OUTPUT}"[0m
+2026-11-12T21:29:59.3728049Z [36;1mecho "repository-cache-restore-key=bazel-cache-${CACHE_SCOPE}-${TARGET}-" >> "${GITHUB_OUTPUT}"[0m
+2026-11-12T21:29:59.3742641Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:29:59.3743039Z env:
+2026-11-12T21:29:59.3743220Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:59.3743478Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:59.3743821Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:59.3744040Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:59.3744297Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:59.3744737Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:59.3745359Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:59.3745614Z   TEMP: D:/tmp
+2026-11-12T21:29:59.3745794Z   TMP: D:/tmp
+2026-11-12T21:29:59.3745994Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:59.3748891Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:59.3751243Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T21:29:59.3754251Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T21:29:59.3756701Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T21:29:59.3773980Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T21:29:59.3788700Z   UCRTVersion: 10.0.26100.0
+2026-11-12T21:29:59.3789007Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:29:59.3789594Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T21:29:59.3790321Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T21:29:59.3791181Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T21:29:59.3791815Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T21:29:59.3792189Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:29:59.3792500Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T21:29:59.3792774Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T21:29:59.3800438Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T21:29:59.3808417Z   CACHE_SCOPE: bazel-test
+2026-11-12T21:29:59.3808649Z   TARGET: x86_64-pc-windows-msvc
+2026-11-12T21:29:59.3809049Z   CACHE_HASH: cd2efd5992ac0f5233c864ca93cef79165705c98673c7348e8018c8303830b48
+2026-11-12T21:29:59.3809461Z ##[endgroup]
+2026-11-12T21:29:59.4317891Z ##[end-action id=prepare_bazel.cache_bazel_repository_key;outcome=success;conclusion=success;duration_ms=73]
+2026-11-12T21:29:59.4320383Z ##[start-action display=Restore bazel repository cache;id=prepare_bazel.cache_bazel_repository_restore]
+2026-11-12T21:29:59.4489541Z ##[group]Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
+2026-11-12T21:29:59.4489905Z with:
+2026-11-12T21:29:59.4490112Z   path: D:/bazel-repository-cache
+2026-11-12T21:29:59.4490653Z   key: bazel-cache-bazel-test-x86_64-pc-windows-msvc-cd2efd5992ac0f5233c864ca93cef79165705c98673c7348e8018c8303830b48
+2026-11-12T21:29:59.4491292Z   restore-keys: bazel-cache-bazel-test-x86_64-pc-windows-msvc-
+
+2026-11-12T21:29:59.4491651Z   enableCrossOsArchive: false
+2026-11-12T21:29:59.4491887Z   fail-on-cache-miss: false
+2026-11-12T21:29:59.4492294Z   lookup-only: false
+2026-11-12T21:29:59.4492493Z env:
+2026-11-12T21:29:59.4492661Z   CI_BUILD_ROOT: D:
+2026-11-12T21:29:59.4492925Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:29:59.4493232Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:29:59.4493463Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:29:59.4493722Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:29:59.4494163Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:29:59.4494584Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:29:59.4494808Z   TEMP: D:/tmp
+2026-11-12T21:29:59.4494982Z   TMP: D:/tmp
+2026-11-12T21:29:59.4495172Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:29:59.4497908Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:29:59.4499914Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T21:29:59.4503074Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T21:29:59.4505935Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T21:29:59.4524682Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T21:29:59.4539911Z   UCRTVersion: 10.0.26100.0
+2026-11-12T21:29:59.4540228Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:29:59.4540708Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T21:29:59.4541313Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T21:29:59.4542143Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T21:29:59.4542860Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T21:29:59.4543281Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:29:59.4543617Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T21:29:59.4543895Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T21:29:59.4552431Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T21:29:59.4560744Z ##[endgroup]
+2026-11-12T21:30:00.0590636Z Cache not found for input keys: bazel-cache-bazel-test-x86_64-pc-windows-msvc-cd2efd5992ac0f5233c864ca93cef79165705c98673c7348e8018c8303830b48, bazel-cache-bazel-test-x86_64-pc-windows-msvc-
+2026-11-12T21:30:00.0712978Z ##[end-action id=prepare_bazel.cache_bazel_repository_restore;outcome=success;conclusion=success;duration_ms=639]
+2026-11-12T21:30:00.0715419Z ##[start-action display=Set up Bazel execution logs;id=prepare_bazel.__run_2]
+2026-11-12T21:30:00.0863506Z ##[group]Run mkdir -p "${RUNNER_TEMP}/bazel-execution-logs"
+2026-11-12T21:30:00.0863930Z [36;1mmkdir -p "${RUNNER_TEMP}/bazel-execution-logs"[0m
+2026-11-12T21:30:00.0864434Z [36;1mecho "CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR=${RUNNER_TEMP}/bazel-execution-logs" >> "${GITHUB_ENV}"[0m
+2026-11-12T21:30:00.0879420Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:30:00.0879801Z env:
+2026-11-12T21:30:00.0879974Z   CI_BUILD_ROOT: D:
+2026-11-12T21:30:00.0880229Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:30:00.0880533Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:30:00.0880756Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:30:00.0881019Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:30:00.0881446Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:30:00.0881861Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:30:00.0882079Z   TEMP: D:/tmp
+2026-11-12T21:30:00.0882244Z   TMP: D:/tmp
+2026-11-12T21:30:00.0882438Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:30:00.0885402Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:30:00.0887681Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T21:30:00.0890666Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T21:30:00.0893118Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T21:30:00.0908725Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T21:30:00.0925749Z   UCRTVersion: 10.0.26100.0
+2026-11-12T21:30:00.0926067Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:30:00.0926504Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T21:30:00.0927046Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T21:30:00.0927780Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T21:30:00.0928410Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T21:30:00.0928808Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:30:00.0929107Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T21:30:00.0929366Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T21:30:00.0937245Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T21:30:00.0945380Z ##[endgroup]
+2026-11-12T21:30:00.1641815Z ##[end-action id=prepare_bazel.__run_2;outcome=success;conclusion=success;duration_ms=92]
+2026-11-12T21:30:00.1835299Z ##[group]Run set -euo pipefail
+2026-11-12T21:30:00.1835751Z [36;1mset -euo pipefail[0m
+2026-11-12T21:30:00.1835972Z [36;1m[0m
+2026-11-12T21:30:00.1836449Z [36;1mbazel_test_query='tests(//...) except tests(//third_party/v8:all) except attr(tags, "manual", tests(//...))'[0m
+2026-11-12T21:30:00.1836958Z [36;1mmapfile -t bazel_targets < <([0m
+2026-11-12T21:30:00.1837379Z [36;1m  ./.github/scripts/run-bazel-query-ci.sh --output=label -- "${bazel_test_query}" \[0m
+2026-11-12T21:30:00.1837810Z [36;1m    | LC_ALL=C sort[0m
+2026-11-12T21:30:00.1838028Z [36;1m)[0m
+2026-11-12T21:30:00.1838198Z [36;1m[0m
+2026-11-12T21:30:00.1838395Z [36;1mselected_targets=()[0m
+2026-11-12T21:30:00.1838671Z [36;1mfor bazel_target in "${bazel_targets[@]}"; do[0m
+2026-11-12T21:30:00.1838955Z [36;1m  target_bucket="$([0m
+2026-11-12T21:30:00.1839196Z [36;1m    printf '%s\n' "${bazel_target}" \[0m
+2026-11-12T21:30:00.1839468Z [36;1m      | cksum \[0m
+2026-11-12T21:30:00.1839909Z [36;1m      | awk -v shard_count="${BAZEL_TEST_SHARD_COUNT}" '{ print ($1 % shard_count) + 1 }'[0m
+2026-11-12T21:30:00.1840300Z [36;1m  )"[0m
+2026-11-12T21:30:00.1840559Z [36;1m  if [[ "${target_bucket}" == "${BAZEL_TEST_SHARD}" ]]; then[0m
+2026-11-12T21:30:00.1840903Z [36;1m    selected_targets+=("${bazel_target}")[0m
+2026-11-12T21:30:00.1841190Z [36;1m  fi[0m
+2026-11-12T21:30:00.1841359Z [36;1mdone[0m
+2026-11-12T21:30:00.1841528Z [36;1m[0m
+2026-11-12T21:30:00.1841740Z [36;1mif [[ ${#selected_targets[@]} -eq 0 ]]; then[0m
+2026-11-12T21:30:00.1842244Z [36;1m  echo "No Bazel test targets selected for Windows shard ${BAZEL_TEST_SHARD}/${BAZEL_TEST_SHARD_COUNT}." >&2[0m
+2026-11-12T21:30:00.1842716Z [36;1m  exit 1[0m
+2026-11-12T21:30:00.1842912Z [36;1mfi[0m
+2026-11-12T21:30:00.1843082Z [36;1m[0m
+2026-11-12T21:30:00.1843590Z [36;1mecho "Selected ${#selected_targets[@]} of ${#bazel_targets[@]} Bazel test targets for Windows shard ${BAZEL_TEST_SHARD}/${BAZEL_TEST_SHARD_COUNT}."[0m
+2026-11-12T21:30:00.1844160Z [36;1m[0m
+2026-11-12T21:30:00.1844338Z [36;1mbazel_test_args=([0m
+2026-11-12T21:30:00.1844551Z [36;1m  test[0m
+2026-11-12T21:30:00.1844763Z [36;1m  --platforms=//:windows_x86_64_msvc[0m
+2026-11-12T21:30:00.1845064Z [36;1m  --skip_incompatible_explicit_targets[0m
+2026-11-12T21:30:00.1845386Z [36;1m  --test_tag_filters=-argument-comment-lint[0m
+2026-11-12T21:30:00.1845682Z [36;1m  --test_verbose_timeout_warnings[0m
+2026-11-12T21:30:00.1845966Z [36;1m  --build_metadata=COMMIT_SHA=${GITHUB_SHA}[0m
+2026-11-12T21:30:00.1846331Z [36;1m  --build_metadata=TAG_windows_test_shard=${BAZEL_TEST_SHARD}[0m
+2026-11-12T21:30:00.1846649Z [36;1m)[0m
+2026-11-12T21:30:00.1846823Z [36;1m[0m
+2026-11-12T21:30:00.1847018Z [36;1m./.github/scripts/run-bazel-ci.sh \[0m
+2026-11-12T21:30:00.1847307Z [36;1m  --print-failed-action-summary \[0m
+2026-11-12T21:30:00.1847640Z [36;1m  --print-failed-test-logs \[0m
+2026-11-12T21:30:00.1847944Z [36;1m  --windows-msvc-host-platform \[0m
+2026-11-12T21:30:00.1848226Z [36;1m  --remote-download-toplevel \[0m
+2026-11-12T21:30:00.1848484Z [36;1m  -- \[0m
+2026-11-12T21:30:00.1848689Z [36;1m  "${bazel_test_args[@]}" \[0m
+2026-11-12T21:30:00.1848930Z [36;1m  -- \[0m
+2026-11-12T21:30:00.1849128Z [36;1m  "${selected_targets[@]}"[0m
+2026-11-12T21:30:00.1864470Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:30:00.1864854Z env:
+2026-11-12T21:30:00.1865039Z   CI_BUILD_ROOT: D:
+2026-11-12T21:30:00.1865315Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T21:30:00.1865622Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T21:30:00.1865848Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T21:30:00.1866115Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T21:30:00.1866562Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43310500072-test-windows-shard
+2026-11-12T21:30:00.1866989Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T21:30:00.1869393Z   TEMP: D:/tmp
+2026-11-12T21:30:00.1869628Z   TMP: D:/tmp
+2026-11-12T21:30:00.1869833Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:30:00.1872747Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:30:00.1875148Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T21:30:00.1878188Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T21:30:00.1880698Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T21:30:00.1896766Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T21:30:00.1910853Z   UCRTVersion: 10.0.26100.0
+2026-11-12T21:30:00.1911153Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:30:00.1911590Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T21:30:00.1912130Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T21:30:00.1912870Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T21:30:00.1913496Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T21:30:00.1913887Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T21:30:00.1914198Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T21:30:00.1914465Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T21:30:00.1922658Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T21:30:00.1930619Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T21:30:00.1930971Z   BAZEL_TEST_SHARD: 4
+2026-11-12T21:30:00.1931185Z   BAZEL_TEST_SHARD_COUNT: 4
+2026-11-12T21:30:00.1931534Z   BUILDBUDDY_API_KEY: ***
+2026-11-12T21:30:00.1931746Z ##[endgroup]
+2026-11-12T21:30:02.0723013Z Using generic BuildBuddy configuration: buildbuddy-generic.
+2026-11-12T21:30:02.1388659Z 2026/11/12 21:30:02 Downloading https://releases.bazel.build/9.3.0/release/bazel-9.3.0-windows-x86_64.exe...
+2026-11-12T21:30:03.5190175Z Extracting Bazel installation...
+2026-11-12T21:30:04.0405751Z Starting local Bazel server (9.3.0) and connecting to it...
+2026-11-12T21:30:06.5704052Z INFO: Invocation ID: 506dc296-a1fe-4068-ae5e-10a0fa26a332
+2026-11-12T21:30:06.5706015Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/506dc296-a1fe-4068-ae5e-10a0fa26a332
+2026-11-12T21:30:07.3285362Z  no actions running
+2026-11-12T21:30:08.3788867Z  no actions running
+2026-11-12T21:30:09.3808343Z  no actions running
+2026-11-12T21:30:16.1276643Z  no actions running
+2026-11-12T21:30:17.1724684Z  no actions running
+2026-11-12T21:30:18.1537062Z  no actions running
+2026-11-12T21:30:19.1573299Z  no actions running
+2026-11-12T21:30:19.8611178Z WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:30:19.8615109Z WARNING: For repository 'apple_support', the root module requires module version apple_support@2.1.0, but got apple_support@2.5.2 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:30:19.8619855Z WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+2026-11-12T21:30:20.1592201Z  no actions running
+2026-11-12T21:30:20.5097127Z Loading: 0 packages loaded
+2026-11-12T21:30:21.9417009Z Loading: 6 packages loaded
+2026-11-12T21:30:21.9839061Z     currently loading: third_party/v8/libcxx_config ... (177 packages)
+2026-11-12T21:30:22.8092173Z Loading: 11 packages loaded
+2026-11-12T21:30:22.8108903Z     currently loading: third_party/v8/libcxx_config ... (200 packages)
+2026-11-12T21:30:23.7777806Z Loading: 11 packages loaded
+2026-11-12T21:30:23.7779620Z     currently loading: third_party/v8/libcxx_config ... (200 packages)
+2026-11-12T21:30:24.7790708Z Loading: 11 packages loaded
+2026-11-12T21:30:24.7791415Z     currently loading: third_party/v8/libcxx_config ... (200 packages)
+2026-11-12T21:30:25.7818262Z Loading: 17 packages loaded
+2026-11-12T21:30:25.7818902Z     currently loading: bazel/rules/testing/wine ... (194 packages)
+2026-11-12T21:30:26.7817666Z Loading: 17 packages loaded
+2026-11-12T21:30:26.7818498Z     currently loading: bazel/rules/testing/wine ... (194 packages)
+2026-11-12T21:30:27.7852674Z Loading: 17 packages loaded
+2026-11-12T21:30:27.7853524Z     currently loading: bazel/rules/testing/wine ... (194 packages)
+2026-11-12T21:30:28.7945335Z Loading: 17 packages loaded
+2026-11-12T21:30:28.7946158Z     currently loading: bazel/rules/testing/wine ... (194 packages)
+2026-11-12T21:30:28.9552596Z DEBUG: D:/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:30:28.9653764Z WARNING: A well-known crate annotation exists for zstd-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:30:28.9654799Z 
+2026-11-12T21:30:28.9654933Z ```
+2026-11-12T21:30:28.9655257Z bazel_dep(name = "zstd", version = "1.5.7.bcr.1")
+2026-11-12T21:30:28.9655598Z 
+2026-11-12T21:30:28.9655856Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:30:28.9656336Z crate.annotation(
+2026-11-12T21:30:28.9656622Z     crate = "zstd-sys",
+2026-11-12T21:30:28.9656920Z     gen_build_script = "off",
+2026-11-12T21:30:28.9657248Z     deps = ["@zstd"],
+2026-11-12T21:30:28.9657516Z )
+2026-11-12T21:30:28.9657735Z ```
+2026-11-12T21:30:28.9657871Z 
+2026-11-12T21:30:28.9658056Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:30:28.9658323Z 
+2026-11-12T21:30:28.9660092Z ```
+2026-11-12T21:30:28.9660343Z crate.annotation(
+2026-11-12T21:30:28.9660558Z     crate = "zstd-sys",
+2026-11-12T21:30:28.9660780Z     gen_build_script = "on",
+2026-11-12T21:30:28.9661020Z )
+2026-11-12T21:30:28.9661179Z ```
+2026-11-12T21:30:29.2863264Z DEBUG: D:/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:30:29.2864708Z WARNING: A well-known crate annotation exists for libgit2-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:30:29.2865640Z 
+2026-11-12T21:30:29.2865915Z ```
+2026-11-12T21:30:29.2866397Z bazel_dep(name = "libgit2", version = "1.9.1")
+2026-11-12T21:30:29.2866874Z 
+2026-11-12T21:30:29.2867179Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:30:29.2867697Z crate.annotation(
+2026-11-12T21:30:29.2870515Z     crate = "libgit2-sys",
+2026-11-12T21:30:29.2872133Z     gen_build_script = "off",
+2026-11-12T21:30:29.2872520Z     deps = ["@libgit2"],
+2026-11-12T21:30:29.2872859Z )
+2026-11-12T21:30:29.2873784Z ```
+2026-11-12T21:30:29.2873938Z 
+2026-11-12T21:30:29.2874262Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:30:29.2874755Z 
+2026-11-12T21:30:29.2874902Z ```
+2026-11-12T21:30:29.2875182Z crate.annotation(
+2026-11-12T21:30:29.2875782Z     crate = "libgit2-sys",
+2026-11-12T21:30:29.2876185Z     gen_build_script = "on",
+2026-11-12T21:30:29.2876525Z )
+2026-11-12T21:30:29.2876899Z ```
+2026-11-12T21:30:29.2877272Z DEBUG: D:/o/external/rules_rs+/rs/extensions.bzl:302:18: 
+2026-11-12T21:30:29.2885834Z WARNING: A well-known crate annotation exists for libssh2-sys! Apply the following to your MODULE.bazel:
+2026-11-12T21:30:29.2886875Z 
+2026-11-12T21:30:29.2887214Z ```
+2026-11-12T21:30:29.2887785Z bazel_dep(name = "libssh2", version = "1.11.1.bcr.1")
+2026-11-12T21:30:29.2888356Z 
+2026-11-12T21:30:29.2890096Z crate = use_extension("@rules_rs//rs:extensions.bzl", "crate")
+2026-11-12T21:30:29.2891625Z crate.annotation(
+2026-11-12T21:30:29.2892185Z     crate = "libssh2-sys",
+2026-11-12T21:30:29.2892776Z     gen_build_script = "off",
+2026-11-12T21:30:29.2893356Z     deps = ["@libssh2"],
+2026-11-12T21:30:29.2893893Z )
+2026-11-12T21:30:29.2894358Z ```
+2026-11-12T21:30:29.2896340Z 
+2026-11-12T21:30:29.2896981Z You can disable this warning by configuring your MODULE.bazel like so:
+2026-11-12T21:30:29.2897703Z 
+2026-11-12T21:30:29.2898012Z ```
+2026-11-12T21:30:29.2900388Z crate.annotation(
+2026-11-12T21:30:29.2901575Z     crate = "libssh2-sys",
+2026-11-12T21:30:29.2902206Z     gen_build_script = "on",
+2026-11-12T21:30:29.2902772Z )
+2026-11-12T21:30:29.2903215Z ```
+2026-11-12T21:30:29.8052624Z Loading: 17 packages loaded
+2026-11-12T21:30:29.8053523Z     currently loading: bazel/rules/testing/wine ... (194 packages)
+2026-11-12T21:30:31.1818158Z Loading: 165 packages loaded
+2026-11-12T21:30:31.2034800Z     currently loading: codex-rs/mcp-server ... (46 packages)
+2026-11-12T21:30:31.3242968Z Loading: 211 packages loaded
+2026-11-12T21:30:31.8922666Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/506dc296-a1fe-4068-ae5e-10a0fa26a332
+2026-11-12T21:31:09.4902487Z Selected 143 of 585 Bazel test targets for Windows shard 4/4.
+2026-11-12T21:31:09.5725119Z BuildBuddy API key is available; using remote Bazel configuration.
+2026-11-12T21:31:09.7611740Z Using generic BuildBuddy configuration: buildbuddy-generic.
+2026-11-12T21:31:09.9094172Z INFO: Invocation ID: 0fca6ef2-5010-4c63-937e-4313885d4be5
+2026-11-12T21:31:09.9095464Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/0fca6ef2-5010-4c63-937e-4313885d4be5
+2026-11-12T21:31:10.4502766Z Computing main repo mapping: 
+2026-11-12T21:31:11.4431440Z Computing main repo mapping: 
+2026-11-12T21:31:12.5257314Z Computing main repo mapping: 
+2026-11-12T21:31:13.4882755Z Computing main repo mapping: 
+2026-11-12T21:31:14.4374633Z Loading: 
+2026-11-12T21:31:14.4477345Z Loading: 4 packages loaded
+2026-11-12T21:31:15.1052602Z Analyzing: 143 targets (7 packages loaded, 7 targets configured)
+2026-11-12T21:31:15.2467314Z Analyzing: 143 targets (7 packages loaded, 8 targets configured)
+2026-11-12T21:31:15.2813434Z 
+2026-11-12T21:31:16.1842462Z Analyzing: 143 targets (31 packages loaded, 26 targets configured)
+2026-11-12T21:31:16.1961220Z 
+2026-11-12T21:31:17.2076248Z Analyzing: 143 targets (80 packages loaded, 37 targets configured)
+2026-11-12T21:31:17.2081335Z 
+2026-11-12T21:31:18.5203037Z Analyzing: 143 targets (82 packages loaded, 37 targets configured)
+2026-11-12T21:31:18.5203401Z 
+2026-11-12T21:31:19.6497747Z Analyzing: 143 targets (108 packages loaded, 1124 targets configured)
+2026-11-12T21:31:19.6530572Z 
+2026-11-12T21:31:20.7352001Z Analyzing: 143 targets (115 packages loaded, 3781 targets configured)
+2026-11-12T21:31:20.8056678Z 
+2026-11-12T21:31:21.7794952Z Analyzing: 143 targets (119 packages loaded, 6451 targets configured)
+2026-11-12T21:31:21.8376555Z 
+2026-11-12T21:31:22.7930374Z Analyzing: 143 targets (122 packages loaded, 7266 targets configured)
+2026-11-12T21:31:22.7975901Z 
+2026-11-12T21:31:23.7839487Z Analyzing: 143 targets (133 packages loaded, 8503 targets configured)
+2026-11-12T21:31:23.7839975Z 
+2026-11-12T21:31:24.7796883Z Analyzing: 143 targets (145 packages loaded, 9094 targets configured)
+2026-11-12T21:31:24.7840242Z 
+2026-11-12T21:31:25.8322649Z Analyzing: 143 targets (148 packages loaded, 11742 targets configured)
+2026-11-12T21:31:25.8323600Z 
+2026-11-12T21:31:26.8521832Z Analyzing: 143 targets (155 packages loaded, 11928 targets configured)
+2026-11-12T21:31:26.8522653Z 
+2026-11-12T21:31:28.1020897Z Analyzing: 143 targets (162 packages loaded, 13131 targets configured)
+2026-11-12T21:31:28.1021424Z 
+2026-11-12T21:31:29.1681285Z Analyzing: 143 targets (170 packages loaded, 13724 targets configured)
+2026-11-12T21:31:29.1687206Z 
+2026-11-12T21:31:30.2244514Z Analyzing: 143 targets (177 packages loaded, 14194 targets configured)
+2026-11-12T21:31:30.2245191Z 
+2026-11-12T21:31:31.2309354Z Analyzing: 143 targets (184 packages loaded, 14469 targets configured)
+2026-11-12T21:31:31.2320067Z 
+2026-11-12T21:31:32.2903225Z Analyzing: 143 targets (192 packages loaded, 14696 targets configured)
+2026-11-12T21:31:32.2904593Z 
+2026-11-12T21:31:33.6230346Z Analyzing: 143 targets (202 packages loaded, 15049 targets configured)
+2026-11-12T21:31:33.6231025Z 
+2026-11-12T21:31:34.6901278Z Analyzing: 143 targets (217 packages loaded, 18625 targets configured)
+2026-11-12T21:31:34.6954599Z 
+2026-11-12T21:31:35.6094055Z Analyzing: 143 targets (240 packages loaded, 25964 targets configured)
+2026-11-12T21:31:35.6094795Z 
+2026-11-12T21:31:36.6155092Z Analyzing: 143 targets (263 packages loaded, 26862 targets configured)
+2026-11-12T21:31:36.6156043Z 
+2026-11-12T21:31:37.6272813Z Analyzing: 143 targets (279 packages loaded, 27512 targets configured)
+2026-11-12T21:31:37.6273492Z 
+2026-11-12T21:31:38.6446334Z Analyzing: 143 targets (301 packages loaded, 28107 targets configured)
+2026-11-12T21:31:38.6446930Z 
+2026-11-12T21:31:39.8114477Z Analyzing: 143 targets (322 packages loaded, 29030 targets configured)
+2026-11-12T21:31:39.8115043Z 
+2026-11-12T21:31:40.8161140Z Analyzing: 143 targets (338 packages loaded, 30316 targets configured)
+2026-11-12T21:31:40.8322080Z 
+2026-11-12T21:31:41.8151507Z Analyzing: 143 targets (358 packages loaded, 30886 targets configured)
+2026-11-12T21:31:41.8156560Z 
+2026-11-12T21:31:42.8195319Z Analyzing: 143 targets (382 packages loaded, 32270 targets configured)
+2026-11-12T21:31:42.8205769Z 
+2026-11-12T21:31:43.8197369Z Analyzing: 143 targets (406 packages loaded, 34054 targets configured)
+2026-11-12T21:31:43.8198178Z 
+2026-11-12T21:31:44.8220770Z Analyzing: 143 targets (436 packages loaded, 34868 targets configured)
+2026-11-12T21:31:44.8221607Z 
+2026-11-12T21:31:45.8256460Z Analyzing: 143 targets (464 packages loaded, 36029 targets configured)
+2026-11-12T21:31:45.8265552Z 
+2026-11-12T21:31:46.8327559Z Analyzing: 143 targets (500 packages loaded, 37054 targets configured)
+2026-11-12T21:31:46.8328296Z 
+2026-11-12T21:31:47.8486764Z Analyzing: 143 targets (533 packages loaded, 37930 targets configured)
+2026-11-12T21:31:47.8493982Z 
+2026-11-12T21:31:48.8448227Z Analyzing: 143 targets (565 packages loaded, 39486 targets configured)
+2026-11-12T21:31:48.8448772Z 
+2026-11-12T21:31:49.8536367Z Analyzing: 143 targets (602 packages loaded, 40417 targets configured)
+2026-11-12T21:31:49.8537491Z 
+2026-11-12T21:31:50.8499530Z Analyzing: 143 targets (634 packages loaded, 41264 targets configured)
+2026-11-12T21:31:50.8500079Z 
+2026-11-12T21:31:51.8496937Z Analyzing: 143 targets (656 packages loaded, 41984 targets configured)
+2026-11-12T21:31:51.8497769Z 
+2026-11-12T21:31:52.8526310Z Analyzing: 143 targets (672 packages loaded, 42457 targets configured)
+2026-11-12T21:31:52.8527058Z 
+2026-11-12T21:31:53.8549013Z Analyzing: 143 targets (692 packages loaded, 44958 targets configured)
+2026-11-12T21:31:53.8549575Z 
+2026-11-12T21:31:55.1391227Z Analyzing: 143 targets (711 packages loaded, 45365 targets configured)
+2026-11-12T21:31:55.1942319Z 
+2026-11-12T21:31:55.9181133Z Analyzing: 143 targets (720 packages loaded, 45734 targets configured)
+2026-11-12T21:31:55.9211665Z 
+2026-11-12T21:31:56.9450349Z Analyzing: 143 targets (744 packages loaded, 46615 targets configured)
+2026-11-12T21:31:56.9560895Z 
+2026-11-12T21:31:57.9267700Z Analyzing: 143 targets (761 packages loaded, 47638 targets configured)
+2026-11-12T21:31:57.9268693Z 
+2026-11-12T21:31:58.9254699Z Analyzing: 143 targets (789 packages loaded, 48472 targets configured)
+2026-11-12T21:31:58.9275990Z 
+2026-11-12T21:31:59.9308888Z Analyzing: 143 targets (810 packages loaded, 49905 targets configured)
+2026-11-12T21:31:59.9342357Z 
+2026-11-12T21:32:00.9249035Z Analyzing: 143 targets (832 packages loaded, 51442 targets configured)
+2026-11-12T21:32:00.9249369Z 
+2026-11-12T21:32:01.9771784Z Analyzing: 143 targets (852 packages loaded, 53132 targets configured)
+2026-11-12T21:32:01.9779522Z 
+2026-11-12T21:32:02.9893296Z Analyzing: 143 targets (878 packages loaded, 54136 targets configured)
+2026-11-12T21:32:02.9894109Z 
+2026-11-12T21:32:04.0189937Z Analyzing: 143 targets (904 packages loaded, 55476 targets configured)
+2026-11-12T21:32:04.0190592Z 
+2026-11-12T21:32:05.0223823Z Analyzing: 143 targets (920 packages loaded, 55774 targets configured)
+2026-11-12T21:32:05.0331145Z 
+2026-11-12T21:32:06.0189820Z Analyzing: 143 targets (933 packages loaded, 56117 targets configured)
+2026-11-12T21:32:06.0281301Z 
+2026-11-12T21:32:07.0362815Z Analyzing: 143 targets (946 packages loaded, 57750 targets configured)
+2026-11-12T21:32:07.0375282Z 
+2026-11-12T21:32:08.0657556Z Analyzing: 143 targets (964 packages loaded, 58149 targets configured)
+2026-11-12T21:32:08.0658844Z 
+2026-11-12T21:32:09.0676094Z Analyzing: 143 targets (982 packages loaded, 58557 targets configured)
+2026-11-12T21:32:09.0676899Z 
+2026-11-12T21:32:10.4851195Z Analyzing: 143 targets (985 packages loaded, 58576 targets configured)
+2026-11-12T21:32:10.4852052Z 
+2026-11-12T21:32:11.5737203Z Analyzing: 143 targets (993 packages loaded, 59500 targets configured)
+2026-11-12T21:32:11.5770830Z 
+2026-11-12T21:32:12.5745149Z Analyzing: 143 targets (1000 packages loaded, 60090 targets configured)
+2026-11-12T21:32:12.5746503Z 
+2026-11-12T21:32:14.0133867Z Analyzing: 143 targets (1009 packages loaded, 60260 targets configured)
+2026-11-12T21:32:14.0134414Z 
+2026-11-12T21:32:15.1418832Z Analyzing: 143 targets (1009 packages loaded, 60260 targets configured)
+2026-11-12T21:32:15.1754543Z 
+2026-11-12T21:32:17.1771872Z Analyzing: 143 targets (1009 packages loaded, 60260 targets configured)
+2026-11-12T21:32:17.1777044Z 
+2026-11-12T21:32:18.1757510Z Analyzing: 143 targets (1021 packages loaded, 60581 targets configured)
+2026-11-12T21:32:18.1758046Z 
+2026-11-12T21:32:19.1923742Z Analyzing: 143 targets (1039 packages loaded, 60953 targets configured)
+2026-11-12T21:32:19.1924545Z 
+2026-11-12T21:32:20.2032215Z Analyzing: 143 targets (1059 packages loaded, 61358 targets configured)
+2026-11-12T21:32:20.2032635Z 
+2026-11-12T21:32:21.2222778Z Analyzing: 143 targets (1085 packages loaded, 62115 targets configured)
+2026-11-12T21:32:21.2223886Z 
+2026-11-12T21:32:22.2423897Z Analyzing: 143 targets (1101 packages loaded, 62475 targets configured)
+2026-11-12T21:32:22.2424647Z 
+2026-11-12T21:32:23.2619607Z Analyzing: 143 targets (1114 packages loaded, 62631 targets configured)
+2026-11-12T21:32:23.2621720Z 
+2026-11-12T21:32:24.4048974Z Analyzing: 143 targets (1128 packages loaded, 62874 targets configured)
+2026-11-12T21:32:24.4054070Z 
+2026-11-12T21:32:26.0595297Z Analyzing: 143 targets (1129 packages loaded, 62890 targets configured)
+2026-11-12T21:32:26.0596272Z 
+2026-11-12T21:32:27.0603294Z Analyzing: 143 targets (1129 packages loaded, 62890 targets configured)
+2026-11-12T21:32:27.0603615Z 
+2026-11-12T21:32:28.0609488Z Analyzing: 143 targets (1130 packages loaded, 62930 targets configured)
+2026-11-12T21:32:28.0609991Z 
+2026-11-12T21:32:39.0692039Z Analyzing: 143 targets (1130 packages loaded, 62930 targets configured)
+2026-11-12T21:32:39.0692603Z 
+2026-11-12T21:32:40.0698556Z Analyzing: 143 targets (1131 packages loaded, 63036 targets configured)
+2026-11-12T21:32:40.0699119Z 
+2026-11-12T21:32:41.0793066Z Analyzing: 143 targets (1132 packages loaded, 63105 targets configured)
+2026-11-12T21:32:41.0794308Z 
+2026-11-12T21:32:42.0796079Z Analyzing: 143 targets (1133 packages loaded, 63119 targets configured)
+2026-11-12T21:32:42.0796427Z 
+2026-11-12T21:32:43.0813900Z Analyzing: 143 targets (1135 packages loaded, 63303 targets configured)
+2026-11-12T21:32:43.0814287Z 
+2026-11-12T21:32:45.0816674Z Analyzing: 143 targets (1137 packages loaded, 63375 targets configured)
+2026-11-12T21:32:45.0817565Z 
+2026-11-12T21:32:46.0846358Z Analyzing: 143 targets (1138 packages loaded, 63412 targets configured)
+2026-11-12T21:32:46.0846718Z 
+2026-11-12T21:32:47.0863931Z Analyzing: 143 targets (1138 packages loaded, 63412 targets configured)
+2026-11-12T21:32:47.0864870Z 
+2026-11-12T21:32:48.2119824Z Analyzing: 143 targets (1138 packages loaded, 63412 targets configured)
+2026-11-12T21:32:48.2120661Z 
+2026-11-12T21:32:50.0174186Z Analyzing: 143 targets (1139 packages loaded, 63429 targets configured)
+2026-11-12T21:32:50.0175995Z 
+2026-11-12T21:32:51.0884578Z Analyzing: 143 targets (1139 packages loaded, 63429 targets configured)
+2026-11-12T21:32:51.0884976Z 
+2026-11-12T21:32:52.1294503Z Analyzing: 143 targets (1151 packages loaded, 64730 targets configured)
+2026-11-12T21:32:52.1306338Z 
+2026-11-12T21:32:53.1155497Z Analyzing: 143 targets (1170 packages loaded, 66602 targets configured)
+2026-11-12T21:32:53.1170063Z 
+2026-11-12T21:32:54.1215229Z Analyzing: 143 targets (1189 packages loaded, 67421 targets configured)
+2026-11-12T21:32:54.1216040Z 
+2026-11-12T21:32:55.1404014Z Analyzing: 143 targets (1212 packages loaded, 68312 targets configured)
+2026-11-12T21:32:55.1499272Z 
+2026-11-12T21:32:56.2873768Z Analyzing: 143 targets (1227 packages loaded, 70274 targets configured)
+2026-11-12T21:32:56.3451511Z 
+2026-11-12T21:32:57.6506181Z Analyzing: 143 targets (1227 packages loaded, 71521 targets configured)
+2026-11-12T21:32:57.7043167Z [1 / 1] no actions running
+2026-11-12T21:32:58.7728380Z Analyzing: 143 targets (1227 packages loaded, 71807 targets configured)
+2026-11-12T21:32:58.7987517Z [91 / 137] Linking external/rules_rs++rules_rust+rules_rust/util/process_wrapper/private/bootstrap_process_wrapper.exe [for tool]; 0s remote-cache
+2026-11-12T21:32:59.8200606Z Analyzing: 143 targets (1227 packages loaded, 72383 targets configured)
+2026-11-12T21:32:59.8825240Z [114 / 137] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain_bootstrap/lib/rustlib/x86_64-pc-windows-msvc/lib/liballoc-4007f5acb6859617.rmeta [for tool] ... (2 actions, 0 running)
+2026-11-12T21:33:01.6623618Z Analyzing: 143 targets (1227 packages loaded, 72970 targets configured)
+2026-11-12T21:33:01.7305945Z [246 / 278] checking cached actions
+2026-11-12T21:33:02.6542539Z Analyzing: 143 targets (1227 packages loaded, 73369 targets configured)
+2026-11-12T21:33:02.7113444Z [252 / 289] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain_bootstrap/bin/cargo.exe [for tool] ... (4 actions, 0 running)
+2026-11-12T21:33:03.6389919Z Analyzing: 143 targets (1227 packages loaded, 73966 targets configured)
+2026-11-12T21:33:03.6635808Z [256 / 289] checking cached actions
+2026-11-12T21:33:05.0287958Z Analyzing: 143 targets (1227 packages loaded, 74461 targets configured)
+2026-11-12T21:33:05.0905938Z [274 / 408] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/lib/libcore-d378bf52e32e9198.rmeta [for tool] ... (15 actions, 0 running)
+2026-11-12T21:33:05.8963968Z Analyzing: 143 targets (1227 packages loaded, 74601 targets configured)
+2026-11-12T21:33:05.9184252Z [308 / 441] checking cached actions
+2026-11-12T21:33:06.9231065Z Analyzing: 143 targets (1227 packages loaded, 74998 targets configured)
+2026-11-12T21:33:06.9618611Z [340 / 542] checking cached actions
+2026-11-12T21:33:08.2523563Z Analyzing: 143 targets (1227 packages loaded, 75286 targets configured)
+2026-11-12T21:33:08.3808240Z [365 / 653] [Prepa] Writing repo mapping manifest for //codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-unit-tests
+2026-11-12T21:33:09.0245605Z Analyzing: 143 targets (1227 packages loaded, 75317 targets configured, 40 aspect applications)
+2026-11-12T21:33:09.0382305Z [394 / 724] checking cached actions
+2026-11-12T21:33:10.2130805Z Analyzing: 143 targets (1227 packages loaded, 75365 targets configured, 109 aspect applications)
+2026-11-12T21:33:10.2357676Z [394 / 724] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain_bootstrap/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe [for tool] ... (4 actions, 0 running)
+2026-11-12T21:33:11.3830468Z Analyzing: 143 targets (1227 packages loaded, 75428 targets configured, 248 aspect applications)
+2026-11-12T21:33:11.4789131Z [406 / 768] [Prepa] Creating symlink external/rules_rs++toolchains+default_rust_toolchains/windows_x86_64_1_96_0_rust_toolchain/lib/rustlib/x86_64-pc-windows-msvc/bin/rust-lld.exe [for tool]
+2026-11-12T21:33:12.5680107Z Analyzing: 143 targets (1227 packages loaded, 75543 targets configured, 271 aspect applications)
+2026-11-12T21:33:12.6344100Z [407 / 768] checking cached actions
+2026-11-12T21:33:13.5623596Z Analyzing: 143 targets (1227 packages loaded, 75622 targets configured, 271 aspect applications)
+2026-11-12T21:33:13.6192393Z [447 / 1,334] checking cached actions
+2026-11-12T21:33:14.7674430Z Analyzing: 143 targets (1227 packages loaded, 75651 targets configured, 271 aspect applications)
+2026-11-12T21:33:14.8867608Z [666 / 2,067] [Prepa] Writing script external/rules_rs++crate+crates__icu_locale_fallback_data-2.3.0/_bs- ... (10 actions, 0 running)
+2026-11-12T21:33:15.2712699Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-sha3.c [for tool]:
+2026-11-12T21:33:15.3496293Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.3916945Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-base.c:
+2026-11-12T21:33:15.4453079Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.4685633Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-timer.c:
+2026-11-12T21:33:15.5292540Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.5294547Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-sha3.c:
+2026-11-12T21:33:15.5854924Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.6623926Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-noise.c:
+2026-11-12T21:33:15.6952965Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.7372260Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-timer.c [for tool]:
+2026-11-12T21:33:15.7373770Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.7375882Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-noise.c [for tool]:
+2026-11-12T21:33:15.7376647Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.8703737Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-gcd.c:
+2026-11-12T21:33:15.8718085Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.8720137Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-health.c [for tool]:
+2026-11-12T21:33:15.8725668Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.8726486Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-gcd.c [for tool]:
+2026-11-12T21:33:15.9531406Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.9537136Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-health.c:
+2026-11-12T21:33:15.9538432Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.9540061Z INFO: From Compiling third_party/jitterentropy/jitterentropy-library/src/jitterentropy-base.c [for tool]:
+2026-11-12T21:33:15.9542227Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:15.9544455Z Analyzing: 143 targets (1227 packages loaded, 75687 targets configured, 271 aspect applications)
+2026-11-12T21:33:15.9546246Z [810 / 2,575] checking cached actions
+2026-11-12T21:33:16.6742756Z Analyzing: 143 targets (1227 packages loaded, 75746 targets configured, 373 aspect applications)
+2026-11-12T21:33:16.7600835Z [855 / 2,757] checking cached actions
+2026-11-12T21:33:17.4782263Z INFO: From Compiling crypto/asn1/a_bitstr.c [for tool]:
+2026-11-12T21:33:17.5007361Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:17.5042512Z INFO: From Compiling crypto/asn1/a_bool.c [for tool]:
+2026-11-12T21:33:17.5261719Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:17.5866389Z INFO: From Compiling crypto/asn1/a_d2i_fp.c [for tool]:
+2026-11-12T21:33:17.6047663Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:17.6140009Z Analyzing: 143 targets (1227 packages loaded, 75748 targets configured, 542 aspect applications)
+2026-11-12T21:33:17.6175741Z [858 / 2,757] Compiling crypto/asn1/a_dup.c [for tool]; 0s remote-cache
+2026-11-12T21:33:17.6209125Z INFO: From Compiling crypto/asn1/a_dup.c [for tool]:
+2026-11-12T21:33:17.6213400Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:18.0919623Z INFO: From Compiling crypto/asn1/a_gentm.c [for tool]:
+2026-11-12T21:33:18.3508274Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:18.4574336Z INFO: From Compiling crypto/asn1/a_i2d_fp.c [for tool]:
+2026-11-12T21:33:18.5671282Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:18.7944658Z INFO: From Compiling crypto/asn1/a_int.c [for tool]:
+2026-11-12T21:33:18.9197264Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:19.0601764Z INFO: From Compiling crypto/x509/a_sign.c:
+2026-11-12T21:33:19.1864283Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.4818037Z INFO: From Compiling crypto/asn1/a_mbstr.c [for tool]:
+2026-11-12T21:33:20.4832510Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.4843418Z INFO: From Compiling crypto/x509/a_digest.c:
+2026-11-12T21:33:20.4845053Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.4845783Z INFO: From Compiling crypto/asn1/a_object.c [for tool]:
+2026-11-12T21:33:20.4846499Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.4849162Z INFO: From Compiling crypto/ui/ui.c:
+2026-11-12T21:33:20.4850271Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.4851089Z INFO: From Compiling crypto/ube/vm_ube_detect.c:
+2026-11-12T21:33:20.9621563Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9622352Z INFO: From Compiling crypto/ube/ube.c:
+2026-11-12T21:33:20.9623041Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9623841Z INFO: From Compiling crypto/asn1/a_octet.c [for tool]:
+2026-11-12T21:33:20.9624884Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9625624Z INFO: From Compiling crypto/ube/fork_ube_detect.c:
+2026-11-12T21:33:20.9626261Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9626940Z INFO: From Compiling crypto/asn1/a_strex.c [for tool]:
+2026-11-12T21:33:20.9627782Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9628560Z INFO: From Compiling crypto/trust_token/voprf.c:
+2026-11-12T21:33:20.9629312Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9630070Z INFO: From Compiling crypto/asn1/a_strnid.c [for tool]:
+2026-11-12T21:33:20.9630768Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9631555Z INFO: From Compiling generated-src/err_data.c [for tool]:
+2026-11-12T21:33:20.9632256Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9633036Z INFO: From Compiling crypto/trust_token/trust_token.c:
+2026-11-12T21:33:20.9633771Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9635778Z INFO: From Compiling crypto/asn1/a_time.c [for tool]:
+2026-11-12T21:33:20.9636651Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9638062Z INFO: From Compiling crypto/x509/x_x509a.c [for tool]:
+2026-11-12T21:33:20.9638902Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9639751Z INFO: From Compiling crypto/trust_token/pmbtoken.c:
+2026-11-12T21:33:20.9640551Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9641374Z INFO: From Compiling crypto/asn1/a_type.c [for tool]:
+2026-11-12T21:33:20.9642177Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9643055Z INFO: From Compiling crypto/x509/x_x509.c [for tool]:
+2026-11-12T21:33:20.9644285Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9645101Z INFO: From Compiling crypto/x509/x_val.c [for tool]:
+2026-11-12T21:33:20.9645888Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9646703Z INFO: From Compiling crypto/x509/x_spki.c [for tool]:
+2026-11-12T21:33:20.9647528Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9648321Z INFO: From Compiling crypto/thread_win.c:
+2026-11-12T21:33:20.9649128Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9649943Z INFO: From Compiling crypto/x509/x_sig.c [for tool]:
+2026-11-12T21:33:20.9650743Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9651553Z INFO: From Compiling crypto/asn1/a_utctm.c [for tool]:
+2026-11-12T21:33:20.9652376Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9653235Z INFO: From Compiling crypto/x509/x_pubkey.c [for tool]:
+2026-11-12T21:33:20.9654165Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9654969Z INFO: From Compiling crypto/thread_pthread.c:
+2026-11-12T21:33:20.9655737Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9656554Z INFO: From Compiling crypto/x509/x_req.c [for tool]:
+2026-11-12T21:33:20.9657339Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9658189Z INFO: From Compiling crypto/x509/x_name.c [for tool]:
+2026-11-12T21:33:20.9658993Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9659798Z INFO: From Compiling crypto/asn1/a_utf8.c [for tool]:
+2026-11-12T21:33:20.9660591Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9661376Z INFO: From Compiling generated-src/err_data.c:
+2026-11-12T21:33:20.9662150Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9663002Z INFO: From Compiling crypto/x509/x_exten.c [for tool]:
+2026-11-12T21:33:20.9663907Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9664672Z INFO: From Compiling crypto/thread_none.c:
+2026-11-12T21:33:20.9665420Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9666488Z Analyzing: 143 targets (1227 packages loaded, 75749 targets configured, 542 aspect applications)
+2026-11-12T21:33:20.9667712Z [916 / 2,757] Compiling crypto/x509/x_x509a.c; 0s remote-cache ... (9 actions, 0 running)
+2026-11-12T21:33:20.9668642Z INFO: From Compiling crypto/x509/x_attrib.c [for tool]:
+2026-11-12T21:33:20.9669441Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9670249Z INFO: From Compiling crypto/asn1/asn1_lib.c [for tool]:
+2026-11-12T21:33:20.9671064Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9671827Z INFO: From Compiling crypto/x509/x_x509.c:
+2026-11-12T21:33:20.9673009Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9673984Z INFO: From Compiling crypto/x509/x_all.c [for tool]:
+2026-11-12T21:33:20.9675244Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9676461Z INFO: From Compiling crypto/thread.c:
+2026-11-12T21:33:20.9677312Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9678107Z INFO: From Compiling crypto/x509/x_crl.c [for tool]:
+2026-11-12T21:33:20.9678880Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9679695Z INFO: From Compiling crypto/asn1/asn1_par.c [for tool]:
+2026-11-12T21:33:20.9680533Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9681284Z INFO: From Compiling crypto/x509/x_val.c:
+2026-11-12T21:33:20.9681997Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9682758Z INFO: From Compiling crypto/stack/stack.c:
+2026-11-12T21:33:20.9683480Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9684416Z INFO: From Compiling crypto/x509/x509spki.c [for tool]:
+2026-11-12T21:33:20.9685260Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9686023Z INFO: From Compiling crypto/x509/x_spki.c:
+2026-11-12T21:33:20.9686755Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9687547Z INFO: From Compiling crypto/x509/x509rset.c [for tool]:
+2026-11-12T21:33:20.9688344Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9689252Z INFO: From Compiling crypto/spake25519/spake25519.c:
+2026-11-12T21:33:20.9690044Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9690870Z INFO: From Compiling crypto/asn1/asn_pack.c [for tool]:
+2026-11-12T21:33:20.9691672Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9692490Z INFO: From Compiling crypto/x509/x509name.c [for tool]:
+2026-11-12T21:33:20.9693278Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9694602Z INFO: From Compiling crypto/x509/x_req.c:
+2026-11-12T21:33:20.9695354Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9696121Z INFO: From Compiling crypto/x509/x_x509a.c:
+2026-11-12T21:33:20.9696872Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9697676Z INFO: From Compiling crypto/x509/x509cset.c [for tool]:
+2026-11-12T21:33:20.9698468Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9699309Z INFO: From Compiling crypto/x509/x509_vpm.c [for tool]:
+2026-11-12T21:33:20.9700096Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9700886Z INFO: From Compiling crypto/asn1/f_int.c [for tool]:
+2026-11-12T21:33:20.9701655Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9702411Z INFO: From Compiling crypto/x509/x_pubkey.c:
+2026-11-12T21:33:20.9703156Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9704062Z INFO: From Compiling crypto/x509/x_name.c:
+2026-11-12T21:33:20.9705502Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9706413Z INFO: From Compiling crypto/x509/x509_vfy.c [for tool]:
+2026-11-12T21:33:20.9707123Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:20.9708287Z INFO: From Compiling crypto/asn1/f_string.c [for tool]:
+2026-11-12T21:33:20.9709119Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.0963869Z INFO: From Compiling crypto/x509/x509_v3.c [for tool]:
+2026-11-12T21:33:21.0967737Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.0978250Z INFO: From Compiling crypto/x509/x_exten.c:
+2026-11-12T21:33:21.0987715Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.0989832Z INFO: From Compiling crypto/x509/x509_txt.c [for tool]:
+2026-11-12T21:33:21.0991436Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.0992667Z INFO: From Compiling crypto/x509/x_crl.c:
+2026-11-12T21:33:21.1034154Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.3797732Z INFO: From Compiling crypto/x509/x_sig.c:
+2026-11-12T21:33:21.3799368Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.3800151Z INFO: From Compiling crypto/x509/x_algor.c [for tool]:
+2026-11-12T21:33:21.3800907Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.3801541Z INFO: From Compiling crypto/x509/x_attrib.c:
+2026-11-12T21:33:21.3802228Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.3802929Z INFO: From Compiling crypto/siphash/siphash.c:
+2026-11-12T21:33:21.3803586Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.3804938Z INFO: From Compiling crypto/x509/x509_trs.c [for tool]:
+2026-11-12T21:33:21.3805758Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.3806479Z INFO: From Compiling crypto/x509/x_algor.c:
+2026-11-12T21:33:21.3808814Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4013903Z INFO: From Compiling crypto/x509/x509_set.c [for tool]:
+2026-11-12T21:33:21.4601422Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4603759Z INFO: From Compiling crypto/x509/x509spki.c:
+2026-11-12T21:33:21.4609661Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4610986Z INFO: From Compiling crypto/x509/x_all.c:
+2026-11-12T21:33:21.4613522Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4614969Z INFO: From Compiling crypto/x509/x509_req.c [for tool]:
+2026-11-12T21:33:21.4619111Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4620245Z INFO: From Compiling crypto/x509/x509rset.c:
+2026-11-12T21:33:21.4620987Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4621745Z INFO: From Compiling crypto/rsa_extra/rsassa_pss_asn1.c:
+2026-11-12T21:33:21.4622517Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4623148Z INFO: From Compiling crypto/x509/x509_vpm.c:
+2026-11-12T21:33:21.4623840Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4624665Z INFO: From Compiling crypto/x509/x509_ext.c [for tool]:
+2026-11-12T21:33:21.4625435Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4626249Z INFO: From Compiling crypto/x509/x509_lu.c [for tool]:
+2026-11-12T21:33:21.4627018Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4660685Z INFO: From Compiling crypto/x509/x509_obj.c [for tool]:
+2026-11-12T21:33:21.4661496Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4662242Z INFO: From Compiling crypto/rsa_extra/rsa_print.c:
+2026-11-12T21:33:21.4662909Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4663570Z INFO: From Compiling crypto/x509/x509_v3.c:
+2026-11-12T21:33:21.4664198Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4664962Z INFO: From Compiling crypto/x509/x509_def.c [for tool]:
+2026-11-12T21:33:21.4665632Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4666285Z INFO: From Compiling crypto/rsa_extra/rsa_crypt.c:
+2026-11-12T21:33:21.4667014Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4667667Z INFO: From Compiling crypto/x509/x509_txt.c:
+2026-11-12T21:33:21.4669683Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4675801Z Analyzing: 143 targets (1227 packages loaded, 75749 targets configured, 542 aspect applications)
+2026-11-12T21:33:21.4684884Z [976 / 2,757] Compiling ssl/s3_both.cc [for tool]; 0s remote-cache ... (18 actions, 0 running)
+2026-11-12T21:33:21.4688911Z INFO: From Compiling crypto/x509/x509_att.c [for tool]:
+2026-11-12T21:33:21.4689719Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4692496Z INFO: From Compiling crypto/rsa_extra/rsa_asn1.c:
+2026-11-12T21:33:21.4723258Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4724553Z INFO: From Compiling crypto/x509/x509_set.c:
+2026-11-12T21:33:21.4726342Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4727945Z INFO: From Compiling crypto/x509/x509_trs.c:
+2026-11-12T21:33:21.4728692Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4732622Z INFO: From Compiling crypto/x509/x509.c [for tool]:
+2026-11-12T21:33:21.4735398Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4736728Z INFO: From Compiling crypto/refcount_win.c:
+2026-11-12T21:33:21.4737473Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4739158Z INFO: From Compiling crypto/x509/x509_obj.c:
+2026-11-12T21:33:21.4740506Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4741809Z INFO: From Compiling crypto/x509/x509_req.c:
+2026-11-12T21:33:21.4742443Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4743169Z INFO: From Compiling crypto/asn1/posix_time.c [for tool]:
+2026-11-12T21:33:21.4743879Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4744580Z INFO: From Compiling crypto/x509/v3_utl.c [for tool]:
+2026-11-12T21:33:21.4745496Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4746140Z INFO: From Compiling crypto/x509/x509_lu.c:
+2026-11-12T21:33:21.4747904Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4748633Z INFO: From Compiling crypto/refcount_lock.c:
+2026-11-12T21:33:21.4749317Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4750063Z INFO: From Compiling crypto/x509/v3_skey.c [for tool]:
+2026-11-12T21:33:21.4750851Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4751535Z INFO: From Compiling ssl/ssl_decrepit.c:
+2026-11-12T21:33:21.4752163Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4752845Z INFO: From Compiling crypto/x509/x509_def.c:
+2026-11-12T21:33:21.4753515Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4754292Z INFO: From Compiling crypto/x509/v3_purp.c [for tool]:
+2026-11-12T21:33:21.4755343Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4756050Z INFO: From Compiling crypto/refcount_c11.c:
+2026-11-12T21:33:21.4756790Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4757537Z INFO: From Compiling crypto/x509/x509_d2.c:
+2026-11-12T21:33:21.4758307Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4759091Z INFO: From Compiling crypto/rc4/rc4.c:
+2026-11-12T21:33:21.4759821Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4760696Z INFO: From Compiling crypto/x509/v3_prn.c [for tool]:
+2026-11-12T21:33:21.4761509Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4762314Z INFO: From Compiling crypto/x509/x509_cmp.c:
+2026-11-12T21:33:21.4763086Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4764291Z INFO: From Compiling crypto/x509/v3_pmaps.c [for tool]:
+2026-11-12T21:33:21.4765525Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4766321Z INFO: From Compiling crypto/x509/x509_att.c:
+2026-11-12T21:33:21.4767087Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4767898Z INFO: From Compiling crypto/rand_extra/windows.c:
+2026-11-12T21:33:21.4768692Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4769454Z INFO: From Compiling ssl/ssl_c_test.c:
+2026-11-12T21:33:21.4770211Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4771048Z INFO: From Compiling crypto/x509/v3_pcons.c [for tool]:
+2026-11-12T21:33:21.4771872Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4773176Z INFO: From Compiling crypto/x509/x509.c:
+2026-11-12T21:33:21.4773840Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4775358Z INFO: From Compiling crypto/rand_extra/vm_ube_fallback.c:
+2026-11-12T21:33:21.4776218Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4776976Z INFO: From Compiling crypto/x509/v3_utl.c:
+2026-11-12T21:33:21.4777677Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:21.4778472Z INFO: From Compiling crypto/rand_extra/urandom.c:
+2026-11-12T21:33:21.4779199Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:22.1193206Z INFO: From Compiling crypto/x509/v3_skey.c:
+2026-11-12T21:33:22.7376249Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:23.0221168Z INFO: From Compiling crypto/x509/x509_vfy.c:
+2026-11-12T21:33:23.0238817Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:23.0283867Z INFO: From Compiling crypto/x509/x509_ext.c:
+2026-11-12T21:33:23.0362998Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:23.0398792Z INFO: From Compiling crypto/x509/x509cset.c:
+2026-11-12T21:33:23.0424729Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:23.0526042Z INFO: From Compiling crypto/x509/x509name.c:
+2026-11-12T21:33:23.0538204Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:23.0611600Z INFO: From Compiling crypto/rand_extra/rand_extra.c:
+2026-11-12T21:33:23.0638575Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:23.0639602Z INFO: From Compiling crypto/asn1/tasn_dec.c [for tool]:
+2026-11-12T21:33:23.1181653Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:23.1194467Z INFO: From Compiling crypto/x509/x509_d2.c [for tool]:
+2026-11-12T21:33:23.3211392Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:24.3029954Z Analyzing: 143 targets (1227 packages loaded, 75749 targets configured, 542 aspect applications)
+2026-11-12T21:33:24.4301811Z [1,045 / 2,757] Compiling crypto/x509/x509_d2.c [for tool]; 1s remote-cache ... (18 actions, 0 running)
+2026-11-12T21:33:24.4952538Z INFO: From Compiling crypto/x509/v3_purp.c:
+2026-11-12T21:33:24.5198568Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:24.5708374Z INFO: From Compiling crypto/x509/x509_cmp.c [for tool]:
+2026-11-12T21:33:24.6052729Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:24.6508251Z INFO: From Compiling crypto/x509/v3_ocsp.c [for tool]:
+2026-11-12T21:33:24.7037509Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:24.7216308Z INFO: From Compiling crypto/x509/v3_prn.c:
+2026-11-12T21:33:24.7981697Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:24.8541139Z INFO: From Compiling crypto/asn1/tasn_enc.c [for tool]:
+2026-11-12T21:33:24.8542596Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:24.9081616Z INFO: From Compiling crypto/x509/v3_pcons.c:
+2026-11-12T21:33:24.9410726Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:24.9915102Z INFO: From Compiling crypto/x509/v3_pmaps.c:
+2026-11-12T21:33:25.0022630Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.0455955Z INFO: From Compiling crypto/rand_extra/getentropy.c:
+2026-11-12T21:33:25.0481142Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.0580590Z INFO: From Compiling crypto/x509/v3_ncons.c [for tool]:
+2026-11-12T21:33:25.0844369Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.0920305Z INFO: From Compiling crypto/x509/v3_ncons.c:
+2026-11-12T21:33:25.0974714Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.1351335Z INFO: From Compiling crypto/x509/v3_ocsp.c:
+2026-11-12T21:33:25.1362857Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.1646352Z INFO: From Compiling crypto/x509/v3_lib.c [for tool]:
+2026-11-12T21:33:25.1756947Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.1794006Z INFO: From Compiling crypto/x509/v3_int.c [for tool]:
+2026-11-12T21:33:25.2103354Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.2144525Z INFO: From Compiling crypto/x509/v3_lib.c:
+2026-11-12T21:33:25.2275905Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.2602240Z INFO: From Compiling crypto/x509/v3_info.c [for tool]:
+2026-11-12T21:33:25.2665046Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.2972028Z INFO: From Compiling crypto/asn1/tasn_fre.c [for tool]:
+2026-11-12T21:33:25.3067383Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.3106613Z INFO: From Compiling crypto/rand_extra/deterministic.c:
+2026-11-12T21:33:25.3577328Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.3618305Z INFO: From Compiling crypto/x509/v3_int.c:
+2026-11-12T21:33:25.4034736Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.4107494Z INFO: From Compiling ssl/ssl_decrepit.c [for tool]:
+2026-11-12T21:33:25.4309272Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.4551334Z INFO: From Compiling crypto/x509/v3_ia5.c:
+2026-11-12T21:33:25.4692452Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.5008025Z INFO: From Compiling crypto/x509/v3_info.c:
+2026-11-12T21:33:25.5009033Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.5081460Z INFO: From Compiling crypto/x509/v3_ia5.c [for tool]:
+2026-11-12T21:33:25.5147493Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.5529642Z INFO: From Compiling crypto/x509/v3_extku.c:
+2026-11-12T21:33:25.5713976Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.5751124Z INFO: From Compiling crypto/x509/v3_genn.c:
+2026-11-12T21:33:25.6140586Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.6197445Z INFO: From Compiling crypto/rand_extra/ccrandomgeneratebytes.c:
+2026-11-12T21:33:25.6561161Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.6589919Z INFO: From Compiling crypto/x509/v3_enum.c:
+2026-11-12T21:33:25.6590704Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.6738087Z INFO: From Compiling ssl/ssl_c_test.c [for tool]:
+2026-11-12T21:33:25.7041046Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.7064682Z INFO: From Compiling crypto/x509/v3_genn.c [for tool]:
+2026-11-12T21:33:25.7328613Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.7499044Z INFO: From Compiling crypto/x509/v3_crld.c:
+2026-11-12T21:33:25.7631911Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.7747879Z INFO: From Compiling crypto/x509/v3_enum.c [for tool]:
+2026-11-12T21:33:25.7966147Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.8097945Z INFO: From Compiling crypto/x509/v3_cpols.c:
+2026-11-12T21:33:25.8239422Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.8433253Z INFO: From Compiling crypto/asn1/tasn_new.c [for tool]:
+2026-11-12T21:33:25.8572549Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.8641231Z INFO: From Compiling crypto/x509/v3_extku.c [for tool]:
+2026-11-12T21:33:25.8735145Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.8738678Z INFO: From Compiling crypto/x509/v3_conf.c:
+2026-11-12T21:33:25.8759362Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.8788741Z INFO: From Compiling crypto/x509/v3_crld.c [for tool]:
+2026-11-12T21:33:25.8807051Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9010281Z INFO: From Compiling crypto/x509/v3_bitst.c:
+2026-11-12T21:33:25.9340031Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9393031Z INFO: From Compiling crypto/x509/v3_bcons.c:
+2026-11-12T21:33:25.9405392Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9417759Z INFO: From Compiling crypto/x509/v3_alt.c:
+2026-11-12T21:33:25.9435304Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9444254Z INFO: From Compiling crypto/x509/v3_cpols.c [for tool]:
+2026-11-12T21:33:25.9445443Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9448590Z INFO: From Compiling crypto/pool/pool.c:
+2026-11-12T21:33:25.9449287Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9450078Z INFO: From Compiling crypto/x509/v3_conf.c [for tool]:
+2026-11-12T21:33:25.9450849Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9451523Z INFO: From Compiling crypto/x509/v3_akeya.c:
+2026-11-12T21:33:25.9452189Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9452962Z INFO: From Compiling crypto/x509/v3_bitst.c [for tool]:
+2026-11-12T21:33:25.9463121Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9463990Z INFO: From Compiling crypto/asn1/tasn_typ.c [for tool]:
+2026-11-12T21:33:25.9464819Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9465639Z INFO: From Compiling crypto/x509/v3_akey.c:
+2026-11-12T21:33:25.9466398Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9467432Z INFO: From Compiling crypto/x509/v3_bcons.c [for tool]:
+2026-11-12T21:33:25.9468207Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9468961Z INFO: From Compiling crypto/x509/t_x509a.c:
+2026-11-12T21:33:25.9469559Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9470245Z INFO: From Compiling crypto/x509/t_x509.c:
+2026-11-12T21:33:25.9470913Z cl : Command line warning D9025 : overriding '/std:c17' with '/std:c11'
+2026-11-12T21:33:25.9471714Z

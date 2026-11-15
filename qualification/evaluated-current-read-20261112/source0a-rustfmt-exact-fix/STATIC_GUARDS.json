@@ -1,0 +1,1134 @@
+{
+  "scope": "Local exact marker/order/brace-depth inspection of the two affected protected rows; not execution of the repository checker, source gates, formatter, Rust or CI.",
+  "method": "JSON string decoding of inline required_function_order entries; exact fn marker schema, sequence>=2, ordered body match, brace-depth1 top_level using masked strings/comments.",
+  "rules": 18,
+  "passed": 18,
+  "boundary_count": 629,
+  "protected_rows": 429,
+  "all_other_callers_bytes_unchanged_after_inverse": true,
+  "sole_allowlist_hash_replacement_only": true,
+  "results": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn from_original_receipt_owner(",
+      "sequence_count": 21,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "evaluator: OriginalCellEvaluationReceiptOwnerV1<FileAnchorWitnessStore>",
+          "offset": 40
+        },
+        {
+          "marker": "panel: Panel",
+          "offset": 121
+        },
+        {
+          "marker": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&evaluator)",
+          "offset": 217
+        },
+        {
+          "marker": "panel.primary.qualification.config",
+          "offset": 313
+        },
+        {
+          "marker": "panel.fenced",
+          "offset": 360
+        },
+        {
+          "marker": "receipt.training != primary.training",
+          "offset": 388
+        },
+        {
+          "marker": "receipt.scope != primary.scope",
+          "offset": 440
+        },
+        {
+          "marker": "receipt.plan != primary.plan",
+          "offset": 486
+        },
+        {
+          "marker": "receipt.signing.plan != *primary.plan.product_plan()",
+          "offset": 530
+        },
+        {
+          "marker": "receipt.signing.execution_namespace != primary.execution_namespace",
+          "offset": 598
+        },
+        {
+          "marker": "receipt.signing.signer.principal != primary.context.evaluator",
+          "offset": 680
+        },
+        {
+          "marker": "receipt.signing.verifier.trust_digest() != primary.verifier.trust_digest()",
+          "offset": 757
+        },
+        {
+          "marker": "receipt.signing.verifier.scope_digest() != primary.verifier.scope_digest()",
+          "offset": 847
+        },
+        {
+          "marker": "receipt.signing.verifier.objective_digest() != primary.verifier.objective_digest()",
+          "offset": 937
+        },
+        {
+          "marker": "Context::from_checkpoint(",
+          "offset": 1199
+        },
+        {
+          "marker": "primary.training_evidence.clone()",
+          "offset": 1350
+        },
+        {
+          "marker": "context.binding(now()?)?",
+          "offset": 1457
+        },
+        {
+          "marker": "Handle::try_current()",
+          "offset": 1505
+        },
+        {
+          "marker": "training_source: OriginalPanelTrainingSourceV1::Individual",
+          "offset": 1685
+        },
+        {
+          "marker": "execution_requested: AtomicBool::new(readback_only)",
+          "offset": 1944
+        },
+        {
+          "marker": "Semaphore::new(4)",
+          "offset": 2052
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn completion(",
+      "sequence_count": 8,
+      "top_level_count": 3,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "if self.fenced",
+          "offset": 133
+        },
+        {
+          "marker": "return Err(Error::CommitUncertain)",
+          "offset": 162
+        },
+        {
+          "marker": "self.read_original_completion(context, action).await",
+          "offset": 229
+        },
+        {
+          "marker": "if result.is_err()",
+          "offset": 291
+        },
+        {
+          "marker": "LearningOriginalOwnerErrorV1::Pending",
+          "offset": 474
+        },
+        {
+          "marker": "ProductEvaluationExecutionStoreErrorV1::Missing",
+          "offset": 649
+        },
+        {
+          "marker": "self.fenced = true",
+          "offset": 755
+        },
+        {
+          "marker": "result",
+          "offset": 793
+        }
+      ],
+      "top_levels": [
+        {
+          "marker": "if self.fenced",
+          "depth": 1
+        },
+        {
+          "marker": "let result =",
+          "depth": 1
+        },
+        {
+          "marker": "if result.is_err()",
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn read_original_completion(",
+      "sequence_count": 43,
+      "top_level_count": 11,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "self.current_time()?",
+          "offset": 164
+        },
+        {
+          "marker": "context.authenticate(started_at)?",
+          "offset": 194
+        },
+        {
+          "marker": "let call = match action",
+          "offset": 237
+        },
+        {
+          "marker": "wire::Action::Execute => OriginalPanelTrainingSourceV1::call(",
+          "offset": 275
+        },
+        {
+          "marker": "&self.training_source,\n                self.panel.retention.len() + 1,",
+          "offset": 353
+        },
+        {
+          "marker": "wire::Action::Readback => OriginalPanelTrainingSourceV1::readback_call(",
+          "offset": 452
+        },
+        {
+          "marker": "&self.training_source,\n                &self.panel.primary,\n                &self.panel.retention,",
+          "offset": 540
+        },
+        {
+          "marker": "OriginalPanelTrainingCallV1::begin(&call)?",
+          "offset": 693
+        },
+        {
+          "marker": "let before = self.read_panel_with_training(&mut training).await?",
+          "offset": 745
+        },
+        {
+          "marker": "before.training() != &context.training",
+          "offset": 822
+        },
+        {
+          "marker": "before.training_evidence() != &context.training_evidence",
+          "offset": 876
+        },
+        {
+          "marker": "before.registration() != &context.registration",
+          "offset": 948
+        },
+        {
+          "marker": "if action == wire::Action::Execute",
+          "offset": 1147
+        },
+        {
+          "marker": "self.current_time()?",
+          "offset": 1210
+        },
+        {
+          "marker": "require_clock(started_at, current)?",
+          "offset": 1244
+        },
+        {
+          "marker": "current >= context.training.request.envelope.expiry_unix_seconds",
+          "offset": 1296
+        },
+        {
+          "marker": "let primary = &mut self.panel.primary",
+          "offset": 1478
+        },
+        {
+          "marker": "OriginalCellEvaluationReceiptSourcesV1",
+          "offset": 1599
+        },
+        {
+          "marker": "qualification: before.primary().qualification()",
+          "offset": 2091
+        },
+        {
+          "marker": "context: &config.context",
+          "offset": 2156
+        },
+        {
+          "marker": "evidence: &config.product_evidence",
+          "offset": 2198
+        },
+        {
+          "marker": "trainer: primary.trainer.as_ref()",
+          "offset": 2314
+        },
+        {
+          "marker": "wire::Action::Execute =>",
+          "offset": 2407
+        },
+        {
+          "marker": "OriginalCellEvaluationReceiptOwnerV1::attest_original_completion(",
+          "offset": 2454
+        },
+        {
+          "marker": "wire::Action::Readback =>",
+          "offset": 2682
+        },
+        {
+          "marker": "OriginalCellEvaluationReceiptOwnerV1::readback(",
+          "offset": 2730
+        },
+        {
+          "marker": "let after = self.read_panel_with_training(&mut training).await?",
+          "offset": 2890
+        },
+        {
+          "marker": "if before != after",
+          "offset": 2963
+        },
+        {
+          "marker": "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+          "offset": 3131
+        },
+        {
+          "marker": "&completed.0,\n            &completed.1",
+          "offset": 3247
+        },
+        {
+          "marker": "let current = self.current_time()?",
+          "offset": 3307
+        },
+        {
+          "marker": "require_clock(started_at, current)?",
+          "offset": 3351
+        },
+        {
+          "marker": "current >= context.training.request.envelope.expiry_unix_seconds",
+          "offset": 3446
+        },
+        {
+          "marker": "return Err(Error::CommitUncertain)",
+          "offset": 3618
+        },
+        {
+          "marker": "OriginalPanelTrainingReadV1::finish(training, &call, current)?",
+          "offset": 3672
+        },
+        {
+          "marker": "self.authenticate_panel(&after, current)?",
+          "offset": 3744
+        },
+        {
+          "marker": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile(&self.evaluator)",
+          "offset": 3825
+        },
+        {
+          "marker": "config.signing.verifier.require_signer_binding(",
+          "offset": 3911
+        },
+        {
+          "marker": "LearningEvidenceRoleV1::Evaluator",
+          "offset": 3971
+        },
+        {
+          "marker": "contract::authenticate_receipt(context, completed.0, completed.1, current)?",
+          "offset": 4098
+        },
+        {
+          "marker": "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)",
+          "offset": 4186
+        },
+        {
+          "marker": "self.retained = Some(original.clone())",
+          "offset": 4370
+        },
+        {
+          "marker": "Ok(original)",
+          "offset": 4502
+        }
+      ],
+      "top_levels": [
+        {
+          "marker": "let started_at =",
+          "depth": 1
+        },
+        {
+          "marker": "context.authenticate(started_at)?",
+          "depth": 1
+        },
+        {
+          "marker": "let call = match action",
+          "depth": 1
+        },
+        {
+          "marker": "let before =",
+          "depth": 1
+        },
+        {
+          "marker": "let completed =",
+          "depth": 1
+        },
+        {
+          "marker": "let after =",
+          "depth": 1
+        },
+        {
+          "marker": "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+          "depth": 1
+        },
+        {
+          "marker": "self.authenticate_panel(&after, current)?",
+          "depth": 1
+        },
+        {
+          "marker": "let original = contract::authenticate_receipt(",
+          "depth": 1
+        },
+        {
+          "marker": "self.retained = Some(original.clone())",
+          "depth": 1
+        },
+        {
+          "marker": "Ok(original)",
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn read_panel(",
+      "sequence_count": 2,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "&mut self",
+          "offset": 14
+        },
+        {
+          "marker": "OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel)\n            .await\n            .map_err(Error::from)",
+          "offset": 340
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn authenticate_panel(",
+      "sequence_count": 6,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "self.panel.retained.as_ref() != Some(observed)",
+          "offset": 162
+        },
+        {
+          "marker": "observed.retention().len() != self.panel.retention.len()",
+          "offset": 224
+        },
+        {
+          "marker": "self.panel\n            .primary\n            .authenticate(observed.primary(), current)?",
+          "offset": 357
+        },
+        {
+          "marker": "self.panel.retention.iter_mut().zip(observed.retention())",
+          "offset": 477
+        },
+        {
+          "marker": "owner.authenticate(member, current)?",
+          "offset": 549
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 605
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn current_time(",
+      "sequence_count": 2,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "&self",
+          "offset": 16
+        },
+        {
+          "marker": "now()",
+          "offset": 170
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn now(",
+      "sequence_count": 2,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "fn now(",
+          "offset": 0
+        },
+        {
+          "marker": "super::original::now().map_err(Error::from)",
+          "offset": 37
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn require_clock(",
+      "sequence_count": 3,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "current < started_at",
+          "offset": 78
+        },
+        {
+          "marker": "return Err(Error::Binding(",
+          "offset": 109
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 192
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "function": "fn read_panel_with_training(",
+      "sequence_count": 5,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+      "markers": [
+        {
+          "marker": "matches!(training, OriginalPanelTrainingReadV1::Individual)",
+          "offset": 179
+        },
+        {
+          "marker": "return self.read_panel().await",
+          "offset": 253
+        },
+        {
+          "marker": "OriginalCellEvaluationPanelOwnerV1::read_current_with_training(",
+          "offset": 565
+        },
+        {
+          "marker": "&mut self.panel,\n            super::original::now,\n            training,",
+          "offset": 641
+        },
+        {
+          "marker": ".await",
+          "offset": 732
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn from_original_training_readback(",
+      "sequence_count": 3,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "Self::Bound(Arc::new(OriginalPanelTrainingPinV1",
+          "offset": 179
+        },
+        {
+          "marker": "trainer,",
+          "offset": 241
+        },
+        {
+          "marker": "config: config.clone()",
+          "offset": 262
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn readback_call(",
+      "sequence_count": 19,
+      "top_level_count": 4,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "primary: &Member",
+          "offset": 41
+        },
+        {
+          "marker": "retention: &[Member]",
+          "offset": 67
+        },
+        {
+          "marker": "match self",
+          "offset": 151
+        },
+        {
+          "marker": "Self::Bound(_) => return Self::call(self, retention.len() + 1)",
+          "offset": 176
+        },
+        {
+          "marker": "Self::Individual => {}",
+          "offset": 252
+        },
+        {
+          "marker": "Self::ReadbackMembers(_) => return Err(Error::CommitUncertain)",
+          "offset": 287
+        },
+        {
+          "marker": "if retention.is_empty()",
+          "offset": 369
+        },
+        {
+          "marker": "return Err(Error::Binding(",
+          "offset": 407
+        },
+        {
+          "marker": ".checked_add(1)",
+          "offset": 543
+        },
+        {
+          "marker": ".checked_mul(8)",
+          "offset": 598
+        },
+        {
+          "marker": "std::iter::once(primary)",
+          "offset": 712
+        },
+        {
+          "marker": ".chain(retention)",
+          "offset": 749
+        },
+        {
+          "marker": "trainer: Arc::clone(&member.trainer)",
+          "offset": 838
+        },
+        {
+          "marker": "config: member.qualification.config.clone()",
+          "offset": 892
+        },
+        {
+          "marker": ".collect()",
+          "offset": 964
+        },
+        {
+          "marker": "source: Self::ReadbackMembers(Arc::new(members))",
+          "offset": 1029
+        },
+        {
+          "marker": "identity: Arc::new(())",
+          "offset": 1091
+        },
+        {
+          "marker": "slots,",
+          "offset": 1127
+        },
+        {
+          "marker": "admitted: AtomicBool::new(false)",
+          "offset": 1146
+        }
+      ],
+      "top_levels": [
+        {
+          "marker": "match self",
+          "depth": 1
+        },
+        {
+          "marker": "if retention.is_empty()",
+          "depth": 1
+        },
+        {
+          "marker": "let slots =",
+          "depth": 1
+        },
+        {
+          "marker": "let members =",
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn call(",
+      "sequence_count": 8,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "if members < 2",
+          "offset": 87
+        },
+        {
+          "marker": ".checked_mul(8)",
+          "offset": 231
+        },
+        {
+          "marker": "Self::Individual => Self::Individual",
+          "offset": 368
+        },
+        {
+          "marker": "Self::Bound(original) => Self::Bound(Arc::clone(original))",
+          "offset": 418
+        },
+        {
+          "marker": "Self::ReadbackMembers(_) => return Err(Error::CommitUncertain)",
+          "offset": 490
+        },
+        {
+          "marker": "identity: Arc::new(())",
+          "offset": 638
+        },
+        {
+          "marker": "slots,",
+          "offset": 674
+        },
+        {
+          "marker": "admitted: AtomicBool::new(false)",
+          "offset": 693
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn begin(",
+      "sequence_count": 8,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": ".compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)",
+          "offset": 102
+        },
+        {
+          "marker": "Error::CommitUncertain",
+          "offset": 195
+        },
+        {
+          "marker": "match &self.source",
+          "offset": 229
+        },
+        {
+          "marker": "OriginalPanelTrainingReadV1::Individual",
+          "offset": 328
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::ReadbackMembers(_)",
+          "offset": 449
+        },
+        {
+          "marker": "OriginalPanelTrainingProofV1",
+          "offset": 557
+        },
+        {
+          "marker": "call: self",
+          "offset": 608
+        },
+        {
+          "marker": "cursor: Cursor::Next(0)",
+          "offset": 640
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn read(",
+      "sequence_count": 23,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "Self::Individual => {\n                OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config).await\n            }",
+          "offset": 353
+        },
+        {
+          "marker": "Self::Panel(proof)",
+          "offset": 498
+        },
+        {
+          "marker": "std::mem::replace(&mut proof.cursor, Cursor::Refused)",
+          "offset": 563
+        },
+        {
+          "marker": "return Err(Error::CommitUncertain)",
+          "offset": 660
+        },
+        {
+          "marker": "match &proof.call.source",
+          "offset": 834
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Individual =>",
+          "offset": 881
+        },
+        {
+          "marker": "return Err(Error::CommitUncertain)",
+          "offset": 952
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Bound(original) =>",
+          "offset": 1030
+        },
+        {
+          "marker": "original.require_source(source.trainer, config)?",
+          "offset": 1106
+        },
+        {
+          "marker": "slot == 0 || slot + 1 == proof.call.slots",
+          "offset": 1200
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::ReadbackMembers(members) =>",
+          "offset": 1285
+        },
+        {
+          "marker": "let width = members.len() * 2",
+          "offset": 1526
+        },
+        {
+          "marker": "let original = &members[(slot % width) / 2]",
+          "offset": 1581
+        },
+        {
+          "marker": "let member_slot = (slot / width) * 2 + slot % 2",
+          "offset": 1650
+        },
+        {
+          "marker": "original.require_member_source(source.trainer, config)?",
+          "offset": 1723
+        },
+        {
+          "marker": "member_slot == 0 || member_slot == 7",
+          "offset": 1815
+        },
+        {
+          "marker": "if physical",
+          "offset": 1910
+        },
+        {
+          "marker": "OriginalCellEvaluationQualificationSourcesV1::read_trainer(source, config)\n                        .await?",
+          "offset": 2101
+        },
+        {
+          "marker": "original.authenticate(binding::now()?)?",
+          "offset": 2243
+        },
+        {
+          "marker": "proof.cursor = if slot + 1 == proof.call.slots",
+          "offset": 2300
+        },
+        {
+          "marker": "Cursor::Complete",
+          "offset": 2369
+        },
+        {
+          "marker": "Cursor::Next(slot + 1)",
+          "offset": 2431
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 2489
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn finish(",
+      "sequence_count": 27,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "self,",
+          "offset": 19
+        },
+        {
+          "marker": "expected: &OriginalPanelTrainingCallV1",
+          "offset": 33
+        },
+        {
+          "marker": "current: u64",
+          "offset": 81
+        },
+        {
+          "marker": "Self::Individual => match &expected.source",
+          "offset": 157
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Individual => Ok(())",
+          "offset": 218
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Bound(_)",
+          "offset": 287
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::ReadbackMembers(_) => Err(Error::CommitUncertain)",
+          "offset": 345
+        },
+        {
+          "marker": "Self::Panel(proof)",
+          "offset": 454
+        },
+        {
+          "marker": "let same_source = match (&proof.call.source, &expected.source)",
+          "offset": 494
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Bound(original)",
+          "offset": 605
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Bound(expected_source)",
+          "offset": 677
+        },
+        {
+          "marker": "Arc::ptr_eq(original, expected_source)",
+          "offset": 757
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::ReadbackMembers(original)",
+          "offset": 843
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::ReadbackMembers(expected_source)",
+          "offset": 925
+        },
+        {
+          "marker": "Arc::ptr_eq(original, expected_source)",
+          "offset": 1015
+        },
+        {
+          "marker": "_ => return Err(Error::CommitUncertain)",
+          "offset": 1075
+        },
+        {
+          "marker": "!Arc::ptr_eq(&proof.call.identity, &expected.identity) || !same_source",
+          "offset": 1154
+        },
+        {
+          "marker": "return Err(Error::Binding(",
+          "offset": 1247
+        },
+        {
+          "marker": "!matches!(proof.cursor, Cursor::Complete)",
+          "offset": 1408
+        },
+        {
+          "marker": "return Err(Error::CommitUncertain)",
+          "offset": 1472
+        },
+        {
+          "marker": "match &proof.call.source",
+          "offset": 1542
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Individual => Err(Error::CommitUncertain)",
+          "offset": 1589
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::Bound(original) => {\n                        original.authenticate(current)\n                    }",
+          "offset": 1683
+        },
+        {
+          "marker": "OriginalPanelTrainingSourceV1::ReadbackMembers(members) =>",
+          "offset": 1832
+        },
+        {
+          "marker": "for original in members.iter()",
+          "offset": 1917
+        },
+        {
+          "marker": "original.authenticate(current)?",
+          "offset": 1978
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 2061
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn require_source(",
+      "sequence_count": 10,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "!std::ptr::eq(self.trainer.as_ref(), trainer)",
+          "offset": 189
+        },
+        {
+          "marker": "self.config.training != config.training",
+          "offset": 250
+        },
+        {
+          "marker": "self.config.scope != config.scope",
+          "offset": 305
+        },
+        {
+          "marker": "self.config.training_evidence != config.training_evidence",
+          "offset": 354
+        },
+        {
+          "marker": "self.config.context.generator != config.context.generator",
+          "offset": 427
+        },
+        {
+          "marker": "self.config.verifier.trust_digest() != config.verifier.trust_digest()",
+          "offset": 500
+        },
+        {
+          "marker": "self.config.verifier.scope_digest() != config.verifier.scope_digest()",
+          "offset": 585
+        },
+        {
+          "marker": "self.config.verifier.objective_digest() != config.verifier.objective_digest()",
+          "offset": 670
+        },
+        {
+          "marker": "return Err(Error::Binding(",
+          "offset": 770
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 906
+        }
+      ],
+      "top_levels": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn require_member_source(",
+      "sequence_count": 11,
+      "top_level_count": 3,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "self.require_source(trainer, config)?",
+          "offset": 193
+        },
+        {
+          "marker": "self.config.plan != config.plan",
+          "offset": 243
+        },
+        {
+          "marker": "self.config.execution_namespace != config.execution_namespace",
+          "offset": 290
+        },
+        {
+          "marker": "self.config.qualification_namespace != config.qualification_namespace",
+          "offset": 367
+        },
+        {
+          "marker": "self.config.context.evaluator != config.context.evaluator",
+          "offset": 452
+        },
+        {
+          "marker": "self.config.context.retention_receipt_digests\n                != config.context.retention_receipt_digests",
+          "offset": 525
+        },
+        {
+          "marker": "self.config.context.unlearning_receipt_digest\n                != config.context.unlearning_receipt_digest",
+          "offset": 646
+        },
+        {
+          "marker": "self.config.product_evidence != config.product_evidence",
+          "offset": 767
+        },
+        {
+          "marker": "self.config.execution_evidence != config.execution_evidence",
+          "offset": 838
+        },
+        {
+          "marker": "return Err(Error::Binding(",
+          "offset": 920
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 1005
+        }
+      ],
+      "top_levels": [
+        {
+          "marker": "self.require_source(trainer, config)?",
+          "depth": 1
+        },
+        {
+          "marker": "if self.config.plan != config.plan",
+          "depth": 1
+        },
+        {
+          "marker": "Ok(())",
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "function": "fn authenticate(",
+      "sequence_count": 8,
+      "top_level_count": 0,
+      "passed": true,
+      "source_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "markers": [
+        {
+          "marker": "self.config.verifier.verify(",
+          "offset": 83
+        },
+        {
+          "marker": "LearningEvidenceRoleV1::Generator",
+          "offset": 124
+        },
+        {
+          "marker": "&self.config.training_evidence",
+          "offset": 171
+        },
+        {
+          "marker": "learning_iteration_receipt_signing_bytes_v1(binding::training_receipt(&self.config)?)?",
+          "offset": 216
+        },
+        {
+          "marker": "current,",
+          "offset": 316
+        },
+        {
+          "marker": "original.principal() != &self.config.context.generator",
+          "offset": 348
+        },
+        {
+          "marker": "return Err(Error::Binding(",
+          "offset": 417
+        },
+        {
+          "marker": "Ok(())",
+          "offset": 508
+        }
+      ],
+      "top_levels": []
+    }
+  ]
+}
