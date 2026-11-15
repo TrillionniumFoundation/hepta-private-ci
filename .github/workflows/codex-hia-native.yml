@@ -7,10 +7,14 @@ on:
       - codex-rs/apply-patch/**
       - codex-rs/arg0/**
       - codex-rs/cli/**
+      - codex-rs/core/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
       - codex-rs/login/**
+      - codex-rs/utils/output-truncation/**
+      - codex-rs/protocol/**
+      - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -24,10 +28,14 @@ on:
       - codex-rs/apply-patch/**
       - codex-rs/arg0/**
       - codex-rs/cli/**
+      - codex-rs/core/**
       - codex-rs/tui/**
       - codex-rs/utils/string/**
       - codex-rs/utils/template/**
       - codex-rs/login/**
+      - codex-rs/utils/output-truncation/**
+      - codex-rs/protocol/**
+      - codex-rs/context-fragments/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
@@ -50,6 +58,7 @@ jobs:
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
+      NEXTEST_TEST_THREADS: "4"
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
     defaults:
@@ -66,7 +75,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: TrillionniumFoundation/Hepta
-          ref: f33d8da316de8fdf27b504371f1a5310997ff548
+          ref: 0de5657a80f96b138525ac7ee9ce11712a83a10d
           path: Hepta
           persist-credentials: false
 
@@ -89,7 +98,7 @@ jobs:
       - name: Prepare Rust oracle and production caller compiler
         run: |
           set -euo pipefail
-          rustup toolchain install 1.96.1 --profile minimal --no-self-update
+          rustup toolchain install 1.96.1 --profile minimal --component clippy --component rustfmt --no-self-update
           rustc_path="$(rustup which --toolchain 1.96.1 rustc)"
           test -x "$rustc_path"
           echo "RUSTC=$rustc_path" >> "$GITHUB_ENV"
@@ -114,6 +123,14 @@ jobs:
             --output "$RUNNER_TEMP/hia-native" \
             2>&1 | tee "$RUNNER_TEMP/hia-build.log"
 
+      - name: Verify pinned word-memory language contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: Hepta
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest tests.test_hia_word_memory \
+            2>&1 | tee "$RUNNER_TEMP/hia-word-memory.log"
+
       - name: Verify Cargo build receipts and reject stale artifacts
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -135,6 +152,21 @@ jobs:
             --rustc "$RUSTC" \
             --report "$RUNNER_TEMP/hia-seek-sequence.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-seek-sequence.log"
+
+      - name: Verify typed scalar admission and unchanged Cargo receipt checks
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_scalar_build_admission.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-scalar-admission.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-scalar-admission.log"
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module token_budget \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-scalar-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-scalar-receipt.log"
 
       - name: Compare HIA UTF-8 boundaries with Rust and Core VM
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -238,7 +270,7 @@ jobs:
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --features hia-native --locked \
+          just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --features hia-native --locked --retries 0 \
             2>&1 | tee "$RUNNER_TEMP/hia-native-crates.log"
 
       - name: Compare actual native and original ASCII JSON callers
@@ -337,6 +369,42 @@ jobs:
             --library "$RUNNER_TEMP/hia-native/libcodex_hia_template_index.so" \
             --report "$RUNNER_TEMP/hia-template-index-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-template-index-abi.log"
+      - name: Compare native truncation APIs with the original Rust source
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_truncate_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-truncate-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-truncate-caller.log"
+
+      - name: Verify truncation UTF-8, budgets and buffer contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_truncate_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-truncate-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-truncate-abi.log"
+
+      - name: Test consumers of native truncation and token budgets
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments \
+            --features codex-utils-string/hia-native --locked --retries 0 \
+            2>&1 | tee "$RUNNER_TEMP/hia-truncate-consumers.log"
+
+      - name: Verify native scalar token arithmetic and invalid-mode traps
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_token_budget_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-token-budget-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-token-budget-abi.log"
 
       - name: Verify installed HIA apply_patch executable
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -359,7 +427,7 @@ jobs:
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          just test -p codex-cli -p codex-arg0 -p codex-tui --features hia-native --locked \
+          just test -p codex-cli -p codex-arg0 -p codex-core -p codex-tui -p codex-login --features hia-native --locked --retries 0 \
             2>&1 | tee "$RUNNER_TEMP/hia-codex-owners.log"
 
       - name: Verify installed full Codex executable
@@ -378,13 +446,40 @@ jobs:
             --report "$RUNNER_TEMP/hia-installed-codex.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-installed-codex.log"
 
-      - name: Verify default callers require no HIA artifacts
+      - name: Verify default callers and truncation consumers require no HIA artifacts
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template --locked \
+          env -u CODEX_HIA_NATIVE_LIB_DIR just test -p codex-apply-patch -p codex-utils-string -p codex-utils-template \
+            -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments --locked --retries 0 \
             2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
+
+      - name: Run strict native and default owner lint
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just clippy -p codex-apply-patch -p codex-utils-string -p codex-utils-template \
+            -p codex-cli -p codex-arg0 -p codex-core -p codex-tui -p codex-login \
+            --all-targets --features hia-native --locked -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-native-owner-clippy.log"
+          env -u CODEX_HIA_NATIVE_LIB_DIR just clippy \
+            -p codex-apply-patch -p codex-utils-string -p codex-utils-template \
+            -p codex-utils-output-truncation -p codex-protocol -p codex-context-fragments \
+            --all-targets --locked -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/hia-default-owner-clippy.log"
+
+      - name: Run scoped native owner fixes without source drift
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just fix -p codex-apply-patch -p codex-utils-string -p codex-utils-template \
+            -p codex-cli -p codex-arg0 -p codex-core -p codex-tui -p codex-login \
+            --features hia-native --locked \
+            2>&1 | tee "$RUNNER_TEMP/hia-native-owner-fix.log"
+          git diff --exit-code
 
       - name: Upload original build and test results
         if: ${{ always() }}
@@ -427,6 +522,17 @@ jobs:
             ${{ runner.temp }}/hia-template-placeholders.log
             ${{ runner.temp }}/hia-template-index-abi.json
             ${{ runner.temp }}/hia-template-index-abi.log
+            ${{ runner.temp }}/hia-truncate-caller.json
+            ${{ runner.temp }}/hia-truncate-caller.log
+            ${{ runner.temp }}/hia-truncate-abi.json
+            ${{ runner.temp }}/hia-truncate-abi.log
+            ${{ runner.temp }}/hia-truncate-consumers.log
+            ${{ runner.temp }}/hia-token-budget-abi.json
+            ${{ runner.temp }}/hia-token-budget-abi.log
+            ${{ runner.temp }}/hia-scalar-admission.json
+            ${{ runner.temp }}/hia-scalar-admission.log
+            ${{ runner.temp }}/hia-scalar-receipt.json
+            ${{ runner.temp }}/hia-scalar-receipt.log
             ${{ runner.temp }}/hia-native-crates.log
             ${{ runner.temp }}/hia-installed-patch-build.log
             ${{ runner.temp }}/hia-original-patch-build.log
@@ -439,9 +545,13 @@ jobs:
             ${{ runner.temp }}/hia-installed-codex.json
             ${{ runner.temp }}/hia-installed-codex.log
             ${{ runner.temp }}/hia-build.log
+            ${{ runner.temp }}/hia-word-memory.log
             ${{ runner.temp }}/hia-build-receipt.json
             ${{ runner.temp }}/hia-build-receipt.log
             ${{ runner.temp }}/hia-seek-sequence.json
             ${{ runner.temp }}/hia-seek-sequence.log
             ${{ runner.temp }}/hia-utf8-boundaries.json
             ${{ runner.temp }}/hia-utf8-boundaries.log
+            ${{ runner.temp }}/hia-native-owner-clippy.log
+            ${{ runner.temp }}/hia-default-owner-clippy.log
+            ${{ runner.temp }}/hia-native-owner-fix.log

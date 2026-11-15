@@ -25,6 +25,105 @@ LINK_FIELDS = (
 )
 
 
+def entry_profile(lock, name, program):
+    """Bind the component's native calling convention to its checked Core."""
+    profiles = lock.get("entry_profiles", {})
+    if not isinstance(profiles, dict) or set(profiles) - set(lock["modules"]):
+        raise ValueError("entry profiles must name locked modules")
+    profile = profiles.get(name, "borrowed-buffers-u32-v1")
+    signatures = {
+        "borrowed-buffers-u32-v1": (["readbuf", "mutbuf", "mutbuf"], ["u32"]),
+        "u64-pair-to-u64-v1": (["u64", "u64"], ["u64"]),
+    }
+    if not isinstance(profile, str) or profile not in signatures:
+        raise ValueError("unknown native entry profile")
+    functions = [function for function in program["functions"] if function["name"] == "f0"]
+    if len(functions) != 1:
+        raise ValueError("native component requires one f0 entry")
+    function = functions[0]
+    actual = ([parameter["type"] for parameter in function["params"]], function["returns"])
+    if actual != signatures[profile]:
+        raise ValueError("native entry signature differs from the locked profile")
+    if profile == "borrowed-buffers-u32-v1" and program["functions"][0]["name"] != "f0":
+        raise ValueError("the borrowed-buffer source entry must be the first function")
+    expected_exports = ["f0"] if profile == "u64-pair-to-u64-v1" else []
+    if program.get("exports", []) != expected_exports:
+        raise ValueError("native exports differ from the locked profile")
+    return profile
+
+
+def selfhost_object_source(source, program):
+    """Rename a checked module for ELF emission without changing its schema."""
+    schema = program["schema"]
+    if schema not in ("hepta.hia.program.v8", "hepta.hia.program.v9"):
+        raise ValueError("unsupported HIA assembly schema")
+    header, remainder = source.split(b"\n", 1)
+    expected = f"hia-asm.v1 {schema} {program['module']}".encode("ascii")
+    if header != expected:
+        raise ValueError("HIA assembly header differs from the checked Core")
+    return f"hia-asm.v1 {schema} selfhost_elf\n".encode("ascii") + remainder
+
+
+def inspect_scalar_object(data):
+    """Admit the pinned single scalar export, including an empty relocation section."""
+    if len(data) < 64:
+        raise ValueError("truncated scalar ELF object")
+    header = struct.unpack_from("<16sHHIQQQIHHHHHH", data)
+    ident, kind, machine, version, entry, phoff, shoff, flags, ehsize, phsize, phnum, shsize, shnum, names_index = header
+    if (ident != b"\x7fELF\x02\x01\x01\x00" + b"\0" * 8
+            or (kind, machine, version, entry, phoff, flags, ehsize, phsize, phnum, shsize, shnum, names_index)
+            != (1, 62, 1, 0, 0, 0, 64, 0, 0, 64, 7, 4)
+            or shoff % 8 or shoff + 7 * 64 != len(data)):
+        raise ValueError("ELF header is outside the closed scalar profile")
+    sections = [struct.unpack_from("<IIQQQQIIQQ", data, shoff + i * 64) for i in range(7)]
+    if any(sections[0]):
+        raise ValueError("non-null scalar ELF null section")
+    for row in sections[1:]:
+        if row[3] or row[4] < 64 or row[4] + row[5] > shoff:
+            raise ValueError("scalar ELF section outside the object payload")
+    text, sym, strings, names, stack, rela = sections[1:]
+    expected_names = b"\0.text\0.symtab\0.strtab\0.shstrtab\0.note.GNU-stack\0.rela.text\0"
+    if (data[names[4]:names[4] + names[5]] != expected_names
+            or [row[0] for row in sections] != [0, 1, 7, 15, 23, 33, 49]):
+        raise ValueError("scalar ELF section-name inventory differs")
+    if ((text[1], text[2], text[4], text[6], text[7], text[8], text[9]) != (1, 6, 64, 0, 0, 16, 0)
+            or (sym[1], sym[2], sym[5], sym[6], sym[7], sym[8], sym[9]) != (2, 0, 72, 3, 2, 8, 24)
+            or (strings[1], strings[2], strings[5], strings[6], strings[7], strings[8], strings[9]) != (3, 0, 4, 0, 0, 1, 0)
+            or (names[1], names[2], names[5], names[6], names[7], names[8], names[9]) != (3, 0, 60, 0, 0, 1, 0)
+            or (stack[1], stack[2], stack[5], stack[6], stack[7], stack[8], stack[9]) != (1, 0, 0, 0, 0, 1, 0)
+            or (rela[1], rela[2], rela[5], rela[6], rela[7], rela[8], rela[9]) != (4, 0, 0, 2, 1, 8, 24)):
+        raise ValueError("scalar ELF flags, empty relocation section or links differ")
+    if (sym[4] != ((64 + text[5] + 7) & ~7) or strings[4] != sym[4] + 72
+            or names[4] != strings[4] + 4 or stack[4] != names[4] + 60
+            or rela[4] != ((stack[4] + 7) & ~7) or shoff != rela[4]):
+        raise ValueError("scalar ELF payload layout differs")
+    symbols = [struct.unpack_from("<IBBHQQ", data, sym[4] + i * 24) for i in range(3)]
+    exported = symbols[2]
+    if (any(symbols[0]) or symbols[1] != (0, 3, 0, 1, 0, 0)
+            or exported[:4] != (1, 18, 0, 1) or exported[5] != 59
+            or exported[4] + exported[5] != text[5]
+            or data[strings[4]:strings[4] + 4] != b"\0f0\0"):
+        raise ValueError("scalar ELF symbol inventory differs")
+    wrapper = data[64 + exported[4]:64 + text[5]]
+    prefix = bytes.fromhex(
+        "554889e54881ec600000004889f8488985a0ffffff"
+        "4889f0488985b0ffffff488dbda0ffffff488db5c0ffffffe8"
+    )
+    suffix = bytes.fromhex("488b85c0ffffffc9c3")
+    if wrapper[:len(prefix)] != prefix or wrapper[len(prefix) + 4:] != suffix:
+        raise ValueError("scalar entry wrapper differs from the locked two-u64 ABI")
+    displacement = struct.unpack_from("<i", wrapper, len(prefix))[0]
+    target = exported[4] + len(prefix) + 4 + displacement
+    if not 0 <= target < exported[4]:
+        raise ValueError("scalar wrapper call does not target its internal function text")
+    return {"format": "ELF64-ET_REL", "machine": "EM_X86_64", "exports": ["f0"],
+            "undefined_symbols": [], "external_relocations": [], "nonexecuting_stack_note": True,
+            "text_offset": 64, "text_bytes": text[5],
+            "text_sha256": hashlib.sha256(data[64:64 + text[5]]).hexdigest(),
+            "entry_wrapper_offset": exported[4], "entry_wrapper_bytes": exported[5],
+            "object_sha256": hashlib.sha256(data).hexdigest(), "empty_relocation_section": True}
+
+
 def text_section(data):
     """Read the admitted ELF object's text, without changing machine bytes."""
     table = struct.unpack_from("<Q", data, 40)[0]
@@ -163,22 +262,24 @@ def main():
             source = source_path.read_bytes()
             source_inputs[source_path] = source
             checked = assemble_program(source)
+            profile = entry_profile(lock, name, checked.as_dict())
             library = output / f"{name}.so"
-            row = {"source_sha256": hashlib.sha256(source).hexdigest(), "core_sha256": checked.sha256}
+            row = {"source_sha256": hashlib.sha256(source).hexdigest(), "core_sha256": checked.sha256,
+                   "entry_profile": profile}
             if compiler is None:
                 row["build"] = build_program_machine(
                     checked, library, linker="ld",
-                    foreign_buffer_exports=(("f0", lock["borrowed_buffer_capacity"]),),
+                    foreign_buffer_exports=(("f0", lock["borrowed_buffer_capacity"]),)
+                    if profile == "borrowed-buffers-u32-v1" else (),
                 )
             else:
-                header, remainder = source.split(b"\n", 1)
-                if not header.startswith(b"hia-asm.v1 hepta.hia.program.v8 "):
-                    raise ValueError("unexpected HIA assembly header")
-                object_source = b"hia-asm.v1 hepta.hia.program.v8 selfhost_elf\n" + remainder
+                object_source = selfhost_object_source(source, checked.as_dict())
                 obj, receipt = compile_stage(output, name, compiler, object_source,
                                              output_extension=".o")
                 row["compilation"] = receipt
-                row["object_inventory"] = inspect_selfhost_object(obj.read_bytes())
+                row["object_inventory"] = (inspect_scalar_object(obj.read_bytes())
+                                           if profile == "u64-pair-to-u64-v1"
+                                           else inspect_selfhost_object(obj.read_bytes()))
                 command = ["ld", "-m", "elf_x86_64", "-shared", "-z", "defs", "-z", "noexecstack",
                            "-z", "relro", "-z", "now", "--build-id=none", str(obj), "-o", str(library)]
                 subprocess.run(command, check=True, capture_output=True, timeout=60)
@@ -188,8 +289,12 @@ def main():
                 # for simultaneous linkage; all algorithm code remains HIA.
                 public_symbol = f"codex_hia_{name}"
                 named_obj = output / f"{name}.namespaced.o"
-                objcopy_command = ["objcopy", f"--redefine-sym=f0={public_symbol}",
-                                   str(obj), str(named_obj)]
+                objcopy_command = ["objcopy"]
+                if profile == "u64-pair-to-u64-v1":
+                    # The strict scalar inspection proved this section empty.
+                    # Keep the existing six-section Cargo admission contract.
+                    objcopy_command.append("--remove-section=.rela.text")
+                objcopy_command += [f"--redefine-sym=f0={public_symbol}", str(obj), str(named_obj)]
                 subprocess.run(objcopy_command, check=True, capture_output=True, timeout=60)
                 original_bytes, named_bytes = obj.read_bytes(), named_obj.read_bytes()
                 symbols = inspect_object_symbols(named_bytes, "ELF64", 62)
@@ -198,6 +303,15 @@ def main():
                 original_text, named_text = text_section(original_bytes), text_section(named_bytes)
                 if original_text != named_text:
                     raise ValueError("ELF symbol renaming changed HIA machine code")
+                if profile == "u64-pair-to-u64-v1":
+                    if struct.unpack_from("<H", named_bytes, 60)[0] != 6:
+                        raise ValueError("scalar ELF normalization must retain six sections")
+                    row["object_normalization"] = {
+                        "removed_section": ".rela.text", "removed_payload_bytes": 0,
+                        "text_unchanged": True, "imports_added": False,
+                        "source_object_sha256": hashlib.sha256(original_bytes).hexdigest(),
+                        "normalized_object_sha256": hashlib.sha256(named_bytes).hexdigest(),
+                    }
                 archive = output / f"lib{public_symbol}.a"
                 with tempfile.TemporaryDirectory(prefix=".hia-archive-", dir=output) as temporary:
                     member = Path(temporary) / "hia.o"
