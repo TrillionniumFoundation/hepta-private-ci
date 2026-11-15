@@ -80,19 +80,19 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "current_native_components_and_owner_preflight_passed_complete_public_pending",
+    "qualification_status": "formal_component_and_receipts_passed_historical_direct_rustc_parity_current_cargo_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Sixteen B3 modules cover fourteen algorithm groups. The current fixed-point build preserves all fifteen prior sources and 45 namespaced machine artifacts. The standalone ABI executed 6310 native calls: 5097 error/no-write and 1213 successful calls, covering 25 transition keys, 27 source-condition outcomes, 17 actions and 13 complete callback traces. The 128 interleaved instances ran on a single worker and do not establish concurrent execution. The actual 72-check standalone source/archive admission passed for all sixteen locked modules. All 994 paired process fixtures were materialized and checked, but no complete standalone original/native program comparison has executed. An independent H build reproduced all 48 namespaced machine artifacts. The original setup wrapper failed after 24 successful commands; a separate successful read-only completion verified its unchanged source, empty target and native artifacts without relabeling that failure. A subsequent independent empty-target owner preflight passed all 20 commands: native/default Cargo graphs each bind 666 units and 1284 files, actual just tests passed 101/99 with zero skips, both strict all-target workspace Clippy modes passed and native fresh/cached/strict receipts were admitted. That prepublication record binds cae5db67 plus eighteen code/test/build overlays and 9933 files, with source map 3eeeb56c unchanged before and after; the three final metadata documents were outside the tested source. Complete clean-source effects/application/standalone comparisons, final fix/format and installed executables remain pending. Earlier fifteen-module results and failures retain their original source identities and are not sixteen-module qualification. Required platforms, default dispatch, release/LTO, whole-product performance, all 15 complete capabilities, the 198-crate baseline and legacy retirement remain open.",
+    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Seventeen B3 modules cover fifteen algorithm groups. The formal fixed-point build preserves all sixteen prior module sources and 48 namespaced artifacts; the three new UUID artifacts match the frozen prototype. The formal UUID ABI passed 19232 calls, including 370 atomic no-write failures, 9216 byte-position mutations and 128 sequential interleavings; this was not simultaneous-thread testing. The UUID receipt gate passed 74 checks and admitted all seventeen locked modules. Historical direct-rustc evidence binds the complete a201 fifteen-file utils/string crate and the complete 23-file locked regex-lite 0.1.8 crate: 26 original tests and 38 candidate tests passed without omissions, actual workspace Clippy passed for the candidate library, and 9609 public pairs returned 78778 matching strings with 14060 real native calls. Separate complete regex offsets agreed in 9609 query/emit pairs. These are recorded source-bound observations, not current Cargo or installed-product qualification. The portable real-Cargo public gate and its workflow are integrated but have not executed for this candidate. Parent eb439d69 includes the standalone CLI-argument repair; inherited records retain their exact scope and do not establish successful sixteen- or seventeen-module CI. Current owner Cargo, clean public comparisons, strict lint/fix, installed binaries and CI remain pending. All 15 complete capabilities, the 198-crate baseline, default dispatch, required platforms, whole-product performance and legacy retirement remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json#patch_standalone_increment",
+    "report": "hia/verification.json#uuid_find_increment",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "scope": "Linux x86-64 GNU, opt-in hia-native. Sixteen B3 modules cover fourteen algorithm groups. The current fixed-point build preserves all fifteen prior sources and 45 namespaced machine artifacts. The standalone ABI executed 6310 native calls: 5097 error/no-write and 1213 successful calls, covering 25 transition keys, 27 source-condition outcomes, 17 actions and 13 complete callback traces. The 128 interleaved instances ran on a single worker and do not establish concurrent execution. The actual 72-check standalone source/archive admission passed for all sixteen locked modules. All 994 paired process fixtures were materialized and checked, but no complete standalone original/native program comparison has executed. An independent H build reproduced all 48 namespaced machine artifacts. The original setup wrapper failed after 24 successful commands; a separate successful read-only completion verified its unchanged source, empty target and native artifacts without relabeling that failure. A subsequent independent empty-target owner preflight passed all 20 commands: native/default Cargo graphs each bind 666 units and 1284 files, actual just tests passed 101/99 with zero skips, both strict all-target workspace Clippy modes passed and native fresh/cached/strict receipts were admitted. That prepublication record binds cae5db67 plus eighteen code/test/build overlays and 9933 files, with source map 3eeeb56c unchanged before and after; the three final metadata documents were outside the tested source. Complete clean-source effects/application/standalone comparisons, final fix/format and installed executables remain pending. Earlier fifteen-module results and failures retain their original source identities and are not sixteen-module qualification. Required platforms, default dispatch, release/LTO, whole-product performance, all 15 complete capabilities, the 198-crate baseline and legacy retirement remain open."
+    "scope": "Linux x86-64 GNU, opt-in hia-native. Seventeen B3 modules cover fifteen algorithm groups. The formal fixed-point build preserves all sixteen prior module sources and 48 namespaced artifacts; the three new UUID artifacts match the frozen prototype. The formal UUID ABI passed 19232 calls, including 370 atomic no-write failures, 9216 byte-position mutations and 128 sequential interleavings; this was not simultaneous-thread testing. The UUID receipt gate passed 74 checks and admitted all seventeen locked modules. Historical direct-rustc evidence binds the complete a201 fifteen-file utils/string crate and the complete 23-file locked regex-lite 0.1.8 crate: 26 original tests and 38 candidate tests passed without omissions, actual workspace Clippy passed for the candidate library, and 9609 public pairs returned 78778 matching strings with 14060 real native calls. Separate complete regex offsets agreed in 9609 query/emit pairs. These are recorded source-bound observations, not current Cargo or installed-product qualification. The portable real-Cargo public gate and its workflow are integrated but have not executed for this candidate. Parent eb439d69 includes the standalone CLI-argument repair; inherited records retain their exact scope and do not establish successful sixteen- or seventeen-module CI. Current owner Cargo, clean public comparisons, strict lint/fix, installed binaries and CI remain pending. All 15 complete capabilities, the 198-crate baseline, default dispatch, required platforms, whole-product performance and legacy retirement remain open."
   },
   "candidate_modules": [
     {
@@ -809,6 +809,40 @@
       ],
       "validation": {
         "current": "hia/verification.json#patch_standalone_increment"
+      }
+    },
+    {
+      "id": "uuid_find",
+      "hia_source": "hia/uuid_find.hepta",
+      "source_path": "codex-rs/utils/string/src/lib.rs",
+      "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "source_functions": [
+        "find_uuids"
+      ],
+      "production_algorithm_group": "uuid_find",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "formal_component_and_receipts_passed_historical_direct_rustc_parity_current_cargo_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_uuid_find",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/uuid_find_buffer_contract.json",
+        "contract_sha256": "931c0cfb5c181ec08bbd9a94ba69f8e3c4a770c939ddd887f75659fc232ef00c"
+      },
+      "behavior": [
+        "HIA scans the complete input for the fixed 8-4-4-4-12 ASCII hexadecimal pattern and chooses ordered non-overlapping byte spans.",
+        "Preserve original case, duplicates and substring matches; impose no UUID version, variant, word-boundary or normalization requirement.",
+        "Rust validates the native plan and copies each selected span into an independently owned String; the native feature path has no regex fallback."
+      ],
+      "tests": [
+        "hia/tests/test_uuid_find_abi.py",
+        "hia/tests/test_native_uuid_find_caller.py",
+        "hia/tests/test_build_receipt.py",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "current": "hia/verification.json#uuid_find_increment"
       }
     }
   ],
@@ -2562,7 +2596,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_sixteen_module_standalone_admission_passed_other_current_gates_pending",
+    "status": "current_seventeen_module_uuid_admission_passed_other_current_gates_pending",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2579,16 +2613,17 @@
       "unified_diff",
       "patch_summary",
       "patch_application",
-      "patch_standalone"
+      "patch_standalone",
+      "uuid_find"
     ],
-    "checks_passed": 72,
+    "checks_passed": 74,
     "scalar_build_admission_checks_passed": 120,
     "shared_cargo_helper_changed": false,
-    "report": "hia/verification.json#patch_standalone_increment",
-    "checks_passed_scope": "72 current patch_standalone checks admit all sixteen locked modules; inherited mutation results retain their original source scopes.",
+    "report": "hia/verification.json#uuid_find_increment",
+    "checks_passed_scope": "74 current uuid_find mutation checks admit all seventeen locked modules; inherited mutation results retain their original source scopes.",
     "mutation_modules": [
-      "patch_standalone"
+      "uuid_find"
     ],
-    "scalar_build_admission_checks_scope": "Historical fourteen-module 120-check result; current sixteen-module scalar gate pending."
+    "scalar_build_admission_checks_scope": "Historical fourteen-module 120-check result; current seventeen-module scalar gate pending."
   }
 }
