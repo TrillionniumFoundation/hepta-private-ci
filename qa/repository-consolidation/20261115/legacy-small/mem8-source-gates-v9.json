@@ -1,0 +1,59 @@
+{
+  "base": "e8652af9f615f235b249bb433a412c5026270ecd",
+  "incoming": "43d28191901d7d08c4543884d2f81c0b44eb8678",
+  "preview_tree": "378cf54f8822749f6f5153972d0f7b975a14766b",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete V11 source/workflow read, followed by all exact V5-to-V11 deltas. V5 lacks V6+ full golden JSON and named regression checks; each remains a separate immutable historical source-only operation. No old source operation is substituted for current qualification.",
+  "version": 9,
+  "historical_source": "408226fc670bfa8c1736e2b264750b549237b7c4",
+  "historical_source_tree": "112fe78dedd76b258b17976cff14693c52897c8d",
+  "frozen_old_branch_only": "codex/mem8-source-gates-v9-20261111-ed353817",
+  "contents_permission": "read",
+  "native_or_model_execution": false,
+  "historical_driver_executed": false,
+  "qualification": false,
+  "source_mutation_scope_if_historically_triggered": "isolated exact source checkout: just fmt, git add and write-tree; no source commit, ref update or remote push",
+  "capsule": {
+    "bytes": 388060,
+    "sha256": "66bafeebc5d006befa4b333eadb0f555304d6cac72ee520c6dda55e3ed78c90a",
+    "git_blob": "0249b5dae6103c5dc03c8beb869eb820b6ba4cf5",
+    "decoded_bytes": 2968818,
+    "verified_content_rows": 117,
+    "golden": {
+      "bytes": 75046,
+      "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+      "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+    }
+  },
+  "python_ast": true,
+  "embedded_python_ast_blocks": 3,
+  "bash_n_blocks": [
+    "Retain this source-only invocation identity",
+    "Install the previously qualified DotSlash binary",
+    "Bind both checkouts and actual formatting binaries",
+    "Run the fixed 600-second independent source-only gate"
+  ],
+  "exact_incoming_files": {
+    ".github/scripts/mem8_source_gates_v9.py": {
+      "bytes": 33587,
+      "sha256": "d8693a01773c5df6508f7983ad9ef4be306e12116743a059df99aa88ab325186",
+      "git_blob": "210febab5369cbd99bd38c1b39cf8523b8f9399e"
+    },
+    ".github/workflows/hepta-mem8-source-gates-v9.yml": {
+      "bytes": 9721,
+      "sha256": "640ed07f54130d12a3022a7bbff854288da3be1a48eea9085357a5875f132b74",
+      "git_blob": "e7cb0bc778c7d5f68e3f61a3f257656b1770f975"
+    },
+    "qualification/memory-cell-mem8-source-gates-v9/GOLDEN_CALLER_RECEIPT.json": {
+      "bytes": 75046,
+      "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+      "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+    },
+    "qualification/memory-cell-mem8-source-gates-v9/INPUT_SOURCE_GATES.json.xz": {
+      "bytes": 388060,
+      "sha256": "66bafeebc5d006befa4b333eadb0f555304d6cac72ee520c6dda55e3ed78c90a",
+      "git_blob": "0249b5dae6103c5dc03c8beb869eb820b6ba4cf5"
+    }
+  }
+}

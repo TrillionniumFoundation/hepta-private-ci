@@ -191,15 +191,22 @@ jobs:
           if [ "$locked_status" -eq 0 ]; then
             exit 0
           fi
-          echo "::error::Cargo.lock differs from the exact candidate manifests"
           set +e
           cargo metadata --offline --format-version=1 >/dev/null
           offline_status=$?
+          git diff --quiet -- Cargo.lock
+          drift_status=$?
           set -e
           git diff -- Cargo.lock
           git checkout -- Cargo.lock
           if [ "$offline_status" -ne 0 ]; then
-            echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
+            echo "::error::Cargo metadata lock verification unresolved: online and offline resolution failed; inspect resolver output (no lock drift inference)"
+          elif [ "$drift_status" -eq 1 ]; then
+            echo "::error::Cargo.lock differs from the exact candidate manifests"
+          elif [ "$drift_status" -eq 0 ]; then
+            echo "::error::Cargo metadata --locked failed with no observed Cargo.lock drift; inspect resolver output"
+          else
+            echo "::error::Cargo diff could not be checked; source qualification is unresolved"
           fi
           exit "$locked_status"
       - name: Inference owner regressions and streaming digest
