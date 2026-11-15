@@ -130,6 +130,83 @@ class FormatterScopeTests(unittest.TestCase):
         )
         self.assertEqual(command.cwd, self.root / "codex-rs/example")
 
+    def test_dispatcher_standalone_inputs_use_their_compile_edition(self):
+        names = (
+            "command_dispatch_fixtures.rs",
+            "native_command_dispatch.rs",
+            "native_command_dispatch_allocations.rs",
+            "native_command_dispatch_effects.rs",
+            "native_command_dispatch_failures.rs",
+            "native_command_dispatch_performance.rs",
+        )
+        for name in names:
+            relative = f"hia/tests/{name}"
+            source = self.write(relative, "pub fn entry() {}\n")
+            for check in (False, True):
+                for parser in (FMT.tomllib, None):
+                    with self.subTest(
+                        name=name, check=check, tomllib=parser is not None
+                    ):
+                        with (
+                            patch.object(FMT, "tomllib", parser),
+                            patch.object(FMT.subprocess, "check_output") as cargo,
+                        ):
+                            command = FMT.rust_file_command(relative, check=check)
+                        cargo.assert_not_called()
+                        expected = [
+                            "rustfmt",
+                            "--edition",
+                            "2024",
+                            "--config",
+                            "imports_granularity=Item,skip_children=true",
+                        ]
+                        if check:
+                            expected.append("--check")
+                        expected += ["--", str(source)]
+                        self.assertEqual(
+                            command, FMT.Command(tuple(expected), source.parent)
+                        )
+
+    def test_standalone_edition_mapping_does_not_expand_to_other_inputs(self):
+        for relative in (
+            "hia/tests/seek_sequence_oracle.rs",
+            "hia/tests/native_future_caller.rs",
+            "unrelated/native_command_dispatch.rs",
+        ):
+            with self.subTest(path=relative):
+                source = self.write(relative, "pub fn entry() {}\n")
+                command = FMT.rust_file_command(relative, check=True)
+                self.assertEqual(
+                    command.args[command.args.index("--edition") + 1], "2021"
+                )
+                self.assertEqual(command.args[-1], str(source))
+                self.assertEqual(command.cwd, source.parent)
+
+    def test_standalone_mapping_defers_to_nearest_cargo_edition(self):
+        self.write("hia/Cargo.toml", '[package]\nname="outer"\nedition="2024"\n')
+        self.write(
+            "hia/tests/Cargo.toml", '[package]\nname="harness"\nedition="2018"\n'
+        )
+        source = self.write("hia/tests/native_command_dispatch.rs", "fn main() {}\n")
+        command = FMT.rust_file_command(
+            "hia/tests/native_command_dispatch.rs", check=False
+        )
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2018")
+        self.assertEqual(command.cwd, source.parent)
+
+    def test_standalone_mapping_preserves_workspace_edition_inheritance(self):
+        self.write("hia/Cargo.toml", '[workspace.package]\nedition="2021"\n')
+        self.write(
+            "hia/tests/Cargo.toml",
+            '[package]\nname="harness"\nedition.workspace=true\n',
+        )
+        source = self.write("hia/tests/native_command_dispatch.rs", "fn main() {}\n")
+        command = FMT.rust_file_command(
+            "hia/tests/native_command_dispatch.rs", check=True
+        )
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+        self.assertEqual(command.cwd, source.parent)
+
     def test_rust_formatter_executes_in_owner_context_without_touching_neighbor(self):
         import json
 
