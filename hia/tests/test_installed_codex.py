@@ -36,6 +36,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_network_domains",
     "codex_hia_allowed_prefixes",
     "codex_hia_command_dispatch",
+    "codex_hia_network_host",
 )
 
 
