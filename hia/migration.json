@@ -80,14 +80,14 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_10_modules_and_8_opt_in_production_path_algorithms_passed",
+    "qualification_status": "three_generation_fixed_point_11_modules_with_scoped_linux_component_qualification",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "B1/B2/B3 byte equality; ten native modules; eight production-path algorithms plus a public UUID API with no repository production caller; original-Rust/ABI comparisons; three owner crates and listed Linux GNU consumers; relocated full CLI with eight symbols. Template performance, complete owners, default releases and other platforms remain pending.",
+    "qualification_scope": "Eleven modules rebuilt through B3. The prefix module passed current raw ABI, original Rust, complete execpolicy crate and relocated standalone CLI comparisons. Historical eight-symbol full Codex and workspace results remain scoped to the prior source; current full CLI/Core/workspace, performance, complete owners, default releases and other platforms are pending.",
     "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
@@ -171,7 +171,9 @@
         "original Rust behavior for every valid string input",
         "full UTF-8 validation before output publication"
       ],
-      "tests": ["hia/tests/test_utf8_boundaries.py"],
+      "tests": [
+        "hia/tests/test_utf8_boundaries.py"
+      ],
       "validation": {
         "native_selfhost": {
           "status": "passed",
@@ -625,6 +627,60 @@
         "generic iterator/AsRef/Drop effects",
         "public formatting and checked native result conversion"
       ]
+    },
+    {
+      "id": "prefix_match",
+      "hia_source": "hia/prefix_match.hepta",
+      "source_path": "codex-rs/execpolicy/src/rule.rs",
+      "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "source_function": "PrefixPattern::matches_prefix",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "linux_component_and_installed_standalone_passed_full_codex_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_prefix_match",
+        "source_wire": "u64 command_count, pattern_count; pattern_count groups of u64 alternative_count then u64 byte_length and bytes per alternative; min(command_count, pattern_count) length-prefixed command strings. All integers little-endian.",
+        "source_contract": "At least one pattern group; exactly one first-group alternative; later groups may have zero alternatives. Entire frame must be structurally valid and have no trailing bytes before matching.",
+        "output_wire": "u64 pattern_count for a match or zero for no match, little-endian",
+        "success_return": 8,
+        "invalid_input_return": 4294967295,
+        "short_output_return": 4294967294,
+        "error_precedence": "Short output before source validation.",
+        "workspace": "Unused; never read or written; null with zero length accepted.",
+        "error_effect": "Output unchanged; source/workspace never modified. Success writes only output bytes 0..8."
+      },
+      "tests": [
+        "hia/tests/test_prefix_match_abi.py",
+        "hia/tests/test_native_execpolicy_caller.py",
+        "hia/tests/native_execpolicy_caller.rs",
+        "hia/tests/test_installed_execpolicy.py"
+      ],
+      "validation": {
+        "native_selfhost": {
+          "status": "passed",
+          "artifact_generation": "B3",
+          "source_sha256": "7afed3bed9645253300482454b011328b0314da920c0b889f9872686db5e3101",
+          "archive_sha256": "b718da6fdfdb7f6c079b5c9daa1ff349933d7fecbfb1040adc8c867c2b10ba2f",
+          "native_abi_calls": 5937,
+          "original_rust_comparisons": 49938,
+          "skipped": 0,
+          "report": "hia/verification.json#prefix_match"
+        },
+        "production_dispatch": {
+          "status": "opt_in_linux_execpolicy_and_standalone_cli_passed",
+          "feature": "codex-execpolicy/hia-native",
+          "link": "static=codex_hia_prefix_match",
+          "default_release_migrated": false
+        },
+        "performance": {
+          "qualified": false,
+          "report": "hia/verification.json#prefix_match.performance"
+        },
+        "full_codex_and_core": {
+          "status": "pending_current_increment"
+        }
+      }
     }
   ],
   "capabilities": [
@@ -745,14 +801,18 @@
         "codex-rs/bwrap",
         "codex-rs/shell-escalation"
       ],
-      "migration_status": "pending",
+      "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
         "existing approval and execution policies",
         "filesystem and network isolation",
         "platform sandbox setup and denial behavior"
       ],
-      "next_implementation": "Port policy evaluation and platform integration while preserving the existing sandbox environment contracts and denial tests."
+      "next_implementation": "Execute the new full Codex/Core gates, close prefix performance, then migrate remaining policy evaluation and platform integration with existing denial tests.",
+      "candidate_modules": [
+        "prefix_match"
+      ],
+      "partial_scope": "Only PrefixPattern::matches_prefix uses HIA through codex-execpolicy/hia-native. Decision aggregation, rule metadata, resolved-program policy, Core integration and platform sandbox ownership are not migrated."
     },
     {
       "id": "mcp",
@@ -809,7 +869,11 @@
     },
     {
       "id": "sdk_frontends",
-      "source_roots": ["sdk", "codex-cli", "apps"],
+      "source_roots": [
+        "sdk",
+        "codex-cli",
+        "apps"
+      ],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -821,7 +885,10 @@
     },
     {
       "id": "patch_application",
-      "source_roots": ["codex-rs/apply-patch", "codex-rs/file-search"],
+      "source_roots": [
+        "codex-rs/apply-patch",
+        "codex-rs/file-search"
+      ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -830,11 +897,15 @@
         "Unicode context matching and search ordering"
       ],
       "next_implementation": "Complete platform/default release gates and HIA parser/file-update owners.",
-      "candidate_modules": ["seek_sequence"]
+      "candidate_modules": [
+        "seek_sequence"
+      ]
     },
     {
       "id": "string_utilities",
-      "source_roots": ["codex-rs/utils/string"],
+      "source_roots": [
+        "codex-rs/utils/string"
+      ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -942,7 +1013,10 @@
           "revision": "f33d8da316de8fdf27b504371f1a5310997ff548"
         }
       ],
-      "source_paths": ["hia/build.py", "hia/toolchain.json"],
+      "source_paths": [
+        "hia/build.py",
+        "hia/toolchain.json"
+      ],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -2372,11 +2446,30 @@
       "uuid_matches",
       "template_parser",
       "template_render",
-      "template_index"
+      "template_index",
+      "prefix_match"
     ],
-    "checks_passed": 60
+    "checks_passed": 62,
+    "build_report_sha256": "cfa066b9abbf52781c15f0313301d3eea5b6bba41471358d5ebe8da7b4826016"
   },
   "current_qualification": {
+    "report": "hia/verification.json#prefix_match",
+    "base_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+    "module_count": 11,
+    "configured_production_path_algorithms": 9,
+    "current_installed_standalone_symbols": 1,
+    "installed_full_codex_cli": "pending_current_increment",
+    "core_exec_policy": "pending_current_increment",
+    "whole_workspace_requalification": "pending_current_increment",
+    "prefix_performance_closed": false,
+    "template_performance_closed": false,
+    "other_platforms": "pending",
+    "default_release_migrated": false,
+    "post_test_deltas": "Only rustfmt on the differential test harness plus canonical documentation; exact hashes are in prefix_match.source_reconciliation."
+  },
+  "historical_qualification": {
+    "source_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+    "scope": "Prior ten-module record, not qualification of the current prefix increment.",
     "report": "hia/verification.json",
     "component_tested_git_tree": "54905a2186d56f7ee5dc37e812b14bb181340fd9",
     "source_snapshot_sha256": "575813eb6545264769276bd69b8e7ac957ae6d1be0c9b86adebf4b744c0d1dd5",
