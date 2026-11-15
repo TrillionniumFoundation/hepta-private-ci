@@ -13,6 +13,12 @@ UNIT = "//codex-rs/core:core-unit-tests-bin"
 NATIVE = "//codex-rs/core:core-all-test-bin"
 CROSS = "//codex-rs/core:core-all-test-windows-cross-bin"
 CUSTOM = "//codex-rs/fake:manual-helper"
+UNIX_PRODUCT = (
+    "//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin"
+)
+UNIX_READ_ONLY = "//codex-rs/hepta-agentd:hepta-agentd-read-only-product-test-bin"
+UNIX_HELPER = "//codex-rs/fake:manual-unix-helper"
+UNIX_TARGETS = [UNIX_PRODUCT, UNIX_READ_ONLY, UNIX_HELPER]
 PREFIX = ["//codex-rs/...", "-//codex-rs/v8-poc:all"]
 
 
@@ -29,14 +35,19 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
         query.write_text(
             "#!/usr/bin/env bash\n"
             "set -euo pipefail\n"
+            "printf '%s\\n' called >> \"${DISCOVERY_QUERY_CALLS}\"\n"
             "if [[ ${DISCOVERY_QUERY_FAIL:-0} == 1 ]]; then\n"
             "  printf '%s\\n' '//codex-rs/partial:partial-unit-tests-bin'\n"
             "  exit 37\n"
             "fi\n"
+            f"targets=('{UNIT}' '{NATIVE}' '{CROSS}' '{CUSTOM}')\n"
+            "if [[ $* != *requires-unix* ]]; then\n"
+            f"  targets+=('{UNIX_PRODUCT}' '{UNIX_READ_ONLY}' '{UNIX_HELPER}')\n"
+            "fi\n"
             "if [[ ${DISCOVERY_QUERY_CRLF:-0} == 1 ]]; then\n"
-            f"  printf '%s\\r\\n' '{UNIT}' '{NATIVE}' '{CROSS}' '{CUSTOM}'\n"
+            "  printf '%s\\r\\n' \"${targets[@]}\"\n"
             "else\n"
-            f"  printf '%s\\n' '{UNIT}' '{NATIVE}' '{CROSS}' '{CUSTOM}'\n"
+            "  printf '%s\\n' \"${targets[@]}\"\n"
             "fi\n",
             encoding="utf-8",
             newline="\n",
@@ -53,12 +64,15 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
         self.assertIsNotNone(self.bash, "Bash is required to test target discovery")
 
     def discover(self, runner_os, *args, crlf=False, query_failure=False):
+        calls = self.root / "query-calls"
+        calls.unlink(missing_ok=True)
         env = os.environ | {
             "RUNNER_OS": runner_os,
             "DISCOVERY_QUERY_CRLF": "1" if crlf else "0",
             "DISCOVERY_QUERY_FAIL": "1" if query_failure else "0",
+            "DISCOVERY_QUERY_CALLS": str(calls),
         }
-        return subprocess.run(
+        result = subprocess.run(
             [self.bash, str(self.script), *args],
             env=env,
             capture_output=True,
@@ -66,6 +80,11 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
             timeout=10,
             check=False,
         )
+        self.assertEqual(
+            calls.read_text().splitlines() if calls.exists() else [],
+            [] if "--unknown" in args else ["called"],
+        )
+        return result
 
     def test_native_platforms_keep_native_and_unit_tests(self):
         for runner_os in ["Windows", "Linux", "macOS"]:
@@ -73,12 +92,14 @@ class ClippyTargetDiscoveryTests(unittest.TestCase):
                 with self.subTest(runner_os=runner_os, crlf=crlf):
                     result = self.discover(runner_os, crlf=crlf)
                     self.assertEqual(result.returncode, 0, result.stderr)
+                    unix_targets = [] if runner_os == "Windows" else UNIX_TARGETS
                     self.assertEqual(
-                        result.stdout.splitlines(), PREFIX + [UNIT, NATIVE, CUSTOM]
+                        result.stdout.splitlines(),
+                        PREFIX + [UNIT, NATIVE, CUSTOM] + unix_targets,
                     )
 
     def test_explicit_cross_keeps_cross_and_unit_tests(self):
-        for runner_os in ["Windows", "Linux"]:
+        for runner_os in ["Windows", "Linux", "macOS"]:
             for crlf in [False, True]:
                 with self.subTest(runner_os=runner_os, crlf=crlf):
                     result = self.discover(

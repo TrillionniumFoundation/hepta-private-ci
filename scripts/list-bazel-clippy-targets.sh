@@ -22,10 +22,16 @@ done
 # Resolve the dynamic targets before printing anything so callers do not
 # continue with a partial list if `bazel query` fails. Target discovery is
 # local on all platforms.
+manual_rust_test_query='kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
+if [[ "${RUNNER_OS:-}" == "Windows" || $windows_cross_compile -eq 1 ]]; then
+  # Unconfigured query does not evaluate target_compatible_with. Preserve
+  # Unix-only process harnesses on Unix and omit them from Windows rosters.
+  manual_rust_test_query="${manual_rust_test_query} except attr(tags, \"requires-unix\", //codex-rs/...)"
+fi
 manual_rust_test_targets="$(
   ./.github/scripts/run-bazel-query-ci.sh \
     --output=label \
-    -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
+    -- "${manual_rust_test_query}"
 )"
 # Native Windows query output may use CRLF; normalize labels before suffix
 # matching so incompatible helper targets cannot leak through the filter.

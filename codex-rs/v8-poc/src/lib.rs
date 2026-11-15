@@ -36,6 +36,9 @@ mod tests {
         INIT.call_once(|| {
             v8::V8::initialize_platform(v8::new_default_platform(0, false).make_shared());
             v8::V8::initialize();
+            // V8 150 lazily initializes the shared ArrayBuffer backing pool.
+            // Create its first allocator before parallel tests create isolates.
+            drop(v8::new_default_allocator());
         });
     }
 
@@ -77,6 +80,22 @@ mod tests {
     #[test]
     fn evaluates_string_concatenation() {
         assert_eq!(evaluate_expression("'hello ' + 'world'"), "hello world");
+    }
+
+    #[test]
+    fn evaluates_multiple_isolates_concurrently() {
+        let barrier = std::sync::Barrier::new(2);
+        let results = std::thread::scope(|scope| {
+            let handles = ["1 + 2", "'hello ' + 'world'"].map(|expression| {
+                let barrier = &barrier;
+                scope.spawn(move || {
+                    barrier.wait();
+                    evaluate_expression(expression)
+                })
+            });
+            handles.map(|handle| handle.join().expect("isolate evaluation should complete"))
+        });
+        assert_eq!(results, ["3", "hello world"]);
     }
 
     #[test]
