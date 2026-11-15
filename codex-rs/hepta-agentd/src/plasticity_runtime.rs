@@ -32,6 +32,7 @@ use crate::AgentdTopologyHostErrorV1;
 use crate::AgentdTopologyWriterV1;
 use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityOwnerEvidenceResolverV1;
+use crate::PlasticityRuntimeHandleV1;
 use crate::propose_agentd_plasticity_v1;
 use crate::propose_agentd_topology_plasticity_v1;
 
@@ -52,7 +53,7 @@ impl fmt::Display for PlasticityRuntimeCallErrorV1 {
 }
 impl StdError for PlasticityRuntimeCallErrorV1 {}
 
-enum PlasticityRuntimeCommandV1 {
+pub(crate) enum PlasticityRuntimeCommandV1 {
     Parameter {
         request: Box<ParameterPlasticityProductRequestV1>,
         now: u64,
@@ -67,53 +68,6 @@ enum PlasticityRuntimeCommandV1 {
             Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1>,
         >,
     },
-}
-
-/// Bounded in-process product handle. It contains no writer, store or trust-root
-/// material, so dropping/recreating a handle cannot create another owner.
-#[derive(Clone)]
-pub struct PlasticityRuntimeHandleV1 {
-    sender: mpsc::Sender<PlasticityRuntimeCommandV1>,
-}
-
-impl PlasticityRuntimeHandleV1 {
-    pub async fn propose_parameter(
-        &self,
-        request: ParameterPlasticityProductRequestV1,
-        now: u64,
-    ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        let (response, receive) = oneshot::channel();
-        self.sender
-            .send(PlasticityRuntimeCommandV1::Parameter {
-                request: Box::new(request),
-                now,
-                response,
-            })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
-        receive
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
-    }
-
-    pub async fn propose_topology(
-        &self,
-        request: TopologyPlasticityProductRequestV1,
-        now: u64,
-    ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        let (response, receive) = oneshot::channel();
-        self.sender
-            .send(PlasticityRuntimeCommandV1::Topology {
-                request: Box::new(request),
-                now,
-                response,
-            })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
-        receive
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
-    }
 }
 
 /// Immutable construction envelope consumed exactly once by Agentd runtime
@@ -210,7 +164,7 @@ pub fn plasticity_runtime_channel_v1(
     validate_plasticity_runtime_capacity(capacity)?;
     let (sender, receiver) = mpsc::channel(capacity);
     Ok((
-        PlasticityRuntimeHandleV1 { sender },
+        PlasticityRuntimeHandleV1::new(sender),
         PlasticityRuntimeOwnerV1 {
             receiver,
             artifacts,
