@@ -80,19 +80,19 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "formal_parse_component_and_receipts_passed_historical_direct_rustc_parity_current_cargo_pending",
+    "qualification_status": "formal_render_component_and_receipts_passed_current_cargo_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Eighteen B3 modules cover sixteen algorithm groups. The formal build preserves all seventeen prior module sources and 51 namespaced artifacts; the three template-parse artifacts match the frozen prototype. The formal template ABI passed 52179 real calls, including 9255 atomic no-write failures, and the template receipt gate passed 76 checks. Historical direct-rustc evidence compiled the complete unchanged four-file a201 template crate and complete candidate: all 14 original tests passed on each side, four uncapped strict Clippy invocations used the actual 37 workspace lint levels, and 13206 public pairs plus 21 constructed values agreed with 40287 real parse calls. Those observations used three genuine Cargo-produced dependency rlibs and all 54 locked registry source files; they are not a current Cargo owner or installation result. Rendering remains the original Rust algorithm. The formatted fifteen-file portable public gate and final owner workflow are integrated, but current Cargo/public execution remains pending. Actual owner tests, default/native uncapped strict lint, scoped string/template fix, six consumers, installed parse symbol checks and final-source CI remain pending. The corrected UUID parent is adopted; both initial failed CI runs and library-only positive UUID scope are preserved. The integrated eighteen-module installed gate requires sixteen reachable CLI symbols and all seventeen default-reference absences, including UUID; standalone apply_patch retains eight symbols. Source adoption and formatting do not qualify these runtime gates. All 15 complete capabilities, the 198-crate baseline, required platforms, default dispatch, whole-product performance and retirement remain open.",
+    "qualification_scope": "Linux x86-64 GNU, opt-in hia-native. Nineteen B3 modules cover seventeen algorithm groups. One actual fresh B1/B2/B3 and nineteen-module build completed; all 54 inherited namespaced artifacts are byte-identical and the three renderer artifacts match the frozen prototype. A subsequent controller receipt-reader failure is retained. The corrected continuation reused that exact successful build, rechecked its complete artifacts and executed the previously unrun formal renderer ABI and receipt gates: 66026 calls, 54262 whole-output no-write transport failures, zero skips, and 78 receipt checks. Historical complete-original direct-rustc public parity remains separately scoped. Current Cargo/public, owner and six-consumer suites, strict/fix, installed combination and CI remain pending. The public gate now verifies actual Cargo OUT_DIR staged archive bytes against admitted formal archives; both prior eighteen-module CI failures remain failures. Corrected seventeen-module push and PR CI archives were fully audited, but do not qualify this new source. All15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and legacy retirement remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json#template_parse_increment",
+    "report": "hia/verification.json#template_render_increment",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size.",
-    "scope": "Linux x86-64 GNU, opt-in hia-native. Eighteen B3 modules cover sixteen algorithm groups. The formal build preserves all seventeen prior module sources and 51 namespaced artifacts; the three template-parse artifacts match the frozen prototype. The formal template ABI passed 52179 real calls, including 9255 atomic no-write failures, and the template receipt gate passed 76 checks. Historical direct-rustc evidence compiled the complete unchanged four-file a201 template crate and complete candidate: all 14 original tests passed on each side, four uncapped strict Clippy invocations used the actual 37 workspace lint levels, and 13206 public pairs plus 21 constructed values agreed with 40287 real parse calls. Those observations used three genuine Cargo-produced dependency rlibs and all 54 locked registry source files; they are not a current Cargo owner or installation result. Rendering remains the original Rust algorithm. The formatted fifteen-file portable public gate and final owner workflow are integrated, but current Cargo/public execution remains pending. Actual owner tests, default/native uncapped strict lint, scoped string/template fix, six consumers, installed parse symbol checks and final-source CI remain pending. The corrected UUID parent is adopted; both initial failed CI runs and library-only positive UUID scope are preserved. The integrated eighteen-module installed gate requires sixteen reachable CLI symbols and all seventeen default-reference absences, including UUID; standalone apply_patch retains eight symbols. Source adoption and formatting do not qualify these runtime gates. All 15 complete capabilities, the 198-crate baseline, required platforms, default dispatch, whole-product performance and retirement remain open."
+    "scope": "Linux x86-64 GNU, opt-in hia-native. Nineteen B3 modules cover seventeen algorithm groups. One actual fresh B1/B2/B3 and nineteen-module build completed; all 54 inherited namespaced artifacts are byte-identical and the three renderer artifacts match the frozen prototype. A subsequent controller receipt-reader failure is retained. The corrected continuation reused that exact successful build, rechecked its complete artifacts and executed the previously unrun formal renderer ABI and receipt gates: 66026 calls, 54262 whole-output no-write transport failures, zero skips, and 78 receipt checks. Historical complete-original direct-rustc public parity remains separately scoped. Current Cargo/public, owner and six-consumer suites, strict/fix, installed combination and CI remain pending. The public gate now verifies actual Cargo OUT_DIR staged archive bytes against admitted formal archives; both prior eighteen-module CI failures remain failures. Corrected seventeen-module push and PR CI archives were fully audited, but do not qualify this new source. All15 full capabilities, historical198 inventory, required platforms, default release, whole-product performance and legacy retirement remain open."
   },
   "candidate_modules": [
     {
@@ -869,7 +869,7 @@
       "behavior": [
         "HIA owns delimiter priority, escaped literal selection, placeholder scanning, Unicode whitespace trimming, four parse errors and ordered new/append/placeholder spans.",
         "Rust validates the returned frame and each source span while materializing independent owned strings and the existing BTreeSet/Vec; malformed plans never return a partial Template. Original Error/Debug/Clone/Eq behavior remains.",
-        "The original Rust render algorithm and default platform parser remain. The selected native parse path has no Rust semantic fallback."
+        "The original default platform parser remains. The selected native parse route has no Rust fallback; opt-in rendering uses the separate HIA renderer."
       ],
       "tests": [
         "hia/tests/test_template_parse_abi.py",
@@ -879,6 +879,41 @@
       ],
       "validation": {
         "current": "hia/verification.json#template_parse_increment"
+      }
+    },
+    {
+      "id": "template_render",
+      "hia_source": "hia/template_render.hepta",
+      "source_path": "codex-rs/utils/template/src/lib.rs",
+      "original_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+      "source_functions": [
+        "Template::render",
+        "render_template"
+      ],
+      "production_algorithm_group": "template_render",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "formal_render_component_and_receipts_passed_current_cargo_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_template_render",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/template_render_buffer_contract.json",
+        "contract_sha256": "7fd49d58237c372d1d875463acf0582a28a32e27317a4eac6f290598fd5f54b5"
+      },
+      "behavior": [
+        "HIA selects duplicate/missing/extra-variable errors, looks up segments and emits exact rendered bytes.",
+        "Rust preserves original generic iteration, AsRef calls, error ownership and destructor order; the selected native route has no Rust semantic fallback.",
+        "Default/reference Rust code remains; performance and allocation-failure equivalence are not qualified."
+      ],
+      "tests": [
+        "hia/tests/test_template_render_abi.py",
+        "hia/tests/test_native_template_parse_caller.py",
+        "hia/tests/test_build_receipt.py",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "current": "hia/verification.json#template_render_increment"
       }
     }
   ],
@@ -2632,7 +2667,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_eighteen_module_template_parse_admission_passed_other_current_gates_pending",
+    "status": "current_nineteen_module_template_render_admission_passed_other_current_gates_pending",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2651,16 +2686,17 @@
       "patch_application",
       "patch_standalone",
       "uuid_find",
-      "template_parse"
+      "template_parse",
+      "template_render"
     ],
-    "checks_passed": 76,
+    "checks_passed": 78,
     "scalar_build_admission_checks_passed": 120,
     "shared_cargo_helper_changed": false,
-    "report": "hia/verification.json#template_parse_increment",
-    "checks_passed_scope": "76 current template_parse mutation checks admit all eighteen locked modules; inherited results retain their actual source scopes.",
+    "report": "hia/verification.json#template_render_increment",
+    "checks_passed_scope": "78 current renderer mutation checks admit all nineteen locked modules; inherited checks retain their actual scopes.",
     "mutation_modules": [
-      "template_parse"
+      "template_render"
     ],
-    "scalar_build_admission_checks_scope": "Historical fourteen-module 120-check result; current eighteen-module scalar gate pending."
+    "scalar_build_admission_checks_scope": "Historical fourteen-module120-check result; current nineteen-module scalar gate pending."
   }
 }
