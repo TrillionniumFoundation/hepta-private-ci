@@ -335,6 +335,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &mut self,
         source: impl SelectionSources,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        #[cfg(test)]
+        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(8);
         let started_at = now()?;
         if self.completion_fenced {
             return Err(OwnerError::CommitUncertain.into());
@@ -344,7 +346,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             let before = self.training_evidence(&source).await?;
             authenticate_training(&self.config, &before, now()?)?;
         }
+        #[cfg(test)]
+        let hepta_readback_journal = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(15);
         let bytes = self.journal.read(&self.saved)?;
+        #[cfg(test)]
+        drop(hepta_readback_journal);
         let result = self
             .finish_original_readback(
                 &source, &observed, &bytes, started_at, /*new_attestation*/ false,
@@ -360,6 +366,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &self,
         source: &impl SelectionSources,
     ) -> Result<LearningIterationObservationV1, Error> {
+        #[cfg(test)]
+        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(9);
         LearningIterationCoordinatorV1::from_snapshot(source.snapshot().clone())?;
         self.config.scope.validate_snapshot(source.snapshot())?;
         if source.snapshot().request != self.config.decision.request
@@ -380,6 +388,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         &self,
         source: &impl SelectionSources,
     ) -> Result<SignedLearningEvidenceV1, Error> {
+        #[cfg(test)]
+        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(10);
         let trainer: &LearningIterationEvidenceClientV1 = source.trainer();
         Ok(trainer
             .readback(source.snapshot(), training_receipt(&self.config)?)
@@ -394,6 +404,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         started_at: u64,
         new_attestation: bool,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        #[cfg(test)]
+        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(11);
         let completed = self.decode_completed(source, observed, bytes)?;
         // The post-observation covers the publication after the original
         // journal read or effect. Its predecessor is read once after that I/O;
@@ -415,9 +427,13 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
                 self.training_evidence(source).await?
             }
         };
+        #[cfg(test)]
+        let hepta_readback_journal = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(15);
         if self.journal.read(&self.saved)? != bytes {
             return Err(OwnerError::CommitUncertain.into());
         }
+        #[cfg(test)]
+        drop(hepta_readback_journal);
         let current = now()?;
         self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)
     }
@@ -435,6 +451,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         ),
         Error,
     > {
+        #[cfg(test)]
+        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(12);
         let (payload, signed) = learning_owner_evidence::decode(bytes)?;
         let receipt = receipt(&self.config, observed, signed.issued_at)?;
         if payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?
@@ -461,6 +479,8 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         current: u64,
         new_attestation: bool,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        #[cfg(test)]
+        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(13);
         let (receipt, payload, signed) = completed;
         if current < started_at {
             return Err(OwnerError::Binding("original Selector clock moved backwards").into());
@@ -563,6 +583,8 @@ fn authenticate_training(
     evidence: &SignedLearningEvidenceV1,
     current: u64,
 ) -> Result<VerifiedLearningEvidenceV1, Error> {
+    #[cfg(test)]
+    let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(14);
     if evidence != &config.training_evidence {
         return Err(OwnerError::Binding("changed original Training signature").into());
     }

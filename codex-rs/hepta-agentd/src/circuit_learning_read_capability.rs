@@ -142,6 +142,8 @@ impl OriginalCircuitLearningReadClientV1 {
     /// Each invocation performs original owner I/O. Failed or cancelled reads
     /// consume this connection. A historical successful read cannot satisfy it.
     pub async fn read_current(&self) -> Result<OriginalCircuitLearningReadbackV1, Error> {
+        #[cfg(test)]
+        let _hepta_readback_span = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(16);
         let mut channel = self
             .channel
             .try_lock()
@@ -161,12 +163,16 @@ impl OriginalCircuitLearningReadClientV1 {
             .checked_add(1)
             .ok_or(Error::Unavailable)?;
         let bytes = serde_json::to_vec(&request)?;
+        #[cfg(test)]
+        let hepta_readback_task_rpc = crate::learning_iteration_evidence_client::completed_read_timing::Span::new(17);
         let (channel, response) = tokio::task::spawn_blocking(move || {
             let response = channel.peer.request(&bytes)?;
             Ok::<_, Error>((channel, response))
         })
         .await
         .map_err(|_| Error::Unavailable)??;
+        #[cfg(test)]
+        drop(hepta_readback_task_rpc);
         let response: wire::Response = serde_json::from_slice(&response)?;
         response.require_request(&request)?;
         let current = response.read.decode(&self.context)?;
