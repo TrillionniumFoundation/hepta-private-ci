@@ -13,7 +13,7 @@ import re
 import sys
 
 sys.dont_write_bytecode = True
-DRIVER_SHA256 = "d725d1f8fd33a9849f44d274bd98ad7b0ef97ae35b4499a847e28ca7b1c1a436"
+DRIVER_SHA256 = "0306fc9ae81434d1846ad0e1ebd037e7d027b99ea3abd4afdf59bcfc0c3468c8"
 
 
 def verify(args, report):

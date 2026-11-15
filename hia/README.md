@@ -289,14 +289,22 @@ not claimed for these two additions. Targeted real-library checks passed
 20 pairs/40 processes and 7 delimiter pairs in 2 processes, with zero mismatches
 or skips. These probes do not qualify the full repaired matrix.
 
+The subsequent clean `1083727e` run passed the fresh complete effects gate,
+then the application entrypoint rejected a stale `DRIVER_SHA256`. No application
+observer was compiled or executed, and final fix/format did not run. This
+follow-up changes that one constant to the already published driver SHA,
+retains the strict check and corpus, and verifies both hardcoded harness pins
+against their actual files. The earlier bounded probe did not exercise this
+full entrypoint admission; both failed runs are retained.
+
 The current requirement is 1,470 original/native pairs and 2,940 processes
 across three public APIs. That complete repaired gate has not run. The three
 metadata documents, earlier two-import ordering follow-up and these six test
 files are outside the original prepublication preflight scope; all production
 inputs and native artifacts remain identical. Final fix/format, installed
 executables and complete current consumer CI remain pending. The direct parent
-is `08dfcb76`; its observed push step failure is not presented as a terminal CI
-result. The earlier nextest version failure and UNKNOWN durable launch retain
+is `1083727e`; its consumer CI is audited separately from the H public run, and
+no H result substitutes its actual CI outcome. The earlier nextest version failure and UNKNOWN durable launch retain
 their original evidence and status. The machine-readable failure and targeted
 repair records are linked under `patch_application_increment` in verification.
 
