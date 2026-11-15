@@ -27,6 +27,7 @@ required-features = ["trusted-inprocess-eval"]
 workspace = true
 
 [dependencies]
+codex-hepta-cell-roles = { path = "../hepta-cell-roles" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-types = { path = "../hepta-types" }
 

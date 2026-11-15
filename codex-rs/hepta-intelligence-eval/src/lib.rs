@@ -457,3 +457,7 @@ pub use memory_citation_gate::MemorySnapshotCensusV1;
 pub use memory_citation_gate::VerifiedMemoryCitationGateV1;
 pub use memory_citation_gate::memory_citation_census_payload_v1;
 pub use memory_citation_gate::verify_memory_citation_census_v1;
+
+mod cell_role_qualification_replay;
+pub use cell_role_qualification_replay::CELL_ROLE_QUALIFICATION_REPLAY_SCHEMA_V1;
+pub use cell_role_qualification_replay::CellRoleQualificationReplayV1;

@@ -103,3 +103,38 @@ pub use manifests::SensorUncertaintyProfileV1;
 pub use manifests::UncertaintyDistributionV1;
 pub use manifests::UtcTimestampV1;
 pub use numeric_conversion::RegisteredNumericConversionReceiptV1;
+
+mod cell_role;
+mod cell_split;
+pub use cell_role::CellCapabilityProfileV1;
+pub use cell_role::CellDefinitionV2;
+pub use cell_role::CellPersistenceClassV1;
+pub use cell_role::CellRoleContractErrorV1;
+pub use cell_role::CellRoleV1;
+pub use cell_role::CellStepReceiptV1;
+pub use cell_role::CellStepStatusV1;
+pub use cell_role::CellUpdateModeV1;
+pub use cell_split::CellBundleBindingV1;
+pub use cell_split::CellBundleInheritanceV1;
+pub use cell_split::CellBundleModeV1;
+pub use cell_split::CellCachePolicyV1;
+pub use cell_split::CellChildPortBindingV1;
+pub use cell_split::CellChildV1;
+pub use cell_split::CellInFlightPolicyV1;
+pub use cell_split::CellParentDispositionV1;
+pub use cell_split::CellParentRetirementPlanV1;
+pub use cell_split::CellPortCompatibilityV1;
+pub use cell_split::CellResourceDeltaV1;
+pub use cell_split::CellRouteModeV1;
+pub use cell_split::CellRoutePartitionV1;
+pub use cell_split::CellSplitContractErrorV1;
+pub use cell_split::CellSplitEvaluationBindingV1;
+pub use cell_split::CellSplitV1;
+pub use cell_split::CellStateSplitPlanV1;
+pub use cell_split::CellStateTransformKindV1;
+pub use cell_split::CellStateTransformV1;
+pub use cell_split::MAX_CELL_SPLIT_CHILDREN_V1;
+
+#[cfg(test)]
+#[path = "cell_split_tests.rs"]
+mod cell_split_tests;
