@@ -75,20 +75,20 @@
   "toolchain": {
     "lock": "hia/toolchain.json",
     "repository": "https://github.com/TrillionniumFoundation/Hepta",
-    "revision": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
     "implemented_target": "x86_64-unknown-linux-gnu",
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "three_generation_fixed_point_10_modules_and_8_opt_in_production_path_algorithms_passed",
+    "qualification_status": "three_generation_fixed_point_and_twelve_component_gates_passed",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "B1/B2/B3 byte equality; ten native modules; eight production-path algorithms plus a public UUID API with no repository production caller; original-Rust/ABI comparisons; three owner crates and listed Linux GNU consumers; relocated full CLI with eight symbols. Template performance, complete owners, default releases and other platforms remain pending.",
-    "compiler_generation_sha256": "bfd603dd2b40974d2083b567b4295fb3975938da8435dd636514fc197c485de0",
+    "qualification_scope": "Twelve native HIA components and ten opt-in production-path symbols on Linux GNU. Complete capability ownership, default dispatch, performance parity and other platforms remain open.",
+    "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
     "report": "hia/verification.json",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
@@ -101,7 +101,7 @@
       "source_blob": "9934fa55e767cacf85db7e459a913e72c9d828a0",
       "source_function": "seek_sequence",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_selfhost_component_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -125,26 +125,16 @@
         "codex-rs/apply-patch/tests/suite/hia_native.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "valid_cases": 2327,
-          "invalid_cases": 86,
-          "buffer_boundary_calls": 135,
-          "original_rust_comparison": true,
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
-          "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
-          "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1"
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-apply-patch/hia-native",
-          "link": "static=codex_hia_seek_sequence",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+        "archive_sha256": "06be5cfad619089bea7ea2e874ee854b1db344a229a71adc65d67c88628a2eb1",
+        "library_sha256": "4a443a187e259d5c012abd508c68f7066b6b0744d441789bf736b92ad08aaabc",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       }
     },
     {
@@ -154,7 +144,7 @@
       "source_blob": "2d081f79e29d1d7d9a351c92700262e4ed98b87f",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_candidate",
-      "qualification_status": "native_selfhost_component_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -171,26 +161,20 @@
         "original Rust behavior for every valid string input",
         "full UTF-8 validation before output publication"
       ],
-      "tests": ["hia/tests/test_utf8_boundaries.py"],
+      "tests": [
+        "hia/tests/test_utf8_boundaries.py"
+      ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "tests": 6,
-          "skipped": 0,
-          "native_calls": 75109,
-          "rust_oracle_calls": 2093,
-          "core_vm_calls": 56,
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
-          "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
-          "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17"
-        },
-        "production_dispatch": {
-          "status": "pending"
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+        "archive_sha256": "c3750af87b47986f3ba2d2347c53436de60d82f08cf185db7cbf2325c104ea17",
+        "library_sha256": "73f90541e1b138753902ad071e28695e99b35495ff770f7039241cba0f8a07c5",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       }
     },
     {
@@ -199,7 +183,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "take_bytes_at_char_boundary",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -216,25 +200,16 @@
         "codex-rs/utils/string/src/hia_native_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
-          "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
-          "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
-          "tests": 5,
-          "skipped": 0,
-          "original_rust_comparisons": 18559
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_utf8_prefix",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+        "archive_sha256": "d21b8419a17395f89c615b8ff063bea453e53e6bf2061dfaf377e5cfe6341a4c",
+        "library_sha256": "450cea563e824fc8ef25c72771107a3b629405acc711073819103f9f6bd4760f",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       }
     },
     {
@@ -243,7 +218,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "sanitize_metric_tag_value",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -272,26 +247,16 @@
         "codex-rs/utils/string/src/hia_native_metric_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "tests": 6,
-          "skipped": 0,
-          "original_rust_comparisons": 40992,
-          "abi_native_calls": 10535,
-          "report": "hia/verification.json",
-          "source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
-          "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
-          "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae"
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_metric_tag",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+        "archive_sha256": "1f3c53e668155d9ebc4f3499f9ddf210b74bf31e9011b3d875b42f887d8f1bae",
+        "library_sha256": "1b9ebfbc3aa348f62ecf1a77d3ab3cf2f5a5ab928769134d2885765c3b30d180",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       }
     },
     {
@@ -325,30 +290,20 @@
         "codex-rs/utils/string/src/markdown_location_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
-          "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
-          "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
-          "tests": 7,
-          "skipped": 0,
-          "original_rust_comparisons": 164791,
-          "abi_native_calls": 1289
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_markdown_location",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+        "archive_sha256": "c80d77885c6d1e518dd96c782bd091c40009c4a423480d3b40cec2d73bc490c7",
+        "library_sha256": "966be5bc181e85f5461766c227954ea1e6d244f574dd83d5ac4752b53dd2fee1",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       }
     },
     {
@@ -382,30 +337,20 @@
         "codex-rs/utils/string/src/ascii_json_tests.rs"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_caller_and_crate_tests_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
-          "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
-          "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
-          "tests": 7,
-          "skipped": 0,
-          "original_rust_comparisons": 27075,
-          "abi_native_calls": 957
-        },
-        "production_dispatch": {
-          "status": "native_linux_crate_tests_passed",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_ascii_json_fragment",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+        "archive_sha256": "fd7f868a2efe10d2be82256faed5c010a182748eb2252c87bb49b53fe3e85d3c",
+        "library_sha256": "4e7edd6081b30d890c4a178bc4b7872e3321b7eabe173f78894b479016765894",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       }
     },
     {
@@ -414,7 +359,7 @@
       "source_path": "codex-rs/utils/string/src/lib.rs",
       "source_function": "find_uuids",
       "implementation_status": "native_with_opt_in_public_api_no_repository_production_caller",
-      "qualification_status": "native_linux_public_api_and_crate_tests_passed",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -440,26 +385,16 @@
         "codex-rs/utils/string/src/uuid_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
-          "library_sha256": "5972557274b1ef6ce2a0e76712781534f179d18eae96caf842c7a61225bd0d02",
-          "archive_sha256": "a62ca9814c7422b12cee721ce1c67db524870740e14933fad48bfe8d630e1d1f",
-          "tests": 6,
-          "skipped": 0,
-          "original_rust_comparisons": 26808,
-          "abi_native_calls": 34861
-        },
-        "production_dispatch": {
-          "status": "public_api_only_no_repository_production_caller",
-          "feature": "codex-utils-string/hia-native",
-          "link": "static=codex_hia_uuid_matches",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
+        "archive_sha256": "a62ca9814c7422b12cee721ce1c67db524870740e14933fad48bfe8d630e1d1f",
+        "library_sha256": "5972557274b1ef6ce2a0e76712781534f179d18eae96caf842c7a61225bd0d02",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       }
     },
     {
@@ -468,7 +403,7 @@
       "source_path": "codex-rs/utils/template/src/lib.rs",
       "source_function": "Template::parse",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_functional_tests_passed_performance_open",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -487,27 +422,16 @@
         "codex-rs/utils/template/src/parser_native_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
-          "library_sha256": "bc3b613d335b7bab98f281412024fcb2b19e55380124314e998248c3fe592a60",
-          "archive_sha256": "1c57968b2caedc582323ca89900bd90204cf497e96a4f471b88d9f624e70bb1d",
-          "tests": 7,
-          "skipped": 0,
-          "original_rust_parse_comparisons": 2334492,
-          "original_rust_render_comparisons": 78,
-          "abi_native_calls": 962
-        },
-        "production_dispatch": {
-          "status": "native_linux_opt_in_caller_tests_passed",
-          "feature": "codex-utils-template/hia-native",
-          "link": "static=codex_hia_template_parser",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
+        "archive_sha256": "1c57968b2caedc582323ca89900bd90204cf497e96a4f471b88d9f624e70bb1d",
+        "library_sha256": "bc3b613d335b7bab98f281412024fcb2b19e55380124314e998248c3fe592a60",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       },
       "performance_equivalence": false,
       "remaining_host_work": [
@@ -523,7 +447,7 @@
       "source_path": "codex-rs/utils/template/src/lib.rs",
       "source_function": "Template::render and build_variable_map",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_functional_tests_passed_performance_open",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -542,27 +466,16 @@
         "codex-rs/utils/template/src/render_native_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
-          "library_sha256": "86752db526f3be8d544bb60547255b05772534e2b86312edb72f02b360f5fb91",
-          "archive_sha256": "bd87e7e068658c55387c5a3cb8a8975551c2d6766c18303a54d51dd9c83c43be",
-          "tests": 5,
-          "skipped": 0,
-          "original_rust_comparisons": 1161985,
-          "iterator_effect_cases": 120,
-          "abi_native_calls": 457
-        },
-        "production_dispatch": {
-          "status": "native_linux_opt_in_caller_tests_passed",
-          "feature": "codex-utils-template/hia-native",
-          "link": "static=codex_hia_template_render",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
+        "archive_sha256": "bd87e7e068658c55387c5a3cb8a8975551c2d6766c18303a54d51dd9c83c43be",
+        "library_sha256": "86752db526f3be8d544bb60547255b05772534e2b86312edb72f02b360f5fb91",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       },
       "performance_equivalence": false,
       "remaining_host_work": [
@@ -578,7 +491,7 @@
       "source_path": "codex-rs/utils/template/src/lib.rs",
       "source_function": "Template placeholder ordering/deduplication and render variable lookup",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "native_linux_functional_tests_passed_performance_open",
+      "qualification_status": "current_native_selfhost_component_passed",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -597,26 +510,16 @@
         "codex-rs/utils/template/src/hia_native_index_tests.rs"
       ],
       "validation": {
-        "native_selfhost": {
-          "status": "passed",
-          "rust_version": "1.96.1",
-          "host": "ai395",
-          "artifact_generation": "B3",
-          "report": "hia/verification.json",
-          "source_sha256": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
-          "library_sha256": "065be7a88cfc09241bcaaf79355fcb537b77475c189ebae57ff7c082108305ad",
-          "archive_sha256": "d199980913d36eaf31c634c936571fae03be2d34cb765d917058306695afb5a6",
-          "tests": 6,
-          "skipped": 0,
-          "original_rust_public_api_comparisons": 2029,
-          "abi_native_calls": 609200
-        },
-        "production_dispatch": {
-          "status": "native_linux_opt_in_caller_tests_passed",
-          "feature": "codex-utils-template/hia-native",
-          "link": "static=codex_hia_template_index",
-          "default_release_migrated": false
-        }
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
+        "archive_sha256": "d199980913d36eaf31c634c936571fae03be2d34cb765d917058306695afb5a6",
+        "library_sha256": "065be7a88cfc09241bcaaf79355fcb537b77475c189ebae57ff7c082108305ad",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
       },
       "performance_equivalence": false,
       "remaining_host_work": [
@@ -625,6 +528,109 @@
         "generic iterator/AsRef/Drop effects",
         "public formatting and checked native result conversion"
       ]
+    },
+    {
+      "id": "truncate",
+      "hia_source": "hia/truncate.hepta",
+      "source_path": "codex-rs/utils/string/src/truncate.rs",
+      "source_blob": "fa5b871774c242fb1380b927dd34fd7f73d3680b",
+      "source_functions": [
+        "truncate_middle_chars",
+        "truncate_middle_with_token_budget"
+      ],
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "current_native_selfhost_component_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_truncate",
+        "source_contract": "Operations 0/1 validate arbitrary UTF-8 bytes; 4/5 require valid UTF-8 borrowed from Rust &str; 2/3 require empty source.",
+        "request": "Read-only 16-byte workspace: little-endian u64 operation, budget.",
+        "operations": {
+          "0": "strict chars plan",
+          "1": "strict token plan",
+          "2": "tokens to saturating bytes",
+          "3": "bytes to saturating approximate tokens",
+          "4": "trusted chars plan",
+          "5": "trusted token plan"
+        },
+        "output_wire": "Five little-endian u64 values: prefix_end, suffix_start, removed_units, original_tokens, kind. Scalar operations return value followed by four zero fields.",
+        "output_bytes": 40,
+        "success_return": 40,
+        "invalid_input_return": 4294967295,
+        "short_buffer_return": 4294967294,
+        "invalid_utf8_return": 4294967293,
+        "error_effect": "Every returned error preserves the complete source, request and output. Successful calls preserve the request and output beyond byte 39."
+      },
+      "behavior": [
+        "Assign the odd byte-budget remainder to the suffix and move both cut points to UTF-8 boundaries.",
+        "Count removed Unicode scalars for character markers; token markers retain the original nominal byte-budget accounting.",
+        "Preserve saturating multiply/add arithmetic and the original result-string comparison, including marker collisions that return None.",
+        "Borrow arbitrarily large valid strings without a bootstrap-capacity input limit or a Rust algorithm fallback.",
+        "Count complete eight-byte batches with checked unaligned v9 word loads; preserve individual-byte tail behavior."
+      ],
+      "tests": [
+        "hia/tests/test_native_truncate_caller.py",
+        "hia/tests/native_truncate_caller.rs",
+        "hia/tests/test_truncate_abi.py",
+        "codex-rs/utils/string/src/truncate_native_tests.rs"
+      ],
+      "validation": {
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "9eb40af80a77e5c7658de82cb13580e133931c0273a9cb0466e43c25bc2d1744",
+        "archive_sha256": "3dd358a5be6db2db8860e4e6e8a7d58d30ce104256d272b5304c1db8d0d865ff",
+        "library_sha256": "d79583344ca287f8404e715120301f843cc3bc3339dabd4968c5e28d25009b21",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
+      }
+    },
+    {
+      "id": "token_budget",
+      "hia_source": "hia/token_budget.hepta",
+      "source_path": "codex-rs/utils/string/src/truncate.rs",
+      "source_functions": [
+        "approx_token_count",
+        "approx_bytes_for_tokens",
+        "approx_tokens_from_byte_count"
+      ],
+      "production_algorithm_group": "truncate",
+      "implementation_status": "native_with_opt_in_production_caller",
+      "qualification_status": "current_native_selfhost_component_passed",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "interface": {
+        "entry": "codex_hia_token_budget",
+        "profile": "u64-pair-to-u64-v1",
+        "operations": {
+          "0": "min(value * 4, u64::MAX)",
+          "1": "min(value + 3, u64::MAX) / 4",
+          "other": "SIGILL"
+        },
+        "invalid_operation": "trap; all 64 operation bits are significant",
+        "value_domain": "all u64 values, including u64::MAX as a valid input and result"
+      },
+      "tests": [
+        "hia/tests/test_token_budget_abi.py",
+        "hia/tests/test_scalar_build_admission.py",
+        "hia/tests/test_native_truncate_caller.py",
+        "hia/tests/test_build_receipt.py"
+      ],
+      "validation": {
+        "report": "hia/verification.json",
+        "artifact_generation": "B3",
+        "target": "x86_64-unknown-linux-gnu",
+        "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+        "source_sha256": "44090a84b91590a53ef3b1ffe92b7674b218044091f0ebd838d29517e3102bda",
+        "archive_sha256": "791efb6220129bdeb722e27b9457e718f51219a162e6c45619462f84601c6eec",
+        "library_sha256": "424b0fc4529a7877bf4c94879c5db965930ab66fb58ca398be92600d0926565e",
+        "native_component_qualified": true,
+        "combined_product_gates_qualified": true,
+        "default_release_migrated": false
+      }
     }
   ],
   "capabilities": [
@@ -809,7 +815,11 @@
     },
     {
       "id": "sdk_frontends",
-      "source_roots": ["sdk", "codex-cli", "apps"],
+      "source_roots": [
+        "sdk",
+        "codex-cli",
+        "apps"
+      ],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -821,7 +831,10 @@
     },
     {
       "id": "patch_application",
-      "source_roots": ["codex-rs/apply-patch", "codex-rs/file-search"],
+      "source_roots": [
+        "codex-rs/apply-patch",
+        "codex-rs/file-search"
+      ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -830,11 +843,15 @@
         "Unicode context matching and search ordering"
       ],
       "next_implementation": "Complete platform/default release gates and HIA parser/file-update owners.",
-      "candidate_modules": ["seek_sequence"]
+      "candidate_modules": [
+        "seek_sequence"
+      ]
     },
     {
       "id": "string_utilities",
-      "source_roots": ["codex-rs/utils/string"],
+      "source_roots": [
+        "codex-rs/utils/string"
+      ],
       "migration_status": "partial_opt_in_caller",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -842,14 +859,16 @@
         "middle truncation and budget accounting",
         "metric tag, UUID, JSON and location helpers"
       ],
-      "next_implementation": "Complete middle truncation, budget accounting and remaining owner/default-release/platform gates. UUID matching is verified as an opt-in public API without a current repository production caller. JSON serialization outside the fragment encoder remains Rust.",
+      "next_implementation": "Qualify performance, complete owner coverage, default releases and required platforms for the connected string/truncation/token algorithms. UUID matching remains an opt-in public API without a current repository production caller. JSON serialization outside the fragment encoder remains Rust.",
       "candidate_modules": [
         "utf8_boundaries",
         "utf8_prefix",
         "metric_tag",
         "markdown_location",
         "ascii_json_fragment",
-        "uuid_matches"
+        "uuid_matches",
+        "truncate",
+        "token_budget"
       ]
     },
     {
@@ -942,7 +961,10 @@
           "revision": "f33d8da316de8fdf27b504371f1a5310997ff548"
         }
       ],
-      "source_paths": ["hia/build.py", "hia/toolchain.json"],
+      "source_paths": [
+        "hia/build.py",
+        "hia/toolchain.json"
+      ],
       "migration_status": "pending",
       "production_dispatch_migrated": false,
       "required_behavior": [
@@ -2372,25 +2394,35 @@
       "uuid_matches",
       "template_parser",
       "template_render",
-      "template_index"
+      "template_index",
+      "truncate",
+      "token_budget"
     ],
-    "checks_passed": 60
+    "checks_passed": 64,
+    "typed_scalar_mutation_checks_passed": 64,
+    "scalar_build_admission_checks_passed": 118
   },
   "current_qualification": {
     "report": "hia/verification.json",
-    "component_tested_git_tree": "54905a2186d56f7ee5dc37e812b14bb181340fd9",
-    "source_snapshot_sha256": "575813eb6545264769276bd69b8e7ac957ae6d1be0c9b86adebf4b744c0d1dd5",
-    "module_count": 10,
-    "installed_production_symbols": 8,
-    "template_performance_closed": false,
+    "module_count": 12,
+    "production_symbols": 10,
+    "native_component_qualification": "passed",
+    "combined_product_qualification": "passed",
     "whole_workspace_requalification": "passed_default_linux_gnu",
-    "default_workspace_tests": {
-      "passed": 19383,
-      "existing_skips": 53,
-      "flaky": 1
-    },
+    "template_performance_closed": false,
+    "truncate_and_token_budget_performance_closed": false,
     "native_windows_runtime": "pending_for_main_source",
-    "post_test_deltas": "See verification.json source_reconciliation for documentation and CI changes.",
-    "separate_windows_diagnostic": "Open: separate branch b10e6d45 has 180/189 sandbox tests passing with nine failures; it is not main-source qualification."
+    "native_macos_runtime": "pending_for_main_source",
+    "post_test_deltas": "Only three documentation paths; see verification.json source_reconciliation.",
+    "source_snapshot_sha256": "515c11aec52d9957812581c667842840e6a61a1f4a0a63c6a8ad9c427ab287ba",
+    "default_workspace_tests": {
+      "executed": 19432,
+      "passed": 19432,
+      "failed": 0,
+      "existing_skips": 53,
+      "skips_counted_as_passed": false,
+      "retries": 0,
+      "summary": "     Summary [ 800.487s] 19432 tests run: 19432 passed (3 slow), 53 skipped"
+    }
   }
 }
