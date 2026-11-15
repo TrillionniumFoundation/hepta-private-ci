@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--producer", type=Path, default=ROOT)
     parser.add_argument("--library-dir", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
@@ -46,7 +47,9 @@ def main():
     }
     inputs = {}
     try:
-        build, library_path, inputs = admit(ROOT, args.library_dir.resolve())
+        producer = args.producer.resolve(strict=True)
+        require(producer == ROOT, "standalone ABI producer differs from executing checkout")
+        build, library_path, inputs = admit(producer, args.library_dir.resolve())
         for path in (
             Path(__file__).resolve(),
             ROOT / "hia/tests/patch_standalone_oracle/abi_cases.py",
