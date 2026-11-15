@@ -1,0 +1,86 @@
+{
+  "observed_at": "2026-11-15T15:43:01.861730+00:00",
+  "base": "786fa6b0a49d95f60b3957b9a290c401960b4220",
+  "incoming": "4157c319f6031f8a431c13d5254a1f332c6cd6c8",
+  "ordinary_merge_tree": "2bc79679acd799f0966252a4fa5ace026b491a4c",
+  "normal_merge": true,
+  "conflicts": [],
+  "delta": [
+    "A\tqa/evidence/retention-reader-cfe0b879/BASELINE.json",
+    "A\tqa/evidence/retention-reader-cfe0b879/REMOTE_RECOVERY.json",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/ATTEMPT_HISTORY.json",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/NEGATIVE_AND_PIN.json",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT-before-oserror.json",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT.json",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/tests-before-oserror.stderr.log",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/tests-before-oserror.stdout.log",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/tests.stderr.log",
+    "A\tqa/evidence/retention-reader-cfe0b879/evidence/tests.stdout.log",
+    "A\tqa/evidence/retention-reader-cfe0b879/maintenance-attempt1.stderr.log",
+    "A\tqa/evidence/retention-reader-cfe0b879/maintenance-attempt1.stdout.log",
+    "A\tqa/evidence/retention-reader-cfe0b879/maintenance.json",
+    "A\tqa/evidence/retention-reader-cfe0b879/summary.json",
+    "M\tscripts/ndu_real_runtime/candidate_retention_report.py",
+    "M\tscripts/ndu_real_runtime/test_candidate_retention_report.py"
+  ],
+  "review": "Complete source/test delta reviewed. Strict object/list checks reject malformed nested evidence per episode; missing artifacts remain UNKNOWN, malformed artifacts and I/O/symlink errors are REJECTED. Failed rows keep original roster/denominators and do not prevent later valid pixel scoring. Source-plan/readback pins and HOLD/no-adoption flags remain enforced. No execution/model/runtime path changed.",
+  "all_incoming_paths_byte_identical": true,
+  "path_sha256": {
+    "qa/evidence/retention-reader-cfe0b879/BASELINE.json": "1fb46e838fb4224512fda4111cd507e9ea41221fca4c5e471bfefcf9eedf214f",
+    "qa/evidence/retention-reader-cfe0b879/REMOTE_RECOVERY.json": "c5a2193cdce1686cfb317a530b25b438398d9e4f16be7bfa49c3aebec2937d6a",
+    "qa/evidence/retention-reader-cfe0b879/evidence/ATTEMPT_HISTORY.json": "a1482dcd4d8453c97dfe0d9d92f154bc71210a5288c64f898b272cff3c6825c9",
+    "qa/evidence/retention-reader-cfe0b879/evidence/NEGATIVE_AND_PIN.json": "45512b52afdba389eb004867d33c5cee05edaa733155c242d0f1bff4d419ae16",
+    "qa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT-before-oserror.json": "c1d40590f528963b39383462ba731dac53c6dd67bbfcb311c0b44a8654afe04b",
+    "qa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT.json": "7a4c45af591cdef91c2e8a57559ea8510e90a774c0386e6f23e5cadfa10f6fc8",
+    "qa/evidence/retention-reader-cfe0b879/evidence/tests-before-oserror.stderr.log": "1e426edf0f8e97ae888cf5023a726739f2df79142574b29f06f7e1a50f387375",
+    "qa/evidence/retention-reader-cfe0b879/evidence/tests-before-oserror.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa/evidence/retention-reader-cfe0b879/evidence/tests.stderr.log": "c262dbd2427e019edab927d616d81002f14c39f251b76dc34d1e9455e323b9ae",
+    "qa/evidence/retention-reader-cfe0b879/evidence/tests.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa/evidence/retention-reader-cfe0b879/maintenance-attempt1.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa/evidence/retention-reader-cfe0b879/maintenance-attempt1.stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qa/evidence/retention-reader-cfe0b879/maintenance.json": "2b282c7524babd9a846ca036de5345a8aeee7adc69ad73b1a832477c0d8e0096",
+    "qa/evidence/retention-reader-cfe0b879/summary.json": "7182e3bdb3cde83ff6ae26f91d634fcbcb1f0705f6e3221846d15b2613f76c98",
+    "scripts/ndu_real_runtime/candidate_retention_report.py": "9b32a179297ad363c9dd9cb4408688d342dd31da7d27d8ae438e225c86ae71ab",
+    "scripts/ndu_real_runtime/test_candidate_retention_report.py": "cc942e636f135e562b75b26eecbb2a22dac2dd404e53e10beb6e232a595f0d67"
+  },
+  "historical_stream_integrity": [
+    {
+      "metadata": "qa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT.json",
+      "original_stream_name": "tests.stdout.log",
+      "retained_path": "qa/evidence/retention-reader-cfe0b879/evidence/tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "metadata": "qa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT.json",
+      "original_stream_name": "tests.stderr.log",
+      "retained_path": "qa/evidence/retention-reader-cfe0b879/evidence/tests.stderr.log",
+      "bytes": 2837,
+      "sha256": "c262dbd2427e019edab927d616d81002f14c39f251b76dc34d1e9455e323b9ae"
+    },
+    {
+      "metadata": "qa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT-before-oserror.json",
+      "original_stream_name": "tests.stdout.log",
+      "retained_path": "qa/evidence/retention-reader-cfe0b879/evidence/tests-before-oserror.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "metadata": "qa/evidence/retention-reader-cfe0b879/evidence/TEST_RESULT-before-oserror.json",
+      "original_stream_name": "tests.stderr.log",
+      "retained_path": "qa/evidence/retention-reader-cfe0b879/evidence/tests-before-oserror.stderr.log",
+      "bytes": 2626,
+      "sha256": "1e426edf0f8e97ae888cf5023a726739f2df79142574b29f06f7e1a50f387375"
+    }
+  ],
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "ndu_real_runtime.test_candidate_retention_report",
+    "-v"
+  ],
+  "test_exit": 0,
+  "reported_tests": 13,
+  "qualification": false
+}

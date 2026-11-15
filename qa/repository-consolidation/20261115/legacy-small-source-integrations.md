@@ -39,3 +39,20 @@ Incoming `ec23a433bfa9b47f8c9a6c5fa892dda313569cd5`. Reviewed complete immutable
 The fresh preview against `94909bc9f0a0bbd906c3d375b9f4decda7e50ffb` has the exact reviewed source delta;
 all incoming files retain their bytes. The focused suite passes 15 tests.
 Hashes, command and log are retained under `legacy-small/v2-exclusions`.
+
+## Retention-reader evidence shapes
+
+Incoming `4157c319f6031f8a431c13d5254a1f332c6cd6c8` strengthens nested
+object/list checks and per-episode error handling. Missing evidence stays UNKNOWN;
+malformed evidence, symlinks and unreadable nonmissing artifacts are REJECTED.
+The authoritative roster and failed-row denominators remain intact, while later
+valid episodes continue to be scored. Original source-plan pins are still checked
+before and after reading; an incompatible original plan is refused. All incoming
+source and evidence bytes are retained. Four historical test-stream size/SHA pins
+were independently checked, mapping the older metadata's original stream names
+to the retained `tests-before-oserror` files. That old run remains historical.
+
+The complete focused reader suite passes 13 tests, including recursive shape
+substitutions and later-episode real fixture pixel scoring. No real actor campaign
+or production adoption occurred. Details and the actual combined-source test log
+are retained under `legacy-small/retention-reader-shapes`.
