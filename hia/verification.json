@@ -305,19 +305,42 @@
         "object_sha256": "ef2746e068352399523590eb81df1f1f1b2814978ec4c6a4431deee98be52dfd",
         "library_sha256": "53f1c94554679d3a28c1848c16d837bc99985c3f7e4c5eec13af9858dee1e015"
       }
+    },
+    "policy_summary": {
+      "source_sha256": "f6b6f44bffaf5984116d6c5b3b3e0b619c5a944b0becd9a3e4bd7c6dbc9cc5ef",
+      "core_sha256": "002777022d35298fbc38d72df3623fbd647cd07eebfeca1cda298bd4176628c0",
+      "entry_profile": "borrowed-buffers-u32-v1",
+      "library_sha256": "a89676e42541d13f13ece5b863e6c0d6820082aa80d44dd17319e2ad42a394a0",
+      "library_bytes": 13096,
+      "static_link": {
+        "symbol": "codex_hia_policy_summary",
+        "library": "libcodex_hia_policy_summary.so",
+        "object": "policy_summary.namespaced.o",
+        "archive": "libcodex_hia_policy_summary.a",
+        "archive_member": "hia.o",
+        "archive_bytes": 3938,
+        "archive_sha256": "6c4a40b081f3ab50ade351a42cafd2fbca59b53d656630074d82f3960a50028a",
+        "text_sha256": "b7efd25f48c5655bb7c3391c9fa676a2ed0d4728c5441e5a7704b3efd12b33eb",
+        "defined_symbols": [
+          "codex_hia_policy_summary"
+        ],
+        "undefined_symbols": [],
+        "object_sha256": "7ba0d99a4d6dc8782436bbe3b4e1d9eb9cfa2b5191fb0fc9c5e3a0c91544ee28",
+        "library_sha256": "4087705fd25e1f13f2b59c836da2ccfde250d3c5f697eb1698fc5b51348773cf"
+      }
     }
   },
   "build_inputs": {
-    "toolchain_lock_sha256": "a554310979a41eb9edad66a756a27eb5606de9705e2107e160ddb44ecc35cecc",
+    "toolchain_lock_sha256": "165fb9046a6e95b6a4c82bfd4e2bf143b7918089d87b18691944d34f13fda43a",
     "build_driver_sha256": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
     "cargo_helper_sha256": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
     "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273"
   },
-  "build_report_sha256": "1a9a4f4c8da2e8523a584c68ce6aa74bce2924a656d2f83980cbe15955bb393b",
+  "build_report_sha256": "90c9c706d50e0f46a908eae45490b163366c8ef001ab32b5c60b51e157d8032d",
   "production_dispatch_migrated": false,
   "whole_codex_rewritten": false,
   "legacy_source_retired": false,
-  "opt_in_production_callers_verified": true,
+  "opt_in_production_callers_verified": false,
   "production_algorithms": {
     "seek_sequence": "patch context matching",
     "utf8_prefix": "UTF-8 prefix selection",
@@ -327,7 +350,8 @@
     "template_parser": "template delimiter grammar, Unicode trimming and byte-position errors",
     "template_render": "template validation precedence and segment decisions",
     "template_index": "template AVL ordering, deduplication, lookup and usage tracking",
-    "prefix_match": "Complete PrefixPattern matching, alternative byte equality and scalar count admission through the opt-in execpolicy caller; HIA owns both decisions."
+    "prefix_match": "Complete PrefixPattern matching, alternative byte equality and scalar count admission through the opt-in execpolicy caller; HIA owns both decisions.",
+    "policy_summary": "Complete pure RuleMatch reduction for Evaluation and CLI summary: presence, strictest decision and explicit-match flag."
   },
   "seek_sequence": {
     "schema": "codex.hia.seek-sequence-differential.v1",
@@ -1116,7 +1140,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "scope": "Stack-frame adapter on unchanged twelve-module Hepta 0de artifacts: 34 native plus 34 default execpolicy tests, two builds, relocated standalone 30 cases/60 processes, strict Clippy in both modes, scoped fix/fmt/diff checks passed in 11 steps. Earlier stack 49,938 public comparisons and 20 allocation cases (nine zero-allocation calls) bind by exact nine-file hashes. V3 raw/scalar/artifact/receipt evidence applies to identical reused artifacts and was not rerun. Full CLI/Core/workspace, performance, platforms, default release, complete ownership and retirement remain open.",
+  "scope": "Actual local thirteen-module build and executed scoped gates, followed by an exact source freeze. The formatted public harness has not executed. Published V4 is historical evidence only. No full CLI/Core/workspace/platform/performance/default-release/retirement closure is claimed.",
   "evidence_reports": {
     "seek_sequence": {
       "sha256": "203c1acec06c710c6db76ec62d4ea22c064e7b353033e941816fe7b2a586152b",
@@ -1371,16 +1395,16 @@
     }
   },
   "current_source_inputs": {
-    ".github/workflows/codex-hia-native.yml": "9b7b1846cd4515fd68585377d2429c5f65ac068df479f4a6cac08d3dda19481f",
+    ".github/workflows/codex-hia-native.yml": "3c53334e72ea9557e84dd91edbdcd010e26f250b1f715d74632058be4e93d94a",
     ".github/workflows/rusty-v8-release.yml": "25eb9da672e26f1da7f0c186c8f1b7395530f4f139aad6dcce5e234e9e3ced59",
     ".github/workflows/v8-canary.yml": "89f6a2bfeb3a6dbec431c64872c61dfb5e3f0f5444bf0c62a62237129734679d",
     "codex-rs/apply-patch/src/seek_sequence.rs": "d9a618f06c775370811a6064ca5b3fa057159cf752d161ee8d0504c1229e7a45",
     "codex-rs/cli/Cargo.toml": "b85af25d93b7994e9c7bc74ec8a29087be056f5cfe853f76ca63332b64275119",
     "codex-rs/execpolicy/BUILD.bazel": "1e5a7a8c87ce0a8f95fb482269d7f2624b94242f1a2082237f660f8386a3fdb8",
     "codex-rs/execpolicy/Cargo.toml": "d2da9231655293621f7d32474019c536004de03d01b6ff4f90bcf64fd00be6b2",
-    "codex-rs/execpolicy/build.rs": "5532d11378f6e38cff93e99c5a90ac850b541f831f189a9ff241e1fc7b3211ce",
+    "codex-rs/execpolicy/build.rs": "3321efcfc55ec7f7ca7c98eb796a15aebb628c2166159a7ae5badd79d0443f2a",
     "codex-rs/execpolicy/src/hia_native_prefix.rs": "8f658da4233784567f5c74086cfae0dca7d8fc545b2bb988a00aab411ebcd3c5",
-    "codex-rs/execpolicy/src/lib.rs": "ce894c27c783a94ae1649854170a1e4da0c003c41d884a6bfae4c70b9de2a332",
+    "codex-rs/execpolicy/src/lib.rs": "ffe798da13de49d9c5379cd87f2172abcd1044630a55ffb15c5b82a03eafe86d",
     "codex-rs/execpolicy/src/rule.rs": "2bb6276d98078f67b67717b265b006c280ec503007c94daa1ec7f58ca4959221",
     "codex-rs/linux-sandbox/tests/suite/landlock.rs": "3301d411053aaf43bf60435261aef451b115a1ba775a19d395cc104a203a9fcd",
     "codex-rs/login/Cargo.toml": "09f35415c4cdd324a270eaa95d27a99f16c9bf5519c55c8c128207a9235f2f50",
@@ -1430,8 +1454,8 @@
     "hia/tests/native_template_render.rs": "5520be3887d16d6a219b3ff97953e310c02c55a68767d48e5ec3d31802ec867b",
     "hia/tests/native_uuid_caller.rs": "ea5abc5c9efe0f3c09a257d23853b572ec266ef9358b39296f1e221fc7bff81f",
     "hia/tests/test_ascii_json_abi.py": "7a37660ec055db9b8beb597556b817d272e71acc212fad9cadd9c316ccdb3467",
-    "hia/tests/test_installed_codex.py": "45c1ae053e8ea11531e91c78e868c4d86b97f0779ff9102c1efd811cae5e442b",
-    "hia/tests/test_installed_execpolicy.py": "448619fcd33f8ede4ce2a7fee8be247bc498acbf6bf0a9afb7c1e8095bb6b92e",
+    "hia/tests/test_installed_codex.py": "fbcfde8b33d5cb097ece7d13ba079473a9155bda43203bdf49244000aa84873b",
+    "hia/tests/test_installed_execpolicy.py": "cde069eecea4b0b1e470aa3ee94e456a49b3dfd763fc4be19638e87d2cbc8e66",
     "hia/tests/test_native_ascii_json_caller.py": "9d259bead83682e0416cdf2275322ef44c3fa832bab5eaa9969aa4974f7c416d",
     "hia/tests/test_native_execpolicy_caller.py": "67f0bd663206f831c2f06d31771dd0e6a7bbe4e849ebc698231c18b302ccd466",
     "hia/tests/test_native_template_parser.py": "3442b35bae2e3620fcb9ff8c262307a131bd49e7c47ba2e5a6167d9a10917074",
@@ -1441,7 +1465,7 @@
     "hia/tests/test_template_parser_abi.py": "0c8b599c6792903891d9ee0abb88a6367661aef0b4c29a525c09dcc7efcab964",
     "hia/tests/test_template_render_abi.py": "a5a2ea257c35e3f8ce3589f03e23facc9c7fdd4daf12517862e9a253921558e7",
     "hia/tests/test_uuid_abi.py": "33d355c8fdcec9663f048f01e1e93184dce12c52177b32375e2ef656e8aaaaf8",
-    "hia/toolchain.json": "a554310979a41eb9edad66a756a27eb5606de9705e2107e160ddb44ecc35cecc",
+    "hia/toolchain.json": "165fb9046a6e95b6a4c82bfd4e2bf143b7918089d87b18691944d34f13fda43a",
     "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
     "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
     "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0",
@@ -1449,7 +1473,16 @@
     "hia/tests/test_prefix_admission_abi.py": "e43f76b0990e8a64db0f7603fd9a5dbc8df91a46236b2edb6129e645227e5921",
     "hia/tests/test_scalar_build_admission.py": "705cbbab65b52f92102824c0c8abd80302dedb6fa390400cb276cc6195b2f685",
     "hia/tests/native_execpolicy_allocations.rs": "7510b8911787fd638becdd63b70ec9df86228f11b62125e12cf7649e88b1c358",
-    "hia/tests/test_native_execpolicy_allocations.py": "5737c504400bbc3eb14f5f5253677667ff92eaacdcbe03ab17b7c9d0fbde0fbe"
+    "hia/tests/test_native_execpolicy_allocations.py": "5737c504400bbc3eb14f5f5253677667ff92eaacdcbe03ab17b7c9d0fbde0fbe",
+    "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
+    "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
+    "codex-rs/execpolicy/src/policy.rs": "bd337f0ea8b03a1b944bb921dc8cbb338ecf2c09c6b73c4395571c7fe5248db2",
+    "hia/policy_summary.hepta": "f6b6f44bffaf5984116d6c5b3b3e0b619c5a944b0becd9a3e4bd7c6dbc9cc5ef",
+    "hia/tests/native_policy_summary.rs": "323290da9790073f08e66871ba888ac9fa15a1dc24aad89490678437a22faf7b",
+    "hia/tests/native_policy_summary_allocations.rs": "8e26f419fbe1395023ad179d3cc2819d8762772ae58d83b4606ec95578842b31",
+    "hia/tests/native_policy_summary_failures.rs": "9e19cd091a0bccd8825c15201818ae9d1ec10b5b99479b45e7bb7ed718938bfb",
+    "hia/tests/test_native_policy_summary.py": "bc0f402f470e5cbbe078d60b53849b6a022fe7211fc7c270e31a69ac07dc64a5",
+    "hia/tests/test_policy_summary_abi.py": "3d4bcd9dd76abccb9acf09a6f1111ddeb9e3408caba6bbd6cf36489f0bf20d4c"
   },
   "workspace_requalification": {
     "status": "passed",
@@ -1491,7 +1524,7 @@
     "recorded_at_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
     "applies_to_current_prefix_increment": false
   },
-  "module_count": 12,
+  "module_count": 13,
   "public_api_components": {
     "uuid_matches": {
       "api": "codex_utils_string::find_uuids",
@@ -2469,8 +2502,8 @@
     "applies_to_current_prefix_increment": false,
     "evidence_rule": "Existing per-component reports retain their original hashes and scopes. Historical full CLI, Core consumers and workspace results are not a pass for the newly added prefix path."
   },
-  "production_callers_verification_scope": "Current stack adapter: complete execpolicy native/default crate and relocated standalone passed; earlier stack public/allocation runs bind by identical nine-file hashes. Recorded V3 artifact/component evidence remains in current_qualification. Full stack-adapter Codex CLI/Core requires future V4 CI.",
-  "current_source_inputs_scope": "Current stack code-input hashes: exactly three entries changed from 98429434; all nine fixture inputs match the earlier executed stack reports and remain unchanged through the current owner/fix/fmt gates. Canonical documentation is a subsequent draft and no full CLI/Core/workspace run is inferred.",
+  "production_callers_verification_scope": "Active evidence is policy_summary_qualification. Local production/standalone and original-owner comparisons are recorded, but final formatted harness CI and current full CLI/Core/workspace are pending.",
+  "current_source_inputs_scope": "Exact d7 source inputs plus the fifteen frozen policy-summary files. The executed public report uses the prior harness hash; both identities and the exact format delta are recorded separately.",
   "prefix_match": {
     "schema": "codex.hia.prefix-match-qualification.v1",
     "status": "linux_gnu_component_and_standalone_passed",
@@ -3104,7 +3137,7 @@
       "artifact_admission": "current_qualification.gates.scalar_artifact"
     }
   },
-  "borrowed_module_count": 11,
+  "borrowed_module_count": 12,
   "scalar_module_count": 1,
   "entry_profile_rule": {
     "default": "borrowed-buffers-u32-v1",
@@ -3115,7 +3148,7 @@
   "historical_evidence_scopes": {
     "recorded_at_revision": "be38c8b47a4955f7c7e453a570a688b07b1ad540",
     "applies_to_current_compiler": false,
-    "rule": "The following objects remain in their original positions and scopes. Their passed/status/count fields are historical. current_qualification records V3 local execution; published_v3_ci_history records exact published V3 CI; stack_frame_qualification records the changed stack adapter. New identities do not requalify old reports.",
+    "rule": "The listed objects retain historical source scopes. current_qualification records V3 local execution; published_v3_ci_history records V3 CI; stack_frame_qualification records the V4 local checkpoint; published_v4_ci_history records exact d7 CI. Active thirteen-module evidence is policy_summary_qualification. New identities do not requalify historical reports.",
     "fields": [
       "seek_sequence",
       "utf8_boundaries",
@@ -3924,7 +3957,10 @@
         "sha256": "54ce32168bc8506bd697085e1dd7fd32a06340907f0d3a8c25c9da59eff8362d",
         "bytes": 114382
       }
-    }
+    },
+    "recorded_at_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+    "applies_to_current_policy_summary_increment": false,
+    "subsequent_published_ci": "published_v4_ci_history"
   },
   "published_v3_ci_history": {
     "recorded_at_revision": "98429434a266d2165e9d3b4d6f1894bd77916917",
@@ -4057,5 +4093,406 @@
       "canary_scope": "Metadata job succeeded; canary_required was false and both build jobs were skipped. This is not a V8 native build pass."
     },
     "evidence_limits": "The ZIPs contain reports and logs, not compiled binaries. Module and executable hashes are report evidence. Core used an explicit exec-policy filter; owner suites are not the whole workspace. Allocation has no independent subprocess timeout. Performance, all required platforms, default release, complete ownership and retirement remain open."
+  },
+  "published_v4_ci_history": {
+    "source_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+    "source_tree": "08ca98a7ce509a29c59910c11e10d3a4cdbb1999",
+    "pr_merge_revision": "18acfc33830d81632ce2b72d87a6eb657d075021",
+    "base_revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+    "merge_same_tree_verified": true,
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "applies_to_current_policy_summary_increment": false,
+    "reports": [
+      {
+        "file": "ci-evidence/v4/native-ci-summary.json",
+        "sha256": "a26efc0d4afa45b5e9d74e227a07ec3e288887cef8b5644cd697bb9ac0be178b",
+        "bytes": 29424
+      },
+      {
+        "file": "ci-evidence/v4-broader-audit.json",
+        "sha256": "bfde0fc3ed7c4d4d042de4ca7b7fbb5bccf68094fd210c4ad846e2c0bad524b4",
+        "bytes": 36141
+      },
+      {
+        "file": "ci-evidence/v4-broader-final-audit.json",
+        "sha256": "90818731866a0dcde1a8bb4b75f15cb16c408edae5f97db7604e4a4a52a22557",
+        "bytes": 36383
+      }
+    ],
+    "runs": [
+      {
+        "run_id": 43679109773,
+        "event": "push",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43679109773",
+        "actual_checkout": {
+          "codex": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+          "hepta": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "evidence": "hia-toolchain.log",
+          "also_confirmed_in_original_job_log": true
+        },
+        "job_id": 132705660535,
+        "successful_steps": 41,
+        "failed_steps": 0,
+        "skipped_steps": 0,
+        "artifact_id": 14148203620,
+        "artifact_zip_sha256": "6d7e3dc40d1227dbe75b62d8185f47d09e4e3b3bca549911324c5a213ed2b636",
+        "artifact_bytes": 307287,
+        "verified_members": 66,
+        "performance_rows_slower_than_rust": 7
+      },
+      {
+        "run_id": 43679113356,
+        "event": "pull_request",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43679113356",
+        "actual_checkout": {
+          "codex": "18acfc33830d81632ce2b72d87a6eb657d075021",
+          "hepta": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+          "evidence": "hia-toolchain.log",
+          "also_confirmed_in_original_job_log": true
+        },
+        "job_id": 132705671260,
+        "successful_steps": 41,
+        "failed_steps": 0,
+        "skipped_steps": 0,
+        "artifact_id": 14147554712,
+        "artifact_zip_sha256": "d5794023b49fbea0c01992d787a019fa91ec3093b48e8937d99a5de0e2d32dcf",
+        "artifact_bytes": 307231,
+        "verified_members": 66,
+        "performance_rows_slower_than_rust": 7
+      }
+    ],
+    "per_run_gates": {
+      "modules": 12,
+      "borrowed_modules": 11,
+      "scalar_modules": 1,
+      "compiler_fixed_point_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "raw_prefix_calls": 5937,
+      "scalar_calls": 158100,
+      "scalar_artifact_checks": 119,
+      "receipt_checks": 64,
+      "original_public_comparisons": 49938,
+      "allocation_cases": 20,
+      "zero_allocation_cases": 9,
+      "standalone_cases": 30,
+      "standalone_processes": 60,
+      "standalone_symbols": 2,
+      "full_cli_cases": 34,
+      "full_cli_startup_cases": 2,
+      "full_cli_symbols": 10,
+      "four_component_crates_native_passed": 198,
+      "four_component_crates_default_passed": 185,
+      "cli_arg0_tui_passed": 4474,
+      "cli_arg0_tui_skipped": 6,
+      "core_exec_policy_passed": 11,
+      "core_excluded_by_filter": 3870,
+      "whole_core_or_workspace_qualified": false,
+      "performance_qualified": false
+    },
+    "broader_terminal": {
+      "observed_at": "2026-11-15 06:18:47 UTC",
+      "state": "terminal_failure",
+      "blocking_run": 43679113416,
+      "blocking_status": "completed",
+      "blocking_conclusion": "failure",
+      "blocking_jobs": 37,
+      "blocking_job_counts": {
+        "success": 17,
+        "failure": 16,
+        "skipped": 4,
+        "cancelled": 0,
+        "in_progress": 0
+      },
+      "architecture_run": 43679113358,
+      "architecture_conclusion": "success",
+      "canary_run": 43679113378,
+      "canary_conclusion": "success",
+      "canary_scope": "Metadata-only success; native canary not required, zero native builds executed and two skipped."
+    },
+    "scope": "Only the exact twelve-module d7/merge sources above. Counts are per run, not added together. All seven prefix timings in each run were slower than original Rust. The source-specific reports retain all timing rows, exact build/artifact identities and limitations; no historical pass qualifies the current thirteen-module source."
+  },
+  "active_qualification": "policy_summary_qualification",
+  "policy_summary_qualification": {
+    "status": "local_scoped_execution_recorded_final_formatted_harness_pending_ci",
+    "base_revision": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "evidence_root": "ai395:/home/qq/codex-hia-work/9f0b-policy-summary-20261115",
+    "report_path_scope": "Remote reports use this evidence root, except build-v1.json is the local alias for native-v1/build.json. root-source-review.json and root-build-comparison.json are local root review records in /workspace/scratch/9f0b8ba180a8/policy-summary-review/.",
+    "module_count": 13,
+    "borrowed_module_count": 12,
+    "scalar_module_count": 1,
+    "configured_production_path_algorithms": 10,
+    "scalar_helpers": [
+      "prefix_admission"
+    ],
+    "expected_full_codex_symbols": 11,
+    "installed_standalone_symbols": 3,
+    "ownership": {
+      "complete_pure_reduction": "Current RuleMatch vector to presence, strictest Allow/Prompt/Forbidden decision and whether any explicit PrefixRuleMatch exists.",
+      "production_callers": [
+        "Evaluation::from_matches",
+        "Evaluation::is_match",
+        "ExecPolicyCheckCommand JSON summary"
+      ],
+      "rust_retains": "Rule traversal; callbacks; iterator/as_ref/drop/panic effects; full RuleMatch metadata/order/owned strings; serialization and checked transport. Public mutable vectors are summarized afresh, without a cached is_match result.",
+      "whole_policy_or_core_migrated": false
+    },
+    "build": {
+      "status": "built",
+      "mode": "native-selfhost",
+      "B1_B2_B3_identical": true,
+      "compiler_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
+      "report_sha256": "90c9c706d50e0f46a908eae45490b163366c8ef001ab32b5c60b51e157d8032d",
+      "receipt_checks_passed": 66,
+      "previous_twelve_identity_scope": "Sources, Core, entry profiles, raw/namespaced objects, text and static archives equal the V4 build; linked shared-library hashes differ. Identity comparison is not behavioral requalification.",
+      "comparison_report": "root-build-comparison.json"
+    },
+    "raw_abi": {
+      "passed": true,
+      "native_calls": 3955,
+      "success": 3080,
+      "error_no_write": 875,
+      "enumerated": 1555,
+      "random": 1024,
+      "truncation": 160,
+      "trailing_bytes": 20,
+      "byte_mutation": 160,
+      "record_mutation": 48,
+      "count_mutation": 36,
+      "short_output_precedence": 168,
+      "buffer_layout": 252,
+      "large_or_threshold": 15,
+      "invalid_tail": 5,
+      "concurrent": 512,
+      "maximum_input_bytes": 2097192,
+      "skipped": 0,
+      "library_sha256": "a89676e42541d13f13ece5b863e6c0d6820082aa80d44dd17319e2ad42a394a0",
+      "test_sha256": "3d4bcd9dd76abccb9acf09a6f1111ddeb9e3408caba6bbd6cf36489f0bf20d4c"
+    },
+    "public_execution": {
+      "passed_for_executed_bytes": true,
+      "executed_harness_sha256": "0d74f5d82b59affa6b9d0668f93979af343be822479eb03aab97e9ad478cd4ab",
+      "full_result_comparisons": 10356,
+      "enumerated_cases": 9331,
+      "concurrent_cases": 512,
+      "mutable_states": 23,
+      "effect_trace_scenarios": [
+        "normal",
+        "empty",
+        "rule_panic",
+        "fallback_panic",
+        "iterator_panic",
+        "as_ref_panic"
+      ],
+      "comparison_scope": "Original full owners and exact results, metadata, order, JSON and effect traces; original-source token identities are pinned below.",
+      "oracle": {
+        "revision": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+        "owners": {
+          "policy": {
+            "token_count": 2372,
+            "token_sha256": "080a1946165e5555b5789e5705fdae77f117f4c0300f6159e682f1678ff79254"
+          },
+          "decision": {
+            "token_count": 134,
+            "token_sha256": "62c968bd0e18a20e2c4e4e814f115f7be66f5ddb69455679b28155be2a4dc9d2"
+          },
+          "execpolicycheck": {
+            "token_count": 491,
+            "token_sha256": "579b4542a2a063435c8f5ea7f9bea744f5140feb5aaaa294128cae948ec466e3"
+          },
+          "rule": {
+            "token_count": 208,
+            "token_sha256": "229f094dded61b39578ae0cdd453e12e14bb0720a3147082075d2c9997812e7f"
+          }
+        }
+      },
+      "allocation_cases": 30,
+      "zero_allocation_cases": 20,
+      "allocation_positive_probe": [
+        true,
+        1,
+        1
+      ],
+      "allocation_regression": "Frames through 31 records fit the 512-byte stack. Observed 32/33-record frames allocate once versus zero for original Rust; mutable growth/shrink and large metadata are included.",
+      "failure_injection_cases": 18,
+      "failure_injection_scope": "Actual production adapter rejects injected callee errors; separate from native raw ABI verification."
+    },
+    "owner_execution": {
+      "crate_logs": {
+        "native-owner-v1.log": {
+          "tests_run": 34,
+          "passed": 34,
+          "skipped": 0,
+          "sha256": "cbb2dc61d466ede1655485da80a22e971145207341ba48289ff55e5591d75e05"
+        },
+        "default-owner-v1.log": {
+          "tests_run": 34,
+          "passed": 34,
+          "skipped": 0,
+          "sha256": "fbd116e630bb12584692b9157500097bc9b18957c4df366da0350c4f8ab8d44f"
+        }
+      },
+      "installed_cases": 30,
+      "installed_processes": 60,
+      "installed_skipped": 0,
+      "relocated_copies_match": true,
+      "native_binary_sha256": "05c008657a2ba9cb2560d92430cfb74e2c1a3c71f7eff11a71deca2496583041",
+      "reference_binary_sha256": "2cdd6cf74aac050fec9bb30a7c10de2b160619461af95ffcd17cef45689a8c6c",
+      "strict_native_and_default_clippy": "Both execpolicy all-targets invocations returned zero with -D warnings.",
+      "scoped_fix_and_workspace_fmt": "Both commands returned zero; only the public harness import ordering changed.",
+      "owner_first_aggregate_passed": false,
+      "owner_first_failure": "AssertionError: public-summary-v1 failed",
+      "owner_final_aggregate_passed": false,
+      "owner_final_failure": "RuntimeError: qualification source changed; prior results not assigned to changed bytes",
+      "scope": "First report has two successful crate steps before a failed initial public runner; final report has five successful installed/check/fix/fmt steps but fails its source-identity guard. Neither aggregate report is rewritten as a pass."
+    },
+    "source_reconciliation": {
+      "final_code_files": 15,
+      "manifest": "source-manifest.json",
+      "executed_harness_sha256": "0d74f5d82b59affa6b9d0668f93979af343be822479eb03aab97e9ad478cd4ab",
+      "final_harness_sha256": "323290da9790073f08e66871ba888ac9fa15a1dc24aad89490678437a22faf7b",
+      "format_diff_sha256": "30555c028e6ce36eccffb4805cd0dee970fceab7fcf1a632f681c5cb18dd5b36",
+      "only_change": "serde_json::json and serde_json::Value use declarations exchange order; reversing this exact diff reproduces the executed hash.",
+      "production_sources_unchanged": true,
+      "allocation_and_failure_harnesses_unchanged": true,
+      "post_fmt_tests_executed": false,
+      "reason": "AGENTS.md forbids rerunning tests after fix or fmt; final harness execution is deferred to CI.",
+      "final_source_ci_qualified": false
+    },
+    "performance": {
+      "qualified": false,
+      "profile": "real dev crate artifacts; opt-level=3 external harness; diagnostic timings only",
+      "all_five_rows_slower_than_original_rust": true,
+      "measurements": [
+        {
+          "case": "is_match_empty",
+          "hia_ns": 1195881,
+          "iterations": 10000,
+          "rust_ns": 71767
+        },
+        {
+          "case": "is_match_mixed_3",
+          "hia_ns": 2687282,
+          "iterations": 10000,
+          "rust_ns": 52579
+        },
+        {
+          "case": "is_match_all_heuristics_31",
+          "hia_ns": 19113968,
+          "iterations": 10000,
+          "rust_ns": 674938
+        },
+        {
+          "case": "is_match_first_prefix_31",
+          "hia_ns": 18471439,
+          "iterations": 10000,
+          "rust_ns": 52568
+        },
+        {
+          "case": "is_match_last_prefix_32",
+          "hia_ns": 16603769,
+          "iterations": 10000,
+          "rust_ns": 722147
+        }
+      ],
+      "allocation_equivalence": false
+    },
+    "remaining_gates": {
+      "final_source_ci_qualified": false,
+      "installed_full_codex_cli_qualified": false,
+      "core_exec_policy_qualified": false,
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "default_release_migrated": false,
+      "performance_qualified": false,
+      "whole_policy_migrated": false,
+      "whole_codex_rewritten": false,
+      "retirement_ready": false,
+      "legacy_source_retired": false
+    },
+    "reports": [
+      {
+        "file": "build-v1.json",
+        "sha256": "90c9c706d50e0f46a908eae45490b163366c8ef001ab32b5c60b51e157d8032d",
+        "bytes": 173320
+      },
+      {
+        "file": "build-v1-receipt.json",
+        "sha256": "bfd984833b8665a242df2dd097ba218bc0e8321a319c294599e843b35e8e33b3",
+        "bytes": 1679
+      },
+      {
+        "file": "build-receipt-v1.json",
+        "sha256": "fae718eb989afac91b39ae3518a49fd651709db90170841c11d074a008c7b4a3",
+        "bytes": 2530
+      },
+      {
+        "file": "raw-abi-v1.json",
+        "sha256": "3201fbd37cc1d0ea482fb6ab76e95f9767012eb84fbbe0e14d1f5b60f35f5b22",
+        "bytes": 1451
+      },
+      {
+        "file": "public-summary-v3.json",
+        "sha256": "a55ce4af6ff366dcc2719f31d5da8286eb01830cc763e0fa25af51103d68386e",
+        "bytes": 45584
+      },
+      {
+        "file": "installed-execpolicy-v1.json",
+        "sha256": "bec9ff0056767c02ce57c938fa59971c2cf6723ec7962dd6238ec6a94f54e501",
+        "bytes": 133398
+      },
+      {
+        "file": "owner-first-v1.json",
+        "sha256": "03840129c06f6c73ae386f768be22e4d87bdb84e3d7a3f03ffc1259158ecad27",
+        "bytes": 4356
+      },
+      {
+        "file": "owner-final-v1.json",
+        "sha256": "85fa9f7e208bfa236d41f349a8cb37cf13aa54d3e193eba0ced330ca397c3687",
+        "bytes": 5744
+      },
+      {
+        "file": "qualification-summary.json",
+        "sha256": "50da3ede06fae8f2e37bd85e6b5607f2a44ddc1065265dff6a7066568a6e88e3",
+        "bytes": 32848
+      },
+      {
+        "file": "source-manifest.json",
+        "sha256": "e036432e3136f3248e1f20644729815c516029e55b51875f059d656e7bca8f6d",
+        "bytes": 5337
+      },
+      {
+        "file": "source-stage7-fmt.diff",
+        "sha256": "30555c028e6ce36eccffb4805cd0dee970fceab7fcf1a632f681c5cb18dd5b36",
+        "bytes": 336
+      },
+      {
+        "file": "root-source-review.json",
+        "sha256": "f836c85b70babf2c8f9b802df57da75c8625b0233c72144e76eafed83d3adfae",
+        "bytes": 2308
+      },
+      {
+        "file": "root-build-comparison.json",
+        "sha256": "2f4bcc3b84844a2b77601a5d83764efe288cf9107c2740bc1586b852b72cc2e0",
+        "bytes": 3977
+      }
+    ],
+    "earlier_failed_report_identities": [
+      {
+        "sha256": "f3e9e64eac27b4785dfb9464d9803e0636e98d1c239af88cbb8e0add6b508eed",
+        "bytes": 3844,
+        "file": "source-stage1.json"
+      },
+      {
+        "sha256": "98d5101b74d4b3a5e71ae1eca902e9b43ed045375203700cd4a12d50413e5018",
+        "bytes": 7615,
+        "file": "public-summary-v1.json"
+      },
+      {
+        "sha256": "a1f7b54b880d82ceea04d592cc9c717d8984a4b76e6e75c9ed102993bcf87165",
+        "bytes": 7934,
+        "file": "public-summary-v2.json"
+      }
+    ],
+    "scope": "Actual local thirteen-module build and executed scoped gates, followed by an exact source freeze. The formatted public harness has not executed. Published V4 is historical evidence only. No full CLI/Core/workspace/platform/performance/default-release/retirement closure is claimed."
   }
 }
