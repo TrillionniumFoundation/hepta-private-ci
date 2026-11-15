@@ -1,0 +1,47 @@
+test_canonical_nested_json_remains_supported (test_strict_json.StrictJSONTests.test_canonical_nested_json_remains_supported) ... ok
+test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) ... 
+  test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=0) ... FAIL
+  test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=1) ... FAIL
+  test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=2) ... FAIL
+  test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=3) ... FAIL
+
+======================================================================
+FAIL: test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/hcsn-c2-json-admission-test-20261111-0835/red-original/test_strict_json.py", line 12, in test_noncanonical_nested_python_containers_fail_closed
+    with self.assertRaises(EvidenceError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/hcsn-c2-json-admission-test-20261111-0835/red-original/test_strict_json.py", line 12, in test_noncanonical_nested_python_containers_fail_closed
+    with self.assertRaises(EvidenceError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=2)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/hcsn-c2-json-admission-test-20261111-0835/red-original/test_strict_json.py", line 12, in test_noncanonical_nested_python_containers_fail_closed
+    with self.assertRaises(EvidenceError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+======================================================================
+FAIL: test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) (case=3)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/hcsn-c2-json-admission-test-20261111-0835/red-original/test_strict_json.py", line 12, in test_noncanonical_nested_python_containers_fail_closed
+    with self.assertRaises(EvidenceError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+AssertionError: EvidenceError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+FAILED (failures=4)

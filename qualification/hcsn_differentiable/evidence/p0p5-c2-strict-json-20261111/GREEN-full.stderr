@@ -1,0 +1,25 @@
+test_atomic_checkpoint_nonempty_and_no_overwrite (test_c2_durable.DurableTests.test_atomic_checkpoint_nonempty_and_no_overwrite) ... ok
+test_concurrent_append_has_unbroken_hash_chain (test_c2_durable.DurableTests.test_concurrent_append_has_unbroken_hash_chain) ... ok
+test_duplicate_terminal_rejected (test_c2_durable.DurableTests.test_duplicate_terminal_rejected) ... ok
+test_failing_serializer_never_publishes (test_c2_durable.DurableTests.test_failing_serializer_never_publishes) ... ok
+test_forged_canonical_receipt_without_native_proofs_is_rejected (test_c2_durable.DurableTests.test_forged_canonical_receipt_without_native_proofs_is_rejected) ... ok
+test_hard_exit_after_atomic_link_never_implies_terminal (test_c2_durable.DurableTests.test_hard_exit_after_atomic_link_never_implies_terminal) ... ok
+test_hard_exit_while_serializing_no_false_checkpoint (test_c2_durable.DurableTests.test_hard_exit_while_serializing_no_false_checkpoint) ... ok
+test_identity_spoof_and_roster_duplicates (test_c2_durable.DurableTests.test_identity_spoof_and_roster_duplicates) ... ok
+test_mutated_checksum_and_gap_rejected (test_c2_durable.DurableTests.test_mutated_checksum_and_gap_rejected) ... ok
+test_nonfinite_spoof_and_missing_native_proof_rejected (test_c2_durable.DurableTests.test_nonfinite_spoof_and_missing_native_proof_rejected) ... ok
+test_post_terminal_progress_is_contradictory (test_c2_durable.DurableTests.test_post_terminal_progress_is_contradictory) ... ok
+test_semantically_invalid_checkpoint_never_publishes (test_c2_durable.DurableTests.test_semantically_invalid_checkpoint_never_publishes) ... ok
+test_six_missing_not_promoted (test_c2_durable.DurableTests.test_six_missing_not_promoted) ... ok
+test_six_terminal_is_still_not_independent_admission (test_c2_durable.DurableTests.test_six_terminal_is_still_not_independent_admission) ... ok
+test_terminal_status_str_subclass_rejected (test_c2_durable.DurableTests.test_terminal_status_str_subclass_rejected) ... ok
+test_torn_jsonl_is_not_a_receipt (test_c2_durable.DurableTests.test_torn_jsonl_is_not_a_receipt) ... ok
+test_zero_byte_existing_checkpoint_rejected_not_overwritten (test_c2_durable.DurableTests.test_zero_byte_existing_checkpoint_rejected_not_overwritten) ... ok
+test_actual_optimizer_model_rng_frozen_round_trip (test_c2_torch_interop.TorchInteropTests.test_actual_optimizer_model_rng_frozen_round_trip) ... skipped 'torch is not installed on this interpreter'
+test_canonical_nested_json_remains_supported (test_strict_json.StrictJSONTests.test_canonical_nested_json_remains_supported) ... ok
+test_noncanonical_nested_python_containers_fail_closed (test_strict_json.StrictJSONTests.test_noncanonical_nested_python_containers_fail_closed) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.045s
+
+OK (skipped=1)
