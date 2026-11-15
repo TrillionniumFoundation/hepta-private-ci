@@ -218,10 +218,6 @@ impl LiveGenerationCurrent {
         // Lock order is artifact owner -> selected payload -> FinalUse owner.
         // The update coordinator temporarily rebinds its terminal old journal
         // to the concrete Control floor before it holds this artifact lock.
-        #[cfg(test)]
-        let hepta_artifact_span = task_physical_timing::Span::new(
-            task_physical_timing::LIVE_ARTIFACT,
-        );
         let artifacts = self
             .authorities
             .artifacts
@@ -242,12 +238,6 @@ impl LiveGenerationCurrent {
                     .map_err(|_| CellGenerationErrorV2::Unavailable)?,
             )
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        #[cfg(test)]
-        drop(hepta_artifact_span);
-        #[cfg(test)]
-        let hepta_final_use_span = task_physical_timing::Span::new(
-            task_physical_timing::LIVE_FINAL_USE,
-        );
         self.authorities
             .final_use
             .verify_retained_use(
@@ -256,8 +246,6 @@ impl LiveGenerationCurrent {
                 self.publication.witness(),
             )
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        #[cfg(test)]
-        drop(hepta_final_use_span);
         Ok(())
     }
 }
@@ -287,87 +275,4 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
 
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
-}
-
-// Temporary Task physical-read timing. One synchronous read_original call owns
-// the thread-local window. No payload, path, receipt, identity or key is logged.
-#[cfg(test)]
-pub(crate) mod task_physical_timing {
-    use std::cell::Cell;
-    use std::time::Instant;
-
-    pub(crate) const SOURCE_ANCHOR: usize = 0;
-    pub(crate) const LIVE_ARTIFACT: usize = 1;
-    pub(crate) const LIVE_FINAL_USE: usize = 2;
-
-    #[derive(Clone, Copy, Default)]
-    struct Totals {
-        calls: [u64; 3],
-        micros: [u64; 3],
-    }
-
-    std::thread_local! {
-        static ACTIVE: Cell<Option<Totals>> = const { Cell::new(None) };
-    }
-
-    pub(crate) struct Span {
-        bucket: usize,
-        started: Option<Instant>,
-    }
-
-    impl Span {
-        pub(crate) fn new(bucket: usize) -> Self {
-            let active = ACTIVE.with(|slot| slot.get().is_some());
-            Self { bucket, started: active.then(Instant::now) }
-        }
-    }
-
-    impl Drop for Span {
-        fn drop(&mut self) {
-            let Some(started) = self.started else { return; };
-            let micros = u64::try_from(started.elapsed().as_micros())
-                .unwrap_or(u64::MAX);
-            ACTIVE.with(|slot| {
-                if let Some(mut totals) = slot.get() {
-                    totals.calls[self.bucket] = totals.calls[self.bucket].saturating_add(1);
-                    totals.micros[self.bucket] =
-                        totals.micros[self.bucket].saturating_add(micros);
-                    slot.set(Some(totals));
-                }
-            });
-        }
-    }
-
-    pub(crate) struct Trace {
-        started: Option<Instant>,
-    }
-
-    impl Trace {
-        pub(crate) fn new() -> Self {
-            let active = ACTIVE.with(|slot| {
-                if slot.get().is_some() {
-                    false
-                } else {
-                    slot.set(Some(Totals::default()));
-                    true
-                }
-            });
-            Self { started: active.then(Instant::now) }
-        }
-    }
-
-    impl Drop for Trace {
-        fn drop(&mut self) {
-            let Some(started) = self.started else { return; };
-            let micros = started.elapsed().as_micros();
-            let Some(totals) = ACTIVE.with(|slot| slot.take()) else { return; };
-            eprintln!(
-                "[task-physical-parts] total_us={} source.anchor={}/{} live.artifact={}/{} live.final_use={}/{}",
-                micros,
-                totals.calls[SOURCE_ANCHOR], totals.micros[SOURCE_ANCHOR],
-                totals.calls[LIVE_ARTIFACT], totals.micros[LIVE_ARTIFACT],
-                totals.calls[LIVE_FINAL_USE], totals.micros[LIVE_FINAL_USE],
-            );
-        }
-    }
 }
