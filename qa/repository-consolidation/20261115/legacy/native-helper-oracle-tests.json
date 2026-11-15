@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-11-15T15:18:49.386517+00:00",
+  "base": "b6a5e15aa4b05ddfe63c88cb870de85c19a87214",
+  "merging": "255c4fdfad374c08200847761040c4eadaa16f7d",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "-v",
+    "test_build_group_native",
+    "test_native_group_control.NativeGroupControlOracleTests",
+    "test_native_ndu_bridge.NativeNduBridgeTests"
+  ],
+  "exit": 0,
+  "tests": 12,
+  "scope": "four build-helper source-closure tests and eight Python reference/oracle tests; no Rust executable ran",
+  "source_sha256": {
+    "qualification/stem-cell-v1/build_group_native.py": "ec15f420e2217027c9113fa5b8a465164c946c547ed58b7d56f86378bfb14eac",
+    "qualification/stem-cell-v1/test_build_group_native.py": "58b63d0d8fc052d2294f3c462afe20d4189c53b44640d77474ea3a68a5e7e721",
+    "qualification/stem-cell-v1/native_group_control.py": "1ca8813a9a92102bef6a41f90e700c735a60066a7bca984c1ed768f79baacfda",
+    "qualification/stem-cell-v1/native_ndu_bridge.py": "ffeb2b81144c1aa7e86363966d7834b8a6b0792774ed6d79c544146c4a689d9b",
+    "codex-rs/hepta-ndu/src/bin/ndu-group-control.rs": "8cc8cf199cba3004c52aa156138f4b3d9c85b025b0b6d29b078d145940a674e7",
+    "codex-rs/hepta-ndu/src/bin/ndu-group-replay.rs": "4936dd8d2cda927500d43b3280a799faddb8feb34c6c63d06a3be48f6d7877bd"
+  },
+  "local_tools": {
+    "rustc": null,
+    "cargo": null,
+    "just": null,
+    "bazel": null
+  },
+  "native_test_status": "pending exact combined-tree owning-crate and native-binary checks on the separate prepared host",
+  "production_qualification": false
+}
