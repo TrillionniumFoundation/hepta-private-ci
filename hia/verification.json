@@ -7978,5 +7978,661 @@
         "sha256": "0c8fd6e2c1cea0d0ee57565b5547ba20c96dc627ebbdb96ce2d2d076b186ebf6"
       }
     }
+  },
+  "published_command_dispatch16_ci": {
+    "status": "published_sixteen_module_native_passed_broader_failed",
+    "source_revision": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+    "source_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+    "merge_revision": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+    "merge_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+    "applies_to_current_network_host_increment": false,
+    "module_count": 16,
+    "borrowed_module_count": 15,
+    "scalar_module_count": 1,
+    "source_bindings_verified": 106,
+    "directly_embedded_report_source_files": 96,
+    "actual_report_source_bindings_per_run": 298,
+    "original_raw_streams_per_run": 106,
+    "native_runs": [
+      {
+        "run_id": 43716443324,
+        "event": "push",
+        "job_id": 132818906105,
+        "actual_checkout": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "successful_steps": 51,
+        "artifact_id": 14163634565,
+        "zip_bytes": 14276230,
+        "zip_sha256": "7faa7102f3fde58c80a87483d4dcc35f46f99c791a393a2a32a00a20c404d72e",
+        "all_members_verified": 211,
+        "build_report_sha256": "0cd060ac786a1d9852542c6d75a137871e045284a7820c5c252b62312d1b21a7",
+        "receipt_checks": 72,
+        "scalar_artifact_checks": 123,
+        "standalone": {
+          "cases": 30,
+          "processes": 60,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_command_dispatch",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match"
+          ],
+          "native_binary_sha256": "205f01fef02b487e49c8aa1d7ce99d0e1db6212b987a4e091e37ec82daffaa4f",
+          "reference_binary_sha256": "2097c32b22d45a6a8c49023a262c8f63a3eb62f2b8add9a4c6c449437e78cbf8",
+          "relocated_copies_match": true
+        },
+        "full_cli": {
+          "cases": 34,
+          "startup_cases": 2,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_allowed_prefixes",
+            "codex_hia_ascii_json_fragment",
+            "codex_hia_command_dispatch",
+            "codex_hia_markdown_location",
+            "codex_hia_metric_tag",
+            "codex_hia_network_domains",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match",
+            "codex_hia_seek_sequence",
+            "codex_hia_template_index",
+            "codex_hia_template_parser",
+            "codex_hia_template_render",
+            "codex_hia_utf8_prefix"
+          ],
+          "native_binary_sha256": "68476c9089ed42e32cebe6cee3dead30aacae067347d9e18981ad23c986bde25",
+          "reference_binary_sha256": "03329d56f3665cff3da5f05627adea9f276a36d7140dbc4407cfacf65ca01358",
+          "relocated_copies_match": true,
+          "case_dispatch_counts": {
+            "codex": 30,
+            "stdin": 2,
+            "codex_arg1": 2
+          }
+        },
+        "owner_tests": {
+          "hia-native-crates.log": {
+            "tests_run": 198,
+            "passed": 198,
+            "reported_skipped": 0,
+            "elapsed_seconds": 2.11,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-default-crates.log": {
+            "tests_run": 185,
+            "passed": 185,
+            "reported_skipped": 0,
+            "elapsed_seconds": 2.472,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-codex-owners.log": {
+            "tests_run": 4474,
+            "passed": 4474,
+            "reported_skipped": 6,
+            "elapsed_seconds": 131.571,
+            "whole_workspace": false,
+            "packages": [
+              "codex-cli",
+              "codex-arg0",
+              "codex-tui"
+            ]
+          },
+          "hia-core-execpolicy.log": {
+            "tests_run": 11,
+            "passed": 11,
+            "reported_skipped": 3870,
+            "elapsed_seconds": 2.549,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(suite::exec_policy::)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.646s] codex-core::all suite::exec_policy::deeply_nested_forced_rm_is_rejected_before_execution_when_approvals_are_disabled",
+              "        PASS [   0.699s] codex-core::all suite::exec_policy::execpolicy_blocks_shell_invocation",
+              "        PASS [   0.714s] codex-core::all suite::exec_policy::environment_command_restrictions_override_saved_prefix_approvals",
+              "        PASS [   0.662s] codex-core::all suite::exec_policy::granular_complex_forced_rm_denial_explains_why_the_command_was_rejected",
+              "        PASS [   0.673s] codex-core::all suite::exec_policy::granular_complex_forced_rm_requests_approval_when_allowed",
+              "        PASS [   0.760s] codex-core::all suite::exec_policy::git_status_requires_approval_under_unless_trusted",
+              "        PASS [   1.822s] codex-core::all suite::exec_policy::environment_command_policy_changes_invalidate_session_approvals",
+              "        PASS [   0.537s] codex-core::all suite::exec_policy::startup_migrates_default_policy_and_honors_ignore_rules",
+              "        PASS [   0.632s] codex-core::all suite::exec_policy::malformed_custom_rules_preserve_managed_forbidden_prefix",
+              "        PASS [   0.912s] codex-core::all suite::exec_policy::unified_exec_empty_script_with_collaboration_mode_does_not_panic",
+              "        PASS [   0.702s] codex-core::all suite::exec_policy::unified_exec_whitespace_script_with_collaboration_mode_does_not_panic"
+            ]
+          },
+          "hia-core-network-domains.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 3880,
+            "elapsed_seconds": 0.04,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.019s] codex-core config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-core --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-core-network-domains.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132818906105.log",
+              "bytes": 1631393,
+              "sha256": "7a24b152769a23f89210cf71a31ca68028ed6f55f790e47d0851f3d6c1c53905",
+              "actual_checkout": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "b20229a9e88a7a025e6a7edab503658d38651f2f29b636eeba456fff2a473cee"
+          },
+          "hia-protocol-allowed-prefixes.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 300,
+            "elapsed_seconds": 0.012,
+            "whole_workspace": false,
+            "packages": [
+              "codex-protocol"
+            ],
+            "explicit_filter": "test(=models::tests::format_allow_prefixes_limits_output)",
+            "whole_protocol_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.010s] codex-protocol models::tests::format_allow_prefixes_limits_output"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-protocol --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=models::tests::format_allow_prefixes_limits_output)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-protocol-allowed-prefixes.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132818906105.log",
+              "bytes": 1631393,
+              "sha256": "7a24b152769a23f89210cf71a31ca68028ed6f55f790e47d0851f3d6c1c53905",
+              "actual_checkout": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+          }
+        }
+      },
+      {
+        "run_id": 43716486906,
+        "event": "pull_request",
+        "job_id": 132819040560,
+        "actual_checkout": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+        "successful_steps": 51,
+        "artifact_id": 14163573068,
+        "zip_bytes": 14275670,
+        "zip_sha256": "2af32e43e6e295bb16a5809fd76215d31df8c6148745636cc5317e11c6c25995",
+        "all_members_verified": 211,
+        "build_report_sha256": "d49831c7115ea4c9ca0c40e9487797e19978912400113f890d09d0946e49e9a0",
+        "receipt_checks": 72,
+        "scalar_artifact_checks": 123,
+        "standalone": {
+          "cases": 30,
+          "processes": 60,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_command_dispatch",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match"
+          ],
+          "native_binary_sha256": "205f01fef02b487e49c8aa1d7ce99d0e1db6212b987a4e091e37ec82daffaa4f",
+          "reference_binary_sha256": "2097c32b22d45a6a8c49023a262c8f63a3eb62f2b8add9a4c6c449437e78cbf8",
+          "relocated_copies_match": true
+        },
+        "full_cli": {
+          "cases": 34,
+          "startup_cases": 2,
+          "skipped": 0,
+          "symbols": [
+            "codex_hia_allowed_prefixes",
+            "codex_hia_ascii_json_fragment",
+            "codex_hia_command_dispatch",
+            "codex_hia_markdown_location",
+            "codex_hia_metric_tag",
+            "codex_hia_network_domains",
+            "codex_hia_policy_summary",
+            "codex_hia_prefix_admission",
+            "codex_hia_prefix_match",
+            "codex_hia_seek_sequence",
+            "codex_hia_template_index",
+            "codex_hia_template_parser",
+            "codex_hia_template_render",
+            "codex_hia_utf8_prefix"
+          ],
+          "native_binary_sha256": "8f97c98d93e8cab162ad416eb1e443137375f3356836421e86f81c2137e19ad5",
+          "reference_binary_sha256": "82608b4fa5470d01a23c67885ed6b4fe42554d7fa4f5f68ab132f4f336d2a9f6",
+          "relocated_copies_match": true,
+          "case_dispatch_counts": {
+            "codex": 30,
+            "stdin": 2,
+            "codex_arg1": 2
+          }
+        },
+        "owner_tests": {
+          "hia-native-crates.log": {
+            "tests_run": 198,
+            "passed": 198,
+            "reported_skipped": 0,
+            "elapsed_seconds": 1.579,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-default-crates.log": {
+            "tests_run": 185,
+            "passed": 185,
+            "reported_skipped": 0,
+            "elapsed_seconds": 1.835,
+            "whole_workspace": false,
+            "packages": [
+              "codex-apply-patch",
+              "codex-utils-string",
+              "codex-utils-template",
+              "codex-execpolicy"
+            ]
+          },
+          "hia-codex-owners.log": {
+            "tests_run": 4474,
+            "passed": 4474,
+            "reported_skipped": 6,
+            "elapsed_seconds": 102.778,
+            "whole_workspace": false,
+            "packages": [
+              "codex-cli",
+              "codex-arg0",
+              "codex-tui"
+            ]
+          },
+          "hia-core-execpolicy.log": {
+            "tests_run": 11,
+            "passed": 11,
+            "reported_skipped": 3870,
+            "elapsed_seconds": 2.142,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(suite::exec_policy::)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.479s] codex-core::all suite::exec_policy::deeply_nested_forced_rm_is_rejected_before_execution_when_approvals_are_disabled",
+              "        PASS [   0.527s] codex-core::all suite::exec_policy::environment_command_restrictions_override_saved_prefix_approvals",
+              "        PASS [   0.529s] codex-core::all suite::exec_policy::execpolicy_blocks_shell_invocation",
+              "        PASS [   0.689s] codex-core::all suite::exec_policy::granular_complex_forced_rm_requests_approval_when_allowed",
+              "        PASS [   0.728s] codex-core::all suite::exec_policy::granular_complex_forced_rm_denial_explains_why_the_command_was_rejected",
+              "        PASS [   0.829s] codex-core::all suite::exec_policy::git_status_requires_approval_under_unless_trusted",
+              "        PASS [   1.565s] codex-core::all suite::exec_policy::environment_command_policy_changes_invalidate_session_approvals",
+              "        PASS [   0.404s] codex-core::all suite::exec_policy::startup_migrates_default_policy_and_honors_ignore_rules",
+              "        PASS [   0.474s] codex-core::all suite::exec_policy::malformed_custom_rules_preserve_managed_forbidden_prefix",
+              "        PASS [   0.667s] codex-core::all suite::exec_policy::unified_exec_empty_script_with_collaboration_mode_does_not_panic",
+              "        PASS [   0.557s] codex-core::all suite::exec_policy::unified_exec_whitespace_script_with_collaboration_mode_does_not_panic"
+            ]
+          },
+          "hia-core-network-domains.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 3880,
+            "elapsed_seconds": 0.034,
+            "whole_workspace": false,
+            "packages": [
+              "codex-core"
+            ],
+            "explicit_filter": "test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)",
+            "whole_core_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.016s] codex-core config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-core --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-core-network-domains.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132819040560.log",
+              "bytes": 1631810,
+              "sha256": "b97c318910afedc7564f519ea57d1c548df62cec7c3c5a5b0df0cd264fdc1626",
+              "actual_checkout": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "b20229a9e88a7a025e6a7edab503658d38651f2f29b636eeba456fff2a473cee"
+          },
+          "hia-protocol-allowed-prefixes.log": {
+            "tests_run": 1,
+            "passed": 1,
+            "reported_skipped": 300,
+            "elapsed_seconds": 0.01,
+            "whole_workspace": false,
+            "packages": [
+              "codex-protocol"
+            ],
+            "explicit_filter": "test(=models::tests::format_allow_prefixes_limits_output)",
+            "whole_protocol_suite": false,
+            "actual_pass_lines": [
+              "        PASS [   0.008s] codex-protocol models::tests::format_allow_prefixes_limits_output"
+            ],
+            "actual_invocation_lines": [
+              "just test -p codex-protocol --features codex-execpolicy/hia-native --locked \\",
+              "  -E 'test(=models::tests::format_allow_prefixes_limits_output)' \\",
+              "  2>&1 | tee \"$RUNNER_TEMP/hia-protocol-allowed-prefixes.log\""
+            ],
+            "original_job_log": {
+              "path": "native-job-132819040560.log",
+              "bytes": 1631810,
+              "sha256": "b97c318910afedc7564f519ea57d1c548df62cec7c3c5a5b0df0cd264fdc1626",
+              "actual_checkout": "67427c1c99269eb8e7ac3740a5c83b1400ecbd43",
+              "consumer_artifact_log_matches": true
+            },
+            "test_source_sha256": "fedc0c42e2cee3f0e1ac9412690c11081286168d02f3473a039f2ade46cb6d09"
+          }
+        }
+      }
+    ],
+    "command_dispatch_counts_per_run": {
+      "raw_calls": 148057,
+      "raw_success": 141492,
+      "raw_errors_without_writes": 6565,
+      "completed_sessions": 37157,
+      "concurrent_calls_included": 2576,
+      "concurrent_sessions": 256,
+      "public_comparisons": 33311,
+      "concurrent_public_comparisons_included": 256,
+      "effect_cases": 14,
+      "allocation_cases": 24,
+      "zero_allocation_cases": 3,
+      "substituted_callee_rejections": 33
+    },
+    "timing_baselines": [
+      "original",
+      "native16"
+    ],
+    "three_baseline_execution": false,
+    "diagnostic_timing_rows_per_run": 53,
+    "slower_than_original_rows_per_run": 53,
+    "timing_rows_by_component": {
+      "prefix_match": 7,
+      "policy_summary": 5,
+      "network_domains": 11,
+      "allowed_prefixes": 14,
+      "command_dispatch": 16
+    },
+    "dispatcher_slowest_recorded_rows": [
+      {
+        "run_id": 43716443324,
+        "case": "many-exact-none",
+        "calls": 30,
+        "original_ns": 360763,
+        "native16_ns": 55477193
+      },
+      {
+        "run_id": 43716486906,
+        "case": "many-exact-none",
+        "calls": 30,
+        "original_ns": 332700,
+        "native16_ns": 38253537
+      }
+    ],
+    "complete_timing_and_allocation_rows_retained_in": "published16_native_ci report, each runs[].performance; no historical measurements removed from this file",
+    "performance_qualified": false,
+    "cross_run_full_cli_binary_equal": false,
+    "compiled_binary_bytes_in_archives": false,
+    "binary_hash_scope": "CI report identities; compiled binaries were not independently downloaded in the report ZIPs.",
+    "broader_runs": [
+      {
+        "kind": "blocking",
+        "run_id": 43716486788,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486788",
+        "head_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "event": "pull_request",
+        "conclusion": "failure",
+        "metadata_complete_per_page_100": true,
+        "job_counts": {
+          "total": 37,
+          "success": 17,
+          "failure": 15,
+          "cancelled": 1,
+          "skipped": 4
+        }
+      },
+      {
+        "kind": "architecture",
+        "run_id": 43716486703,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486703",
+        "head_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "event": "pull_request",
+        "conclusion": "success",
+        "metadata_complete_per_page_100": true,
+        "job_counts": {
+          "total": 3,
+          "success": 3
+        }
+      },
+      {
+        "kind": "canary",
+        "run_id": 43716486756,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43716486756",
+        "head_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+        "event": "pull_request",
+        "conclusion": "success",
+        "metadata_complete_per_page_100": true,
+        "job_counts": {
+          "total": 3,
+          "success": 1,
+          "skipped": 2
+        }
+      }
+    ],
+    "broader_failure_log_coverage": {
+      "actual_checkout_bound_saved_logs": 14,
+      "workflow_reference_only_saved_logs": 1,
+      "unavailable_failure_log_jobs": [
+        132819713254,
+        132819713273,
+        132819713317
+      ],
+      "unknown_causes_inferred": false,
+      "paired_base_execution": false,
+      "base_causal_attribution": false
+    },
+    "observed_failure_scope": {
+      "sdk_and_gnu_release": "Actual current logs reported undefined symbol res_nsearch; the separate SDK follow-up was not included in b762.",
+      "arm_mac": "Actual process_wrapper execution failures, exit126; ARM test target summary retained in the linked broader audit.",
+      "windows_clippy": "Actual incompatible hepta-agentd cognitive product qualification target.",
+      "windows_tests": "Four shards failed; target summaries and observed code87/automation/memory failures remain in the linked current logs.",
+      "intel_mac": "Cancelled; no final Bazel target summary was observed.",
+      "required": "Actual checkout-bound aggregate rejected bazel and sdk failures.",
+      "windows_release": "Success in this run: 1,030 targets and 5,244 actions.",
+      "architecture": "Three successful jobs. The base-merge job used synthetic 6f1edbe921e2c20e426e8b4f408406338d3fc980 with the same tree and did not require a second native execution.",
+      "canary": "One metadata job succeeded; two build jobs were skipped."
+    },
+    "remaining_limits": {
+      "whole_policy_migrated": false,
+      "whole_core_suite_qualified": false,
+      "whole_workspace_qualified": false,
+      "required_platforms_qualified": false,
+      "performance_qualified": false,
+      "default_release_migrated": false,
+      "whole_codex_rewritten": false,
+      "legacy_source_retired": false
+    },
+    "reports": [
+      {
+        "path": "ci-evidence/command-dispatch16/native-ci-summary.json",
+        "bytes": 947111,
+        "sha256": "da5bb772ec4a3076a46ea999b1f1aeb14fea57ac89cc996a1b5176892b1b4470"
+      },
+      {
+        "path": "ci-evidence/command-dispatch16/broader-final-audit.json",
+        "bytes": 112755,
+        "sha256": "d9f998a8d7b65545f957bfd7fe3d1cd5b5baeaebb12291f49036fa1f232f89e3"
+      },
+      {
+        "path": "ci-evidence/command-dispatch16/root-native-ci-verification.json",
+        "bytes": 162871,
+        "sha256": "c9716d478718d7cf30d72bfa4528ce4ff1fbd2009d3f746701b6f77a7719c035"
+      },
+      {
+        "path": "ci-evidence/command-dispatch16/root-broader-final-verification.json",
+        "bytes": 18194,
+        "sha256": "3abd557131bcd900b7b43a130abd5436aa259eeb7b4447f50d46cfe981b0bd10"
+      }
+    ],
+    "scope": "Immutable source-specific sixteen-module follow-up. The former local pending statements remain historical. These native successes do not qualify seventeen-module CI, whole Policy/Core/workspace, platform release, performance or retirement.",
+    "pull_request": 6378,
+    "source_observation": {
+      "observed_at": "2026-11-15T13:00:05.993Z",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "commits": 14,
+      "changed_files": 23,
+      "additions": 7132,
+      "deletions": 93
+    }
+  },
+  "network_host_qualification": {
+    "status": "exact_source_local_qualification_passed_new_product_ci_pending",
+    "base_revision": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+    "base_tree": "9c670d2fb44b428f5e8d75a6558b803bcd5a8861",
+    "candidate_code_tree_before_documentation": "9c984a9f9be8dca17240233ae62973193d4beb03",
+    "published_revision": null,
+    "hepta_revision": "0de5657a80f96b138525ac7ee9ce11712a83a10d",
+    "target": "x86_64-unknown-linux-gnu",
+    "rustc": "rustc 1.96.1 (31fca3adb 2026-06-26)\nbinary: rustc\ncommit-hash: 31fca3adb283cc9dfd56b49cdee9a96eb9c96ffd\ncommit-date: 2026-06-26\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.1\nLLVM version: 22.1.2\n",
+    "module_count": 17,
+    "borrowed_module_count": 16,
+    "scalar_module_count": 1,
+    "scope": "Local qualification of the exact 21-source network-host increment on Linux GNU, from published16 b762/9c6. Initial formatting preceded all behavioral gates; the final scoped fixes and fmt exited 0 and left all 9,893 source files unchanged. No product build or test was run after final maintenance. Original/native16/native17 allocation and timing harnesses were separately compiled and executed; the frozen native16 owner itself was not rebuilt. Current seventeen-module full CLI, Protocol/Core/prior-component and platform CI remain pending. Complete Policy/Core/workspace, performance, default release and retirement are not qualified.",
+    "whole_policy_migrated": false,
+    "performance_qualified": false,
+    "source_identity": {
+      "initial_source_manifest": {
+        "path": "network-host-root-review/execution-v1/initial-formatted-source-manifest.json",
+        "bytes": 18982,
+        "sha256": "413ef6fe5d1c2ace8cdee53cffa6ab95757b503ec0709798d60026d5561bdc7e"
+      },
+      "final_source_manifest": {
+        "archive": "network-host-root-review/observations-v1/observations.tar.xz",
+        "member": "evidence/final-source/source-manifest.json",
+        "bytes": 18932,
+        "sha256": "5bfda2cd5ab431a4418430d3db8dc791a2e99e91ce449a06f153f8a55850a8cc"
+      },
+      "candidate_files": {
+        ".github/workflows/codex-hia-native.yml": "216fdf2b7a3c2581bc45a8ac54b13fb0e0054605fd758228dae9a94a1be40c64",
+        "codex-rs/execpolicy/build.rs": "adc1a1911a74d09df3e2eef5f4b4c140d55204695b79fd7924befed39b49d423",
+        "codex-rs/execpolicy/src/hia_native_network_host.rs": "2e4c32c076ff91c4130eb4f26e89cd4e069f911cecba5b7f584da28c1b25efa9",
+        "codex-rs/execpolicy/src/lib.rs": "e47234f22384dec734368c1c09c6f78ddc5e1b3e2cfe4f147fe9d16ae657db35",
+        "codex-rs/execpolicy/src/rule.rs": "2e27abf0ab6c719c23fadcb2e95cb68af2004c73b1c624e7b99d7aa43a29bd68",
+        "hia/network_host.hepta": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+        "hia/tests/native_network_host.rs": "464e18c81372b7aac71b919c9e5cd378f5f54393ff00f3aaad4db8fc790af9db",
+        "hia/tests/native_network_host_allocations.rs": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+        "hia/tests/native_network_host_failures.rs": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50",
+        "hia/tests/native_network_host_performance.rs": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+        "hia/tests/network_host_fixtures.rs": "b03d89002a472730924575a8ba19d15f872bb10b559ae9ac2a64234a42aa9f6c",
+        "hia/tests/network_host_predecessor16.py": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428",
+        "hia/tests/test_installed_codex.py": "e072f0a095f67d62bd3275a5b6427ca6a8d6bd531e91272742a349a9db1c5e9d",
+        "hia/tests/test_installed_execpolicy.py": "27986b3a3d3bef975b2846239b28cf89e64575abb618e6f82be7c489cc52571e",
+        "hia/tests/test_native_network_domains.py": "47f3a82ba11d11746e0896bc2d90a34149ff9e69d4837ce176880cad9871e9d1",
+        "hia/tests/test_native_network_host.py": "a0802a18144ae1bc8cb82ec2781799c0eb834ac24668f19a9ce925f5ce67a036",
+        "hia/tests/test_network_host_abi.py": "61f78166c8d003da19d4c8ca53c6f186692b779a990511ee51d14e717ac2e18e",
+        "hia/toolchain.json": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
+        "patches/rama-dns_hermetic_toolchain.patch": "45e6d237825c4dc24c91634417652650c9e0b29de26481015da6d60c775a95b3",
+        "scripts/format.py": "5be1f8fa3ba123794debcdb49f42536e3ab5dd5737260b28a38c27a816b4bd53",
+        "scripts/test_hepta_format_scope.py": "97633a7d4163be146a33b9f632866467c601c04670a82e32e00d2a2e4ad5edb4"
+      },
+      "actual_public_source_inputs": {
+        "codex-rs/Cargo.lock": "70e7aaa26f47946700fd8d2bc8dfdcbd9458fbf56891826a32b168cd24fbc955",
+        "codex-rs/Cargo.toml": "344073ad2f842700540b6b76a412740dbca7453c9303c94cc1ab60979665e1b7",
+        "codex-rs/execpolicy/Cargo.toml": "d2da9231655293621f7d32474019c536004de03d01b6ff4f90bcf64fd00be6b2",
+        "codex-rs/execpolicy/build.rs": "adc1a1911a74d09df3e2eef5f4b4c140d55204695b79fd7924befed39b49d423",
+        "codex-rs/execpolicy/src/amend.rs": "e0869236f00e7e96e13c8546c17120b8e7e4438c6e6d676831446707eda2d1eb",
+        "codex-rs/execpolicy/src/decision.rs": "9a706dbee5301bb81b2c89a69380dab15b68abafad4e102521d81b6009de2e03",
+        "codex-rs/execpolicy/src/error.rs": "7c952283b5c2a75d3a34669427dab79ef0a6ff26d401b8731bba9751822d81dc",
+        "codex-rs/execpolicy/src/execpolicycheck.rs": "d31931dbb0654c2583b4a30b9aacb0e175db24c47c4a076e29d9654f587b8093",
+        "codex-rs/execpolicy/src/executable_name.rs": "85414e488db0dba6a0b077cc038cc8f7ad0aa5695f927fc1fb05886f4d8adf7b",
+        "codex-rs/execpolicy/src/hia_native_allowed_prefixes.rs": "d00759c4308e11d16943480394c1573f8071cd887a9657bf7e1987503dfd3262",
+        "codex-rs/execpolicy/src/hia_native_command_dispatch.rs": "1f492c5fcb9febf6da77658ee4db36f6502cfad4faca400bdb7bff264fd3a34a",
+        "codex-rs/execpolicy/src/hia_native_network_domains.rs": "bb23cad2692e0e4025c1d1a2a4c2843a9e73e73934a7eddc09ed3ca93c1e4902",
+        "codex-rs/execpolicy/src/hia_native_network_host.rs": "2e4c32c076ff91c4130eb4f26e89cd4e069f911cecba5b7f584da28c1b25efa9",
+        "codex-rs/execpolicy/src/hia_native_policy_summary.rs": "3fa24f997257db6415892f83897df463ae552e4075fa09cf341d3e1699a9a205",
+        "codex-rs/execpolicy/src/hia_native_prefix.rs": "8f658da4233784567f5c74086cfae0dca7d8fc545b2bb988a00aab411ebcd3c5",
+        "codex-rs/execpolicy/src/lib.rs": "e47234f22384dec734368c1c09c6f78ddc5e1b3e2cfe4f147fe9d16ae657db35",
+        "codex-rs/execpolicy/src/main.rs": "4d21dcd7566b4b55cd3118709ce82879d062dc975fdc48682e58965fc65b7710",
+        "codex-rs/execpolicy/src/parser.rs": "58b89a789c394cffa2412189b5acadf2110ab23229c91db5878b72d5aeb9fee8",
+        "codex-rs/execpolicy/src/policy.rs": "ef8ff4f7e23771dde26ba7082bc04f3ee3fe8fb272eee67788907c564d82dadd",
+        "codex-rs/execpolicy/src/rule.rs": "2e27abf0ab6c719c23fadcb2e95cb68af2004c73b1c624e7b99d7aa43a29bd68",
+        "codex-rs/execpolicy/src/sandbox_migration.rs": "64809294aae17e811ff742fadcc004a4176d8bf89fa80b8a28283319a7ebccf7",
+        "codex-rs/execpolicy/src/sandbox_migration_tests.rs": "ce737c7ce8a6507ce3d077fe3b574903617a29893f309a97a0ca6586a8f96578",
+        "codex-rs/execpolicy/tests/basic.rs": "5a26d154b4b1e448e6e358c2e19c9245cfe15d295f7519f77e5dc75a78eb0569",
+        "codex-rs/rust-toolchain.toml": "47f5c5c59856700915beeb7e5ff46a5eeed1c08420579af27698e6740f396a82",
+        "codex-rs/rustfmt.toml": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c",
+        "codex-rs/utils/absolute-path/src/absolutize.rs": "7a2c95d410b8503c2a26e37715bc403bd31496fcead7cdc4d95dc8e96ced77a7",
+        "codex-rs/utils/absolute-path/src/lib.rs": "a6f3553c4aefe49082b6bd8fb671eaaf14cf81cb134940bbd6b769024af01b70",
+        "hia/allowed_prefixes.hepta": "257184be5851e53a4c95deb70dc7e980a7dbafa131a4562cb9b6274c00116fc0",
+        "hia/ascii_json_fragment.hepta": "97990d5e58da77639dfd248f62e0b77597e060b4bd5b188b3f30ffc7f0f8df5a",
+        "hia/build.py": "ec76f17b128b97c02511614e93658b2bf307e1c4bbc77ea889d43a0d4ccf9ad8",
+        "hia/cargo_build.rs": "2d6a6aa58fd5e07f1e1241153a85d4b569adae311ed6f510ed96c48ccce62dc5",
+        "hia/command_dispatch.hepta": "b45b7592b5df2df5fee21ccec693fc9c8e12f445c3883a96b1ab7581cdf4a9c7",
+        "hia/markdown_location.hepta": "7e7ac2af1e42cea783aaed234da18bc6fb4f6df4a952b501e94ea2e728feeebe",
+        "hia/metric_tag.hepta": "00859a6a0e9f43f25dd43bd73cdc563a7fc9f02dc6d66d84cbfac6e54ce24abe",
+        "hia/network_domains.hepta": "7ef166afa54278b0ec0957a9e210141cc58ca31652518a5d127ffff4a0eb9859",
+        "hia/network_host.hepta": "752c579a495e8bbbd044a214ea9325692fe43f31efc073f70f1fb1c4969cdb1b",
+        "hia/policy_summary.hepta": "f6b6f44bffaf5984116d6c5b3b3e0b619c5a944b0becd9a3e4bd7c6dbc9cc5ef",
+        "hia/prefix_admission.hepta": "2ad0a3454b58901fa52c3dd48dd37e4b18e38560c97f279aab755f1a31383cdb",
+        "hia/prefix_match.hepta": "5502f02c6b7e18cb88ca48323d3cebcd9bf95e43f8557556f52bfb39fad215ee",
+        "hia/seek_sequence.hepta": "6e5933d271073e4bb526c26e269863c8347eb14e4461d6d9e380cc5f3753f71c",
+        "hia/template_index.hepta": "e839d8dcbd7ec81721b79b6cdba490a3e951b1eab55f29d04e11e61c8f12575a",
+        "hia/template_parser.hepta": "7ac923fac32fef0cac8c8c671cf5b11f6e5b904e86e1511422f8c522738b3fe1",
+        "hia/template_render.hepta": "15e02f5ff7b8abecbe7312b4f7d8f5616472d3b95d838d6cb671d57a0efd5567",
+        "hia/tests/native_network_host.rs": "464e18c81372b7aac71b919c9e5cd378f5f54393ff00f3aaad4db8fc790af9db",
+        "hia/tests/native_network_host_allocations.rs": "d74140ef2c85eef840d467ed9979f10943b5ef1ca409ad6cd4d8cf3c3155ebbe",
+        "hia/tests/native_network_host_failures.rs": "96381daa5ee4be108201049eb6a1f53cfa87b1733b3f604d82c8a87c8e29de50",
+        "hia/tests/native_network_host_performance.rs": "4dc69355ae8e86333898782195237c9b2389e770b8081341956f230c04237a78",
+        "hia/tests/network_host_fixtures.rs": "b03d89002a472730924575a8ba19d15f872bb10b559ae9ac2a64234a42aa9f6c",
+        "hia/tests/network_host_predecessor16.py": "81bc4bda00cde1dde1466fa5283c4ff9a64510e3ffa5c6645a64e85c18cbb428",
+        "hia/tests/test_native_command_dispatch.py": "5f7da2f0ceb96205846118f905bfd43d73e8ac1a112f45bebb9fa6061bf521cd",
+        "hia/tests/test_native_execpolicy_caller.py": "67f0bd663206f831c2f06d31771dd0e6a7bbe4e849ebc698231c18b302ccd466",
+        "hia/tests/test_native_network_host.py": "a0802a18144ae1bc8cb82ec2781799c0eb834ac24668f19a9ce925f5ce67a036",
+        "hia/tests/test_native_policy_summary.py": "277d4215eb243555fc591c54fa050928d01fd1f9e38191919de46eb31879b377",
+        "hia/tests/test_network_host_abi.py": "61f78166c8d003da19d4c8ca53c6f186692b779a990511ee51d14e717ac2e18e",
+        "hia/toolchain.json": "2be52c133a996c668ac75ccf33233a018581d999e67b795936bdc073b94f1fab",
+        "hia/utf8_boundaries.hepta": "52afe38653a3c145a7f25c457f06d276e9b06ee5e4a7f19d670dcd635fe027a3",
+        "hia/utf8_prefix.hepta": "a80d29ca048d723232e9178c8960959a6908ce30d182f26cece2208d244db2e9",
+        "hia/uuid_matches.hepta": "e116c61efea7c0fbc5ba7f9589e3e0ca6e7b4b653f3fb2ba9f788ad3709fcea0"
+      },
+      "actual_public_source_count": 58,
+      "initial_and_final_code_tree_equal": true,
+      "complete_source_inventory": {
+        "files": 9893,
+        "bytes": 109917681,
+        "inventory_sha256": "12909d9288ad1185f7dc8d6c907719f212cc7a3bc975614803fe0309b0327598",
+        "scope": "complete regular/symlink bytes and Git modes"
+      },
+      "final_source_is_same_as_executed": true,
+      "post_final_maintenance_product_execution": false
+    }
   }
 }
