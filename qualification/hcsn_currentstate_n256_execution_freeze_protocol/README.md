@@ -7,11 +7,11 @@ execution-key allocation.
 
 The protocol requires the future runtime profile, host snapshot, ancestor
 cgroup snapshot, allocation, and calendar originals to share one explicit
-capture-session identity and host alias. Their capture must precede the frozen
-execution interval. Allocation/calendar and the host snapshot must be one
-atomic observation; a convenient but stale hardware snapshot cannot be used as
-execution evidence. The exact #6345 child request and frozen provider source
-are also bound.
+capture-session identity and host alias. Each capture must precede the frozen
+execution interval. The originals may have distinct capture timestamps; the
+shared session and host prevent an unrelated or stale snapshot from being
+mixed into the execution freeze. The exact #6345 child request and frozen
+provider source are also bound.
 
 Provider-author identity and independent reviewer identity, custody, and review
 artifact remain separately required. Provider self-review and conflated
