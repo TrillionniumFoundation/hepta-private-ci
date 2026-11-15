@@ -6,7 +6,8 @@ import re
 
 from file_update_oracle import cargo, identity
 
-MODULES = ("seek_sequence", "source_file", "file_update", "parser", "patch_effects")
+MODULES = ("seek_sequence", "source_file", "file_update", "parser", "patch_effects",
+           "patch_summary")
 ORIGINAL_LIB_SHA256 = "7daa1b1f7df70220bcc2bd45e5e169246261c689b388fbb030c6b60b9d5db07a"
 ORIGINAL_LIB_BLOB = "1450223f39c2ce2e3ec6709df58a612d681e4b0d"
 ORIGINAL_TESTS = frozenset((
@@ -58,6 +59,10 @@ def recover_lib(producer):
     blocks = [
         native + "mod hia_native_patch_effects;\n",
         native + "use hia_native_patch_effects::apply_hunks_to_files;\n",
+        native + "mod hia_native_patch_summary;\n",
+        native + "pub use hia_native_patch_summary::print_summary;\n",
+        native + "mod hia_native_unified_diff;\n",
+        native + "mod hia_native_unified_diff_policy;\n",
     ]
     for statement in (
         "use std::io;", "use anyhow::Context;",
@@ -81,6 +86,10 @@ def recover_lib(producer):
         before = (legacy + after).encode()
         require(restored.count(before) == 1, "legacy owner routing is absent or duplicated")
         restored = restored.replace(before, after.encode(), 1)
+    summary = "pub fn print_summary("
+    guarded_summary = (legacy + summary).encode()
+    require(restored.count(guarded_summary) == 1, "legacy summary routing differs")
+    restored = restored.replace(guarded_summary, summary.encode(), 1)
     # These four inherited module declarations are the complete a201 -> 2ff
     # lib.rs difference, independently observed before effects routing.
     blocks.extend(native + "mod " + name + ";\n" for name in (
@@ -97,7 +106,7 @@ def recover_lib(producer):
             (47657, ORIGINAL_LIB_SHA256, ORIGINAL_LIB_BLOB),
             "inverse routing must recover the entire unchanged original lib.rs")
     return {"current_lib_sha256": hashlib.sha256(data).hexdigest(),
-            "exact_routing_rewrites": 21, "restored_bytes": len(restored),
+            "exact_routing_rewrites": 26, "restored_bytes": len(restored),
             "restored_sha256": digest, "restored_git_blob": blob}
 
 
@@ -124,6 +133,8 @@ def native_inputs(producer, library):
         "codex-rs/apply-patch/src/lib.rs",
         "codex-rs/apply-patch/src/hia_native_patch_effects.rs",
         "hia/patch_effects_buffer_contract.json",
+        "codex-rs/apply-patch/src/hia_native_patch_summary.rs",
+        "hia/patch_summary_buffer_contract.json",
     ):
         sources[relative] = identity.sha(producer / relative)
     return {"build_report_sha256": identity.sha(report_path),

@@ -2,6 +2,9 @@ use codex_exec_server::ExecutorFileSystem;
 use codex_exec_server::FileSystemSandboxContext;
 use codex_exec_server::ReadFileOptions;
 use codex_utils_path_uri::PathUri;
+// BEGIN HIA_NATIVE unified_diff_import
+#[cfg(not(feature = "hia-native"))]
+// END HIA_NATIVE unified_diff_import
 use similar::TextDiff;
 
 use crate::ApplyPatchError;
@@ -352,8 +355,23 @@ async fn unified_diff_from_chunks_with_context_and_mode(
         sandbox,
     )
     .await?;
+    // BEGIN HIA_NATIVE unified_diff_text
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA_NATIVE unified_diff_text
     let text_diff = TextDiff::from_lines(&original_contents, &new_contents);
+    // BEGIN HIA_NATIVE unified_diff_render
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA_NATIVE unified_diff_render
     let unified_diff = text_diff.unified_diff().context_radius(context).to_string();
+    // BEGIN HIA_NATIVE unified_diff_native
+    #[cfg(feature = "hia-native")]
+    let unified_diff = crate::hia_native_unified_diff::unified_diff(
+        &original_contents,
+        &new_contents,
+        context,
+        crate::hia_native_unified_diff_policy::ARITHMETIC_POLICY,
+    );
+    // END HIA_NATIVE unified_diff_native
     Ok(ApplyPatchFileUpdate {
         unified_diff,
         original_content: original_contents,
