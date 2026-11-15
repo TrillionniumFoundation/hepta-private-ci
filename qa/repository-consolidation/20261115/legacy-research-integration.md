@@ -224,3 +224,12 @@ The complete staged PERC delta passes the unchanged 512,000-byte blob policy
 and full `git diff --check`; the tree checked and raw outputs are recorded in
 `legacy/perc-static-checks.json`. This is scoped to this third merge, so it does
 not relabel the three preserved PRED raw-log whitespace findings.
+
+## Model-runner documentation correction
+
+A separate documentation-only follow-up describes the existing custom-model
+exception accurately: local content-pinned snapshots are required, automatic
+downloads are disabled, and custom code defaults off; the CLI permits only the
+explicitly audited `jina_zh` snapshot with `--allow-audited-custom-code`. Runtime
+logic is unchanged. The before/after Python ASTs match after normalizing the
+module docstring; no model was loaded for this documentation correction.
