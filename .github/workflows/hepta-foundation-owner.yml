@@ -184,6 +184,15 @@ jobs:
             cargo clippy --locked -p codex-hepta-agentd --all-targets \
               --features qualification-cognitive-write -- -D warnings
 
+      - name: Run required scoped Agentd lint fixes after tests
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/foundation-owner-records/agentd-fix.json" -- \
+            just fix --locked -p codex-hepta-agentd --all-targets \
+              --features qualification-cognitive-write
+
       - name: Require unchanged candidate and namespace restriction after execution
         if: ${{ always() }}
         run: |
