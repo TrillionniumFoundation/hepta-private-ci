@@ -1,0 +1,1953 @@
+hia-asm.v1 hepta.hia.program.v9 codex_file_update
+fn f0(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf)
+  value_1:usize = buffer.len(entry_output)
+  value_2:u64 = int.cast(value_1) {"mode":"wrap"}
+  constant_3:u64 = const() {"value":32}
+  value_4:bool = compare.ge(value_2,constant_3)
+  value_5:usize = buffer.len(entry_workspace)
+  value_6:u64 = int.cast(value_5) {"mode":"wrap"}
+  constant_7:u64 = const() {"value":8}
+  value_8:bool = compare.ge(value_6,constant_7)
+  value_9:bool = bool.and(value_4,value_8)
+  branch value_9 operation(entry_source,entry_output,entry_workspace) short()
+block operation(operation_source:readbuf,operation_output:mutbuf,operation_workspace:mutbuf)
+  constant_10:u64 = const() {"value":0}
+  value_11:usize = int.cast(constant_10) {"mode":"wrap"}
+  value_12:u64 = buffer.load.u64.le(operation_workspace,value_11)
+  constant_13:u64 = const() {"value":7}
+  value_14:bool = compare.le(value_12,constant_13)
+  branch value_14 known(operation_source,operation_output,operation_workspace,value_12) invalid()
+block known(known_source:readbuf,known_output:mutbuf,known_workspace:mutbuf,known_operation:u64)
+  constant_15:u64 = const() {"value":2}
+  value_16:bool = compare.lt(known_operation,constant_15)
+  branch value_16 lf(known_source,known_output,known_workspace) later(known_source,known_output,known_workspace,known_operation)
+block lf(lf_source:readbuf,lf_output:mutbuf,lf_workspace:mutbuf)
+  lf_entry_17:u32 = call(lf_source,lf_output,lf_workspace) {"function":"lf_entry"}
+  ret(lf_entry_17)
+block later(later_source:readbuf,later_output:mutbuf,later_workspace:mutbuf,later_operation:u64)
+  constant_18:u64 = const() {"value":4}
+  value_19:bool = compare.lt(later_operation,constant_18)
+  branch value_19 step(later_source,later_output,later_workspace) final(later_source,later_output,later_workspace,later_operation)
+block step(step_source:readbuf,step_output:mutbuf,step_workspace:mutbuf)
+  step_entry_20:u32 = call(step_source,step_output,step_workspace) {"function":"step_entry"}
+  ret(step_entry_20)
+block final(final_source:readbuf,final_output:mutbuf,final_workspace:mutbuf,final_operation:u64)
+  constant_21:u64 = const() {"value":6}
+  value_22:bool = compare.lt(final_operation,constant_21)
+  branch value_22 sort(final_source,final_output,final_workspace) render(final_source,final_output,final_workspace)
+block sort(sort_source:readbuf,sort_output:mutbuf,sort_workspace:mutbuf)
+  sort_entry_23:u32 = call(sort_source,sort_output,sort_workspace) {"function":"sort_entry"}
+  ret(sort_entry_23)
+block render(render_source:readbuf,render_output:mutbuf,render_workspace:mutbuf)
+  render_entry_24:u32 = call(render_source,render_output,render_workspace) {"function":"render_entry"}
+  ret(render_entry_24)
+block short()
+  constant_25:u32 = const() {"value":4294967294}
+  ret(constant_25)
+block invalid()
+  constant_26:u32 = const() {"value":4294967295}
+  ret(constant_26)
+end
+fn valid_utf8(entry_source:readbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(entry_source:readbuf)
+  value_1:usize = buffer.len(entry_source)
+  constant_2:usize = const() {"value":0}
+  jump scan(entry_source,constant_2,value_1)
+block scan(scan_source:readbuf,scan_index:usize,scan_size:usize)
+  value_3:usize = int.sub.checked(scan_size,scan_index)
+  constant_4:usize = const() {"value":32}
+  value_5:bool = compare.ge(value_3,constant_4)
+  branch value_5 wide(scan_source,scan_index,scan_size) word_check(scan_source,scan_index,scan_size)
+block wide(wide_source:readbuf,wide_index:usize,wide_size:usize)
+  value_6:u64 = buffer.load.u64.le(wide_source,wide_index)
+  constant_7:usize = const() {"value":8}
+  value_8:usize = int.add.checked(wide_index,constant_7)
+  value_9:u64 = buffer.load.u64.le(wide_source,value_8)
+  value_10:u64 = bit.or(value_6,value_9)
+  constant_11:usize = const() {"value":16}
+  value_12:usize = int.add.checked(wide_index,constant_11)
+  value_13:u64 = buffer.load.u64.le(wide_source,value_12)
+  value_14:u64 = bit.or(value_10,value_13)
+  constant_15:usize = const() {"value":24}
+  value_16:usize = int.add.checked(wide_index,constant_15)
+  value_17:u64 = buffer.load.u64.le(wide_source,value_16)
+  value_18:u64 = bit.or(value_14,value_17)
+  constant_19:u64 = const() {"value":9259542123273814144}
+  value_20:u64 = bit.and(value_18,constant_19)
+  constant_21:u64 = const() {"value":0}
+  value_22:bool = compare.eq(value_20,constant_21)
+  constant_23:usize = const() {"value":32}
+  value_24:usize = int.add.checked(wide_index,constant_23)
+  branch value_22 scan(wide_source,value_24,wide_size) word_check(wide_source,wide_index,wide_size)
+block word_check(word_check_source:readbuf,word_check_index:usize,word_check_size:usize)
+  value_25:usize = int.sub.checked(word_check_size,word_check_index)
+  constant_26:usize = const() {"value":8}
+  value_27:bool = compare.ge(value_25,constant_26)
+  branch value_27 word(word_check_source,word_check_index,word_check_size) scalar_check(word_check_source,word_check_index,word_check_size)
+block word(word_source:readbuf,word_index:usize,word_size:usize)
+  value_28:u64 = buffer.load.u64.le(word_source,word_index)
+  constant_29:u64 = const() {"value":9259542123273814144}
+  value_30:u64 = bit.and(value_28,constant_29)
+  constant_31:u64 = const() {"value":0}
+  value_32:bool = compare.eq(value_30,constant_31)
+  constant_33:usize = const() {"value":8}
+  value_34:usize = int.add.checked(word_index,constant_33)
+  branch value_32 scan(word_source,value_34,word_size) scalar_check(word_source,word_index,word_size)
+block scalar_check(scalar_check_source:readbuf,scalar_check_index:usize,scalar_check_size:usize)
+  value_35:bool = compare.lt(scalar_check_index,scalar_check_size)
+  branch value_35 scalar(scalar_check_source,scalar_check_index,scalar_check_size) valid()
+block scalar(scalar_source:readbuf,scalar_index:usize,scalar_size:usize)
+  value_36:u8 = buffer.load(scalar_source,scalar_index)
+  constant_37:usize = const() {"value":1}
+  value_38:usize = int.add.checked(scalar_index,constant_37)
+  constant_39:u8 = const() {"value":128}
+  value_40:bool = compare.lt(value_36,constant_39)
+  branch value_40 scan(scalar_source,value_38,scalar_size) lead(scalar_source,scalar_index,scalar_size,value_36)
+block lead(lead_source:readbuf,lead_index:usize,lead_size:usize,lead_lead:u8)
+  constant_41:u8 = const() {"value":194}
+  value_42:bool = compare.ge(lead_lead,constant_41)
+  constant_43:u8 = const() {"value":244}
+  value_44:bool = compare.le(lead_lead,constant_43)
+  value_45:bool = bool.and(value_42,value_44)
+  branch value_45 width(lead_source,lead_index,lead_size,lead_lead) invalid()
+block width(width_source:readbuf,width_index:usize,width_size:usize,width_lead:u8)
+  constant_46:u8 = const() {"value":223}
+  value_47:bool = compare.le(width_lead,constant_46)
+  constant_48:u8 = const() {"value":239}
+  value_49:bool = compare.le(width_lead,constant_48)
+  constant_50:usize = const() {"value":2}
+  constant_51:usize = const() {"value":3}
+  constant_52:usize = const() {"value":4}
+  value_53:usize = select(value_49,constant_51,constant_52)
+  value_54:usize = select(value_47,constant_50,value_53)
+  value_55:usize = int.sub.checked(width_size,width_index)
+  value_56:bool = compare.le(value_54,value_55)
+  branch value_56 second(width_source,width_index,width_size,width_lead,value_54) invalid()
+block second(second_source:readbuf,second_index:usize,second_size:usize,second_lead:u8,second_width:usize)
+  constant_57:usize = const() {"value":1}
+  value_58:usize = int.add.checked(second_index,constant_57)
+  value_59:u8 = buffer.load(second_source,value_58)
+  constant_60:u8 = const() {"value":224}
+  value_61:bool = compare.eq(second_lead,constant_60)
+  constant_62:u8 = const() {"value":160}
+  constant_63:u8 = const() {"value":128}
+  value_64:u8 = select(value_61,constant_62,constant_63)
+  constant_65:u8 = const() {"value":240}
+  value_66:bool = compare.eq(second_lead,constant_65)
+  constant_67:u8 = const() {"value":144}
+  value_68:u8 = select(value_66,constant_67,value_64)
+  constant_69:u8 = const() {"value":237}
+  value_70:bool = compare.eq(second_lead,constant_69)
+  constant_71:u8 = const() {"value":159}
+  constant_72:u8 = const() {"value":191}
+  value_73:u8 = select(value_70,constant_71,constant_72)
+  constant_74:u8 = const() {"value":244}
+  value_75:bool = compare.eq(second_lead,constant_74)
+  constant_76:u8 = const() {"value":143}
+  value_77:u8 = select(value_75,constant_76,value_73)
+  value_78:bool = compare.ge(value_59,value_68)
+  value_79:bool = compare.le(value_59,value_77)
+  value_80:bool = bool.and(value_78,value_79)
+  branch value_80 third_check(second_source,second_index,second_size,second_width) invalid()
+block third_check(third_check_source:readbuf,third_check_index:usize,third_check_size:usize,third_check_width:usize)
+  value_81:usize = int.add.checked(third_check_index,third_check_width)
+  constant_82:usize = const() {"value":2}
+  value_83:bool = compare.eq(third_check_width,constant_82)
+  branch value_83 continuation(third_check_source,value_81,third_check_size) third(third_check_source,third_check_index,third_check_size,third_check_width,value_81)
+block third(third_source:readbuf,third_index:usize,third_size:usize,third_width:usize,third_after:usize)
+  constant_84:usize = const() {"value":2}
+  value_85:usize = int.add.checked(third_index,constant_84)
+  value_86:u8 = buffer.load(third_source,value_85)
+  constant_87:u8 = const() {"value":192}
+  value_88:u8 = bit.and(value_86,constant_87)
+  constant_89:u8 = const() {"value":128}
+  value_90:bool = compare.eq(value_88,constant_89)
+  branch value_90 fourth_check(third_source,third_index,third_size,third_width,third_after) invalid()
+block fourth_check(fourth_check_source:readbuf,fourth_check_index:usize,fourth_check_size:usize,fourth_check_width:usize,fourth_check_after:usize)
+  constant_91:usize = const() {"value":3}
+  value_92:bool = compare.eq(fourth_check_width,constant_91)
+  branch value_92 continuation(fourth_check_source,fourth_check_after,fourth_check_size) fourth(fourth_check_source,fourth_check_index,fourth_check_size,fourth_check_after)
+block fourth(fourth_source:readbuf,fourth_index:usize,fourth_size:usize,fourth_after:usize)
+  constant_93:usize = const() {"value":3}
+  value_94:usize = int.add.checked(fourth_index,constant_93)
+  value_95:u8 = buffer.load(fourth_source,value_94)
+  constant_96:u8 = const() {"value":192}
+  value_97:u8 = bit.and(value_95,constant_96)
+  constant_98:u8 = const() {"value":128}
+  value_99:bool = compare.eq(value_97,constant_98)
+  branch value_99 continuation(fourth_source,fourth_after,fourth_size) invalid()
+block continuation(continuation_source:readbuf,continuation_index:usize,continuation_size:usize)
+  value_100:bool = compare.lt(continuation_index,continuation_size)
+  branch value_100 continued_byte(continuation_source,continuation_index,continuation_size) valid()
+block continued_byte(continued_byte_source:readbuf,continued_byte_index:usize,continued_byte_size:usize)
+  value_101:u8 = buffer.load(continued_byte_source,continued_byte_index)
+  constant_102:u8 = const() {"value":128}
+  value_103:bool = compare.lt(value_101,constant_102)
+  branch value_103 scan(continued_byte_source,continued_byte_index,continued_byte_size) lead(continued_byte_source,continued_byte_index,continued_byte_size,value_101)
+block valid()
+  constant_104:bool = const() {"value":true}
+  ret(constant_104)
+block invalid()
+  constant_105:bool = const() {"value":false}
+  ret(constant_105)
+end
+fn extent(entry_base:u64,entry_count:u64,entry_stride:u64,entry_limit:u64) -> (u64) effects(trap) entry(entry)
+block entry(entry_base:u64,entry_count:u64,entry_stride:u64,entry_limit:u64)
+  value_1:bool = compare.le(entry_base,entry_limit)
+  branch value_1 base(entry_base,entry_count,entry_stride,entry_limit) invalid()
+block base(base_base:u64,base_count:u64,base_stride:u64,base_limit:u64)
+  value_2:u64 = int.sub.checked(base_limit,base_base)
+  value_3:u64 = int.div.checked(value_2,base_stride)
+  value_4:bool = compare.le(base_count,value_3)
+  branch value_4 done(base_base,base_count,base_stride) invalid()
+block done(done_base:u64,done_count:u64,done_stride:u64)
+  value_5:u64 = int.mul.checked(done_count,done_stride)
+  value_6:u64 = int.add.checked(done_base,value_5)
+  ret(value_6)
+block invalid()
+  constant_7:u64 = const() {"value":0}
+  ret(constant_7)
+end
+fn find_lf(entry_source:readbuf,entry_position:u64,entry_end:u64) -> (u64) effects(read,trap) entry(entry)
+block entry(entry_source:readbuf,entry_position:u64,entry_end:u64)
+  jump scan(entry_source,entry_position,entry_end)
+block scan(scan_source:readbuf,scan_position:u64,scan_end:u64)
+  value_1:u64 = int.sub.checked(scan_end,scan_position)
+  constant_2:u64 = const() {"value":8}
+  value_3:bool = compare.ge(value_1,constant_2)
+  branch value_3 word(scan_source,scan_position,scan_end) tail(scan_source,scan_position,scan_end)
+block word(word_source:readbuf,word_position:u64,word_end:u64)
+  value_4:usize = int.cast(word_position) {"mode":"wrap"}
+  value_5:u64 = buffer.load.u64.le(word_source,value_4)
+  constant_6:u64 = const() {"value":723401728380766730}
+  value_7:u64 = bit.xor(value_5,constant_6)
+  constant_8:u64 = const() {"value":72340172838076673}
+  value_9:u64 = int.sub.wrap(value_7,constant_8)
+  value_10:u64 = bit.not(value_7)
+  value_11:u64 = bit.and(value_9,value_10)
+  constant_12:u64 = const() {"value":9259542123273814144}
+  value_13:u64 = bit.and(value_11,constant_12)
+  constant_14:u64 = const() {"value":0}
+  value_15:bool = compare.ne(value_13,constant_14)
+  constant_16:u64 = const() {"value":8}
+  value_17:u64 = int.add.checked(word_position,constant_16)
+  branch value_15 tail(word_source,word_position,word_end) scan(word_source,value_17,word_end)
+block tail(tail_source:readbuf,tail_position:u64,tail_end:u64)
+  value_18:bool = compare.lt(tail_position,tail_end)
+  branch value_18 byte(tail_source,tail_position,tail_end) done(tail_position)
+block byte(byte_source:readbuf,byte_position:u64,byte_end:u64)
+  value_19:usize = int.cast(byte_position) {"mode":"wrap"}
+  value_20:u8 = buffer.load(byte_source,value_19)
+  constant_21:u8 = const() {"value":10}
+  value_22:bool = compare.eq(value_20,constant_21)
+  constant_23:u64 = const() {"value":1}
+  value_24:u64 = int.add.checked(byte_position,constant_23)
+  branch value_22 done(byte_position) tail(byte_source,value_24,byte_end)
+block done(done_position:u64)
+  ret(done_position)
+end
+fn lf_plan(entry_source:readbuf,entry_output:mutbuf,entry_emit:bool) -> (u64,u64) effects(read,write,trap) entry(entry)
+block entry(entry_source:readbuf,entry_output:mutbuf,entry_emit:bool)
+  constant_1:u64 = const() {"value":0}
+  jump scan(entry_source,entry_output,entry_emit,constant_1,constant_1,constant_1)
+block scan(scan_source:readbuf,scan_output:mutbuf,scan_emit:bool,scan_start:u64,scan_count:u64,scan_last_length:u64)
+  value_2:usize = buffer.len(scan_source)
+  value_3:u64 = int.cast(value_2) {"mode":"wrap"}
+  value_4:bool = compare.lt(scan_start,value_3)
+  branch value_4 line(scan_source,scan_output,scan_emit,scan_start,scan_count,value_3) done(scan_count,scan_last_length)
+block line(line_source:readbuf,line_output:mutbuf,line_emit:bool,line_start:u64,line_count:u64,line_size:u64)
+  find_lf_5:u64 = call(line_source,line_start,line_size) {"function":"find_lf"}
+  value_6:u64 = int.sub.checked(find_lf_5,line_start)
+  branch line_emit write(line_source,line_output,line_emit,line_start,line_count,line_size,find_lf_5,value_6) next(line_source,line_output,line_emit,line_count,line_size,find_lf_5,value_6)
+block write(write_source:readbuf,write_output:mutbuf,write_emit:bool,write_start:u64,write_count:u64,write_size:u64,write_end:u64,write_length:u64)
+  constant_7:u64 = const() {"value":32}
+  constant_8:u64 = const() {"value":16}
+  value_9:u64 = int.mul.checked(write_count,constant_8)
+  value_10:u64 = int.add.checked(constant_7,value_9)
+  value_11:usize = int.cast(value_10) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_11,write_start)
+  constant_12:u64 = const() {"value":8}
+  value_13:u64 = int.add.checked(value_10,constant_12)
+  value_14:usize = int.cast(value_13) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_14,write_length)
+  jump next(write_source,write_output,write_emit,write_count,write_size,write_end,write_length)
+block next(next_source:readbuf,next_output:mutbuf,next_emit:bool,next_count:u64,next_size:u64,next_end:u64,next_length:u64)
+  constant_15:u64 = const() {"value":1}
+  value_16:u64 = int.add.checked(next_count,constant_15)
+  value_17:bool = compare.lt(next_end,next_size)
+  branch value_17 after_lf(next_source,next_output,next_emit,value_16,next_end,next_length) done(value_16,next_length)
+block after_lf(after_lf_source:readbuf,after_lf_output:mutbuf,after_lf_emit:bool,after_lf_count:u64,after_lf_end:u64,after_lf_length:u64)
+  constant_18:u64 = const() {"value":1}
+  value_19:u64 = int.add.checked(after_lf_end,constant_18)
+  jump scan(after_lf_source,after_lf_output,after_lf_emit,value_19,after_lf_count,after_lf_length)
+block done(done_count:u64,done_last_length:u64)
+  ret(done_count,done_last_length)
+end
+fn valid_step(entry_workspace:mutbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(entry_workspace:mutbuf)
+  constant_1:u64 = const() {"value":8}
+  value_2:usize = int.cast(constant_1) {"mode":"wrap"}
+  value_3:u64 = buffer.load.u64.le(entry_workspace,value_2)
+  constant_4:u64 = const() {"value":16}
+  value_5:usize = int.cast(constant_4) {"mode":"wrap"}
+  value_6:u64 = buffer.load.u64.le(entry_workspace,value_5)
+  constant_7:u64 = const() {"value":24}
+  value_8:usize = int.cast(constant_7) {"mode":"wrap"}
+  value_9:u64 = buffer.load.u64.le(entry_workspace,value_8)
+  constant_10:u64 = const() {"value":32}
+  value_11:usize = int.cast(constant_10) {"mode":"wrap"}
+  value_12:u64 = buffer.load.u64.le(entry_workspace,value_11)
+  constant_13:u64 = const() {"value":40}
+  value_14:usize = int.cast(constant_13) {"mode":"wrap"}
+  value_15:u64 = buffer.load.u64.le(entry_workspace,value_14)
+  constant_16:u64 = const() {"value":48}
+  value_17:usize = int.cast(constant_16) {"mode":"wrap"}
+  value_18:u64 = buffer.load.u64.le(entry_workspace,value_17)
+  constant_19:u64 = const() {"value":56}
+  value_20:usize = int.cast(constant_19) {"mode":"wrap"}
+  value_21:u64 = buffer.load.u64.le(entry_workspace,value_20)
+  constant_22:u64 = const() {"value":64}
+  value_23:usize = int.cast(constant_22) {"mode":"wrap"}
+  value_24:u64 = buffer.load.u64.le(entry_workspace,value_23)
+  constant_25:u64 = const() {"value":72}
+  value_26:usize = int.cast(constant_25) {"mode":"wrap"}
+  value_27:u64 = buffer.load.u64.le(entry_workspace,value_26)
+  constant_28:u64 = const() {"value":80}
+  value_29:usize = int.cast(constant_28) {"mode":"wrap"}
+  value_30:u64 = buffer.load.u64.le(entry_workspace,value_29)
+  constant_31:u64 = const() {"value":88}
+  value_32:usize = int.cast(constant_31) {"mode":"wrap"}
+  value_33:u64 = buffer.load.u64.le(entry_workspace,value_32)
+  constant_34:u64 = const() {"value":96}
+  value_35:usize = int.cast(constant_34) {"mode":"wrap"}
+  value_36:u64 = buffer.load.u64.le(entry_workspace,value_35)
+  constant_37:u64 = const() {"value":104}
+  value_38:usize = int.cast(constant_37) {"mode":"wrap"}
+  value_39:u64 = buffer.load.u64.le(entry_workspace,value_38)
+  constant_40:u64 = const() {"value":112}
+  value_41:usize = int.cast(constant_40) {"mode":"wrap"}
+  value_42:u64 = buffer.load.u64.le(entry_workspace,value_41)
+  constant_43:u64 = const() {"value":120}
+  value_44:usize = int.cast(constant_43) {"mode":"wrap"}
+  value_45:u64 = buffer.load.u64.le(entry_workspace,value_44)
+  constant_46:u64 = const() {"value":128}
+  constant_47:u64 = const() {"value":1}
+  value_48:bool = compare.le(value_3,constant_47)
+  constant_49:u64 = const() {"value":3}
+  value_50:bool = compare.le(value_21,constant_49)
+  value_51:bool = compare.le(value_24,constant_47)
+  value_52:bool = compare.le(value_30,constant_47)
+  value_53:bool = compare.le(value_33,constant_47)
+  constant_54:u64 = const() {"value":0}
+  value_55:bool = compare.eq(value_45,constant_54)
+  value_56:bool = compare.le(value_15,value_12)
+  value_57:bool = compare.le(value_18,value_6)
+  value_58:bool = compare.gt(value_6,constant_54)
+  value_59:bool = compare.eq(value_9,constant_54)
+  value_60:bool = bool.or(value_58,value_59)
+  value_61:bool = compare.eq(value_24,constant_47)
+  value_62:bool = compare.eq(value_27,constant_54)
+  value_63:bool = bool.or(value_61,value_62)
+  value_64:bool = bool.and(value_48,value_50)
+  value_65:bool = bool.and(value_64,value_51)
+  value_66:bool = bool.and(value_65,value_52)
+  value_67:bool = bool.and(value_66,value_53)
+  value_68:bool = bool.and(value_67,value_55)
+  value_69:bool = bool.and(value_68,value_56)
+  value_70:bool = bool.and(value_69,value_57)
+  value_71:bool = bool.and(value_70,value_60)
+  value_72:bool = bool.and(value_71,value_63)
+  value_73:usize = buffer.len(entry_workspace)
+  value_74:u64 = int.cast(value_73) {"mode":"wrap"}
+  extent_75:u64 = call(constant_46,value_36,constant_1,value_74) {"function":"extent"}
+  value_76:bool = compare.ne(extent_75,constant_54)
+  value_77:bool = bool.and(value_72,value_76)
+  value_78:usize = buffer.len(entry_workspace)
+  value_79:u64 = int.cast(value_78) {"mode":"wrap"}
+  extent_80:u64 = call(extent_75,value_39,constant_1,value_79) {"function":"extent"}
+  value_81:bool = compare.ne(extent_80,constant_54)
+  value_82:bool = bool.and(value_77,value_81)
+  value_83:usize = buffer.len(entry_workspace)
+  value_84:u64 = int.cast(value_83) {"mode":"wrap"}
+  extent_85:u64 = call(extent_80,value_42,constant_4,value_84) {"function":"extent"}
+  value_86:bool = compare.ne(extent_85,constant_54)
+  value_87:bool = bool.and(value_82,value_86)
+  value_88:usize = buffer.len(entry_workspace)
+  value_89:u64 = int.cast(value_88) {"mode":"wrap"}
+  value_90:bool = compare.eq(extent_85,value_89)
+  value_91:bool = bool.and(value_87,value_90)
+  branch value_91 shape(entry_workspace) invalid()
+block shape(shape_workspace:mutbuf)
+  constant_92:u64 = const() {"value":40}
+  value_93:usize = int.cast(constant_92) {"mode":"wrap"}
+  value_94:u64 = buffer.load.u64.le(shape_workspace,value_93)
+  constant_95:u64 = const() {"value":32}
+  value_96:usize = int.cast(constant_95) {"mode":"wrap"}
+  value_97:u64 = buffer.load.u64.le(shape_workspace,value_96)
+  value_98:bool = compare.eq(value_94,value_97)
+  branch value_98 done_chunk(shape_workspace) phase(shape_workspace)
+block done_chunk(done_chunk_workspace:mutbuf)
+  constant_99:bool = const() {"value":true}
+  constant_100:u64 = const() {"value":56}
+  value_101:usize = int.cast(constant_100) {"mode":"wrap"}
+  value_102:u64 = buffer.load.u64.le(done_chunk_workspace,value_101)
+  constant_103:u64 = const() {"value":0}
+  value_104:bool = compare.eq(value_102,constant_103)
+  value_105:bool = bool.and(constant_99,value_104)
+  constant_106:u64 = const() {"value":64}
+  value_107:usize = int.cast(constant_106) {"mode":"wrap"}
+  value_108:u64 = buffer.load.u64.le(done_chunk_workspace,value_107)
+  value_109:bool = compare.eq(value_108,constant_103)
+  value_110:bool = bool.and(value_105,value_109)
+  constant_111:u64 = const() {"value":72}
+  value_112:usize = int.cast(constant_111) {"mode":"wrap"}
+  value_113:u64 = buffer.load.u64.le(done_chunk_workspace,value_112)
+  value_114:bool = compare.eq(value_113,constant_103)
+  value_115:bool = bool.and(value_110,value_114)
+  constant_116:u64 = const() {"value":80}
+  value_117:usize = int.cast(constant_116) {"mode":"wrap"}
+  value_118:u64 = buffer.load.u64.le(done_chunk_workspace,value_117)
+  value_119:bool = compare.eq(value_118,constant_103)
+  value_120:bool = bool.and(value_115,value_119)
+  constant_121:u64 = const() {"value":88}
+  value_122:usize = int.cast(constant_121) {"mode":"wrap"}
+  value_123:u64 = buffer.load.u64.le(done_chunk_workspace,value_122)
+  value_124:bool = compare.eq(value_123,constant_103)
+  value_125:bool = bool.and(value_120,value_124)
+  constant_126:u64 = const() {"value":96}
+  value_127:usize = int.cast(constant_126) {"mode":"wrap"}
+  value_128:u64 = buffer.load.u64.le(done_chunk_workspace,value_127)
+  value_129:bool = compare.eq(value_128,constant_103)
+  value_130:bool = bool.and(value_125,value_129)
+  constant_131:u64 = const() {"value":104}
+  value_132:usize = int.cast(constant_131) {"mode":"wrap"}
+  value_133:u64 = buffer.load.u64.le(done_chunk_workspace,value_132)
+  value_134:bool = compare.eq(value_133,constant_103)
+  value_135:bool = bool.and(value_130,value_134)
+  constant_136:u64 = const() {"value":112}
+  value_137:usize = int.cast(constant_136) {"mode":"wrap"}
+  value_138:u64 = buffer.load.u64.le(done_chunk_workspace,value_137)
+  value_139:bool = compare.eq(value_138,constant_103)
+  value_140:bool = bool.and(value_135,value_139)
+  ret(value_140)
+block phase(phase_workspace:mutbuf)
+  constant_141:u64 = const() {"value":56}
+  value_142:usize = int.cast(constant_141) {"mode":"wrap"}
+  value_143:u64 = buffer.load.u64.le(phase_workspace,value_142)
+  constant_144:u64 = const() {"value":0}
+  value_145:bool = compare.eq(value_143,constant_144)
+  branch value_145 begin(phase_workspace) context_or_old(phase_workspace,value_143)
+block begin(begin_workspace:mutbuf)
+  constant_146:u64 = const() {"value":64}
+  value_147:usize = int.cast(constant_146) {"mode":"wrap"}
+  value_148:u64 = buffer.load.u64.le(begin_workspace,value_147)
+  constant_149:u64 = const() {"value":0}
+  value_150:bool = compare.eq(value_148,constant_149)
+  constant_151:u64 = const() {"value":72}
+  value_152:usize = int.cast(constant_151) {"mode":"wrap"}
+  value_153:u64 = buffer.load.u64.le(begin_workspace,value_152)
+  value_154:bool = compare.eq(value_153,constant_149)
+  value_155:bool = bool.and(value_150,value_154)
+  ret(value_155)
+block context_or_old(context_or_old_workspace:mutbuf,context_or_old_phase:u64)
+  constant_156:u64 = const() {"value":1}
+  value_157:bool = compare.eq(context_or_old_phase,constant_156)
+  branch value_157 context(context_or_old_workspace) old(context_or_old_workspace,context_or_old_phase)
+block context(context_workspace:mutbuf)
+  constant_158:u64 = const() {"value":80}
+  value_159:usize = int.cast(constant_158) {"mode":"wrap"}
+  value_160:u64 = buffer.load.u64.le(context_workspace,value_159)
+  constant_161:u64 = const() {"value":1}
+  value_162:bool = compare.eq(value_160,constant_161)
+  constant_163:u64 = const() {"value":0}
+  branch value_162 reply(context_workspace,constant_161,constant_163) invalid()
+block old(old_workspace:mutbuf,old_phase:u64)
+  constant_164:u64 = const() {"value":96}
+  value_165:usize = int.cast(constant_164) {"mode":"wrap"}
+  value_166:u64 = buffer.load.u64.le(old_workspace,value_165)
+  constant_167:u64 = const() {"value":0}
+  value_168:bool = compare.gt(value_166,constant_167)
+  branch value_168 nonempty(old_workspace,old_phase,value_166) invalid()
+block nonempty(nonempty_workspace:mutbuf,nonempty_phase:u64,nonempty_old:u64)
+  constant_169:u64 = const() {"value":3}
+  value_170:bool = compare.eq(nonempty_phase,constant_169)
+  constant_171:u64 = const() {"value":88}
+  value_172:usize = int.cast(constant_171) {"mode":"wrap"}
+  value_173:u64 = buffer.load.u64.le(nonempty_workspace,value_172)
+  branch value_170 trim(nonempty_workspace,nonempty_old) reply(nonempty_workspace,nonempty_old,value_173)
+block trim(trim_workspace:mutbuf,trim_old:u64)
+  constant_174:u64 = const() {"value":1}
+  value_175:u64 = int.sub.checked(trim_old,constant_174)
+  constant_176:u64 = const() {"value":128}
+  constant_177:u64 = const() {"value":8}
+  value_178:u64 = int.mul.checked(value_175,constant_177)
+  value_179:u64 = int.add.checked(constant_176,value_178)
+  value_180:usize = int.cast(value_179) {"mode":"wrap"}
+  value_181:u64 = buffer.load.u64.le(trim_workspace,value_180)
+  constant_182:u64 = const() {"value":0}
+  value_183:bool = compare.eq(value_181,constant_182)
+  constant_184:u64 = const() {"value":88}
+  value_185:usize = int.cast(constant_184) {"mode":"wrap"}
+  value_186:u64 = buffer.load.u64.le(trim_workspace,value_185)
+  branch value_183 reply(trim_workspace,value_175,value_186) invalid()
+block reply(reply_workspace:mutbuf,reply_pattern:u64,reply_eof:u64)
+  constant_187:u64 = const() {"value":64}
+  value_188:usize = int.cast(constant_187) {"mode":"wrap"}
+  value_189:u64 = buffer.load.u64.le(reply_workspace,value_188)
+  constant_190:u64 = const() {"value":0}
+  value_191:bool = compare.eq(value_189,constant_190)
+  branch value_191 absent(reply_pattern) found(reply_workspace,reply_pattern,reply_eof)
+block absent(absent_pattern:u64)
+  constant_192:u64 = const() {"value":0}
+  value_193:bool = compare.gt(absent_pattern,constant_192)
+  ret(value_193)
+block found(found_workspace:mutbuf,found_pattern:u64,found_eof:u64)
+  constant_194:u64 = const() {"value":0}
+  value_195:bool = compare.eq(found_pattern,constant_194)
+  branch value_195 empty(found_workspace) fits(found_workspace,found_pattern,found_eof)
+block empty(empty_workspace:mutbuf)
+  constant_196:u64 = const() {"value":72}
+  value_197:usize = int.cast(constant_196) {"mode":"wrap"}
+  value_198:u64 = buffer.load.u64.le(empty_workspace,value_197)
+  constant_199:u64 = const() {"value":48}
+  value_200:usize = int.cast(constant_199) {"mode":"wrap"}
+  value_201:u64 = buffer.load.u64.le(empty_workspace,value_200)
+  value_202:bool = compare.eq(value_198,value_201)
+  ret(value_202)
+block fits(fits_workspace:mutbuf,fits_pattern:u64,fits_eof:u64)
+  constant_203:u64 = const() {"value":16}
+  value_204:usize = int.cast(constant_203) {"mode":"wrap"}
+  value_205:u64 = buffer.load.u64.le(fits_workspace,value_204)
+  value_206:bool = compare.le(fits_pattern,value_205)
+  branch value_206 range(fits_workspace,fits_pattern,fits_eof,value_205) invalid()
+block range(range_workspace:mutbuf,range_pattern:u64,range_eof:u64,range_lines:u64)
+  constant_207:u64 = const() {"value":72}
+  value_208:usize = int.cast(constant_207) {"mode":"wrap"}
+  value_209:u64 = buffer.load.u64.le(range_workspace,value_208)
+  value_210:u64 = int.sub.checked(range_lines,range_pattern)
+  value_211:bool = compare.le(value_209,value_210)
+  branch value_211 start(range_workspace,range_eof,value_209,value_210) invalid()
+block start(start_workspace:mutbuf,start_eof:u64,start_index:u64,start_last:u64)
+  constant_212:u64 = const() {"value":48}
+  value_213:usize = int.cast(constant_212) {"mode":"wrap"}
+  value_214:u64 = buffer.load.u64.le(start_workspace,value_213)
+  value_215:bool = compare.ge(start_index,value_214)
+  constant_216:u64 = const() {"value":1}
+  value_217:bool = compare.eq(start_eof,constant_216)
+  constant_218:u64 = const() {"value":8}
+  value_219:usize = int.cast(constant_218) {"mode":"wrap"}
+  value_220:u64 = buffer.load.u64.le(start_workspace,value_219)
+  constant_221:u64 = const() {"value":0}
+  value_222:bool = compare.eq(value_220,constant_221)
+  value_223:bool = bool.and(value_217,value_222)
+  value_224:bool = bool.or(value_223,value_215)
+  value_225:bool = compare.eq(start_eof,constant_221)
+  value_226:bool = compare.eq(start_index,start_last)
+  value_227:bool = bool.or(value_225,value_226)
+  value_228:bool = bool.and(value_224,value_227)
+  ret(value_228)
+block invalid()
+  constant_229:bool = const() {"value":false}
+  ret(constant_229)
+end
+fn step_outcome(entry_output:mutbuf,entry_publish:bool,entry_action:u64,entry_index:u64,entry_cursor:u64,entry_phase:u64,entry_pattern:u64,entry_eof:u64,entry_count:u64,entry_mode:u64,entry_semantic:u64) -> (u64) effects(read,write,trap) entry(entry)
+block entry(entry_output:mutbuf,entry_publish:bool,entry_action:u64,entry_index:u64,entry_cursor:u64,entry_phase:u64,entry_pattern:u64,entry_eof:u64,entry_count:u64,entry_mode:u64,entry_semantic:u64)
+  branch entry_publish write(entry_output,entry_action,entry_index,entry_cursor,entry_phase,entry_pattern,entry_eof,entry_count,entry_mode,entry_semantic) done(entry_count)
+block write(write_output:mutbuf,write_action:u64,write_index:u64,write_cursor:u64,write_phase:u64,write_pattern:u64,write_eof:u64,write_count:u64,write_mode:u64,write_semantic:u64)
+  constant_1:u64 = const() {"value":96}
+  constant_2:u64 = const() {"value":32}
+  value_3:u64 = int.mul.checked(write_count,constant_2)
+  value_4:u64 = int.add.checked(constant_1,value_3)
+  constant_5:u64 = const() {"value":0}
+  value_6:usize = int.cast(constant_5) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_6,value_4)
+  constant_7:u64 = const() {"value":8}
+  value_8:usize = int.cast(constant_7) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_8,write_action)
+  constant_9:u64 = const() {"value":16}
+  value_10:usize = int.cast(constant_9) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_10,write_index)
+  constant_11:u64 = const() {"value":24}
+  value_12:usize = int.cast(constant_11) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_12,write_cursor)
+  value_13:usize = int.cast(constant_2) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_13,write_phase)
+  constant_14:u64 = const() {"value":40}
+  value_15:usize = int.cast(constant_14) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_15,write_pattern)
+  constant_16:u64 = const() {"value":48}
+  value_17:usize = int.cast(constant_16) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_17,write_eof)
+  constant_18:u64 = const() {"value":56}
+  value_19:usize = int.cast(constant_18) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_19,write_count)
+  constant_20:u64 = const() {"value":64}
+  value_21:usize = int.cast(constant_20) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_21,write_mode)
+  constant_22:u64 = const() {"value":72}
+  value_23:usize = int.cast(constant_22) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_23,write_semantic)
+  constant_24:u64 = const() {"value":80}
+  value_25:usize = int.cast(constant_24) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_25,constant_5)
+  constant_26:u64 = const() {"value":88}
+  value_27:usize = int.cast(constant_26) {"mode":"wrap"}
+  _ = buffer.store.u64.le(write_output,value_27,constant_5)
+  jump done(write_count)
+block done(done_count:u64)
+  ret(done_count)
+end
+fn replacement_record(entry_output:mutbuf,entry_index:u64,entry_start:u64,entry_old:u64,entry_new_start:u64,entry_new_count:u64) -> () effects(write,trap) entry(entry)
+block entry(entry_output:mutbuf,entry_index:u64,entry_start:u64,entry_old:u64,entry_new_start:u64,entry_new_count:u64)
+  constant_1:u64 = const() {"value":96}
+  constant_2:u64 = const() {"value":32}
+  value_3:u64 = int.mul.checked(entry_index,constant_2)
+  value_4:u64 = int.add.checked(constant_1,value_3)
+  value_5:usize = int.cast(value_4) {"mode":"wrap"}
+  _ = buffer.store.u64.le(entry_output,value_5,entry_start)
+  constant_6:u64 = const() {"value":8}
+  value_7:u64 = int.add.checked(value_4,constant_6)
+  value_8:usize = int.cast(value_7) {"mode":"wrap"}
+  _ = buffer.store.u64.le(entry_output,value_8,entry_old)
+  constant_9:u64 = const() {"value":16}
+  value_10:u64 = int.add.checked(value_4,constant_9)
+  value_11:usize = int.cast(value_10) {"mode":"wrap"}
+  _ = buffer.store.u64.le(entry_output,value_11,entry_new_start)
+  constant_12:u64 = const() {"value":24}
+  value_13:u64 = int.add.checked(value_4,constant_12)
+  value_14:usize = int.cast(value_13) {"mode":"wrap"}
+  _ = buffer.store.u64.le(entry_output,value_14,entry_new_count)
+  ret()
+end
+fn effective_new(entry_workspace:mutbuf) -> (u64) effects(read,trap) entry(entry)
+block entry(entry_workspace:mutbuf)
+  constant_1:u64 = const() {"value":104}
+  value_2:usize = int.cast(constant_1) {"mode":"wrap"}
+  value_3:u64 = buffer.load.u64.le(entry_workspace,value_2)
+  constant_4:u64 = const() {"value":56}
+  value_5:usize = int.cast(constant_4) {"mode":"wrap"}
+  value_6:u64 = buffer.load.u64.le(entry_workspace,value_5)
+  constant_7:u64 = const() {"value":3}
+  value_8:bool = compare.eq(value_6,constant_7)
+  constant_9:u64 = const() {"value":0}
+  value_10:bool = compare.gt(value_3,constant_9)
+  value_11:bool = bool.and(value_8,value_10)
+  branch value_11 last(entry_workspace,value_3) done(value_3)
+block last(last_workspace:mutbuf,last_count:u64)
+  constant_12:u64 = const() {"value":1}
+  value_13:u64 = int.sub.checked(last_count,constant_12)
+  constant_14:u64 = const() {"value":128}
+  constant_15:u64 = const() {"value":96}
+  value_16:usize = int.cast(constant_15) {"mode":"wrap"}
+  value_17:u64 = buffer.load.u64.le(last_workspace,value_16)
+  constant_18:u64 = const() {"value":8}
+  value_19:u64 = int.mul.checked(value_17,constant_18)
+  value_20:u64 = int.add.checked(constant_14,value_19)
+  value_21:u64 = int.mul.checked(value_13,constant_18)
+  value_22:u64 = int.add.checked(value_20,value_21)
+  value_23:usize = int.cast(value_22) {"mode":"wrap"}
+  value_24:u64 = buffer.load.u64.le(last_workspace,value_23)
+  constant_25:u64 = const() {"value":0}
+  value_26:bool = compare.eq(value_24,constant_25)
+  value_27:u64 = select(value_26,value_13,last_count)
+  ret(value_27)
+block done(done_count:u64)
+  ret(done_count)
+end
+fn context_plan(entry_workspace:mutbuf,entry_output:mutbuf,entry_emit:bool,entry_start:u64,entry_old:u64,entry_new:u64) -> (u64) effects(read,write,trap) entry(entry)
+block entry(entry_workspace:mutbuf,entry_output:mutbuf,entry_emit:bool,entry_start:u64,entry_old:u64,entry_new:u64)
+  constant_1:u64 = const() {"value":0}
+  jump scan(entry_workspace,entry_output,entry_emit,entry_start,entry_old,entry_new,constant_1,constant_1,constant_1,constant_1)
+block scan(scan_workspace:mutbuf,scan_output:mutbuf,scan_emit:bool,scan_start:u64,scan_old:u64,scan_new:u64,scan_pair:u64,scan_old_start:u64,scan_new_start:u64,scan_count:u64)
+  constant_2:u64 = const() {"value":112}
+  value_3:usize = int.cast(constant_2) {"mode":"wrap"}
+  value_4:u64 = buffer.load.u64.le(scan_workspace,value_3)
+  value_5:bool = compare.lt(scan_pair,value_4)
+  branch value_5 pair(scan_workspace,scan_output,scan_emit,scan_start,scan_old,scan_new,scan_pair,scan_old_start,scan_new_start,scan_count) tail(scan_workspace,scan_output,scan_emit,scan_start,scan_old,scan_new,scan_old_start,scan_new_start,scan_count)
+block pair(pair_workspace:mutbuf,pair_output:mutbuf,pair_emit:bool,pair_start:u64,pair_old:u64,pair_new:u64,pair_pair:u64,pair_old_start:u64,pair_new_start:u64,pair_count:u64)
+  constant_6:u64 = const() {"value":128}
+  constant_7:u64 = const() {"value":96}
+  value_8:usize = int.cast(constant_7) {"mode":"wrap"}
+  value_9:u64 = buffer.load.u64.le(pair_workspace,value_8)
+  constant_10:u64 = const() {"value":8}
+  value_11:u64 = int.mul.checked(value_9,constant_10)
+  value_12:u64 = int.add.checked(constant_6,value_11)
+  constant_13:u64 = const() {"value":104}
+  value_14:usize = int.cast(constant_13) {"mode":"wrap"}
+  value_15:u64 = buffer.load.u64.le(pair_workspace,value_14)
+  value_16:u64 = int.mul.checked(value_15,constant_10)
+  value_17:u64 = int.add.checked(value_12,value_16)
+  constant_18:u64 = const() {"value":16}
+  value_19:u64 = int.mul.checked(pair_pair,constant_18)
+  value_20:u64 = int.add.checked(value_17,value_19)
+  value_21:usize = int.cast(value_20) {"mode":"wrap"}
+  value_22:u64 = buffer.load.u64.le(pair_workspace,value_21)
+  value_23:u64 = int.add.checked(value_20,constant_10)
+  value_24:usize = int.cast(value_23) {"mode":"wrap"}
+  value_25:u64 = buffer.load.u64.le(pair_workspace,value_24)
+  value_26:bool = compare.lt(value_22,pair_old)
+  value_27:bool = compare.lt(value_25,pair_new)
+  value_28:bool = bool.and(value_26,value_27)
+  branch value_28 order(pair_workspace,pair_output,pair_emit,pair_start,pair_old,pair_new,pair_pair,pair_old_start,pair_new_start,pair_count,value_22,value_25) tail(pair_workspace,pair_output,pair_emit,pair_start,pair_old,pair_new,pair_old_start,pair_new_start,pair_count)
+block order(order_workspace:mutbuf,order_output:mutbuf,order_emit:bool,order_start:u64,order_old:u64,order_new:u64,order_pair:u64,order_old_start:u64,order_new_start:u64,order_count:u64,order_old_context:u64,order_new_context:u64)
+  value_29:bool = compare.ge(order_old_context,order_old_start)
+  value_30:bool = compare.ge(order_new_context,order_new_start)
+  value_31:bool = bool.and(value_29,value_30)
+  branch value_31 different(order_workspace,order_output,order_emit,order_start,order_old,order_new,order_pair,order_old_start,order_new_start,order_count,order_old_context,order_new_context) invalid()
+block different(different_workspace:mutbuf,different_output:mutbuf,different_emit:bool,different_start:u64,different_old:u64,different_new:u64,different_pair:u64,different_old_start:u64,different_new_start:u64,different_count:u64,different_old_context:u64,different_new_context:u64)
+  value_32:bool = compare.ne(different_old_start,different_old_context)
+  value_33:bool = compare.ne(different_new_start,different_new_context)
+  value_34:bool = bool.or(value_32,value_33)
+  branch value_34 changed(different_workspace,different_output,different_emit,different_start,different_old,different_new,different_pair,different_old_start,different_new_start,different_count,different_old_context,different_new_context) next(different_workspace,different_output,different_emit,different_start,different_old,different_new,different_pair,different_count,different_old_context,different_new_context)
+block changed(changed_workspace:mutbuf,changed_output:mutbuf,changed_emit:bool,changed_start:u64,changed_old:u64,changed_new:u64,changed_pair:u64,changed_old_start:u64,changed_new_start:u64,changed_count:u64,changed_old_context:u64,changed_new_context:u64)
+  branch changed_emit write(changed_workspace,changed_output,changed_emit,changed_start,changed_old,changed_new,changed_pair,changed_old_start,changed_new_start,changed_count,changed_old_context,changed_new_context) added(changed_workspace,changed_output,changed_emit,changed_start,changed_old,changed_new,changed_pair,changed_count,changed_old_context,changed_new_context)
+block write(write_workspace:mutbuf,write_output:mutbuf,write_emit:bool,write_start:u64,write_old:u64,write_new:u64,write_pair:u64,write_old_start:u64,write_new_start:u64,write_count:u64,write_old_context:u64,write_new_context:u64)
+  value_35:u64 = int.add.checked(write_start,write_old_start)
+  value_36:u64 = int.sub.checked(write_old_context,write_old_start)
+  value_37:u64 = int.sub.checked(write_new_context,write_new_start)
+  _ = call(write_output,write_count,value_35,value_36,write_new_start,value_37) {"function":"replacement_record"}
+  jump added(write_workspace,write_output,write_emit,write_start,write_old,write_new,write_pair,write_count,write_old_context,write_new_context)
+block added(added_workspace:mutbuf,added_output:mutbuf,added_emit:bool,added_start:u64,added_old:u64,added_new:u64,added_pair:u64,added_count:u64,added_old_context:u64,added_new_context:u64)
+  constant_38:u64 = const() {"value":1}
+  value_39:u64 = int.add.checked(added_count,constant_38)
+  jump next(added_workspace,added_output,added_emit,added_start,added_old,added_new,added_pair,value_39,added_old_context,added_new_context)
+block next(next_workspace:mutbuf,next_output:mutbuf,next_emit:bool,next_start:u64,next_old:u64,next_new:u64,next_pair:u64,next_count:u64,next_old_context:u64,next_new_context:u64)
+  constant_40:u64 = const() {"value":1}
+  value_41:u64 = int.add.checked(next_pair,constant_40)
+  value_42:u64 = int.add.checked(next_old_context,constant_40)
+  value_43:u64 = int.add.checked(next_new_context,constant_40)
+  jump scan(next_workspace,next_output,next_emit,next_start,next_old,next_new,value_41,value_42,value_43,next_count)
+block tail(tail_workspace:mutbuf,tail_output:mutbuf,tail_emit:bool,tail_start:u64,tail_old:u64,tail_new:u64,tail_old_start:u64,tail_new_start:u64,tail_count:u64)
+  value_44:bool = compare.ne(tail_old_start,tail_old)
+  value_45:bool = compare.ne(tail_new_start,tail_new)
+  value_46:bool = bool.or(value_44,value_45)
+  branch value_46 tail_changed(tail_output,tail_emit,tail_start,tail_old,tail_new,tail_old_start,tail_new_start,tail_count) done(tail_count)
+block tail_changed(tail_changed_output:mutbuf,tail_changed_emit:bool,tail_changed_start:u64,tail_changed_old:u64,tail_changed_new:u64,tail_changed_old_start:u64,tail_changed_new_start:u64,tail_changed_count:u64)
+  constant_47:u64 = const() {"value":1}
+  value_48:u64 = int.add.checked(tail_changed_count,constant_47)
+  branch tail_changed_emit tail_write(tail_changed_output,tail_changed_start,tail_changed_old,tail_changed_new,tail_changed_old_start,tail_changed_new_start,tail_changed_count) done(value_48)
+block tail_write(tail_write_output:mutbuf,tail_write_start:u64,tail_write_old:u64,tail_write_new:u64,tail_write_old_start:u64,tail_write_new_start:u64,tail_write_count:u64)
+  value_49:u64 = int.add.checked(tail_write_start,tail_write_old_start)
+  value_50:u64 = int.sub.checked(tail_write_old,tail_write_old_start)
+  value_51:u64 = int.sub.checked(tail_write_new,tail_write_new_start)
+  _ = call(tail_write_output,tail_write_count,value_49,value_50,tail_write_new_start,value_51) {"function":"replacement_record"}
+  constant_52:u64 = const() {"value":1}
+  value_53:u64 = int.add.checked(tail_write_count,constant_52)
+  ret(value_53)
+block done(done_count:u64)
+  ret(done_count)
+block invalid()
+  constant_54:u64 = const() {"value":18446744073709551615}
+  ret(constant_54)
+end
+fn step_plan(entry_workspace:mutbuf,entry_output:mutbuf,entry_publish:bool,entry_emit:bool) -> (u64) effects(read,write,trap) entry(entry)
+block entry(entry_workspace:mutbuf,entry_output:mutbuf,entry_publish:bool,entry_emit:bool)
+  constant_1:u64 = const() {"value":40}
+  value_2:usize = int.cast(constant_1) {"mode":"wrap"}
+  value_3:u64 = buffer.load.u64.le(entry_workspace,value_2)
+  constant_4:u64 = const() {"value":32}
+  value_5:usize = int.cast(constant_4) {"mode":"wrap"}
+  value_6:u64 = buffer.load.u64.le(entry_workspace,value_5)
+  value_7:bool = compare.eq(value_3,value_6)
+  branch value_7 done(entry_workspace,entry_output,entry_publish) phase(entry_workspace,entry_output,entry_publish,entry_emit)
+block done(done_workspace:mutbuf,done_output:mutbuf,done_publish:bool)
+  constant_8:u64 = const() {"value":0}
+  constant_9:u64 = const() {"value":40}
+  value_10:usize = int.cast(constant_9) {"mode":"wrap"}
+  value_11:u64 = buffer.load.u64.le(done_workspace,value_10)
+  constant_12:u64 = const() {"value":48}
+  value_13:usize = int.cast(constant_12) {"mode":"wrap"}
+  value_14:u64 = buffer.load.u64.le(done_workspace,value_13)
+  constant_15:u64 = const() {"value":8}
+  value_16:usize = int.cast(constant_15) {"mode":"wrap"}
+  value_17:u64 = buffer.load.u64.le(done_workspace,value_16)
+  step_outcome_18:u64 = call(done_output,done_publish,constant_8,value_11,value_14,constant_8,constant_8,constant_8,constant_8,value_17,constant_8) {"function":"step_outcome"}
+  ret(step_outcome_18)
+block phase(phase_workspace:mutbuf,phase_output:mutbuf,phase_publish:bool,phase_emit:bool)
+  constant_19:u64 = const() {"value":56}
+  value_20:usize = int.cast(constant_19) {"mode":"wrap"}
+  value_21:u64 = buffer.load.u64.le(phase_workspace,value_20)
+  constant_22:u64 = const() {"value":0}
+  value_23:bool = compare.eq(value_21,constant_22)
+  branch value_23 begin(phase_workspace,phase_output,phase_publish,phase_emit) reply(phase_workspace,phase_output,phase_publish,phase_emit,value_21)
+block begin(begin_workspace:mutbuf,begin_output:mutbuf,begin_publish:bool,begin_emit:bool)
+  constant_24:u64 = const() {"value":80}
+  value_25:usize = int.cast(constant_24) {"mode":"wrap"}
+  value_26:u64 = buffer.load.u64.le(begin_workspace,value_25)
+  constant_27:u64 = const() {"value":1}
+  value_28:bool = compare.eq(value_26,constant_27)
+  constant_29:u64 = const() {"value":48}
+  value_30:usize = int.cast(constant_29) {"mode":"wrap"}
+  value_31:u64 = buffer.load.u64.le(begin_workspace,value_30)
+  branch value_28 context_request(begin_workspace,begin_output,begin_publish) old_begin(begin_workspace,begin_output,begin_publish,begin_emit,value_31)
+block context_request(context_request_workspace:mutbuf,context_request_output:mutbuf,context_request_publish:bool)
+  constant_32:u64 = const() {"value":1}
+  constant_33:u64 = const() {"value":40}
+  value_34:usize = int.cast(constant_33) {"mode":"wrap"}
+  value_35:u64 = buffer.load.u64.le(context_request_workspace,value_34)
+  constant_36:u64 = const() {"value":48}
+  value_37:usize = int.cast(constant_36) {"mode":"wrap"}
+  value_38:u64 = buffer.load.u64.le(context_request_workspace,value_37)
+  constant_39:u64 = const() {"value":0}
+  constant_40:u64 = const() {"value":8}
+  value_41:usize = int.cast(constant_40) {"mode":"wrap"}
+  value_42:u64 = buffer.load.u64.le(context_request_workspace,value_41)
+  step_outcome_43:u64 = call(context_request_output,context_request_publish,constant_32,value_35,value_38,constant_32,constant_32,constant_39,constant_39,value_42,constant_39) {"function":"step_outcome"}
+  ret(step_outcome_43)
+block reply(reply_workspace:mutbuf,reply_output:mutbuf,reply_publish:bool,reply_emit:bool,reply_phase:u64)
+  constant_44:u64 = const() {"value":1}
+  value_45:bool = compare.eq(reply_phase,constant_44)
+  branch value_45 context_reply(reply_workspace,reply_output,reply_publish,reply_emit) old_reply(reply_workspace,reply_output,reply_publish,reply_emit,reply_phase)
+block context_reply(context_reply_workspace:mutbuf,context_reply_output:mutbuf,context_reply_publish:bool,context_reply_emit:bool)
+  constant_46:u64 = const() {"value":64}
+  value_47:usize = int.cast(constant_46) {"mode":"wrap"}
+  value_48:u64 = buffer.load.u64.le(context_reply_workspace,value_47)
+  constant_49:u64 = const() {"value":1}
+  value_50:bool = compare.eq(value_48,constant_49)
+  branch value_50 context_found(context_reply_workspace,context_reply_output,context_reply_publish,context_reply_emit) error(context_reply_workspace,context_reply_output,context_reply_publish,constant_49)
+block context_found(context_found_workspace:mutbuf,context_found_output:mutbuf,context_found_publish:bool,context_found_emit:bool)
+  constant_51:u64 = const() {"value":72}
+  value_52:usize = int.cast(constant_51) {"mode":"wrap"}
+  value_53:u64 = buffer.load.u64.le(context_found_workspace,value_52)
+  constant_54:u64 = const() {"value":1}
+  value_55:u64 = int.add.checked(value_53,constant_54)
+  jump old_begin(context_found_workspace,context_found_output,context_found_publish,context_found_emit,value_55)
+block old_begin(old_begin_workspace:mutbuf,old_begin_output:mutbuf,old_begin_publish:bool,old_begin_emit:bool,old_begin_cursor:u64)
+  constant_56:u64 = const() {"value":96}
+  value_57:usize = int.cast(constant_56) {"mode":"wrap"}
+  value_58:u64 = buffer.load.u64.le(old_begin_workspace,value_57)
+  constant_59:u64 = const() {"value":0}
+  value_60:bool = compare.eq(value_58,constant_59)
+  branch value_60 pure(old_begin_workspace,old_begin_output,old_begin_publish,old_begin_emit,old_begin_cursor) full_request(old_begin_workspace,old_begin_output,old_begin_publish,old_begin_cursor)
+block full_request(full_request_workspace:mutbuf,full_request_output:mutbuf,full_request_publish:bool,full_request_cursor:u64)
+  constant_61:u64 = const() {"value":2}
+  constant_62:u64 = const() {"value":40}
+  value_63:usize = int.cast(constant_62) {"mode":"wrap"}
+  value_64:u64 = buffer.load.u64.le(full_request_workspace,value_63)
+  constant_65:u64 = const() {"value":96}
+  value_66:usize = int.cast(constant_65) {"mode":"wrap"}
+  value_67:u64 = buffer.load.u64.le(full_request_workspace,value_66)
+  constant_68:u64 = const() {"value":88}
+  value_69:usize = int.cast(constant_68) {"mode":"wrap"}
+  value_70:u64 = buffer.load.u64.le(full_request_workspace,value_69)
+  constant_71:u64 = const() {"value":0}
+  constant_72:u64 = const() {"value":8}
+  value_73:usize = int.cast(constant_72) {"mode":"wrap"}
+  value_74:u64 = buffer.load.u64.le(full_request_workspace,value_73)
+  step_outcome_75:u64 = call(full_request_output,full_request_publish,constant_61,value_64,full_request_cursor,constant_61,value_67,value_70,constant_71,value_74,constant_71) {"function":"step_outcome"}
+  ret(step_outcome_75)
+block pure(pure_workspace:mutbuf,pure_output:mutbuf,pure_publish:bool,pure_emit:bool,pure_cursor:u64)
+  constant_76:u64 = const() {"value":16}
+  value_77:usize = int.cast(constant_76) {"mode":"wrap"}
+  value_78:u64 = buffer.load.u64.le(pure_workspace,value_77)
+  constant_79:u64 = const() {"value":8}
+  value_80:usize = int.cast(constant_79) {"mode":"wrap"}
+  value_81:u64 = buffer.load.u64.le(pure_workspace,value_80)
+  constant_82:u64 = const() {"value":0}
+  value_83:bool = compare.eq(value_81,constant_82)
+  value_84:bool = compare.gt(value_78,constant_82)
+  constant_85:u64 = const() {"value":24}
+  value_86:usize = int.cast(constant_85) {"mode":"wrap"}
+  value_87:u64 = buffer.load.u64.le(pure_workspace,value_86)
+  value_88:bool = compare.eq(value_87,constant_82)
+  value_89:bool = bool.and(value_83,value_84)
+  value_90:bool = bool.and(value_89,value_88)
+  constant_91:u64 = const() {"value":1}
+  value_92:u64 = int.sub.wrap(value_78,constant_91)
+  value_93:u64 = select(value_90,value_92,value_78)
+  constant_94:u64 = const() {"value":104}
+  value_95:usize = int.cast(constant_94) {"mode":"wrap"}
+  value_96:u64 = buffer.load.u64.le(pure_workspace,value_95)
+  jump single(pure_workspace,pure_output,pure_publish,pure_emit,value_93,constant_82,value_96,pure_cursor)
+block old_reply(old_reply_workspace:mutbuf,old_reply_output:mutbuf,old_reply_publish:bool,old_reply_emit:bool,old_reply_phase:u64)
+  constant_97:u64 = const() {"value":64}
+  value_98:usize = int.cast(constant_97) {"mode":"wrap"}
+  value_99:u64 = buffer.load.u64.le(old_reply_workspace,value_98)
+  constant_100:u64 = const() {"value":1}
+  value_101:bool = compare.eq(value_99,constant_100)
+  branch value_101 matched(old_reply_workspace,old_reply_output,old_reply_publish,old_reply_emit,old_reply_phase) absent(old_reply_workspace,old_reply_output,old_reply_publish,old_reply_phase)
+block absent(absent_workspace:mutbuf,absent_output:mutbuf,absent_publish:bool,absent_phase:u64)
+  constant_102:u64 = const() {"value":96}
+  value_103:usize = int.cast(constant_102) {"mode":"wrap"}
+  value_104:u64 = buffer.load.u64.le(absent_workspace,value_103)
+  constant_105:u64 = const() {"value":1}
+  value_106:u64 = int.sub.checked(value_104,constant_105)
+  constant_107:u64 = const() {"value":2}
+  value_108:bool = compare.eq(absent_phase,constant_107)
+  constant_109:u64 = const() {"value":128}
+  constant_110:u64 = const() {"value":8}
+  value_111:u64 = int.mul.checked(value_106,constant_110)
+  value_112:u64 = int.add.checked(constant_109,value_111)
+  value_113:usize = int.cast(value_112) {"mode":"wrap"}
+  value_114:u64 = buffer.load.u64.le(absent_workspace,value_113)
+  constant_115:u64 = const() {"value":0}
+  value_116:bool = compare.eq(value_114,constant_115)
+  value_117:bool = bool.and(value_108,value_116)
+  branch value_117 retry_request(absent_workspace,absent_output,absent_publish,value_106) error(absent_workspace,absent_output,absent_publish,constant_107)
+block retry_request(retry_request_workspace:mutbuf,retry_request_output:mutbuf,retry_request_publish:bool,retry_request_count:u64)
+  constant_118:u64 = const() {"value":2}
+  constant_119:u64 = const() {"value":40}
+  value_120:usize = int.cast(constant_119) {"mode":"wrap"}
+  value_121:u64 = buffer.load.u64.le(retry_request_workspace,value_120)
+  constant_122:u64 = const() {"value":48}
+  value_123:usize = int.cast(constant_122) {"mode":"wrap"}
+  value_124:u64 = buffer.load.u64.le(retry_request_workspace,value_123)
+  constant_125:u64 = const() {"value":3}
+  constant_126:u64 = const() {"value":88}
+  value_127:usize = int.cast(constant_126) {"mode":"wrap"}
+  value_128:u64 = buffer.load.u64.le(retry_request_workspace,value_127)
+  constant_129:u64 = const() {"value":0}
+  constant_130:u64 = const() {"value":8}
+  value_131:usize = int.cast(constant_130) {"mode":"wrap"}
+  value_132:u64 = buffer.load.u64.le(retry_request_workspace,value_131)
+  step_outcome_133:u64 = call(retry_request_output,retry_request_publish,constant_118,value_121,value_124,constant_125,retry_request_count,value_128,constant_129,value_132,constant_129) {"function":"step_outcome"}
+  ret(step_outcome_133)
+block matched(matched_workspace:mutbuf,matched_output:mutbuf,matched_publish:bool,matched_emit:bool,matched_phase:u64)
+  constant_134:u64 = const() {"value":96}
+  value_135:usize = int.cast(constant_134) {"mode":"wrap"}
+  value_136:u64 = buffer.load.u64.le(matched_workspace,value_135)
+  constant_137:u64 = const() {"value":3}
+  value_138:bool = compare.eq(matched_phase,constant_137)
+  constant_139:u64 = const() {"value":1}
+  value_140:u64 = int.sub.checked(value_136,constant_139)
+  value_141:u64 = select(value_138,value_140,value_136)
+  effective_new_142:u64 = call(matched_workspace) {"function":"effective_new"}
+  constant_143:u64 = const() {"value":72}
+  value_144:usize = int.cast(constant_143) {"mode":"wrap"}
+  value_145:u64 = buffer.load.u64.le(matched_workspace,value_144)
+  value_146:u64 = int.add.checked(value_145,value_141)
+  constant_147:u64 = const() {"value":8}
+  value_148:usize = int.cast(constant_147) {"mode":"wrap"}
+  value_149:u64 = buffer.load.u64.le(matched_workspace,value_148)
+  constant_150:u64 = const() {"value":0}
+  value_151:bool = compare.eq(value_149,constant_150)
+  branch value_151 single(matched_workspace,matched_output,matched_publish,matched_emit,value_145,value_141,effective_new_142,value_146) preserve(matched_workspace,matched_output,matched_publish,matched_emit,value_145,value_141,effective_new_142,value_146)
+block single(single_workspace:mutbuf,single_output:mutbuf,single_publish:bool,single_emit:bool,single_start:u64,single_old:u64,single_new:u64,single_cursor:u64)
+  value_152:bool = bool.and(single_publish,single_emit)
+  constant_153:u64 = const() {"value":1}
+  branch value_152 single_write(single_workspace,single_output,single_publish,single_start,single_old,single_new,single_cursor) completed(single_workspace,single_output,single_publish,single_cursor,constant_153)
+block single_write(single_write_workspace:mutbuf,single_write_output:mutbuf,single_write_publish:bool,single_write_start:u64,single_write_old:u64,single_write_new:u64,single_write_cursor:u64)
+  constant_154:u64 = const() {"value":0}
+  _ = call(single_write_output,constant_154,single_write_start,single_write_old,constant_154,single_write_new) {"function":"replacement_record"}
+  constant_155:u64 = const() {"value":1}
+  jump completed(single_write_workspace,single_write_output,single_write_publish,single_write_cursor,constant_155)
+block preserve(preserve_workspace:mutbuf,preserve_output:mutbuf,preserve_publish:bool,preserve_emit:bool,preserve_start:u64,preserve_old:u64,preserve_new:u64,preserve_cursor:u64)
+  constant_156:bool = const() {"value":false}
+  context_plan_157:u64 = call(preserve_workspace,preserve_output,constant_156,preserve_start,preserve_old,preserve_new) {"function":"context_plan"}
+  constant_158:u64 = const() {"value":18446744073709551615}
+  value_159:bool = compare.eq(context_plan_157,constant_158)
+  constant_160:u64 = const() {"value":3}
+  branch value_159 error(preserve_workspace,preserve_output,preserve_publish,constant_160) preserve_ready(preserve_workspace,preserve_output,preserve_publish,preserve_emit,preserve_start,preserve_old,preserve_new,preserve_cursor,context_plan_157)
+block preserve_ready(preserve_ready_workspace:mutbuf,preserve_ready_output:mutbuf,preserve_ready_publish:bool,preserve_ready_emit:bool,preserve_ready_start:u64,preserve_ready_old:u64,preserve_ready_new:u64,preserve_ready_cursor:u64,preserve_ready_count:u64)
+  value_161:bool = bool.and(preserve_ready_publish,preserve_ready_emit)
+  branch value_161 preserve_write(preserve_ready_workspace,preserve_ready_output,preserve_ready_publish,preserve_ready_start,preserve_ready_old,preserve_ready_new,preserve_ready_cursor,preserve_ready_count) completed(preserve_ready_workspace,preserve_ready_output,preserve_ready_publish,preserve_ready_cursor,preserve_ready_count)
+block preserve_write(preserve_write_workspace:mutbuf,preserve_write_output:mutbuf,preserve_write_publish:bool,preserve_write_start:u64,preserve_write_old:u64,preserve_write_new:u64,preserve_write_cursor:u64,preserve_write_count:u64)
+  constant_162:bool = const() {"value":true}
+  context_plan_163:u64 = call(preserve_write_workspace,preserve_write_output,constant_162,preserve_write_start,preserve_write_old,preserve_write_new) {"function":"context_plan"}
+  jump completed(preserve_write_workspace,preserve_write_output,preserve_write_publish,preserve_write_cursor,preserve_write_count)
+block completed(completed_workspace:mutbuf,completed_output:mutbuf,completed_publish:bool,completed_cursor:u64,completed_count:u64)
+  constant_164:u64 = const() {"value":3}
+  constant_165:u64 = const() {"value":40}
+  value_166:usize = int.cast(constant_165) {"mode":"wrap"}
+  value_167:u64 = buffer.load.u64.le(completed_workspace,value_166)
+  constant_168:u64 = const() {"value":1}
+  value_169:u64 = int.add.checked(value_167,constant_168)
+  constant_170:u64 = const() {"value":0}
+  constant_171:u64 = const() {"value":8}
+  value_172:usize = int.cast(constant_171) {"mode":"wrap"}
+  value_173:u64 = buffer.load.u64.le(completed_workspace,value_172)
+  step_outcome_174:u64 = call(completed_output,completed_publish,constant_164,value_169,completed_cursor,constant_170,constant_170,constant_170,completed_count,value_173,constant_170) {"function":"step_outcome"}
+  ret(step_outcome_174)
+block error(error_workspace:mutbuf,error_output:mutbuf,error_publish:bool,error_error:u64)
+  constant_175:u64 = const() {"value":4}
+  constant_176:u64 = const() {"value":40}
+  value_177:usize = int.cast(constant_176) {"mode":"wrap"}
+  value_178:u64 = buffer.load.u64.le(error_workspace,value_177)
+  constant_179:u64 = const() {"value":48}
+  value_180:usize = int.cast(constant_179) {"mode":"wrap"}
+  value_181:u64 = buffer.load.u64.le(error_workspace,value_180)
+  constant_182:u64 = const() {"value":0}
+  constant_183:u64 = const() {"value":8}
+  value_184:usize = int.cast(constant_183) {"mode":"wrap"}
+  value_185:u64 = buffer.load.u64.le(error_workspace,value_184)
+  step_outcome_186:u64 = call(error_output,error_publish,constant_175,value_178,value_181,constant_182,constant_182,constant_182,constant_182,value_185,error_error) {"function":"step_outcome"}
+  ret(step_outcome_186)
+end
+fn key_greater(entry_workspace:mutbuf,entry_left:u64,entry_right:u64) -> (bool) effects(read,trap) entry(entry)
+block entry(entry_workspace:mutbuf,entry_left:u64,entry_right:u64)
+  constant_1:u64 = const() {"value":32}
+  constant_2:u64 = const() {"value":8}
+  value_3:u64 = int.mul.checked(entry_left,constant_2)
+  value_4:u64 = int.add.checked(constant_1,value_3)
+  value_5:usize = int.cast(value_4) {"mode":"wrap"}
+  value_6:u64 = buffer.load.u64.le(entry_workspace,value_5)
+  value_7:u64 = int.mul.checked(entry_right,constant_2)
+  value_8:u64 = int.add.checked(constant_1,value_7)
+  value_9:usize = int.cast(value_8) {"mode":"wrap"}
+  value_10:u64 = buffer.load.u64.le(entry_workspace,value_9)
+  value_11:bool = compare.gt(value_6,value_10)
+  value_12:bool = compare.eq(value_6,value_10)
+  value_13:bool = compare.gt(entry_left,entry_right)
+  value_14:bool = bool.and(value_12,value_13)
+  value_15:bool = bool.or(value_11,value_14)
+  ret(value_15)
+end
+fn sift(entry_workspace:mutbuf,entry_output:mutbuf,entry_root:u64,entry_size:u64) -> () effects(read,write,trap) entry(entry)
+block entry(entry_workspace:mutbuf,entry_output:mutbuf,entry_root:u64,entry_size:u64)
+  jump loop(entry_workspace,entry_output,entry_root,entry_size)
+block loop(loop_workspace:mutbuf,loop_output:mutbuf,loop_root:u64,loop_size:u64)
+  constant_1:u64 = const() {"value":2}
+  value_2:u64 = int.mul.checked(loop_root,constant_1)
+  constant_3:u64 = const() {"value":1}
+  value_4:u64 = int.add.checked(value_2,constant_3)
+  value_5:bool = compare.lt(value_4,loop_size)
+  branch value_5 left(loop_workspace,loop_output,loop_root,loop_size,value_4) done()
+block left(left_workspace:mutbuf,left_output:mutbuf,left_root:u64,left_size:u64,left_left:u64)
+  constant_6:u64 = const() {"value":32}
+  constant_7:u64 = const() {"value":8}
+  value_8:u64 = int.mul.checked(left_left,constant_7)
+  value_9:u64 = int.add.checked(constant_6,value_8)
+  value_10:usize = int.cast(value_9) {"mode":"wrap"}
+  value_11:u64 = buffer.load.u64.le(left_output,value_10)
+  value_12:u64 = int.mul.checked(left_root,constant_7)
+  value_13:u64 = int.add.checked(constant_6,value_12)
+  value_14:usize = int.cast(value_13) {"mode":"wrap"}
+  value_15:u64 = buffer.load.u64.le(left_output,value_14)
+  key_greater_16:bool = call(left_workspace,value_11,value_15) {"function":"key_greater"}
+  value_17:u64 = select(key_greater_16,left_left,left_root)
+  constant_18:u64 = const() {"value":1}
+  value_19:u64 = int.add.checked(left_left,constant_18)
+  value_20:bool = compare.lt(value_19,left_size)
+  branch value_20 right(left_workspace,left_output,left_root,left_size,value_17,value_19) selected(left_workspace,left_output,left_root,left_size,value_17)
+block right(right_workspace:mutbuf,right_output:mutbuf,right_root:u64,right_size:u64,right_best:u64,right_right:u64)
+  constant_21:u64 = const() {"value":32}
+  constant_22:u64 = const() {"value":8}
+  value_23:u64 = int.mul.checked(right_right,constant_22)
+  value_24:u64 = int.add.checked(constant_21,value_23)
+  value_25:usize = int.cast(value_24) {"mode":"wrap"}
+  value_26:u64 = buffer.load.u64.le(right_output,value_25)
+  value_27:u64 = int.mul.checked(right_best,constant_22)
+  value_28:u64 = int.add.checked(constant_21,value_27)
+  value_29:usize = int.cast(value_28) {"mode":"wrap"}
+  value_30:u64 = buffer.load.u64.le(right_output,value_29)
+  key_greater_31:bool = call(right_workspace,value_26,value_30) {"function":"key_greater"}
+  value_32:u64 = select(key_greater_31,right_right,right_best)
+  jump selected(right_workspace,right_output,right_root,right_size,value_32)
+block selected(selected_workspace:mutbuf,selected_output:mutbuf,selected_root:u64,selected_size:u64,selected_best:u64)
+  value_33:bool = compare.ne(selected_best,selected_root)
+  branch value_33 swap(selected_workspace,selected_output,selected_root,selected_size,selected_best) done()
+block swap(swap_workspace:mutbuf,swap_output:mutbuf,swap_root:u64,swap_size:u64,swap_best:u64)
+  constant_34:u64 = const() {"value":32}
+  constant_35:u64 = const() {"value":8}
+  value_36:u64 = int.mul.checked(swap_root,constant_35)
+  value_37:u64 = int.add.checked(constant_34,value_36)
+  value_38:usize = int.cast(value_37) {"mode":"wrap"}
+  value_39:u64 = buffer.load.u64.le(swap_output,value_38)
+  value_40:u64 = int.mul.checked(swap_best,constant_35)
+  value_41:u64 = int.add.checked(constant_34,value_40)
+  value_42:usize = int.cast(value_41) {"mode":"wrap"}
+  value_43:u64 = buffer.load.u64.le(swap_output,value_42)
+  value_44:u64 = int.mul.checked(swap_root,constant_35)
+  value_45:u64 = int.add.checked(constant_34,value_44)
+  value_46:usize = int.cast(value_45) {"mode":"wrap"}
+  _ = buffer.store.u64.le(swap_output,value_46,value_43)
+  value_47:u64 = int.mul.checked(swap_best,constant_35)
+  value_48:u64 = int.add.checked(constant_34,value_47)
+  value_49:usize = int.cast(value_48) {"mode":"wrap"}
+  _ = buffer.store.u64.le(swap_output,value_49,value_39)
+  jump loop(swap_workspace,swap_output,swap_best,swap_size)
+block done()
+  ret()
+end
+fn sort_indices(entry_workspace:mutbuf,entry_output:mutbuf,entry_size:u64) -> () effects(read,write,trap) entry(entry)
+block entry(entry_workspace:mutbuf,entry_output:mutbuf,entry_size:u64)
+  constant_1:u64 = const() {"value":0}
+  jump initialize(entry_workspace,entry_output,entry_size,constant_1)
+block initialize(initialize_workspace:mutbuf,initialize_output:mutbuf,initialize_size:u64,initialize_index:u64)
+  value_2:bool = compare.lt(initialize_index,initialize_size)
+  constant_3:u64 = const() {"value":2}
+  value_4:u64 = int.div.checked(initialize_size,constant_3)
+  branch value_2 store(initialize_workspace,initialize_output,initialize_size,initialize_index) heap(initialize_workspace,initialize_output,initialize_size,value_4)
+block store(store_workspace:mutbuf,store_output:mutbuf,store_size:u64,store_index:u64)
+  constant_5:u64 = const() {"value":32}
+  constant_6:u64 = const() {"value":8}
+  value_7:u64 = int.mul.checked(store_index,constant_6)
+  value_8:u64 = int.add.checked(constant_5,value_7)
+  value_9:usize = int.cast(value_8) {"mode":"wrap"}
+  _ = buffer.store.u64.le(store_output,value_9,store_index)
+  constant_10:u64 = const() {"value":1}
+  value_11:u64 = int.add.checked(store_index,constant_10)
+  jump initialize(store_workspace,store_output,store_size,value_11)
+block heap(heap_workspace:mutbuf,heap_output:mutbuf,heap_size:u64,heap_index:u64)
+  constant_12:u64 = const() {"value":0}
+  value_13:bool = compare.gt(heap_index,constant_12)
+  constant_14:u64 = const() {"value":1}
+  value_15:u64 = int.sub.wrap(heap_index,constant_14)
+  branch value_13 sift(heap_workspace,heap_output,heap_size,value_15) extract(heap_workspace,heap_output,heap_size)
+block sift(sift_workspace:mutbuf,sift_output:mutbuf,sift_size:u64,sift_index:u64)
+  _ = call(sift_workspace,sift_output,sift_index,sift_size) {"function":"sift"}
+  jump heap(sift_workspace,sift_output,sift_size,sift_index)
+block extract(extract_workspace:mutbuf,extract_output:mutbuf,extract_size:u64)
+  constant_16:u64 = const() {"value":1}
+  value_17:bool = compare.gt(extract_size,constant_16)
+  value_18:u64 = int.sub.wrap(extract_size,constant_16)
+  branch value_17 last(extract_workspace,extract_output,value_18) done()
+block last(last_workspace:mutbuf,last_output:mutbuf,last_last:u64)
+  constant_19:u64 = const() {"value":0}
+  constant_20:u64 = const() {"value":32}
+  constant_21:u64 = const() {"value":8}
+  value_22:u64 = int.mul.checked(constant_19,constant_21)
+  value_23:u64 = int.add.checked(constant_20,value_22)
+  value_24:usize = int.cast(value_23) {"mode":"wrap"}
+  value_25:u64 = buffer.load.u64.le(last_output,value_24)
+  value_26:u64 = int.mul.checked(last_last,constant_21)
+  value_27:u64 = int.add.checked(constant_20,value_26)
+  value_28:usize = int.cast(value_27) {"mode":"wrap"}
+  value_29:u64 = buffer.load.u64.le(last_output,value_28)
+  value_30:u64 = int.mul.checked(constant_19,constant_21)
+  value_31:u64 = int.add.checked(constant_20,value_30)
+  value_32:usize = int.cast(value_31) {"mode":"wrap"}
+  _ = buffer.store.u64.le(last_output,value_32,value_29)
+  value_33:u64 = int.mul.checked(last_last,constant_21)
+  value_34:u64 = int.add.checked(constant_20,value_33)
+  value_35:usize = int.cast(value_34) {"mode":"wrap"}
+  _ = buffer.store.u64.le(last_output,value_35,value_25)
+  _ = call(last_workspace,last_output,constant_19,last_last) {"function":"sift"}
+  jump extract(last_workspace,last_output,last_last)
+block done()
+  ret()
+end
+fn valid_render(entry_workspace:mutbuf) -> (bool) effects(read,trap) entry(entry)
+block entry(entry_workspace:mutbuf)
+  constant_1:u64 = const() {"value":8}
+  value_2:usize = int.cast(constant_1) {"mode":"wrap"}
+  value_3:u64 = buffer.load.u64.le(entry_workspace,value_2)
+  constant_4:u64 = const() {"value":16}
+  value_5:usize = int.cast(constant_4) {"mode":"wrap"}
+  value_6:u64 = buffer.load.u64.le(entry_workspace,value_5)
+  constant_7:u64 = const() {"value":24}
+  value_8:usize = int.cast(constant_7) {"mode":"wrap"}
+  value_9:u64 = buffer.load.u64.le(entry_workspace,value_8)
+  constant_10:u64 = const() {"value":2}
+  value_11:bool = compare.ge(value_9,constant_10)
+  constant_12:u64 = const() {"value":64}
+  constant_13:u64 = const() {"value":32}
+  value_14:usize = int.cast(constant_13) {"mode":"wrap"}
+  value_15:u64 = buffer.load.u64.le(entry_workspace,value_14)
+  constant_16:u64 = const() {"value":0}
+  value_17:bool = compare.eq(value_15,constant_16)
+  value_18:bool = bool.and(value_11,value_17)
+  constant_19:u64 = const() {"value":40}
+  value_20:usize = int.cast(constant_19) {"mode":"wrap"}
+  value_21:u64 = buffer.load.u64.le(entry_workspace,value_20)
+  value_22:bool = compare.eq(value_21,constant_16)
+  value_23:bool = bool.and(value_18,value_22)
+  constant_24:u64 = const() {"value":48}
+  value_25:usize = int.cast(constant_24) {"mode":"wrap"}
+  value_26:u64 = buffer.load.u64.le(entry_workspace,value_25)
+  value_27:bool = compare.eq(value_26,constant_16)
+  value_28:bool = bool.and(value_23,value_27)
+  constant_29:u64 = const() {"value":56}
+  value_30:usize = int.cast(constant_29) {"mode":"wrap"}
+  value_31:u64 = buffer.load.u64.le(entry_workspace,value_30)
+  value_32:bool = compare.eq(value_31,constant_16)
+  value_33:bool = bool.and(value_28,value_32)
+  value_34:usize = buffer.len(entry_workspace)
+  value_35:u64 = int.cast(value_34) {"mode":"wrap"}
+  extent_36:u64 = call(constant_12,value_9,constant_1,value_35) {"function":"extent"}
+  value_37:bool = compare.ne(extent_36,constant_16)
+  value_38:bool = bool.and(value_33,value_37)
+  value_39:usize = buffer.len(entry_workspace)
+  value_40:u64 = int.cast(value_39) {"mode":"wrap"}
+  extent_41:u64 = call(extent_36,value_3,constant_1,value_40) {"function":"extent"}
+  value_42:bool = compare.ne(extent_41,constant_16)
+  value_43:bool = bool.and(value_38,value_42)
+  value_44:usize = buffer.len(entry_workspace)
+  value_45:u64 = int.cast(value_44) {"mode":"wrap"}
+  extent_46:u64 = call(extent_41,value_6,constant_13,value_45) {"function":"extent"}
+  value_47:bool = compare.ne(extent_46,constant_16)
+  value_48:bool = bool.and(value_43,value_47)
+  value_49:usize = buffer.len(entry_workspace)
+  value_50:u64 = int.cast(value_49) {"mode":"wrap"}
+  value_51:bool = compare.eq(extent_46,value_50)
+  value_52:bool = bool.and(value_48,value_51)
+  branch value_52 literals(entry_workspace) invalid()
+block literals(literals_workspace:mutbuf)
+  constant_53:u64 = const() {"value":64}
+  value_54:usize = int.cast(constant_53) {"mode":"wrap"}
+  value_55:u64 = buffer.load.u64.le(literals_workspace,value_54)
+  constant_56:u64 = const() {"value":1}
+  value_57:bool = compare.eq(value_55,constant_56)
+  constant_58:u64 = const() {"value":72}
+  value_59:usize = int.cast(constant_58) {"mode":"wrap"}
+  value_60:u64 = buffer.load.u64.le(literals_workspace,value_59)
+  constant_61:u64 = const() {"value":0}
+  value_62:bool = compare.eq(value_60,constant_61)
+  value_63:bool = bool.and(value_57,value_62)
+  branch value_63 original(literals_workspace,constant_61) invalid()
+block original(original_workspace:mutbuf,original_index:u64)
+  constant_64:u64 = const() {"value":8}
+  value_65:usize = int.cast(constant_64) {"mode":"wrap"}
+  value_66:u64 = buffer.load.u64.le(original_workspace,value_65)
+  value_67:bool = compare.lt(original_index,value_66)
+  constant_68:u64 = const() {"value":0}
+  branch value_67 original_id(original_workspace,original_index) replacements(original_workspace,constant_68,constant_68)
+block original_id(original_id_workspace:mutbuf,original_id_index:u64)
+  constant_69:u64 = const() {"value":64}
+  constant_70:u64 = const() {"value":24}
+  value_71:usize = int.cast(constant_70) {"mode":"wrap"}
+  value_72:u64 = buffer.load.u64.le(original_id_workspace,value_71)
+  constant_73:u64 = const() {"value":8}
+  value_74:u64 = int.mul.checked(value_72,constant_73)
+  value_75:u64 = int.add.checked(constant_69,value_74)
+  value_76:u64 = int.mul.checked(original_id_index,constant_73)
+  value_77:u64 = int.add.checked(value_75,value_76)
+  value_78:usize = int.cast(value_77) {"mode":"wrap"}
+  value_79:u64 = buffer.load.u64.le(original_id_workspace,value_78)
+  constant_80:u64 = const() {"value":2}
+  value_81:bool = compare.ge(value_79,constant_80)
+  value_82:usize = int.cast(constant_70) {"mode":"wrap"}
+  value_83:u64 = buffer.load.u64.le(original_id_workspace,value_82)
+  value_84:bool = compare.lt(value_79,value_83)
+  value_85:bool = bool.and(value_81,value_84)
+  constant_86:u64 = const() {"value":1}
+  value_87:u64 = int.add.checked(original_id_index,constant_86)
+  branch value_85 original(original_id_workspace,value_87) invalid()
+block replacements(replacements_workspace:mutbuf,replacements_index:u64,replacements_last:u64)
+  constant_88:u64 = const() {"value":16}
+  value_89:usize = int.cast(constant_88) {"mode":"wrap"}
+  value_90:u64 = buffer.load.u64.le(replacements_workspace,value_89)
+  value_91:bool = compare.lt(replacements_index,value_90)
+  branch value_91 replacement(replacements_workspace,replacements_index,replacements_last) valid()
+block replacement(replacement_workspace:mutbuf,replacement_index:u64,replacement_last:u64)
+  constant_92:u64 = const() {"value":64}
+  constant_93:u64 = const() {"value":24}
+  value_94:usize = int.cast(constant_93) {"mode":"wrap"}
+  value_95:u64 = buffer.load.u64.le(replacement_workspace,value_94)
+  constant_96:u64 = const() {"value":8}
+  value_97:u64 = int.mul.checked(value_95,constant_96)
+  value_98:u64 = int.add.checked(constant_92,value_97)
+  value_99:usize = int.cast(constant_96) {"mode":"wrap"}
+  value_100:u64 = buffer.load.u64.le(replacement_workspace,value_99)
+  value_101:u64 = int.mul.checked(value_100,constant_96)
+  value_102:u64 = int.add.checked(value_98,value_101)
+  constant_103:u64 = const() {"value":32}
+  value_104:u64 = int.mul.checked(replacement_index,constant_103)
+  value_105:u64 = int.add.checked(value_102,value_104)
+  value_106:usize = int.cast(value_105) {"mode":"wrap"}
+  value_107:u64 = buffer.load.u64.le(replacement_workspace,value_106)
+  value_108:u64 = int.add.checked(value_105,constant_96)
+  value_109:usize = int.cast(value_108) {"mode":"wrap"}
+  value_110:u64 = buffer.load.u64.le(replacement_workspace,value_109)
+  constant_111:u64 = const() {"value":16}
+  value_112:u64 = int.add.checked(value_105,constant_111)
+  value_113:usize = int.cast(value_112) {"mode":"wrap"}
+  value_114:u64 = buffer.load.u64.le(replacement_workspace,value_113)
+  value_115:u64 = int.add.checked(value_105,constant_93)
+  value_116:usize = int.cast(value_115) {"mode":"wrap"}
+  value_117:u64 = buffer.load.u64.le(replacement_workspace,value_116)
+  value_118:usize = int.cast(constant_93) {"mode":"wrap"}
+  value_119:u64 = buffer.load.u64.le(replacement_workspace,value_118)
+  value_120:usize = int.cast(constant_96) {"mode":"wrap"}
+  value_121:u64 = buffer.load.u64.le(replacement_workspace,value_120)
+  value_122:bool = compare.le(value_107,value_121)
+  value_123:bool = compare.ge(value_107,replacement_last)
+  constant_124:u64 = const() {"value":2}
+  value_125:bool = compare.ge(value_114,constant_124)
+  value_126:bool = compare.le(value_114,value_119)
+  value_127:bool = bool.and(value_122,value_123)
+  value_128:bool = bool.and(value_127,value_125)
+  value_129:bool = bool.and(value_128,value_126)
+  branch value_129 new_count(replacement_workspace,replacement_index,value_107,value_114,value_117,value_119) invalid()
+block new_count(new_count_workspace:mutbuf,new_count_index:u64,new_count_start:u64,new_count_first:u64,new_count_count:u64,new_count_pools:u64)
+  value_130:u64 = int.sub.checked(new_count_pools,new_count_first)
+  value_131:bool = compare.le(new_count_count,value_130)
+  constant_132:u64 = const() {"value":1}
+  value_133:u64 = int.add.checked(new_count_index,constant_132)
+  branch value_131 replacements(new_count_workspace,value_133,new_count_start) invalid()
+block valid()
+  constant_134:bool = const() {"value":true}
+  ret(constant_134)
+block invalid()
+  constant_135:bool = const() {"value":false}
+  ret(constant_135)
+end
+fn render_stats(entry_workspace:mutbuf) -> (u64,u64,u64) effects(read,trap) entry(entry)
+block entry(entry_workspace:mutbuf)
+  constant_1:u64 = const() {"value":0}
+  jump original(entry_workspace,constant_1,constant_1)
+block original(original_workspace:mutbuf,original_index:u64,original_total:u64)
+  constant_2:u64 = const() {"value":8}
+  value_3:usize = int.cast(constant_2) {"mode":"wrap"}
+  value_4:u64 = buffer.load.u64.le(original_workspace,value_3)
+  value_5:bool = compare.lt(original_index,value_4)
+  constant_6:u64 = const() {"value":0}
+  branch value_5 original_sum(original_workspace,original_index,original_total) replacements(original_workspace,constant_6,original_total)
+block original_sum(original_sum_workspace:mutbuf,original_sum_index:u64,original_sum_total:u64)
+  constant_7:u64 = const() {"value":64}
+  constant_8:u64 = const() {"value":24}
+  value_9:usize = int.cast(constant_8) {"mode":"wrap"}
+  value_10:u64 = buffer.load.u64.le(original_sum_workspace,value_9)
+  constant_11:u64 = const() {"value":8}
+  value_12:u64 = int.mul.checked(value_10,constant_11)
+  value_13:u64 = int.add.checked(constant_7,value_12)
+  value_14:u64 = int.mul.checked(original_sum_index,constant_11)
+  value_15:u64 = int.add.checked(value_13,value_14)
+  value_16:usize = int.cast(value_15) {"mode":"wrap"}
+  value_17:u64 = buffer.load.u64.le(original_sum_workspace,value_16)
+  value_18:u64 = int.mul.checked(value_17,constant_11)
+  value_19:u64 = int.add.checked(constant_7,value_18)
+  value_20:usize = int.cast(value_19) {"mode":"wrap"}
+  value_21:u64 = buffer.load.u64.le(original_sum_workspace,value_20)
+  constant_22:u64 = const() {"value":18446744073709551615}
+  value_23:u64 = int.sub.checked(constant_22,original_sum_total)
+  value_24:bool = compare.le(value_21,value_23)
+  branch value_24 original_added(original_sum_workspace,original_sum_index,original_sum_total,value_21) invalid()
+block original_added(original_added_workspace:mutbuf,original_added_index:u64,original_added_total:u64,original_added_length:u64)
+  constant_25:u64 = const() {"value":1}
+  value_26:u64 = int.add.checked(original_added_index,constant_25)
+  value_27:u64 = int.add.checked(original_added_total,original_added_length)
+  jump original(original_added_workspace,value_26,value_27)
+block replacements(replacements_workspace:mutbuf,replacements_index:u64,replacements_total:u64)
+  constant_28:u64 = const() {"value":16}
+  value_29:usize = int.cast(constant_28) {"mode":"wrap"}
+  value_30:u64 = buffer.load.u64.le(replacements_workspace,value_29)
+  value_31:bool = compare.lt(replacements_index,value_30)
+  value_32:usize = int.cast(constant_28) {"mode":"wrap"}
+  value_33:u64 = buffer.load.u64.le(replacements_workspace,value_32)
+  constant_34:u64 = const() {"value":8}
+  value_35:usize = int.cast(constant_34) {"mode":"wrap"}
+  value_36:u64 = buffer.load.u64.le(replacements_workspace,value_35)
+  value_37:usize = int.cast(constant_34) {"mode":"wrap"}
+  value_38:u64 = buffer.load.u64.le(replacements_workspace,value_37)
+  branch value_31 replacement(replacements_workspace,replacements_index,replacements_total) counts(replacements_workspace,value_33,value_36,value_38,replacements_total)
+block replacement(replacement_workspace:mutbuf,replacement_index:u64,replacement_total:u64)
+  constant_39:u64 = const() {"value":64}
+  constant_40:u64 = const() {"value":24}
+  value_41:usize = int.cast(constant_40) {"mode":"wrap"}
+  value_42:u64 = buffer.load.u64.le(replacement_workspace,value_41)
+  constant_43:u64 = const() {"value":8}
+  value_44:u64 = int.mul.checked(value_42,constant_43)
+  value_45:u64 = int.add.checked(constant_39,value_44)
+  value_46:usize = int.cast(constant_43) {"mode":"wrap"}
+  value_47:u64 = buffer.load.u64.le(replacement_workspace,value_46)
+  value_48:u64 = int.mul.checked(value_47,constant_43)
+  value_49:u64 = int.add.checked(value_45,value_48)
+  constant_50:u64 = const() {"value":32}
+  value_51:u64 = int.mul.checked(replacement_index,constant_50)
+  value_52:u64 = int.add.checked(value_49,value_51)
+  value_53:usize = int.cast(value_52) {"mode":"wrap"}
+  value_54:u64 = buffer.load.u64.le(replacement_workspace,value_53)
+  value_55:u64 = int.add.checked(value_52,constant_43)
+  value_56:usize = int.cast(value_55) {"mode":"wrap"}
+  value_57:u64 = buffer.load.u64.le(replacement_workspace,value_56)
+  constant_58:u64 = const() {"value":16}
+  value_59:u64 = int.add.checked(value_52,constant_58)
+  value_60:usize = int.cast(value_59) {"mode":"wrap"}
+  value_61:u64 = buffer.load.u64.le(replacement_workspace,value_60)
+  value_62:u64 = int.add.checked(value_52,constant_40)
+  value_63:usize = int.cast(value_62) {"mode":"wrap"}
+  value_64:u64 = buffer.load.u64.le(replacement_workspace,value_63)
+  value_65:u64 = int.add.checked(value_61,value_64)
+  jump new_lines(replacement_workspace,replacement_index,replacement_total,value_61,value_65)
+block new_lines(new_lines_workspace:mutbuf,new_lines_index:u64,new_lines_total:u64,new_lines_pool:u64,new_lines_end:u64)
+  value_66:bool = compare.lt(new_lines_pool,new_lines_end)
+  constant_67:u64 = const() {"value":1}
+  value_68:u64 = int.add.checked(new_lines_index,constant_67)
+  branch value_66 new_sum(new_lines_workspace,new_lines_index,new_lines_total,new_lines_pool,new_lines_end) replacements(new_lines_workspace,value_68,new_lines_total)
+block new_sum(new_sum_workspace:mutbuf,new_sum_index:u64,new_sum_total:u64,new_sum_pool:u64,new_sum_end:u64)
+  constant_69:u64 = const() {"value":64}
+  constant_70:u64 = const() {"value":8}
+  value_71:u64 = int.mul.checked(new_sum_pool,constant_70)
+  value_72:u64 = int.add.checked(constant_69,value_71)
+  value_73:usize = int.cast(value_72) {"mode":"wrap"}
+  value_74:u64 = buffer.load.u64.le(new_sum_workspace,value_73)
+  constant_75:u64 = const() {"value":18446744073709551615}
+  value_76:u64 = int.sub.checked(constant_75,new_sum_total)
+  value_77:bool = compare.le(value_74,value_76)
+  branch value_77 new_added(new_sum_workspace,new_sum_index,new_sum_total,new_sum_pool,new_sum_end,value_74) invalid()
+block new_added(new_added_workspace:mutbuf,new_added_index:u64,new_added_total:u64,new_added_pool:u64,new_added_end:u64,new_added_length:u64)
+  value_78:u64 = int.add.checked(new_added_total,new_added_length)
+  constant_79:u64 = const() {"value":1}
+  value_80:u64 = int.add.checked(new_added_pool,constant_79)
+  jump new_lines(new_added_workspace,new_added_index,value_78,value_80,new_added_end)
+block counts(counts_workspace:mutbuf,counts_remaining:u64,counts_count:u64,counts_peak:u64,counts_total:u64)
+  constant_81:u64 = const() {"value":0}
+  value_82:bool = compare.gt(counts_remaining,constant_81)
+  branch value_82 count_one(counts_workspace,counts_remaining,counts_count,counts_peak,counts_total) join_bound(counts_count,counts_peak,counts_total)
+block count_one(count_one_workspace:mutbuf,count_one_remaining:u64,count_one_count:u64,count_one_peak:u64,count_one_total:u64)
+  constant_83:u64 = const() {"value":1}
+  value_84:u64 = int.sub.checked(count_one_remaining,constant_83)
+  constant_85:u64 = const() {"value":64}
+  constant_86:u64 = const() {"value":24}
+  value_87:usize = int.cast(constant_86) {"mode":"wrap"}
+  value_88:u64 = buffer.load.u64.le(count_one_workspace,value_87)
+  constant_89:u64 = const() {"value":8}
+  value_90:u64 = int.mul.checked(value_88,constant_89)
+  value_91:u64 = int.add.checked(constant_85,value_90)
+  value_92:usize = int.cast(constant_89) {"mode":"wrap"}
+  value_93:u64 = buffer.load.u64.le(count_one_workspace,value_92)
+  value_94:u64 = int.mul.checked(value_93,constant_89)
+  value_95:u64 = int.add.checked(value_91,value_94)
+  constant_96:u64 = const() {"value":32}
+  value_97:u64 = int.mul.checked(value_84,constant_96)
+  value_98:u64 = int.add.checked(value_95,value_97)
+  value_99:usize = int.cast(value_98) {"mode":"wrap"}
+  value_100:u64 = buffer.load.u64.le(count_one_workspace,value_99)
+  value_101:u64 = int.add.checked(value_98,constant_89)
+  value_102:usize = int.cast(value_101) {"mode":"wrap"}
+  value_103:u64 = buffer.load.u64.le(count_one_workspace,value_102)
+  constant_104:u64 = const() {"value":16}
+  value_105:u64 = int.add.checked(value_98,constant_104)
+  value_106:usize = int.cast(value_105) {"mode":"wrap"}
+  value_107:u64 = buffer.load.u64.le(count_one_workspace,value_106)
+  value_108:u64 = int.add.checked(value_98,constant_86)
+  value_109:usize = int.cast(value_108) {"mode":"wrap"}
+  value_110:u64 = buffer.load.u64.le(count_one_workspace,value_109)
+  value_111:bool = compare.le(value_100,count_one_count)
+  branch value_111 delete(count_one_workspace,value_84,count_one_count,count_one_peak,count_one_total,value_100,value_103,value_110) invalid()
+block delete(delete_workspace:mutbuf,delete_remaining:u64,delete_count:u64,delete_peak:u64,delete_total:u64,delete_start:u64,delete_old:u64,delete_new:u64)
+  value_112:u64 = int.sub.checked(delete_count,delete_start)
+  value_113:bool = compare.lt(delete_old,value_112)
+  value_114:u64 = select(value_113,delete_old,value_112)
+  value_115:u64 = int.sub.checked(delete_count,value_114)
+  constant_116:u64 = const() {"value":18446744073709551615}
+  value_117:u64 = int.sub.checked(constant_116,value_115)
+  value_118:bool = compare.le(delete_new,value_117)
+  branch value_118 insert(delete_workspace,delete_remaining,delete_peak,delete_total,value_115,delete_new) invalid()
+block insert(insert_workspace:mutbuf,insert_remaining:u64,insert_peak:u64,insert_total:u64,insert_after_delete:u64,insert_new:u64)
+  value_119:u64 = int.add.checked(insert_after_delete,insert_new)
+  value_120:bool = compare.gt(insert_peak,value_119)
+  value_121:u64 = select(value_120,insert_peak,value_119)
+  jump counts(insert_workspace,insert_remaining,value_119,value_121,insert_total)
+block join_bound(join_bound_count:u64,join_bound_peak:u64,join_bound_total:u64)
+  constant_122:u64 = const() {"value":18446744073709551615}
+  value_123:u64 = int.sub.checked(constant_122,join_bound_total)
+  value_124:bool = compare.le(join_bound_count,value_123)
+  branch value_124 done(join_bound_count,join_bound_peak,join_bound_total) invalid()
+block done(done_count:u64,done_peak:u64,done_total:u64)
+  value_125:u64 = int.add.checked(done_total,done_count)
+  ret(done_peak,done_count,value_125)
+block invalid()
+  constant_126:u64 = const() {"value":18446744073709551615}
+  constant_127:u64 = const() {"value":0}
+  ret(constant_126,constant_127,constant_127)
+end
+fn move_ids(entry_output:mutbuf,entry_source_start:u64,entry_target_start:u64,entry_length:u64) -> () effects(read,write,trap) entry(entry)
+block entry(entry_output:mutbuf,entry_source_start:u64,entry_target_start:u64,entry_length:u64)
+  value_1:bool = compare.gt(entry_target_start,entry_source_start)
+  constant_2:u64 = const() {"value":0}
+  branch value_1 back(entry_output,entry_source_start,entry_target_start,entry_length) forward(entry_output,entry_source_start,entry_target_start,entry_length,constant_2)
+block back(back_output:mutbuf,back_source_start:u64,back_target_start:u64,back_length:u64)
+  constant_3:u64 = const() {"value":0}
+  value_4:bool = compare.gt(back_length,constant_3)
+  branch value_4 back_one(back_output,back_source_start,back_target_start,back_length) done()
+block back_one(back_one_output:mutbuf,back_one_source_start:u64,back_one_target_start:u64,back_one_length:u64)
+  constant_5:u64 = const() {"value":1}
+  value_6:u64 = int.sub.checked(back_one_length,constant_5)
+  value_7:u64 = int.add.checked(back_one_source_start,value_6)
+  constant_8:u64 = const() {"value":32}
+  constant_9:u64 = const() {"value":8}
+  value_10:u64 = int.mul.checked(value_7,constant_9)
+  value_11:u64 = int.add.checked(constant_8,value_10)
+  value_12:usize = int.cast(value_11) {"mode":"wrap"}
+  value_13:u64 = buffer.load.u64.le(back_one_output,value_12)
+  value_14:u64 = int.add.checked(back_one_target_start,value_6)
+  value_15:u64 = int.mul.checked(value_14,constant_9)
+  value_16:u64 = int.add.checked(constant_8,value_15)
+  value_17:usize = int.cast(value_16) {"mode":"wrap"}
+  _ = buffer.store.u64.le(back_one_output,value_17,value_13)
+  jump back(back_one_output,back_one_source_start,back_one_target_start,value_6)
+block forward(forward_output:mutbuf,forward_source_start:u64,forward_target_start:u64,forward_length:u64,forward_index:u64)
+  value_18:bool = compare.lt(forward_index,forward_length)
+  branch value_18 forward_one(forward_output,forward_source_start,forward_target_start,forward_length,forward_index) done()
+block forward_one(forward_one_output:mutbuf,forward_one_source_start:u64,forward_one_target_start:u64,forward_one_length:u64,forward_one_index:u64)
+  value_19:u64 = int.add.checked(forward_one_source_start,forward_one_index)
+  constant_20:u64 = const() {"value":32}
+  constant_21:u64 = const() {"value":8}
+  value_22:u64 = int.mul.checked(value_19,constant_21)
+  value_23:u64 = int.add.checked(constant_20,value_22)
+  value_24:usize = int.cast(value_23) {"mode":"wrap"}
+  value_25:u64 = buffer.load.u64.le(forward_one_output,value_24)
+  value_26:u64 = int.add.checked(forward_one_target_start,forward_one_index)
+  value_27:u64 = int.mul.checked(value_26,constant_21)
+  value_28:u64 = int.add.checked(constant_20,value_27)
+  value_29:usize = int.cast(value_28) {"mode":"wrap"}
+  _ = buffer.store.u64.le(forward_one_output,value_29,value_25)
+  constant_30:u64 = const() {"value":1}
+  value_31:u64 = int.add.checked(forward_one_index,constant_30)
+  jump forward(forward_one_output,forward_one_source_start,forward_one_target_start,forward_one_length,value_31)
+block done()
+  ret()
+end
+fn render_ids(entry_workspace:mutbuf,entry_output:mutbuf) -> (u64,u64) effects(read,write,trap) entry(entry)
+block entry(entry_workspace:mutbuf,entry_output:mutbuf)
+  constant_1:u64 = const() {"value":0}
+  jump copy(entry_workspace,entry_output,constant_1)
+block copy(copy_workspace:mutbuf,copy_output:mutbuf,copy_index:u64)
+  constant_2:u64 = const() {"value":8}
+  value_3:usize = int.cast(constant_2) {"mode":"wrap"}
+  value_4:u64 = buffer.load.u64.le(copy_workspace,value_3)
+  value_5:bool = compare.lt(copy_index,value_4)
+  constant_6:u64 = const() {"value":16}
+  value_7:usize = int.cast(constant_6) {"mode":"wrap"}
+  value_8:u64 = buffer.load.u64.le(copy_workspace,value_7)
+  value_9:usize = int.cast(constant_2) {"mode":"wrap"}
+  value_10:u64 = buffer.load.u64.le(copy_workspace,value_9)
+  branch value_5 copy_one(copy_workspace,copy_output,copy_index) edit(copy_workspace,copy_output,value_8,value_10)
+block copy_one(copy_one_workspace:mutbuf,copy_one_output:mutbuf,copy_one_index:u64)
+  constant_11:u64 = const() {"value":64}
+  constant_12:u64 = const() {"value":24}
+  value_13:usize = int.cast(constant_12) {"mode":"wrap"}
+  value_14:u64 = buffer.load.u64.le(copy_one_workspace,value_13)
+  constant_15:u64 = const() {"value":8}
+  value_16:u64 = int.mul.checked(value_14,constant_15)
+  value_17:u64 = int.add.checked(constant_11,value_16)
+  value_18:u64 = int.mul.checked(copy_one_index,constant_15)
+  value_19:u64 = int.add.checked(value_17,value_18)
+  value_20:usize = int.cast(value_19) {"mode":"wrap"}
+  value_21:u64 = buffer.load.u64.le(copy_one_workspace,value_20)
+  constant_22:u64 = const() {"value":32}
+  value_23:u64 = int.mul.checked(copy_one_index,constant_15)
+  value_24:u64 = int.add.checked(constant_22,value_23)
+  value_25:usize = int.cast(value_24) {"mode":"wrap"}
+  _ = buffer.store.u64.le(copy_one_output,value_25,value_21)
+  constant_26:u64 = const() {"value":1}
+  value_27:u64 = int.add.checked(copy_one_index,constant_26)
+  jump copy(copy_one_workspace,copy_one_output,value_27)
+block edit(edit_workspace:mutbuf,edit_output:mutbuf,edit_remaining:u64,edit_count:u64)
+  constant_28:u64 = const() {"value":0}
+  value_29:bool = compare.gt(edit_remaining,constant_28)
+  branch value_29 edit_one(edit_workspace,edit_output,edit_remaining,edit_count) last(edit_workspace,edit_output,edit_count)
+block edit_one(edit_one_workspace:mutbuf,edit_one_output:mutbuf,edit_one_remaining:u64,edit_one_count:u64)
+  constant_30:u64 = const() {"value":1}
+  value_31:u64 = int.sub.checked(edit_one_remaining,constant_30)
+  constant_32:u64 = const() {"value":64}
+  constant_33:u64 = const() {"value":24}
+  value_34:usize = int.cast(constant_33) {"mode":"wrap"}
+  value_35:u64 = buffer.load.u64.le(edit_one_workspace,value_34)
+  constant_36:u64 = const() {"value":8}
+  value_37:u64 = int.mul.checked(value_35,constant_36)
+  value_38:u64 = int.add.checked(constant_32,value_37)
+  value_39:usize = int.cast(constant_36) {"mode":"wrap"}
+  value_40:u64 = buffer.load.u64.le(edit_one_workspace,value_39)
+  value_41:u64 = int.mul.checked(value_40,constant_36)
+  value_42:u64 = int.add.checked(value_38,value_41)
+  constant_43:u64 = const() {"value":32}
+  value_44:u64 = int.mul.checked(value_31,constant_43)
+  value_45:u64 = int.add.checked(value_42,value_44)
+  value_46:usize = int.cast(value_45) {"mode":"wrap"}
+  value_47:u64 = buffer.load.u64.le(edit_one_workspace,value_46)
+  value_48:u64 = int.add.checked(value_45,constant_36)
+  value_49:usize = int.cast(value_48) {"mode":"wrap"}
+  value_50:u64 = buffer.load.u64.le(edit_one_workspace,value_49)
+  constant_51:u64 = const() {"value":16}
+  value_52:u64 = int.add.checked(value_45,constant_51)
+  value_53:usize = int.cast(value_52) {"mode":"wrap"}
+  value_54:u64 = buffer.load.u64.le(edit_one_workspace,value_53)
+  value_55:u64 = int.add.checked(value_45,constant_33)
+  value_56:usize = int.cast(value_55) {"mode":"wrap"}
+  value_57:u64 = buffer.load.u64.le(edit_one_workspace,value_56)
+  value_58:u64 = int.sub.checked(edit_one_count,value_47)
+  value_59:bool = compare.lt(value_50,value_58)
+  value_60:u64 = select(value_59,value_50,value_58)
+  value_61:u64 = int.add.checked(value_47,value_60)
+  value_62:u64 = int.sub.checked(edit_one_count,value_61)
+  value_63:u64 = int.add.checked(value_47,value_57)
+  _ = call(edit_one_output,value_61,value_63,value_62) {"function":"move_ids"}
+  value_64:u64 = int.sub.checked(edit_one_count,value_60)
+  value_65:u64 = int.add.checked(value_64,value_57)
+  constant_66:u64 = const() {"value":0}
+  jump insert(edit_one_workspace,edit_one_output,value_31,value_65,value_47,value_54,value_57,constant_66)
+block insert(insert_workspace:mutbuf,insert_output:mutbuf,insert_remaining:u64,insert_count:u64,insert_start:u64,insert_first:u64,insert_new:u64,insert_index:u64)
+  value_67:bool = compare.lt(insert_index,insert_new)
+  branch value_67 insert_one(insert_workspace,insert_output,insert_remaining,insert_count,insert_start,insert_first,insert_new,insert_index) edit(insert_workspace,insert_output,insert_remaining,insert_count)
+block insert_one(insert_one_workspace:mutbuf,insert_one_output:mutbuf,insert_one_remaining:u64,insert_one_count:u64,insert_one_start:u64,insert_one_first:u64,insert_one_new:u64,insert_one_index:u64)
+  value_68:u64 = int.add.checked(insert_one_start,insert_one_index)
+  value_69:u64 = int.add.checked(insert_one_first,insert_one_index)
+  constant_70:u64 = const() {"value":32}
+  constant_71:u64 = const() {"value":8}
+  value_72:u64 = int.mul.checked(value_68,constant_71)
+  value_73:u64 = int.add.checked(constant_70,value_72)
+  value_74:usize = int.cast(value_73) {"mode":"wrap"}
+  _ = buffer.store.u64.le(insert_one_output,value_74,value_69)
+  constant_75:u64 = const() {"value":1}
+  value_76:u64 = int.add.checked(insert_one_index,constant_75)
+  jump insert(insert_one_workspace,insert_one_output,insert_one_remaining,insert_one_count,insert_one_start,insert_one_first,insert_one_new,value_76)
+block last(last_workspace:mutbuf,last_output:mutbuf,last_count:u64)
+  constant_77:u64 = const() {"value":0}
+  value_78:bool = compare.eq(last_count,constant_77)
+  branch value_78 append_empty(last_workspace,last_output,last_count) last_nonempty(last_workspace,last_output,last_count)
+block last_nonempty(last_nonempty_workspace:mutbuf,last_nonempty_output:mutbuf,last_nonempty_count:u64)
+  constant_79:u64 = const() {"value":1}
+  value_80:u64 = int.sub.checked(last_nonempty_count,constant_79)
+  constant_81:u64 = const() {"value":32}
+  constant_82:u64 = const() {"value":8}
+  value_83:u64 = int.mul.checked(value_80,constant_82)
+  value_84:u64 = int.add.checked(constant_81,value_83)
+  value_85:usize = int.cast(value_84) {"mode":"wrap"}
+  value_86:u64 = buffer.load.u64.le(last_nonempty_output,value_85)
+  constant_87:u64 = const() {"value":64}
+  value_88:u64 = int.mul.checked(value_86,constant_82)
+  value_89:u64 = int.add.checked(constant_87,value_88)
+  value_90:usize = int.cast(value_89) {"mode":"wrap"}
+  value_91:u64 = buffer.load.u64.le(last_nonempty_workspace,value_90)
+  constant_92:u64 = const() {"value":0}
+  value_93:bool = compare.eq(value_91,constant_92)
+  value_94:u64 = int.sub.checked(last_nonempty_count,constant_79)
+  branch value_93 sum(last_nonempty_workspace,last_nonempty_output,last_nonempty_count,constant_92,value_94) append_empty(last_nonempty_workspace,last_nonempty_output,last_nonempty_count)
+block append_empty(append_empty_workspace:mutbuf,append_empty_output:mutbuf,append_empty_count:u64)
+  constant_95:u64 = const() {"value":1}
+  constant_96:u64 = const() {"value":32}
+  constant_97:u64 = const() {"value":8}
+  value_98:u64 = int.mul.checked(append_empty_count,constant_97)
+  value_99:u64 = int.add.checked(constant_96,value_98)
+  value_100:usize = int.cast(value_99) {"mode":"wrap"}
+  _ = buffer.store.u64.le(append_empty_output,value_100,constant_95)
+  value_101:u64 = int.add.checked(append_empty_count,constant_95)
+  constant_102:u64 = const() {"value":0}
+  jump sum(append_empty_workspace,append_empty_output,value_101,constant_102,append_empty_count)
+block sum(sum_workspace:mutbuf,sum_output:mutbuf,sum_count:u64,sum_index:u64,sum_total:u64)
+  value_103:bool = compare.lt(sum_index,sum_count)
+  branch value_103 sum_one(sum_workspace,sum_output,sum_count,sum_index,sum_total) expand(sum_output,sum_count,sum_count,sum_total)
+block sum_one(sum_one_workspace:mutbuf,sum_one_output:mutbuf,sum_one_count:u64,sum_one_index:u64,sum_one_total:u64)
+  constant_104:u64 = const() {"value":32}
+  constant_105:u64 = const() {"value":8}
+  value_106:u64 = int.mul.checked(sum_one_index,constant_105)
+  value_107:u64 = int.add.checked(constant_104,value_106)
+  value_108:usize = int.cast(value_107) {"mode":"wrap"}
+  value_109:u64 = buffer.load.u64.le(sum_one_output,value_108)
+  constant_110:u64 = const() {"value":64}
+  value_111:u64 = int.mul.checked(value_109,constant_105)
+  value_112:u64 = int.add.checked(constant_110,value_111)
+  value_113:usize = int.cast(value_112) {"mode":"wrap"}
+  value_114:u64 = buffer.load.u64.le(sum_one_workspace,value_113)
+  constant_115:u64 = const() {"value":1}
+  value_116:u64 = int.add.checked(sum_one_index,constant_115)
+  value_117:u64 = int.add.checked(sum_one_total,value_114)
+  jump sum(sum_one_workspace,sum_one_output,sum_one_count,value_116,value_117)
+block expand(expand_output:mutbuf,expand_count:u64,expand_remaining:u64,expand_total:u64)
+  constant_118:u64 = const() {"value":0}
+  value_119:bool = compare.gt(expand_remaining,constant_118)
+  branch value_119 expand_one(expand_output,expand_count,expand_remaining,expand_total) done(expand_count,expand_total)
+block expand_one(expand_one_output:mutbuf,expand_one_count:u64,expand_one_remaining:u64,expand_one_total:u64)
+  constant_120:u64 = const() {"value":1}
+  value_121:u64 = int.sub.checked(expand_one_remaining,constant_120)
+  constant_122:u64 = const() {"value":32}
+  constant_123:u64 = const() {"value":8}
+  value_124:u64 = int.mul.checked(value_121,constant_123)
+  value_125:u64 = int.add.checked(constant_122,value_124)
+  value_126:usize = int.cast(value_125) {"mode":"wrap"}
+  value_127:u64 = buffer.load.u64.le(expand_one_output,value_126)
+  constant_128:u64 = const() {"value":2}
+  value_129:u64 = int.mul.checked(value_121,constant_128)
+  value_130:u64 = int.mul.checked(value_129,constant_123)
+  value_131:u64 = int.add.checked(constant_122,value_130)
+  value_132:usize = int.cast(value_131) {"mode":"wrap"}
+  _ = buffer.store.u64.le(expand_one_output,value_132,value_127)
+  constant_133:u64 = const() {"value":0}
+  value_134:bool = compare.gt(value_121,constant_133)
+  branch value_134 separator(expand_one_output,expand_one_count,value_121,expand_one_total,value_129) expand(expand_one_output,expand_one_count,value_121,expand_one_total)
+block separator(separator_output:mutbuf,separator_count:u64,separator_remaining:u64,separator_total:u64,separator_destination:u64)
+  constant_135:u64 = const() {"value":1}
+  value_136:u64 = int.sub.checked(separator_destination,constant_135)
+  constant_137:u64 = const() {"value":0}
+  constant_138:u64 = const() {"value":32}
+  constant_139:u64 = const() {"value":8}
+  value_140:u64 = int.mul.checked(value_136,constant_139)
+  value_141:u64 = int.add.checked(constant_138,value_140)
+  value_142:usize = int.cast(value_141) {"mode":"wrap"}
+  _ = buffer.store.u64.le(separator_output,value_142,constant_137)
+  jump expand(separator_output,separator_count,separator_remaining,separator_total)
+block done(done_count:u64,done_total:u64)
+  ret(done_count,done_total)
+end
+fn lf_entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf)
+  value_1:usize = buffer.len(entry_workspace)
+  value_2:u64 = int.cast(value_1) {"mode":"wrap"}
+  constant_3:u64 = const() {"value":8}
+  value_4:bool = compare.eq(value_2,constant_3)
+  branch value_4 utf8(entry_source,entry_output,entry_workspace) invalid()
+block utf8(utf8_source:readbuf,utf8_output:mutbuf,utf8_workspace:mutbuf)
+  valid_utf8_5:bool = call(utf8_source) {"function":"valid_utf8"}
+  branch valid_utf8_5 plan(utf8_source,utf8_output,utf8_workspace) bad_utf8()
+block plan(plan_source:readbuf,plan_output:mutbuf,plan_workspace:mutbuf)
+  constant_6:bool = const() {"value":false}
+  lf_plan_7:u64,lf_plan_8:u64 = call(plan_source,plan_output,constant_6) {"function":"lf_plan"}
+  constant_9:u64 = const() {"value":1152921504606846973}
+  value_10:bool = compare.le(lf_plan_7,constant_9)
+  branch value_10 capacity(plan_source,plan_output,plan_workspace,lf_plan_7,lf_plan_8) invalid()
+block capacity(capacity_source:readbuf,capacity_output:mutbuf,capacity_workspace:mutbuf,capacity_count:u64,capacity_last:u64)
+  constant_11:u64 = const() {"value":32}
+  constant_12:u64 = const() {"value":16}
+  value_13:u64 = int.mul.checked(capacity_count,constant_12)
+  value_14:u64 = int.add.checked(constant_11,value_13)
+  constant_15:u64 = const() {"value":0}
+  value_16:usize = int.cast(constant_15) {"mode":"wrap"}
+  value_17:u64 = buffer.load.u64.le(capacity_workspace,value_16)
+  constant_18:u64 = const() {"value":1}
+  value_19:u64 = bit.and(value_17,constant_18)
+  value_20:bool = compare.eq(value_19,constant_18)
+  value_21:u64 = select(value_20,value_14,constant_11)
+  value_22:usize = buffer.len(capacity_output)
+  value_23:u64 = int.cast(value_22) {"mode":"wrap"}
+  value_24:bool = compare.ge(value_23,value_21)
+  branch value_24 publish(capacity_source,capacity_output,capacity_count,capacity_last,value_14,value_20) short()
+block publish(publish_source:readbuf,publish_output:mutbuf,publish_count:u64,publish_last:u64,publish_needed:u64,publish_emit:bool)
+  value_25:usize = buffer.len(publish_source)
+  value_26:u64 = int.cast(value_25) {"mode":"wrap"}
+  constant_27:u64 = const() {"value":0}
+  value_28:usize = int.cast(constant_27) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_28,publish_needed)
+  constant_29:u64 = const() {"value":8}
+  value_30:usize = int.cast(constant_29) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_30,publish_count)
+  constant_31:u64 = const() {"value":16}
+  value_32:usize = int.cast(constant_31) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_32,value_26)
+  constant_33:u64 = const() {"value":24}
+  value_34:usize = int.cast(constant_33) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_34,publish_last)
+  branch publish_emit materialize(publish_source,publish_output) success()
+block materialize(materialize_source:readbuf,materialize_output:mutbuf)
+  constant_35:bool = const() {"value":true}
+  lf_plan_36:u64,lf_plan_37:u64 = call(materialize_source,materialize_output,constant_35) {"function":"lf_plan"}
+  jump success()
+block success()
+  constant_38:u32 = const() {"value":0}
+  ret(constant_38)
+block short()
+  constant_39:u32 = const() {"value":4294967294}
+  ret(constant_39)
+block invalid()
+  constant_40:u32 = const() {"value":4294967295}
+  ret(constant_40)
+block bad_utf8()
+  constant_41:u32 = const() {"value":4294967293}
+  ret(constant_41)
+end
+fn step_entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf)
+  value_1:usize = buffer.len(entry_workspace)
+  value_2:u64 = int.cast(value_1) {"mode":"wrap"}
+  constant_3:u64 = const() {"value":128}
+  value_4:bool = compare.ge(value_2,constant_3)
+  value_5:usize = buffer.len(entry_output)
+  value_6:u64 = int.cast(value_5) {"mode":"wrap"}
+  constant_7:u64 = const() {"value":96}
+  value_8:bool = compare.ge(value_6,constant_7)
+  value_9:bool = bool.and(value_4,value_8)
+  branch value_9 source(entry_source,entry_output,entry_workspace) short()
+block source(source_source:readbuf,source_output:mutbuf,source_workspace:mutbuf)
+  value_10:usize = buffer.len(source_source)
+  value_11:u64 = int.cast(value_10) {"mode":"wrap"}
+  constant_12:u64 = const() {"value":0}
+  value_13:bool = compare.eq(value_11,constant_12)
+  branch value_13 metadata(source_output,source_workspace) invalid()
+block metadata(metadata_output:mutbuf,metadata_workspace:mutbuf)
+  valid_step_14:bool = call(metadata_workspace) {"function":"valid_step"}
+  branch valid_step_14 plan(metadata_output,metadata_workspace) invalid()
+block plan(plan_output:mutbuf,plan_workspace:mutbuf)
+  constant_15:bool = const() {"value":false}
+  step_plan_16:u64 = call(plan_workspace,plan_output,constant_15,constant_15) {"function":"step_plan"}
+  constant_17:u64 = const() {"value":576460752303423484}
+  value_18:bool = compare.le(step_plan_16,constant_17)
+  branch value_18 capacity(plan_output,plan_workspace,step_plan_16) invalid()
+block capacity(capacity_output:mutbuf,capacity_workspace:mutbuf,capacity_count:u64)
+  constant_19:u64 = const() {"value":96}
+  constant_20:u64 = const() {"value":32}
+  value_21:u64 = int.mul.checked(capacity_count,constant_20)
+  value_22:u64 = int.add.checked(constant_19,value_21)
+  constant_23:u64 = const() {"value":0}
+  value_24:usize = int.cast(constant_23) {"mode":"wrap"}
+  value_25:u64 = buffer.load.u64.le(capacity_workspace,value_24)
+  constant_26:u64 = const() {"value":1}
+  value_27:u64 = bit.and(value_25,constant_26)
+  value_28:bool = compare.eq(value_27,constant_26)
+  value_29:u64 = select(value_28,value_22,constant_19)
+  value_30:usize = buffer.len(capacity_output)
+  value_31:u64 = int.cast(value_30) {"mode":"wrap"}
+  value_32:bool = compare.ge(value_31,value_29)
+  branch value_32 publish(capacity_output,capacity_workspace,value_28) short()
+block publish(publish_output:mutbuf,publish_workspace:mutbuf,publish_emit:bool)
+  constant_33:bool = const() {"value":true}
+  step_plan_34:u64 = call(publish_workspace,publish_output,constant_33,publish_emit) {"function":"step_plan"}
+  jump success()
+block success()
+  constant_35:u32 = const() {"value":0}
+  ret(constant_35)
+block short()
+  constant_36:u32 = const() {"value":4294967294}
+  ret(constant_36)
+block invalid()
+  constant_37:u32 = const() {"value":4294967295}
+  ret(constant_37)
+end
+fn sort_entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf)
+  value_1:usize = buffer.len(entry_workspace)
+  value_2:u64 = int.cast(value_1) {"mode":"wrap"}
+  constant_3:u64 = const() {"value":32}
+  value_4:bool = compare.ge(value_2,constant_3)
+  branch value_4 metadata(entry_source,entry_output,entry_workspace) short()
+block metadata(metadata_source:readbuf,metadata_output:mutbuf,metadata_workspace:mutbuf)
+  constant_5:u64 = const() {"value":8}
+  value_6:usize = int.cast(constant_5) {"mode":"wrap"}
+  value_7:u64 = buffer.load.u64.le(metadata_workspace,value_6)
+  constant_8:u64 = const() {"value":32}
+  value_9:usize = buffer.len(metadata_workspace)
+  value_10:u64 = int.cast(value_9) {"mode":"wrap"}
+  extent_11:u64 = call(constant_8,value_7,constant_5,value_10) {"function":"extent"}
+  value_12:usize = buffer.len(metadata_source)
+  value_13:u64 = int.cast(value_12) {"mode":"wrap"}
+  constant_14:u64 = const() {"value":0}
+  value_15:bool = compare.eq(value_13,constant_14)
+  constant_16:u64 = const() {"value":16}
+  value_17:usize = int.cast(constant_16) {"mode":"wrap"}
+  value_18:u64 = buffer.load.u64.le(metadata_workspace,value_17)
+  value_19:bool = compare.eq(value_18,constant_14)
+  constant_20:u64 = const() {"value":24}
+  value_21:usize = int.cast(constant_20) {"mode":"wrap"}
+  value_22:u64 = buffer.load.u64.le(metadata_workspace,value_21)
+  value_23:bool = compare.eq(value_22,constant_14)
+  value_24:bool = compare.ne(extent_11,constant_14)
+  value_25:usize = buffer.len(metadata_workspace)
+  value_26:u64 = int.cast(value_25) {"mode":"wrap"}
+  value_27:bool = compare.eq(extent_11,value_26)
+  value_28:bool = bool.and(value_15,value_19)
+  value_29:bool = bool.and(value_28,value_23)
+  value_30:bool = bool.and(value_29,value_24)
+  value_31:bool = bool.and(value_30,value_27)
+  branch value_31 capacity(metadata_output,metadata_workspace,value_7,extent_11) invalid()
+block capacity(capacity_output:mutbuf,capacity_workspace:mutbuf,capacity_count:u64,capacity_needed:u64)
+  constant_32:u64 = const() {"value":0}
+  value_33:usize = int.cast(constant_32) {"mode":"wrap"}
+  value_34:u64 = buffer.load.u64.le(capacity_workspace,value_33)
+  constant_35:u64 = const() {"value":1}
+  value_36:u64 = bit.and(value_34,constant_35)
+  value_37:bool = compare.eq(value_36,constant_35)
+  constant_38:u64 = const() {"value":32}
+  value_39:u64 = select(value_37,capacity_needed,constant_38)
+  value_40:usize = buffer.len(capacity_output)
+  value_41:u64 = int.cast(value_40) {"mode":"wrap"}
+  value_42:bool = compare.ge(value_41,value_39)
+  branch value_42 publish(capacity_output,capacity_workspace,capacity_count,capacity_needed,value_37) short()
+block publish(publish_output:mutbuf,publish_workspace:mutbuf,publish_count:u64,publish_needed:u64,publish_emit:bool)
+  constant_43:u64 = const() {"value":0}
+  value_44:usize = int.cast(constant_43) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_44,publish_needed)
+  constant_45:u64 = const() {"value":8}
+  value_46:usize = int.cast(constant_45) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_46,publish_count)
+  constant_47:u64 = const() {"value":16}
+  value_48:usize = int.cast(constant_47) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_48,constant_43)
+  constant_49:u64 = const() {"value":24}
+  value_50:usize = int.cast(constant_49) {"mode":"wrap"}
+  _ = buffer.store.u64.le(publish_output,value_50,constant_43)
+  branch publish_emit sort(publish_output,publish_workspace,publish_count) success()
+block sort(sort_output:mutbuf,sort_workspace:mutbuf,sort_count:u64)
+  _ = call(sort_workspace,sort_output,sort_count) {"function":"sort_indices"}
+  jump success()
+block success()
+  constant_51:u32 = const() {"value":0}
+  ret(constant_51)
+block short()
+  constant_52:u32 = const() {"value":4294967294}
+  ret(constant_52)
+block invalid()
+  constant_53:u32 = const() {"value":4294967295}
+  ret(constant_53)
+end
+fn render_entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(entry_source:readbuf,entry_output:mutbuf,entry_workspace:mutbuf)
+  value_1:usize = buffer.len(entry_workspace)
+  value_2:u64 = int.cast(value_1) {"mode":"wrap"}
+  constant_3:u64 = const() {"value":64}
+  value_4:bool = compare.ge(value_2,constant_3)
+  branch value_4 source(entry_source,entry_output,entry_workspace) short()
+block source(source_source:readbuf,source_output:mutbuf,source_workspace:mutbuf)
+  value_5:usize = buffer.len(source_source)
+  value_6:u64 = int.cast(value_5) {"mode":"wrap"}
+  constant_7:u64 = const() {"value":0}
+  value_8:bool = compare.eq(value_6,constant_7)
+  branch value_8 metadata(source_output,source_workspace) invalid()
+block metadata(metadata_output:mutbuf,metadata_workspace:mutbuf)
+  valid_render_9:bool = call(metadata_workspace) {"function":"valid_render"}
+  branch valid_render_9 stats(metadata_output,metadata_workspace) invalid()
+block stats(stats_output:mutbuf,stats_workspace:mutbuf)
+  render_stats_10:u64,render_stats_11:u64,render_stats_12:u64 = call(stats_workspace) {"function":"render_stats"}
+  constant_13:u64 = const() {"value":2305843009213693947}
+  value_14:bool = compare.le(render_stats_10,constant_13)
+  constant_15:u64 = const() {"value":1152921504606846973}
+  value_16:bool = compare.le(render_stats_11,constant_15)
+  value_17:bool = bool.and(value_14,value_16)
+  branch value_17 capacity(stats_output,stats_workspace,render_stats_10,render_stats_11,render_stats_12) invalid()
+block capacity(capacity_output:mutbuf,capacity_workspace:mutbuf,capacity_peak:u64,capacity_count:u64,capacity_total:u64)
+  constant_18:u64 = const() {"value":2}
+  value_19:u64 = int.mul.checked(capacity_count,constant_18)
+  constant_20:u64 = const() {"value":1}
+  value_21:u64 = int.add.checked(value_19,constant_20)
+  value_22:bool = compare.gt(capacity_peak,value_21)
+  value_23:u64 = select(value_22,capacity_peak,value_21)
+  constant_24:u64 = const() {"value":32}
+  constant_25:u64 = const() {"value":8}
+  value_26:u64 = int.mul.checked(value_23,constant_25)
+  value_27:u64 = int.add.checked(constant_24,value_26)
+  constant_28:u64 = const() {"value":0}
+  value_29:usize = int.cast(constant_28) {"mode":"wrap"}
+  value_30:u64 = buffer.load.u64.le(capacity_workspace,value_29)
+  value_31:u64 = bit.and(value_30,constant_20)
+  value_32:bool = compare.eq(value_31,constant_20)
+  value_33:u64 = select(value_32,value_27,constant_24)
+  value_34:usize = buffer.len(capacity_output)
+  value_35:u64 = int.cast(value_34) {"mode":"wrap"}
+  value_36:bool = compare.ge(value_35,value_33)
+  branch value_36 publish(capacity_output,capacity_workspace,value_23,capacity_count,capacity_total,value_27,value_32) short()
+block publish(publish_output:mutbuf,publish_workspace:mutbuf,publish_rows:u64,publish_count:u64,publish_total:u64,publish_needed:u64,publish_emit:bool)
+  branch publish_emit render(publish_output,publish_workspace,publish_needed) query(publish_output,publish_rows,publish_count,publish_total,publish_needed)
+block query(query_output:mutbuf,query_rows:u64,query_count:u64,query_total:u64,query_needed:u64)
+  constant_37:u64 = const() {"value":0}
+  value_38:usize = int.cast(constant_37) {"mode":"wrap"}
+  _ = buffer.store.u64.le(query_output,value_38,query_needed)
+  constant_39:u64 = const() {"value":8}
+  value_40:usize = int.cast(constant_39) {"mode":"wrap"}
+  _ = buffer.store.u64.le(query_output,value_40,query_rows)
+  constant_41:u64 = const() {"value":16}
+  value_42:usize = int.cast(constant_41) {"mode":"wrap"}
+  _ = buffer.store.u64.le(query_output,value_42,query_count)
+  constant_43:u64 = const() {"value":24}
+  value_44:usize = int.cast(constant_43) {"mode":"wrap"}
+  _ = buffer.store.u64.le(query_output,value_44,query_total)
+  jump success()
+block render(render_output:mutbuf,render_workspace:mutbuf,render_needed:u64)
+  render_ids_45:u64,render_ids_46:u64 = call(render_workspace,render_output) {"function":"render_ids"}
+  constant_47:u64 = const() {"value":2}
+  value_48:u64 = int.mul.checked(render_ids_45,constant_47)
+  constant_49:u64 = const() {"value":1}
+  value_50:u64 = int.sub.checked(value_48,constant_49)
+  constant_51:u64 = const() {"value":0}
+  value_52:usize = int.cast(constant_51) {"mode":"wrap"}
+  _ = buffer.store.u64.le(render_output,value_52,render_needed)
+  constant_53:u64 = const() {"value":8}
+  value_54:usize = int.cast(constant_53) {"mode":"wrap"}
+  _ = buffer.store.u64.le(render_output,value_54,value_50)
+  constant_55:u64 = const() {"value":16}
+  value_56:usize = int.cast(constant_55) {"mode":"wrap"}
+  _ = buffer.store.u64.le(render_output,value_56,render_ids_45)
+  constant_57:u64 = const() {"value":24}
+  value_58:usize = int.cast(constant_57) {"mode":"wrap"}
+  _ = buffer.store.u64.le(render_output,value_58,render_ids_46)
+  jump success()
+block success()
+  constant_59:u32 = const() {"value":0}
+  ret(constant_59)
+block short()
+  constant_60:u32 = const() {"value":4294967294}
+  ret(constant_60)
+block invalid()
+  constant_61:u32 = const() {"value":4294967295}
+  ret(constant_61)
+end
