@@ -156,8 +156,6 @@ impl OriginalMaterialSource {
         config: &OriginalCellQ24TrainingSourceConfigV1,
         baseline: &Arc<LoadedCellQ24ModelV1>,
     ) -> Result<OriginalCellQ24DatasetV1, Error> {
-        #[cfg(test)]
-        let _root_material = timing::Span::new(5);
         match self {
             Self::Local(original) => original.read(config),
             Self::Remote(original) => {
@@ -339,8 +337,6 @@ impl LiveOwners {
     ) -> Result<(), Error> {
         let experience = &config.dataset.receipts[0];
         let dataset = &config.dataset.receipts[1];
-        #[cfg(test)]
-        let __root_experience = crate::cell_q24_training_source::timing::Span::new(3);
         let original_experience = LearningIterationEvidenceClientV1::readback(
             &self.experience,
             &config.dataset,
@@ -348,19 +344,13 @@ impl LiveOwners {
         )
         .await
         .map_err(|_| Error::OwnerUnavailable)?;
-        #[cfg(test)]
-        drop(__root_experience);
         if original_experience != config.experience_evidence {
             return Err(Error::Binding("complete original Material signatures"));
         }
-        #[cfg(test)]
-        let __root_dataset = crate::cell_q24_training_source::timing::Span::new(4);
         let original_dataset =
             LearningIterationEvidenceClientV1::readback(&self.dataset, &config.dataset, dataset)
                 .await
                 .map_err(|_| Error::OwnerUnavailable)?;
-        #[cfg(test)]
-        drop(__root_dataset);
         if original_dataset != config.dataset_evidence {
             return Err(Error::Binding("complete original Material signatures"));
         }
@@ -372,8 +362,6 @@ fn verify_original_evidence(
     config: &OriginalCellQ24TrainingSourceConfigV1,
     at: u64,
 ) -> Result<(), Error> {
-    #[cfg(test)]
-    let _root_verify = timing::Span::new(0);
     let coordinator = LearningIterationCoordinatorV1::from_snapshot(config.dataset.clone())?;
     config.scope.validate_snapshot(&config.dataset)?;
     if coordinator.next_stage() != Some(LearningIterationStageV1::Training)
@@ -390,14 +378,10 @@ fn verify_original_evidence(
         .zip([&config.experience_evidence, &config.dataset_evidence])
     {
         let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-        #[cfg(test)]
-        let __root_observer = crate::cell_q24_training_source::timing::Span::new(1);
         let verified =
             config
                 .verifier
                 .verify(LearningEvidenceRoleV1::Observer, evidence, &payload, at)?;
-        #[cfg(test)]
-        drop(__root_observer);
         if verified.principal().principal_id != receipt.actor_id
             || receipt.observed_unix_seconds != evidence.issued_at
             || receipt.observed_unix_seconds > at
@@ -467,49 +451,4 @@ fn now() -> Result<u64, Error> {
         .duration_since(UNIX_EPOCH)
         .map(|value| value.as_secs())
         .map_err(|_| Error::Binding("source capture clock before Unix epoch"))
-}
-
-#[cfg(test)]
-pub(crate) mod timing {
-    use std::cell::Cell;
-    use std::io::Write;
-    use std::time::Instant;
-    const LABELS: [&str; 14] = ["source-verify-total", "observer-verify", "source-freeze", "experience-rpc", "dataset-rpc", "material-read", "phase-before", "phase-work", "phase-after", "phase-tail", "phase-finish", "completion-generator", "completion-native", "tail-generator-verify"];
-    thread_local! {
-        static COUNTS: Cell<[[u128; 2]; 14]> = const { Cell::new([[0; 2]; 14]) };
-    }
-    pub(crate) struct Span(usize, Instant);
-    impl Span {
-        pub(crate) fn new(bucket: usize) -> Self { Self(bucket, Instant::now()) }
-    }
-    impl Drop for Span {
-        fn drop(&mut self) {
-            let elapsed = self.1.elapsed().as_micros();
-            COUNTS.with(|slot| {
-                let mut values = slot.get();
-                values[self.0][0] = values[self.0][0].saturating_add(1);
-                values[self.0][1] = values[self.0][1].saturating_add(elapsed);
-                slot.set(values);
-            });
-        }
-    }
-    pub(crate) struct Lane {
-        start: Instant,
-        before: [[u128; 2]; 14],
-    }
-    impl Lane {
-        pub(crate) fn new() -> Self {
-            Self { start: Instant::now(), before: COUNTS.with(Cell::get) }
-        }
-    }
-    impl Drop for Lane {
-        fn drop(&mut self) {
-            let after = COUNTS.with(Cell::get);
-            let delta: Vec<_> = LABELS.iter().enumerate().filter_map(|(i, label)| {
-                let count = after[i][0].saturating_sub(self.before[i][0]);
-                (count != 0).then_some((*label, count, after[i][1].saturating_sub(self.before[i][1])))
-            }).collect();
-            let _ = writeln!(std::io::stderr(), "original-training-phase-timing lane_us={} buckets_count_us={:?}", self.start.elapsed().as_micros(), delta);
-        }
-    }
 }

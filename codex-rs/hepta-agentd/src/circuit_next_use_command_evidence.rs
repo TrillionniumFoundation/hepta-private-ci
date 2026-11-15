@@ -33,8 +33,6 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
 
     fn evidence_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
         let started_at = now()?;
-        #[cfg(test)]
-        let diagnostic_started = std::time::Instant::now();
         let request: evidence_wire::Request = serde_json::from_slice(bytes)?;
         let snapshot_head: Digest32 = request
             .snapshot_head
@@ -54,8 +52,6 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
             return Err(Error::Binding("original C Observer evidence request"));
         }
         self.context.authenticate(started_at)?;
-        #[cfg(test)]
-        eprintln!("NEXT_USE_EVIDENCE_STAGE context_us={}", diagnostic_started.elapsed().as_micros());
         let (receipt, signed) = {
             let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
             let original: &mut OriginalCircuitNextUseReceiptOwnerV1<W> = &mut owner;
@@ -70,13 +66,9 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
                     },
                 ))?
         };
-        #[cfg(test)]
-        eprintln!("NEXT_USE_EVIDENCE_STAGE original_readback_us={}", diagnostic_started.elapsed().as_micros());
         let current = now()?;
         require_clock(started_at, current)?;
         let original = wire::authenticate_receipt(&self.context, receipt, signed, current)?;
-        #[cfg(test)]
-        eprintln!("NEXT_USE_EVIDENCE_STAGE receipt_auth_us={}", diagnostic_started.elapsed().as_micros());
         if request.receipt_digest != original.attestation.payload_digest.to_string() {
             return Err(Error::Binding("exact original C Observer receipt digest"));
         }

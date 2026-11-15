@@ -258,12 +258,7 @@ impl LearningIterationEvidenceClientV1 {
             .transport
             .read(&request)
             .await
-            .map_err(|error| {
-                #[cfg(test)]
-                eprintln!("NEXT_USE_EVIDENCE_TRANSPORT actor={} error={error:?}", self.actor_id);
-                let _ = error;
-                unavailable()
-            })?;
+            .map_err(|_| unavailable())?;
         if response.schema != 1
             || response.operation != request.operation
             || response.request_id != request_id
