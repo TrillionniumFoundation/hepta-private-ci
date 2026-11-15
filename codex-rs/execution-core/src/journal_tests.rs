@@ -71,14 +71,8 @@ impl ExecutionVerifier for Deny {
 }
 
 fn prepared(class: ExecutionClass) -> (ExecutionJournal, ExecutionBinding, String) {
-    prepared_with_binding(class, binding(class))
-}
-
-fn prepared_with_binding(
-    class: ExecutionClass,
-    original: ExecutionBinding,
-) -> (ExecutionJournal, ExecutionBinding, String) {
     let mut journal = ExecutionJournal::new();
+    let original = binding(class);
     let head = journal
         .append(ExecutionRecord::ExecutionIntent(ExecutionIntent {
             binding: original.clone(),
@@ -143,9 +137,7 @@ fn read_only_chain_requires_verified_start_and_effect_observation() {
 #[test]
 fn mutating_action_rejects_missing_final_use_and_stale_generation() {
     let class = ExecutionClass::RestrictedFileWrite;
-    let mut original = binding(class);
-    original.final_use = FinalUse::NotGranted;
-    let (mut journal, mut binding, reservation_digest) = prepared_with_binding(class, original);
+    let (mut journal, mut binding, reservation_digest) = prepared(class);
     let last = journal.events().last().unwrap().digest().unwrap();
     binding.final_use = FinalUse::NotGranted;
     let started = ExecutionStarted {
@@ -158,8 +150,6 @@ fn mutating_action_rejects_missing_final_use_and_stale_generation() {
         journal.append_started(started, &Allow),
         Err(ExecutionError::AuthorizationDenied)
     );
-    let (mut journal, mut binding, reservation_digest) = prepared(class);
-    let last = journal.events().last().unwrap().digest().unwrap();
     binding.currentness = Currentness::Stale;
     binding.final_use = FinalUse::Verified {
         grant_digest: digest(4),
