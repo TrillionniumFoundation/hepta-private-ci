@@ -1,0 +1,49 @@
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core/src/generation_control.rs:348:
+         if self.result.is_some() {
+             return 0;
+         }
+-        let metadata = u64::from(self.dispatched_at_micros.is_none())
+-            + u64::from(!self.cancel_requested)
+-            + 1;
++        let metadata =
++            u64::from(self.dispatched_at_micros.is_none()) + u64::from(!self.cancel_requested) + 1;
+         u64::from(self.binding.result_limit_bytes) * 4 + metadata * METADATA_RESERVE
+     }
+ }
+Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core/src/generation_control.rs:368:
+         let event =
+             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("generation decode"))?;
+         let record = self.next_record(event)?;
+-        self.records.insert(record.binding.request_id.clone(), record);
++        self.records
++            .insert(record.binding.request_id.clone(), record);
+         Ok(())
+     }
+ 
+Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core/src/generation_control_tests.rs:449:
+         // A copied replacement buffer is not reuse of the retained allocation.
+         // No pointer is dereferenced after a mutation.
+         assert_eq!(
+-            record.result.as_ref().expect("historical result").bytes.as_ptr(),
++            record
++                .result
++                .as_ref()
++                .expect("historical result")
++                .bytes
++                .as_ptr(),
+             retained
+         );
+     };
+Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core/src/generation_control_tests.rs:502:
+         let before = locked_bytes(&control)?;
+         // Retain the actual locked writer while injecting a real read-only
+         // descriptor write error. This does not emulate power loss or fsync.
+-        let original_file =
+-            std::mem::replace(&mut control.file, fs::File::open(fixture.path())?);
++        let original_file = std::mem::replace(&mut control.file, fs::File::open(fixture.path())?);
+         let failed = if fail_settlement {
+             control.settle_generation(&request, b"must not publish".to_vec())
+         } else {
+Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
