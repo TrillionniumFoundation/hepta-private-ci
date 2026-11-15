@@ -34,6 +34,7 @@ NATIVE_SYMBOLS = (
     "codex_hia_prefix_admission",
     "codex_hia_policy_summary",
     "codex_hia_network_domains",
+    "codex_hia_allowed_prefixes",
 )
 
 
