@@ -235,16 +235,24 @@ impl PairFleet {
         );
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
         let fixture_binary = std::env::current_exe()?;
+        // Bazel may expose this executable through a runfiles symlink. The
+        // release API rejects symlink sources, so install a private physical
+        // copy on every platform.
+        let copy = temp.path().join("paired-process-fixture");
+        let original_bytes = std::fs::copy(&fixture_binary, &copy)?;
         // Linux embeds the full integration harness's DWARF in this file.
         // Catalog installation and each real release resolution still verify
         // every executable byte; debug metadata is irrelevant to the fixture.
         // Keep the authoritative checks bounded by installing a private copy
         // with only that metadata removed, as for an ordinary release binary.
         #[cfg(target_os = "linux")]
-        let fixture_binary = {
-            let copy = temp.path().join("paired-process-fixture");
-            let original_bytes = std::fs::copy(&fixture_binary, &copy)?;
-            let output = std::process::Command::new("strip")
+        {
+            let strip = if codex_utils_cargo_bin::runfiles_available() {
+                codex_utils_cargo_bin::cargo_bin("llvm-strip")?
+            } else {
+                PathBuf::from("strip")
+            };
+            let output = std::process::Command::new(strip)
                 .arg("-S")
                 .arg(&copy)
                 .output()
@@ -258,8 +266,10 @@ impl PairFleet {
                 "paired-stage executable_bytes before={original_bytes} after={}",
                 std::fs::metadata(&copy)?.len()
             );
-            copy
-        };
+        }
+        #[cfg(not(target_os = "linux"))]
+        anyhow::ensure!(original_bytes > 0, "fixture executable must not be empty");
+        let fixture_binary = copy;
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),

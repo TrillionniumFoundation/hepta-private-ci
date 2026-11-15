@@ -1,4 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+load("//:defs.bzl", "workspace_root_test")
 
 rust_library(
     name = "hepta-operator-acceptance-lib",
@@ -23,7 +24,7 @@ rust_library(
 )
 
 rust_test(
-    name = "hepta-operator-acceptance-tests",
+    name = "hepta-operator-acceptance-unit-tests-bin",
     crate = ":hepta-operator-acceptance-lib",
     rustc_flags = select({
         "@platforms//os:windows": [
@@ -32,13 +33,21 @@ rust_test(
         ],
         "//conditions:default": [],
     }),
-    # The signature fixtures and verifier require the host's /usr/bin/ssh-keygen.
-    # Keep sandboxing while preventing execution in an image without OpenSSH.
-    tags = ["no-remote-exec"],
+    tags = ["manual"],
     deps = [
         "@crates//:pretty_assertions",
         "@crates//:tempfile",
     ],
+)
+
+workspace_root_test(
+    name = "hepta-operator-acceptance-tests",
+    chdir_workspace_root = False,
+    # OpenSSH is a host test dependency. Restrict only the test launcher so
+    # Rustc and Clippy retain their selected remote execution toolchain.
+    tags = ["no-remote-exec"],
+    test_bin = ":hepta-operator-acceptance-unit-tests-bin",
+    workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
 
 rust_binary(
