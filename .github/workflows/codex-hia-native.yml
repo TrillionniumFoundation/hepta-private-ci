@@ -176,6 +176,29 @@ jobs:
             --report "$RUNNER_TEMP/hia-template-parse-receipt.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-template-parse-receipt.log"
 
+      - name: Verify template rendering and atomic no-write contracts
+        id: template_render_abi
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_template_render_abi.py \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-template-render-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-render-abi.log"
+
+      - name: Verify template renderer source and archive receipts
+        id: template_render_receipt
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module template_render \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-template-render-receipts.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-template-render-receipts.log"
+
       - name: Verify UUID byte matching and atomic no-write contracts
         id: uuid_abi
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -705,7 +728,7 @@ jobs:
             --report "$RUNNER_TEMP/hia-uuid-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-uuid-caller.log"
 
-      - name: Compare complete original and actual Cargo native template owners
+      - name: Compare complete original and actual Cargo native template parse and render owners
         id: template_parse_caller
         if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
@@ -942,6 +965,11 @@ jobs:
             ${{ runner.temp }}/hia-template-parse-abi-files/
             ${{ runner.temp }}/hia-template-parse-receipt.json
             ${{ runner.temp }}/hia-template-parse-receipt.log
+            ${{ runner.temp }}/hia-template-render-abi.json
+            ${{ runner.temp }}/hia-template-render-abi.log
+            ${{ runner.temp }}/hia-template-render-abi-files/
+            ${{ runner.temp }}/hia-template-render-receipts.json
+            ${{ runner.temp }}/hia-template-render-receipts.log
             ${{ runner.temp }}/hia-template-caller.json
             ${{ runner.temp }}/hia-template-caller.log
             ${{ runner.temp }}/hia-template-caller/

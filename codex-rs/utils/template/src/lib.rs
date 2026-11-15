@@ -10,6 +10,14 @@
 mod hia_native_parse;
 // END HIA TEMPLATE PARSE MODULE
 
+// BEGIN HIA TEMPLATE RENDER MODULE
+#[cfg(feature = "hia-native")]
+mod hia_native_render;
+// END HIA TEMPLATE RENDER MODULE
+
+// BEGIN HIA TEMPLATE RENDER MAP IMPORT GUARD
+#[cfg(not(feature = "hia-native"))]
+// END HIA TEMPLATE RENDER MAP IMPORT GUARD
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
@@ -186,6 +194,21 @@ impl Template {
         self.placeholders.iter().map(String::as_str)
     }
 
+    // BEGIN HIA TEMPLATE RENDER NATIVE ENTRY
+    #[cfg(feature = "hia-native")]
+    pub fn render<I, K, V>(&self, variables: I) -> Result<String, TemplateRenderError>
+    where
+        I: IntoIterator<Item = (K, V)>,
+        K: AsRef<str>,
+        V: AsRef<str>,
+    {
+        hia_native_render::render(self, variables)
+    }
+    // END HIA TEMPLATE RENDER NATIVE ENTRY
+
+    // BEGIN HIA TEMPLATE RENDER ORIGINAL GUARD
+    #[cfg(not(feature = "hia-native"))]
+    // END HIA TEMPLATE RENDER ORIGINAL GUARD
     pub fn render<I, K, V>(&self, variables: I) -> Result<String, TemplateRenderError>
     where
         I: IntoIterator<Item = (K, V)>,
@@ -279,6 +302,9 @@ fn parse_placeholder(source: &str, start: usize) -> Result<(String, usize), Temp
     Err(TemplateParseError::UnterminatedPlaceholder { start })
 }
 
+// BEGIN HIA TEMPLATE RENDER VARIABLE HELPER ORIGINAL GUARD
+#[cfg(not(feature = "hia-native"))]
+// END HIA TEMPLATE RENDER VARIABLE HELPER ORIGINAL GUARD
 fn build_variable_map<I, K, V>(
     variables: I,
 ) -> Result<BTreeMap<String, String>, TemplateRenderError>
