@@ -1,7 +1,9 @@
+use super::SessionIo;
 use super::TurnInput as PendingTurnInput;
 use super::mailbox_retry::MailboxEnqueueOutcome;
 use super::session::Session;
 use super::turn_context::TurnContext;
+use super::turn_input_retry::FinishFences;
 use super::turn_input_retry::FinishRetryState;
 use crate::codex_thread::InjectIfRunningError;
 use codex_features::Feature;
@@ -11,6 +13,18 @@ use codex_protocol::error::CodexErr;
 use codex_protocol::error::Result as CodexResult;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::protocol::InterAgentCommunication;
+use std::sync::Arc;
+use tokio_util::sync::CancellationToken;
+
+/// A retry retains the original unannotated items and the exact owners seen at
+/// the same admission decision. Internal injection callers keep strict refusal.
+enum ClientResponseItemsInjection {
+    Injected,
+    Finishing {
+        items: Vec<ResponseItem>,
+        fences: FinishFences,
+    },
+}
 
 impl Session {
     pub(crate) async fn enqueue_mailbox_communication(
@@ -175,44 +189,97 @@ impl Session {
         }
     }
 
+    /// Inspect the same protected admission state used by the final injection.
+    /// This lets external callers wait before preparing any initial context.
+    async fn client_response_items_finish_fences(&self) -> CodexResult<Option<FinishFences>> {
+        let active = self.active_turn.lock().await;
+        self.client_response_items_admission(active.as_ref())
+    }
+
+    /// Called only while holding active_turn. Registry retirement may occur
+    /// independently, so capture Clear/Finishing/Blocked in one observation.
+    fn client_response_items_admission(
+        &self,
+        active: Option<&crate::state::ActiveTurn>,
+    ) -> CodexResult<Option<FinishFences>> {
+        let terminalizing = || {
+            CodexErr::InvalidRequest(
+                "turn is terminalizing or shutting down and cannot accept injected context"
+                    .to_string(),
+            )
+        };
+        if self.shutdown_started() {
+            return Err(terminalizing());
+        }
+        let has_terminalization_marker =
+            active.is_some_and(|turn| turn.task_terminalization.is_some());
+        if self.has_pending_task_terminalization() || has_terminalization_marker {
+            match self.finish_retry_state(active) {
+                FinishRetryState::Finishing(fences) => return Ok(Some(fences)),
+                FinishRetryState::Clear if !has_terminalization_marker => {}
+                FinishRetryState::Clear | FinishRetryState::Blocked => {
+                    return Err(terminalizing());
+                }
+            }
+        }
+        if active.is_some_and(|turn| turn.task_terminalization.is_some() || turn.task.is_none()) {
+            return Err(CodexErr::InvalidRequest(
+                "turn is transitioning and cannot accept injected context".to_string(),
+            ));
+        }
+        Ok(None)
+    }
+
     /// Preserves trusted client provenance while items wait for an active turn.
-    #[expect(
-        clippy::await_holding_invalid_type,
-        reason = "active turn checks and turn state updates must remain atomic"
-    )]
+    /// Internal callers retain immediate refusal at every terminalization fence.
     pub(crate) async fn inject_client_response_items(
         &self,
         items: Vec<ResponseItem>,
         turn_context: &TurnContext,
     ) -> CodexResult<()> {
+        // Keep internal callers' original immediate refusal, including when
+        // a terminalizer still owns the active-turn lock.
+        if self.shutdown_started() || self.has_pending_task_terminalization() {
+            return Err(CodexErr::InvalidRequest(
+                "turn is terminalizing or shutting down and cannot accept injected context"
+                    .to_string(),
+            ));
+        }
+        match self
+            .try_inject_client_response_items(items, turn_context)
+            .await?
+        {
+            ClientResponseItemsInjection::Injected => Ok(()),
+            ClientResponseItemsInjection::Finishing { .. } => Err(CodexErr::InvalidRequest(
+                "turn is terminalizing or shutting down and cannot accept injected context"
+                    .to_string(),
+            )),
+        }
+    }
+
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "active turn checks, recovery revoke, and injection must remain atomic"
+    )]
+    async fn try_inject_client_response_items(
+        &self,
+        items: Vec<ResponseItem>,
+        turn_context: &TurnContext,
+    ) -> CodexResult<ClientResponseItemsInjection> {
+        let mut active = self.active_turn.lock().await;
+        if let Some(fences) = self.client_response_items_admission(active.as_ref())? {
+            return Ok(ClientResponseItemsInjection::Finishing { items, fences });
+        }
         let items = items
             .into_iter()
             .map(|item| self.annotate_client_response_item(item))
             .collect::<Vec<_>>();
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
-            return Err(codex_protocol::error::CodexErr::InvalidRequest(
-                "turn is terminalizing or shutting down and cannot accept injected context"
-                    .to_string(),
-            ));
-        }
-        let mut active = self.active_turn.lock().await;
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
-            return Err(codex_protocol::error::CodexErr::InvalidRequest(
-                "turn is terminalizing or shutting down and cannot accept injected context"
-                    .to_string(),
-            ));
-        }
         if let Some(active_turn) = active.as_mut() {
-            if active_turn.task_terminalization.is_some() || active_turn.task.is_none() {
-                return Err(codex_protocol::error::CodexErr::InvalidRequest(
-                    "turn is transitioning and cannot accept injected context".to_string(),
-                ));
-            }
             if let Some(task) = active_turn.task.as_ref()
                 && let Some(authority) = task.recovery_authority.as_ref()
             {
-                // As above, do not release the active-turn lock until the
-                // durable Unready marker precedes the turn-state enqueue.
+                // Keep strict revocation before the turn-state enqueue, under
+                // the same active-turn lock used by the original injection.
                 self.ensure_turn_recovery_unready(&task.turn_context.sub_id, authority.as_ref())
                     .await?;
             }
@@ -225,7 +292,7 @@ impl Session {
                         .collect(),
                 )
                 .await;
-            return Ok(());
+            return Ok(ClientResponseItemsInjection::Injected);
         }
         if self.shutdown_started() || self.has_pending_task_terminalization() {
             return Err(CodexErr::InvalidRequest(
@@ -240,7 +307,7 @@ impl Session {
             self.settle_consumed_recovery_status();
         }
         drop(active);
-        Ok(())
+        Ok(ClientResponseItemsInjection::Injected)
     }
 
     pub(crate) fn annotate_client_response_item(&self, item: ResponseItem) -> ResponseItemEnvelope {
@@ -341,6 +408,78 @@ impl Session {
             self.settle_consumed_recovery_status();
         }
         drop(active);
+    }
+}
+
+impl SessionIo {
+    /// Only the external caller waits. Internal injection remains a strict
+    /// attempt, and every retry re-enters the original admission decision.
+    pub(crate) async fn inject_response_items_after_finish(
+        &self,
+        session: &Arc<Session>,
+        mut items: Vec<ResponseItem>,
+    ) -> CodexResult<()> {
+        if items.is_empty() {
+            return Err(CodexErr::InvalidRequest(
+                "items must not be empty".to_string(),
+            ));
+        }
+        loop {
+            if self.tx_sub.is_closed() {
+                return Err(CodexErr::InternalAgentDied);
+            }
+            if let Some(fences) = session.client_response_items_finish_fences().await? {
+                self.wait_for_client_injection_finish(fences).await?;
+                continue;
+            }
+
+            let turn_context = session.new_default_turn().await;
+            if session.reference_context_item().await.is_none() {
+                // Preserve the history-only API's original initial step. Do
+                // asynchronous preparation without holding the active-turn
+                // lock; contributors may themselves inspect thread state.
+                let step_context = session
+                    .capture_step_context(Arc::clone(&turn_context), &CancellationToken::new())
+                    .await?;
+                if self.tx_sub.is_closed() {
+                    return Err(CodexErr::InternalAgentDied);
+                }
+                if let Some(fences) = session.client_response_items_finish_fences().await? {
+                    self.wait_for_client_injection_finish(fences).await?;
+                    continue;
+                }
+                session
+                    .record_context_updates_and_set_reference_context_item(step_context.as_ref())
+                    .await?;
+            }
+
+            match session
+                .try_inject_client_response_items(items, turn_context.as_ref())
+                .await?
+            {
+                ClientResponseItemsInjection::Injected => return Ok(()),
+                ClientResponseItemsInjection::Finishing {
+                    items: original_items,
+                    fences,
+                } => {
+                    items = original_items;
+                    self.wait_for_client_injection_finish(fences).await?;
+                }
+            }
+        }
+    }
+
+    async fn wait_for_client_injection_finish(&self, fences: FinishFences) -> CodexResult<()> {
+        for completion in fences {
+            tokio::select! {
+                biased;
+                () = self.session_loop_termination.clone() => {
+                    return Err(CodexErr::InternalAgentDied);
+                },
+                () = completion.wait() => {},
+            }
+        }
+        Ok(())
     }
 }
 
@@ -853,3 +992,7 @@ mod tests {
         session.abort_all_tasks(TurnAbortReason::Replaced).await;
     }
 }
+
+#[cfg(test)]
+#[path = "client_response_item_retry_tests.rs"]
+mod client_retry_tests;

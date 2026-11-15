@@ -76,7 +76,6 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::sync::oneshot;
 use tokio::sync::watch;
-use tokio_util::sync::CancellationToken;
 
 use codex_rollout::state_db::StateDbHandle;
 
@@ -953,27 +952,9 @@ impl CodexThread {
         &self,
         items: Vec<ResponseItem>,
     ) -> CodexResult<()> {
-        if items.is_empty() {
-            return Err(CodexErr::InvalidRequest(
-                "items must not be empty".to_string(),
-            ));
-        }
-
-        let turn_context = self.session.new_default_turn().await;
-        if self.session.reference_context_item().await.is_none() {
-            // This history-only API runs without run_turn, so it owns its initial step.
-            let step_context = self
-                .session
-                .capture_step_context(Arc::clone(&turn_context), &CancellationToken::new())
-                .await?;
-            self.session
-                .record_context_updates_and_set_reference_context_item(step_context.as_ref())
-                .await?;
-        }
-        self.session
-            .inject_client_response_items(items, turn_context.as_ref())
-            .await?;
-        Ok(())
+        self.io
+            .inject_response_items_after_finish(&self.session, items)
+            .await
     }
 
     pub fn rollout_path(&self) -> Option<PathBuf> {
