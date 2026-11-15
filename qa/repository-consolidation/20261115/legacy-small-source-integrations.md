@@ -31,3 +31,11 @@ Incoming `f5a605255bca5a300a6c524e8206e8f0cc13d6c3`. Reviewed complete productio
 The fresh preview against `a6b77d82aba0d0f85c99e72910e4184ecec09262` has the exact reviewed source delta;
 all incoming files retain their bytes. The focused suite passes 10 tests.
 Hashes, command and log are retained under `legacy-small/confirmatory-v2`.
+
+## NDU v2 historical source exclusions
+
+Incoming `ec23a433bfa9b47f8c9a6c5fa892dda313569cd5`. Reviewed complete immutable exclusion assembler and both test modules. Fixed external SHA pins and exact 384+256 roster, original IDs, file/RGB digests and dHash distance reject reused sources. Existing nonidentical output is never replaced. Image fixture invokes existing cohort builder with download_images=False and local temporary JPEGs. No weights, outcomes, historical image payloads, model training or real new cohort were executed.
+
+The fresh preview against `94909bc9f0a0bbd906c3d375b9f4decda7e50ffb` has the exact reviewed source delta;
+all incoming files retain their bytes. The focused suite passes 15 tests.
+Hashes, command and log are retained under `legacy-small/v2-exclusions`.
