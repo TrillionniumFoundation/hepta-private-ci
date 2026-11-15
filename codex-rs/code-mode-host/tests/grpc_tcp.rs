@@ -1,5 +1,4 @@
 use std::future::poll_fn;
-use std::process::Stdio;
 use std::time::Duration;
 
 use anyhow::Context;
@@ -10,12 +9,9 @@ use axum::http::Version;
 use codex_code_mode_protocol::grpc;
 use codex_code_mode_protocol::grpc::code_mode_host_client::CodeModeHostClient;
 use pretty_assertions::assert_eq;
-use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
-use tokio::io::BufReader;
 use tokio::net::TcpStream;
-use tokio::process::Command;
 use tokio::time::timeout;
 use tonic::body::Body;
 use tonic::codegen::Service;
@@ -119,23 +115,8 @@ async fn http1_response(endpoint: &str, request: &[u8]) -> Result<String> {
 
 #[tokio::test]
 async fn tcp_listener_opens_a_grpc_session() -> Result<()> {
-    let mut host = Command::new(codex_utils_cargo_bin::cargo_bin("codex-code-mode-host")?)
-        .args(["--listen", "grpc://127.0.0.1:0"])
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .kill_on_drop(/*kill_on_drop*/ true)
-        .spawn()
-        .context("failed to start gRPC code-mode host")?;
-    let stdout = host
-        .stdout
-        .take()
-        .context("gRPC code-mode host stdout is unavailable")?;
-    let mut stdout = BufReader::new(stdout);
-    let mut endpoint = String::new();
-    timeout(TEST_TIMEOUT, stdout.read_line(&mut endpoint))
-        .await
-        .context("gRPC code-mode host did not publish its endpoint")??;
-    let endpoint = Endpoint::from_shared(endpoint.trim().to_string())
+    let host = HostHarness::start("grpc://127.0.0.1:0").await?;
+    let endpoint = Endpoint::from_shared(host.endpoint.clone())
         .context("gRPC code-mode host published an invalid endpoint")?
         .connect_timeout(TEST_TIMEOUT)
         .timeout(TEST_TIMEOUT);

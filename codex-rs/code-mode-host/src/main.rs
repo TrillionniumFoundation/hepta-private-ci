@@ -19,5 +19,8 @@ async fn main() -> anyhow::Result<()> {
         .with_ansi(false)
         .init();
 
-    codex_code_mode_host::run_main(&Cli::parse().listen).await
+    tracing::info!(phase = "runtime_ready", "code-mode host startup");
+    let cli = Cli::parse();
+    tracing::info!(phase = "transport_selected", "code-mode host startup");
+    codex_code_mode_host::run_main(&cli.listen).await
 }

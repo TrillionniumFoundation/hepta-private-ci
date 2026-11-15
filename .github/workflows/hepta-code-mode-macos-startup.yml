@@ -1,0 +1,65 @@
+name: Hepta code-mode macOS startup qualification
+
+on:
+  push:
+    branches: [codex/hia-macos-code-mode-startup-20261115-a90d]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-code-mode-startup-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  code-mode-host:
+    name: Original code-mode host on ${{ matrix.runner }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            target: aarch64-apple-darwin
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Prepare the original repository Bazel toolchain and cache
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: bazel-test
+
+      - name: Run original code-mode host tests and strict Clippy
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B .github/scripts/hepta_code_mode_startup_qualification.py \
+            --report-dir "$RUNNER_TEMP/code-mode-startup"
+
+      - name: Preserve native results and compiler evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: code-mode-startup-${{ matrix.target }}-${{ github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/code-mode-startup/
+            ${{ runner.temp }}/bazel-execution-logs/
+            bazel-testlogs/codex-rs/code-mode-host/
+
+      - name: Check production source and original assertions are unchanged
+        if: always()
+        uses: ./.github/actions/check-clean-worktree
