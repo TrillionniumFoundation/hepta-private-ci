@@ -1527,7 +1527,8 @@ async fn multi_agent_v2_list_agents_returns_completed_status() {
             let result: ListAgentsResult =
                 serde_json::from_str(&content).expect("list_agents result should be json");
             if result.agents.iter().any(|agent| {
-                agent.agent_name == "/root/worker" && agent.agent_status == json!({"completed": "done"})
+                agent.agent_name == "/root/worker"
+                    && agent.agent_status == json!({"completed": "done"})
             }) {
                 break (result, success);
             }
