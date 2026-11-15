@@ -1,0 +1,361 @@
+{
+  "schema": "codex.hia.template-complete-original-sources.v1",
+  "commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+  "crate_tree": "239023ac5b71e7cd40b23bff31cbf3e36c59a8c5",
+  "original_files": {
+    "BUILD.bazel": {
+      "bytes": 125,
+      "sha256": "c8c7a94dd7d8669a6ce914fb2c2f3e89e7921ee1b718c69c140a8be6c1119941",
+      "git_blob": "4b3376de4eb12b031f88fe97ccd4c580862ed287"
+    },
+    "Cargo.toml": {
+      "bytes": 225,
+      "sha256": "5785b0365d1f99f5d719c8d6b16586fcaadedc373f4342c92aa28a52eb778368",
+      "git_blob": "f24caec190455f3ac685004fc1f6e474ee8f8ed9"
+    },
+    "README.md": {
+      "bytes": 941,
+      "sha256": "240762454068a7cde26cdec7194434ab4f4dbc01459719c84b5c85c84f461dbe",
+      "git_blob": "3197e115ebabffdbe23715feffcf7a13b4e2feb6"
+    },
+    "src/lib.rs": {
+      "bytes": 13066,
+      "sha256": "f930640a38e4ed882274397f6f2ac2105c3aac7891269b7b1edf39393b5d80cf",
+      "git_blob": "62d2314ffb30959cc7dab3c9fd6924e189e53ca8"
+    }
+  },
+  "original_tests": [
+    "tests::parse_errors_when_closing_delimiter_is_unmatched",
+    "tests::parse_errors_when_placeholder_is_empty",
+    "tests::parse_errors_when_placeholder_is_nested",
+    "tests::parse_errors_when_placeholder_is_unterminated",
+    "tests::parsed_templates_can_be_reused",
+    "tests::placeholders_are_sorted_and_unique",
+    "tests::render_errors_when_duplicate_value_is_provided",
+    "tests::render_errors_when_extra_value_is_provided",
+    "tests::render_errors_when_placeholder_is_missing",
+    "tests::render_function_wraps_parse_errors",
+    "tests::render_function_wraps_render_errors",
+    "tests::render_replaces_placeholders_with_and_without_whitespace",
+    "tests::render_supports_literal_delimiter_escapes",
+    "tests::render_supports_multiline_templates_and_adjacent_placeholders"
+  ],
+  "routing_blocks": [
+    {
+      "name": "template_parse_module",
+      "text": "// BEGIN HIA TEMPLATE PARSE MODULE\n#[cfg(feature = \"hia-native\")]\nmod hia_native_parse;\n// END HIA TEMPLATE PARSE MODULE\n\n",
+      "sha256": "e2e64a0208da6a5a0a0b5d3cfe499c9b1095749ab19935ce025125679db4d421",
+      "occurrences": 1
+    },
+    {
+      "name": "template_parse_native_entry",
+      "text": "    // BEGIN HIA TEMPLATE PARSE NATIVE ENTRY\n    #[cfg(feature = \"hia-native\")]\n    pub fn parse(source: &str) -> Result<Self, TemplateParseError> {\n        hia_native_parse::parse(source)\n    }\n    // END HIA TEMPLATE PARSE NATIVE ENTRY\n\n",
+      "sha256": "01c783a313471d0f2fb29c657005358b8f97e9e6a7ff6df715b60a712072f457",
+      "occurrences": 1
+    },
+    {
+      "name": "template_parse_original_guard",
+      "text": "    // BEGIN HIA TEMPLATE PARSE ORIGINAL GUARD\n    #[cfg(not(feature = \"hia-native\"))]\n    // END HIA TEMPLATE PARSE ORIGINAL GUARD\n",
+      "sha256": "d707630e6c17c8c1140aab6cb562bc211fcb281aaeae8efb6e96274e2f6c9401",
+      "occurrences": 1
+    },
+    {
+      "name": "template_push_literal_original_guard",
+      "text": "// BEGIN HIA TEMPLATE PUSH LITERAL ORIGINAL GUARD\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA TEMPLATE PUSH LITERAL ORIGINAL GUARD\n",
+      "sha256": "bbbe277f4de2b59f79221d980e2aee9204c86b74310809673bae20064ea10669",
+      "occurrences": 1
+    },
+    {
+      "name": "template_placeholder_original_guard",
+      "text": "// BEGIN HIA TEMPLATE PLACEHOLDER ORIGINAL GUARD\n#[cfg(not(feature = \"hia-native\"))]\n// END HIA TEMPLATE PLACEHOLDER ORIGINAL GUARD\n",
+      "sha256": "95acda1d69c7abe3c1fb5bcdf0113316433bd3fbe7a5f6e6670f2d9dbd440b56",
+      "occurrences": 1
+    }
+  ],
+  "registry_packages": {
+    "registry+https://github.com/rust-lang/crates.io-index#diff@0.1.13": {
+      "lock": {
+        "name": "diff",
+        "version": "0.1.13",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "56254986775e3233ffa9c4d7d3faaf6d36a2c09d30b20687e9f88bc8bafc16c8"
+      },
+      "features": [],
+      "files": {
+        ".cargo_vcs_info.json": {
+          "bytes": 94,
+          "sha256": "13ebb8c99b5a5552c935e49e5d97e006777fd739d484775b565db7efaa934422"
+        },
+        ".github/workflows/main.yml": {
+          "bytes": 643,
+          "sha256": "42e1c6e7efb4e8e5aaaa8cb904c1c64ab8024147957329c5c1e054c7c157f63e"
+        },
+        ".gitignore": {
+          "bytes": 18,
+          "sha256": "f9b1ca6ae27d1c18215265024629a8960c31379f206d9ed20f64e0b2dcf79805"
+        },
+        "Cargo.lock": {
+          "bytes": 18600,
+          "sha256": "02caf089cd65edef991562a204a415bc99f3e19e23245f86516a7053fd9ca7ab"
+        },
+        "Cargo.toml": {
+          "bytes": 1007,
+          "sha256": "c8ea71f523d7f241ff0ee61e32cb0212d2c82cc603f0734a51716f88ada2fae0"
+        },
+        "Cargo.toml.orig": {
+          "bytes": 476,
+          "sha256": "55f94b54c9514da9cc50ad56d60f26517dd8acb15eae613907dafb32ae9f55c5"
+        },
+        "LICENSE-APACHE": {
+          "bytes": 11357,
+          "sha256": "b40930bbcf80744c86c46a12bc9da056641d722716c378f5659b9e555ef833e1"
+        },
+        "LICENSE-MIT": {
+          "bytes": 1072,
+          "sha256": "c5de694d2f7a6084593c7280222149b683f084103f9627be3a22ed5eee4ce86c"
+        },
+        "README.md": {
+          "bytes": 732,
+          "sha256": "e4c66260ab73e5ef5e023aef26a5f1562c43c8c1a2a2a39e3bed4be809c79321"
+        },
+        "benches/benches.rs": {
+          "bytes": 2677,
+          "sha256": "0a9662385d8508cc40815515cdbdfbd80b479c5f08840cdf5beaf0881a755ed2"
+        },
+        "examples/simple.rs": {
+          "bytes": 367,
+          "sha256": "b56bfd5a90d9ece110a0e2ac7eece6cec7e8ca92d2af8394d40f33176577e48f"
+        },
+        "src/lib.rs": {
+          "bytes": 4984,
+          "sha256": "23ad78ffade95bffbea6a29c4abd15ee43b3a0078df97bb3931d09bbff208837"
+        },
+        "tests/data/gitignores.chars.diff": {
+          "bytes": 429771,
+          "sha256": "e3bf5c4793ca8a31ca0e2c7b99dd23513f3326d83ef7107f157218648870f15d"
+        },
+        "tests/data/gitignores.lines.diff": {
+          "bytes": 387079,
+          "sha256": "3019cd72dde8587c176b65514612cd6cc71d74385f428abf3648e608a7495eb0"
+        },
+        "tests/data/gitignores.txt": {
+          "bytes": 83790,
+          "sha256": "a076427a81326de1a95733c656bf54382b3a4d79346c73dbfb015b2c37424eef"
+        },
+        "tests/tests.rs": {
+          "bytes": 8171,
+          "sha256": "975e6311cc897c707b5819af232daa2fad0484d8998414ae81ea28878e5e6027"
+        }
+      }
+    },
+    "registry+https://github.com/rust-lang/crates.io-index#yansi@1.0.1": {
+      "lock": {
+        "name": "yansi",
+        "version": "1.0.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049"
+      },
+      "features": [
+        "alloc",
+        "default",
+        "std"
+      ],
+      "files": {
+        ".cargo_vcs_info.json": {
+          "bytes": 94,
+          "sha256": "c3365e9dc64d32373afb66743a926ca5c735a7dd1488d6513528e780b3187185"
+        },
+        ".github/workflows/ci.yml": {
+          "bytes": 1055,
+          "sha256": "afd071ff380511114cb907652410f558f0e01db541d90604985fd10b88dfe0ae"
+        },
+        ".github/yansi-example.svg": {
+          "bytes": 13756,
+          "sha256": "0107acdb252027c31429b402e787196b1a3e90427937e6b5b5d12c39816f823c"
+        },
+        ".github/yansi-logo.png": {
+          "bytes": 37427,
+          "sha256": "4839ae7c250815e64aa8819671a478724ce39c4786fe0b37fe951f44158d204c"
+        },
+        ".gitignore": {
+          "bytes": 19,
+          "sha256": "2ebe6cb6f5289849dce5a8a6cdd77e06b1385302c862982f8e181c4782d19214"
+        },
+        "Cargo.toml": {
+          "bytes": 1214,
+          "sha256": "8908ed99df666028b0f0586fd3ab4851e94a95644b387c5078637dee10dc396e"
+        },
+        "Cargo.toml.orig": {
+          "bytes": 764,
+          "sha256": "5b46dcde0ef618bf66e17b926ab749681358af932e2f0b5f7a4030b812bb13fa"
+        },
+        "LICENSE-APACHE": {
+          "bytes": 10834,
+          "sha256": "a8410ec5312922e0edae227ae056c7ea78093092503717ae377a2be4f0d295f1"
+        },
+        "LICENSE-MIT": {
+          "bytes": 1080,
+          "sha256": "ce1f970284c4ab06e90671a984086692dc44da3e2b8ee86444d79b6f77bcf9e7"
+        },
+        "README.md": {
+          "bytes": 3942,
+          "sha256": "9dc47127789cc349f5b13ae70b064449e4a17f4ee3020e6e11194f67692e9f2a"
+        },
+        "src/attr_quirk.rs": {
+          "bytes": 6769,
+          "sha256": "b314f91d4beca906dd41789d65e1f627ffc512844fc8494affa27d06ca75e980"
+        },
+        "src/bitops.rs": {
+          "bytes": 1332,
+          "sha256": "9417de2135b756a70be77cbfc96fb103185246c4a9299eaa719c8050df56d696"
+        },
+        "src/color.rs": {
+          "bytes": 7718,
+          "sha256": "3e5993c0b1078be1708d69d67f4a83f6347b14efe9d440096fcb95cd1f3ee49a"
+        },
+        "src/condition.rs": {
+          "bytes": 12289,
+          "sha256": "504413832b67b10cb48cb4a5cea994d278f39b8557ed30fcfe80d7ce1ff0ed00"
+        },
+        "src/global.rs": {
+          "bytes": 3168,
+          "sha256": "bdd5b85f149660bb99ced27d4df3b41a9c3150c260e6a232a9a86c3fe3dcca78"
+        },
+        "src/hyperlink.rs": {
+          "bytes": 4158,
+          "sha256": "4dbbdc4a84a3b599fe177904b3a523a1abf2d14dbd6aff71b5f50713bf40e604"
+        },
+        "src/lib.rs": {
+          "bytes": 14516,
+          "sha256": "3a2eca594768c44a5aed88c422910b1d49926ebed43b2459d477bf0d045706b9"
+        },
+        "src/macros.rs": {
+          "bytes": 11706,
+          "sha256": "45a978df474134889e773525b77a1e46844f39baac44b1f9ac86b67e934dff8e"
+        },
+        "src/paint.rs": {
+          "bytes": 8263,
+          "sha256": "c64325a6e8570a69fd17a4b52710a366e20783ffe20a86eec98b6a1015a47b8e"
+        },
+        "src/set.rs": {
+          "bytes": 1927,
+          "sha256": "dbcb24b9cc8824a9e379c68a649a222489b392c1fc83a559c51007bea8914a87"
+        },
+        "src/style.rs": {
+          "bytes": 11473,
+          "sha256": "79b124d535ebce74280ef1f590d4646bac964a3ba27a57fae700bf6d83f34821"
+        },
+        "src/windows.rs": {
+          "bytes": 3452,
+          "sha256": "f01a2e20a060fde7196153deac1e4b4943fda069b81058c8ca6dbce73f5fba48"
+        },
+        "tests/basic.rs": {
+          "bytes": 9641,
+          "sha256": "4f4f0df3dfe15db8f39170933f98917f7f5047ed8a22ffae6cd1304a2623ac4a"
+        }
+      }
+    },
+    "registry+https://github.com/rust-lang/crates.io-index#pretty_assertions@1.4.1": {
+      "lock": {
+        "name": "pretty_assertions",
+        "version": "1.4.1",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "checksum": "3ae130e2f271fbc2ac3a40fb1d07180839cdbbe443c7a27e1e3c13c5cac0116d",
+        "dependencies": [
+          "diff",
+          "yansi"
+        ]
+      },
+      "features": [
+        "default",
+        "std"
+      ],
+      "files": {
+        ".cargo_vcs_info.json": {
+          "bytes": 111,
+          "sha256": "79a399ba97447fb7622e5ff67a11e8cae942041b7db2df41cbbd6976d776b963"
+        },
+        "Cargo.lock": {
+          "bytes": 577,
+          "sha256": "c566305e059217afe3dfee81304ef9582972767fca5488f8ff116a28978bf46c"
+        },
+        "Cargo.toml": {
+          "bytes": 1622,
+          "sha256": "c054059cdeb97740a9f0702a3a9b53b1c6f7852854c2da451bd711b16aad6db9"
+        },
+        "Cargo.toml.orig": {
+          "bytes": 960,
+          "sha256": "bc20523901d35b1bba632c4057a82ad807f28c9a883db38ddcedfad760af5472"
+        },
+        "LICENSE-APACHE": {
+          "bytes": 11358,
+          "sha256": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08"
+        },
+        "LICENSE-MIT": {
+          "bytes": 1099,
+          "sha256": "8c9612877aacfa1b42f5e80b679e6c3c93a7ba2bb99dfaf6e87e200dca4b4e6c"
+        },
+        "README.md": {
+          "bytes": 4249,
+          "sha256": "56382a8b5347e3be95c26c97806291aebf5cc321090b19b2ac7d680461d4add1"
+        },
+        "examples/pretty_assertion.png": {
+          "bytes": 21419,
+          "sha256": "a9a43d098b548cd222056e8f7391cc071ccd07372e9c44d10e254c0a683c7562"
+        },
+        "examples/pretty_assertion.rs": {
+          "bytes": 70,
+          "sha256": "41d0527d286baebe09149e33a9359c3e30c7fbfddd41995db4facdee291fcd2c"
+        },
+        "examples/pretty_assertion_v0_6_1.png": {
+          "bytes": 21236,
+          "sha256": "c07a7a8cd56ebeb840ae8095c024957ddac8a1d011288acf7928f79d85b39e3a"
+        },
+        "examples/standard_assertion.png": {
+          "bytes": 21727,
+          "sha256": "be6f676deb51d06bcb33f36d194c82228d5585d91f58af590d9040012e38a0a8"
+        },
+        "examples/standard_assertion.rs": {
+          "bytes": 524,
+          "sha256": "70180f493795da15c82c0002c26249ef2a1b9fa81f6d0c9a8e0bf4e09121e041"
+        },
+        "src/lib.rs": {
+          "bytes": 14253,
+          "sha256": "6cd82626ccbd1401ed660f92eedac20efae01e9f5c7a9a5ce3203b6d20465d28"
+        },
+        "src/printer.rs": {
+          "bytes": 17942,
+          "sha256": "bcf295fee4874caf52b31be2b964a1337247bfee242b3e46b37f10844b13c3fe"
+        },
+        "tests/macros.rs": {
+          "bytes": 9043,
+          "sha256": "cadb699c6d1bab26bb7ba044b1094fdc8a1f4f670d70dc38b7defea1a4dd41fb"
+        }
+      }
+    }
+  },
+  "frozen_observers": {
+    "observer.rs": {
+      "bytes": 9378,
+      "sha256": "c4f049a3e5148fbbeca47a15aa763a1120e40ca00d4452e8ded415930c8a1280"
+    },
+    "counter.rs": {
+      "bytes": 2653,
+      "sha256": "008d58fb09438ec66a4027a7686ac1b8d9d26a7e22bfbeafbaeb2ca825376c4a"
+    },
+    "lifecycle.rs": {
+      "bytes": 3681,
+      "sha256": "17e679e50c7c1f1e903396867177b69134682de0584e5bcad132e1c663893729"
+    },
+    "observations.py": {
+      "bytes": 5487,
+      "sha256": "8d1e83c1a4595123083a2bb2bda4ba19ab13b1372c1a077fea149fbb0930884b"
+    }
+  },
+  "corpus_wire": {
+    "bytes": 6462758,
+    "sha256": "2509d05836c1d0c620e6f03c8f13b6da849a7fbc7968fb763bb525da95eb76b5",
+    "cases": 13206,
+    "constructor_values": 21
+  }
+}
