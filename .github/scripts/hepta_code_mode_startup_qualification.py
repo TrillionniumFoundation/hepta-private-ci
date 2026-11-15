@@ -96,6 +96,10 @@ def main():
         assert query.returncode == 0, 'original manual test target discovery failed'
         manual = query.stdout.decode().splitlines()
         assert manual and all(label.startswith('//codex-rs/code-mode-host:') for label in manual)
+        # Unconfigured query includes incompatible platform helpers. Match the
+        # native selection in scripts/list-bazel-clippy-targets.sh.
+        manual = [label for label in manual if not label.endswith('-windows-cross-bin')]
+        assert manual, 'native manual test target discovery returned no owners'
         strict = run('strict', [
             './.github/scripts/run-bazel-ci.sh', '--print-failed-action-summary', '--',
             'build', '--config=clippy',
