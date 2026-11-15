@@ -244,6 +244,8 @@ def terminal_result_gate(row, path, parent, contract):
                     and type(plan['batch_size']) is int and plan['batch_size'] == prior['effective_batch_size']
                     and manifest.get('confirmation_access') is False,
                     'exit0 sample manifest or batch contract differs')
+            from c2_stopping import terminal_stopping
+            stopping_states = terminal_stopping(prior, result, plan, contract['maximum_epochs'])
             train_ids = [item['id'] for item in manifest['episodes'] if item['partition'] == 'train']
             require(all(type(name) is str and name for name in train_ids)
                     and len(train_ids) == len(set(train_ids)) == prior['episodes_train'] > 0,
@@ -351,6 +353,19 @@ def terminal_result_gate(row, path, parent, contract):
                                 and checkpoint_path.stat().st_size > 0
                                 and identity(checkpoint_path) == commit.get('checkpoint'),
                                 'exit0 epoch checkpoint bytes differ')
+                        require(type(commit.get('stopping')) is dict
+                                and type(commit['stopping'].get('best_epoch')) is int
+                                and type(commit['stopping'].get('stale_epochs')) is int
+                                and commit['stopping'] == stopping_states[epoch_index],
+                                'exit0 committed stopping state differs from full metric history')
+                        best_epoch = stopping_states[epoch_index]['best_epoch']
+                        best_path = (path.parent / 'inherited-best.pt' if best_epoch <= retained
+                            else path.parent / 'checkpoints' / f'epoch-{best_epoch:04d}.pt')
+                        require(commit.get('best_path') == str(best_path) and best_path.is_file()
+                                and not best_path.is_symlink() and not best_path.parent.is_symlink()
+                                and best_path.stat().st_size > 0
+                                and identity(best_path) == commit.get('best_checkpoint'),
+                                'exit0 committed best checkpoint is not selected from the metric prefix')
                         previous_commit, last_commit_object = commit_receipt, commit
                         epoch_index, in_epoch, phase = epoch_index + 1, False, 'between_epochs'
                     elif kind == 'finished':
@@ -366,7 +381,8 @@ def terminal_result_gate(row, path, parent, contract):
                     and identity(event_path) == event_identity,
                     'exit0 event journal incomplete, counters differ or bytes changed')
             require(result.get('last_commit') == previous_commit
-                    and last_commit_object['checkpoint']['sha256'] == result['last_checkpoint_sha256'],
+                    and last_commit_object['checkpoint']['sha256'] == result['last_checkpoint_sha256']
+                    and last_commit_object['best_checkpoint']['sha256'] == result['best_checkpoint_sha256'],
                     'exit0 last checkpoint does not match final complete commit')
             output['event_accounting'] = {'schema': 'hcsn-c2-terminal-event-accounting-v1',
                 'journal': event_identity, 'rows': line_number,
