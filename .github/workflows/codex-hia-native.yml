@@ -102,6 +102,63 @@ jobs:
             --output "$RUNNER_TEMP/hia-native" \
             2>&1 | tee "$RUNNER_TEMP/hia-build.log"
 
+      - name: Configure exact unified formatter compiler receipts
+        id: unified_policy_config
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/prepare_unified_diff_policy.py \
+            --repo "$GITHUB_WORKSPACE/codex" --rustc "$RUSTC" \
+            --config "$RUNNER_TEMP/unified-policy/config.json" \
+            --receipt-root "$RUNNER_TEMP/unified-policy/receipts" \
+            --bind-input "$RUNNER_TEMP/hia-native/build.json" \
+            --report "$RUNNER_TEMP/unified-policy/configuration-report.json" \
+            --github-env "$GITHUB_ENV" \
+            2>&1 | tee "$RUNNER_TEMP/unified-policy-configuration.log"
+
+      - name: Verify complete unified formatter ABI and original components
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_unified_diff_abi.py \
+            --repo "$GITHUB_WORKSPACE/codex" \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" \
+            --output-dir "$RUNNER_TEMP/unified-component-gate" \
+            --report "$RUNNER_TEMP/unified-component-report.json" \
+            2>&1 | tee "$RUNNER_TEMP/unified-component-gate.log"
+
+      - name: Verify unified formatter source and archive receipts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module unified_diff \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/unified-component-receipts.json" \
+            2>&1 | tee "$RUNNER_TEMP/unified-component-receipts.log"
+
+      - name: Verify summary continuation and no-write contracts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_patch_summary_abi.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --report "$RUNNER_TEMP/hia-patch-summary-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-summary-abi.log"
+
+      - name: Verify summary source and archive receipts
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_build_receipt.py \
+            --artifacts "$RUNNER_TEMP/hia-native" \
+            --mutation-module patch_summary \
+            --rustc "$RUSTC" \
+            --report "$RUNNER_TEMP/hia-patch-summary-receipt.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-summary-receipt.log"
+
       - name: Verify patch-effect frames and committed-state contracts
         if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
@@ -354,12 +411,24 @@ jobs:
           tool: just@1.51.0,nextest@0.9.103
 
       - name: Test both production crates with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
+          cargo build --locked -p codex-apply-patch -p codex-utils-string --features hia-native --all-targets \
+            --message-format=json-render-diagnostics \
+            > "$RUNNER_TEMP/unified-all-targets.jsonl" 2> "$RUNNER_TEMP/unified-all-targets.stderr"
+          python3 -B ../hia/similar_policy.py --verify-cargo-log "$RUNNER_TEMP/unified-all-targets.jsonl" \
+            > "$RUNNER_TEMP/unified-all-targets-admission.json"
+          python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-all-targets-admission.json"
           just test -p codex-apply-patch -p codex-utils-string --features hia-native --locked \
             2>&1 | tee "$RUNNER_TEMP/hia-native-crates.log"
+          cargo build --locked -p codex-apply-patch -p codex-utils-string --features hia-native --all-targets \
+            --message-format=json-render-diagnostics \
+            > "$RUNNER_TEMP/unified-all-targets-cached.jsonl" 2> "$RUNNER_TEMP/unified-all-targets-cached.stderr"
+          python3 -B ../hia/similar_policy.py --verify-cargo-log "$RUNNER_TEMP/unified-all-targets-cached.jsonl" \
+            > "$RUNNER_TEMP/unified-all-targets-cached-admission.json"
+          python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 and x["cargo_fresh"] for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-all-targets-cached-admission.json"
 
       - name: Compare actual native and original ASCII JSON callers
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -400,7 +469,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-abi.log"
 
       - name: Test consumers of native truncation and token budgets
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -418,7 +487,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-token-budget-abi.log"
 
       - name: Verify installed HIA apply_patch executable
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -454,7 +523,7 @@ jobs:
           bwrap --unshare-user --unshare-net --ro-bind / / --dev /dev --proc /proc -- /bin/true
 
       - name: Test full Codex owners with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -462,7 +531,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-codex-owners.log"
 
       - name: Verify installed full Codex executable
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -495,7 +564,7 @@ jobs:
           persist-credentials: false
 
       - name: Compare complete original and native file-update owners
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_file_update_caller.py \
@@ -507,7 +576,8 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-caller.log"
 
       - name: Compare complete original and native filesystem-effect owners
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        id: effects_caller
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_patch_effects_caller.py \
@@ -519,26 +589,96 @@ jobs:
             --report "$RUNNER_TEMP/hia-patch-effects-caller.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-patch-effects-caller.log"
 
+      - name: Compare complete original and native public summary writes
+        if: ${{ always() && steps.effects_caller.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_patch_summary_caller.py \
+            --producer "$GITHUB_WORKSPACE/codex" \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --effects-report "$RUNNER_TEMP/hia-patch-effects-caller.json" \
+            --rustc "$RUSTC" \
+            --work-dir "$RUNNER_TEMP/hia-patch-summary-caller" \
+            --report "$RUNNER_TEMP/hia-patch-summary-caller.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-patch-summary-caller.log"
+
+      - name: Qualify actual checked and wrapping owner policy receipts
+        id: unified_policy
+        if: ${{ always() && steps.unified_policy_config.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_unified_diff_policy.py \
+            --library-dir "$RUNNER_TEMP/hia-native" --rustc "$RUSTC" \
+            --target-dir "$CARGO_TARGET_DIR" \
+            --output-dir "$RUNNER_TEMP/unified-policy-gate" \
+            --report "$RUNNER_TEMP/unified-policy-report.json" \
+            2>&1 | tee "$RUNNER_TEMP/unified-policy-gate.log"
+
+      - name: Check out complete original unified formatter owner
+        id: unified_original_checkout
+        if: ${{ always() && steps.unified_policy.outcome == 'success' }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: aeb88f596b83186456caac577080bcb2f253ad32
+          path: codex-unified-original
+          persist-credentials: false
+
+      - name: Compare complete original and native unified formatter APIs
+        id: unified_caller
+        if: ${{ always() && steps.unified_policy.outcome == 'success' && steps.unified_original_checkout.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_unified_diff_caller.py \
+            --library-dir "$RUNNER_TEMP/hia-native" --rustc "$RUSTC" \
+            --original-root "$GITHUB_WORKSPACE/codex-unified-original" \
+            --policy-report "$RUNNER_TEMP/unified-policy-report.json" \
+            --target-dir "$CARGO_TARGET_DIR" \
+            --output-dir "$RUNNER_TEMP/unified-public-gate" \
+            --report "$RUNNER_TEMP/unified-public-report.json" \
+            2>&1 | tee "$RUNNER_TEMP/unified-public-gate.log"
+
       - name: Run strict native and default owner lint
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
           cargo clippy --locked --all-targets -p codex-apply-patch -p codex-utils-string \
-            --features codex-apply-patch/hia-native,codex-utils-string/hia-native -- -D warnings \
-            2>&1 | tee "$RUNNER_TEMP/hia-native-owner-clippy.log"
+            --features codex-apply-patch/hia-native,codex-utils-string/hia-native \
+            --message-format=json-render-diagnostics -- -D warnings \
+            > "$RUNNER_TEMP/unified-owner-clippy.jsonl" 2> "$RUNNER_TEMP/unified-owner-clippy.stderr"
+          cat "$RUNNER_TEMP/unified-owner-clippy.stderr" | tee "$RUNNER_TEMP/hia-native-owner-clippy.log"
+          python3 -B ../hia/similar_policy.py --verify-cargo-log "$RUNNER_TEMP/unified-owner-clippy.jsonl" \
+            > "$RUNNER_TEMP/unified-owner-clippy-admission.json"
+          python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-owner-clippy-admission.json"
           env -u CODEX_HIA_NATIVE_LIB_DIR cargo clippy --locked --all-targets \
             -p codex-apply-patch -p codex-utils-string -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/hia-default-owner-clippy.log"
 
       - name: Run scoped native owner fixes without source drift
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
-          just fix --locked -p codex-apply-patch --features hia-native \
+          CODEX_HIA_POLICY_FIX_REQUIRE_NATIVE=1 \
+          CODEX_HIA_POLICY_FIX_REPORT="$RUNNER_TEMP/unified-policy/fix.json" \
+            just fix --locked -p codex-apply-patch --features hia-native \
             2>&1 | tee "$RUNNER_TEMP/hia-native-owner-fix.log"
+          python3 - "$RUNNER_TEMP/unified-policy/fix.json" <<'PY'
+          import json, sys
+          value = json.load(open(sys.argv[1]))
+          assert value["passed"] and value["require_native"]
+          assert value["all_subcompilers_succeeded"] and value["source_inputs_unchanged"]
+          assert value["actual_native_helper_calls"] > 0
+          assert value["consumer_artifacts"]
+          assert all(row["policy_mode"] == 0 for row in value["consumer_artifacts"])
+          PY
           git diff --exit-code
+          cargo clippy --locked --all-targets -p codex-apply-patch --features hia-native \
+            --message-format=json-render-diagnostics -- -D warnings \
+            > "$RUNNER_TEMP/unified-after-fix.jsonl" 2> "$RUNNER_TEMP/unified-after-fix.stderr"
+          python3 -B ../hia/similar_policy.py --verify-cargo-log "$RUNNER_TEMP/unified-after-fix.jsonl" \
+            > "$RUNNER_TEMP/unified-after-fix-admission.json"
+          python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-after-fix-admission.json"
 
       - name: Upload original build and test results
         if: ${{ always() }}
@@ -551,6 +691,46 @@ jobs:
           include-hidden-files: true
           path: |
             ${{ runner.temp }}/hia-native/build.json
+            ${{ runner.temp }}/unified-component-gate/**/*.json
+            ${{ runner.temp }}/unified-component-gate/**/*.jsonl
+            ${{ runner.temp }}/unified-component-gate/**/*.stdout
+            ${{ runner.temp }}/unified-component-gate/**/*.stderr
+            ${{ runner.temp }}/unified-component-gate/**/*.bin
+            ${{ runner.temp }}/unified-component-gate/reference/similar-2.7.0/
+            ${{ runner.temp }}/unified-component-report.json.stdout
+            ${{ runner.temp }}/unified-policy/*.json
+            ${{ runner.temp }}/unified-policy/fix/
+            ${{ runner.temp }}/unified-policy/policy-profiles/
+            ${{ runner.temp }}/unified-policy/receipts/*.jsonl
+            ${{ runner.temp }}/unified-policy/receipts/indices/
+            ${{ runner.temp }}/unified-policy/receipts/receipts/
+            ${{ runner.temp }}/unified-policy/receipts/compiler-logs/
+            ${{ runner.temp }}/unified-policy/receipts/probes/*/probe.rs
+            ${{ runner.temp }}/unified-policy/receipts/probes/*/receipt.json
+            ${{ runner.temp }}/unified-policy/receipts/probes/*/*.stdout
+            ${{ runner.temp }}/unified-policy/receipts/probes/*/*.stderr
+            ${{ runner.temp }}/unified-policy-gate/*.json
+            ${{ runner.temp }}/unified-policy-gate/*.stdout
+            ${{ runner.temp }}/unified-policy-gate/*.stderr
+            ${{ runner.temp }}/unified-public-gate/*.json
+            ${{ runner.temp }}/unified-public-gate/*.stdout
+            ${{ runner.temp }}/unified-public-gate/*.stderr
+            ${{ runner.temp }}/unified-public-gate/cases.bin
+            ${{ runner.temp }}/unified-public-gate/original-source/
+            ${{ runner.temp }}/unified-public-gate/fixtures/
+            ${{ runner.temp }}/unified-public-gate/policy-*/native-call-counts.tsv
+            ${{ runner.temp }}/unified-*.json
+            ${{ runner.temp }}/unified-*.jsonl
+            ${{ runner.temp }}/unified-*.log
+            ${{ runner.temp }}/unified-*.stderr
+            ${{ runner.temp }}/hia-patch-summary-abi.json
+            ${{ runner.temp }}/hia-patch-summary-abi.log
+            ${{ runner.temp }}/hia-patch-summary-receipt.json
+            ${{ runner.temp }}/hia-patch-summary-receipt.log
+            ${{ runner.temp }}/hia-patch-summary-caller.json
+            ${{ runner.temp }}/hia-patch-summary-caller.log
+            ${{ runner.temp }}/hia-patch-summary-caller/commands/
+            ${{ runner.temp }}/hia-patch-summary-caller/public-observations/
             ${{ runner.temp }}/hia-patch-effects-abi.json
             ${{ runner.temp }}/hia-patch-effects-abi.log
             ${{ runner.temp }}/hia-patch-effects-receipt.json

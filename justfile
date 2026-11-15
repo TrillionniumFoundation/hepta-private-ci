@@ -55,7 +55,7 @@ fmt-check:
     @{{ python }} ../scripts/format.py --all --check
 
 fix *args:
-    cargo clippy --fix --tests --allow-dirty {args}
+    {{ python }} ../hia/unified_policy_fix.py {args}
 
 clippy *args:
     cargo clippy --tests {args}
