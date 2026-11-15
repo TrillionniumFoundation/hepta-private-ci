@@ -70,6 +70,11 @@ def validate(migration: dict, verification: dict) -> list[str]:
         errors.append("approved_paths must be a list of nonempty paths")
     if len(set(approved)) != len(approved):
         errors.append("approved_paths contains duplicates")
+    for path in approved:
+        if (path.startswith("/") or "\\" in path or "\0" in path
+                or path == ".git" or path.startswith(".git/")
+                or any(part in ("", ".", "..") for part in path.split("/"))):
+            errors.append(f"{path}: unsafe approved source path")
     for flag in ("production_dispatch_migrated", "whole_codex_rewritten"):
         mv, vv = migration.get(flag), verification.get(flag)
         if type(mv) is not bool or type(vv) is not bool or mv is not vv:
@@ -94,8 +99,13 @@ def validate(migration: dict, verification: dict) -> list[str]:
         errors.append("whole-product rewrite claimed with unresolved template performance")
     if retiring.get("ready") is True and not (whole and dispatch and not incomplete):
         errors.append("retirement ready without whole-product/default-dispatch closure")
+    if retiring.get("ready") is True and not approved:
+        errors.append("retirement ready without approved source paths")
     if verification.get("legacy_source_retired") is True and retiring.get("ready") is not True:
         errors.append("legacy source claimed retired without retirement approval")
+    if (verification.get("legacy_source_retired") is True
+            and not any(isinstance(m, dict) and m.get("retire_legacy") is True for m in modules)):
+        errors.append("legacy source claimed retired without a retired candidate module")
 
     if approved:
         records = retiring.get("per_path_qualification")
@@ -111,6 +121,10 @@ def validate(migration: dict, verification: dict) -> list[str]:
                 errors.append(f"{path}: missing immutable source-tree and qualification identities")
             if not record or not isinstance(record.get("verified_platforms"), list) or not record["verified_platforms"]:
                 errors.append(f"{path}: missing executed platform qualification")
+            elif (not all(isinstance(p, str) and p.strip() == p and p
+                          for p in record["verified_platforms"])
+                  or len(set(record["verified_platforms"])) != len(record["verified_platforms"])):
+                errors.append(f"{path}: invalid executed platform qualification entries")
     for item in modules:
         if isinstance(item, dict) and item.get("retire_legacy") is True:
             source = item.get("source_path")

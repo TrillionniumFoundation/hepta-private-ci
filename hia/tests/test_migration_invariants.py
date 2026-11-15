@@ -76,7 +76,7 @@ class RetirementGateTest(unittest.TestCase):
         migration["candidate_modules"][0]["production_dispatch_migrated"] = True
         self.assertEqual(validate(migration, verification), [])
 
-    def test_retires_only_when_all_independent_gates_closed(self):
+    def test_global_flags_without_per_path_evidence_cannot_mark_retirement_ready(self):
         migration, verification = incomplete()
         for item in migration["capabilities"]:
             item["migration_status"] = "fully_qualified"
@@ -86,7 +86,42 @@ class RetirementGateTest(unittest.TestCase):
         migration["toolchain"]["complete_compiler_runtime_qualified"] = True
         migration["current_qualification"]["template_performance_closed"] = True
         migration["retirement"]["ready"] = True
+        self.assertIn("retirement ready without approved source paths",
+                      "\n".join(validate(migration, verification)))
+        migration["retirement"]["approved_paths"] = ["codex-rs/sample.rs"]
+        migration["retirement"]["per_path_qualification"] = [{
+            "path": "codex-rs/sample.rs",
+            "source_tree": "a" * 40, "qualification_sha256": "b" * 64,
+            "verified_platforms": ["linux-x86_64-gnu"],
+        }]
+        # Valid declarations are consistency checks, never executed qualification.
         self.assertEqual(validate(migration, verification), [])
+
+    def test_approved_source_cannot_escape_checkout_or_target_git_metadata(self):
+        migration, verification = incomplete()
+        for path in ("../outside", "/absolute", "codex-rs/../outside",
+                     ".git/config", "a\\\\b", "codex-rs//sample.rs"):
+            with self.subTest(path=path):
+                migration["retirement"]["approved_paths"] = [path]
+                self.assertIn("unsafe approved source path",
+                              "\n".join(validate(migration, verification)))
+
+    def test_claimed_retirement_requires_an_explicit_module(self):
+        migration, verification = incomplete()
+        verification["legacy_source_retired"] = True
+        self.assertIn("without a retired candidate module",
+                      "\n".join(validate(migration, verification)))
+
+    def test_platform_proof_names_must_be_nonempty_unique_strings(self):
+        migration, verification = incomplete()
+        migration["retirement"]["approved_paths"] = ["codex-rs/sample.rs"]
+        migration["retirement"]["per_path_qualification"] = [{
+            "path": "codex-rs/sample.rs",
+            "source_tree": "a" * 40, "qualification_sha256": "b" * 64,
+            "verified_platforms": ["linux-x86_64-gnu", ""],
+        }]
+        self.assertIn("invalid executed platform qualification entries",
+                      "\n".join(validate(migration, verification)))
 
     def test_retired_flag_requires_readiness(self):
         migration, verification = incomplete()
