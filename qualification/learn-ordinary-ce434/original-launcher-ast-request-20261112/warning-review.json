@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.service-root01.safe-static-ast.warning-review.v1",
+  "input_script_blob": "a24a64227831a0bcbc5f95ca0bd6388d296fa029",
+  "input_contract_blob": "ed1469965e1ac904e13ef95634d61b4595df838a",
+  "corrected_script": {
+    "git_blob": "9831f0f57ba089708a6ccd2f184a88427e744fd9",
+    "bytes": 13479
+  },
+  "corrected_contract": {
+    "git_blob": "5586ed06b5e88cd501bad4156929cac271247586",
+    "bytes": 7562
+  },
+  "finding": {
+    "severity": "must fix before executing the original inspection script",
+    "trigger": "Parser diagnostics can be warnings without being caught by the script's exception handlers.",
+    "original_path": "ast.parse(source_text, filename=TARGET, mode='exec') without a local warning-to-error filter",
+    "supported_source_fact": "CPython v3.12.0 Parser/string_parser.c warn_invalid_escape_sequence selects SyntaxWarning for feature_version>=12 and calls PyErr_WarnExplicitObject with the parser filename and original line.",
+    "output_path": "Lib/warnings.py _formatwarnmsg_impl formats warning text and requests the source line from linecache; ordinary formatting can therefore emit a source literal and initiate a source-line lookup.",
+    "closure": "The local catch_warnings/simplefilter('error') makes the native _warnings.c error action raise before its warning-display path. The parser may replace this warning exception with SyntaxError; either form reaches an existing handler that omits messages and source text.",
+    "nuance": "The pure-Python warnings.warn_explicit fallback contains linecache priming before its error branch. This review uses the actual CPython native PyErr_WarnExplicitObject parser route documented in the pinned source; it does not claim every warning producer on every Python implementation has identical internal I/O.",
+    "no_target_execution": "ast.parse compiles only to an AST via PyCF_ONLY_AST; the inspected module is never imported or evaluated."
+  },
+  "exact_script_edits": [
+    {
+      "before": "import sys\n",
+      "after": "import sys\nimport warnings\n"
+    },
+    {
+      "before": "        module = ast.parse(source_text, filename=TARGET, mode=\"exec\")",
+      "after": "        with warnings.catch_warnings():\n            warnings.simplefilter(\"error\")\n            module = ast.parse(source_text, filename=TARGET, mode=\"exec\")"
+    }
+  ],
+  "exact_inverse_to_original_script": true,
+  "remaining_script_body_unchanged": true,
+  "contract_changed_fields": [
+    "script.git_blob",
+    "script.bytes",
+    "script.dependencies",
+    "target_read_contract.parsing",
+    "target_read_contract.parser_warning_policy",
+    "stdout_contract.exceptions",
+    "supersedes"
+  ],
+  "corrected_contract_suggested_argv": [
+    "python3",
+    "-I",
+    "-S",
+    "-B",
+    "ROOT_OWNED_ABSOLUTE_SCRIPT_PATH"
+  ],
+  "original_preserved_checks": [
+    "The only explicit target-data path is /data/hepta-service-root-01.py.",
+    "Initial lstat and both fd/path stat checks require a regular file, nlink==1 and size in 0..65536.",
+    "Open is O_RDONLY|O_NOFOLLOW|O_CLOEXEC|O_NONBLOCK; missing required flags reject.",
+    "Read at most the initially observed file size, then compare dev/ino/mode/nlink/size/mtime_ns/ctime_ns and exact byte count.",
+    "Fixed UTF-8 string decoding precedes AST parsing; source encoding cookies do not select a codec.",
+    "Literal values, docstrings, comments and source-line text are never intentionally exported. Identifier names are the explicitly allowed output class.",
+    "The AST node and output-record caps remain 50000 and 512 per kind; identifier text remains limited to 256 characters.",
+    "No target import, exec, eval, subprocess, network, source writes, ownership changes, process signals, or environment-value inspection is added.",
+    "Assessment stays unknown_from_static_ast; ordinary_execution_authority_proven and runtime_owner_custody_observed remain false."
+  ],
+  "precise_limitations": [
+    "Filesystem stability is sampled metadata equality, not a lock or a proof against every privileged concurrent change.",
+    "Identifier mentions do not prove a live owner handle, valid grant, runtime assembly or pre-FinalUse evaluator authority.",
+    "This is a source review against pinned official CPython implementation files. The H interpreter version and the target file were not read by this subtask.",
+    "Neither original nor corrected script was parsed, compiled or executed by this subtask.",
+    "No H query, command, or operation dispatch was made in this review/fix."
+  ],
+  "official_primary_source_pins": [
+    {
+      "repository": "python/cpython",
+      "ref": "v3.12.0",
+      "path": "Parser/string_parser.c",
+      "blob": "20459e8946349496d3d5a8ca77c9fbae8f627cda",
+      "bytes": 8126,
+      "independent_git_sha_equal": true,
+      "url": "https://github.com/python/cpython/blob/v3.12.0/Parser/string_parser.c"
+    },
+    {
+      "repository": "python/cpython",
+      "ref": "v3.12.0",
+      "path": "Lib/warnings.py",
+      "blob": "98ae708ca3401d3e7b0941afade5956c1a0f5c6b",
+      "bytes": 21675,
+      "independent_git_sha_equal": true,
+      "url": "https://github.com/python/cpython/blob/v3.12.0/Lib/warnings.py"
+    },
+    {
+      "repository": "python/cpython",
+      "ref": "v3.12.0",
+      "path": "Lib/ast.py",
+      "blob": "07044706dc3608db9d9f5c59594afdf45fac0662",
+      "bytes": 63951,
+      "independent_git_sha_equal": true,
+      "url": "https://github.com/python/cpython/blob/v3.12.0/Lib/ast.py"
+    },
+    {
+      "repository": "python/cpython",
+      "ref": "v3.12.0",
+      "path": "Python/_warnings.c",
+      "blob": "1f91edbf5cb5dce5f983b3a883528e695e3908a9",
+      "bytes": 41546,
+      "independent_git_sha_equal": true,
+      "url": "https://github.com/python/cpython/blob/v3.12.0/Python/_warnings.c"
+    },
+    {
+      "repository": "python/cpython",
+      "ref": "v3.12.0",
+      "path": "Lib/linecache.py",
+      "blob": "97644a8e3794e17151a415bb92af22cda8d595bb",
+      "bytes": 5690,
+      "independent_git_sha_equal": true,
+      "url": "https://github.com/python/cpython/blob/v3.12.0/Lib/linecache.py"
+    }
+  ],
+  "review_status": {
+    "script_full_readback": true,
+    "contract_full_readback": true,
+    "independent_original_git_hashes_verified": true,
+    "exact_edits_reviewed": true,
+    "python_or_native_execution": false,
+    "actual_target_read": false,
+    "ordinary_acceptance": 0
+  }
+}

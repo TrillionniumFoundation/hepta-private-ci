@@ -1,0 +1,91 @@
+{"state": "downloading-exact-original-public-asset", "result": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/result.json"}
+{
+  "state": "original-assets-recovered-and-full-hash-verified",
+  "source_sha": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "source_tree": "c3390ffc8c18c47f7bb4cbaa24ce4b585645fae2",
+  "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v1",
+  "evidence": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1",
+  "uid": 1000,
+  "data_parent": {
+    "uid": 1000,
+    "mode": "0o40755",
+    "device": 2067,
+    "inode": 2,
+    "free_bytes": 193799684096,
+    "total_bytes": 983023263744
+  },
+  "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "original_manifest_unchanged": true,
+  "archive_url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+  "official_asset_id": 493388485,
+  "expected_archive_bytes": 29366352,
+  "expected_archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+  "steps": [
+    {
+      "name": "download-exact-original-public-asset",
+      "exit_code": 0,
+      "seconds": 33.60324056283571,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "native_tests_executed": 0,
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "fresh_C": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "download_command": [
+    "/usr/bin/curl",
+    "--fail",
+    "--location",
+    "--silent",
+    "--show-error",
+    "--proto",
+    "=https",
+    "--proto-redir",
+    "=https",
+    "--tlsv1.2",
+    "--socks5-hostname",
+    "127.0.0.1:11080",
+    "--connect-timeout",
+    "20",
+    "--max-time",
+    "300",
+    "--max-redirs",
+    "5",
+    "--max-filesize",
+    "29366352",
+    "--output",
+    "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz.partial",
+    "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+  ],
+  "artifacts": [
+    {
+      "key": "RUSTY_V8_ARCHIVE",
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "uid": 1000,
+      "mode": "0o100400",
+      "nlink": 1
+    },
+    {
+      "key": "RUSTY_V8_SRC_BINDING_PATH",
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "uid": 1000,
+      "mode": "0o100400",
+      "nlink": 1
+    }
+  ],
+  "environment": {
+    "RUSTY_V8_ARCHIVE": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "CARGO_TARGET_DIR": "/data/hepta-learn-ce434-runtime-20261112-v1/target"
+  },
+  "source_after": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "source_status_after": ""
+}

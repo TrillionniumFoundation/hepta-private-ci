@@ -12,6 +12,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -23,26 +25,35 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "neuron_cell_evaluation_receipt_owner.rs"
+OPERATION = AGENT + "neuron_cell_evaluation_receipt_operation.rs"
+HOST = AGENT + "neuron_cell_evaluation_host.rs"
 HANDOFF = AGENT + "cell_q24_evaluation_handoff.rs"
 EVALUATION_STAGE = AGENT + "cell_q24_evaluation_stage.rs"
 TRAINER_SOURCE = AGENT + "neuron_cell_evaluation_training_source.rs"
 CALLERS = {
     "cell_learning_evaluation_receipt_prepare": (
-        AGENT + "learning_iteration_evaluation_evidence.rs",
-        AGENT + "cell_q24_model_projection.rs",
-        OWNER,
         AGENT + "authority_host_q24_evaluation_execute.rs",
+        AGENT + "cell_q24_model_projection.rs",
+        AGENT + "learning_iteration_evaluation_evidence.rs",
+        OWNER,
     ),
     "learning_evidence_original_owner_readback": (
         AGENT + "learning_iteration_evaluation_evidence.rs",
         AGENT + "learning_iteration_generation_evidence.rs",
         TRAINER_SOURCE,
+        AGENT + "neuron_cell_evaluation_training_operation.rs",
+        AGENT + "circuit_next_use_receipt_owner.rs",
+        AGENT + "circuit_selection_receipt_owner.rs",
+        AGENT + "cell_q24_training_source.rs",
+        AGENT + "circuit_model_selection_receipt_sources.rs",
+        AGENT + "neuron_cell_evaluation_qualification_sources.rs",
     ),
     "cell_completed_evaluation_readback": (OWNER,),
     "learning_original_evaluation_key": (
         AGENT + "neuron_cell_evaluation_owner.rs",
         OWNER,
         AGENT + "authority_host_q24_evaluation_execution.rs",
+        AGENT + "neuron_cell_evaluation_qualification_binding.rs",
     ),
 }
 
@@ -62,7 +73,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
                 *cls.boundaries[identifier].product_callers,
             )
         }
-        paths.update((HANDOFF, EVALUATION_STAGE))
+        paths.update((HANDOFF, EVALUATION_STAGE, OPERATION, HOST))
         cls.sources = {
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
@@ -70,31 +81,34 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             for path in paths
         }
 
-    def rejects_source(self, changed):
-        self.assertTrue(self.rows)
-        self.assertNotEqual(self.source, changed)
+    def rejects_source(self, changed, path=OWNER):
+        rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
+        source = (ROOT / path).read_text()
+        self.assertTrue(rows)
+        self.assertNotEqual(source, changed)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            target = root / OWNER
+            target = root / path
             target.parent.mkdir(parents=True)
-            target.write_text(self.source)
-            manifest = {"protected_file": self.rows}
+            target.write_text(source)
+            manifest = {"protected_file": rows}
             PROOF._verify_protected_files(root, manifest)
             target.write_text(changed)
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, manifest)
 
-    def rejects(self, function, marker, replacement=""):
-        code = PROOF._strip_rust_non_code(self.source)
+    def rejects(self, function, marker, replacement="", path=OWNER):
+        source = (ROOT / path).read_text()
+        code = PROOF._strip_rust_non_code(source)
         self.assertEqual(code.count(function), 1, function)
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
         assert end is not None
-        body = self.source[start : end + 1]
-        self.assertEqual(body.count(marker), 1, (function, marker))
-        offset = start + body.index(marker)
-        self.rejects_source(self.source[:offset] + replacement + self.source[offset + len(marker) :])
+        offset, after = source_marker_span(source, marker, start, end + 1)
+        with self.assertRaises(ValueError):
+            source_marker_span(source, marker, after, end + 1)
+        self.rejects_source(source[:offset] + replacement + source[after:], path)
 
     def reject_unregistered_caller(self, row):
         method = row.symbol.rsplit("::", 1)[-1]
@@ -136,6 +150,8 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             # and deletion mutants below; only the real stage is an outside caller.
             "evaluation_original_sources_attest": (EVALUATION_STAGE,),
             "evaluation_original_sources_readback": (EVALUATION_STAGE,),
+            "learning_original_evaluation_receipt_operation_attest": (HOST,),
+            "learning_original_evaluation_receipt_operation_read": (HOST,),
         }
         for identifier, expected in ports.items():
             with self.subTest(boundary=identifier):
@@ -205,11 +221,12 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
 
     def test_current_original_sources_and_durable_pending_precede_exact_signature(self):
         self.rejects("fn attest_original_completion<", "self.attest_original_sources(source.into()).await")
+        self.rejects("fn attest_original_sources<", "self.attest_sources_with_training(source, TrainingRead::Independent)")
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "let prepared = self.prepare(&mut source)?",
-            "readback(source.snapshot, self.training()?)",
-            "self.authenticate_roles(&source, &prepared.1, &training)?",
+            ".original_training_evidence(source.trainer, source.snapshot, training)",
+            "self.authenticate_roles(&source, &prepared.1, &observed_training)?",
             "if self.prepare(&mut source)? != prepared",
             "learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
             "self.journal.commit_once(&self.saved, ||",
@@ -218,16 +235,16 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "key.sign(&signed.signing_bytes()).to_bytes()",
             "config.verifier.verify(",
             "learning_owner_evidence::encode(&payload, &signed)",
-            "self.authenticate_completed(&mut source, prepared, &bytes)",
+            "self.authenticate_completed(&mut source, prepared, &bytes, training)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn attest_original_sources<", marker)
+                self.rejects("fn attest_sources_with_training<", marker, path=OPERATION)
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds",
         ):
             with self.subTest(deadline=marker):
-                self.rejects("fn attest_original_sources<", marker, marker.replace(">=", ">"))
+                self.rejects("fn attest_sources_with_training<", marker, marker.replace(">=", ">"), path=OPERATION)
 
     def test_actual_time_full_principals_and_controller_separation_remain_required(self):
         for marker in (
@@ -255,19 +272,20 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
 
     def test_original_signature_readback_revalidates_sources_and_witness_before_ack(self):
         self.rejects("fn readback<", "self.readback_sources(source.into()).await")
+        self.rejects("fn readback_sources<", "self.readback_sources_with_training(source, TrainingRead::Independent)")
         for marker in (
             "let prepared = self.prepare(&mut source)?",
             "let bytes = self.journal.read(&self.saved)?",
-            "self.authenticate_completed(&mut source, prepared, &bytes)",
+            "self.authenticate_completed(&mut source, prepared, &bytes, training)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn readback_sources<", marker)
+                self.rejects("fn readback_sources_with_training<", marker, path=OPERATION)
         for marker in (
             "learning_owner_evidence::decode(bytes)?",
             "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
-            "readback(source.snapshot, self.training()?)",
+            ".original_training_evidence(source.trainer, source.snapshot, training)",
             "if self.prepare(source)? != prepared",
-            "self.authenticate_roles(source, &prepared.1, &training)?",
+            "self.authenticate_roles(source, &prepared.1, &observed_training)?",
             ".verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?",
             "verified.principal() != &config.signer.principal",
             "verified.controller_id() != &config.signer.controller_id",
@@ -275,7 +293,7 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "if self.journal.read(&self.saved)? != bytes",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn authenticate_completed<", marker)
+                self.rejects("fn authenticate_completed<", marker, path=OPERATION)
 
     def test_original_execution_adapter_rejects_writes_and_substituted_namespace(self):
         for function in ("fn claim(", "fn complete("):

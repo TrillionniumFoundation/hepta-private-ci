@@ -8,6 +8,8 @@ import tempfile
 import tomllib
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -22,10 +24,22 @@ OWNER = AGENT + "cell_q24_model_proposal.rs"
 ADMISSION = AGENT + "cell_q24_model_proposal_admission.rs"
 FACTORY = AGENT + "root_q24_model_factory.rs"
 PROJECTION = AGENT + "cell_q24_model_projection.rs"
-BOUNDARIES = tuple(
-    "cell_q24_model_material_owner_" + method
+CURRENT = AGENT + "cell_q24_model_current_owner.rs"
+LANE = AGENT + "cell_q24_training_model_lane.rs"
+TRAINER = AGENT + "cell_composed_q24_training_owner.rs"
+BOUND = AGENT + "cell_q24_source_bound_stage.rs"
+BOUNDARIES = {
+    "cell_q24_model_material_owner_" + method: (FACTORY, LANE)
     for method in ("create", "recover", "commit", "readback")
-)
+}
+BOUNDARIES.update({
+    "cell_q24_current_model_owner_" + method: (LANE,)
+    for method in ("create", "recover", "commit", "readback")
+})
+BOUNDARIES.update({
+    "learning_original_training_model_" + method: (BOUND,)
+    for method in ("create", "recover", "commit", "readback")
+})
 
 
 class Q24ModelProposalSourceClosureTests(unittest.TestCase):
@@ -39,19 +53,30 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             path: PROOF._strip_cfg_test_items(
                 PROOF._strip_rust_non_code((ROOT / path).read_text())
             )
-            for path in (OWNER, ADMISSION, FACTORY, PROJECTION)
+            for path in (OWNER, ADMISSION, FACTORY, PROJECTION, CURRENT, LANE, TRAINER, BOUND)
         }
 
-    def rejects(self, path, function, marker):
+    def rejects(self, path, function, marker, *, within=None):
         source = (ROOT / path).read_text()
-        start = source.index(function)
-        end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
+        code = PROOF._strip_rust_non_code(source)
+        self.assertEqual(code.count(function), 1, function)
+        start = code.index(function)
+        end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
         assert end is not None
-        body = source[start : end + 1]
-        self.assertEqual(body.count(marker), 1, marker)
-        offset = start + body.index(marker)
-        changed = source[:offset] + source[offset + len(marker) :]
+        if within is not None:
+            function_code = code[start : end + 1]
+            self.assertEqual(function_code.count(within), 1, within)
+            start += function_code.index(within)
+            branch_end = PROOF._rust_item_end(code, start)
+            self.assertIsNotNone(branch_end)
+            assert branch_end is not None
+            self.assertLessEqual(branch_end, end)
+            end = branch_end
+        offset, after = source_marker_span(source, marker, start, end + 1)
+        with self.assertRaises(ValueError):
+            source_marker_span(source, marker, after, end + 1)
+        changed = source[:offset] + source[after:]
         rows = [
             row for row in self.manifest["protected_file"] if row["path"] == path
         ]
@@ -66,21 +91,60 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def test_owner_entrypoints_require_original_root_factory(self):
-        for identifier in BOUNDARIES:
+        for identifier, expected in BOUNDARIES.items():
             with self.subTest(boundary=identifier):
                 row = self.boundaries[identifier]
-                self.assertEqual(row.product_callers, (FACTORY,))
+                self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
-                with self.assertRaises(PROOF.VerificationFailure):
-                    PROOF._verify_boundary(
-                        ROOT, replace(row, product_callers=()), self.sources, ()
-                    )
+                for caller in expected:
+                    with self.assertRaises(PROOF.VerificationFailure):
+                        PROOF._verify_boundary(
+                            ROOT, replace(row, product_callers=tuple(path for path in expected if path != caller)), self.sources, ()
+                        )
                 sources = dict(self.sources)
                 method = row.symbol.rsplit("::", 1)[-1]
                 sources[AGENT + "unregistered_model_proposal.rs"] = (
                     f"fn extra(owner: &{row.receiver_type}) {{ owner.{method}(); }}"
                 )
                 with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                    PROOF._verify_boundary(ROOT, row, sources, ())
+
+
+        # The split current-material impl contains the Model owner type, but
+        # both readbacks belong to its original durable journal. Reverting
+        # either real call independently must reproduce the closed scanner
+        # refusal, never add this file to the Model-owner caller allowlist.
+        original = (ROOT / CURRENT).read_text()
+        row = self.boundaries["cell_q24_model_material_owner_readback"]
+        call = (
+            "ProductEvaluationExecutionStoreV1::readback("
+            "&mut self.journal, &admission.key(self.binding))"
+        )
+        for function in (
+            "fn commit_current_material_or_readback<",
+            "fn read_current_material<",
+        ):
+            with self.subTest(function=function):
+                code = self.sources[CURRENT]
+                self.assertEqual(code.count(function), 1)
+                start = code.index(function)
+                end = PROOF._rust_item_end(code, start)
+                self.assertIsNotNone(end)
+                assert end is not None
+                first, after = source_marker_span(original, call, start, end + 1)
+                reverted = (
+                    original[:first]
+                    + "self.journal.readback(&admission.key(self.binding))"
+                    + original[after:]
+                )
+                sources = dict(self.sources)
+                sources[CURRENT] = PROOF._strip_cfg_test_items(
+                    PROOF._strip_rust_non_code(reverted)
+                )
+                with self.assertRaisesRegex(
+                    PROOF.VerificationFailure,
+                    "unresolved possible CellQ24ModelProposalOwnerV1::readback receiver",
+                ):
                     PROOF._verify_boundary(ROOT, row, sources, ())
 
     def test_original_training_header_and_receipt_bindings_cannot_be_removed(self):
@@ -230,17 +294,17 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
 
     def test_commit_cannot_skip_durable_claim_completion_or_witness(self):
         for marker in (
-            "self.journal.claim(&key)",
-            "self.journal.complete(&key, &payload)",
+            "self.journal.claim(key)",
+            "self.journal.complete(key, payload)",
         ):
             with self.subTest(marker=marker):
-                self.rejects(OWNER, "fn commit_admitted(", marker)
+                self.rejects(OWNER, "fn complete_admitted(", marker)
 
     def test_shared_model_journal_kernels_keep_original_witness_and_pending(self):
         for function, marker in (
             ("fn create_bound(", "witness.current()?.is_some()"),
-            ("fn create_bound(", "compare_and_swap(None, anchor(journal.anchor())?)"),
-            ("fn recover_bound(", "compare_and_swap(Some(minimum), current)"),
+            ("fn create_empty_original(", "compare_and_swap(None, anchor(journal.anchor())?)"),
+            ("fn recover_existing_original(", "compare_and_swap(Some(minimum), current)"),
             ("fn commit_or_readback<", "self.commit_admitted(&admission, now)"),
             ("fn readback<", "self.read_admitted(&admission)"),
         ):
@@ -269,6 +333,40 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             with self.subTest(function=function):
                 self.rejects(OWNER, function, marker)
         self.rejects(PROJECTION, "fn project_original_qualified_model<", "&request")
+
+
+    def test_shared_lane_cannot_skip_original_completion_or_exact_attestation(self):
+        for function, markers in (
+            ("fn in_model_lane<", (
+                ".try_acquire_owned()", "self.owners.try_lock()",
+                ".require_original_dataset_scope(",
+                "let original = owners.read_original_completion()?",
+                "work(&mut owners.training, &original, &proof)",
+                "let current = owners",
+                "if current.receipt != original.receipt || current.attestation != original.attestation",
+            )),
+            ("fn require_original_training(", (
+                "inputs.training_cut.receipts.last() != Some(&completed.receipt)",
+                "inputs.training_attestation != &completed.attestation",
+            )),
+        ):
+            for marker in markers:
+                with self.subTest(function=function, marker=marker):
+                    self.rejects(LANE, function, marker)
+
+    def test_current_cannot_skip_physical_bytes_second_witness_or_permanent_fence(self):
+        for path in (OWNER, TRAINER):
+            for marker in (
+                "let before = self.witness.current()?",
+                "self.journal.read_current_anchor()?",
+                "let after = self.witness.current()?",
+                "self.fenced = true",
+            ):
+                with self.subTest(path=path, marker=marker):
+                    self.rejects(
+                        path, "fn require_current(", marker,
+                        within="if result.is_err()" if marker == "self.fenced = true" else None,
+                    )
 
 
 if __name__ == "__main__":

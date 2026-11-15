@@ -29,11 +29,17 @@ PREPARE = "fn prepare_cell_learning_evaluation_v1"
 READ = "fn read_cell_learning_evaluation_v1"
 CALLERS = {
     "cell_learning_evaluation_profile_freeze": (),
-    "cell_learning_evaluation_receipt_prepare": (READBACK, MODEL_MATERIAL, EVALUATION_OWNER, AGENT + "authority_host_q24_evaluation_execute.rs"),
+    "cell_learning_evaluation_receipt_prepare": (AGENT + "authority_host_q24_evaluation_execute.rs", MODEL_MATERIAL, READBACK, EVALUATION_OWNER),
     "cell_learning_evaluation_original_readback": (),
     "learning_evidence_original_owner_readback": (
         READBACK, GENERATION_READBACK,
         AGENT + "neuron_cell_evaluation_training_source.rs",
+        AGENT + "neuron_cell_evaluation_training_operation.rs",
+        AGENT + "circuit_next_use_receipt_owner.rs",
+        AGENT + "circuit_selection_receipt_owner.rs",
+        AGENT + "cell_q24_training_source.rs",
+        AGENT + "circuit_model_selection_receipt_sources.rs",
+        AGENT + "neuron_cell_evaluation_qualification_sources.rs",
     ),
     "root_learning_original_stage_assembly": (),
 }

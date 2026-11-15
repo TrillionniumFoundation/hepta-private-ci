@@ -133,5 +133,40 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
         for marker in ("identity.spawn_generation == 0", "published.require_bundle(&profile.bundle)?", "CellQ24FeatureWorkerV1::new(", "DurableCircuitTaskSourceV1::recover(", "published.open_cell(", "published\n        .control(", "cell.writer()", "circuit_task_channel_v1(", "DurableCircuitTaskSourceV1::readback(&source)"):
             with self.subTest(marker=marker): self.rejects(path, "fn circuit_q24_task_channel_v1<", marker)
 
+    def test_live_original_owner_current_brackets_physical_read_with_witness(self):
+        for marker in ("let before = self.witness.current()?", "self.journal.read_current_anchor()?", "let after = self.witness.current()?", "before != Some(current) || after != before", "if result.is_err()", "self.fenced = true"):
+            with self.subTest(marker=marker): self.rejects(JOURNAL, "fn require_current(", marker)
+
+    def test_live_execution_current_replays_original_locked_bytes(self):
+        current = "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs"
+        physical = "codex-rs/hepta-intelligence-eval/src/product_execution_physical.rs"
+        for marker in (
+            "length > MAX_FILE_BYTES", "length != self.length",
+            "physical::read_stable_image(&mut self.file)?",
+            "physical::replay_image(&bytes, self.binding, self.anchor)?",
+            "replayed.anchor != self.anchor", "replayed.records != self.records",
+            "Digest32::of_bytes(&bytes) != self.image_digest",
+            "self.file.seek(SeekFrom::Start(cursor))", "if result.is_err()",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(current, "fn read_current_anchor(", marker)
+        for marker in (
+            ".take(MAX_FILE_BYTES + 1)", ".read_to_end(&mut bytes)",
+            "for _ in 0..2", "!metadata.is_file()", "length > MAX_FILE_BYTES",
+            "bytes.len() as u64 != length",
+            "file.metadata().map_err(io_error)?.len() != length",
+            "previous.as_ref().is_some_and(|original| original != &bytes)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(physical, "fn read_stable_image(", marker)
+        for marker in (
+            "&bytes[8..40] != binding.as_array()", "next_anchor(anchor, payload)?",
+            "checksum != next.history_digest.as_array()", "replay(&mut records, payload)?",
+            "if !witnessed",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(physical, "fn replay_image(", marker)
+
+
 if __name__ == "__main__":
     unittest.main()

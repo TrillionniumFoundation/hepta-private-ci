@@ -1,0 +1,1746 @@
+{
+  "audit": {
+    "kind": "exact complete-record integration, no path deduplication",
+    "source_parent": "676eee82e7334face4b63c8aa3b4c0d286098de0",
+    "pure_parent": "36a494ae6ce41a536f0ddf79a474a0577e9aa853",
+    "pure_upstream_contract_blob": "ca75253b32952b16383fb7ef753d6c8f936e75d6",
+    "before": {
+      "base_ref": "676eee82e7334face4b63c8aa3b4c0d286098de0",
+      "base_sha": "210a143b3bd2cdb96fd359ddf436d6d5c7c8ad23",
+      "sha": "16fc94f23dadd77d01579bea8f1298cd96268ad8",
+      "bytes": 1580397,
+      "before": {
+        "boundary": 716,
+        "protected_file": 489
+      },
+      "after": {
+        "boundary": 729,
+        "protected_file": 503
+      },
+      "whole_record_replacements": 4,
+      "added_boundaries": 13,
+      "added_protected_records": 14,
+      "unowned_raw_records_preserved": 1201,
+      "exact_multiset": true,
+      "recursive_sequence_schema": true,
+      "scope": "agentd delta after corrected original Material/T bridge; pure Product guard child not yet applied",
+      "verifier_modified": false
+    },
+    "pure_delta": {
+      "protected_replacements": 4,
+      "protected_additions": 3,
+      "boundary_replacements": 1,
+      "boundary_additions": 7,
+      "actual_external_caller_extensions": 4,
+      "unowned_records_preserved": 1227
+    },
+    "final": {
+      "boundary": 736,
+      "protected_file": 506,
+      "inventory": 736,
+      "sha": "dc445dd052620bb07ebd7b2eee9640d4d4172234",
+      "bytes": 1619553
+    },
+    "full_record_multiset_equal": true,
+    "all_other_raw_records_preserved": true,
+    "schema_sequences_at_least_two": true,
+    "original_verifier_modified": false,
+    "python_executed": false
+  },
+  "pure_complete_replacements": [
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+        "required": [
+          "hepta.intelligence-eval.on-policy-pair-contract.v1",
+          "hepta.intelligence-eval.product-frozen-paired-on-policy.v1",
+          "hepta.intelligence-eval.product-paired-on-policy-estimand.v1",
+          "hepta.intelligence-eval.paired-on-policy-estimate.v1",
+          "hepta.intelligence-eval.paired-on-policy-support.v1",
+          "hepta.intelligence-eval.paired-on-policy-confidence.v1",
+          "pub(in super::super) fn require_receipt_mode("
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn count(",
+            "sequence": [
+              "u32::try_from(value)",
+              ".map_err(|_| ProductEvaluationError::Binding(",
+              "bytes.extend_from_slice(&value.to_be_bytes());",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn arm(",
+            "sequence": [
+              "for value in [&original.decision_id, &original.principal_lineage,",
+              "&original.episode_lineage, &original.behavior_run_id]",
+              "id(bytes, value);",
+              "bytes.extend_from_slice(original.model_digest.as_array());"
+            ],
+            "top_level": [
+              "bytes.extend_from_slice(original.model_digest.as_array());"
+            ]
+          },
+          {
+            "function": "fn pair_contract(",
+            "sequence": [
+              "inputs::validate_pair_contract(pairing)?;",
+              "let mut bytes = b                                                    .to_vec();",
+              "bytes.push(0);",
+              "count(&mut bytes, pairing.pairs.len())?;",
+              "let mut pairs: Vec<_> = pairing.pairs.iter().collect();",
+              "pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));",
+              "for pair in pairs {",
+              "id(&mut bytes, &pair.pair_id);",
+              "bytes.extend_from_slice(pair.input_digest.as_array());",
+              "bytes.extend_from_slice(pair.protocol_digest.as_array());",
+              "bytes.push(0);",
+              "arm(&mut bytes, &pair.candidate);",
+              "bytes.push(1);",
+              "arm(&mut bytes, &pair.baseline);",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "inputs::validate_pair_contract(pairing)?;",
+              "count(&mut bytes, pairing.pairs.len())?;",
+              "let mut pairs: Vec<_> = pairing.pairs.iter().collect();",
+              "pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));",
+              "for pair in pairs {",
+              "Ok(bytes)"
+            ]
+          },
+          {
+            "function": "fn plan(",
+            "sequence": [
+              "let paired = pairing.canonical_commitment_bytes()?;",
+              "let mut bytes = b                                                            .to_vec();",
+              "for digest in [plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,",
+              "plan.base_estimand_digest, plan.candidate_temporal_plan_digest,",
+              "plan.baseline_temporal_plan_digest]",
+              "bytes.extend_from_slice(digest.as_array());",
+              "count(&mut bytes, paired.len())?;",
+              "bytes.extend_from_slice(&paired);",
+              "count(&mut bytes, plan.metric_contracts.len())?;",
+              "for contract in &plan.metric_contracts {",
+              "id(&mut bytes, &contract.metric_id);",
+              "bytes.push(match contract.direction {",
+              "EvaluationDirectionV1::Maximize => 0,",
+              "EvaluationDirectionV1::Minimize => 1,",
+              "match contract.safety_floor {",
+              "Some(value) => {",
+              "bytes.push(1);",
+              "bytes.extend_from_slice(&value.raw().to_be_bytes());",
+              "None => bytes.push(0),",
+              "count(&mut bytes, plan.metric_roles.len())?;",
+              "for role in &plan.metric_roles {",
+              "id(&mut bytes, &role.metric_id);",
+              "match role.role {",
+              "MetricRoleV2::PrimarySuperiority { minimum_improvement } => {",
+              "bytes.push(0);",
+              "bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());",
+              "MetricRoleV2::NonInferiority { maximum_regression } => {",
+              "bytes.push(1);",
+              "bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());",
+              "MetricRoleV2::AbsoluteConstraint => bytes.push(2),",
+              "count(&mut bytes, plan.metric_sources.len())?;",
+              "for source in &plan.metric_sources {",
+              "id(&mut bytes, &source.metric_id);",
+              "bytes.push(source.source.tag());",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "let paired = pairing.canonical_commitment_bytes()?;",
+              "count(&mut bytes, paired.len())?;",
+              "bytes.extend_from_slice(&paired);",
+              "count(&mut bytes, plan.metric_contracts.len())?;",
+              "count(&mut bytes, plan.metric_roles.len())?;",
+              "count(&mut bytes, plan.metric_sources.len())?;",
+              "Ok(bytes)"
+            ]
+          },
+          {
+            "function": "fn estimand(",
+            "sequence": [
+              "let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {",
+              "return Err(ProductEvaluationError::Binding(",
+              "if plan.base_estimand_digest.is_zero()",
+              "plan.candidate_temporal_plan_digest.is_zero()",
+              "plan.baseline_temporal_plan_digest.is_zero()",
+              "return Err(ProductEvaluationError::Binding(",
+              "let mut bytes = b                                                              .to_vec();",
+              "for digest in [plan.base_estimand_digest, plan.candidate_temporal_plan_digest,",
+              "plan.baseline_temporal_plan_digest, pairing.digest()?]",
+              "bytes.extend_from_slice(digest.as_array());",
+              "count(&mut bytes, plan.metric_sources.len())?;",
+              "for source in &plan.metric_sources {",
+              "id(&mut bytes, &source.metric_id);",
+              "bytes.push(source.source.tag());",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {",
+              "if plan.base_estimand_digest.is_zero()",
+              "count(&mut bytes, plan.metric_sources.len())?;",
+              "Ok(bytes)"
+            ]
+          },
+          {
+            "function": "fn require_receipt_mode(",
+            "sequence": [
+              "match (&plan.comparison, paired_input) {",
+              "(ProductComparisonModeV1::SharedBehavior, None) => Ok(()),",
+              "(ProductComparisonModeV1::PairedOnPolicy(pairing), Some(input)) if !input.is_zero() => {",
+              "inputs::validate_pair_contract(pairing)",
+              "_ => Err(ProductEvaluationError::Integrity("
+            ],
+            "top_level": [
+              "match (&plan.comparison, paired_input) {"
+            ]
+          },
+          {
+            "function": "fn comparison(",
+            "sequence": [
+              "require_receipt_mode(plan, paired_input)?;",
+              "let legacy = super::super::comparison_digests(candidate, baseline, metrics);",
+              "match &plan.comparison {",
+              "ProductComparisonModeV1::SharedBehavior => Ok(legacy),",
+              "ProductComparisonModeV1::PairedOnPolicy(pairing) => {",
+              "let contract = pairing.digest()?;",
+              "let input = paired_input.ok_or(ProductEvaluationError::Integrity(",
+              "let bind = |domain: &[u8], original: Digest32| {",
+              "let mut bytes = domain.to_vec();",
+              "for digest in [contract, input, original] {",
+              "bytes.extend_from_slice(digest.as_array());",
+              "Digest32::of_bytes(&bytes)",
+              "Ok((",
+              "bind(b                                                      , legacy.0),",
+              "bind(b                                                     , legacy.1),",
+              "bind(b                                                        , legacy.2),"
+            ],
+            "top_level": [
+              "require_receipt_mode(plan, paired_input)?;",
+              "let legacy = super::super::comparison_digests(candidate, baseline, metrics);",
+              "match &plan.comparison {"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+        "required": [
+          "hepta.intelligence-eval.on-policy-pair-contract.v1",
+          "hepta.intelligence-eval.product-frozen-paired-on-policy.v1",
+          "hepta.intelligence-eval.product-paired-on-policy-estimand.v1",
+          "hepta.intelligence-eval.paired-on-policy-estimate.v1",
+          "hepta.intelligence-eval.paired-on-policy-support.v1",
+          "hepta.intelligence-eval.paired-on-policy-confidence.v1",
+          "pub(in super::super) fn require_receipt_mode("
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn count(",
+            "sequence": [
+              "u32::try_from(value)",
+              ".map_err(|_| ProductEvaluationError::Binding(",
+              "bytes.extend_from_slice(&value.to_be_bytes());",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn arm(",
+            "sequence": [
+              "for value in [&original.decision_id, &original.principal_lineage,",
+              "&original.episode_lineage, &original.behavior_run_id]",
+              "id(bytes, value);",
+              "bytes.extend_from_slice(original.model_digest.as_array());"
+            ],
+            "top_level": [
+              "bytes.extend_from_slice(original.model_digest.as_array());"
+            ]
+          },
+          {
+            "function": "fn pair_contract(",
+            "sequence": [
+              "inputs::validate_pair_contract(pairing)?;",
+              "let mut bytes = b                                                    .to_vec();",
+              "bytes.push(0);",
+              "count(&mut bytes, pairing.pairs.len())?;",
+              "let mut pairs: Vec<_> = pairing.pairs.iter().collect();",
+              "pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));",
+              "for pair in pairs {",
+              "id(&mut bytes, &pair.pair_id);",
+              "bytes.extend_from_slice(pair.input_digest.as_array());",
+              "bytes.extend_from_slice(pair.protocol_digest.as_array());",
+              "bytes.push(0);",
+              "arm(&mut bytes, &pair.candidate);",
+              "bytes.push(1);",
+              "arm(&mut bytes, &pair.baseline);",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "inputs::validate_pair_contract(pairing)?;",
+              "count(&mut bytes, pairing.pairs.len())?;",
+              "let mut pairs: Vec<_> = pairing.pairs.iter().collect();",
+              "pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));",
+              "for pair in pairs {",
+              "Ok(bytes)"
+            ]
+          },
+          {
+            "function": "fn plan(",
+            "sequence": [
+              "fn plan(",
+              "plan: &ProductFrozenEvaluationPlanV1,\n    pairing: &OnPolicyPairingContractV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    plan_fields(\n        plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_contracts,\n        &plan.metric_roles, &plan.metric_sources,\n    )\n}"
+            ],
+            "top_level": [
+              "plan_fields("
+            ]
+          },
+          {
+            "function": "fn plan_fields(",
+            "sequence": [
+              "fn plan_fields(",
+              "plan_digest: Digest32,\n    metric_contract_digest: Digest32,\n    base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_contracts: &[crate::MetricContractV1],\n    metric_roles: &[crate::MetricRoleContractV2],\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let paired = pairing.canonical_commitment_bytes()?;\n    let mut bytes = b                                                            .to_vec();\n    for digest in [plan_digest, metric_contract_digest,\n        base_estimand_digest, candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, paired.len())?;\n    bytes.extend_from_slice(&paired);\n    count(&mut bytes, metric_contracts.len())?;\n    for contract in metric_contracts {\n        id(&mut bytes, &contract.metric_id);\n        bytes.push(match contract.direction {\n            EvaluationDirectionV1::Maximize => 0,\n            EvaluationDirectionV1::Minimize => 1,\n        });\n        match contract.safety_floor {\n            Some(value) => {\n                bytes.push(1);\n                bytes.extend_from_slice(&value.raw().to_be_bytes());\n            }\n            None => bytes.push(0),\n        }\n    }\n    count(&mut bytes, metric_roles.len())?;\n    for role in metric_roles {\n        id(&mut bytes, &role.metric_id);\n        match role.role {\n            MetricRoleV2::PrimarySuperiority { minimum_improvement } => {\n                bytes.push(0);\n                bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\n            }\n            MetricRoleV2::NonInferiority { maximum_regression } => {\n                bytes.push(1);\n                bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\n            }\n            MetricRoleV2::AbsoluteConstraint => bytes.push(2),\n        }\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}"
+            ],
+            "top_level": [
+              "let paired = pairing.canonical_commitment_bytes()?;"
+            ]
+          },
+          {
+            "function": "fn estimand(",
+            "sequence": [
+              "fn estimand(",
+              "plan: &ProductFrozenEvaluationPlanV1,\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\n        return Err(ProductEvaluationError::Binding(                      ));\n    };\n    estimand_fields(\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_sources,\n    )\n}"
+            ],
+            "top_level": [
+              "let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {"
+            ]
+          },
+          {
+            "function": "fn estimand_fields(",
+            "sequence": [
+              "fn estimand_fields(",
+              "base_estimand_digest: Digest32,\n    candidate_temporal_plan_digest: Digest32,\n    baseline_temporal_plan_digest: Digest32,\n    pairing: &OnPolicyPairingContractV1,\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\n) -> Result<Vec<u8>, ProductEvaluationError> {\n    if base_estimand_digest.is_zero()\n        || candidate_temporal_plan_digest.is_zero()\n        || baseline_temporal_plan_digest.is_zero()\n    {\n        return Err(ProductEvaluationError::Binding(                        ));\n    }\n    let mut bytes = b                                                              .to_vec();\n    for digest in [base_estimand_digest, candidate_temporal_plan_digest,\n        baseline_temporal_plan_digest, pairing.digest()?] {\n        bytes.extend_from_slice(digest.as_array());\n    }\n    count(&mut bytes, metric_sources.len())?;\n    for source in metric_sources {\n        id(&mut bytes, &source.metric_id);\n        bytes.push(source.source.tag());\n    }\n    Ok(bytes)\n}"
+            ],
+            "top_level": [
+              "if base_estimand_digest.is_zero()"
+            ]
+          },
+          {
+            "function": "fn require_receipt_mode(",
+            "sequence": [
+              "match (&plan.comparison, paired_input) {",
+              "(ProductComparisonModeV1::SharedBehavior, None) => Ok(()),",
+              "(ProductComparisonModeV1::PairedOnPolicy(pairing), Some(input)) if !input.is_zero() => {",
+              "inputs::validate_pair_contract(pairing)",
+              "_ => Err(ProductEvaluationError::Integrity("
+            ],
+            "top_level": [
+              "match (&plan.comparison, paired_input) {"
+            ]
+          },
+          {
+            "function": "fn comparison(",
+            "sequence": [
+              "require_receipt_mode(plan, paired_input)?;",
+              "let legacy = super::super::comparison_digests(candidate, baseline, metrics);",
+              "match &plan.comparison {",
+              "ProductComparisonModeV1::SharedBehavior => Ok(legacy),",
+              "ProductComparisonModeV1::PairedOnPolicy(pairing) => {",
+              "let contract = pairing.digest()?;",
+              "let input = paired_input.ok_or(ProductEvaluationError::Integrity(",
+              "let bind = |domain: &[u8], original: Digest32| {",
+              "let mut bytes = domain.to_vec();",
+              "for digest in [contract, input, original] {",
+              "bytes.extend_from_slice(digest.as_array());",
+              "Digest32::of_bytes(&bytes)",
+              "Ok((",
+              "bind(b                                                      , legacy.0),",
+              "bind(b                                                     , legacy.1),",
+              "bind(b                                                        , legacy.2),"
+            ],
+            "top_level": [
+              "require_receipt_mode(plan, paired_input)?;",
+              "let legacy = super::super::comparison_digests(candidate, baseline, metrics);",
+              "match &plan.comparison {"
+            ]
+          }
+        ]
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs\"\nrequired = [\"hepta.intelligence-eval.on-policy-pair-contract.v1\", \"hepta.intelligence-eval.product-frozen-paired-on-policy.v1\", \"hepta.intelligence-eval.product-paired-on-policy-estimand.v1\", \"hepta.intelligence-eval.paired-on-policy-estimate.v1\", \"hepta.intelligence-eval.paired-on-policy-support.v1\", \"hepta.intelligence-eval.paired-on-policy-confidence.v1\", \"pub(in super::super) fn require_receipt_mode(\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = []\nrequired_function_order = [{ \"function\" = \"fn count(\", \"sequence\" = [\"u32::try_from(value)\", \".map_err(|_| ProductEvaluationError::Binding(\", \"bytes.extend_from_slice(&value.to_be_bytes());\", \"Ok(())\"], \"top_level\" = [] }, { \"function\" = \"fn arm(\", \"sequence\" = [\"for value in [&original.decision_id, &original.principal_lineage,\", \"&original.episode_lineage, &original.behavior_run_id]\", \"id(bytes, value);\", \"bytes.extend_from_slice(original.model_digest.as_array());\"], \"top_level\" = [\"bytes.extend_from_slice(original.model_digest.as_array());\"] }, { \"function\" = \"fn pair_contract(\", \"sequence\" = [\"inputs::validate_pair_contract(pairing)?;\", \"let mut bytes = b                                                    .to_vec();\", \"bytes.push(0);\", \"count(&mut bytes, pairing.pairs.len())?;\", \"let mut pairs: Vec<_> = pairing.pairs.iter().collect();\", \"pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));\", \"for pair in pairs {\", \"id(&mut bytes, &pair.pair_id);\", \"bytes.extend_from_slice(pair.input_digest.as_array());\", \"bytes.extend_from_slice(pair.protocol_digest.as_array());\", \"bytes.push(0);\", \"arm(&mut bytes, &pair.candidate);\", \"bytes.push(1);\", \"arm(&mut bytes, &pair.baseline);\", \"Ok(bytes)\"], \"top_level\" = [\"inputs::validate_pair_contract(pairing)?;\", \"count(&mut bytes, pairing.pairs.len())?;\", \"let mut pairs: Vec<_> = pairing.pairs.iter().collect();\", \"pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));\", \"for pair in pairs {\", \"Ok(bytes)\"] }, { \"function\" = \"fn plan(\", \"sequence\" = [\"let paired = pairing.canonical_commitment_bytes()?;\", \"let mut bytes = b                                                            .to_vec();\", \"for digest in [plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,\", \"plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\", \"plan.baseline_temporal_plan_digest]\", \"bytes.extend_from_slice(digest.as_array());\", \"count(&mut bytes, paired.len())?;\", \"bytes.extend_from_slice(&paired);\", \"count(&mut bytes, plan.metric_contracts.len())?;\", \"for contract in &plan.metric_contracts {\", \"id(&mut bytes, &contract.metric_id);\", \"bytes.push(match contract.direction {\", \"EvaluationDirectionV1::Maximize => 0,\", \"EvaluationDirectionV1::Minimize => 1,\", \"match contract.safety_floor {\", \"Some(value) => {\", \"bytes.push(1);\", \"bytes.extend_from_slice(&value.raw().to_be_bytes());\", \"None => bytes.push(0),\", \"count(&mut bytes, plan.metric_roles.len())?;\", \"for role in &plan.metric_roles {\", \"id(&mut bytes, &role.metric_id);\", \"match role.role {\", \"MetricRoleV2::PrimarySuperiority { minimum_improvement } => {\", \"bytes.push(0);\", \"bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\", \"MetricRoleV2::NonInferiority { maximum_regression } => {\", \"bytes.push(1);\", \"bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\", \"MetricRoleV2::AbsoluteConstraint => bytes.push(2),\", \"count(&mut bytes, plan.metric_sources.len())?;\", \"for source in &plan.metric_sources {\", \"id(&mut bytes, &source.metric_id);\", \"bytes.push(source.source.tag());\", \"Ok(bytes)\"], \"top_level\" = [\"let paired = pairing.canonical_commitment_bytes()?;\", \"count(&mut bytes, paired.len())?;\", \"bytes.extend_from_slice(&paired);\", \"count(&mut bytes, plan.metric_contracts.len())?;\", \"count(&mut bytes, plan.metric_roles.len())?;\", \"count(&mut bytes, plan.metric_sources.len())?;\", \"Ok(bytes)\"] }, { \"function\" = \"fn estimand(\", \"sequence\" = [\"let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\", \"return Err(ProductEvaluationError::Binding(\", \"if plan.base_estimand_digest.is_zero()\", \"plan.candidate_temporal_plan_digest.is_zero()\", \"plan.baseline_temporal_plan_digest.is_zero()\", \"return Err(ProductEvaluationError::Binding(\", \"let mut bytes = b                                                              .to_vec();\", \"for digest in [plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\", \"plan.baseline_temporal_plan_digest, pairing.digest()?]\", \"bytes.extend_from_slice(digest.as_array());\", \"count(&mut bytes, plan.metric_sources.len())?;\", \"for source in &plan.metric_sources {\", \"id(&mut bytes, &source.metric_id);\", \"bytes.push(source.source.tag());\", \"Ok(bytes)\"], \"top_level\" = [\"let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\", \"if plan.base_estimand_digest.is_zero()\", \"count(&mut bytes, plan.metric_sources.len())?;\", \"Ok(bytes)\"] }, { \"function\" = \"fn require_receipt_mode(\", \"sequence\" = [\"match (&plan.comparison, paired_input) {\", \"(ProductComparisonModeV1::SharedBehavior, None) => Ok(()),\", \"(ProductComparisonModeV1::PairedOnPolicy(pairing), Some(input)) if !input.is_zero() => {\", \"inputs::validate_pair_contract(pairing)\", \"_ => Err(ProductEvaluationError::Integrity(\"], \"top_level\" = [\"match (&plan.comparison, paired_input) {\"] }, { \"function\" = \"fn comparison(\", \"sequence\" = [\"require_receipt_mode(plan, paired_input)?;\", \"let legacy = super::super::comparison_digests(candidate, baseline, metrics);\", \"match &plan.comparison {\", \"ProductComparisonModeV1::SharedBehavior => Ok(legacy),\", \"ProductComparisonModeV1::PairedOnPolicy(pairing) => {\", \"let contract = pairing.digest()?;\", \"let input = paired_input.ok_or(ProductEvaluationError::Integrity(\", \"let bind = |domain: &[u8], original: Digest32| {\", \"let mut bytes = domain.to_vec();\", \"for digest in [contract, input, original] {\", \"bytes.extend_from_slice(digest.as_array());\", \"Digest32::of_bytes(&bytes)\", \"Ok((\", \"bind(b                                                      , legacy.0),\", \"bind(b                                                     , legacy.1),\", \"bind(b                                                        , legacy.2),\"], \"top_level\" = [\"require_receipt_mode(plan, paired_input)?;\", \"let legacy = super::super::comparison_digests(candidate, baseline, metrics);\", \"match &plan.comparison {\"] }]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs\"\nrequired = [\"hepta.intelligence-eval.on-policy-pair-contract.v1\", \"hepta.intelligence-eval.product-frozen-paired-on-policy.v1\", \"hepta.intelligence-eval.product-paired-on-policy-estimand.v1\", \"hepta.intelligence-eval.paired-on-policy-estimate.v1\", \"hepta.intelligence-eval.paired-on-policy-support.v1\", \"hepta.intelligence-eval.paired-on-policy-confidence.v1\", \"pub(in super::super) fn require_receipt_mode(\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn count(\", sequence = [\"u32::try_from(value)\", \".map_err(|_| ProductEvaluationError::Binding(\", \"bytes.extend_from_slice(&value.to_be_bytes());\", \"Ok(())\"], top_level = [] },\n  { function = \"fn arm(\", sequence = [\"for value in [&original.decision_id, &original.principal_lineage,\", \"&original.episode_lineage, &original.behavior_run_id]\", \"id(bytes, value);\", \"bytes.extend_from_slice(original.model_digest.as_array());\"], top_level = [\"bytes.extend_from_slice(original.model_digest.as_array());\"] },\n  { function = \"fn pair_contract(\", sequence = [\"inputs::validate_pair_contract(pairing)?;\", \"let mut bytes = b                                                    .to_vec();\", \"bytes.push(0);\", \"count(&mut bytes, pairing.pairs.len())?;\", \"let mut pairs: Vec<_> = pairing.pairs.iter().collect();\", \"pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));\", \"for pair in pairs {\", \"id(&mut bytes, &pair.pair_id);\", \"bytes.extend_from_slice(pair.input_digest.as_array());\", \"bytes.extend_from_slice(pair.protocol_digest.as_array());\", \"bytes.push(0);\", \"arm(&mut bytes, &pair.candidate);\", \"bytes.push(1);\", \"arm(&mut bytes, &pair.baseline);\", \"Ok(bytes)\"], top_level = [\"inputs::validate_pair_contract(pairing)?;\", \"count(&mut bytes, pairing.pairs.len())?;\", \"let mut pairs: Vec<_> = pairing.pairs.iter().collect();\", \"pairs.sort_by(|left, right| left.pair_id.cmp(&right.pair_id));\", \"for pair in pairs {\", \"Ok(bytes)\"] },\n  { function = \"fn plan(\", sequence = [\"fn plan(\", \"plan: &ProductFrozenEvaluationPlanV1,\\n    pairing: &OnPolicyPairingContractV1,\\n) -> Result<Vec<u8>, ProductEvaluationError> {\\n    plan_fields(\\n        plan.frozen_plan.plan_digest, plan.frozen_plan.metric_contract_digest,\\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_contracts,\\n        &plan.metric_roles, &plan.metric_sources,\\n    )\\n}\"], top_level = [\"plan_fields(\"] },\n  { function = \"fn plan_fields(\", sequence = [\"fn plan_fields(\", \"plan_digest: Digest32,\\n    metric_contract_digest: Digest32,\\n    base_estimand_digest: Digest32,\\n    candidate_temporal_plan_digest: Digest32,\\n    baseline_temporal_plan_digest: Digest32,\\n    pairing: &OnPolicyPairingContractV1,\\n    metric_contracts: &[crate::MetricContractV1],\\n    metric_roles: &[crate::MetricRoleContractV2],\\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\\n) -> Result<Vec<u8>, ProductEvaluationError> {\\n    let paired = pairing.canonical_commitment_bytes()?;\\n    let mut bytes = b                                                            .to_vec();\\n    for digest in [plan_digest, metric_contract_digest,\\n        base_estimand_digest, candidate_temporal_plan_digest,\\n        baseline_temporal_plan_digest] {\\n        bytes.extend_from_slice(digest.as_array());\\n    }\\n    count(&mut bytes, paired.len())?;\\n    bytes.extend_from_slice(&paired);\\n    count(&mut bytes, metric_contracts.len())?;\\n    for contract in metric_contracts {\\n        id(&mut bytes, &contract.metric_id);\\n        bytes.push(match contract.direction {\\n            EvaluationDirectionV1::Maximize => 0,\\n            EvaluationDirectionV1::Minimize => 1,\\n        });\\n        match contract.safety_floor {\\n            Some(value) => {\\n                bytes.push(1);\\n                bytes.extend_from_slice(&value.raw().to_be_bytes());\\n            }\\n            None => bytes.push(0),\\n        }\\n    }\\n    count(&mut bytes, metric_roles.len())?;\\n    for role in metric_roles {\\n        id(&mut bytes, &role.metric_id);\\n        match role.role {\\n            MetricRoleV2::PrimarySuperiority { minimum_improvement } => {\\n                bytes.push(0);\\n                bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\\n            }\\n            MetricRoleV2::NonInferiority { maximum_regression } => {\\n                bytes.push(1);\\n                bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\\n            }\\n            MetricRoleV2::AbsoluteConstraint => bytes.push(2),\\n        }\\n    }\\n    count(&mut bytes, metric_sources.len())?;\\n    for source in metric_sources {\\n        id(&mut bytes, &source.metric_id);\\n        bytes.push(source.source.tag());\\n    }\\n    Ok(bytes)\\n}\"], top_level = [\"let paired = pairing.canonical_commitment_bytes()?;\"] },\n  { function = \"fn estimand(\", sequence = [\"fn estimand(\", \"plan: &ProductFrozenEvaluationPlanV1,\\n) -> Result<Vec<u8>, ProductEvaluationError> {\\n    let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\\n        return Err(ProductEvaluationError::Binding(                      ));\\n    };\\n    estimand_fields(\\n        plan.base_estimand_digest, plan.candidate_temporal_plan_digest,\\n        plan.baseline_temporal_plan_digest, pairing, &plan.metric_sources,\\n    )\\n}\"], top_level = [\"let ProductComparisonModeV1::PairedOnPolicy(pairing) = &plan.comparison else {\"] },\n  { function = \"fn estimand_fields(\", sequence = [\"fn estimand_fields(\", \"base_estimand_digest: Digest32,\\n    candidate_temporal_plan_digest: Digest32,\\n    baseline_temporal_plan_digest: Digest32,\\n    pairing: &OnPolicyPairingContractV1,\\n    metric_sources: &[super::super::ProductMetricSourceContractV1],\\n) -> Result<Vec<u8>, ProductEvaluationError> {\\n    if base_estimand_digest.is_zero()\\n        || candidate_temporal_plan_digest.is_zero()\\n        || baseline_temporal_plan_digest.is_zero()\\n    {\\n        return Err(ProductEvaluationError::Binding(                        ));\\n    }\\n    let mut bytes = b                                                              .to_vec();\\n    for digest in [base_estimand_digest, candidate_temporal_plan_digest,\\n        baseline_temporal_plan_digest, pairing.digest()?] {\\n        bytes.extend_from_slice(digest.as_array());\\n    }\\n    count(&mut bytes, metric_sources.len())?;\\n    for source in metric_sources {\\n        id(&mut bytes, &source.metric_id);\\n        bytes.push(source.source.tag());\\n    }\\n    Ok(bytes)\\n}\"], top_level = [\"if base_estimand_digest.is_zero()\"] },\n  { function = \"fn require_receipt_mode(\", sequence = [\"match (&plan.comparison, paired_input) {\", \"(ProductComparisonModeV1::SharedBehavior, None) => Ok(()),\", \"(ProductComparisonModeV1::PairedOnPolicy(pairing), Some(input)) if !input.is_zero() => {\", \"inputs::validate_pair_contract(pairing)\", \"_ => Err(ProductEvaluationError::Integrity(\"], top_level = [\"match (&plan.comparison, paired_input) {\"] },\n  { function = \"fn comparison(\", sequence = [\"require_receipt_mode(plan, paired_input)?;\", \"let legacy = super::super::comparison_digests(candidate, baseline, metrics);\", \"match &plan.comparison {\", \"ProductComparisonModeV1::SharedBehavior => Ok(legacy),\", \"ProductComparisonModeV1::PairedOnPolicy(pairing) => {\", \"let contract = pairing.digest()?;\", \"let input = paired_input.ok_or(ProductEvaluationError::Integrity(\", \"let bind = |domain: &[u8], original: Digest32| {\", \"let mut bytes = domain.to_vec();\", \"for digest in [contract, input, original] {\", \"bytes.extend_from_slice(digest.as_array());\", \"Digest32::of_bytes(&bytes)\", \"Ok((\", \"bind(b                                                      , legacy.0),\", \"bind(b                                                     , legacy.1),\", \"bind(b                                                        , legacy.2),\"], top_level = [\"require_receipt_mode(plan, paired_input)?;\", \"let legacy = super::super::comparison_digests(candidate, baseline, metrics);\", \"match &plan.comparison {\"] },\n]\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "required": [
+          "comparison: ProductComparisonModeV1,",
+          "paired_input_digest: Option<Digest32>,",
+          "receipt_seal: Digest32,",
+          "hepta.intelligence-eval.product-execution.v1",
+          "hepta.intelligence-eval.paired-on-policy-product-execution.v1",
+          "hepta.intelligence-eval.product-evaluation-receipt.v1",
+          "hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1",
+          "hepta.intelligence-eval.product-frozen-plan.v1",
+          "hepta.intelligence-eval.product-estimand.v1",
+          "#[path = \"product_paired.rs\"]",
+          "mod paired;",
+          "pub use paired::freeze_paired_on_policy_product_evaluation_plan_v1;"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [
+          [
+            "impl ProductFrozenEvaluationPlanV1 {",
+            "fn validate_integrity(",
+            "if self.receipt_seal != product_plan_seal(self)?",
+            "return Err(ProductEvaluationError::Integrity(",
+            "let expected = Digest32::of_bytes(&plan_estimand_commitment_bytes(self)?);",
+            "if self.frozen_plan.estimand_digest != expected",
+            "return Err(ProductEvaluationError::Binding(",
+            "Ok(())"
+          ],
+          [
+            "impl ProductTemporalEvaluationReceiptV1 {",
+            "fn validate_integrity(",
+            "self.product_plan.validate_integrity()?;",
+            "paired::commitments::require_receipt_mode(&self.product_plan, self.paired_input_digest)?;",
+            "self.candidate.validate_integrity()?;",
+            "self.baseline.validate_integrity()?;",
+            "let expected_metrics = derive_metric_gates(",
+            "&self.product_plan,",
+            "&self.candidate.estimate,",
+            "&self.baseline.estimate,",
+            "if expected_metrics != self.metrics",
+            "return Err(ProductEvaluationError::Integrity(",
+            "let (estimate, support, confidence) = paired::commitments::comparison(",
+            "&self.product_plan, self.paired_input_digest,",
+            "&self.candidate, &self.baseline, &self.metrics,",
+            "if self.estimate_receipt_digest != estimate",
+            "self.support_audit_digest != support",
+            "self.confidence_receipt_digest != confidence",
+            "return Err(ProductEvaluationError::Integrity(",
+            "let expected_execution = execution_digest(",
+            "&self.holdout,",
+            "&self.product_plan,",
+            "&self.candidate,",
+            "&self.baseline,",
+            "&self.metrics,",
+            "&self.snapshot_ids,",
+            "&self.future_window_ids,",
+            "estimate,",
+            "support,",
+            "confidence,",
+            "if self.execution_digest != expected_execution",
+            "self.receipt_seal != product_evaluation_seal(self)?",
+            "return Err(ProductEvaluationError::Integrity(",
+            "Ok(())"
+          ],
+          [
+            "fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>",
+            "if matches!(product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))",
+            "return self.evaluate_paired_on_policy_comparison(",
+            "product_plan, candidate_plan, baseline_plan, provider,",
+            "product_plan.validate_integrity()?;",
+            "candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest",
+            "baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest",
+            "candidate_plan.plan_digest != candidate_plan.canonical_digest()?",
+            "baseline_plan.plan_digest != baseline_plan.canonical_digest()?",
+            "candidate_plan.objective_digest != product_plan.frozen_plan.objective_digest",
+            "baseline_plan.objective_digest != product_plan.frozen_plan.objective_digest",
+            "let manifest = provider.manifest_digest()?;",
+            "if manifest.is_zero() || manifest != product_plan.frozen_plan.final_holdout_digest",
+            "let holdout = self.holdout.consume(&product_plan.frozen_plan)?;",
+            "match holdout.disposition {",
+            "HoldoutUseDispositionV1::Recorded => {}",
+            "HoldoutUseDispositionV1::IdempotentReplay => {",
+            "return Err(ProductEvaluationError::Binding(",
+            "let mut inputs = provider.release_after_consumption(&holdout)?;",
+            "validate_released_inputs(&product_plan.frozen_plan, &inputs)?;",
+            "validate_comparable_observations(",
+            "&inputs.candidate_observations,",
+            "&inputs.baseline_observations,",
+            "normalize_unique_ids(&mut inputs.snapshot_ids)?;",
+            "normalize_unique_ids(&mut inputs.future_window_ids)?;",
+            "let candidate = evaluate_temporal_holdout(",
+            "candidate_plan,",
+            "&inputs.training,",
+            "&inputs.targets,",
+            "&inputs.candidate_observations,",
+            "&inputs.assignments,",
+            "let baseline = evaluate_temporal_holdout(",
+            "baseline_plan,",
+            "&inputs.training,",
+            "&inputs.targets,",
+            "&inputs.baseline_observations,",
+            "&inputs.assignments,",
+            "candidate.validate_integrity()?;",
+            "baseline.validate_integrity()?;",
+            "let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;",
+            "comparison_digests(&candidate, &baseline, &metrics);",
+            "let execution_digest = execution_digest(",
+            "authority: AuthorityPosture::DENY_ALL,",
+            "execution_evaluator: None,",
+            "paired_input_digest: None,",
+            "receipt.receipt_seal = product_evaluation_seal(&receipt)?;",
+            "Ok(receipt)"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn freeze_product_evaluation_plan_v1(",
+            "sequence": [
+              "if candidate_temporal.plan_digest.is_zero()",
+              "baseline_temporal.plan_digest.is_zero()",
+              "candidate_temporal.plan_digest != candidate_temporal.canonical_digest()?",
+              "baseline_temporal.plan_digest != baseline_temporal.canonical_digest()?",
+              "candidate_temporal.objective_digest != plan.objective_digest",
+              "baseline_temporal.objective_digest != plan.objective_digest",
+              "candidate_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm",
+              "baseline_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm",
+              "candidate_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons",
+              "baseline_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons",
+              "return Err(ProductEvaluationError::Binding(",
+              "if plan.metric_contracts.is_empty() || plan.estimand_digest.is_zero()",
+              "return Err(ProductEvaluationError::Binding(",
+              "let mut metric_contracts = plan.metric_contracts.clone();",
+              "metric_contracts.sort_by_key(|row| row.metric_id.clone());",
+              "metric_sources.sort_by_key(|row| row.metric_id.clone());",
+              "metric_roles.sort_by_key(|row| row.metric_id.clone());",
+              "if metric_sources.len() != metric_contracts.len()",
+              "metric_roles.len() != metric_contracts.len()",
+              "contract.metric_id != source.metric_id",
+              "contract.metric_id != role.metric_id",
+              "return Err(ProductEvaluationError::Binding(",
+              "let base_estimand_digest = plan.estimand_digest;",
+              "plan.estimand_digest = bound_estimand_digest(",
+              "base_estimand_digest,",
+              "candidate_temporal.plan_digest,",
+              "baseline_temporal.plan_digest,",
+              "&metric_sources,",
+              "let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;",
+              "let mut receipt = ProductFrozenEvaluationPlanV1 {",
+              "frozen_plan,",
+              "metric_roles,",
+              "metric_contracts,",
+              "metric_sources,",
+              "base_estimand_digest,",
+              "candidate_temporal_plan_digest: candidate_temporal.plan_digest,",
+              "baseline_temporal_plan_digest: baseline_temporal.plan_digest,",
+              "comparison: ProductComparisonModeV1::SharedBehavior,",
+              "receipt_seal: Digest32::ZERO,",
+              "receipt.receipt_seal = product_plan_seal(&receipt)?;",
+              "Ok(receipt)"
+            ],
+            "top_level": [
+              "if candidate_temporal.plan_digest.is_zero()",
+              "let base_estimand_digest = plan.estimand_digest;",
+              "let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;",
+              "receipt.receipt_seal = product_plan_seal(&receipt)?;",
+              "Ok(receipt)"
+            ]
+          },
+          {
+            "function": "fn release_paired_after_consumption(",
+            "sequence": [
+              "fn release_paired_after_consumption(",
+              "Err(ProductProviderErrorV1::Rejected)"
+            ],
+            "top_level": [
+              "Err(ProductProviderErrorV1::Rejected)"
+            ]
+          },
+          {
+            "function": "fn validate_comparable_observations(",
+            "sequence": [
+              "if candidate.len() != baseline.len()",
+              "return Err(ProductEvaluationError::Binding(",
+              "let mut left: Vec<_> = candidate.iter().collect();",
+              "let mut right: Vec<_> = baseline.iter().collect();",
+              "left.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));",
+              "right.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));",
+              "for (left, right) in left.into_iter().zip(right) {",
+              "if left.decision_id != right.decision_id",
+              "left.chosen_action != right.chosen_action",
+              "left.complete_candidates != right.complete_candidates",
+              "left.finalized_outcome != right.finalized_outcome",
+              "left.outcome_observed_at != right.outcome_observed_at",
+              "left.outcome_evidence != right.outcome_evidence",
+              "left.actions.len() != right.actions.len()",
+              "return Err(ProductEvaluationError::Binding(",
+              "left.actions.iter().collect();",
+              "right.actions.iter().collect();",
+              "left_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));",
+              "right_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));",
+              ".zip(right_actions)",
+              ".any(|(left, right)| {",
+              "left.action_id != right.action_id",
+              "left.behavior_probability != right.behavior_probability",
+              "return Err(ProductEvaluationError::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if candidate.len() != baseline.len()",
+              "for (left, right) in left.into_iter().zip(right) {",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn derive_metric_gates(",
+            "sequence": [
+              "candidate\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "baseline\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "if plan.metric_contracts.len() != plan.metric_sources.len()",
+              "return Err(ProductEvaluationError::Integrity(",
+              "let mut metrics = Vec::with_capacity(plan.metric_contracts.len());",
+              "for (contract, source) in plan.metric_contracts.iter().zip(plan.metric_sources.iter()) {",
+              "if contract.metric_id != source.metric_id",
+              "return Err(ProductEvaluationError::Integrity(",
+              "let candidate_interval = select_interval(candidate, source.source);",
+              "let baseline_interval = select_interval(baseline, source.source);",
+              "candidate.point.evidence_digest,",
+              "candidate.evidence_digest,",
+              "baseline.point.evidence_digest,",
+              "baseline.evidence_digest,",
+              "metrics.push(MetricGateV1 {",
+              "metric_id: contract.metric_id.clone(),",
+              "direction: contract.direction,",
+              "candidate: EvaluationIntervalV1 {",
+              "lower: candidate_interval.lower,",
+              "upper: candidate_interval.upper,",
+              "baseline: EvaluationIntervalV1 {",
+              "lower: baseline_interval.lower,",
+              "upper: baseline_interval.upper,",
+              "safety_floor: contract.safety_floor,",
+              "support_digest: Digest32::of_bytes(&support),",
+              "Ok(metrics)"
+            ],
+            "top_level": [
+              "candidate\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "baseline\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "let mut metrics = Vec::with_capacity(plan.metric_contracts.len());",
+              "Ok(metrics)"
+            ]
+          },
+          {
+            "function": "fn select_interval(",
+            "sequence": [
+              "match source {",
+              "ProductMetricSourceV1::Ips => estimate.ips,",
+              "ProductMetricSourceV1::Snips => estimate.snips,",
+              "ProductMetricSourceV1::DoublyRobust => estimate.doubly_robust,"
+            ],
+            "top_level": [
+              "match source {"
+            ]
+          },
+          {
+            "function": "fn execution_digest(",
+            "sequence": [
+              "let mut bytes = match plan.comparison_mode() {",
+              "ProductComparisonModeV1::SharedBehavior => b                                              .to_vec(),",
+              "ProductComparisonModeV1::PairedOnPolicy(_) => b                                                               .to_vec(),",
+              "holdout.record_digest,",
+              "holdout.use_receipt.use_digest,",
+              "plan.frozen_plan.plan_digest,",
+              "candidate.evidence_digest,",
+              "baseline.evidence_digest,",
+              "estimate_digest,",
+              "support_digest,",
+              "confidence_digest,",
+              "bytes.extend_from_slice(digest.as_array());",
+              "for metric in metrics {",
+              "push_id(&mut bytes, &metric.metric_id);",
+              "bytes.extend_from_slice(metric.support_digest.as_array());",
+              "push_ids(&mut bytes, snapshot_ids);",
+              "push_ids(&mut bytes, future_window_ids);",
+              "Digest32::of_bytes(&bytes)"
+            ],
+            "top_level": [
+              "let mut bytes = match plan.comparison_mode() {",
+              "push_ids(&mut bytes, snapshot_ids);",
+              "push_ids(&mut bytes, future_window_ids);",
+              "Digest32::of_bytes(&bytes)"
+            ]
+          },
+          {
+            "function": "fn product_evaluation_seal(",
+            "sequence": [
+              "paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;",
+              "let mut bytes = match receipt.product_plan.comparison_mode() {",
+              "ProductComparisonModeV1::SharedBehavior => b                                                       .to_vec(),",
+              "ProductComparisonModeV1::PairedOnPolicy(_) => {",
+              "let mut bytes = b                                                                        .to_vec();",
+              "receipt.paired_input_digest.ok_or(ProductEvaluationError::Integrity(",
+              "for digest in [",
+              "receipt.holdout.record_digest,",
+              "receipt.product_plan.frozen_plan.plan_digest,",
+              "receipt.candidate.evidence_digest,",
+              "receipt.baseline.evidence_digest,",
+              "receipt.estimate_receipt_digest,",
+              "receipt.support_audit_digest,",
+              "receipt.confidence_receipt_digest,",
+              "receipt.execution_digest,",
+              "for metric in &receipt.metrics {",
+              "push_metric(&mut bytes, metric);",
+              "push_ids(&mut bytes, &receipt.snapshot_ids);",
+              "push_ids(&mut bytes, &receipt.future_window_ids);",
+              "bytes.push(u8::from(receipt.authority.grants_any()));",
+              "Ok(Digest32::of_bytes(&bytes))"
+            ],
+            "top_level": [
+              "paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;",
+              "let mut bytes = match receipt.product_plan.comparison_mode() {",
+              "push_ids(&mut bytes, &receipt.snapshot_ids);",
+              "push_ids(&mut bytes, &receipt.future_window_ids);",
+              "Ok(Digest32::of_bytes(&bytes))"
+            ]
+          },
+          {
+            "function": "fn product_plan_commitment_bytes(",
+            "sequence": [
+              "if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {",
+              "return paired::commitments::plan(plan, pairing);",
+              "let mut bytes = b                                                .to_vec();",
+              "plan.frozen_plan.plan_digest,",
+              "plan.frozen_plan.metric_contract_digest,",
+              "plan.base_estimand_digest,",
+              "plan.candidate_temporal_plan_digest,",
+              "plan.baseline_temporal_plan_digest,",
+              "for contract in &plan.metric_contracts {",
+              "push_id(&mut bytes, &contract.metric_id);",
+              "match contract.direction {",
+              "EvaluationDirectionV1::Maximize => 0,",
+              "EvaluationDirectionV1::Minimize => 1,",
+              "match contract.safety_floor {",
+              "Some(value) => {",
+              "bytes.push(1);",
+              "bytes.extend_from_slice(&value.raw().to_be_bytes());",
+              "None => bytes.push(0),",
+              "for role in &plan.metric_roles {",
+              "push_id(&mut bytes, &role.metric_id);",
+              "match role.role {",
+              "MetricRoleV2::PrimarySuperiority {",
+              "minimum_improvement,",
+              "bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());",
+              "MetricRoleV2::NonInferiority { maximum_regression }",
+              "bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());",
+              "MetricRoleV2::AbsoluteConstraint => bytes.push(2),",
+              "for source in &plan.metric_sources {",
+              "push_id(&mut bytes, &source.metric_id);",
+              "bytes.push(source.source.tag());",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {",
+              "for contract in &plan.metric_contracts {",
+              "for role in &plan.metric_roles {",
+              "for source in &plan.metric_sources {",
+              "Ok(bytes)"
+            ]
+          },
+          {
+            "function": "fn plan_estimand_commitment_bytes(",
+            "sequence": [
+              "match plan.comparison_mode() {",
+              "ProductComparisonModeV1::SharedBehavior => product_estimand_commitment_bytes(",
+              "plan.base_estimand_digest,",
+              "plan.candidate_temporal_plan_digest,",
+              "plan.baseline_temporal_plan_digest,",
+              "&plan.metric_sources,",
+              "ProductComparisonModeV1::PairedOnPolicy(_) => paired::commitments::estimand(plan),"
+            ],
+            "top_level": [
+              "match plan.comparison_mode() {"
+            ]
+          },
+          {
+            "function": "fn normalize_unique_ids(",
+            "sequence": [
+              "values.sort();",
+              "if values.windows(2).any(|pair| pair[0] == pair[1])",
+              "return Err(ProductEvaluationError::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "values.sort();",
+              "if values.windows(2).any(|pair| pair[0] == pair[1])",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "required": [
+          "comparison: ProductComparisonModeV1,",
+          "paired_input_digest: Option<Digest32>,",
+          "receipt_seal: Digest32,",
+          "hepta.intelligence-eval.product-execution.v1",
+          "hepta.intelligence-eval.paired-on-policy-product-execution.v1",
+          "hepta.intelligence-eval.product-evaluation-receipt.v1",
+          "hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1",
+          "hepta.intelligence-eval.product-frozen-plan.v1",
+          "hepta.intelligence-eval.product-estimand.v1",
+          "#[path = \"product_paired.rs\"]",
+          "mod paired;",
+          "pub use paired::freeze_paired_on_policy_product_evaluation_plan_v1;",
+          "#[path = \"product_policy.rs\"]",
+          "mod policy;",
+          "pub use policy::ProductEvaluationPolicyV2;",
+          "pub use policy::ProductEvaluationPolicyContextV2;",
+          "pub use policy::ProductEvaluationPolicyInputV2;",
+          "pub use policy::ProductEvaluationPolicyBindingsV2;",
+          "pub use policy::ProductEvaluationPolicyCommitmentsV2;"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [
+          [
+            "impl ProductFrozenEvaluationPlanV1 {",
+            "fn validate_integrity(",
+            "if self.receipt_seal != product_plan_seal(self)?",
+            "return Err(ProductEvaluationError::Integrity(",
+            "let expected = Digest32::of_bytes(&plan_estimand_commitment_bytes(self)?);",
+            "if self.frozen_plan.estimand_digest != expected",
+            "return Err(ProductEvaluationError::Binding(",
+            "Ok(())"
+          ],
+          [
+            "impl ProductTemporalEvaluationReceiptV1 {",
+            "fn validate_integrity(",
+            "self.product_plan.validate_integrity()?;",
+            "paired::commitments::require_receipt_mode(&self.product_plan, self.paired_input_digest)?;",
+            "self.candidate.validate_integrity()?;",
+            "self.baseline.validate_integrity()?;",
+            "let expected_metrics = derive_metric_gates(",
+            "&self.product_plan,",
+            "&self.candidate.estimate,",
+            "&self.baseline.estimate,",
+            "if expected_metrics != self.metrics",
+            "return Err(ProductEvaluationError::Integrity(",
+            "let (estimate, support, confidence) = paired::commitments::comparison(",
+            "&self.product_plan, self.paired_input_digest,",
+            "&self.candidate, &self.baseline, &self.metrics,",
+            "if self.estimate_receipt_digest != estimate",
+            "self.support_audit_digest != support",
+            "self.confidence_receipt_digest != confidence",
+            "return Err(ProductEvaluationError::Integrity(",
+            "let expected_execution = execution_digest(",
+            "&self.holdout,",
+            "&self.product_plan,",
+            "&self.candidate,",
+            "&self.baseline,",
+            "&self.metrics,",
+            "&self.snapshot_ids,",
+            "&self.future_window_ids,",
+            "estimate,",
+            "support,",
+            "confidence,",
+            "if self.execution_digest != expected_execution",
+            "self.receipt_seal != product_evaluation_seal(self)?",
+            "return Err(ProductEvaluationError::Integrity(",
+            "Ok(())"
+          ],
+          [
+            "fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>",
+            "if matches!(product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))",
+            "return self.evaluate_paired_on_policy_comparison(",
+            "product_plan, candidate_plan, baseline_plan, provider,",
+            "product_plan.validate_integrity()?;",
+            "candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest",
+            "baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest",
+            "candidate_plan.plan_digest != candidate_plan.canonical_digest()?",
+            "baseline_plan.plan_digest != baseline_plan.canonical_digest()?",
+            "candidate_plan.objective_digest != product_plan.frozen_plan.objective_digest",
+            "baseline_plan.objective_digest != product_plan.frozen_plan.objective_digest",
+            "let manifest = provider.manifest_digest()?;",
+            "if manifest.is_zero() || manifest != product_plan.frozen_plan.final_holdout_digest",
+            "let holdout = self.holdout.consume(&product_plan.frozen_plan)?;",
+            "match holdout.disposition {",
+            "HoldoutUseDispositionV1::Recorded => {}",
+            "HoldoutUseDispositionV1::IdempotentReplay => {",
+            "return Err(ProductEvaluationError::Binding(",
+            "let mut inputs = provider.release_after_consumption(&holdout)?;",
+            "validate_released_inputs(&product_plan.frozen_plan, &inputs)?;",
+            "validate_comparable_observations(",
+            "&inputs.candidate_observations,",
+            "&inputs.baseline_observations,",
+            "normalize_unique_ids(&mut inputs.snapshot_ids)?;",
+            "normalize_unique_ids(&mut inputs.future_window_ids)?;",
+            "let candidate = evaluate_temporal_holdout(",
+            "candidate_plan,",
+            "&inputs.training,",
+            "&inputs.targets,",
+            "&inputs.candidate_observations,",
+            "&inputs.assignments,",
+            "let baseline = evaluate_temporal_holdout(",
+            "baseline_plan,",
+            "&inputs.training,",
+            "&inputs.targets,",
+            "&inputs.baseline_observations,",
+            "&inputs.assignments,",
+            "candidate.validate_integrity()?;",
+            "baseline.validate_integrity()?;",
+            "let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;",
+            "comparison_digests(&candidate, &baseline, &metrics);",
+            "let execution_digest = execution_digest(",
+            "authority: AuthorityPosture::DENY_ALL,",
+            "execution_evaluator: None,",
+            "paired_input_digest: None,",
+            "receipt.receipt_seal = product_evaluation_seal(&receipt)?;",
+            "Ok(receipt)"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn freeze_product_evaluation_plan_v1(",
+            "sequence": [
+              "fn freeze_product_evaluation_plan_v1(",
+              "mut plan: CrossFoldPlanV1,\n    mut metric_roles: Vec<MetricRoleContractV2>,\n    mut metric_sources: Vec<ProductMetricSourceContractV1>,\n    candidate_temporal: &TemporalEvaluationPlan,\n    baseline_temporal: &TemporalEvaluationPlan,\n) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {\n    let metric_contracts = normalize_product_plan_inputs(\n        plan.objective_digest, plan.family_alpha_ppm, plan.simultaneous_comparisons,\n        plan.estimand_digest, &plan.metric_contracts, &mut metric_roles,\n        &mut metric_sources, candidate_temporal, baseline_temporal,\n    )?;\n\n    let base_estimand_digest = plan.estimand_digest;\n    plan.estimand_digest = bound_estimand_digest(\n        base_estimand_digest,\n        candidate_temporal.plan_digest,\n        baseline_temporal.plan_digest,\n        &metric_sources,\n    )?;\n    let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;\n    let mut receipt = ProductFrozenEvaluationPlanV1 {\n        frozen_plan,\n        metric_roles,\n        metric_contracts,\n        metric_sources,\n        base_estimand_digest,\n        candidate_temporal_plan_digest: candidate_temporal.plan_digest,\n        baseline_temporal_plan_digest: baseline_temporal.plan_digest,\n        comparison: ProductComparisonModeV1::SharedBehavior,\n        receipt_seal: Digest32::ZERO,\n    };\n    receipt.receipt_seal = product_plan_seal(&receipt)?;\n    Ok(receipt)\n}"
+            ],
+            "top_level": [
+              "let metric_contracts = normalize_product_plan_inputs("
+            ]
+          },
+          {
+            "function": "fn normalize_product_plan_inputs(",
+            "sequence": [
+              "fn normalize_product_plan_inputs(",
+              "objective_digest: Digest32,\n    family_alpha_ppm: u32,\n    simultaneous_comparisons: u32,\n    estimand_digest: Digest32,\n    original_metric_contracts: &[MetricContractV1],\n    metric_roles: &mut [MetricRoleContractV2],\n    metric_sources: &mut [ProductMetricSourceContractV1],\n    candidate_temporal: &TemporalEvaluationPlan,\n    baseline_temporal: &TemporalEvaluationPlan,\n) -> Result<Vec<MetricContractV1>, ProductEvaluationError> {\n    if candidate_temporal.plan_digest.is_zero()\n        || baseline_temporal.plan_digest.is_zero()\n        || candidate_temporal.plan_digest != candidate_temporal.canonical_digest()?\n        || baseline_temporal.plan_digest != baseline_temporal.canonical_digest()?\n        || candidate_temporal.objective_digest != objective_digest\n        || baseline_temporal.objective_digest != objective_digest\n        || candidate_temporal.confidence.family_alpha_ppm != family_alpha_ppm\n        || baseline_temporal.confidence.family_alpha_ppm != family_alpha_ppm\n        || candidate_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons\n        || baseline_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons\n    {\n        return Err(ProductEvaluationError::Binding(               ));\n    }\n    if original_metric_contracts.is_empty() || estimand_digest.is_zero() {\n        return Err(ProductEvaluationError::Binding(                    ));\n    }\n    let mut metric_contracts = original_metric_contracts.to_vec();\n    metric_contracts.sort_by_key(|row| row.metric_id.clone());\n    metric_sources.sort_by_key(|row| row.metric_id.clone());\n    metric_roles.sort_by_key(|row| row.metric_id.clone());\n    if metric_sources.len() != metric_contracts.len()\n        || metric_roles.len() != metric_contracts.len()\n        || metric_contracts\n            .iter()\n            .zip(metric_sources.iter())\n            .any(|(contract, source)| contract.metric_id != source.metric_id)\n        || metric_contracts\n            .iter()\n            .zip(metric_roles.iter())\n            .any(|(contract, role)| contract.metric_id != role.metric_id)\n    {\n        return Err(ProductEvaluationError::Binding(                        ));\n    }\n\n    Ok(metric_contracts)\n}"
+            ],
+            "top_level": [
+              "if candidate_temporal.plan_digest.is_zero()"
+            ]
+          },
+          {
+            "function": "fn release_paired_after_consumption(",
+            "sequence": [
+              "fn release_paired_after_consumption(",
+              "Err(ProductProviderErrorV1::Rejected)"
+            ],
+            "top_level": [
+              "Err(ProductProviderErrorV1::Rejected)"
+            ]
+          },
+          {
+            "function": "fn validate_comparable_observations(",
+            "sequence": [
+              "if candidate.len() != baseline.len()",
+              "return Err(ProductEvaluationError::Binding(",
+              "let mut left: Vec<_> = candidate.iter().collect();",
+              "let mut right: Vec<_> = baseline.iter().collect();",
+              "left.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));",
+              "right.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));",
+              "for (left, right) in left.into_iter().zip(right) {",
+              "if left.decision_id != right.decision_id",
+              "left.chosen_action != right.chosen_action",
+              "left.complete_candidates != right.complete_candidates",
+              "left.finalized_outcome != right.finalized_outcome",
+              "left.outcome_observed_at != right.outcome_observed_at",
+              "left.outcome_evidence != right.outcome_evidence",
+              "left.actions.len() != right.actions.len()",
+              "return Err(ProductEvaluationError::Binding(",
+              "left.actions.iter().collect();",
+              "right.actions.iter().collect();",
+              "left_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));",
+              "right_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));",
+              ".zip(right_actions)",
+              ".any(|(left, right)| {",
+              "left.action_id != right.action_id",
+              "left.behavior_probability != right.behavior_probability",
+              "return Err(ProductEvaluationError::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if candidate.len() != baseline.len()",
+              "for (left, right) in left.into_iter().zip(right) {",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn derive_metric_gates(",
+            "sequence": [
+              "candidate\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "baseline\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "if plan.metric_contracts.len() != plan.metric_sources.len()",
+              "return Err(ProductEvaluationError::Integrity(",
+              "let mut metrics = Vec::with_capacity(plan.metric_contracts.len());",
+              "for (contract, source) in plan.metric_contracts.iter().zip(plan.metric_sources.iter()) {",
+              "if contract.metric_id != source.metric_id",
+              "return Err(ProductEvaluationError::Integrity(",
+              "let candidate_interval = select_interval(candidate, source.source);",
+              "let baseline_interval = select_interval(baseline, source.source);",
+              "candidate.point.evidence_digest,",
+              "candidate.evidence_digest,",
+              "baseline.point.evidence_digest,",
+              "baseline.evidence_digest,",
+              "metrics.push(MetricGateV1 {",
+              "metric_id: contract.metric_id.clone(),",
+              "direction: contract.direction,",
+              "candidate: EvaluationIntervalV1 {",
+              "lower: candidate_interval.lower,",
+              "upper: candidate_interval.upper,",
+              "baseline: EvaluationIntervalV1 {",
+              "lower: baseline_interval.lower,",
+              "upper: baseline_interval.upper,",
+              "safety_floor: contract.safety_floor,",
+              "support_digest: Digest32::of_bytes(&support),",
+              "Ok(metrics)"
+            ],
+            "top_level": [
+              "candidate\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "baseline\n        .validate_integrity()\n        .map_err(TemporalEvaluationError::Confidence)?;",
+              "let mut metrics = Vec::with_capacity(plan.metric_contracts.len());",
+              "Ok(metrics)"
+            ]
+          },
+          {
+            "function": "fn select_interval(",
+            "sequence": [
+              "match source {",
+              "ProductMetricSourceV1::Ips => estimate.ips,",
+              "ProductMetricSourceV1::Snips => estimate.snips,",
+              "ProductMetricSourceV1::DoublyRobust => estimate.doubly_robust,"
+            ],
+            "top_level": [
+              "match source {"
+            ]
+          },
+          {
+            "function": "fn execution_digest(",
+            "sequence": [
+              "let mut bytes = match plan.comparison_mode() {",
+              "ProductComparisonModeV1::SharedBehavior => b                                              .to_vec(),",
+              "ProductComparisonModeV1::PairedOnPolicy(_) => b                                                               .to_vec(),",
+              "holdout.record_digest,",
+              "holdout.use_receipt.use_digest,",
+              "plan.frozen_plan.plan_digest,",
+              "candidate.evidence_digest,",
+              "baseline.evidence_digest,",
+              "estimate_digest,",
+              "support_digest,",
+              "confidence_digest,",
+              "bytes.extend_from_slice(digest.as_array());",
+              "for metric in metrics {",
+              "push_id(&mut bytes, &metric.metric_id);",
+              "bytes.extend_from_slice(metric.support_digest.as_array());",
+              "push_ids(&mut bytes, snapshot_ids);",
+              "push_ids(&mut bytes, future_window_ids);",
+              "Digest32::of_bytes(&bytes)"
+            ],
+            "top_level": [
+              "let mut bytes = match plan.comparison_mode() {",
+              "push_ids(&mut bytes, snapshot_ids);",
+              "push_ids(&mut bytes, future_window_ids);",
+              "Digest32::of_bytes(&bytes)"
+            ]
+          },
+          {
+            "function": "fn product_evaluation_seal(",
+            "sequence": [
+              "paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;",
+              "let mut bytes = match receipt.product_plan.comparison_mode() {",
+              "ProductComparisonModeV1::SharedBehavior => b                                                       .to_vec(),",
+              "ProductComparisonModeV1::PairedOnPolicy(_) => {",
+              "let mut bytes = b                                                                        .to_vec();",
+              "receipt.paired_input_digest.ok_or(ProductEvaluationError::Integrity(",
+              "for digest in [",
+              "receipt.holdout.record_digest,",
+              "receipt.product_plan.frozen_plan.plan_digest,",
+              "receipt.candidate.evidence_digest,",
+              "receipt.baseline.evidence_digest,",
+              "receipt.estimate_receipt_digest,",
+              "receipt.support_audit_digest,",
+              "receipt.confidence_receipt_digest,",
+              "receipt.execution_digest,",
+              "for metric in &receipt.metrics {",
+              "push_metric(&mut bytes, metric);",
+              "push_ids(&mut bytes, &receipt.snapshot_ids);",
+              "push_ids(&mut bytes, &receipt.future_window_ids);",
+              "bytes.push(u8::from(receipt.authority.grants_any()));",
+              "Ok(Digest32::of_bytes(&bytes))"
+            ],
+            "top_level": [
+              "paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;",
+              "let mut bytes = match receipt.product_plan.comparison_mode() {",
+              "push_ids(&mut bytes, &receipt.snapshot_ids);",
+              "push_ids(&mut bytes, &receipt.future_window_ids);",
+              "Ok(Digest32::of_bytes(&bytes))"
+            ]
+          },
+          {
+            "function": "fn product_plan_commitment_bytes(",
+            "sequence": [
+              "if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {",
+              "return paired::commitments::plan(plan, pairing);",
+              "let mut bytes = b                                                .to_vec();",
+              "plan.frozen_plan.plan_digest,",
+              "plan.frozen_plan.metric_contract_digest,",
+              "plan.base_estimand_digest,",
+              "plan.candidate_temporal_plan_digest,",
+              "plan.baseline_temporal_plan_digest,",
+              "for contract in &plan.metric_contracts {",
+              "push_id(&mut bytes, &contract.metric_id);",
+              "match contract.direction {",
+              "EvaluationDirectionV1::Maximize => 0,",
+              "EvaluationDirectionV1::Minimize => 1,",
+              "match contract.safety_floor {",
+              "Some(value) => {",
+              "bytes.push(1);",
+              "bytes.extend_from_slice(&value.raw().to_be_bytes());",
+              "None => bytes.push(0),",
+              "for role in &plan.metric_roles {",
+              "push_id(&mut bytes, &role.metric_id);",
+              "match role.role {",
+              "MetricRoleV2::PrimarySuperiority {",
+              "minimum_improvement,",
+              "bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());",
+              "MetricRoleV2::NonInferiority { maximum_regression }",
+              "bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());",
+              "MetricRoleV2::AbsoluteConstraint => bytes.push(2),",
+              "for source in &plan.metric_sources {",
+              "push_id(&mut bytes, &source.metric_id);",
+              "bytes.push(source.source.tag());",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {",
+              "for contract in &plan.metric_contracts {",
+              "for role in &plan.metric_roles {",
+              "for source in &plan.metric_sources {",
+              "Ok(bytes)"
+            ]
+          },
+          {
+            "function": "fn plan_estimand_commitment_bytes(",
+            "sequence": [
+              "match plan.comparison_mode() {",
+              "ProductComparisonModeV1::SharedBehavior => product_estimand_commitment_bytes(",
+              "plan.base_estimand_digest,",
+              "plan.candidate_temporal_plan_digest,",
+              "plan.baseline_temporal_plan_digest,",
+              "&plan.metric_sources,",
+              "ProductComparisonModeV1::PairedOnPolicy(_) => paired::commitments::estimand(plan),"
+            ],
+            "top_level": [
+              "match plan.comparison_mode() {"
+            ]
+          },
+          {
+            "function": "fn normalize_unique_ids(",
+            "sequence": [
+              "values.sort();",
+              "if values.windows(2).any(|pair| pair[0] == pair[1])",
+              "return Err(ProductEvaluationError::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "values.sort();",
+              "if values.windows(2).any(|pair| pair[0] == pair[1])",
+              "Ok(())"
+            ]
+          }
+        ]
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_runner.rs\"\nrequired = [\"comparison: ProductComparisonModeV1,\", \"paired_input_digest: Option<Digest32>,\", \"receipt_seal: Digest32,\", \"hepta.intelligence-eval.product-execution.v1\", \"hepta.intelligence-eval.paired-on-policy-product-execution.v1\", \"hepta.intelligence-eval.product-evaluation-receipt.v1\", \"hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1\", \"hepta.intelligence-eval.product-frozen-plan.v1\", \"hepta.intelligence-eval.product-estimand.v1\", \"#[path = \\\"product_paired.rs\\\"]\", \"mod paired;\", \"pub use paired::freeze_paired_on_policy_product_evaluation_plan_v1;\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = [[\"impl ProductFrozenEvaluationPlanV1 {\", \"fn validate_integrity(\", \"if self.receipt_seal != product_plan_seal(self)?\", \"return Err(ProductEvaluationError::Integrity(\", \"let expected = Digest32::of_bytes(&plan_estimand_commitment_bytes(self)?);\", \"if self.frozen_plan.estimand_digest != expected\", \"return Err(ProductEvaluationError::Binding(\", \"Ok(())\"], [\"impl ProductTemporalEvaluationReceiptV1 {\", \"fn validate_integrity(\", \"self.product_plan.validate_integrity()?;\", \"paired::commitments::require_receipt_mode(&self.product_plan, self.paired_input_digest)?;\", \"self.candidate.validate_integrity()?;\", \"self.baseline.validate_integrity()?;\", \"let expected_metrics = derive_metric_gates(\", \"&self.product_plan,\", \"&self.candidate.estimate,\", \"&self.baseline.estimate,\", \"if expected_metrics != self.metrics\", \"return Err(ProductEvaluationError::Integrity(\", \"let (estimate, support, confidence) = paired::commitments::comparison(\", \"&self.product_plan, self.paired_input_digest,\", \"&self.candidate, &self.baseline, &self.metrics,\", \"if self.estimate_receipt_digest != estimate\", \"self.support_audit_digest != support\", \"self.confidence_receipt_digest != confidence\", \"return Err(ProductEvaluationError::Integrity(\", \"let expected_execution = execution_digest(\", \"&self.holdout,\", \"&self.product_plan,\", \"&self.candidate,\", \"&self.baseline,\", \"&self.metrics,\", \"&self.snapshot_ids,\", \"&self.future_window_ids,\", \"estimate,\", \"support,\", \"confidence,\", \"if self.execution_digest != expected_execution\", \"self.receipt_seal != product_evaluation_seal(self)?\", \"return Err(ProductEvaluationError::Integrity(\", \"Ok(())\"], [\"fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>\", \"if matches!(product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))\", \"return self.evaluate_paired_on_policy_comparison(\", \"product_plan, candidate_plan, baseline_plan, provider,\", \"product_plan.validate_integrity()?;\", \"candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest\", \"baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest\", \"candidate_plan.plan_digest != candidate_plan.canonical_digest()?\", \"baseline_plan.plan_digest != baseline_plan.canonical_digest()?\", \"candidate_plan.objective_digest != product_plan.frozen_plan.objective_digest\", \"baseline_plan.objective_digest != product_plan.frozen_plan.objective_digest\", \"let manifest = provider.manifest_digest()?;\", \"if manifest.is_zero() || manifest != product_plan.frozen_plan.final_holdout_digest\", \"let holdout = self.holdout.consume(&product_plan.frozen_plan)?;\", \"match holdout.disposition {\", \"HoldoutUseDispositionV1::Recorded => {}\", \"HoldoutUseDispositionV1::IdempotentReplay => {\", \"return Err(ProductEvaluationError::Binding(\", \"let mut inputs = provider.release_after_consumption(&holdout)?;\", \"validate_released_inputs(&product_plan.frozen_plan, &inputs)?;\", \"validate_comparable_observations(\", \"&inputs.candidate_observations,\", \"&inputs.baseline_observations,\", \"normalize_unique_ids(&mut inputs.snapshot_ids)?;\", \"normalize_unique_ids(&mut inputs.future_window_ids)?;\", \"let candidate = evaluate_temporal_holdout(\", \"candidate_plan,\", \"&inputs.training,\", \"&inputs.targets,\", \"&inputs.candidate_observations,\", \"&inputs.assignments,\", \"let baseline = evaluate_temporal_holdout(\", \"baseline_plan,\", \"&inputs.training,\", \"&inputs.targets,\", \"&inputs.baseline_observations,\", \"&inputs.assignments,\", \"candidate.validate_integrity()?;\", \"baseline.validate_integrity()?;\", \"let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;\", \"comparison_digests(&candidate, &baseline, &metrics);\", \"let execution_digest = execution_digest(\", \"authority: AuthorityPosture::DENY_ALL,\", \"execution_evaluator: None,\", \"paired_input_digest: None,\", \"receipt.receipt_seal = product_evaluation_seal(&receipt)?;\", \"Ok(receipt)\"]]\nrequired_function_order = [{ \"function\" = \"fn freeze_product_evaluation_plan_v1(\", \"sequence\" = [\"if candidate_temporal.plan_digest.is_zero()\", \"baseline_temporal.plan_digest.is_zero()\", \"candidate_temporal.plan_digest != candidate_temporal.canonical_digest()?\", \"baseline_temporal.plan_digest != baseline_temporal.canonical_digest()?\", \"candidate_temporal.objective_digest != plan.objective_digest\", \"baseline_temporal.objective_digest != plan.objective_digest\", \"candidate_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm\", \"baseline_temporal.confidence.family_alpha_ppm != plan.family_alpha_ppm\", \"candidate_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons\", \"baseline_temporal.confidence.simultaneous_comparisons != plan.simultaneous_comparisons\", \"return Err(ProductEvaluationError::Binding(\", \"if plan.metric_contracts.is_empty() || plan.estimand_digest.is_zero()\", \"return Err(ProductEvaluationError::Binding(\", \"let mut metric_contracts = plan.metric_contracts.clone();\", \"metric_contracts.sort_by_key(|row| row.metric_id.clone());\", \"metric_sources.sort_by_key(|row| row.metric_id.clone());\", \"metric_roles.sort_by_key(|row| row.metric_id.clone());\", \"if metric_sources.len() != metric_contracts.len()\", \"metric_roles.len() != metric_contracts.len()\", \"contract.metric_id != source.metric_id\", \"contract.metric_id != role.metric_id\", \"return Err(ProductEvaluationError::Binding(\", \"let base_estimand_digest = plan.estimand_digest;\", \"plan.estimand_digest = bound_estimand_digest(\", \"base_estimand_digest,\", \"candidate_temporal.plan_digest,\", \"baseline_temporal.plan_digest,\", \"&metric_sources,\", \"let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;\", \"let mut receipt = ProductFrozenEvaluationPlanV1 {\", \"frozen_plan,\", \"metric_roles,\", \"metric_contracts,\", \"metric_sources,\", \"base_estimand_digest,\", \"candidate_temporal_plan_digest: candidate_temporal.plan_digest,\", \"baseline_temporal_plan_digest: baseline_temporal.plan_digest,\", \"comparison: ProductComparisonModeV1::SharedBehavior,\", \"receipt_seal: Digest32::ZERO,\", \"receipt.receipt_seal = product_plan_seal(&receipt)?;\", \"Ok(receipt)\"], \"top_level\" = [\"if candidate_temporal.plan_digest.is_zero()\", \"let base_estimand_digest = plan.estimand_digest;\", \"let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;\", \"receipt.receipt_seal = product_plan_seal(&receipt)?;\", \"Ok(receipt)\"] }, { \"function\" = \"fn release_paired_after_consumption(\", \"sequence\" = [\"fn release_paired_after_consumption(\", \"Err(ProductProviderErrorV1::Rejected)\"], \"top_level\" = [\"Err(ProductProviderErrorV1::Rejected)\"] }, { \"function\" = \"fn validate_comparable_observations(\", \"sequence\" = [\"if candidate.len() != baseline.len()\", \"return Err(ProductEvaluationError::Binding(\", \"let mut left: Vec<_> = candidate.iter().collect();\", \"let mut right: Vec<_> = baseline.iter().collect();\", \"left.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));\", \"right.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));\", \"for (left, right) in left.into_iter().zip(right) {\", \"if left.decision_id != right.decision_id\", \"left.chosen_action != right.chosen_action\", \"left.complete_candidates != right.complete_candidates\", \"left.finalized_outcome != right.finalized_outcome\", \"left.outcome_observed_at != right.outcome_observed_at\", \"left.outcome_evidence != right.outcome_evidence\", \"left.actions.len() != right.actions.len()\", \"return Err(ProductEvaluationError::Binding(\", \"left.actions.iter().collect();\", \"right.actions.iter().collect();\", \"left_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));\", \"right_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));\", \".zip(right_actions)\", \".any(|(left, right)| {\", \"left.action_id != right.action_id\", \"left.behavior_probability != right.behavior_probability\", \"return Err(ProductEvaluationError::Binding(\", \"Ok(())\"], \"top_level\" = [\"if candidate.len() != baseline.len()\", \"for (left, right) in left.into_iter().zip(right) {\", \"Ok(())\"] }, { \"function\" = \"fn derive_metric_gates(\", \"sequence\" = [\"candidate\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"baseline\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"if plan.metric_contracts.len() != plan.metric_sources.len()\", \"return Err(ProductEvaluationError::Integrity(\", \"let mut metrics = Vec::with_capacity(plan.metric_contracts.len());\", \"for (contract, source) in plan.metric_contracts.iter().zip(plan.metric_sources.iter()) {\", \"if contract.metric_id != source.metric_id\", \"return Err(ProductEvaluationError::Integrity(\", \"let candidate_interval = select_interval(candidate, source.source);\", \"let baseline_interval = select_interval(baseline, source.source);\", \"candidate.point.evidence_digest,\", \"candidate.evidence_digest,\", \"baseline.point.evidence_digest,\", \"baseline.evidence_digest,\", \"metrics.push(MetricGateV1 {\", \"metric_id: contract.metric_id.clone(),\", \"direction: contract.direction,\", \"candidate: EvaluationIntervalV1 {\", \"lower: candidate_interval.lower,\", \"upper: candidate_interval.upper,\", \"baseline: EvaluationIntervalV1 {\", \"lower: baseline_interval.lower,\", \"upper: baseline_interval.upper,\", \"safety_floor: contract.safety_floor,\", \"support_digest: Digest32::of_bytes(&support),\", \"Ok(metrics)\"], \"top_level\" = [\"candidate\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"baseline\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"let mut metrics = Vec::with_capacity(plan.metric_contracts.len());\", \"Ok(metrics)\"] }, { \"function\" = \"fn select_interval(\", \"sequence\" = [\"match source {\", \"ProductMetricSourceV1::Ips => estimate.ips,\", \"ProductMetricSourceV1::Snips => estimate.snips,\", \"ProductMetricSourceV1::DoublyRobust => estimate.doubly_robust,\"], \"top_level\" = [\"match source {\"] }, { \"function\" = \"fn execution_digest(\", \"sequence\" = [\"let mut bytes = match plan.comparison_mode() {\", \"ProductComparisonModeV1::SharedBehavior => b                                              .to_vec(),\", \"ProductComparisonModeV1::PairedOnPolicy(_) => b                                                               .to_vec(),\", \"holdout.record_digest,\", \"holdout.use_receipt.use_digest,\", \"plan.frozen_plan.plan_digest,\", \"candidate.evidence_digest,\", \"baseline.evidence_digest,\", \"estimate_digest,\", \"support_digest,\", \"confidence_digest,\", \"bytes.extend_from_slice(digest.as_array());\", \"for metric in metrics {\", \"push_id(&mut bytes, &metric.metric_id);\", \"bytes.extend_from_slice(metric.support_digest.as_array());\", \"push_ids(&mut bytes, snapshot_ids);\", \"push_ids(&mut bytes, future_window_ids);\", \"Digest32::of_bytes(&bytes)\"], \"top_level\" = [\"let mut bytes = match plan.comparison_mode() {\", \"push_ids(&mut bytes, snapshot_ids);\", \"push_ids(&mut bytes, future_window_ids);\", \"Digest32::of_bytes(&bytes)\"] }, { \"function\" = \"fn product_evaluation_seal(\", \"sequence\" = [\"paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;\", \"let mut bytes = match receipt.product_plan.comparison_mode() {\", \"ProductComparisonModeV1::SharedBehavior => b                                                       .to_vec(),\", \"ProductComparisonModeV1::PairedOnPolicy(_) => {\", \"let mut bytes = b                                                                        .to_vec();\", \"receipt.paired_input_digest.ok_or(ProductEvaluationError::Integrity(\", \"for digest in [\", \"receipt.holdout.record_digest,\", \"receipt.product_plan.frozen_plan.plan_digest,\", \"receipt.candidate.evidence_digest,\", \"receipt.baseline.evidence_digest,\", \"receipt.estimate_receipt_digest,\", \"receipt.support_audit_digest,\", \"receipt.confidence_receipt_digest,\", \"receipt.execution_digest,\", \"for metric in &receipt.metrics {\", \"push_metric(&mut bytes, metric);\", \"push_ids(&mut bytes, &receipt.snapshot_ids);\", \"push_ids(&mut bytes, &receipt.future_window_ids);\", \"bytes.push(u8::from(receipt.authority.grants_any()));\", \"Ok(Digest32::of_bytes(&bytes))\"], \"top_level\" = [\"paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;\", \"let mut bytes = match receipt.product_plan.comparison_mode() {\", \"push_ids(&mut bytes, &receipt.snapshot_ids);\", \"push_ids(&mut bytes, &receipt.future_window_ids);\", \"Ok(Digest32::of_bytes(&bytes))\"] }, { \"function\" = \"fn product_plan_commitment_bytes(\", \"sequence\" = [\"if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {\", \"return paired::commitments::plan(plan, pairing);\", \"let mut bytes = b                                                .to_vec();\", \"plan.frozen_plan.plan_digest,\", \"plan.frozen_plan.metric_contract_digest,\", \"plan.base_estimand_digest,\", \"plan.candidate_temporal_plan_digest,\", \"plan.baseline_temporal_plan_digest,\", \"for contract in &plan.metric_contracts {\", \"push_id(&mut bytes, &contract.metric_id);\", \"match contract.direction {\", \"EvaluationDirectionV1::Maximize => 0,\", \"EvaluationDirectionV1::Minimize => 1,\", \"match contract.safety_floor {\", \"Some(value) => {\", \"bytes.push(1);\", \"bytes.extend_from_slice(&value.raw().to_be_bytes());\", \"None => bytes.push(0),\", \"for role in &plan.metric_roles {\", \"push_id(&mut bytes, &role.metric_id);\", \"match role.role {\", \"MetricRoleV2::PrimarySuperiority {\", \"minimum_improvement,\", \"bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\", \"MetricRoleV2::NonInferiority { maximum_regression }\", \"bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\", \"MetricRoleV2::AbsoluteConstraint => bytes.push(2),\", \"for source in &plan.metric_sources {\", \"push_id(&mut bytes, &source.metric_id);\", \"bytes.push(source.source.tag());\", \"Ok(bytes)\"], \"top_level\" = [\"if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {\", \"for contract in &plan.metric_contracts {\", \"for role in &plan.metric_roles {\", \"for source in &plan.metric_sources {\", \"Ok(bytes)\"] }, { \"function\" = \"fn plan_estimand_commitment_bytes(\", \"sequence\" = [\"match plan.comparison_mode() {\", \"ProductComparisonModeV1::SharedBehavior => product_estimand_commitment_bytes(\", \"plan.base_estimand_digest,\", \"plan.candidate_temporal_plan_digest,\", \"plan.baseline_temporal_plan_digest,\", \"&plan.metric_sources,\", \"ProductComparisonModeV1::PairedOnPolicy(_) => paired::commitments::estimand(plan),\"], \"top_level\" = [\"match plan.comparison_mode() {\"] }, { \"function\" = \"fn normalize_unique_ids(\", \"sequence\" = [\"values.sort();\", \"if values.windows(2).any(|pair| pair[0] == pair[1])\", \"return Err(ProductEvaluationError::Binding(\", \"Ok(())\"], \"top_level\" = [\"values.sort();\", \"if values.windows(2).any(|pair| pair[0] == pair[1])\", \"Ok(())\"] }]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/product_runner.rs\"\nrequired = [\"comparison: ProductComparisonModeV1,\", \"paired_input_digest: Option<Digest32>,\", \"receipt_seal: Digest32,\", \"hepta.intelligence-eval.product-execution.v1\", \"hepta.intelligence-eval.paired-on-policy-product-execution.v1\", \"hepta.intelligence-eval.product-evaluation-receipt.v1\", \"hepta.intelligence-eval.paired-on-policy-product-evaluation-receipt.v1\", \"hepta.intelligence-eval.product-frozen-plan.v1\", \"hepta.intelligence-eval.product-estimand.v1\", \"#[path = \\\"product_paired.rs\\\"]\", \"mod paired;\", \"pub use paired::freeze_paired_on_policy_product_evaluation_plan_v1;\", \"#[path = \\\"product_policy.rs\\\"]\", \"mod policy;\", \"pub use policy::ProductEvaluationPolicyV2;\", \"pub use policy::ProductEvaluationPolicyContextV2;\", \"pub use policy::ProductEvaluationPolicyInputV2;\", \"pub use policy::ProductEvaluationPolicyBindingsV2;\", \"pub use policy::ProductEvaluationPolicyCommitmentsV2;\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = [[\"impl ProductFrozenEvaluationPlanV1 {\", \"fn validate_integrity(\", \"if self.receipt_seal != product_plan_seal(self)?\", \"return Err(ProductEvaluationError::Integrity(\", \"let expected = Digest32::of_bytes(&plan_estimand_commitment_bytes(self)?);\", \"if self.frozen_plan.estimand_digest != expected\", \"return Err(ProductEvaluationError::Binding(\", \"Ok(())\"], [\"impl ProductTemporalEvaluationReceiptV1 {\", \"fn validate_integrity(\", \"self.product_plan.validate_integrity()?;\", \"paired::commitments::require_receipt_mode(&self.product_plan, self.paired_input_digest)?;\", \"self.candidate.validate_integrity()?;\", \"self.baseline.validate_integrity()?;\", \"let expected_metrics = derive_metric_gates(\", \"&self.product_plan,\", \"&self.candidate.estimate,\", \"&self.baseline.estimate,\", \"if expected_metrics != self.metrics\", \"return Err(ProductEvaluationError::Integrity(\", \"let (estimate, support, confidence) = paired::commitments::comparison(\", \"&self.product_plan, self.paired_input_digest,\", \"&self.candidate, &self.baseline, &self.metrics,\", \"if self.estimate_receipt_digest != estimate\", \"self.support_audit_digest != support\", \"self.confidence_receipt_digest != confidence\", \"return Err(ProductEvaluationError::Integrity(\", \"let expected_execution = execution_digest(\", \"&self.holdout,\", \"&self.product_plan,\", \"&self.candidate,\", \"&self.baseline,\", \"&self.metrics,\", \"&self.snapshot_ids,\", \"&self.future_window_ids,\", \"estimate,\", \"support,\", \"confidence,\", \"if self.execution_digest != expected_execution\", \"self.receipt_seal != product_evaluation_seal(self)?\", \"return Err(ProductEvaluationError::Integrity(\", \"Ok(())\"], [\"fn evaluate_temporal_comparison<P: FinalHoldoutProviderV1>\", \"if matches!(product_plan.comparison_mode(), ProductComparisonModeV1::PairedOnPolicy(_))\", \"return self.evaluate_paired_on_policy_comparison(\", \"product_plan, candidate_plan, baseline_plan, provider,\", \"product_plan.validate_integrity()?;\", \"candidate_plan.plan_digest != product_plan.candidate_temporal_plan_digest\", \"baseline_plan.plan_digest != product_plan.baseline_temporal_plan_digest\", \"candidate_plan.plan_digest != candidate_plan.canonical_digest()?\", \"baseline_plan.plan_digest != baseline_plan.canonical_digest()?\", \"candidate_plan.objective_digest != product_plan.frozen_plan.objective_digest\", \"baseline_plan.objective_digest != product_plan.frozen_plan.objective_digest\", \"let manifest = provider.manifest_digest()?;\", \"if manifest.is_zero() || manifest != product_plan.frozen_plan.final_holdout_digest\", \"let holdout = self.holdout.consume(&product_plan.frozen_plan)?;\", \"match holdout.disposition {\", \"HoldoutUseDispositionV1::Recorded => {}\", \"HoldoutUseDispositionV1::IdempotentReplay => {\", \"return Err(ProductEvaluationError::Binding(\", \"let mut inputs = provider.release_after_consumption(&holdout)?;\", \"validate_released_inputs(&product_plan.frozen_plan, &inputs)?;\", \"validate_comparable_observations(\", \"&inputs.candidate_observations,\", \"&inputs.baseline_observations,\", \"normalize_unique_ids(&mut inputs.snapshot_ids)?;\", \"normalize_unique_ids(&mut inputs.future_window_ids)?;\", \"let candidate = evaluate_temporal_holdout(\", \"candidate_plan,\", \"&inputs.training,\", \"&inputs.targets,\", \"&inputs.candidate_observations,\", \"&inputs.assignments,\", \"let baseline = evaluate_temporal_holdout(\", \"baseline_plan,\", \"&inputs.training,\", \"&inputs.targets,\", \"&inputs.baseline_observations,\", \"&inputs.assignments,\", \"candidate.validate_integrity()?;\", \"baseline.validate_integrity()?;\", \"let metrics = derive_metric_gates(product_plan, &candidate.estimate, &baseline.estimate)?;\", \"comparison_digests(&candidate, &baseline, &metrics);\", \"let execution_digest = execution_digest(\", \"authority: AuthorityPosture::DENY_ALL,\", \"execution_evaluator: None,\", \"paired_input_digest: None,\", \"receipt.receipt_seal = product_evaluation_seal(&receipt)?;\", \"Ok(receipt)\"]]\nrequired_function_order = [\n  { function = \"fn freeze_product_evaluation_plan_v1(\", sequence = [\"fn freeze_product_evaluation_plan_v1(\", \"mut plan: CrossFoldPlanV1,\\n    mut metric_roles: Vec<MetricRoleContractV2>,\\n    mut metric_sources: Vec<ProductMetricSourceContractV1>,\\n    candidate_temporal: &TemporalEvaluationPlan,\\n    baseline_temporal: &TemporalEvaluationPlan,\\n) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError> {\\n    let metric_contracts = normalize_product_plan_inputs(\\n        plan.objective_digest, plan.family_alpha_ppm, plan.simultaneous_comparisons,\\n        plan.estimand_digest, &plan.metric_contracts, &mut metric_roles,\\n        &mut metric_sources, candidate_temporal, baseline_temporal,\\n    )?;\\n\\n    let base_estimand_digest = plan.estimand_digest;\\n    plan.estimand_digest = bound_estimand_digest(\\n        base_estimand_digest,\\n        candidate_temporal.plan_digest,\\n        baseline_temporal.plan_digest,\\n        &metric_sources,\\n    )?;\\n    let frozen_plan = freeze_cross_fold_plan_v2(plan, metric_roles.clone())?;\\n    let mut receipt = ProductFrozenEvaluationPlanV1 {\\n        frozen_plan,\\n        metric_roles,\\n        metric_contracts,\\n        metric_sources,\\n        base_estimand_digest,\\n        candidate_temporal_plan_digest: candidate_temporal.plan_digest,\\n        baseline_temporal_plan_digest: baseline_temporal.plan_digest,\\n        comparison: ProductComparisonModeV1::SharedBehavior,\\n        receipt_seal: Digest32::ZERO,\\n    };\\n    receipt.receipt_seal = product_plan_seal(&receipt)?;\\n    Ok(receipt)\\n}\"], top_level = [\"let metric_contracts = normalize_product_plan_inputs(\"] },\n  { function = \"fn normalize_product_plan_inputs(\", sequence = [\"fn normalize_product_plan_inputs(\", \"objective_digest: Digest32,\\n    family_alpha_ppm: u32,\\n    simultaneous_comparisons: u32,\\n    estimand_digest: Digest32,\\n    original_metric_contracts: &[MetricContractV1],\\n    metric_roles: &mut [MetricRoleContractV2],\\n    metric_sources: &mut [ProductMetricSourceContractV1],\\n    candidate_temporal: &TemporalEvaluationPlan,\\n    baseline_temporal: &TemporalEvaluationPlan,\\n) -> Result<Vec<MetricContractV1>, ProductEvaluationError> {\\n    if candidate_temporal.plan_digest.is_zero()\\n        || baseline_temporal.plan_digest.is_zero()\\n        || candidate_temporal.plan_digest != candidate_temporal.canonical_digest()?\\n        || baseline_temporal.plan_digest != baseline_temporal.canonical_digest()?\\n        || candidate_temporal.objective_digest != objective_digest\\n        || baseline_temporal.objective_digest != objective_digest\\n        || candidate_temporal.confidence.family_alpha_ppm != family_alpha_ppm\\n        || baseline_temporal.confidence.family_alpha_ppm != family_alpha_ppm\\n        || candidate_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons\\n        || baseline_temporal.confidence.simultaneous_comparisons != simultaneous_comparisons\\n    {\\n        return Err(ProductEvaluationError::Binding(               ));\\n    }\\n    if original_metric_contracts.is_empty() || estimand_digest.is_zero() {\\n        return Err(ProductEvaluationError::Binding(                    ));\\n    }\\n    let mut metric_contracts = original_metric_contracts.to_vec();\\n    metric_contracts.sort_by_key(|row| row.metric_id.clone());\\n    metric_sources.sort_by_key(|row| row.metric_id.clone());\\n    metric_roles.sort_by_key(|row| row.metric_id.clone());\\n    if metric_sources.len() != metric_contracts.len()\\n        || metric_roles.len() != metric_contracts.len()\\n        || metric_contracts\\n            .iter()\\n            .zip(metric_sources.iter())\\n            .any(|(contract, source)| contract.metric_id != source.metric_id)\\n        || metric_contracts\\n            .iter()\\n            .zip(metric_roles.iter())\\n            .any(|(contract, role)| contract.metric_id != role.metric_id)\\n    {\\n        return Err(ProductEvaluationError::Binding(                        ));\\n    }\\n\\n    Ok(metric_contracts)\\n}\"], top_level = [\"if candidate_temporal.plan_digest.is_zero()\"] },\n  { function = \"fn release_paired_after_consumption(\", sequence = [\"fn release_paired_after_consumption(\", \"Err(ProductProviderErrorV1::Rejected)\"], top_level = [\"Err(ProductProviderErrorV1::Rejected)\"] },\n  { function = \"fn validate_comparable_observations(\", sequence = [\"if candidate.len() != baseline.len()\", \"return Err(ProductEvaluationError::Binding(\", \"let mut left: Vec<_> = candidate.iter().collect();\", \"let mut right: Vec<_> = baseline.iter().collect();\", \"left.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));\", \"right.sort_by(|a, b| a.decision_id.cmp(&b.decision_id));\", \"for (left, right) in left.into_iter().zip(right) {\", \"if left.decision_id != right.decision_id\", \"left.chosen_action != right.chosen_action\", \"left.complete_candidates != right.complete_candidates\", \"left.finalized_outcome != right.finalized_outcome\", \"left.outcome_observed_at != right.outcome_observed_at\", \"left.outcome_evidence != right.outcome_evidence\", \"left.actions.len() != right.actions.len()\", \"return Err(ProductEvaluationError::Binding(\", \"left.actions.iter().collect();\", \"right.actions.iter().collect();\", \"left_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));\", \"right_actions.sort_by(|a, b| a.action_id.cmp(&b.action_id));\", \".zip(right_actions)\", \".any(|(left, right)| {\", \"left.action_id != right.action_id\", \"left.behavior_probability != right.behavior_probability\", \"return Err(ProductEvaluationError::Binding(\", \"Ok(())\"], top_level = [\"if candidate.len() != baseline.len()\", \"for (left, right) in left.into_iter().zip(right) {\", \"Ok(())\"] },\n  { function = \"fn derive_metric_gates(\", sequence = [\"candidate\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"baseline\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"if plan.metric_contracts.len() != plan.metric_sources.len()\", \"return Err(ProductEvaluationError::Integrity(\", \"let mut metrics = Vec::with_capacity(plan.metric_contracts.len());\", \"for (contract, source) in plan.metric_contracts.iter().zip(plan.metric_sources.iter()) {\", \"if contract.metric_id != source.metric_id\", \"return Err(ProductEvaluationError::Integrity(\", \"let candidate_interval = select_interval(candidate, source.source);\", \"let baseline_interval = select_interval(baseline, source.source);\", \"candidate.point.evidence_digest,\", \"candidate.evidence_digest,\", \"baseline.point.evidence_digest,\", \"baseline.evidence_digest,\", \"metrics.push(MetricGateV1 {\", \"metric_id: contract.metric_id.clone(),\", \"direction: contract.direction,\", \"candidate: EvaluationIntervalV1 {\", \"lower: candidate_interval.lower,\", \"upper: candidate_interval.upper,\", \"baseline: EvaluationIntervalV1 {\", \"lower: baseline_interval.lower,\", \"upper: baseline_interval.upper,\", \"safety_floor: contract.safety_floor,\", \"support_digest: Digest32::of_bytes(&support),\", \"Ok(metrics)\"], top_level = [\"candidate\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"baseline\\n        .validate_integrity()\\n        .map_err(TemporalEvaluationError::Confidence)?;\", \"let mut metrics = Vec::with_capacity(plan.metric_contracts.len());\", \"Ok(metrics)\"] },\n  { function = \"fn select_interval(\", sequence = [\"match source {\", \"ProductMetricSourceV1::Ips => estimate.ips,\", \"ProductMetricSourceV1::Snips => estimate.snips,\", \"ProductMetricSourceV1::DoublyRobust => estimate.doubly_robust,\"], top_level = [\"match source {\"] },\n  { function = \"fn execution_digest(\", sequence = [\"let mut bytes = match plan.comparison_mode() {\", \"ProductComparisonModeV1::SharedBehavior => b                                              .to_vec(),\", \"ProductComparisonModeV1::PairedOnPolicy(_) => b                                                               .to_vec(),\", \"holdout.record_digest,\", \"holdout.use_receipt.use_digest,\", \"plan.frozen_plan.plan_digest,\", \"candidate.evidence_digest,\", \"baseline.evidence_digest,\", \"estimate_digest,\", \"support_digest,\", \"confidence_digest,\", \"bytes.extend_from_slice(digest.as_array());\", \"for metric in metrics {\", \"push_id(&mut bytes, &metric.metric_id);\", \"bytes.extend_from_slice(metric.support_digest.as_array());\", \"push_ids(&mut bytes, snapshot_ids);\", \"push_ids(&mut bytes, future_window_ids);\", \"Digest32::of_bytes(&bytes)\"], top_level = [\"let mut bytes = match plan.comparison_mode() {\", \"push_ids(&mut bytes, snapshot_ids);\", \"push_ids(&mut bytes, future_window_ids);\", \"Digest32::of_bytes(&bytes)\"] },\n  { function = \"fn product_evaluation_seal(\", sequence = [\"paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;\", \"let mut bytes = match receipt.product_plan.comparison_mode() {\", \"ProductComparisonModeV1::SharedBehavior => b                                                       .to_vec(),\", \"ProductComparisonModeV1::PairedOnPolicy(_) => {\", \"let mut bytes = b                                                                        .to_vec();\", \"receipt.paired_input_digest.ok_or(ProductEvaluationError::Integrity(\", \"for digest in [\", \"receipt.holdout.record_digest,\", \"receipt.product_plan.frozen_plan.plan_digest,\", \"receipt.candidate.evidence_digest,\", \"receipt.baseline.evidence_digest,\", \"receipt.estimate_receipt_digest,\", \"receipt.support_audit_digest,\", \"receipt.confidence_receipt_digest,\", \"receipt.execution_digest,\", \"for metric in &receipt.metrics {\", \"push_metric(&mut bytes, metric);\", \"push_ids(&mut bytes, &receipt.snapshot_ids);\", \"push_ids(&mut bytes, &receipt.future_window_ids);\", \"bytes.push(u8::from(receipt.authority.grants_any()));\", \"Ok(Digest32::of_bytes(&bytes))\"], top_level = [\"paired::commitments::require_receipt_mode(&receipt.product_plan, receipt.paired_input_digest)?;\", \"let mut bytes = match receipt.product_plan.comparison_mode() {\", \"push_ids(&mut bytes, &receipt.snapshot_ids);\", \"push_ids(&mut bytes, &receipt.future_window_ids);\", \"Ok(Digest32::of_bytes(&bytes))\"] },\n  { function = \"fn product_plan_commitment_bytes(\", sequence = [\"if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {\", \"return paired::commitments::plan(plan, pairing);\", \"let mut bytes = b                                                .to_vec();\", \"plan.frozen_plan.plan_digest,\", \"plan.frozen_plan.metric_contract_digest,\", \"plan.base_estimand_digest,\", \"plan.candidate_temporal_plan_digest,\", \"plan.baseline_temporal_plan_digest,\", \"for contract in &plan.metric_contracts {\", \"push_id(&mut bytes, &contract.metric_id);\", \"match contract.direction {\", \"EvaluationDirectionV1::Maximize => 0,\", \"EvaluationDirectionV1::Minimize => 1,\", \"match contract.safety_floor {\", \"Some(value) => {\", \"bytes.push(1);\", \"bytes.extend_from_slice(&value.raw().to_be_bytes());\", \"None => bytes.push(0),\", \"for role in &plan.metric_roles {\", \"push_id(&mut bytes, &role.metric_id);\", \"match role.role {\", \"MetricRoleV2::PrimarySuperiority {\", \"minimum_improvement,\", \"bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\", \"MetricRoleV2::NonInferiority { maximum_regression }\", \"bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\", \"MetricRoleV2::AbsoluteConstraint => bytes.push(2),\", \"for source in &plan.metric_sources {\", \"push_id(&mut bytes, &source.metric_id);\", \"bytes.push(source.source.tag());\", \"Ok(bytes)\"], top_level = [\"if let ProductComparisonModeV1::PairedOnPolicy(pairing) = plan.comparison_mode() {\", \"for contract in &plan.metric_contracts {\", \"for role in &plan.metric_roles {\", \"for source in &plan.metric_sources {\", \"Ok(bytes)\"] },\n  { function = \"fn plan_estimand_commitment_bytes(\", sequence = [\"match plan.comparison_mode() {\", \"ProductComparisonModeV1::SharedBehavior => product_estimand_commitment_bytes(\", \"plan.base_estimand_digest,\", \"plan.candidate_temporal_plan_digest,\", \"plan.baseline_temporal_plan_digest,\", \"&plan.metric_sources,\", \"ProductComparisonModeV1::PairedOnPolicy(_) => paired::commitments::estimand(plan),\"], top_level = [\"match plan.comparison_mode() {\"] },\n  { function = \"fn normalize_unique_ids(\", sequence = [\"values.sort();\", \"if values.windows(2).any(|pair| pair[0] == pair[1])\", \"return Err(ProductEvaluationError::Binding(\", \"Ok(())\"], top_level = [\"values.sort();\", \"if values.windows(2).any(|pair| pair[0] == pair[1])\", \"Ok(())\"] },\n]\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "required": [
+          "pub use product_runner::OnPolicyArmBindingV1;",
+          "pub use product_runner::OnPolicyArmProvenanceV1;",
+          "pub use product_runner::OnPolicyEvaluationArmInputsV1;",
+          "pub use product_runner::OnPolicyPairContractV1;",
+          "pub use product_runner::OnPolicyPairingContractV1;",
+          "pub use product_runner::OnPolicyTemporalComparisonInputsV1;",
+          "pub use product_runner::ProductComparisonModeV1;",
+          "pub use product_runner::freeze_paired_on_policy_product_evaluation_plan_v1;"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [],
+        "required_function_order": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "required": [
+          "pub use product_runner::OnPolicyArmBindingV1;",
+          "pub use product_runner::OnPolicyArmProvenanceV1;",
+          "pub use product_runner::OnPolicyEvaluationArmInputsV1;",
+          "pub use product_runner::OnPolicyPairContractV1;",
+          "pub use product_runner::OnPolicyPairingContractV1;",
+          "pub use product_runner::OnPolicyTemporalComparisonInputsV1;",
+          "pub use product_runner::ProductComparisonModeV1;",
+          "pub use product_runner::freeze_paired_on_policy_product_evaluation_plan_v1;",
+          "pub use product_runner::ProductEvaluationPolicyV2;",
+          "pub use product_runner::ProductEvaluationPolicyContextV2;",
+          "pub use product_runner::ProductEvaluationPolicyInputV2;",
+          "pub use product_runner::ProductEvaluationPolicyBindingsV2;",
+          "pub use product_runner::ProductEvaluationPolicyCommitmentsV2;"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [],
+        "required_function_order": []
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/lib.rs\"\nrequired = [\"pub use product_runner::OnPolicyArmBindingV1;\", \"pub use product_runner::OnPolicyArmProvenanceV1;\", \"pub use product_runner::OnPolicyEvaluationArmInputsV1;\", \"pub use product_runner::OnPolicyPairContractV1;\", \"pub use product_runner::OnPolicyPairingContractV1;\", \"pub use product_runner::OnPolicyTemporalComparisonInputsV1;\", \"pub use product_runner::ProductComparisonModeV1;\", \"pub use product_runner::freeze_paired_on_policy_product_evaluation_plan_v1;\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = []\nrequired_function_order = []\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/lib.rs\"\nrequired = [\"pub use product_runner::OnPolicyArmBindingV1;\", \"pub use product_runner::OnPolicyArmProvenanceV1;\", \"pub use product_runner::OnPolicyEvaluationArmInputsV1;\", \"pub use product_runner::OnPolicyPairContractV1;\", \"pub use product_runner::OnPolicyPairingContractV1;\", \"pub use product_runner::OnPolicyTemporalComparisonInputsV1;\", \"pub use product_runner::ProductComparisonModeV1;\", \"pub use product_runner::freeze_paired_on_policy_product_evaluation_plan_v1;\", \"pub use product_runner::ProductEvaluationPolicyV2;\", \"pub use product_runner::ProductEvaluationPolicyContextV2;\", \"pub use product_runner::ProductEvaluationPolicyInputV2;\", \"pub use product_runner::ProductEvaluationPolicyBindingsV2;\", \"pub use product_runner::ProductEvaluationPolicyCommitmentsV2;\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = []\nrequired_function_order = []\n\n"
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+        "required": [
+          "pub enum MetricRoleV2 {",
+          "PrimarySuperiority { minimum_improvement: FixedQ32 },",
+          "NonInferiority { maximum_regression: FixedQ32 },",
+          "AbsoluteConstraint,",
+          "hepta.intelligence-eval.metric-contract.v2",
+          "hepta.intelligence-eval.cross-fold-plan.v3"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn freeze_cross_fold_plan_v2(",
+            "sequence": [
+              "let mut contracts = plan.metric_contracts.clone();",
+              "let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;",
+              "let mut receipt = freeze_cross_fold_plan(plan)?;",
+              "let mut bytes = b                                            .to_vec();",
+              "bytes.extend_from_slice(receipt.plan_digest.as_array());",
+              "bytes.extend_from_slice(contract_digest.as_array());",
+              "receipt.plan_digest = Digest32::of_bytes(&bytes);",
+              "receipt.metric_contract_digest = contract_digest;",
+              "receipt.receipt_seal = frozen_plan_receipt_seal(&receipt);",
+              "Ok(receipt)"
+            ],
+            "top_level": [
+              "let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;",
+              "let mut receipt = freeze_cross_fold_plan(plan)?;",
+              "receipt.metric_contract_digest = contract_digest;",
+              "Ok(receipt)"
+            ]
+          },
+          {
+            "function": "fn decide_independently_v2(",
+            "sequence": [
+              "let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;",
+              "let roles: BTreeMap<_, _> = metric_roles\n        .into_iter()\n        .map(|contract| (contract.metric_id, contract.role))\n        .collect();",
+              "decide_with_metric_contract(bundle, now, contract_digest, |metric| {",
+              "let improvement = match metric.direction {",
+              "EvaluationDirectionV1::Maximize => {",
+              "i128::from(metric.candidate.lower.raw()) - i128::from(metric.baseline.upper.raw())",
+              "EvaluationDirectionV1::Minimize => {",
+              "i128::from(metric.baseline.lower.raw()) - i128::from(metric.candidate.upper.raw())",
+              "roles.get(&metric.metric_id).is_some_and(|role| match role {",
+              "MetricRoleV2::PrimarySuperiority {",
+              "minimum_improvement,",
+              "improvement > i128::from(minimum_improvement.raw()),",
+              "MetricRoleV2::NonInferiority { maximum_regression } => {",
+              "improvement >= -i128::from(maximum_regression.raw())",
+              "MetricRoleV2::AbsoluteConstraint => true,"
+            ],
+            "top_level": [
+              "let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;",
+              "decide_with_metric_contract(bundle, now, contract_digest, |metric| {"
+            ]
+          },
+          {
+            "function": "fn role_contract_commitment_bytes(",
+            "sequence": [
+              "let legacy_digest = digest_metric_contracts(contracts)?;",
+              "if metric_roles.len() != contracts.len()",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "metric_roles.sort_by_key(|contract| contract.metric_id.clone());",
+              "let mut bytes = b                                            .to_vec();",
+              "bytes.extend_from_slice(legacy_digest.as_array());",
+              "let mut primary_count = 0;",
+              "for (contract, role) in contracts.iter().zip(metric_roles.iter()) {",
+              "if contract.metric_id != role.metric_id",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "push_id(&mut bytes, &role.metric_id);",
+              "match role.role {",
+              "MetricRoleV2::PrimarySuperiority {",
+              "minimum_improvement,",
+              "if minimum_improvement < FixedQ32::ZERO",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "primary_count += 1;",
+              "bytes.push(0);",
+              "bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());",
+              "MetricRoleV2::NonInferiority { maximum_regression } => {",
+              "if maximum_regression < FixedQ32::ZERO",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "bytes.push(1);",
+              "bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());",
+              "MetricRoleV2::AbsoluteConstraint => {",
+              "if contract.safety_floor.is_none()",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "bytes.push(2);",
+              "if primary_count == 0",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "let legacy_digest = digest_metric_contracts(contracts)?;",
+              "metric_roles.sort_by_key(|contract| contract.metric_id.clone());",
+              "let mut primary_count = 0;",
+              "for (contract, role) in contracts.iter().zip(metric_roles.iter()) {",
+              "if primary_count == 0",
+              "Ok(bytes)"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+        "required": [
+          "pub enum MetricRoleV2 {",
+          "PrimarySuperiority { minimum_improvement: FixedQ32 },",
+          "NonInferiority { maximum_regression: FixedQ32 },",
+          "AbsoluteConstraint,",
+          "hepta.intelligence-eval.metric-contract.v2",
+          "hepta.intelligence-eval.cross-fold-plan.v3"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "TrustedLearningSignerV1",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "TcpStream::connect",
+          "File::open",
+          "OpenOptions",
+          "SystemTime::now",
+          "Deserialize",
+          "unsafe",
+          "pub receipt_seal",
+          "pub paired_input_digest",
+          "pub comparison",
+          ".maximum_weight =",
+          ".family_alpha_ppm ="
+        ],
+        "required_order": [],
+        "required_function_order": [
+          {
+            "function": "fn freeze_cross_fold_plan_v2(",
+            "sequence": [
+              "fn freeze_cross_fold_plan_v2(",
+              "mut plan: CrossFoldPlanV1,\n    mut metric_roles: Vec<MetricRoleContractV2>,\n) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {\n    let commitments = cross_fold_plan_v2_commitments(&mut plan, &mut metric_roles)?;\n    frozen_plan_from_commitments(plan, commitments)\n}"
+            ],
+            "top_level": [
+              "let commitments = cross_fold_plan_v2_commitments(&mut plan, &mut metric_roles)?;"
+            ]
+          },
+          {
+            "function": "fn cross_fold_plan_v2_commitments(",
+            "sequence": [
+              "fn cross_fold_plan_v2_commitments(",
+              "plan: &mut CrossFoldPlanV1,\n    metric_roles: &mut [MetricRoleContractV2],\n) -> Result<CrossFoldPlanCommitmentsV2, EvaluationClosureError> {\n    let mut contracts = plan.metric_contracts.clone();\n    let contract_digest = digest_role_contracts(&mut contracts, metric_roles)?;\n    let original = cross_fold_plan_commitments(plan)?;\n    let mut bytes = b                                            .to_vec();\n    bytes.extend_from_slice(original.plan_digest.as_array());\n    bytes.extend_from_slice(contract_digest.as_array());\n    Ok(CrossFoldPlanCommitmentsV2 {\n        metric_contract_digest: contract_digest,\n        plan_digest: Digest32::of_bytes(&bytes),\n    })\n}"
+            ],
+            "top_level": [
+              "let mut contracts = plan.metric_contracts.clone();"
+            ]
+          },
+          {
+            "function": "fn decide_independently_v2(",
+            "sequence": [
+              "let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;",
+              "let roles: BTreeMap<_, _> = metric_roles\n        .into_iter()\n        .map(|contract| (contract.metric_id, contract.role))\n        .collect();",
+              "decide_with_metric_contract(bundle, now, contract_digest, |metric| {",
+              "let improvement = match metric.direction {",
+              "EvaluationDirectionV1::Maximize => {",
+              "i128::from(metric.candidate.lower.raw()) - i128::from(metric.baseline.upper.raw())",
+              "EvaluationDirectionV1::Minimize => {",
+              "i128::from(metric.baseline.lower.raw()) - i128::from(metric.candidate.upper.raw())",
+              "roles.get(&metric.metric_id).is_some_and(|role| match role {",
+              "MetricRoleV2::PrimarySuperiority {",
+              "minimum_improvement,",
+              "improvement > i128::from(minimum_improvement.raw()),",
+              "MetricRoleV2::NonInferiority { maximum_regression } => {",
+              "improvement >= -i128::from(maximum_regression.raw())",
+              "MetricRoleV2::AbsoluteConstraint => true,"
+            ],
+            "top_level": [
+              "let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;",
+              "decide_with_metric_contract(bundle, now, contract_digest, |metric| {"
+            ]
+          },
+          {
+            "function": "fn role_contract_commitment_bytes(",
+            "sequence": [
+              "let legacy_digest = digest_metric_contracts(contracts)?;",
+              "if metric_roles.len() != contracts.len()",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "metric_roles.sort_by_key(|contract| contract.metric_id.clone());",
+              "let mut bytes = b                                            .to_vec();",
+              "bytes.extend_from_slice(legacy_digest.as_array());",
+              "let mut primary_count = 0;",
+              "for (contract, role) in contracts.iter().zip(metric_roles.iter()) {",
+              "if contract.metric_id != role.metric_id",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "push_id(&mut bytes, &role.metric_id);",
+              "match role.role {",
+              "MetricRoleV2::PrimarySuperiority {",
+              "minimum_improvement,",
+              "if minimum_improvement < FixedQ32::ZERO",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "primary_count += 1;",
+              "bytes.push(0);",
+              "bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());",
+              "MetricRoleV2::NonInferiority { maximum_regression } => {",
+              "if maximum_regression < FixedQ32::ZERO",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "bytes.push(1);",
+              "bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());",
+              "MetricRoleV2::AbsoluteConstraint => {",
+              "if contract.safety_floor.is_none()",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "bytes.push(2);",
+              "if primary_count == 0",
+              "return Err(EvaluationClosureError::FrozenPlanBindingMismatch(",
+              "Ok(bytes)"
+            ],
+            "top_level": [
+              "let legacy_digest = digest_metric_contracts(contracts)?;",
+              "metric_roles.sort_by_key(|contract| contract.metric_id.clone());",
+              "let mut primary_count = 0;",
+              "for (contract, role) in contracts.iter().zip(metric_roles.iter()) {",
+              "if primary_count == 0",
+              "Ok(bytes)"
+            ]
+          }
+        ]
+      },
+      "before_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/metric_roles.rs\"\nrequired = [\"pub enum MetricRoleV2 {\", \"PrimarySuperiority { minimum_improvement: FixedQ32 },\", \"NonInferiority { maximum_regression: FixedQ32 },\", \"AbsoluteConstraint,\", \"hepta.intelligence-eval.metric-contract.v2\", \"hepta.intelligence-eval.cross-fold-plan.v3\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = []\nrequired_function_order = [{ \"function\" = \"fn freeze_cross_fold_plan_v2(\", \"sequence\" = [\"let mut contracts = plan.metric_contracts.clone();\", \"let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;\", \"let mut receipt = freeze_cross_fold_plan(plan)?;\", \"let mut bytes = b                                            .to_vec();\", \"bytes.extend_from_slice(receipt.plan_digest.as_array());\", \"bytes.extend_from_slice(contract_digest.as_array());\", \"receipt.plan_digest = Digest32::of_bytes(&bytes);\", \"receipt.metric_contract_digest = contract_digest;\", \"receipt.receipt_seal = frozen_plan_receipt_seal(&receipt);\", \"Ok(receipt)\"], \"top_level\" = [\"let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;\", \"let mut receipt = freeze_cross_fold_plan(plan)?;\", \"receipt.metric_contract_digest = contract_digest;\", \"Ok(receipt)\"] }, { \"function\" = \"fn decide_independently_v2(\", \"sequence\" = [\"let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;\", \"let roles: BTreeMap<_, _> = metric_roles\\n        .into_iter()\\n        .map(|contract| (contract.metric_id, contract.role))\\n        .collect();\", \"decide_with_metric_contract(bundle, now, contract_digest, |metric| {\", \"let improvement = match metric.direction {\", \"EvaluationDirectionV1::Maximize => {\", \"i128::from(metric.candidate.lower.raw()) - i128::from(metric.baseline.upper.raw())\", \"EvaluationDirectionV1::Minimize => {\", \"i128::from(metric.baseline.lower.raw()) - i128::from(metric.candidate.upper.raw())\", \"roles.get(&metric.metric_id).is_some_and(|role| match role {\", \"MetricRoleV2::PrimarySuperiority {\", \"minimum_improvement,\", \"improvement > i128::from(minimum_improvement.raw()),\", \"MetricRoleV2::NonInferiority { maximum_regression } => {\", \"improvement >= -i128::from(maximum_regression.raw())\", \"MetricRoleV2::AbsoluteConstraint => true,\"], \"top_level\" = [\"let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;\", \"decide_with_metric_contract(bundle, now, contract_digest, |metric| {\"] }, { \"function\" = \"fn role_contract_commitment_bytes(\", \"sequence\" = [\"let legacy_digest = digest_metric_contracts(contracts)?;\", \"if metric_roles.len() != contracts.len()\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"metric_roles.sort_by_key(|contract| contract.metric_id.clone());\", \"let mut bytes = b                                            .to_vec();\", \"bytes.extend_from_slice(legacy_digest.as_array());\", \"let mut primary_count = 0;\", \"for (contract, role) in contracts.iter().zip(metric_roles.iter()) {\", \"if contract.metric_id != role.metric_id\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"push_id(&mut bytes, &role.metric_id);\", \"match role.role {\", \"MetricRoleV2::PrimarySuperiority {\", \"minimum_improvement,\", \"if minimum_improvement < FixedQ32::ZERO\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"primary_count += 1;\", \"bytes.push(0);\", \"bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\", \"MetricRoleV2::NonInferiority { maximum_regression } => {\", \"if maximum_regression < FixedQ32::ZERO\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"bytes.push(1);\", \"bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\", \"MetricRoleV2::AbsoluteConstraint => {\", \"if contract.safety_floor.is_none()\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"bytes.push(2);\", \"if primary_count == 0\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"Ok(bytes)\"], \"top_level\" = [\"let legacy_digest = digest_metric_contracts(contracts)?;\", \"metric_roles.sort_by_key(|contract| contract.metric_id.clone());\", \"let mut primary_count = 0;\", \"for (contract, role) in contracts.iter().zip(metric_roles.iter()) {\", \"if primary_count == 0\", \"Ok(bytes)\"] }]\n\n",
+      "after_raw": "[[protected_file]]\npath = \"codex-rs/hepta-intelligence-eval/src/metric_roles.rs\"\nrequired = [\"pub enum MetricRoleV2 {\", \"PrimarySuperiority { minimum_improvement: FixedQ32 },\", \"NonInferiority { maximum_regression: FixedQ32 },\", \"AbsoluteConstraint,\", \"hepta.intelligence-eval.metric-contract.v2\", \"hepta.intelligence-eval.cross-fold-plan.v3\"]\nforbidden = [\"SigningKey\", \"TrustedLearningSignerV1\", \"LearningEvidenceVerifierV1::new\", \"UnixStream::connect\", \"TcpStream::connect\", \"File::open\", \"OpenOptions\", \"SystemTime::now\", \"Deserialize\", \"unsafe\", \"pub receipt_seal\", \"pub paired_input_digest\", \"pub comparison\", \".maximum_weight =\", \".family_alpha_ppm =\"]\nrequired_order = []\nrequired_function_order = [\n  { function = \"fn freeze_cross_fold_plan_v2(\", sequence = [\"fn freeze_cross_fold_plan_v2(\", \"mut plan: CrossFoldPlanV1,\\n    mut metric_roles: Vec<MetricRoleContractV2>,\\n) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {\\n    let commitments = cross_fold_plan_v2_commitments(&mut plan, &mut metric_roles)?;\\n    frozen_plan_from_commitments(plan, commitments)\\n}\"], top_level = [\"let commitments = cross_fold_plan_v2_commitments(&mut plan, &mut metric_roles)?;\"] },\n  { function = \"fn cross_fold_plan_v2_commitments(\", sequence = [\"fn cross_fold_plan_v2_commitments(\", \"plan: &mut CrossFoldPlanV1,\\n    metric_roles: &mut [MetricRoleContractV2],\\n) -> Result<CrossFoldPlanCommitmentsV2, EvaluationClosureError> {\\n    let mut contracts = plan.metric_contracts.clone();\\n    let contract_digest = digest_role_contracts(&mut contracts, metric_roles)?;\\n    let original = cross_fold_plan_commitments(plan)?;\\n    let mut bytes = b                                            .to_vec();\\n    bytes.extend_from_slice(original.plan_digest.as_array());\\n    bytes.extend_from_slice(contract_digest.as_array());\\n    Ok(CrossFoldPlanCommitmentsV2 {\\n        metric_contract_digest: contract_digest,\\n        plan_digest: Digest32::of_bytes(&bytes),\\n    })\\n}\"], top_level = [\"let mut contracts = plan.metric_contracts.clone();\"] },\n  { function = \"fn decide_independently_v2(\", sequence = [\"let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;\", \"let roles: BTreeMap<_, _> = metric_roles\\n        .into_iter()\\n        .map(|contract| (contract.metric_id, contract.role))\\n        .collect();\", \"decide_with_metric_contract(bundle, now, contract_digest, |metric| {\", \"let improvement = match metric.direction {\", \"EvaluationDirectionV1::Maximize => {\", \"i128::from(metric.candidate.lower.raw()) - i128::from(metric.baseline.upper.raw())\", \"EvaluationDirectionV1::Minimize => {\", \"i128::from(metric.baseline.lower.raw()) - i128::from(metric.candidate.upper.raw())\", \"roles.get(&metric.metric_id).is_some_and(|role| match role {\", \"MetricRoleV2::PrimarySuperiority {\", \"minimum_improvement,\", \"improvement > i128::from(minimum_improvement.raw()),\", \"MetricRoleV2::NonInferiority { maximum_regression } => {\", \"improvement >= -i128::from(maximum_regression.raw())\", \"MetricRoleV2::AbsoluteConstraint => true,\"], top_level = [\"let contract_digest = digest_evaluation_roles(&bundle, &metric_roles)?;\", \"decide_with_metric_contract(bundle, now, contract_digest, |metric| {\"] },\n  { function = \"fn role_contract_commitment_bytes(\", sequence = [\"let legacy_digest = digest_metric_contracts(contracts)?;\", \"if metric_roles.len() != contracts.len()\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"metric_roles.sort_by_key(|contract| contract.metric_id.clone());\", \"let mut bytes = b                                            .to_vec();\", \"bytes.extend_from_slice(legacy_digest.as_array());\", \"let mut primary_count = 0;\", \"for (contract, role) in contracts.iter().zip(metric_roles.iter()) {\", \"if contract.metric_id != role.metric_id\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"push_id(&mut bytes, &role.metric_id);\", \"match role.role {\", \"MetricRoleV2::PrimarySuperiority {\", \"minimum_improvement,\", \"if minimum_improvement < FixedQ32::ZERO\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"primary_count += 1;\", \"bytes.push(0);\", \"bytes.extend_from_slice(&minimum_improvement.raw().to_be_bytes());\", \"MetricRoleV2::NonInferiority { maximum_regression } => {\", \"if maximum_regression < FixedQ32::ZERO\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"bytes.push(1);\", \"bytes.extend_from_slice(&maximum_regression.raw().to_be_bytes());\", \"MetricRoleV2::AbsoluteConstraint => {\", \"if contract.safety_floor.is_none()\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"bytes.push(2);\", \"if primary_count == 0\", \"return Err(EvaluationClosureError::FrozenPlanBindingMismatch(\", \"Ok(bytes)\"], top_level = [\"let legacy_digest = digest_metric_contracts(contracts)?;\", \"metric_roles.sort_by_key(|contract| contract.metric_id.clone());\", \"let mut primary_count = 0;\", \"for (contract, role) in contracts.iter().zip(metric_roles.iter()) {\", \"if primary_count == 0\", \"Ok(bytes)\"] },\n]\n\n"
+    },
+    {
+      "kind": "boundary",
+      "before": {
+        "id": "product_paired_original_plan_freeze",
+        "symbol": "freeze_paired_on_policy_product_evaluation_plan_v1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+        "definition_markers": [
+          "pub fn freeze_paired_on_policy_product_evaluation_plan_v1(",
+          "require_comparable_plans(candidate_temporal, baseline_temporal)?",
+          "inputs::validate_pair_contract(&pairing)?",
+          "frozen.validate_integrity()?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+        ],
+        "caller_markers": [
+          "freeze_paired_on_policy_product_evaluation_plan_v1("
+        ]
+      },
+      "after": {
+        "id": "product_paired_original_plan_freeze",
+        "symbol": "freeze_paired_on_policy_product_evaluation_plan_v1",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_paired.rs",
+        "definition_markers": [
+          "pub fn freeze_paired_on_policy_product_evaluation_plan_v1(",
+          "require_comparable_plans(candidate_temporal, baseline_temporal)?",
+          "inputs::validate_pair_contract(&pairing)?",
+          "frozen.validate_integrity()?"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs",
+          "codex-rs/hepta-intelligence-eval/src/product_policy.rs"
+        ],
+        "caller_markers": [
+          "freeze_paired_on_policy_product_evaluation_plan_v1("
+        ]
+      },
+      "before_raw": "[[boundary]]\nid = \"product_paired_original_plan_freeze\"\nsymbol = \"freeze_paired_on_policy_product_evaluation_plan_v1\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_paired.rs\"\ndefinition_markers = [\"pub fn freeze_paired_on_policy_product_evaluation_plan_v1(\", \"require_comparable_plans(candidate_temporal, baseline_temporal)?\", \"inputs::validate_pair_contract(&pairing)?\", \"frozen.validate_integrity()?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs\"]\ncaller_markers = [\"freeze_paired_on_policy_product_evaluation_plan_v1(\"]\n\n",
+      "after_raw": "[[boundary]]\nid = \"product_paired_original_plan_freeze\"\nsymbol = \"freeze_paired_on_policy_product_evaluation_plan_v1\"\ndefinition_path = \"codex-rs/hepta-intelligence-eval/src/product_paired.rs\"\ndefinition_markers = [\"pub fn freeze_paired_on_policy_product_evaluation_plan_v1(\", \"require_comparable_plans(candidate_temporal, baseline_temporal)?\", \"inputs::validate_pair_contract(&pairing)?\", \"frozen.validate_integrity()?\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs\", \"codex-rs/hepta-intelligence-eval/src/product_policy.rs\"]\ncaller_markers = [\"freeze_paired_on_policy_product_evaluation_plan_v1(\"]\n\n"
+    }
+  ],
+  "product_actual_caller_extensions": [
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_decode",
+        "symbol": "ProductEvaluationPolicyV2::from_canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn from_canonical_commitment_bytes(",
+          "let (context, input) = codec::decode(bytes)?;",
+          "ProductEvaluationPolicyV2::freeze(context, input)?;",
+          "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "from_canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "from_canonical_commitment_bytes"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_decode",
+        "symbol": "ProductEvaluationPolicyV2::from_canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn from_canonical_commitment_bytes(",
+          "let (context, input) = codec::decode(bytes)?;",
+          "ProductEvaluationPolicyV2::freeze(context, input)?;",
+          "ProductEvaluationPolicyV2::canonical_commitment_bytes(&policy)? != bytes"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+        ],
+        "caller_markers": [
+          "from_canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "from_canonical_commitment_bytes"
+        ]
+      }
+    },
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_encode",
+        "symbol": "ProductEvaluationPolicyV2::canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn canonical_commitment_bytes(&self) -> Result<Vec<u8>, ProductEvaluationError>",
+          "codec::encode(&self.context, &self.input)"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "canonical_commitment_bytes"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_encode",
+        "symbol": "ProductEvaluationPolicyV2::canonical_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn canonical_commitment_bytes(&self) -> Result<Vec<u8>, ProductEvaluationError>",
+          "codec::encode(&self.context, &self.input)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_encoding.rs"
+        ],
+        "caller_markers": [
+          "canonical_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "canonical_commitment_bytes"
+        ]
+      }
+    },
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_instantiate",
+        "symbol": "ProductEvaluationPolicyV2::instantiate",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn instantiate(",
+          "freeze_paired_on_policy_product_evaluation_plan_v1(",
+          "self.bound_plan(bindings)"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "instantiate("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "instantiate"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_instantiate",
+        "symbol": "ProductEvaluationPolicyV2::instantiate",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn instantiate(",
+          "freeze_paired_on_policy_product_evaluation_plan_v1(",
+          "self.bound_plan(bindings)"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy.rs"
+        ],
+        "caller_markers": [
+          "instantiate("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "instantiate"
+        ]
+      }
+    },
+    {
+      "before": {
+        "id": "product_pre_b_policy_v2_expected_commitments",
+        "symbol": "ProductEvaluationPolicyV2::expected_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn expected_commitment_bytes(",
+          "paired::commitments::estimand_fields(",
+          "cross_fold_plan_v2_commitments(&mut bound, &mut metric_roles)?;",
+          "paired::commitments::plan_fields(",
+          "Ok(ProductEvaluationPolicyCommitmentsV2 { plan, estimand, roles })"
+        ],
+        "product_callers": [],
+        "caller_markers": [
+          "expected_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "expected_commitment_bytes"
+        ]
+      },
+      "after": {
+        "id": "product_pre_b_policy_v2_expected_commitments",
+        "symbol": "ProductEvaluationPolicyV2::expected_commitment_bytes",
+        "definition_path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "definition_markers": [
+          "pub fn expected_commitment_bytes(",
+          "paired::commitments::estimand_fields(",
+          "cross_fold_plan_v2_commitments(&mut bound, &mut metric_roles)?;",
+          "paired::commitments::plan_fields(",
+          "Ok(ProductEvaluationPolicyCommitmentsV2 { plan, estimand, roles })"
+        ],
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_on_policy_policy.rs"
+        ],
+        "caller_markers": [
+          "expected_commitment_bytes("
+        ],
+        "receiver_type": "ProductEvaluationPolicyV2",
+        "receiver_methods": [
+          "expected_commitment_bytes"
+        ]
+      }
+    }
+  ]
+}

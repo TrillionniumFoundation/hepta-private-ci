@@ -1,0 +1,111 @@
+{
+  "schema": "hepta.learn.fixture-boxed-carriers-final-readback-and-lint-review.v1",
+  "source_child": {
+    "commit": "6e7f8bf879afb1b6b3de88089d7103c252c68a5c",
+    "tree": "5a91c32026674dc2536bbe43f5e4e0cc9a9086e1",
+    "parent": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "canonical": {
+      "timezone": "-0500",
+      "extra_lf": 0
+    },
+    "branch": "refs/heads/codex/learn-original-fixture-boxed-carriers-ce434-20261112-v1",
+    "fileChecks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+        "sha": "a170dd97b062dbc0838afc92c1ac93042ae3b64d",
+        "bytes": 8977,
+        "sha256": "8afca9f926450aa2850d2fe4b715be9237cee0df79ea6fb6d0997f1d17f5418b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+        "sha": "4ca274451d2b6b778c186f4402576ec256d590af",
+        "bytes": 6638,
+        "sha256": "5b979a5a2b7c0e544212310396188db0fdf117c457093853ed9429bec004bfe5"
+      },
+      {
+        "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/repair.patch",
+        "sha": "e0571e476d4adb1b640eb0271a5290bcdcbd4d21",
+        "bytes": 8683,
+        "sha256": "81db68c6a527bdeafced5990df0259666712df98711423b2d4bae8e15a4829a4"
+      },
+      {
+        "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/repair-audit.json",
+        "sha": "fd1a37c96a34f1a355cfd0bcf9fa113d4577dd09",
+        "bytes": 32270,
+        "sha256": "2445dedb614faa24a1fad53a7ad629805b246f598334d51269cb7fa63f9fba88"
+      },
+      {
+        "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/original-frame-analysis.json",
+        "sha": "8d091331a6aa2b25fc5dfe08e3d78ba249e732f5",
+        "bytes": 20860,
+        "sha256": "c291918724ea3c107049303ca57887a665f0d3ffdb2943460a9124ed2e9d441e"
+      }
+    ],
+    "compare": {
+      "ahead_by": 1,
+      "behind_by": 0,
+      "total_commits": 1,
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+          "status": "modified",
+          "sha": "4ca274451d2b6b778c186f4402576ec256d590af",
+          "additions": 54,
+          "deletions": 50
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+          "status": "modified",
+          "sha": "a170dd97b062dbc0838afc92c1ac93042ae3b64d",
+          "additions": 34,
+          "deletions": 30
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/original-frame-analysis.json",
+          "status": "added",
+          "sha": "8d091331a6aa2b25fc5dfe08e3d78ba249e732f5",
+          "additions": 615,
+          "deletions": 0
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/repair-audit.json",
+          "status": "added",
+          "sha": "fd1a37c96a34f1a355cfd0bcf9fa113d4577dd09",
+          "additions": 369,
+          "deletions": 0
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/boxed-fixture-carriers-20261112/repair.patch",
+          "status": "added",
+          "sha": "e0571e476d4adb1b640eb0271a5290bcdcbd4d21",
+          "additions": 204,
+          "deletions": 0
+        }
+      ]
+    },
+    "execution": "source-only; no Rust/Python/native/fmt/H run"
+  },
+  "targeted_lint_review": {
+    "repository_toolchain": {
+      "path": "codex-rs/rust-toolchain.toml",
+      "source": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "channel": "1.96.0"
+    },
+    "official_source": {
+      "repository": "rust-lang/rust",
+      "ref": "1.96.0",
+      "path": "src/tools/clippy/clippy_lints/src/manual_async_fn.rs",
+      "blob": "bee3b19b597c033d6ff6f74ccf0015b5c7b63579",
+      "sha256": "74bac3d186229b817ff7079a2e90fceeecc011442c5c16f45f1b9b243e498a79"
+    },
+    "decision": "The pinned manual_async_fn lint requires desugared_async_block to match the enclosing block's direct tail expression as ExprKind::Closure with an async-block coroutine. Both edited helper tails are the Box::pin function call whose argument is the async block. The direct tail is a Call, so this specific lint does not match these two helpers.",
+    "scope": "Static check of manual_async_fn only, not Clippy execution or proof about every lint.",
+    "action": "No additional source change, lint suppression, or type widening."
+  },
+  "validation_limits": [
+    "No Rust, Python, Clippy, native test, H, stack-layout remeasurement, or formatter run by this agent.",
+    "The new candidate must pass the original tests and budgets; the prior static reservations are from a671 only.",
+    "The original HostFixture::new family was not found within the diagnostic's fixed prefix list; no Host frame value is inferred."
+  ]
+}

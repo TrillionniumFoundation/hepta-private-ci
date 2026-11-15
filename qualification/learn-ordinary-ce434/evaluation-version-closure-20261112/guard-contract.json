@@ -1,0 +1,3523 @@
+{
+  "schema_version": 1,
+  "kind": "original-evaluation-version-typed-closure-repair",
+  "baseline_commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "baseline_tree": "360375952ff4fa51e817f2c773e5a5bc2a842a27",
+  "baseline_manifest_blob": "7df13b4c965af0a6e1c93989075b173fd1ff8db5",
+  "actual_failure_sources": [
+    {
+      "blob": "01bcd21c2b99bb5e901c9555e9c7e0219170a88e",
+      "kind": "H488 typed VerificationFailure excerpt"
+    },
+    {
+      "blob": "91f12b2842b0226ff50ff339860ee9a4fffe4193",
+      "kind": "H488 actual assertion failure excerpt"
+    }
+  ],
+  "changes": [
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",
+        "required": [
+          "pub(super) struct OriginalModelReadHostOperation<'a>",
+          "host: &'a OriginalCellQ24ModelCommandHostV1",
+          "state: MutexGuard<'a, State>",
+          "original: Arc<Trainer>",
+          "context: Context",
+          "evaluation: Option<OriginalCellEvaluationModelReadV1<'static>>",
+          "observed: CellQ24ModelProposalReceiptV1",
+          "model: OriginalCellQ24ModelCommandReceiptV1",
+          "record: String",
+          "body: Vec<u8>",
+          "digest: Digest32",
+          "transfer: u64",
+          "next_page: u32",
+          "started: u64",
+          "completed: bool"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "read_cached",
+          "Deserialize",
+          "Serialize",
+          "derive(Clone",
+          "impl Clone",
+          "impl Default",
+          "impl From<",
+          "transmute",
+          "if false",
+          "unwrap_or",
+          "state.execution_requested = false",
+          "pub state:",
+          "pub original:",
+          "pub evaluation:",
+          "pub observed:",
+          "pub body:",
+          "pub model:",
+          "recover_original_model(",
+          ".in_model_lane(",
+          ".in_lane(",
+          "model_host_bound.store(false",
+          "CellQ24ModelProposalOwnerV1::create",
+          "CellQ24ModelProposalOwnerV1::recover",
+          "write_signature"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn begin_original_read(",
+            "sequence": [
+              "fn begin_original_read(",
+              "match request.action",
+              "Action::BeginOriginalRead => false",
+              "Action::BeginOriginalExecute => true",
+              "self.state.try_lock()",
+              "if state.fenced",
+              "execute && (state.execution_requested || state.model.is_some())",
+              "!execute && state.model.is_none()",
+              "return Err(Error::ReadbackRequired)",
+              "state.fenced = true",
+              "self.original_inputs(&mut state)?",
+              "OriginalCellEvaluationModelMaterialClientV1::begin_owned_model_read(",
+              "Arc::clone(&inputs.material)",
+              "OriginalCellEvaluationModelReadV1::material(&evaluation)",
+              "self.original_context(&mut state, &inputs, before)?",
+              "context.require_qualified()?",
+              "request.require_context(&context, request.nonce)?",
+              "before.original_model_transfer_body().to_vec()",
+              "body.len().div_ceil(wire::MATERIAL_PAGE_BYTES)",
+              "body.is_empty() || body.len() > wire::MATERIAL_MAX_BYTES",
+              "request.nonce.checked_add(pages as u64 + 1).is_none_or(|last| last > 128)",
+              "Digest32::of_bytes(&body)",
+              "let observed = if execute",
+              "state.execution_requested = true",
+              "context.authenticate(inputs.started)?",
+              "fresh >= context.material.initial.request.envelope.expiry_unix_seconds",
+              "self.bootstrap.cancellation.load(Ordering::Acquire)",
+              "before.authenticate_current(fresh)?",
+              "before.require_original_model_input(",
+              "&context.training_cut, context.training.attestation(), fresh",
+              "state.custody.take().ok_or(Error::ReadbackRequired)?",
+              "state.model = Some(",
+              "OriginalCellQ24TrainingCommandOwnerV1::create_original_model(",
+              "inputs.original.as_ref(), file, witness, &context, before",
+              "context.authenticate(fresh)?",
+              "fresh >= context.material.initial.request.envelope.expiry_unix_seconds",
+              "self.bootstrap.cancellation.load(Ordering::Acquire)",
+              "before.authenticate_current(fresh)?",
+              "OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(",
+              "inputs.original.as_ref()",
+              "state.model.as_mut().ok_or(Error::ReadbackRequired)?",
+              "&context, before",
+              "} else {",
+              "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
+              "inputs.original.as_ref()",
+              "state.model.as_mut().ok_or(Error::ReadbackRequired)?",
+              "&context, before",
+              "effect::Observed::Completed(observed)",
+              "Observed::Missing => Error::Missing",
+              "_ => Error::Pending",
+              "evaluation.require_original_operation_current(inputs.started)?",
+              "before.authenticate_current(fresh)?",
+              "before.require_original_model_input(",
+              "wire::encode_completed(",
+              "&context, &observed, input.material_digest(), fresh",
+              "wire::decode_completed(&context, &record, fresh)?",
+              "state.retained.as_ref().is_some_and(|previous| previous != &model)",
+              "return Err(Error::CommitUncertain)",
+              "Ok(OriginalModelReadHostOperation {",
+              "host: self, state, original: inputs.original, context",
+              "evaluation: Some(evaluation), observed, model, record, body, digest",
+              "transfer: request.nonce, next_page: 0, started: inputs.started",
+              "completed: false"
+            ],
+            "top_level": [
+              "let execute",
+              "let mut state",
+              "if state.fenced",
+              "if execute && (state.execution_requested || state.model.is_some())",
+              "state.fenced = true",
+              "let inputs",
+              "let evaluation",
+              "let before",
+              "let context",
+              "context.require_qualified()?",
+              "request.require_context(",
+              "let body",
+              "let pages",
+              "if body.is_empty()",
+              "let digest",
+              "let observed = if execute",
+              "let effect::Observed::Completed",
+              "let fresh = context.authenticate(\n            evaluation.require_original_operation_current(inputs.started)?,\n        )?",
+              "before.authenticate_current(fresh)?;\n        let input = before.require_original_model_input(",
+              "let input = before.require_original_model_input(",
+              "let model",
+              "if state.retained",
+              "Ok(OriginalModelReadHostOperation"
+            ]
+          },
+          {
+            "function": "fn require_current(",
+            "sequence": [
+              "fn require_current(",
+              "self.evaluation.as_ref().ok_or(Error::CommitUncertain)?",
+              "evaluation.require_original_operation_current(self.started)?",
+              "self.context.authenticate(current)?",
+              "evaluation.material().authenticate_current(fresh)?",
+              "Ok(fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn started(",
+            "sequence": [
+              "fn started(",
+              "self.require_current()?",
+              "Outcome::OriginalReadStarted {",
+              "transfer: self.transfer",
+              "record: self.record.clone()",
+              "total: self.body.len()",
+              "digest: self.digest.to_string()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn page(",
+            "sequence": [
+              "fn page(",
+              "self.require_current()?",
+              "request.require_context(&self.context, request.nonce)?",
+              "Action::ReadOriginalPage { transfer, index }",
+              "body.len().div_ceil(wire::MATERIAL_PAGE_BYTES)",
+              "transfer != self.transfer || index != self.next_page || index as usize >= pages",
+              "request.nonce != self.transfer + 1 + u64::from(index)",
+              "STANDARD_NO_PAD.encode(&self.body[offset..end])",
+              "self.next_page += 1",
+              "self.require_current()?",
+              "Outcome::OriginalReadPage {",
+              "transfer, index, offset, total: self.body.len()",
+              "digest: self.digest.to_string(), bytes"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn finish(",
+            "sequence": [
+              "fn finish(",
+              "self.require_current()?",
+              "request.require_context(&self.context, request.nonce)?",
+              "Action::FinishOriginalRead { transfer }",
+              "body.len().div_ceil(wire::MATERIAL_PAGE_BYTES)",
+              "transfer != self.transfer || self.next_page as usize != pages",
+              "request.nonce != self.transfer + 1 + pages as u64",
+              "OriginalCellEvaluationModelReadV1::finish(",
+              "self.evaluation.take().ok_or(Error::CommitUncertain)?",
+              "after.original_model_transfer_body() != self.body.as_slice()",
+              "after.original_evaluation() != &self.context.evaluation",
+              "return Err(Error::CommitUncertain)",
+              "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
+              "self.original.as_ref()",
+              "self.state.model.as_mut().ok_or(Error::ReadbackRequired)?",
+              "&self.context",
+              "&after",
+              "Observed::Completed(native)",
+              "return Err(Error::CommitUncertain)",
+              "self.context.authenticate(self.started)?",
+              "after.authenticate_current(fresh)?",
+              "after.require_original_model_input(",
+              "wire::encode_completed(",
+              "&self.context, &native, input.material_digest(), fresh",
+              "wire::decode_completed(&self.context, &record, fresh)?",
+              "native != self.observed || current != self.model",
+              "self.state.retained.as_ref().is_some_and(|previous| previous != &current)",
+              "return Err(Error::CommitUncertain)",
+              "self.context.authenticate(fresh)?",
+              "after.authenticate_current(final_at)?",
+              "self.state.retained = Some(current)",
+              "self.state.fenced = false",
+              "self.completed = true",
+              "Outcome::OriginalReadFinished {",
+              "transfer, record, total: self.body.len(), digest: self.digest.to_string()"
+            ],
+            "top_level": [
+              "let after",
+              "if after.original_model_transfer_body()",
+              "let native",
+              "let effect::Observed::Completed",
+              "let fresh",
+              "after.authenticate_current(fresh)?",
+              "let input",
+              "let current",
+              "if native != self.observed",
+              "let final_at",
+              "after.authenticate_current(final_at)?",
+              "self.state.retained = Some(current)",
+              "self.state.fenced = false",
+              "self.completed = true",
+              "Ok(wire::Outcome::OriginalReadFinished"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "if !self.completed { self.state.fenced = true; }"
+            ],
+            "top_level": [
+              "if !self.completed"
+            ]
+          }
+        ],
+        "required_order": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",
+        "required": [
+          "pub(super) struct OriginalModelReadHostOperation<'a>",
+          "host: &'a OriginalCellQ24ModelCommandHostV1",
+          "state: MutexGuard<'a, State>",
+          "original: Arc<Trainer>",
+          "context: Context",
+          "evaluation: Option<OriginalCellEvaluationModelReadV1<'static>>",
+          "observed: CellQ24ModelProposalReceiptV1",
+          "model: OriginalCellQ24ModelCommandReceiptV1",
+          "record: String",
+          "body: Vec<u8>",
+          "digest: Digest32",
+          "transfer: u64",
+          "next_page: u32",
+          "started: u64",
+          "completed: bool"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "File::open",
+          "File::create",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "read_cached",
+          "Deserialize",
+          "Serialize",
+          "derive(Clone",
+          "impl Clone",
+          "impl Default",
+          "impl From<",
+          "transmute",
+          "if false",
+          "unwrap_or",
+          "state.execution_requested = false",
+          "pub state:",
+          "pub original:",
+          "pub evaluation:",
+          "pub observed:",
+          "pub body:",
+          "pub model:",
+          "recover_original_model(",
+          ".in_model_lane(",
+          ".in_lane(",
+          "model_host_bound.store(false",
+          "CellQ24ModelProposalOwnerV1::create",
+          "CellQ24ModelProposalOwnerV1::recover",
+          "write_signature"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn begin_original_read(",
+            "sequence": [
+              "fn begin_original_read(",
+              "match request.action",
+              "Action::BeginOriginalRead => false",
+              "Action::BeginOriginalExecute => true",
+              "self.state.try_lock()",
+              "if state.fenced",
+              "execute && (state.execution_requested || state.model.is_some())",
+              "!execute && state.model.is_none()",
+              "return Err(Error::ReadbackRequired)",
+              "state.fenced = true",
+              "self.original_inputs(&mut state)?",
+              "OriginalCellEvaluationModelMaterialClientV1::begin_owned_model_read(",
+              "Arc::clone(&inputs.material)",
+              "OriginalCellEvaluationModelReadV1::material(&evaluation)",
+              "self.original_context(&mut state, &inputs, before)?",
+              "context.require_qualified()?",
+              "request.require_context(&context, request.nonce)?",
+              "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(before).to_vec()",
+              "body.len().div_ceil(wire::MATERIAL_PAGE_BYTES)",
+              "body.is_empty() || body.len() > wire::MATERIAL_MAX_BYTES",
+              "request.nonce.checked_add(pages as u64 + 1).is_none_or(|last| last > 128)",
+              "Digest32::of_bytes(&body)",
+              "let observed = if execute",
+              "state.execution_requested = true",
+              "context.authenticate(inputs.started)?",
+              "fresh >= context.material.initial.request.envelope.expiry_unix_seconds",
+              "self.bootstrap.cancellation.load(Ordering::Acquire)",
+              "before.authenticate_current(fresh)?",
+              "before.require_original_model_input(",
+              "&context.training_cut, context.training.attestation(), fresh",
+              "state.custody.take().ok_or(Error::ReadbackRequired)?",
+              "state.model = Some(",
+              "OriginalCellQ24TrainingCommandOwnerV1::create_original_model(",
+              "inputs.original.as_ref(), file, witness, &context, before",
+              "context.authenticate(fresh)?",
+              "fresh >= context.material.initial.request.envelope.expiry_unix_seconds",
+              "self.bootstrap.cancellation.load(Ordering::Acquire)",
+              "before.authenticate_current(fresh)?",
+              "OriginalCellQ24TrainingCommandOwnerV1::commit_original_model(",
+              "inputs.original.as_ref()",
+              "state.model.as_mut().ok_or(Error::ReadbackRequired)?",
+              "&context, before",
+              "} else {",
+              "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
+              "inputs.original.as_ref()",
+              "state.model.as_mut().ok_or(Error::ReadbackRequired)?",
+              "&context, before",
+              "effect::Observed::Completed(observed)",
+              "Observed::Missing => Error::Missing",
+              "_ => Error::Pending",
+              "OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?",
+              "before.authenticate_current(fresh)?",
+              "before.require_original_model_input(",
+              "wire::encode_completed(",
+              "&context, &observed, input.material_digest(), fresh",
+              "wire::decode_completed(&context, &record, fresh)?",
+              "state.retained.as_ref().is_some_and(|previous| previous != &model)",
+              "return Err(Error::CommitUncertain)",
+              "Ok(OriginalModelReadHostOperation {",
+              "host: self, state, original: inputs.original, context",
+              "evaluation: Some(evaluation), observed, model, record, body, digest",
+              "transfer: request.nonce, next_page: 0, started: inputs.started",
+              "completed: false"
+            ],
+            "top_level": [
+              "let execute",
+              "let mut state",
+              "if state.fenced",
+              "if execute && (state.execution_requested || state.model.is_some())",
+              "state.fenced = true",
+              "let inputs",
+              "let evaluation",
+              "let before",
+              "let context",
+              "context.require_qualified()?",
+              "request.require_context(",
+              "let body",
+              "let pages",
+              "if body.is_empty()",
+              "let digest",
+              "let observed = if execute",
+              "let effect::Observed::Completed",
+              "let fresh = context.authenticate(\n            OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?,\n        )?",
+              "before.authenticate_current(fresh)?;\n        let input = before.require_original_model_input(",
+              "let input = before.require_original_model_input(",
+              "let model",
+              "if state.retained",
+              "Ok(OriginalModelReadHostOperation"
+            ]
+          },
+          {
+            "function": "fn require_current(",
+            "sequence": [
+              "fn require_current(",
+              "self.evaluation.as_ref().ok_or(Error::CommitUncertain)?",
+              "OriginalCellEvaluationModelReadV1::require_original_operation_current(evaluation, self.started)?",
+              "self.context.authenticate(current)?",
+              "OriginalCellEvaluationModelReadV1::material(evaluation).authenticate_current(fresh)?",
+              "Ok(fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn started(",
+            "sequence": [
+              "fn started(",
+              "self.require_current()?",
+              "Outcome::OriginalReadStarted {",
+              "transfer: self.transfer",
+              "record: self.record.clone()",
+              "total: self.body.len()",
+              "digest: self.digest.to_string()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn page(",
+            "sequence": [
+              "fn page(",
+              "self.require_current()?",
+              "request.require_context(&self.context, request.nonce)?",
+              "Action::ReadOriginalPage { transfer, index }",
+              "body.len().div_ceil(wire::MATERIAL_PAGE_BYTES)",
+              "transfer != self.transfer || index != self.next_page || index as usize >= pages",
+              "request.nonce != self.transfer + 1 + u64::from(index)",
+              "STANDARD_NO_PAD.encode(&self.body[offset..end])",
+              "self.next_page += 1",
+              "self.require_current()?",
+              "Outcome::OriginalReadPage {",
+              "transfer, index, offset, total: self.body.len()",
+              "digest: self.digest.to_string(), bytes"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn finish(",
+            "sequence": [
+              "fn finish(",
+              "self.require_current()?",
+              "request.require_context(&self.context, request.nonce)?",
+              "Action::FinishOriginalRead { transfer }",
+              "body.len().div_ceil(wire::MATERIAL_PAGE_BYTES)",
+              "transfer != self.transfer || self.next_page as usize != pages",
+              "request.nonce != self.transfer + 1 + pages as u64",
+              "OriginalCellEvaluationModelReadV1::finish(",
+              "self.evaluation.take().ok_or(Error::CommitUncertain)?",
+              "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after) != self.body.as_slice()",
+              "after.original_evaluation() != &self.context.evaluation",
+              "return Err(Error::CommitUncertain)",
+              "OriginalCellQ24TrainingCommandOwnerV1::read_original_model(",
+              "self.original.as_ref()",
+              "self.state.model.as_mut().ok_or(Error::ReadbackRequired)?",
+              "&self.context",
+              "&after",
+              "Observed::Completed(native)",
+              "return Err(Error::CommitUncertain)",
+              "self.context.authenticate(self.started)?",
+              "after.authenticate_current(fresh)?",
+              "after.require_original_model_input(",
+              "wire::encode_completed(",
+              "&self.context, &native, input.material_digest(), fresh",
+              "wire::decode_completed(&self.context, &record, fresh)?",
+              "native != self.observed || current != self.model",
+              "self.state.retained.as_ref().is_some_and(|previous| previous != &current)",
+              "return Err(Error::CommitUncertain)",
+              "self.context.authenticate(fresh)?",
+              "after.authenticate_current(final_at)?",
+              "self.state.retained = Some(current)",
+              "self.state.fenced = false",
+              "self.completed = true",
+              "Outcome::OriginalReadFinished {",
+              "transfer, record, total: self.body.len(), digest: self.digest.to_string()"
+            ],
+            "top_level": [
+              "let after",
+              "if OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after)",
+              "let native",
+              "let effect::Observed::Completed",
+              "let fresh",
+              "after.authenticate_current(fresh)?",
+              "let input",
+              "let current",
+              "if native != self.observed",
+              "let final_at",
+              "after.authenticate_current(final_at)?",
+              "self.state.retained = Some(current)",
+              "self.state.fenced = false",
+              "self.completed = true",
+              "Ok(wire::Outcome::OriginalReadFinished"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "if !self.completed { self.state.fenced = true; }"
+            ],
+            "top_level": [
+              "if !self.completed"
+            ]
+          }
+        ],
+        "required_order": []
+      },
+      "reason": "Make original receiver identity explicit without changing custody, arguments, effect order, or verification conditions."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+        "required": [
+          "pub(crate) struct OriginalCircuitModelSelectionRemoteSourcesV1<'a> {",
+          "pub(crate) context: &'a OriginalCircuitCandidateLearningReadContextV1,",
+          "pub(crate) model: &'a OriginalCellQ24ModelCommandClientV1,",
+          "pub(crate) live: &'a OriginalCircuitCandidateLearningReadClientV1,",
+          "async fn remote_result(",
+          "async fn remote_operation("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "publish(",
+          "fit_or_readback(",
+          "qualify_and_persist(",
+          "commit_model_or_readback(",
+          "OriginalCellEvaluationModelMaterialV1 {",
+          "pub async fn remote_",
+          "pub fn remote_",
+          "unwrap_or",
+          "snapshot().clone()"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn attest_original_remote_selection(",
+            "sequence": [
+              "if self.readback_only",
+              "return Err(OwnerError::Binding(",
+              "self.remote_result(source,             true).await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn readback_remote(",
+            "sequence": [
+              "fn readback_remote(",
+              "self.remote_result(source,             false).await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn remote_result(",
+            "sequence": [
+              "if self.fenced",
+              "return Err(OwnerError::CommitUncertain.into())",
+              "self.journal.read(&self.saved)",
+              "Ok(bytes) => Some(bytes)",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "if execute => None",
+              "Err(error) => return Err(error.into())",
+              "self.fenced = true",
+              "self.remote_operation(source, existing, execute).await",
+              "if result.is_ok()",
+              "self.fenced = false",
+              "result"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "let existing = match self.journal.read(&self.saved)",
+              "self.fenced = true",
+              "if result.is_ok()"
+            ]
+          },
+          {
+            "function": "fn remote_operation(",
+            "sequence": [
+              "let started = binding::now()?",
+              "source.context.model_publication_context()",
+              "source.context.authenticate(started).map_err(unavailable)?",
+              "source.live.require_original_context(source.context).map_err(unavailable)?",
+              "source.context.prefix() != source.context.decision()",
+              "context.decision() != &self.config.decision",
+              "context.scope() != &self.config.scope",
+              "context.verifier().trust_digest() != self.config.verifier.trust_digest()",
+              "context.verifier().scope_digest() != self.config.verifier.scope_digest()",
+              "context.verifier().objective_digest() != self.config.verifier.objective_digest()",
+              "context.signatures()[2] != self.config.training_evidence",
+              "context.signatures()[3] != self.config.evaluation_evidence",
+              "source.model.begin_original_model_read().await.map_err(unavailable)?",
+              "operation.model() != context.model()",
+              "operation.require_current(started).map_err(unavailable)?",
+              "context.authenticate_material(operation.material(), started, execute).map_err(unavailable)?",
+              "operation.material().require_original_selector_material(&self.config, binding::now()?)",
+              "let before = source.live.read_current().await.map_err(unavailable)?",
+              "context.signatures()[2].clone()",
+              "context.signatures()[3].clone()",
+              "let config = &self.config",
+              "let key = &self.key",
+              "self.saved.binding_digest",
+              "let bytes = match existing",
+              "Some(bytes) => bytes",
+              "None => self.journal.commit_once(&self.saved, ||",
+              "let issued_at = binding::now()?",
+              "binding::new_work_time(config, started, issued_at)?",
+              "operation.require_current(started)",
+              "context.authenticate_material(operation.material(), issued_at,              true)",
+              ".min(config.decision.request.envelope.expiry_unix_seconds)",
+              ".min(binding::signature_expiry(config, issued_at)?)",
+              "operation.material().require_original_selector_material(config, issued_at)",
+              "binding::authenticate_roles(config, &original, issued_at)",
+              "binding::receipt(config, before.observation(), issued_at)",
+              "learning_iteration_receipt_signing_bytes_v1(&receipt)",
+              "binding::sign_original_until(config, key, &payload, identity, issued_at, expiry)?",
+              "learning_owner_evidence::encode(&payload, &signed)",
+              "learning_owner_evidence::decode(&bytes)?",
+              "binding::receipt(config, before.observation(), signed.issued_at)?",
+              "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "let after = source.live.read_current().await.map_err(unavailable)?",
+              "after != before",
+              "let completed = operation.finish().await.map_err(unavailable)?",
+              "completed.model() != context.model() || self.journal.read(&self.saved)? != bytes",
+              "let current = binding::now()?",
+              "current < started",
+              "context.authenticate_material(completed.material(), current, execute)",
+              ".min(config.decision.request.envelope.expiry_unix_seconds)",
+              ".min(binding::signature_expiry(config, signed.issued_at)?)",
+              "completed.material().require_original_selector_material(config, current).map_err(unavailable)?",
+              "binding::authenticate_roles(config, &original, current)?",
+              "config.verifier.verify(",
+              "LearningEvidenceRoleV1::Selector, &signed, &payload, current",
+              "signed.expires_at != expiry",
+              "signed.evidence_id != binding::evidence_id(identity)?",
+              "selector.principal() != &config.signer.principal",
+              "selector.controller_id() != &config.signer.controller_id",
+              "verify_signed_actor_separation(&training, &selector, current)?",
+              "verify_signed_actor_separation(&evaluation, &selector, current)?",
+              "Ok((receipt, signed))"
+            ],
+            "top_level": [
+              "let operation = source.model.begin_original_model_read().await.map_err(unavailable)?",
+              "let before = source.live.read_current().await.map_err(unavailable)?",
+              "let bytes = match existing",
+              "let after = source.live.read_current().await.map_err(unavailable)?",
+              "let completed = operation.finish().await.map_err(unavailable)?",
+              "let current = binding::now()?",
+              "verify_signed_actor_separation(&training, &selector, current)?",
+              "verify_signed_actor_separation(&evaluation, &selector, current)?"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+        "required": [
+          "pub(crate) struct OriginalCircuitModelSelectionRemoteSourcesV1<'a> {",
+          "pub(crate) context: &'a OriginalCircuitCandidateLearningReadContextV1,",
+          "pub(crate) model: &'a OriginalCellQ24ModelCommandClientV1,",
+          "pub(crate) live: &'a OriginalCircuitCandidateLearningReadClientV1,",
+          "async fn remote_result(",
+          "async fn remote_operation("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "publish(",
+          "fit_or_readback(",
+          "qualify_and_persist(",
+          "commit_model_or_readback(",
+          "OriginalCellEvaluationModelMaterialV1 {",
+          "pub async fn remote_",
+          "pub fn remote_",
+          "unwrap_or",
+          "snapshot().clone()"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn attest_original_remote_selection(",
+            "sequence": [
+              "if self.readback_only",
+              "return Err(OwnerError::Binding(",
+              "self.remote_result(source,             true).await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn readback_remote(",
+            "sequence": [
+              "fn readback_remote(",
+              "self.remote_result(source,             false).await"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn remote_result(",
+            "sequence": [
+              "if self.fenced",
+              "return Err(OwnerError::CommitUncertain.into())",
+              "self.journal.read(&self.saved)",
+              "Ok(bytes) => Some(bytes)",
+              "ProductEvaluationExecutionStoreErrorV1::Missing",
+              "if execute => None",
+              "Err(error) => return Err(error.into())",
+              "self.fenced = true",
+              "self.remote_operation(source, existing, execute).await",
+              "if result.is_ok()",
+              "self.fenced = false",
+              "result"
+            ],
+            "top_level": [
+              "if self.fenced",
+              "let existing = match self.journal.read(&self.saved)",
+              "self.fenced = true",
+              "if result.is_ok()"
+            ]
+          },
+          {
+            "function": "fn remote_operation(",
+            "sequence": [
+              "let started = binding::now()?",
+              "source.context.model_publication_context()",
+              "source.context.authenticate(started).map_err(unavailable)?",
+              "OriginalCircuitCandidateLearningReadClientV1::require_original_context(source.live, source.context).map_err(unavailable)?",
+              "source.context.prefix() != source.context.decision()",
+              "context.decision() != &self.config.decision",
+              "context.scope() != &self.config.scope",
+              "context.verifier().trust_digest() != self.config.verifier.trust_digest()",
+              "context.verifier().scope_digest() != self.config.verifier.scope_digest()",
+              "context.verifier().objective_digest() != self.config.verifier.objective_digest()",
+              "context.signatures()[2] != self.config.training_evidence",
+              "context.signatures()[3] != self.config.evaluation_evidence",
+              "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model).await.map_err(unavailable)?",
+              "operation.model() != context.model()",
+              "operation.require_current(started).map_err(unavailable)?",
+              "context.authenticate_material(operation.material(), started, execute).map_err(unavailable)?",
+              "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            operation.material(), &self.config, binding::now()?,\n        )",
+              "let before = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?",
+              "context.signatures()[2].clone()",
+              "context.signatures()[3].clone()",
+              "let config = &self.config",
+              "let key = &self.key",
+              "self.saved.binding_digest",
+              "let bytes = match existing",
+              "Some(bytes) => bytes",
+              "None => self.journal.commit_once(&self.saved, ||",
+              "let issued_at = binding::now()?",
+              "binding::new_work_time(config, started, issued_at)?",
+              "operation.require_current(started)",
+              "context.authenticate_material(operation.material(), issued_at,              true)",
+              ".min(config.decision.request.envelope.expiry_unix_seconds)",
+              ".min(binding::signature_expiry(config, issued_at)?)",
+              "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n                    operation.material(), config, issued_at,\n                )",
+              "binding::authenticate_roles(config, &original, issued_at)",
+              "binding::receipt(config, before.observation(), issued_at)",
+              "learning_iteration_receipt_signing_bytes_v1(&receipt)",
+              "binding::sign_original_until(config, key, &payload, identity, issued_at, expiry)?",
+              "learning_owner_evidence::encode(&payload, &signed)",
+              "learning_owner_evidence::decode(&bytes)?",
+              "binding::receipt(config, before.observation(), signed.issued_at)?",
+              "payload != learning_iteration_receipt_signing_bytes_v1(&receipt)?",
+              "let after = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?",
+              "after != before",
+              "let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await.map_err(unavailable)?",
+              "completed.model() != context.model() || self.journal.read(&self.saved)? != bytes",
+              "let current = binding::now()?",
+              "current < started",
+              "context.authenticate_material(completed.material(), current, execute)",
+              ".min(config.decision.request.envelope.expiry_unix_seconds)",
+              ".min(binding::signature_expiry(config, signed.issued_at)?)",
+              "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            completed.material(), config, current,\n        ).map_err(unavailable)?",
+              "binding::authenticate_roles(config, &original, current)?",
+              "config.verifier.verify(",
+              "LearningEvidenceRoleV1::Selector, &signed, &payload, current",
+              "signed.expires_at != expiry",
+              "signed.evidence_id != binding::evidence_id(identity)?",
+              "selector.principal() != &config.signer.principal",
+              "selector.controller_id() != &config.signer.controller_id",
+              "verify_signed_actor_separation(&training, &selector, current)?",
+              "verify_signed_actor_separation(&evaluation, &selector, current)?",
+              "Ok((receipt, signed))"
+            ],
+            "top_level": [
+              "let operation: OriginalCellQ24ModelReadV1<'_> =\n            OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model).await.map_err(unavailable)?",
+              "let before = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?",
+              "let bytes = match existing",
+              "let after = OriginalCircuitCandidateLearningReadClientV1::read_current(source.live).await.map_err(unavailable)?",
+              "let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await.map_err(unavailable)?",
+              "let current = binding::now()?",
+              "verify_signed_actor_separation(&training, &selector, current)?",
+              "verify_signed_actor_separation(&evaluation, &selector, current)?"
+            ]
+          }
+        ]
+      },
+      "reason": "Make original receiver identity explicit without changing custody, arguments, effect order, or verification conditions."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+        "required": [
+          "pub struct OriginalCircuitModelVersionHostV1 {",
+          "predecessors: Predecessors,",
+          "model: OriginalCellQ24ModelCommandClientV1,",
+          "control: Arc<NeuronGenerationCurrentOwnerV1>,",
+          "artifacts: ModelVersionArtifactOwner,",
+          "origin: Origin,",
+          "state: Mutex<State>,",
+          "requested: AtomicBool,",
+          "runtime_started: AtomicBool,",
+          "end: Instant,",
+          "issuer: OriginalRootModelVersionIssuerV1,",
+          "awaiting: Option<Awaiting>,",
+          "context: Option<Arc<Context>>,",
+          "installed: Option<ModelVersionInstalledTaskV1>,",
+          "config: Option<AgentdConfig>,"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SigningKey",
+          "RunStart",
+          "pub state:",
+          "pub requested:",
+          "pub model:",
+          "pub issuer:",
+          "pub end:",
+          "pub connections:",
+          "bool, origin",
+          "new_issuer"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_owners(",
+            "sequence": [
+              "predecessors.material.require_original_command_initial()?",
+              "task.require_completed_a(&inputs.completed)?",
+              "ModelVersionArtifactOwner::new(",
+              "Arc::clone(&inputs.authorities.artifacts)",
+              "inputs.selection.signed.clone(), inputs.selection.verifier.clone()",
+              "Arc::clone(&inputs.current)",
+              "issuer.into_original_model_version_issuer()?",
+              "Self::new(",
+              "Origin::Fresh",
+              "awaiting: Some(Awaiting",
+              "context: None, intent: None, installed: None, config: None"
+            ],
+            "top_level": [
+              "let (initial_binding, _) = predecessors.material.require_original_command_initial()?",
+              "task.require_completed_a(&inputs.completed)?"
+            ]
+          },
+          {
+            "function": "fn recover_from_original_owners(",
+            "sequence": [
+              "original.intent_digest.is_zero()",
+              "predecessors.material.require_original_command_initial()?",
+              "ModelVersionArtifactOwner::new(",
+              "original.artifacts, original.artifact_checkpoint",
+              "original.artifact_selection, original.artifact_verifier",
+              "ModelVersionInstalledTaskV1",
+              "cell: original.cell, source: original.source, identity: original.identity",
+              "intent: original.intent_digest",
+              "installed.observe(&original.context)?",
+              "Self::new(",
+              "Origin::Recovered",
+              "awaiting: None",
+              "context: Some(Arc::new(original.context))",
+              "intent: Some(original.intent_digest), installed: Some(installed), config: None"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "sequence": [
+              "lifetime.is_zero() || lifetime > Duration::from_secs(300)",
+              "return Err(Error::Binding(",
+              "state: Mutex::new(state)",
+              "requested: AtomicBool::new(origin == Origin::Recovered)",
+              "runtime_started: AtomicBool::new(origin == Origin::Recovered)",
+              "AtomicU8::new(if origin == Origin::Recovered { 4 } else { 0 })",
+              "Instant::now().checked_add(lifetime)",
+              "Handle::try_current()",
+              "Arc::new(Semaphore::new(4))"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_lifetime(",
+            "sequence": [
+              "Instant::now() >= self.end",
+              "Err(Error::Unavailable)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn original_predecessors(",
+            "sequence": [
+              "fn original_predecessors(",
+              "material: self.predecessors.material.clone()",
+              "registration: self.predecessors.registration.clone()",
+              "dataset: self.predecessors.dataset.clone()",
+              "training: self.predecessors.training.clone()",
+              "evaluation: self.predecessors.evaluation.clone()"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+        "required": [
+          "pub struct OriginalCircuitModelVersionHostV1 {",
+          "predecessors: Predecessors,",
+          "model: OriginalCellQ24ModelCommandClientV1,",
+          "control: Arc<NeuronGenerationCurrentOwnerV1>,",
+          "artifacts: ModelVersionArtifactOwner,",
+          "origin: Origin,",
+          "state: Mutex<State>,",
+          "requested: AtomicBool,",
+          "runtime_started: AtomicBool,",
+          "end: Instant,",
+          "issuer: OriginalRootModelVersionIssuerV1,",
+          "awaiting: Option<Awaiting>,",
+          "context: Option<Arc<Context>>,",
+          "installed: Option<ModelVersionInstalledTaskV1>,",
+          "config: Option<AgentdConfig>,"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SigningKey",
+          "RunStart",
+          "pub state:",
+          "pub requested:",
+          "pub model:",
+          "pub issuer:",
+          "pub end:",
+          "pub connections:",
+          "bool, origin",
+          "new_issuer"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_owners(",
+            "sequence": [
+              "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?",
+              "task.require_completed_a(&inputs.completed)?",
+              "ModelVersionArtifactOwner::new(",
+              "Arc::clone(&inputs.authorities.artifacts)",
+              "inputs.selection.signed.clone(), inputs.selection.verifier.clone()",
+              "Arc::clone(&inputs.current)",
+              "AgentdUnixFinalUseGrantProvider::into_original_model_version_issuer(issuer)?",
+              "Self::new(",
+              "Origin::Fresh",
+              "awaiting: Some(Awaiting",
+              "context: None, intent: None, installed: None, config: None"
+            ],
+            "top_level": [
+              "let (initial_binding, _) = OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?",
+              "task.require_completed_a(&inputs.completed)?"
+            ]
+          },
+          {
+            "function": "fn recover_from_original_owners(",
+            "sequence": [
+              "original.intent_digest.is_zero()",
+              "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?",
+              "ModelVersionArtifactOwner::new(",
+              "original.artifacts, original.artifact_checkpoint",
+              "original.artifact_selection, original.artifact_verifier",
+              "ModelVersionInstalledTaskV1",
+              "cell: original.cell, source: original.source, identity: original.identity",
+              "intent: original.intent_digest",
+              "installed.observe(&original.context)?",
+              "Self::new(",
+              "Origin::Recovered",
+              "awaiting: None",
+              "context: Some(Arc::new(original.context))",
+              "intent: Some(original.intent_digest), installed: Some(installed), config: None"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn new(",
+            "sequence": [
+              "lifetime.is_zero() || lifetime > Duration::from_secs(300)",
+              "return Err(Error::Binding(",
+              "state: Mutex::new(state)",
+              "requested: AtomicBool::new(origin == Origin::Recovered)",
+              "runtime_started: AtomicBool::new(origin == Origin::Recovered)",
+              "AtomicU8::new(if origin == Origin::Recovered { 4 } else { 0 })",
+              "Instant::now().checked_add(lifetime)",
+              "Handle::try_current()",
+              "Arc::new(Semaphore::new(4))"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_lifetime(",
+            "sequence": [
+              "Instant::now() >= self.end",
+              "Err(Error::Unavailable)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn original_predecessors(",
+            "sequence": [
+              "fn original_predecessors(",
+              "material: self.predecessors.material.clone()",
+              "registration: self.predecessors.registration.clone()",
+              "dataset: self.predecessors.dataset.clone()",
+              "training: self.predecessors.training.clone()",
+              "evaluation: self.predecessors.evaluation.clone()"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "reason": "Make original receiver identity explicit without changing custody, arguments, effect order, or verification conditions."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+        "required": [
+          "struct Channel {",
+          "peer: HostAuthorityPeerChannel,",
+          "requested: bool,",
+          "pub struct OriginalCircuitModelVersionClientV1 {",
+          "channel: Mutex<Option<Channel>>,",
+          "context: Context,",
+          "retained: Mutex<Option<Readback>>,",
+          "struct Cancelled(Arc<AtomicBool>);"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SigningKey",
+          "FinalUseGrant",
+          "RunStart",
+          "Channel::new",
+          "pub peer:",
+          "pub channel:",
+          "pub retained:",
+          "pub context:",
+          "original.requested = false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.0.store(        true, Ordering::Release)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn bind_original_stage_channel(",
+            "sequence": [
+              "fn bind_original_stage_channel(",
+              "Self::bind(peer, context, Origin::Fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_original_stage_channel(",
+            "sequence": [
+              "fn recover_original_stage_channel(",
+              "Self::bind(peer, context, Origin::Recovered)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn bind(",
+            "sequence": [
+              "context.prefix() != context.decision() || context.decision().receipts.len() != 5",
+              "context.model_publication_context().authenticate(started,              false)?",
+              "context.model_publication_context().original_version_binding(started)?",
+              "peer.check_peer_lifetime()?",
+              "let fresh = now()?",
+              "require_clock(started, fresh)?",
+              "context.model_publication_context().original_version_binding(fresh)? != expected",
+              "Channel { peer, next: 1, requested: origin == Origin::Recovered }",
+              "retained: Mutex::new(None)"
+            ],
+            "top_level": [
+              "peer.check_peer_lifetime()?",
+              "let fresh = now()?"
+            ]
+          },
+          {
+            "function": "fn exchange(",
+            "sequence": [
+              "let started = now()?",
+              "wire::Action::Publish",
+              "wire::Action::Readback",
+              "self.context.model_publication_context().authenticate(",
+              "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))",
+              "self.channel.try_lock()",
+              "slot.as_mut().ok_or(Error::Unavailable)?",
+              "action == wire::Action::Publish && original.requested",
+              "Err(Error::ReadbackRequired)",
+              "original.requested = true",
+              "slot.take().ok_or(Error::Unavailable)?",
+              "!(1..=128).contains(&channel.next)",
+              "wire::Request::new(",
+              "serde_json::to_vec(&request)?",
+              "bytes.is_empty() || bytes.len() > 16_384",
+              "channel.next += 1",
+              "Cancelled(Arc::new(AtomicBool::new(      false)))",
+              "Arc::clone(&cancellation.0)",
+              "tokio::task::spawn_blocking(move ||",
+              "channel.peer.check_peer_lifetime()?",
+              "queued.load(Ordering::Acquire)",
+              "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))",
+              "channel.peer.request(&bytes).map_err(|_| Error::CommitUncertain)?",
+              "channel.peer.check_peer_lifetime()?",
+              "queued.load(Ordering::Acquire)",
+              "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))",
+              "response.is_empty() || response.len() > 16_384",
+              "serde_json::from_slice(&response)?",
+              "response.request != request",
+              "let fresh = now()?",
+              "require_clock(started, fresh).map_err(|_| Error::CommitUncertain)?",
+              "self.context.model_publication_context().authenticate(fresh,              false)",
+              "let structured = matches!",
+              "wire::Outcome::Uncertain",
+              "response.result.decode(self.context.model_publication_context())",
+              "match &decoded",
+              "self.retained.try_lock()",
+              "prior.intent != actual.intent",
+              "prior.publication.is_some() && prior.publication != actual.publication",
+              "*retained = Some(actual.clone())",
+              "Err(_) if structured => {}",
+              "Err(_) => return decoded",
+              "self.channel.try_lock()",
+              "if slot.is_some()",
+              "*slot = Some(channel)",
+              "drop(slot)",
+              "drop(cancellation)",
+              "decoded"
+            ],
+            "top_level": [
+              "let started = now()?",
+              "let mut channel = {",
+              "channel.next += 1",
+              "let fresh = now()?",
+              "match &decoded",
+              "*slot = Some(channel)"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+        "required": [
+          "struct Channel {",
+          "peer: HostAuthorityPeerChannel,",
+          "requested: bool,",
+          "pub struct OriginalCircuitModelVersionClientV1 {",
+          "channel: Mutex<Option<Channel>>,",
+          "context: Context,",
+          "retained: Mutex<Option<Readback>>,",
+          "struct Cancelled(Arc<AtomicBool>);"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SigningKey",
+          "FinalUseGrant",
+          "RunStart",
+          "Channel::new",
+          "pub peer:",
+          "pub channel:",
+          "pub retained:",
+          "pub context:",
+          "original.requested = false"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.0.store(        true, Ordering::Release)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn bind_original_stage_channel(",
+            "sequence": [
+              "fn bind_original_stage_channel(",
+              "Self::bind(peer, context, Origin::Fresh)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn recover_original_stage_channel(",
+            "sequence": [
+              "fn recover_original_stage_channel(",
+              "Self::bind(peer, context, Origin::Recovered)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn bind(",
+            "sequence": [
+              "context.prefix() != context.decision() || context.decision().receipts.len() != 5",
+              "PublicationContext::authenticate(context.model_publication_context(), started,              false)?",
+              "PublicationContext::original_version_binding(context.model_publication_context(), started)?",
+              "peer.check_peer_lifetime()?",
+              "let fresh = now()?",
+              "require_clock(started, fresh)?",
+              "PublicationContext::original_version_binding(context.model_publication_context(), fresh)? != expected",
+              "Channel { peer, next: 1, requested: origin == Origin::Recovered }",
+              "retained: Mutex::new(None)"
+            ],
+            "top_level": [
+              "peer.check_peer_lifetime()?",
+              "let fresh = now()?"
+            ]
+          },
+          {
+            "function": "fn exchange(",
+            "sequence": [
+              "let started = now()?",
+              "wire::Action::Publish",
+              "wire::Action::Readback",
+              "PublicationContext::authenticate(\n            self.context.model_publication_context(),",
+              "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))",
+              "self.channel.try_lock()",
+              "slot.as_mut().ok_or(Error::Unavailable)?",
+              "action == wire::Action::Publish && original.requested",
+              "Err(Error::ReadbackRequired)",
+              "original.requested = true",
+              "slot.take().ok_or(Error::Unavailable)?",
+              "!(1..=128).contains(&channel.next)",
+              "wire::Request::new(",
+              "serde_json::to_vec(&request)?",
+              "bytes.is_empty() || bytes.len() > 16_384",
+              "channel.next += 1",
+              "Cancelled(Arc::new(AtomicBool::new(      false)))",
+              "Arc::clone(&cancellation.0)",
+              "tokio::task::spawn_blocking(move ||",
+              "channel.peer.check_peer_lifetime()?",
+              "queued.load(Ordering::Acquire)",
+              "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))",
+              "channel.peer.request(&bytes).map_err(|_| Error::CommitUncertain)?",
+              "channel.peer.check_peer_lifetime()?",
+              "queued.load(Ordering::Acquire)",
+              "original_cancellation.as_ref().is_some_and(|flag| flag.load(Ordering::Acquire))",
+              "response.is_empty() || response.len() > 16_384",
+              "serde_json::from_slice(&response)?",
+              "response.request != request",
+              "let fresh = now()?",
+              "require_clock(started, fresh).map_err(|_| Error::CommitUncertain)?",
+              "PublicationContext::authenticate(self.context.model_publication_context(), fresh,              false)",
+              "let structured = matches!",
+              "wire::Outcome::Uncertain",
+              "response.result.decode(self.context.model_publication_context())",
+              "match &decoded",
+              "self.retained.try_lock()",
+              "prior.intent != actual.intent",
+              "prior.publication.is_some() && prior.publication != actual.publication",
+              "*retained = Some(actual.clone())",
+              "Err(_) if structured => {}",
+              "Err(_) => return decoded",
+              "self.channel.try_lock()",
+              "if slot.is_some()",
+              "*slot = Some(channel)",
+              "drop(slot)",
+              "drop(cancellation)",
+              "decoded"
+            ],
+            "top_level": [
+              "let started = now()?",
+              "let mut channel = {",
+              "channel.next += 1",
+              "let fresh = now()?",
+              "match &decoded",
+              "*slot = Some(channel)"
+            ]
+          }
+        ]
+      },
+      "reason": "Make original receiver identity explicit without changing custody, arguments, effect order, or verification conditions."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+        "required": [
+          "pub struct OriginalCircuitModelTaskInputsV1 {",
+          "pub original_a: CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,",
+          "pub original_a_identity: AgentdIdentity,",
+          "pub(super) struct ModelVersionInstalledTaskV1 {",
+          "pub(super) cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,",
+          "pub(super) source: Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,",
+          "pub(super) intent: Digest32,"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "SigningKey",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "RunStart",
+          "execute_circuit_task_record(",
+          "execute_cell_committed(",
+          "crate::run(",
+          "publish(",
+          "LearningIterationEvidenceClientV1",
+          "unsafe"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_completed_a(",
+            "sequence": [
+              "completed.source_publication()",
+              "&expected.input().scope.run_id",
+              ".original_a",
+              ".read_run_publication(&self.original_a_identity, run)?",
+              "self.config.identity()",
+              "&self.original_a_identity",
+              "&before != expected",
+              "c.agent_id != a.agent_id",
+              "c.spawn_generation == 0",
+              "c.fleet_root == a.fleet_root && c.spawn_generation <= a.spawn_generation",
+              "c.fleet_root != a.fleet_root",
+              "c.run_root == a.run_root || c.home_root == a.home_root",
+              "self.original_a.read_run_publication(a, run)? != before",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn install_original(",
+            "sequence": [
+              "context.authenticate(super::now()?,              true)?",
+              "coordinator.candidate()",
+              "self.model.components() != &candidate.components",
+              "task.require_bundle(&candidate)?",
+              "Publication::Update { previous, .. }",
+              "&task.0.publication",
+              "self.require_completed_a(previous)?",
+              "previous.source_publication().clone()",
+              "self.original_a",
+              "self.original_a_identity",
+              "self.config.identity().clone()",
+              "AgentdConfig::with_q24_circuit_task_profile(",
+              "self.config",
+              "CircuitQ24TaskProfileV1",
+              "files: self.files",
+              "source_mode: CircuitQ24TaskOpenModeV1::Create",
+              "published_task: task",
+              "fence: self.fence",
+              "circuit: self.circuit",
+              "routes: self.routes",
+              "bundle: candidate.clone()",
+              "model: self.model",
+              "worker_generation: self.worker_generation",
+              "maximum_cell_records: self.maximum_cell_records",
+              "queue_capacity: self.queue_capacity",
+              "clock: self.clock",
+              "ModelVersionInstalledTaskV1",
+              "cell: actual.cell",
+              "source: actual.source",
+              "identity",
+              "intent",
+              "installed.observe(context)?",
+              "original_a.read_run_publication(",
+              "&original_a_identity",
+              "&original_a_publication.input().scope.run_id",
+              ")? != original_a_publication",
+              "context.authenticate(super::now()?,              true)?",
+              "Ok((installed, actual.config))"
+            ],
+            "top_level": [
+              "task.require_bundle(&candidate)?",
+              "self.require_completed_a(previous)?",
+              "let actual = AgentdConfig::with_q24_circuit_task_profile(",
+              "installed.observe(context)?"
+            ]
+          },
+          {
+            "function": "fn observe(",
+            "sequence": [
+              "context.authenticate(super::now()?,              false)?",
+              "coordinator.candidate()",
+              "let task = &self.cell.task",
+              "binding::require_published(context, task,              false)?",
+              "task.require_current()?",
+              "CircuitTaskSourceReadbackV1::require_original_input(",
+              "self.source.as_ref()",
+              "&self.identity",
+              "task.source()",
+              "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?",
+              "Publication::Update { original, previous }",
+              "&task.0.publication",
+              "learning_updated_task_operation_id_v1(&coordinator)?",
+              "original.operation_id() != operation.as_str()",
+              "original.intent_digest() != self.intent",
+              "original.completion()",
+              "NeuronGenerationPredecessorCompletionV1::OwnerDrained",
+              "LearningIterationObservationV1::Selection",
+              "candidate_bundle",
+              "selection_digest",
+              "candidate.digest()",
+              "candidate_bundle != selected_bundle",
+              "task.source().scope.run_id == context.decision().request.source_run_id",
+              "task.source().observation == previous.source.input().observation",
+              "original.publication_digest()?",
+              "circuit_feature_task_digest_v1(task.definition(), task.source())?",
+              "CircuitTaskSourceReadbackV1::require_original_input(",
+              "self.source.as_ref()",
+              "&self.identity",
+              "task.source()",
+              "task.require_bundle(&candidate)?",
+              "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?",
+              "LearningIterationObservationV1::Selection",
+              "candidate_bundle",
+              "selection_digest",
+              "Ok(OriginalCircuitModelVersionReadbackV1",
+              "intent: self.intent",
+              "publication: Some(OriginalCircuitModelVersionPublicationV1"
+            ],
+            "top_level": [
+              "let task = &self.cell.task",
+              "task.require_current()?",
+              "task.require_bundle(&candidate)?"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+        "required": [
+          "pub struct OriginalCircuitModelTaskInputsV1 {",
+          "pub original_a: CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>,",
+          "pub original_a_identity: AgentdIdentity,",
+          "pub(super) struct ModelVersionInstalledTaskV1 {",
+          "pub(super) cell: PublishedCircuitCellOwnerV1<FileAnchorWitnessStore>,",
+          "pub(super) source: Arc<CircuitTaskSourceReadbackV1<FileAnchorWitnessStore>>,",
+          "pub(super) intent: Digest32,"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "SigningKey",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "RunStart",
+          "execute_circuit_task_record(",
+          "execute_cell_committed(",
+          "crate::run(",
+          "publish(",
+          "LearningIterationEvidenceClientV1",
+          "unsafe"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_completed_a(",
+            "sequence": [
+              "completed.source_publication()",
+              "&expected.input().scope.run_id",
+              "CircuitTaskSourceReadbackV1::read_run_publication(",
+              "&self.original_a,",
+              "&self.original_a_identity, run,\n        )?",
+              "self.config.identity()",
+              "&self.original_a_identity",
+              "&before != expected",
+              "c.agent_id != a.agent_id",
+              "c.spawn_generation == 0",
+              "c.fleet_root == a.fleet_root && c.spawn_generation <= a.spawn_generation",
+              "c.fleet_root != a.fleet_root",
+              "c.run_root == a.run_root || c.home_root == a.home_root",
+              "CircuitTaskSourceReadbackV1::read_run_publication(&self.original_a, a, run)? != before",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn install_original(",
+            "sequence": [
+              "context.authenticate(super::now()?,              true)?",
+              "coordinator.candidate()",
+              "self.model.components() != &candidate.components",
+              "task.require_bundle(&candidate)?",
+              "Publication::Update { previous, .. }",
+              "&task.0.publication",
+              "self.require_completed_a(previous)?",
+              "previous.source_publication().clone()",
+              "self.original_a",
+              "self.original_a_identity",
+              "self.config.identity().clone()",
+              "AgentdConfig::with_q24_circuit_task_profile(",
+              "self.config",
+              "CircuitQ24TaskProfileV1",
+              "files: self.files",
+              "source_mode: CircuitQ24TaskOpenModeV1::Create",
+              "published_task: task",
+              "fence: self.fence",
+              "circuit: self.circuit",
+              "routes: self.routes",
+              "bundle: candidate.clone()",
+              "model: self.model",
+              "worker_generation: self.worker_generation",
+              "maximum_cell_records: self.maximum_cell_records",
+              "queue_capacity: self.queue_capacity",
+              "clock: self.clock",
+              "ModelVersionInstalledTaskV1",
+              "cell: actual.cell",
+              "source: actual.source",
+              "identity",
+              "intent",
+              "installed.observe(context)?",
+              "CircuitTaskSourceReadbackV1::read_run_publication(\n            &original_a,",
+              "&original_a_identity",
+              "&original_a_publication.input().scope.run_id",
+              ")? != original_a_publication",
+              "context.authenticate(super::now()?,              true)?",
+              "Ok((installed, actual.config))"
+            ],
+            "top_level": [
+              "task.require_bundle(&candidate)?",
+              "self.require_completed_a(previous)?",
+              "let actual = AgentdConfig::with_q24_circuit_task_profile(",
+              "installed.observe(context)?"
+            ]
+          },
+          {
+            "function": "fn observe(",
+            "sequence": [
+              "context.authenticate(super::now()?,              false)?",
+              "coordinator.candidate()",
+              "let task: &PublishedCircuitFeatureTaskV1 = &self.cell.task",
+              "binding::require_published(context, task,              false)?",
+              "task.require_current()?",
+              "CircuitTaskSourceReadbackV1::require_original_input(",
+              "self.source.as_ref()",
+              "&self.identity",
+              "task.source()",
+              "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?",
+              "Publication::Update { original, previous }",
+              "&task.0.publication",
+              "learning_updated_task_operation_id_v1(&coordinator)?",
+              "original.operation_id() != operation.as_str()",
+              "original.intent_digest() != self.intent",
+              "original.completion()",
+              "NeuronGenerationPredecessorCompletionV1::OwnerDrained",
+              "LearningIterationObservationV1::Selection",
+              "candidate_bundle",
+              "selection_digest",
+              "candidate.digest()",
+              "candidate_bundle != selected_bundle",
+              "task.source().scope.run_id == context.decision().request.source_run_id",
+              "task.source().observation == previous.source.input().observation",
+              "original.publication_digest()?",
+              "circuit_feature_task_digest_v1(task.definition(), task.source())?",
+              "CircuitTaskSourceReadbackV1::require_original_input(",
+              "self.source.as_ref()",
+              "&self.identity",
+              "task.source()",
+              "task.require_bundle(&candidate)?",
+              "PublishedCircuitCellOwnerV1::read_learning_selection(&self.cell, &coordinator)?",
+              "LearningIterationObservationV1::Selection",
+              "candidate_bundle",
+              "selection_digest",
+              "Ok(OriginalCircuitModelVersionReadbackV1",
+              "intent: self.intent",
+              "publication: Some(OriginalCircuitModelVersionPublicationV1"
+            ],
+            "top_level": [
+              "let task: &PublishedCircuitFeatureTaskV1 = &self.cell.task",
+              "task.require_current()?",
+              "task.require_bundle(&candidate)?"
+            ]
+          }
+        ]
+      },
+      "reason": "Make original receiver identity explicit without changing custody, arguments, effect order, or verification conditions."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+        "required": [
+          "struct EffectFence<'a> { host: &'a Host, completed: bool }",
+          "pub(super) async fn publish_original(",
+          "cancelled: &AtomicBool",
+          "state.awaiting.take().ok_or(Error::CommitUncertain)?\n        };\n        let operation",
+          "let signed = OriginalRootModelVersionIssuerV1::request_for_original_model_version("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SigningKey",
+          "SignedFinalUseGrant {",
+          "FinalUseBinding {",
+          ".state.lock(",
+          "requested.store(false",
+          "requested.swap(false",
+          "state.config.clone(",
+          "runtime_started.store(false",
+          "RunStart"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "if !self.completed",
+              "self.host.outcome.store(3, Ordering::Release)",
+              "self.host.installed.notify_waiters()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn publish_original(",
+            "sequence": [
+              "require_not_cancelled(cancelled)?",
+              "self.require_lifetime()?",
+              "self.origin != Origin::Fresh || self.requested.swap(        true, Ordering::AcqRel)",
+              "Error::ReadbackRequired",
+              "self.outcome.store(1, Ordering::Release)",
+              "EffectFence { host: self, completed: false }",
+              "let started = super::super::now()?",
+              "let awaiting = {",
+              "self.state.try_lock()",
+              "state.awaiting.take().ok_or(Error::CommitUncertain)?",
+              "self.model.begin_original_model_read().await?",
+              "require_not_cancelled(cancelled)?",
+              "self.original_predecessors().with_original_model(operation.model().clone())?",
+              "request.require_context(&context)?",
+              "operation.require_current(started)?",
+              "context.authenticate_material(operation.material(), started,              true)?",
+              "self.artifacts.read_current()?",
+              "awaiting.task.require_completed_a(&awaiting.inputs.completed)?",
+              "Arc::new(context.duplicate_response_pin())",
+              "prepare_in_original_model_operation(",
+              "context, operation, *awaiting.inputs, started",
+              ".await.map_err(|_| Error::CommitUncertain)?",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "prepared.intent_digest()",
+              "self.state.try_lock()",
+              "state.context.is_some() || state.intent.is_some() || state.installed.is_some()",
+              "state.context = Some(Arc::clone(&pin))",
+              "state.intent = Some(intent)",
+              "self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))?",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?",
+              "prepared.observation.require_current(started)?",
+              "prepared.context.authenticate_material(prepared.observation.material(), started,              true)?",
+              "self.require_lifetime()?",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "let mut issuer = awaiting.issuer",
+              "OriginalRootModelVersionIssuerV1::request_for_original_model_version(",
+              "&mut issuer, &prepared",
+              "let signed = match signed",
+              "AgentdFinalUseIssuerError::Denied",
+              "let PreparedOriginalCircuitModelPublicationV1 { context, observation, .. } = prepared",
+              "observation.finish().await.map_err(|_| Error::CommitUncertain)?",
+              "self.require_prepared_control(&context, intent, None)?",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?",
+              "completed.model() != context.model()",
+              "context.authenticate_material(completed.material(), started,              false)?",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "self.outcome.store(2, Ordering::Release)",
+              "fence.completed = true",
+              "return Err(Error::FinalUseDenied)",
+              "Err(_) => return Err(Error::CommitUncertain)",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "&signed.grant.binding != prepared.final_use_binding()",
+              "prepared.observation.require_current(started).map_err(|_| Error::CommitUncertain)?",
+              "prepared.context.authenticate_material(prepared.observation.material(), started,              true)",
+              "self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)",
+              "self.require_lifetime().map_err(|_| Error::CommitUncertain)?",
+              "let PreparedOriginalCircuitModelPublicationV1",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)",
+              "ready.into_circuit_feature_task(definition, source, completed)",
+              "binding::require_published(&context, &published,              true)",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "awaiting.task.install_original(published, &context, intent)",
+              "let before = installed.observe(&context)",
+              "let closed = observation.finish().await",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "closed.model() != context.model()",
+              "let current = installed.observe(&context)",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)",
+              "current != before",
+              "self.require_lifetime().map_err(|_| Error::CommitUncertain)?",
+              "context.authenticate_material(closed.material(), started_at,              true)",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "self.state.try_lock()",
+              "state.installed.is_some() || state.config.is_some()",
+              "state.intent != Some(intent)",
+              "!Arc::ptr_eq(original, &pin)",
+              "state.installed = Some(installed)",
+              "state.config = Some(config)",
+              "self.outcome.store(4, Ordering::Release)",
+              "fence.completed = true",
+              "Ok(current)"
+            ],
+            "top_level": [
+              "let awaiting = {",
+              "let operation = self.model.begin_original_model_read().await?",
+              "let signed = OriginalRootModelVersionIssuerV1::request_for_original_model_version(",
+              "let signed = match signed",
+              "let ready = PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)",
+              "let closed = observation.finish().await",
+              "let current = installed.observe(&context)",
+              "context.authenticate_material(closed.material(), started_at,              true)",
+              "self.outcome.store(4, Ordering::Release)"
+            ]
+          },
+          {
+            "function": "fn require_not_cancelled(",
+            "sequence": [
+              "cancelled.load(Ordering::Acquire)",
+              "Err(Error::Cancelled)",
+              "Ok(())"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+        "required": [
+          "struct EffectFence<'a> { host: &'a Host, completed: bool }",
+          "pub(super) async fn publish_original(",
+          "cancelled: &AtomicBool",
+          "state.awaiting.take().ok_or(Error::CommitUncertain)?\n        };\n        let operation",
+          "let signed = OriginalRootModelVersionIssuerV1::request_for_original_model_version("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "Clone",
+          "Deserialize",
+          "SigningKey",
+          "SignedFinalUseGrant {",
+          "FinalUseBinding {",
+          ".state.lock(",
+          "requested.store(false",
+          "requested.swap(false",
+          "state.config.clone(",
+          "runtime_started.store(false",
+          "RunStart"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "if !self.completed",
+              "self.host.outcome.store(3, Ordering::Release)",
+              "self.host.installed.notify_waiters()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn publish_original(",
+            "sequence": [
+              "require_not_cancelled(cancelled)?",
+              "self.require_lifetime()?",
+              "self.origin != Origin::Fresh || self.requested.swap(        true, Ordering::AcqRel)",
+              "Error::ReadbackRequired",
+              "self.outcome.store(1, Ordering::Release)",
+              "EffectFence { host: self, completed: false }",
+              "let started = super::super::now()?",
+              "let awaiting = {",
+              "self.state.try_lock()",
+              "state.awaiting.take().ok_or(Error::CommitUncertain)?",
+              "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?",
+              "require_not_cancelled(cancelled)?",
+              "self.original_predecessors().with_original_model(OriginalCellQ24ModelReadV1::model(&operation).clone())?",
+              "request.require_context(&context)?",
+              "OriginalCellQ24ModelReadV1::require_current(&operation, started)?",
+              "Context::authenticate_material(&context, OriginalCellQ24ModelReadV1::material(&operation), started,              true)?",
+              "self.artifacts.read_current()?",
+              "awaiting.task.require_completed_a(&awaiting.inputs.completed)?",
+              "Arc::new(context.duplicate_response_pin())",
+              "prepare_in_original_model_operation(",
+              "context, operation, *awaiting.inputs, started",
+              ".await.map_err(|_| Error::CommitUncertain)?",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "prepared.intent_digest()",
+              "self.state.try_lock()",
+              "state.context.is_some() || state.intent.is_some() || state.installed.is_some()",
+              "state.context = Some(Arc::clone(&pin))",
+              "state.intent = Some(intent)",
+              "self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))?",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?",
+              "OriginalCellQ24ModelReadV1::require_current(&prepared.observation, started)?",
+              "Context::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started,              true)?",
+              "self.require_lifetime()?",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "let mut issuer = awaiting.issuer",
+              "OriginalRootModelVersionIssuerV1::request_for_original_model_version(",
+              "&mut issuer, &prepared",
+              "let signed = match signed",
+              "AgentdFinalUseIssuerError::Denied",
+              "let PreparedOriginalCircuitModelPublicationV1 { context, observation, .. } = prepared",
+              "OriginalCellQ24ModelReadV1::finish(observation).await.map_err(|_| Error::CommitUncertain)?",
+              "self.require_prepared_control(&context, intent, None)?",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?",
+              "OriginalCellQ24ModelReadCompletionV1::model(&completed) != context.model()",
+              "Context::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&completed), started,              false)?",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "self.outcome.store(2, Ordering::Release)",
+              "fence.completed = true",
+              "return Err(Error::FinalUseDenied)",
+              "Err(_) => return Err(Error::CommitUncertain)",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "&signed.grant.binding != prepared.final_use_binding()",
+              "OriginalCellQ24ModelReadV1::require_current(&prepared.observation, started).map_err(|_| Error::CommitUncertain)?",
+              "Context::authenticate_material(&prepared.context, OriginalCellQ24ModelReadV1::material(&prepared.observation), started,              true)",
+              "self.require_prepared_control(&pin, intent, Some(prepared.final_use_binding()))",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)",
+              "self.require_lifetime().map_err(|_| Error::CommitUncertain)?",
+              "let PreparedOriginalCircuitModelPublicationV1",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)",
+              "ready.into_circuit_feature_task(definition, source, completed)",
+              "binding::require_published(&context, &published,              true)",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "awaiting.task.install_original(published, &context, intent)",
+              "let before = installed.observe(&context)",
+              "let closed = OriginalCellQ24ModelReadV1::finish(observation).await",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "OriginalCellQ24ModelReadCompletionV1::model(&closed) != context.model()",
+              "let current = installed.observe(&context)",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)",
+              "current != before",
+              "self.require_lifetime().map_err(|_| Error::CommitUncertain)?",
+              "Context::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&closed), started_at,              true)",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "self.state.try_lock()",
+              "state.installed.is_some() || state.config.is_some()",
+              "state.intent != Some(intent)",
+              "!Arc::ptr_eq(original, &pin)",
+              "state.installed = Some(installed)",
+              "state.config = Some(config)",
+              "self.outcome.store(4, Ordering::Release)",
+              "fence.completed = true",
+              "Ok(current)"
+            ],
+            "top_level": [
+              "let awaiting = {",
+              "let operation = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?",
+              "let signed = OriginalRootModelVersionIssuerV1::request_for_original_model_version(",
+              "let signed = match signed",
+              "let ready = PreparedAgentdGenerationUpdateV1::publish(prepared, &signed)",
+              "let closed = OriginalCellQ24ModelReadV1::finish(observation).await",
+              "let current = installed.observe(&context)",
+              "Context::authenticate_material(&context, OriginalCellQ24ModelReadCompletionV1::material(&closed), started_at,              true)",
+              "self.outcome.store(4, Ordering::Release)"
+            ]
+          },
+          {
+            "function": "fn require_not_cancelled(",
+            "sequence": [
+              "cancelled.load(Ordering::Acquire)",
+              "Err(Error::Cancelled)",
+              "Ok(())"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "reason": "Make original receiver identity explicit without changing custody, arguments, effect order, or verification conditions."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+        "required": [
+          "pub(super) fn require_prepared_control(",
+          "pub(super) async fn read_original(",
+          "state.intent.ok_or(Error::CommitUncertain)?, state.installed.clone())\n        };\n        let started"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "SigningKey",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "publish(",
+          "prepare_agentd_generation",
+          "install_original(",
+          ".config.take(",
+          "state.config =",
+          "repair(",
+          ".state.lock("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_prepared_control(",
+            "sequence": [
+              "context.authenticate(super::super::now()?,              false)?",
+              "learning_updated_task_operation_id_v1(&coordinator)?",
+              "NeuronGenerationCurrentOwnerV1::recover_operation(",
+              "&self.control, operation.as_str(), intent",
+              "original.intent_digest() != intent",
+              "expected.is_some_and(|binding| original.final_use_binding() != binding)",
+              "NeuronGenerationCurrentOwnerV1::read_operation(&self.control, &original)?",
+              "NeuronGenerationUpdateReadbackV1::Prepared",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "self.require_lifetime()?",
+              "self.outcome.load(Ordering::Acquire) == 1",
+              "Error::Busy",
+              "let (expected, intent, installed) = {",
+              "self.state.try_lock()",
+              "Arc::clone(state.context.as_ref().ok_or(Error::ReadbackRequired)?)",
+              "state.intent.ok_or(Error::CommitUncertain)?",
+              "state.installed.clone()",
+              "let started = super::super::now()?",
+              "self.model.begin_original_model_read().await?",
+              "self.original_predecessors().with_original_model(operation.model().clone())?",
+              "request.require_context(&actual)?",
+              "actual.model() != expected.model()",
+              "actual.original_version_binding(started)? != expected.original_version_binding(started)?",
+              "operation.require_current(started)?",
+              "actual.authenticate_material(operation.material(), started,              false)?",
+              "let artifact_before = self.artifacts.read_current()?",
+              "let observe = ||",
+              "Some(original) => original.observe(&actual)",
+              "self.require_prepared_control(&actual, intent, None)?",
+              "publication: None",
+              "let before = observe()?",
+              "let completed = operation.finish().await?",
+              "completed.model() != actual.model()",
+              "let after = observe()?",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?",
+              "before != after",
+              "self.require_lifetime()?",
+              "actual.authenticate_material(completed.material(), started,              false)?",
+              "Ok(after)"
+            ],
+            "top_level": [
+              "let (expected, intent, installed) = {",
+              "let operation = self.model.begin_original_model_read().await?",
+              "let before = observe()?",
+              "let completed = operation.finish().await?",
+              "let after = observe()?",
+              "actual.authenticate_material(completed.material(), started,              false)?"
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+        "required": [
+          "pub(super) fn require_prepared_control(",
+          "pub(super) async fn read_original(",
+          "state.intent.ok_or(Error::CommitUncertain)?, state.installed.clone())\n        };\n        let expected: Arc<Context> = expected;\n        let started"
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "SigningKey",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "publish(",
+          "prepare_agentd_generation",
+          "install_original(",
+          ".config.take(",
+          "state.config =",
+          "repair(",
+          ".state.lock("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_prepared_control(",
+            "sequence": [
+              "context.authenticate(super::super::now()?,              false)?",
+              "learning_updated_task_operation_id_v1(&coordinator)?",
+              "NeuronGenerationCurrentOwnerV1::recover_operation(",
+              "&self.control, operation.as_str(), intent",
+              "original.intent_digest() != intent",
+              "expected.is_some_and(|binding| original.final_use_binding() != binding)",
+              "NeuronGenerationCurrentOwnerV1::read_operation(&self.control, &original)?",
+              "NeuronGenerationUpdateReadbackV1::Prepared",
+              "return Err(Error::CommitUncertain)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn read_original(",
+            "sequence": [
+              "self.require_lifetime()?",
+              "self.outcome.load(Ordering::Acquire) == 1",
+              "Error::Busy",
+              "let (expected, intent, installed) = {",
+              "self.state.try_lock()",
+              "Arc::clone(state.context.as_ref().ok_or(Error::ReadbackRequired)?)",
+              "state.intent.ok_or(Error::CommitUncertain)?",
+              "state.installed.clone()",
+              "let expected: Arc<Context> = expected;\n        let started = super::super::now()?",
+              "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?",
+              "self.original_predecessors().with_original_model(operation.model().clone())?",
+              "request.require_context(&actual)?",
+              "actual.model() != expected.model()",
+              "Context::original_version_binding(&actual, started)? != Context::original_version_binding(expected.as_ref(), started)?",
+              "operation.require_current(started)?",
+              "actual.authenticate_material(operation.material(), started,              false)?",
+              "let artifact_before = self.artifacts.read_current()?",
+              "let observe = ||",
+              "Some(original) => original.observe(&actual)",
+              "self.require_prepared_control(&actual, intent, None)?",
+              "publication: None",
+              "let before = observe()?",
+              "let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await?",
+              "completed.model() != actual.model()",
+              "let after = observe()?",
+              "artifact::require_same(&artifact_before, &self.artifacts.read_current()?)?",
+              "before != after",
+              "self.require_lifetime()?",
+              "actual.authenticate_material(completed.material(), started,              false)?",
+              "Ok(after)"
+            ],
+            "top_level": [
+              "let (expected, intent, installed) = {",
+              "let operation: OriginalCellQ24ModelReadV1<'_> = OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model).await?",
+              "let before = observe()?",
+              "let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await?",
+              "let after = observe()?",
+              "actual.authenticate_material(completed.material(), started,              false)?"
+            ]
+          }
+        ]
+      },
+      "reason": "Resolve the original concrete peer/current receiver while preserving locks, final CURRENT ordering, and all checks."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "required": [
+          "struct QueuedService(Arc<AtomicBool>);",
+          "pub async fn serve_original_ordinary(",
+          "pub async fn run_original_c("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "SigningKey",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "RunStart",
+          "state.config.clone(",
+          "requested.store(false",
+          "runtime_started.store(false",
+          ".state.lock(",
+          "serve_readback(",
+          "serve_completion_readiness("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_commands(",
+            "sequence": [
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "for request_id in 1..=128_u64",
+              "cancelled.load(Ordering::Acquire)",
+              "self.require_lifetime()?",
+              "channel.exchange(|bytes| self.command_response(bytes, request_id, &cancelled)",
+              "HostIssuerTransportError::InvalidRequest",
+              "return Ok(request_id - 1)",
+              "Err(Error::Unavailable)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let lifetime = self.remaining_lifetime(lifetime)?",
+              "let mut channel = original_owner_command_channel_v1("
+            ]
+          },
+          {
+            "function": "fn command_response(",
+            "sequence": [
+              "require_not_cancelled(cancelled)?",
+              "self.require_lifetime()?",
+              "bytes.is_empty() || bytes.len() > 16_384",
+              "serde_json::from_slice(bytes)?",
+              "request.require_initial(self.initial_binding",
+              "&self.predecessors.material.initial.request.operation_id, request_id",
+              "match request.action",
+              "wire::Action::Publish => self.runtime.block_on(self.publish_original(&request, cancelled))",
+              "wire::Action::Readback",
+              "self.requested.store(        true, Ordering::Release)",
+              "self.runtime.block_on(self.read_original(Some(&request)))",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "let result = match actual",
+              "state.context.as_ref().ok_or(Error::CommitUncertain)?",
+              "request.require_context(&context)?",
+              "wire::Outcome::from_original(read)",
+              "Err(Error::Busy) => wire::Outcome::Busy",
+              "Err(Error::ReadbackRequired) => wire::Outcome::ReadbackRequired",
+              "Err(Error::FinalUseDenied) => wire::Outcome::FinalUseDenied",
+              "Err(Error::Unavailable) => wire::Outcome::Unavailable",
+              "Err(_) => wire::Outcome::Uncertain",
+              "self.require_lifetime()?",
+              "serde_json::to_vec(&wire::Response { request, result })?",
+              "encoded.is_empty() || encoded.len() > 16_384",
+              "Ok(encoded)"
+            ],
+            "top_level": [
+              "let actual = match request.action",
+              "let result = match actual"
+            ]
+          },
+          {
+            "function": "fn serve_original_ordinary(",
+            "sequence": [
+              "tokio::try_join!(",
+              "Arc::clone(&self).serve_commands(",
+              "Arc::clone(&self).run_original_c(arg0_paths)",
+              "Ok(served)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn run_original_c(",
+            "sequence": [
+              "self.origin != Origin::Fresh || self.runtime_started.swap(        true, Ordering::AcqRel)",
+              "Error::ReadbackRequired",
+              "self.wait_installed().await?",
+              "Arc::clone(&self)",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "require_not_cancelled(&cancelled)?",
+              "owner.runtime.block_on(owner.read_original(None))?",
+              "current.publication().is_none()",
+              "require_not_cancelled(&cancelled).map_err(|_| Error::CommitUncertain)?",
+              "owner.state.try_lock()",
+              "state.context.as_ref().ok_or(Error::CommitUncertain)?",
+              "context.authenticate(super::super::now()?,              true)?",
+              "state.intent != Some(current.intent_digest())",
+              "state.config.take().ok_or(Error::ReadbackRequired)",
+              "drop(queued)",
+              "crate::run(config, arg0_paths).await.map_err(Error::Owner)"
+            ],
+            "top_level": [
+              "self.wait_installed().await?",
+              "let config = tokio::task::spawn_blocking(move ||",
+              "crate::run(config, arg0_paths).await.map_err(Error::Owner)"
+            ]
+          },
+          {
+            "function": "fn wait_installed(",
+            "sequence": [
+              "loop",
+              "self.installed.notified()",
+              "self.require_lifetime()?",
+              "self.outcome.load(Ordering::Acquire)",
+              "4 => return Ok(())",
+              "2 => return Err(Error::FinalUseDenied)",
+              "3 => return Err(Error::CommitUncertain)",
+              "tokio::select!",
+              "tokio::time::sleep(Duration::from_millis(100))",
+              "tokio::time::sleep_until(tokio::time::Instant::from_std(self.end))",
+              "Error::Unavailable"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_original_selection_readback(",
+            "sequence": [
+              "timeout.is_zero() || timeout > Duration::from_millis(500)",
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "self.wait_installed().await?",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "require_not_cancelled(&cancelled)?",
+              "channel.check_peer_lifetime()?",
+              "self.state.try_lock()",
+              "state.installed.clone().ok_or(Error::CommitUncertain)?",
+              "Arc::clone(state.context.as_ref().ok_or(Error::CommitUncertain)?)",
+              "ReadContext::from_original_model(context.duplicate_response_pin())?",
+              "ReadOwner::from_original_owners(installed.cell",
+              "installed.source.as_ref().clone(), installed.identity, context",
+              "reader.serve_original_candidate_channel(&mut channel)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let mut channel = original_owner_command_channel_v1(",
+              "self.wait_installed().await?"
+            ]
+          },
+          {
+            "function": "fn original_next_use_reader(",
+            "sequence": [
+              "self.require_lifetime()?",
+              "self.outcome.load(Ordering::Acquire) != 4",
+              "Err(Error::ReadbackRequired)",
+              "self.state.try_lock()",
+              "state.installed.clone().ok_or(Error::CommitUncertain)?",
+              "Arc::clone(state.context.as_ref().ok_or(Error::CommitUncertain)?)",
+              "ReadContext::from_original_selection(selection)?",
+              "super::super::now()?",
+              "context.model() != original.model()",
+              "context.model_publication_context().original_version_binding(current)?",
+              "!= original.original_version_binding(current)?",
+              "ReadOwner::from_original_owners(installed.cell, installed.source.as_ref().clone()",
+              "installed.identity, context)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn remaining_lifetime(",
+            "sequence": [
+              "requested.is_zero() || requested > Duration::from_secs(300)",
+              "return Err(Error::Binding(",
+              "requested.min(self.end.checked_duration_since(Instant::now()).ok_or(Error::Unavailable)?)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.0.store(        true, Ordering::Release)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_not_cancelled(",
+            "sequence": [
+              "cancelled.load(Ordering::Acquire)",
+              "Err(Error::Cancelled)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_original_next_use_readback(",
+            "sequence": [
+              "timeout.is_zero() || timeout > Duration::from_millis(500)",
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "cancelled.load(Ordering::Acquire)",
+              "channel.check_peer_lifetime()?",
+              "self.original_next_use_reader(&selection)?",
+              "reader.serve_original_next_use_channel(&mut channel)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let mut channel = original_owner_command_channel_v1("
+            ]
+          },
+          {
+            "function": "fn serve_original_completion_readiness(",
+            "sequence": [
+              "timeout.is_zero() || timeout > Duration::from_millis(500)",
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "cancelled.load(Ordering::Acquire)",
+              "channel.check_peer_lifetime()?",
+              "self.original_next_use_reader(&selection)?",
+              "reader.serve_original_readiness_channel(&mut channel)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let mut channel = original_owner_command_channel_v1("
+            ]
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+        "required": [
+          "struct QueuedService(Arc<AtomicBool>);",
+          "pub async fn serve_original_ordinary(",
+          "pub async fn run_original_c("
+        ],
+        "forbidden": [
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "LearningEvidenceVerifierV1::new",
+          "LearningEvidenceTrustV1",
+          "UnixStream::connect",
+          "File::open",
+          "with_root_learning_stage_owners(",
+          "LearningIterationStageOwnerPortsV1 for",
+          "permit_all",
+          "if false",
+          "SigningKey",
+          "Deserialize",
+          "SignedFinalUseGrant",
+          "RunStart",
+          "state.config.clone(",
+          "requested.store(false",
+          "runtime_started.store(false",
+          ".state.lock(",
+          "serve_readback(",
+          "serve_completion_readiness("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_commands(",
+            "sequence": [
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "for request_id in 1..=128_u64",
+              "cancelled.load(Ordering::Acquire)",
+              "self.require_lifetime()?",
+              "channel.exchange(|bytes| self.command_response(bytes, request_id, &cancelled)",
+              "HostIssuerTransportError::InvalidRequest",
+              "return Ok(request_id - 1)",
+              "Err(Error::Unavailable)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let lifetime = self.remaining_lifetime(lifetime)?",
+              "let mut channel = original_owner_command_channel_v1("
+            ]
+          },
+          {
+            "function": "fn command_response(",
+            "sequence": [
+              "require_not_cancelled(cancelled)?",
+              "self.require_lifetime()?",
+              "bytes.is_empty() || bytes.len() > 16_384",
+              "serde_json::from_slice(bytes)?",
+              "request.require_initial(self.initial_binding",
+              "&self.predecessors.material.initial.request.operation_id, request_id",
+              "match request.action",
+              "wire::Action::Publish => self.runtime.block_on(self.publish_original(&request, cancelled))",
+              "wire::Action::Readback",
+              "self.requested.store(        true, Ordering::Release)",
+              "self.runtime.block_on(self.read_original(Some(&request)))",
+              "require_not_cancelled(cancelled).map_err(|_| Error::CommitUncertain)?",
+              "let result = match actual",
+              "state.context.as_ref().ok_or(Error::CommitUncertain)?",
+              "request.require_context(&context)?",
+              "wire::Outcome::from_original(read)",
+              "Err(Error::Busy) => wire::Outcome::Busy",
+              "Err(Error::ReadbackRequired) => wire::Outcome::ReadbackRequired",
+              "Err(Error::FinalUseDenied) => wire::Outcome::FinalUseDenied",
+              "Err(Error::Unavailable) => wire::Outcome::Unavailable",
+              "Err(_) => wire::Outcome::Uncertain",
+              "self.require_lifetime()?",
+              "serde_json::to_vec(&wire::Response { request, result })?",
+              "encoded.is_empty() || encoded.len() > 16_384",
+              "Ok(encoded)"
+            ],
+            "top_level": [
+              "let actual = match request.action",
+              "let result = match actual"
+            ]
+          },
+          {
+            "function": "fn serve_original_ordinary(",
+            "sequence": [
+              "tokio::try_join!(",
+              "Arc::clone(&self).serve_commands(",
+              "Arc::clone(&self).run_original_c(arg0_paths)",
+              "Ok(served)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn run_original_c(",
+            "sequence": [
+              "self.origin != Origin::Fresh || self.runtime_started.swap(        true, Ordering::AcqRel)",
+              "Error::ReadbackRequired",
+              "self.wait_installed().await?",
+              "Arc::clone(&self)",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "require_not_cancelled(&cancelled)?",
+              "owner.runtime.block_on(owner.read_original(None))?",
+              "current.publication().is_none()",
+              "require_not_cancelled(&cancelled).map_err(|_| Error::CommitUncertain)?",
+              "owner.state.try_lock()",
+              "state.context.as_ref().ok_or(Error::CommitUncertain)?",
+              "PublicationContext::authenticate(context.as_ref(), super::super::now()?,              true)?",
+              "state.intent != Some(current.intent_digest())",
+              "state.config.take().ok_or(Error::ReadbackRequired)",
+              "drop(queued)",
+              "crate::run(config, arg0_paths).await.map_err(Error::Owner)"
+            ],
+            "top_level": [
+              "self.wait_installed().await?",
+              "let config = tokio::task::spawn_blocking(move ||",
+              "crate::run(config, arg0_paths).await.map_err(Error::Owner)"
+            ]
+          },
+          {
+            "function": "fn wait_installed(",
+            "sequence": [
+              "loop",
+              "self.installed.notified()",
+              "self.require_lifetime()?",
+              "self.outcome.load(Ordering::Acquire)",
+              "4 => return Ok(())",
+              "2 => return Err(Error::FinalUseDenied)",
+              "3 => return Err(Error::CommitUncertain)",
+              "tokio::select!",
+              "tokio::time::sleep(Duration::from_millis(100))",
+              "tokio::time::sleep_until(tokio::time::Instant::from_std(self.end))",
+              "Error::Unavailable"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_original_selection_readback(",
+            "sequence": [
+              "timeout.is_zero() || timeout > Duration::from_millis(500)",
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "self.wait_installed().await?",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "require_not_cancelled(&cancelled)?",
+              "channel.check_peer_lifetime()?",
+              "self.state.try_lock()",
+              "state.installed.clone().ok_or(Error::CommitUncertain)?",
+              "Arc::clone(state.context.as_ref().ok_or(Error::CommitUncertain)?)",
+              "ReadContext::from_original_model(context.duplicate_response_pin())?",
+              "ReadOwner::from_original_owners(installed.cell",
+              "installed.source.as_ref().clone(), installed.identity, context",
+              "ReadOwner::serve_original_candidate_channel(&reader, &mut channel)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let mut channel = original_owner_command_channel_v1(",
+              "self.wait_installed().await?"
+            ]
+          },
+          {
+            "function": "fn original_next_use_reader(",
+            "sequence": [
+              "self.require_lifetime()?",
+              "self.outcome.load(Ordering::Acquire) != 4",
+              "Err(Error::ReadbackRequired)",
+              "self.state.try_lock()",
+              "state.installed.clone().ok_or(Error::CommitUncertain)?",
+              "Arc::clone(state.context.as_ref().ok_or(Error::CommitUncertain)?)",
+              "ReadContext::from_original_selection(selection)?",
+              "super::super::now()?",
+              "context.model() != original.model()",
+              "PublicationContext::original_version_binding(context.model_publication_context(), current)?",
+              "!= PublicationContext::original_version_binding(original.as_ref(), current)?",
+              "ReadOwner::from_original_owners(installed.cell, installed.source.as_ref().clone()",
+              "installed.identity, context)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn remaining_lifetime(",
+            "sequence": [
+              "requested.is_zero() || requested > Duration::from_secs(300)",
+              "return Err(Error::Binding(",
+              "requested.min(self.end.checked_duration_since(Instant::now()).ok_or(Error::Unavailable)?)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.0.store(        true, Ordering::Release)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_not_cancelled(",
+            "sequence": [
+              "cancelled.load(Ordering::Acquire)",
+              "Err(Error::Cancelled)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn serve_original_next_use_readback(",
+            "sequence": [
+              "timeout.is_zero() || timeout > Duration::from_millis(500)",
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "cancelled.load(Ordering::Acquire)",
+              "channel.check_peer_lifetime()?",
+              "self.original_next_use_reader(&selection)?",
+              "ReadOwner::serve_original_next_use_channel(&reader, &mut channel)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let mut channel = original_owner_command_channel_v1("
+            ]
+          },
+          {
+            "function": "fn serve_original_completion_readiness(",
+            "sequence": [
+              "timeout.is_zero() || timeout > Duration::from_millis(500)",
+              "Arc::clone(&self.connections).try_acquire_owned()",
+              "self.remaining_lifetime(lifetime)?",
+              "original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "QueuedService(Arc::new(AtomicBool::new(      false)))",
+              "tokio::task::spawn_blocking(move ||",
+              "cancelled.load(Ordering::Acquire)",
+              "channel.check_peer_lifetime()?",
+              "self.original_next_use_reader(&selection)?",
+              "ReadOwner::serve_original_readiness_channel(&reader, &mut channel)",
+              "drop(queued)"
+            ],
+            "top_level": [
+              "let mut channel = original_owner_command_channel_v1("
+            ]
+          }
+        ]
+      },
+      "reason": "Resolve the original concrete peer/current receiver while preserving locks, final CURRENT ordering, and all checks."
+    },
+    {
+      "kind": "protected_file",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "required": [
+          "pub(super) async fn original_attestations(",
+          "pub(super) fn verify_attestations(",
+          "stages: &ResidentOriginalStageOwnersV3",
+          "pub(super) struct ResidentOriginalEvidenceV3",
+          "model: Option<ResidentOriginalModelProofV3>"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "SignedLearningEvidenceV1::sign",
+          "sign_payload(",
+          "execute_stage("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn verify_non_model_attestations(",
+            "sequence": [
+              "fn verify_non_model_attestations(",
+              "profile\n        .require_verifier(verifier)",
+              "profile.scope.validate_snapshot(snapshot)?",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+              "let proposal_count",
+              "receipt.observation.stage() == LearningIterationStageV1::Proposal",
+              ".count()",
+              "snapshot.request != profile.initial.request",
+              "snapshot.owners != profile.initial.owners",
+              "proposal_count > 1",
+              "proposal_count == 1",
+              "!(5..=7).contains(&snapshot.receipts.len())",
+              "snapshot.receipts[4].observation.stage() != LearningIterationStageV1::Proposal",
+              "signatures.len() + proposal_count != snapshot.receipts.len()",
+              "signatures.len() > 6",
+              "proposal_count == 0 && signatures.len() > 5",
+              "verifier.trust_digest() != snapshot.owners.evidence_trust_digest",
+              "return Err(Error::WrongScope)",
+              "let mut verified",
+              "receipt.observation.stage() != LearningIterationStageV1::Proposal",
+              ".zip(signatures)",
+              "let role = match stage",
+              "LearningEvidenceRoleV1::Observer",
+              "LearningEvidenceRoleV1::Generator",
+              "LearningEvidenceRoleV1::Selector",
+              "LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?",
+              "snapshot.receipts.len() < 4",
+              "snapshot.training_no_update_v2().is_some()",
+              "snapshot.receipts.get(3) != Some(receipt)",
+              "for original in &snapshot.receipts[..3]",
+              "training.record(original.clone(), original.observed_unix_seconds)?",
+              "training.next_stage() != Some(LearningIterationStageV1::Evaluation)",
+              "receipt.predecessor != training.snapshot().head_digest",
+              "receipt.operation_id != profile.initial.request.operation_id",
+              "receipt.observed_unix_seconds > signature.issued_at",
+              "candidate_bundle, evaluation_profile",
+              "*candidate_bundle == candidate",
+              "*evaluation_profile == profile.initial.request.evaluation_profile",
+              "LearningEvidenceRoleV1::Evaluator",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              ".verify(role, signature, &payload, now)",
+              "evidence.principal().principal_id != receipt.actor_id",
+              "&receipt.actor_id != snapshot.owners.owner(stage)",
+              "evidence.trust_digest() != snapshot.owners.evidence_trust_digest",
+              "evidence.objective_digest() != snapshot.request.envelope.objective_digest",
+              "verified.push((stage, evidence))",
+              "for (stage, current) in &verified",
+              "LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training]",
+              "LearningIterationStageV1::Selection",
+              "snapshot.training_no_update_v2().is_some()",
+              "proposal_count != 1 || snapshot.receipts.len() < 6",
+              "LearningIterationStageV1::Training",
+              "LearningIterationStageV1::Evaluation",
+              "LearningIterationStageV1::NextUse",
+              "snapshot.training_no_update_v2().is_some()",
+              "proposal_count != 1 || snapshot.receipts.len() != 7",
+              "LearningIterationStageV1::Training",
+              "LearningIterationStageV1::Evaluation",
+              "LearningIterationStageV1::Selection",
+              "for predecessor in independent",
+              ".find(|(stage, _)| stage == predecessor)",
+              "verify_signed_actor_separation(&previous.1, current, now)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "profile\n        .require_verifier(verifier)",
+              "profile.scope.validate_snapshot(snapshot)?",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+              "let proposal_count",
+              "if snapshot.request",
+              "let mut verified",
+              "for (receipt, signature)",
+              "for (stage, current) in &verified",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn verify_attestations(",
+            "sequence": [
+              "fn verify_attestations(",
+              "verify_original_evidence(profile, verifier, snapshot, signatures, None, now)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn verify_original_evidence(",
+            "sequence": [
+              "verify_non_model_attestations(profile, verifier, snapshot, signatures, now)?",
+              "let proposal = snapshot\n        .receipts\n        .iter()\n        .any",
+              "match (proposal, model)",
+              "(false, None) => Ok(())",
+              "(true, Some(model)) => model.require_original(profile, verifier, snapshot, signatures, now)",
+              "(false, Some(_)) | (true, None) => Err(Error::WrongScope)"
+            ],
+            "top_level": [
+              "verify_non_model_attestations(",
+              "match (proposal, model)"
+            ]
+          },
+          {
+            "function": "fn verify_model_comparison_pin(",
+            "sequence": [
+              "verify_non_model_attestations(profile, verifier, snapshot, signatures, now)?",
+              "ResidentOriginalModelProofV3::decode_root_reply(",
+              "original_model,\n        profile,\n        verifier,\n        snapshot,\n        signatures,\n        now",
+              "Ok(())"
+            ],
+            "top_level": [
+              "verify_non_model_attestations(",
+              "ResidentOriginalModelProofV3::decode_root_reply(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn original_attestations(",
+            "sequence": [
+              "fn original_attestations(",
+              "owner.authority.profile.scope.validate_snapshot(snapshot)?",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+              "coordinator.candidate().is_some() && (4..=7).contains(&snapshot.receipts.len())",
+              "ResidentOriginalStageOwnersV3::read_original_candidate_evidence(",
+              "return candidate_continuation_attestations(",
+              "stages.validate_recovery(snapshot).await?",
+              "receipt.observation.stage() != LearningIterationStageV1::Proposal",
+              "owner.read(cancellation).await?",
+              "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?",
+              "let (_, fresh) = owner.read(cancellation).await?",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "verify_original_evidence(",
+              "&signatures,\n        None,\n        fresh / 1_000",
+              "Ok(ResidentOriginalEvidenceV3 { signatures, model: None })"
+            ],
+            "top_level": [
+              "owner.authority.profile.scope.validate_snapshot(",
+              "let coordinator",
+              "if coordinator.candidate()",
+              "stages.validate_recovery(",
+              "let mut signatures",
+              "for receipt",
+              "let (_, fresh)",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "verify_original_evidence(",
+              "Ok(ResidentOriginalEvidenceV3"
+            ]
+          },
+          {
+            "function": "fn candidate_continuation_attestations(",
+            "sequence": [
+              "fn candidate_continuation_attestations(",
+              "original: OriginalCandidateOperationEvidence",
+              "let (_, fresh) = owner.read(cancellation).await?",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "ResidentOriginalStageOwnersV3::consume_original_candidate_evidence(",
+              "stages, original, snapshot, fresh / 1_000",
+              "ResidentOriginalModelProofV3::from_original_readback(",
+              "verify_original_evidence(",
+              "model.as_ref(), fresh / 1_000",
+              "Ok(ResidentOriginalEvidenceV3 { signatures, model })"
+            ],
+            "top_level": [
+              "let (_, fresh)",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "let (signatures, original_model)",
+              "let model",
+              "verify_original_evidence(",
+              "Ok(ResidentOriginalEvidenceV3"
+            ]
+          },
+          {
+            "function": "fn verify_checkpoint_evidence(",
+            "sequence": [
+              "fn verify_checkpoint_evidence(",
+              "committed_at_ms < before_ms",
+              "return Err(Error::CommitUncertain)",
+              "verify_original_evidence(",
+              "profile,\n        verifier,\n        snapshot,\n        signatures,\n        model,\n        committed_at_ms / 1_000",
+              ".map_err(|_| Error::CommitUncertain)"
+            ],
+            "top_level": [
+              "if committed_at_ms < before_ms",
+              "verify_original_evidence("
+            ]
+          }
+        ],
+        "required_order": []
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "required": [
+          "pub(super) async fn original_attestations(",
+          "pub(super) fn verify_attestations(",
+          "stages: &ResidentOriginalStageOwnersV3",
+          "pub(super) struct ResidentOriginalEvidenceV3",
+          "model: Option<ResidentOriginalModelProofV3>"
+        ],
+        "forbidden": [
+          "AllowVerifier",
+          "permit_all",
+          "SigningKey::generate",
+          "SigningKey::from_bytes",
+          "SignedLearningEvidenceV1::sign",
+          "sign_payload(",
+          "execute_stage("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn verify_non_model_attestations(",
+            "sequence": [
+              "fn verify_non_model_attestations(",
+              "profile\n        .require_verifier(verifier)",
+              "profile.scope.validate_snapshot(snapshot)?",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+              "let proposal_count",
+              "receipt.observation.stage() == LearningIterationStageV1::Proposal",
+              ".count()",
+              "snapshot.request != profile.initial.request",
+              "snapshot.owners != profile.initial.owners",
+              "proposal_count > 1",
+              "proposal_count == 1",
+              "!(5..=7).contains(&snapshot.receipts.len())",
+              "snapshot.receipts[4].observation.stage() != LearningIterationStageV1::Proposal",
+              "signatures.len() + proposal_count != snapshot.receipts.len()",
+              "signatures.len() > 6",
+              "proposal_count == 0 && signatures.len() > 5",
+              "verifier.trust_digest() != snapshot.owners.evidence_trust_digest",
+              "return Err(Error::WrongScope)",
+              "let mut verified",
+              "receipt.observation.stage() != LearningIterationStageV1::Proposal",
+              ".zip(signatures)",
+              "let role = match stage",
+              "LearningEvidenceRoleV1::Observer",
+              "LearningEvidenceRoleV1::Generator",
+              "LearningEvidenceRoleV1::Selector",
+              "LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?",
+              "snapshot.receipts.len() < 4",
+              "snapshot.training_no_update_v2().is_some()",
+              "snapshot.receipts.get(3) != Some(receipt)",
+              "for original in &snapshot.receipts[..3]",
+              "training.record(original.clone(), original.observed_unix_seconds)?",
+              "training.next_stage() != Some(LearningIterationStageV1::Evaluation)",
+              "receipt.predecessor != training.snapshot().head_digest",
+              "receipt.operation_id != profile.initial.request.operation_id",
+              "receipt.observed_unix_seconds > signature.issued_at",
+              "candidate_bundle, evaluation_profile",
+              "*candidate_bundle == candidate",
+              "*evaluation_profile == profile.initial.request.evaluation_profile",
+              "LearningEvidenceRoleV1::Evaluator",
+              "LearningIterationStageV1::Proposal =>",
+              "return Err(Error::WrongScope)",
+              "learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              ".verify(role, signature, &payload, now)",
+              "evidence.principal().principal_id != receipt.actor_id",
+              "&receipt.actor_id != snapshot.owners.owner(stage)",
+              "evidence.trust_digest() != snapshot.owners.evidence_trust_digest",
+              "evidence.objective_digest() != snapshot.request.envelope.objective_digest",
+              "verified.push((stage, evidence))",
+              "for (stage, current) in &verified",
+              "LearningIterationStageV1::Evaluation => &[LearningIterationStageV1::Training]",
+              "LearningIterationStageV1::Selection",
+              "snapshot.training_no_update_v2().is_some()",
+              "proposal_count != 1 || snapshot.receipts.len() < 6",
+              "LearningIterationStageV1::Training",
+              "LearningIterationStageV1::Evaluation",
+              "LearningIterationStageV1::NextUse",
+              "snapshot.training_no_update_v2().is_some()",
+              "proposal_count != 1 || snapshot.receipts.len() != 7",
+              "LearningIterationStageV1::Training",
+              "LearningIterationStageV1::Evaluation",
+              "LearningIterationStageV1::Selection",
+              "for predecessor in independent",
+              ".find(|(stage, _)| stage == predecessor)",
+              "verify_signed_actor_separation(&previous.1, current, now)",
+              "Ok(())"
+            ],
+            "top_level": [
+              "profile\n        .require_verifier(verifier)",
+              "profile.scope.validate_snapshot(snapshot)?",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+              "let proposal_count",
+              "if snapshot.request",
+              "let mut verified",
+              "for (receipt, signature)",
+              "for (stage, current) in &verified",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn verify_attestations(",
+            "sequence": [
+              "fn verify_attestations(",
+              "verify_original_evidence(profile, verifier, snapshot, signatures, None, now)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn verify_original_evidence(",
+            "sequence": [
+              "verify_non_model_attestations(profile, verifier, snapshot, signatures, now)?",
+              "let proposal = snapshot\n        .receipts\n        .iter()\n        .any",
+              "match (proposal, model)",
+              "(false, None) => Ok(())",
+              "(true, Some(model)) => model.require_original(profile, verifier, snapshot, signatures, now)",
+              "(false, Some(_)) | (true, None) => Err(Error::WrongScope)"
+            ],
+            "top_level": [
+              "verify_non_model_attestations(",
+              "match (proposal, model)"
+            ]
+          },
+          {
+            "function": "fn verify_model_comparison_pin(",
+            "sequence": [
+              "verify_non_model_attestations(profile, verifier, snapshot, signatures, now)?",
+              "ResidentOriginalModelProofV3::decode_root_reply(",
+              "original_model,\n        profile,\n        verifier,\n        snapshot,\n        signatures,\n        now",
+              "Ok(())"
+            ],
+            "top_level": [
+              "verify_non_model_attestations(",
+              "ResidentOriginalModelProofV3::decode_root_reply(",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn original_attestations(",
+            "sequence": [
+              "fn original_attestations(",
+              "owner.authority.profile.scope.validate_snapshot(snapshot)?",
+              "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?",
+              "coordinator.candidate().is_some() && (4..=7).contains(&snapshot.receipts.len())",
+              "ResidentOriginalStageOwnersV3::read_original_candidate_evidence(",
+              "return candidate_continuation_attestations(",
+              "stages.validate_recovery(snapshot).await?",
+              "receipt.observation.stage() != LearningIterationStageV1::Proposal",
+              "owner.read(cancellation).await?",
+              "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?",
+              "let (_, fresh) = owner.read(cancellation).await?",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "verify_original_evidence(",
+              "&signatures,\n        None,\n        fresh / 1_000",
+              "Ok(ResidentOriginalEvidenceV3 { signatures, model: None })"
+            ],
+            "top_level": [
+              "owner.authority.profile.scope.validate_snapshot(",
+              "let coordinator",
+              "if coordinator.candidate()",
+              "stages.validate_recovery(",
+              "let mut signatures",
+              "for receipt",
+              "let (_, fresh)",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "verify_original_evidence(",
+              "Ok(ResidentOriginalEvidenceV3"
+            ]
+          },
+          {
+            "function": "fn candidate_continuation_attestations(",
+            "sequence": [
+              "fn candidate_continuation_attestations(",
+              "original: OriginalCandidateOperationEvidence",
+              "let (_, fresh) = owner.read(cancellation).await?",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "ResidentOriginalStageOwnersV3::consume_original_candidate_evidence(",
+              "stages, original, snapshot, fresh / 1_000",
+              "ResidentOriginalModelProofV3::from_original_readback(",
+              "verify_original_evidence(",
+              "model.as_ref(), fresh / 1_000",
+              "Ok(ResidentOriginalEvidenceV3 { signatures, model })"
+            ],
+            "top_level": [
+              "let (_, fresh)",
+              "ResidentOriginalStageOwnersV3::require_initial(",
+              "let (signatures, original_model)",
+              "let model",
+              "verify_original_evidence(",
+              "Ok(ResidentOriginalEvidenceV3"
+            ]
+          },
+          {
+            "function": "fn verify_checkpoint_evidence(",
+            "sequence": [
+              "fn verify_checkpoint_evidence(",
+              "committed_at_ms < before_ms",
+              "return Err(Error::CommitUncertain)",
+              "verify_original_evidence(",
+              "profile,\n        verifier,\n        snapshot,\n        signatures,\n        model,\n        committed_at_ms / 1_000",
+              ".map_err(|_| Error::CommitUncertain)"
+            ],
+            "top_level": [
+              "if committed_at_ms < before_ms",
+              "verify_original_evidence("
+            ]
+          }
+        ],
+        "required_order": []
+      },
+      "reason": "Protect the actual exhaustive Proposal rejection arm inside Root role verification; a Learning-stage signature must never replace the original Model record."
+    }
+  ],
+  "boundary_changes": [],
+  "source_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",
+      "before_blob": "15f975727af65c9076a9c48c981ca5ed1bda1980",
+      "edits": [
+        {
+          "old": "let evaluation = self.runtime.block_on(",
+          "now": "let evaluation: OriginalCellEvaluationModelReadV1<'static> = self.runtime.block_on(",
+          "count": 1
+        },
+        {
+          "old": "let before = OriginalCellEvaluationModelReadV1::material(&evaluation);",
+          "now": "let before: &OriginalCellEvaluationModelMaterialV1 = OriginalCellEvaluationModelReadV1::material(&evaluation);",
+          "count": 1
+        },
+        {
+          "old": "before.original_model_transfer_body()",
+          "now": "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(before)",
+          "count": 1
+        },
+        {
+          "old": "evaluation.require_original_operation_current(inputs.started)?",
+          "now": "OriginalCellEvaluationModelReadV1::require_original_operation_current(&evaluation, inputs.started)?",
+          "count": 1
+        },
+        {
+          "old": "let evaluation = self.evaluation.as_ref().ok_or(Error::CommitUncertain)?;",
+          "now": "let evaluation: &OriginalCellEvaluationModelReadV1<'static> = self.evaluation.as_ref().ok_or(Error::CommitUncertain)?;",
+          "count": 1
+        },
+        {
+          "old": "evaluation.require_original_operation_current(self.started)?",
+          "now": "OriginalCellEvaluationModelReadV1::require_original_operation_current(evaluation, self.started)?",
+          "count": 1
+        },
+        {
+          "old": "evaluation.material().authenticate_current(fresh)?;",
+          "now": "OriginalCellEvaluationModelReadV1::material(evaluation).authenticate_current(fresh)?;",
+          "count": 1
+        },
+        {
+          "old": "let after = self.host.runtime.block_on(",
+          "now": "let after: OriginalCellEvaluationModelMaterialV1 = self.host.runtime.block_on(",
+          "count": 1
+        },
+        {
+          "old": "after.original_model_transfer_body()",
+          "now": "OriginalCellEvaluationModelMaterialV1::original_model_transfer_body(&after)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_remote.rs",
+      "before_blob": "99f3f3e35669317d82d738c7c9308044cd6f692d",
+      "edits": [
+        {
+          "old": "use crate::OriginalCellQ24ModelCommandClientV1;",
+          "now": "use crate::OriginalCellQ24ModelCommandClientV1;\nuse crate::OriginalCellQ24ModelReadV1;\nuse crate::OriginalCellQ24ModelReadCompletionV1;\nuse crate::OriginalCellEvaluationModelMaterialV1;\nuse crate::OriginalCircuitModelPublicationContextV1;",
+          "count": 1
+        },
+        {
+          "old": "let context = source.context.model_publication_context();",
+          "now": "let context: &OriginalCircuitModelPublicationContextV1 = source.context.model_publication_context();",
+          "count": 1
+        },
+        {
+          "old": "let operation = source.model.begin_original_model_read().await.map_err(unavailable)?;",
+          "now": "let operation: OriginalCellQ24ModelReadV1<'_> =\n            source.model.begin_original_model_read().await.map_err(unavailable)?;",
+          "count": 1
+        },
+        {
+          "old": "operation.material().require_original_selector_material(&self.config, binding::now()?)",
+          "now": "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            operation.material(), &self.config, binding::now()?,\n        )",
+          "count": 1
+        },
+        {
+          "old": "operation.material().require_original_selector_material(config, issued_at)",
+          "now": "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n                    operation.material(), config, issued_at,\n                )",
+          "count": 1
+        },
+        {
+          "old": "let completed = operation.finish().await.map_err(unavailable)?;",
+          "now": "let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await.map_err(unavailable)?;",
+          "count": 1
+        },
+        {
+          "old": "completed.material().require_original_selector_material(config, current).map_err(unavailable)?;",
+          "now": "OriginalCellEvaluationModelMaterialV1::require_original_selector_material(\n            completed.material(), config, current,\n        ).map_err(unavailable)?;",
+          "count": 1
+        },
+        {
+          "old": "source.live.require_original_context(source.context)",
+          "now": "OriginalCircuitCandidateLearningReadClientV1::require_original_context(source.live, source.context)",
+          "count": 1
+        },
+        {
+          "old": "source.live.read_current()",
+          "now": "OriginalCircuitCandidateLearningReadClientV1::read_current(source.live)",
+          "count": 2
+        },
+        {
+          "old": "source.model.begin_original_model_read()",
+          "now": "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(source.model)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_host.rs",
+      "before_blob": "7f3c72f17c6f50914881e14776e5018f47af1ff9",
+      "edits": [
+        {
+          "old": "use crate::OriginalCellQ24ModelCommandClientV1;",
+          "now": "use crate::OriginalCellQ24ModelCommandClientV1;\nuse crate::OriginalCellQ24MaterialReceiptConfigV1;",
+          "count": 1
+        },
+        {
+          "old": "predecessors.material.require_original_command_initial()?",
+          "now": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&predecessors.material)?",
+          "count": 2
+        },
+        {
+          "old": "let issuer = issuer.into_original_model_version_issuer()?;",
+          "now": "let issuer = AgentdUnixFinalUseGrantProvider::into_original_model_version_issuer(issuer)?;",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_client.rs",
+      "before_blob": "394532edc720e8bf9c405285a002eaf79634e194",
+      "edits": [
+        {
+          "old": "use crate::OriginalCircuitCandidateLearningReadContextV1 as Context;",
+          "now": "use crate::OriginalCircuitCandidateLearningReadContextV1 as Context;\nuse crate::OriginalCircuitModelPublicationContextV1 as PublicationContext;",
+          "count": 1
+        },
+        {
+          "old": "context.model_publication_context().authenticate(started, /*new_work*/ false)?;",
+          "now": "PublicationContext::authenticate(context.model_publication_context(), started, /*new_work*/ false)?;",
+          "count": 1
+        },
+        {
+          "old": "context.model_publication_context().original_version_binding(started)?",
+          "now": "PublicationContext::original_version_binding(context.model_publication_context(), started)?",
+          "count": 1
+        },
+        {
+          "old": "context.model_publication_context().original_version_binding(fresh)?",
+          "now": "PublicationContext::original_version_binding(context.model_publication_context(), fresh)?",
+          "count": 1
+        },
+        {
+          "old": "self.context.model_publication_context().authenticate(\n            started, action == wire::Action::Publish,\n        )?;",
+          "now": "PublicationContext::authenticate(\n            self.context.model_publication_context(), started, action == wire::Action::Publish,\n        )?;",
+          "count": 1
+        },
+        {
+          "old": "self.context.model_publication_context().authenticate(fresh, /*new_work*/ false)",
+          "now": "PublicationContext::authenticate(self.context.model_publication_context(), fresh, /*new_work*/ false)",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_state.rs",
+      "before_blob": "7f9da85c007eb995e98867be03b942a65ebfc858",
+      "edits": [
+        {
+          "old": "use crate::OriginalCircuitModelPublicationContextV1 as Context;",
+          "now": "use crate::OriginalCircuitModelPublicationContextV1 as Context;\nuse crate::OriginalCellQ24ModelReadV1;\nuse crate::OriginalCellQ24ModelReadCompletionV1;",
+          "count": 1
+        },
+        {
+          "old": "let started = super::super::now()?;",
+          "now": "let expected: Arc<Context> = expected;\n        let started = super::super::now()?;",
+          "count": 1
+        },
+        {
+          "old": "let operation = self.model.begin_original_model_read().await?;",
+          "now": "let operation: OriginalCellQ24ModelReadV1<'_> = self.model.begin_original_model_read().await?;",
+          "count": 1
+        },
+        {
+          "old": "let actual = self.original_predecessors().with_original_model(operation.model().clone())?;",
+          "now": "let actual: Context = self.original_predecessors().with_original_model(operation.model().clone())?;",
+          "count": 1
+        },
+        {
+          "old": "let completed = operation.finish().await?;",
+          "now": "let completed: OriginalCellQ24ModelReadCompletionV1 = operation.finish().await?;",
+          "count": 1
+        },
+        {
+          "old": "use crate::OriginalCellQ24ModelReadV1;",
+          "now": "use crate::OriginalCellQ24ModelReadV1;\nuse crate::OriginalCellQ24ModelCommandClientV1;",
+          "count": 1
+        },
+        {
+          "old": "self.model.begin_original_model_read()",
+          "now": "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model)",
+          "count": 1
+        },
+        {
+          "old": "actual.original_version_binding(started)? != expected.original_version_binding(started)?",
+          "now": "Context::original_version_binding(&actual, started)? != Context::original_version_binding(expected.as_ref(), started)?",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_task.rs",
+      "before_blob": "5570a22b6b55b1b3c99bbc49102797460ed6ee12",
+      "edits": [
+        {
+          "old": "let before = self\n            .original_a\n            .read_run_publication(&self.original_a_identity, run)?;",
+          "now": "let before = CircuitTaskSourceReadbackV1::read_run_publication(\n            &self.original_a, &self.original_a_identity, run,\n        )?;",
+          "count": 1
+        },
+        {
+          "old": "self.original_a.read_run_publication(a, run)?",
+          "now": "CircuitTaskSourceReadbackV1::read_run_publication(&self.original_a, a, run)?",
+          "count": 1
+        },
+        {
+          "old": "if original_a.read_run_publication(\n            &original_a_identity,\n            &original_a_publication.input().scope.run_id,\n        )? != original_a_publication",
+          "now": "if CircuitTaskSourceReadbackV1::read_run_publication(\n            &original_a,\n            &original_a_identity,\n            &original_a_publication.input().scope.run_id,\n        )? != original_a_publication",
+          "count": 1
+        },
+        {
+          "old": "let task = &self.cell.task;",
+          "now": "let task: &PublishedCircuitFeatureTaskV1 = &self.cell.task;",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_service.rs",
+      "before_blob": "03106c90bc652bbbbce658bb21adc5003f02c5f9",
+      "edits": [
+        {
+          "old": "use crate::OriginalCircuitModelSelectionCommandReceiptV1 as Selection;",
+          "now": "use crate::OriginalCircuitModelSelectionCommandReceiptV1 as Selection;\nuse crate::OriginalCircuitModelPublicationContextV1 as PublicationContext;",
+          "count": 1
+        },
+        {
+          "old": "reader.serve_original_candidate_channel(&mut channel)",
+          "now": "ReadOwner::serve_original_candidate_channel(&reader, &mut channel)",
+          "count": 1
+        },
+        {
+          "old": "reader.serve_original_next_use_channel(&mut channel)",
+          "now": "ReadOwner::serve_original_next_use_channel(&reader, &mut channel)",
+          "count": 1
+        },
+        {
+          "old": "reader.serve_original_readiness_channel(&mut channel)",
+          "now": "ReadOwner::serve_original_readiness_channel(&reader, &mut channel)",
+          "count": 1
+        },
+        {
+          "old": "context.authenticate(super::super::now()?, /*new_work*/ true)?;",
+          "now": "PublicationContext::authenticate(context.as_ref(), super::super::now()?, /*new_work*/ true)?;",
+          "count": 1
+        },
+        {
+          "old": "context.model_publication_context().original_version_binding(current)?",
+          "now": "PublicationContext::original_version_binding(context.model_publication_context(), current)?",
+          "count": 1
+        },
+        {
+          "old": "original.original_version_binding(current)?",
+          "now": "PublicationContext::original_version_binding(original.as_ref(), current)?",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_version_effect.rs",
+      "before_blob": "6fdff45b375c19cb4c6c5e0d85270af18192d20d",
+      "edits": [
+        {
+          "old": "use crate::OriginalCircuitModelPublicationContextV1 as Context;",
+          "now": "use crate::OriginalCircuitModelPublicationContextV1 as Context;\nuse crate::OriginalCellQ24ModelCommandClientV1;\nuse crate::OriginalCellQ24ModelReadV1;\nuse crate::OriginalCellQ24ModelReadCompletionV1;",
+          "count": 1
+        },
+        {
+          "old": "self.model.begin_original_model_read()",
+          "now": "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(&self.model)",
+          "count": 1
+        },
+        {
+          "old": "operation.model()",
+          "now": "OriginalCellQ24ModelReadV1::model(&operation)",
+          "count": 1
+        },
+        {
+          "old": "operation.require_current(started)",
+          "now": "OriginalCellQ24ModelReadV1::require_current(&operation, started)",
+          "count": 1
+        },
+        {
+          "old": "operation.material()",
+          "now": "OriginalCellQ24ModelReadV1::material(&operation)",
+          "count": 1
+        },
+        {
+          "old": "prepared.observation.require_current(started)",
+          "now": "OriginalCellQ24ModelReadV1::require_current(&prepared.observation, started)",
+          "count": 2
+        },
+        {
+          "old": "prepared.observation.material()",
+          "now": "OriginalCellQ24ModelReadV1::material(&prepared.observation)",
+          "count": 2
+        },
+        {
+          "old": "observation.finish()",
+          "now": "OriginalCellQ24ModelReadV1::finish(observation)",
+          "count": 2
+        },
+        {
+          "old": "completed.model()",
+          "now": "OriginalCellQ24ModelReadCompletionV1::model(&completed)",
+          "count": 1
+        },
+        {
+          "old": "completed.material()",
+          "now": "OriginalCellQ24ModelReadCompletionV1::material(&completed)",
+          "count": 1
+        },
+        {
+          "old": "closed.model()",
+          "now": "OriginalCellQ24ModelReadCompletionV1::model(&closed)",
+          "count": 1
+        },
+        {
+          "old": "closed.material()",
+          "now": "OriginalCellQ24ModelReadCompletionV1::material(&closed)",
+          "count": 1
+        },
+        {
+          "old": "let context = self.original_predecessors().with_original_model(",
+          "now": "let context: Context = self.original_predecessors().with_original_model(",
+          "count": 1
+        },
+        {
+          "old": "prepared.context.authenticate_material(",
+          "now": "Context::authenticate_material(&prepared.context, ",
+          "count": 2
+        },
+        {
+          "old": "context.authenticate_material(",
+          "now": "Context::authenticate_material(&context, ",
+          "count": 3
+        }
+      ]
+    }
+  ],
+  "qa_changes": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "retained_methods": 6,
+      "reason": "Replace obsolete Candidate recovery markers by the current actual opaque evidence, origin and native read path; protect the existing Proposal role rejection."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+      "retained_methods": 6,
+      "reason": "Follow each original required sequence to delete its actual occurrence in executable code; this reaches the signature constructor/issued_at/expires_at fields rather than same-named return/parameter types. Direct raw-literal tests keep their original semantics."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_continuation_source_closure.py",
+      "retained_methods": 8,
+      "reason": "Exactly two E operation/body markers follow the explicit original UFCS calls; all other tests remain the parent bytes."
+    }
+  ],
+  "unchanged_invariants": [
+    "The original verifier implementation and schema are unchanged.",
+    "All boundary identities, inventories and declared product callers remain unchanged.",
+    "All original peers, grants, deadlines, request budgets and custody remain unchanged.",
+    "No new execution, signature, owner provisioning, reconnect or recovery authority.",
+    "Physical original Model/E/Version reads and native effects retain their original ordering.",
+    "Existing denial, uncertainty, cancellation and positive ordinary gates remain unchanged.",
+    "The native Version qualified-E success branch remains unverified; ordinary acceptance remains zero."
+  ],
+  "integration": [
+    "Merge complete before/after protected records by identity and multiplicity; do not replace another owner's complete record set.",
+    "Retain the peer's independent fix for the singleton wire required_order group.",
+    "Retain the peer's Model/Root receiver fixes and all unrelated Modelcontinuation test edits.",
+    "The Auth change only protects an existing Proposal reject arm; authority_host_learning_resident_auth.rs bytes are unchanged."
+  ]
+}

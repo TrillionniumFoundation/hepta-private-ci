@@ -1,0 +1,89 @@
+diff --git a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs
+index 45bd5347667ef4092fc7420748e5ff19d26a016c..8b70bdb504fda547e75e7942803f3b440540a68c 100644
+--- a/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs
+@@ -1,5 +1,8 @@
+ //! Explicit same-process transport and future B clock for mechanisms only.
+ //! All successful material bytes originate in the actual consumed Panel host.
++use std::os::fd::FromRawFd;
++use std::os::fd::OwnedFd;
++
+ use codex_hepta_contracts::HostAuthorityPeerPolicy;
+ use codex_hepta_contracts::HostIssuerPeer;
+ use codex_hepta_learning_artifacts::learning_iteration_receipt_signing_bytes_v1;
+@@ -18,22 +21,27 @@
+ type Pause = (std::sync::mpsc::Sender<()>, std::sync::mpsc::Receiver<()>);
+ 
+ fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {
++    let pid = std::process::id();
++    let flags: libc::c_uint = 0;
++    // SAFETY: pidfd_open observes this process and returns a new descriptor.
++    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, flags) };
++    anyhow::ensure!(raw >= 0, "{}", std::io::Error::last_os_error());
++    // SAFETY: successful pidfd_open returned a new, unowned descriptor.
++    let pidfd = unsafe { OwnedFd::from_raw_fd(i32::try_from(raw)?) };
+     Ok(HostAuthorityPeerChannel::from_stream(
+         stream,
+         HostAuthorityPeerPolicy {
+             peer: HostIssuerPeer {
++                // SAFETY: geteuid reads only this test process's kernel credential.
++                uid: unsafe { libc::geteuid() },
++                pid,
+-                uid: rustix::process::geteuid().as_raw(),
+-                pid: std::process::id(),
+             },
+             timeout: Duration::from_secs(/*secs*/ 30),
+             lifetime: Duration::from_secs(/*secs*/ 300),
+             request_bound: 16_384,
+             response_bound: 16_384,
+         },
++        pidfd,
+-        rustix::process::pidfd_open(
+-            rustix::process::getpid(),
+-            rustix::process::PidfdFlags::empty(),
+-        )?,
+     )?)
+ }
+ 
+@@ -241,10 +249,13 @@
+             serde_json::from_value(record["candidate"]["manifest"].clone())?;
+         let baseline: CellBackendManifestV2 =
+             serde_json::from_value(record["fixed_expert"]["manifest"].clone())?;
++        // CellEvaluationArmRecordV1 serializes each cut as exactly 32 bytes.
++        let candidate_cut = Digest32::from_array(serde_json::from_value::<[u8; 32]>(
++            record["candidate"]["journal_cut"].clone(),
++        )?);
++        let baseline_cut = Digest32::from_array(serde_json::from_value::<[u8; 32]>(
++            record["fixed_expert"]["journal_cut"].clone(),
++        )?);
+-        let candidate_cut: Digest32 =
+-            serde_json::from_value(record["candidate"]["journal_cut"].clone())?;
+-        let baseline_cut: Digest32 =
+-            serde_json::from_value(record["fixed_expert"]["journal_cut"].clone())?;
+         let generator = self.context.authenticate(current)?;
+         let original = super::super::member::verify(
+             raw,
+diff --git a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
+index 2e18e74b68c39313a5f4be9417208a9e28cd89a9..3fceb43cdf0f153c7ab87661463b062efb540c5e 100644
+--- a/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
++++ b/codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs
+@@ -245,6 +245,8 @@
+         let mut signatures = fixture.original.material_evidence.to_vec();
+         signatures.push(fixture.original.config.training_evidence.clone());
+         signatures.push(evaluation.attestation().clone());
++        // The original Material config retains the signers used for these receipts.
++        let material = &fixture.original.command_config;
+         let credentials = &fixture.original.credentials;
+         crate::RootResidentLearningProfileV3::fixture_original_evaluation_checkpoint(
+             fixture.original.initial.clone(),
+@@ -254,8 +256,8 @@
+             signatures,
+             fixture.host.as_ref().expect("original Evaluator"),
+             [
++                material.experience_signer.clone(),
++                material.dataset_signer.clone(),
+-                credentials.experience.clone(),
+-                credentials.dataset.clone(),
+                 credentials.generator.clone(),
+                 credentials.evaluator.clone(),
+             ],

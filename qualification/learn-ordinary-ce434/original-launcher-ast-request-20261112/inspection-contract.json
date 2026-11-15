@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.service-root01.safe-static-ast.contract.v1",
+  "purpose": "Inspect the single already-observed launcher locator without executing it or exporting source values.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "background_source_ref": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "fixed_target": "/data/hepta-service-root-01.py",
+  "script": {
+    "git_blob": "9831f0f57ba089708a6ccd2f184a88427e744fd9",
+    "bytes": 13479,
+    "full_git_api_readback_equal": true,
+    "independent_git_blob_sha1_equal": true,
+    "materialization": "Root supplies an absolute script path inside its existing owned evidence directory; no destination is assumed here.",
+    "suggested_argv": [
+      "python3",
+      "-I",
+      "-S",
+      "-B",
+      "ROOT_OWNED_ABSOLUTE_SCRIPT_PATH"
+    ],
+    "argv_note": "Replace only the script-path placeholder after materializing and verifying this exact blob; the script accepts no target-path or source arguments.",
+    "isolation": "-I ignores PYTHON environment settings and excludes the script/current directory from import search; -S disables automatic site initialization; -B disables bytecode-cache writes. Imports are the script's named standard-library dependencies, never the inspected file.",
+    "dependencies": [
+      "ast",
+      "hashlib",
+      "json",
+      "os",
+      "re",
+      "stat",
+      "sys",
+      "warnings"
+    ]
+  },
+  "target_read_contract": {
+    "explicit_data_path_reads": [
+      "/data/hepta-service-root-01.py"
+    ],
+    "initial_check": "os.lstat: regular file, not a final-component symlink, link count exactly 1, size 0..65536 bytes.",
+    "open_flags": [
+      "O_RDONLY",
+      "O_NOFOLLOW",
+      "O_CLOEXEC",
+      "O_NONBLOCK"
+    ],
+    "fail_closed_if_flag_missing": true,
+    "descriptor_check": "fstat after open must equal the initial lstat identity.",
+    "bounded_read": "Read at most the initially observed size in chunks of at most 8192 bytes; reject premature EOF.",
+    "final_check": "fstat on the open descriptor and lstat on the fixed path must equal the initial identity; observed byte count must equal initial size.",
+    "identity_fields": [
+      "st_dev",
+      "st_ino",
+      "st_mode",
+      "st_nlink",
+      "st_size",
+      "st_mtime_ns",
+      "st_ctime_ns"
+    ],
+    "atime_note": "Excluded from equality because the authorized read itself may update atime.",
+    "content_digest": "SHA256 of the complete bounded bytes actually read, emitted only after stable-read checks.",
+    "encoding": "Decode with fixed UTF-8, accepting an initial UTF-8 BOM; reject other encodings without printing offending bytes. Parse a string so a source encoding cookie cannot select a codec.",
+    "parsing": "Inside warnings.catch_warnings(), warnings.simplefilter('error') precedes ast.parse(source_text, filename=fixed_target, mode='exec'); grammar is parsed only.",
+    "no_target_execution": [
+      "no eval",
+      "no exec",
+      "no importing the target",
+      "no target bytecode execution",
+      "no subprocess",
+      "no dynamic module loading",
+      "no source-referenced file reads"
+    ],
+    "no_external_effects": [
+      "no source writes",
+      "no ownership or mode changes",
+      "no network calls",
+      "no process signals",
+      "no environment-value reads"
+    ],
+    "stability_limit": "Checks compare sampled metadata; they do not hold a filesystem lock or claim protection against every possible privileged concurrent replacement.",
+    "parser_warning_policy": "Convert all parser warnings into exceptions before warning formatting. The existing redacted handlers emit only builtin error type/location (and numeric errno for OSError), never warning text, source lines or traceback text."
+  },
+  "stdout_contract": {
+    "format": "One JSON document; stdout is the only explicit output destination.",
+    "schema": "hepta.service-root01.safe-static-ast.v1",
+    "fixed_assessment": "unknown_from_static_ast",
+    "ordinary_execution_authority_proven": false,
+    "runtime_owner_custody_observed": false,
+    "emitted_source_metadata": [
+      "device",
+      "inode",
+      "permission mode",
+      "nlink",
+      "size_bytes",
+      "mtime_ns",
+      "ctime_ns",
+      "sha256",
+      "read_before_after_identity_equal"
+    ],
+    "ast_output": [
+      "Import and from-import module/name/alias identifiers and source coordinates.",
+      "Function, async-function and class definition names and source coordinates.",
+      "Statically named Name/Attribute call paths and coordinates; dynamic call targets have null names.",
+      "Closed ordinary/Root/owner/learning/fixture interface-vocabulary matches in identifier-bearing AST fields, with category, fixed marker and coordinates."
+    ],
+    "forbidden_output": [
+      "arbitrary string or byte literal values",
+      "numeric/boolean/other source literal values",
+      "credential values",
+      "environment values",
+      "docstrings",
+      "comments",
+      "source-line text",
+      "AST dumps or reconstructed code",
+      "exception messages, args, reprs or traceback source snippets"
+    ],
+    "marker_scope": "Identifier fields only. Literal/comment mentions are deliberately not inspected; absence of a marker is not evidence of absence of runtime behavior.",
+    "caps": {
+      "source_bytes": 65536,
+      "ast_nodes": 50000,
+      "records_per_output_kind": 512,
+      "identifier_characters": 256
+    },
+    "truncation": "Any record cap, AST cap or omitted invalid/oversized output identifier marks the summary incomplete; counts and omission indicators are explicit.",
+    "exceptions": "Inspection failures use closed error codes. Parser warnings are converted to exceptions inside the parse context. Syntax errors emit only builtin error type and location. Other exceptions emit only builtin error type and, for OSError, numeric errno. No exception/warning messages, args, reprs or traceback snippets are emitted.",
+    "exit_codes": {
+      "0": "Stable read and complete bounded AST summary, without any production-authority conclusion.",
+      "1": "Rejected, unavailable or unparseable; assessment remains unknown.",
+      "2": "Stable read but bounded summary is incomplete; assessment remains unknown."
+    }
+  },
+  "interpretation": {
+    "no_name_based_classification": "A filename, import, definition or call mention cannot establish production use, an existing owner instance, a live grant, a valid principal, original custody or an ordinary LEARN lane.",
+    "can_report": "Only the actual safely exported identifier/interface evidence and its positions, with explicit static scope.",
+    "if_inconclusive": "Report unknown. Do not execute the target or expand to other paths to resolve it under this contract.",
+    "ordinary_acceptance_credit": 0
+  },
+  "preparation_validation": {
+    "exact_script_blob_full_readback": true,
+    "independent_git_blob_hash": true,
+    "static_source_review": true,
+    "python_parse_or_compile_run": false,
+    "script_run": false,
+    "target_opened_by_this_subtask": false,
+    "h_query_or_execution_by_this_subtask": false,
+    "git_commit_tree_branch_or_production_source_changed": false,
+    "note": "This delivery creates standalone Git evidence blobs only. Root owns any later authorized materialization and execution."
+  },
+  "supersedes": {
+    "script_git_blob": "a24a64227831a0bcbc5f95ca0bd6388d296fa029",
+    "contract_git_blob": "ed1469965e1ac904e13ef95634d61b4595df838a",
+    "reason": "Close the parser-warning diagnostic path before the script is executed."
+  }
+}

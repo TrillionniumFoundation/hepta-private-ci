@@ -1,0 +1,137 @@
+{
+  "path": "scripts/hepta_c_observer_coverage.py",
+  "base_blob": "557565ed3d382c34de0617dfb1493210d5764f11",
+  "left_blob": "2cf877d32cb1c3ecffb15f5523701b270ff81da8",
+  "right_blob": "e30bf7a2bb0dbdbbaa14693cbe5c097eeb70bc1e",
+  "only_added_block": "SOURCE_OPERATION_PREFIX = SOURCE_PREFIX + \"operation::\"\nSOURCE_OPERATION_CASES = tuple(\n    SOURCE_OPERATION_PREFIX + name\n    for name in (\n        \"source_operation_candidate_and_model_keep_two_reads_per_lane\",\n        \"source_operation_after_read_withdrawal_fences_completed_native_result\",\n        \"source_operation_cancelled_waiter_keeps_lane_then_fences\",\n        \"source_operation_rejects_equal_capture_from_different_arc\",\n        \"source_operation_abandoned_finish_preserves_real_native_effect_and_fences\",\n    )\n)\n",
+  "only_added_group_row": "    (\"original_training_source_operation\", PACKAGE, SOURCE_OPERATION_CASES),\n",
+  "entire_left_reversible_byte_equal": true,
+  "entire_right_delta_exact_source5": true,
+  "source_case_module_chain_audit": {
+    "kind": "Restricted Python data-declaration inspection in JavaScript, no Python or native execution",
+    "old": {
+      "cases": 162,
+      "groups": 36
+    },
+    "new": {
+      "cases": 167,
+      "groups": 37
+    },
+    "added": [
+      {
+        "group": "original_training_source_operation",
+        "package": "codex-hepta-agentd",
+        "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane"
+      },
+      {
+        "group": "original_training_source_operation",
+        "package": "codex-hepta-agentd",
+        "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_after_read_withdrawal_fences_completed_native_result"
+      },
+      {
+        "group": "original_training_source_operation",
+        "package": "codex-hepta-agentd",
+        "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_cancelled_waiter_keeps_lane_then_fences"
+      },
+      {
+        "group": "original_training_source_operation",
+        "package": "codex-hepta-agentd",
+        "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_rejects_equal_capture_from_different_arc"
+      },
+      {
+        "group": "original_training_source_operation",
+        "package": "codex-hepta-agentd",
+        "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_abandoned_finish_preserves_real_native_effect_and_fences"
+      }
+    ],
+    "removed": [],
+    "all_prior_source_bytes_preserved": true,
+    "duplicate_cases": 0,
+    "actual_test_markers": 5,
+    "module_chain": [
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "sha": "4eb2ec2e7f2b762d8e380861f151fb4b469d74de",
+        "decl": "mod cell_q24_material_receipt_owner;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "sha": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+        "decl": "#[path = \"cell_q24_material_receipt_owner_tests.rs\"] mod tests;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner_tests.rs",
+        "sha": "56ca7bd3a95c0278b0e67230690c2a91595198cb",
+        "decl": "#[path = \"cell_q24_material_receipt_support_tests.rs\"] mod support;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_support_tests.rs",
+        "sha": "f0721d36c57b6192bd813aff539ac786714f4787",
+        "decl": "#[path = \"cell_q24_training_source_tests.rs\"] mod training_source;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_tests.rs",
+        "sha": "5a0cdd909c07f33062fcb81615cadc061db42463",
+        "decl": "#[path = \"cell_q24_training_source_operation_tests.rs\"] mod operation;"
+      }
+    ]
+  },
+  "counts": {
+    "base": {
+      "cases": 162,
+      "groups": 36
+    },
+    "left": {
+      "cases": 175,
+      "groups": 39
+    },
+    "right": {
+      "cases": 167,
+      "groups": 37
+    },
+    "merged": {
+      "cases": 180,
+      "groups": 40
+    }
+  },
+  "exact_case_group_multiset_delta": [
+    {
+      "group": "original_training_source_operation",
+      "package": "codex-hepta-agentd",
+      "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_candidate_and_model_keep_two_reads_per_lane"
+    },
+    {
+      "group": "original_training_source_operation",
+      "package": "codex-hepta-agentd",
+      "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_after_read_withdrawal_fences_completed_native_result"
+    },
+    {
+      "group": "original_training_source_operation",
+      "package": "codex-hepta-agentd",
+      "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_cancelled_waiter_keeps_lane_then_fences"
+    },
+    {
+      "group": "original_training_source_operation",
+      "package": "codex-hepta-agentd",
+      "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_rejects_equal_capture_from_different_arc"
+    },
+    {
+      "group": "original_training_source_operation",
+      "package": "codex-hepta-agentd",
+      "name": "cell_q24_material_receipt_owner::tests::support::training_source::operation::source_operation_abandoned_finish_preserves_real_native_effect_and_fences"
+    }
+  ],
+  "all_old_cases_preserved": true,
+  "no_duplicate_package_case_pairs": true,
+  "correction": {
+    "previous_stated_left": 174,
+    "actual_left": 175,
+    "previous_stated_merged": 179,
+    "actual_merged": 180,
+    "reason": "The fixed 3270/b1 inventory already includes the additional post-CAS cancellation test candidate_stage_cancelled_operation_cannot_reuse_original_prefix, beyond the twelve HEAD/Artifact additions. It must not be dropped to meet the stale count.",
+    "fixed_left_blob": "2cf877d32cb1c3ecffb15f5523701b270ff81da8",
+    "frozen_native174_request_unchanged": true
+  },
+  "python_executed": false,
+  "native_executed": false
+}

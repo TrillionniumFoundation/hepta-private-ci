@@ -1,0 +1,232 @@
+{
+  "schema": "hepta.learn.e-fixture-native-compile-repair.v1",
+  "status": "source-only; no Rust/Python/H execution; original C7 native terminated at compilation with zero tests",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_parent": "c7f5d1950713e592a120807a06b700cd229c35b0",
+  "source_parent_tree": "2f6faa8fc5a3bf2a8e923748a45ec8d56a4a3d1b",
+  "goal": "Repair the eight actual C7 compiler diagnostics in two cfg(test) Evaluator fixture files without changing original production ownership, byte formats, gates, case inventory or dependencies.",
+  "scope": {
+    "rust_changed_paths": [
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs"
+    ],
+    "test_only": true,
+    "production_paths_changed": [],
+    "dependencies_changed": [],
+    "new_grants_keys_policies": false,
+    "new_deserialization_traits": false,
+    "privacy_relaxation": false
+  },
+  "original_terminal_evidence": {
+    "commit": "c08e23e7d94eb44b9c6730f5a1b3dd727f028b49",
+    "blob": "f387d6c2f9a5b525b7a542e11145543c83dd6abc",
+    "bytes": 69516,
+    "git_blob": "f387d6c2f9a5b525b7a542e11145543c83dd6abc",
+    "sha256": "ec43e65d4eb6b7599363ded3c7fccd00f336ca98fbb3c6e12f418dbffc1b54cd"
+  },
+  "diagnostics": [
+    {
+      "header": "error[E0433]: cannot find module or crate `rustix` in this scope",
+      "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:25:22",
+      "original_block": "error[E0433]: cannot find module or crate `rustix` in this scope\n  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:25:22\n   |\n25 |                 uid: rustix::process::geteuid().as_raw(),\n   |                      ^^^^^^ use of unresolved module or unlinked crate `rustix`\n   |\n   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`\n\n"
+    },
+    {
+      "header": "error[E0433]: cannot find module or crate `rustix` in this scope",
+      "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:33:9",
+      "original_block": "error[E0433]: cannot find module or crate `rustix` in this scope\n  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:33:9\n   |\n33 |         rustix::process::pidfd_open(\n   |         ^^^^^^ use of unresolved module or unlinked crate `rustix`\n   |\n   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`\n\n"
+    },
+    {
+      "header": "error[E0433]: cannot find module or crate `rustix` in this scope",
+      "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:34:13",
+      "original_block": "error[E0433]: cannot find module or crate `rustix` in this scope\n  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:34:13\n   |\n34 |             rustix::process::getpid(),\n   |             ^^^^^^ use of unresolved module or unlinked crate `rustix`\n   |\n   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`\n\n"
+    },
+    {
+      "header": "error[E0433]: cannot find module or crate `rustix` in this scope",
+      "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:35:13",
+      "original_block": "error[E0433]: cannot find module or crate `rustix` in this scope\n  --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:35:13\n   |\n35 |             rustix::process::PidfdFlags::empty(),\n   |             ^^^^^^ use of unresolved module or unlinked crate `rustix`\n   |\n   = help: if you wanted to use a crate named `rustix`, use `cargo add rustix` to add it to your `Cargo.toml`\n\n"
+    },
+    {
+      "header": "error[E0616]: field `experience` of struct `model_selection_owner::original::material::Credentials` is private",
+      "location": "--> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:257:29",
+      "original_block": "error[E0616]: field `experience` of struct `model_selection_owner::original::material::Credentials` is private\n   --> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:257:29\n    |\n257 |                 credentials.experience.clone(),\n    |                             ^^^^^^^^^^ private field\n\n"
+    },
+    {
+      "header": "error[E0616]: field `dataset` of struct `model_selection_owner::original::material::Credentials` is private",
+      "location": "--> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:258:29",
+      "original_block": "error[E0616]: field `dataset` of struct `model_selection_owner::original::material::Credentials` is private\n   --> hepta-agentd/src/circuit_original_evaluation_host_tests.rs:258:29\n    |\n258 |                 credentials.dataset.clone(),\n    |                             ^^^^^^^ private field\n\n"
+    },
+    {
+      "header": "error[E0277]: the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied",
+      "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:245:13",
+      "original_block": "error[E0277]: the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied\n    --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:245:13\n     |\n 245 |             serde_json::from_value(record[\"candidate\"][\"journal_cut\"].clone())?;\n     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `for<'de> authority_host_wire::_::_serde::Deserialize<'de>` is not implemented for `codex_hepta_types::Digest32`\n     |\n     = help: the following other types implement trait `authority_host_wire::_::_serde::Deserialize<'de>`:\n               `&'a JsonRawValue` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a [u8]` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a std::path::Path` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a str` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `()` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T,)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T0, T1)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T0, T1, T2)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n             and 4034 others\n     = note: required for `codex_hepta_types::Digest32` to implement `DeserializeOwned`\nnote: required by a bound in `from_value`\n    --> /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/value/mod.rs:1039:8\n     |\n1037 | pub fn from_value<T>(value: Value) -> Result<T, Error>\n     |        ---------- required by a bound in this function\n1038 | where\n1039 |     T: DeserializeOwned,\n     |        ^^^^^^^^^^^^^^^^ required by this bound in `from_value`\n     = note: the full name for the type has been written to '/data/hepta-learn-ce434-runtime-20261112-v1/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd.long-type-11000633389383590274.txt'\n     = note: consider using `--verbose` to print the full type name to the console\n\n"
+    },
+    {
+      "header": "error[E0277]: the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied",
+      "location": "--> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:247:13",
+      "original_block": "error[E0277]: the trait bound `codex_hepta_types::Digest32: serde::de::DeserializeOwned` is not satisfied\n    --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs:247:13\n     |\n 247 |             serde_json::from_value(record[\"fixed_expert\"][\"journal_cut\"].clone())?;\n     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `for<'de> authority_host_wire::_::_serde::Deserialize<'de>` is not implemented for `codex_hepta_types::Digest32`\n     |\n     = help: the following other types implement trait `authority_host_wire::_::_serde::Deserialize<'de>`:\n               `&'a JsonRawValue` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a [u8]` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a std::path::Path` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `&'a str` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `()` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T,)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T0, T1)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n               `(T0, T1, T2)` implements `authority_host_wire::_::_serde::Deserialize<'de>`\n             and 4034 others\n     = note: required for `codex_hepta_types::Digest32` to implement `DeserializeOwned`\nnote: required by a bound in `from_value`\n    --> /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.154/src/value/mod.rs:1039:8\n     |\n1037 | pub fn from_value<T>(value: Value) -> Result<T, Error>\n     |        ---------- required by a bound in this function\n1038 | where\n1039 |     T: DeserializeOwned,\n     |        ^^^^^^^^^^^^^^^^ required by this bound in `from_value`\n     = note: the full name for the type has been written to '/data/hepta-learn-ce434-runtime-20261112-v1/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd.long-type-11000633389383590274.txt'\n     = note: consider using `--verbose` to print the full type name to the console\n\n"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "mode": "100644",
+      "before_blob": "45bd5347667ef4092fc7420748e5ff19d26a016c",
+      "after_blob": "8b70bdb504fda547e75e7942803f3b440540a68c",
+      "before_bytes": 20362,
+      "after_bytes": 20930,
+      "exact_edits": [
+        {
+          "before": "//! All successful material bytes originate in the actual consumed Panel host.\nuse codex_hepta_contracts::HostAuthorityPeerPolicy;",
+          "after": "//! All successful material bytes originate in the actual consumed Panel host.\nuse std::os::fd::FromRawFd;\nuse std::os::fd::OwnedFd;\n\nuse codex_hepta_contracts::HostAuthorityPeerPolicy;"
+        },
+        {
+          "before": "fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {\n    Ok(HostAuthorityPeerChannel::from_stream(\n        stream,\n        HostAuthorityPeerPolicy {\n            peer: HostIssuerPeer {\n                uid: rustix::process::geteuid().as_raw(),\n                pid: std::process::id(),\n            },",
+          "after": "fn fixture_channel(stream: UnixStream) -> anyhow::Result<HostAuthorityPeerChannel> {\n    let pid = std::process::id();\n    let flags: libc::c_uint = 0;\n    // SAFETY: pidfd_open observes this process and returns a new descriptor.\n    let raw = unsafe { libc::syscall(libc::SYS_pidfd_open, pid, flags) };\n    anyhow::ensure!(raw >= 0, \"{}\", std::io::Error::last_os_error());\n    // SAFETY: successful pidfd_open returned a new, unowned descriptor.\n    let pidfd = unsafe { OwnedFd::from_raw_fd(i32::try_from(raw)?) };\n    Ok(HostAuthorityPeerChannel::from_stream(\n        stream,\n        HostAuthorityPeerPolicy {\n            peer: HostIssuerPeer {\n                // SAFETY: geteuid reads only this test process's kernel credential.\n                uid: unsafe { libc::geteuid() },\n                pid,\n            },"
+        },
+        {
+          "before": "        rustix::process::pidfd_open(\n            rustix::process::getpid(),\n            rustix::process::PidfdFlags::empty(),\n        )?,",
+          "after": "        pidfd,"
+        },
+        {
+          "before": "        let candidate_cut: Digest32 =\n            serde_json::from_value(record[\"candidate\"][\"journal_cut\"].clone())?;\n        let baseline_cut: Digest32 =\n            serde_json::from_value(record[\"fixed_expert\"][\"journal_cut\"].clone())?;",
+          "after": "        // CellEvaluationArmRecordV1 serializes each cut as exactly 32 bytes.\n        let candidate_cut = Digest32::from_array(serde_json::from_value::<[u8; 32]>(\n            record[\"candidate\"][\"journal_cut\"].clone(),\n        )?);\n        let baseline_cut = Digest32::from_array(serde_json::from_value::<[u8; 32]>(\n            record[\"fixed_expert\"][\"journal_cut\"].clone(),\n        )?);"
+        }
+      ],
+      "inverse_exact": true,
+      "unchanged_function_names": [
+        "fixture_channel",
+        "fixture_model_material_commands",
+        "fixture_model_material_renewed_evaluation",
+        "fixture_model_material_advance_original_cell",
+        "fixture_model_material_cancel_queued",
+        "fixture_read_current_at",
+        "fixture_exhaust_original_material_session",
+        "fixture_original_material_pages",
+        "fixture_original_material_preimages"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "mode": "100644",
+      "before_blob": "2e18e74b68c39313a5f4be9417208a9e28cd89a9",
+      "after_blob": "3fceb43cdf0f153c7ab87661463b062efb540c5e",
+      "before_bytes": 11038,
+      "after_bytes": 11188,
+      "exact_edits": [
+        {
+          "before": "        let credentials = &fixture.original.credentials;\n        crate::RootResidentLearningProfileV3::fixture_original_evaluation_checkpoint(",
+          "after": "        // The original Material config retains the signers used for these receipts.\n        let material = &fixture.original.command_config;\n        let credentials = &fixture.original.credentials;\n        crate::RootResidentLearningProfileV3::fixture_original_evaluation_checkpoint("
+        },
+        {
+          "before": "                credentials.experience.clone(),\n                credentials.dataset.clone(),",
+          "after": "                material.experience_signer.clone(),\n                material.dataset_signer.clone(),"
+        }
+      ],
+      "inverse_exact": true,
+      "unchanged_function_names": [
+        "original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+        "original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+        "original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+        "fixture_resident_evaluation_checkpoint"
+      ]
+    }
+  ],
+  "unified_diff": {
+    "path": "qualification/learn-ordinary-ce434/e-fixture-native-compile-repair-20261112/fixture-compile-repair.patch",
+    "blob": "97ca01f1d5eb10465c43221fc7a5ba1d71a21676",
+    "bytes": 4706
+  },
+  "original_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_support_tests.rs",
+      "blob": "813cd121292b8df353129f17c81c66f25b206307",
+      "reason": "Existing same-process libc pidfd_open/return-check/OwnedFd pattern and kernel UID policy; no rustix dependency."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_contract.rs",
+      "blob": "88d0786fe43f21ac82a24cd72f18bb1a530a97f5",
+      "reason": "CellEvaluationArmRecordV1::journal_cut uses serialize_digest; serialize_digest calls value.as_array().serialize(serializer), exactly [u8;32]."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_codec.rs",
+      "blob": "8b083bb62da5506b29a9eaadd7b1b059d799a128",
+      "reason": "Existing Digest32::from_array constructor consumes canonical 32-byte material digests."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs",
+      "blob": "468f8f6839da381cd7e94791c09b8d3c4dbea1ca",
+      "reason": "unstarted_material_with_profile stores clones of the actual fixture Credentials.experience/dataset in command_config experience_signer/dataset_signer; private Credentials fields remain private."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "blob": "3f136713030d875865cc2bfb68e7f56a49eff471",
+      "reason": "PositiveFixture retains this exact command_config alongside unchanged original signatures, credentials, ledger and owner."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "blob": "be5a1bd1507c93b8ef62f83fba4baf3770738ca7",
+      "reason": "OriginalCellQ24MaterialReceiptConfigV1 already exposes the two original signer metadata fields used by the fixture; no new production accessor."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "blob": "935a1addd32da00f7ace31107885954f479532c3",
+      "unchanged": true,
+      "existing_entry": "libc = { workspace = true }",
+      "no_rustix_added": true
+    }
+  ],
+  "guards": {
+    "manifest": {
+      "path": "CALLERS.toml",
+      "before_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+      "after_blob": "16c487a051ad08b6d1a00a1165ad4acd750c39e1",
+      "boundary_count": 710,
+      "protected_record_count": 489
+    },
+    "boundary_full_before_after": [],
+    "protected_record_full_before_after": [],
+    "explanation": "Both modified Rust paths end in _tests.rs, which the original manifest ignores for product caller authority; neither path has a protected record. No product caller or protected production source changes.",
+    "inventory": {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "blob": "672a90aef6c8791265891fd31b9b2cadb8660952",
+      "unchanged": true,
+      "reported_cases": 190,
+      "reported_groups": 41,
+      "counts_recomputed_here": false
+    },
+    "original_case_logic_preserved": [
+      "same kernel UID and process PID/pidfd identity, same peer timeout/lifetime/frame bounds",
+      "every original signed material preimage mutation and completed-regression/cancellation/withdrawal assertion",
+      "same serialized candidate/baseline manifests and exact decoded cut bytes in old local material digest equality and ordering negative control",
+      "same four original Root checkpoint signers, complete original attestation list, original clocks, original journal byte preservation and cold readback checks"
+    ],
+    "source_qa_changed_paths": []
+  },
+  "performed_checks": {
+    "exact_unique_replacements": true,
+    "inverse_edits_restore_original_bytes": true,
+    "all_function_names_preserved": true,
+    "no_rustix_refs": true,
+    "no_production_deserializer_or_visibility_change": true,
+    "old_signature_and_clock_assertions_preserved": true,
+    "json_digest_decoder_same_canonical_array": true,
+    "config_is_exact_retained_original_material_signer": true,
+    "source_guard_or_inventory_changes": false,
+    "python_or_rust_executed": false,
+    "h_calls": false,
+    "new_native_pass": false,
+    "ordinary_acceptance": 0,
+    "each_uploaded_source_readback_exact": true,
+    "parent_commit_tree_verified": true,
+    "manifest_git_blob_verified": true,
+    "terminal_log_git_blob_verified": true,
+    "all_exact_edit_occurrences_unique": true
+  },
+  "limits": [
+    "No native, cargo, just, rustfmt, Python verifier or H operation ran for this child.",
+    "C7 source 423/423 prior success does not prove these repaired test files compile or pass.",
+    "The original native run compiled zero test cases; the successor fixed-source native run is still required.",
+    "No ordinary A/B/C, positive adoption, NoUpdate, full Qualified-retention Version effect or daemon cold restart acceptance is claimed."
+  ],
+  "merge_contract": "Use these two exact test-file postimages on the C7 parent or apply the six unique exact edits. Preserve all other files/records/cases; no new or broadened guards are required."
+}
