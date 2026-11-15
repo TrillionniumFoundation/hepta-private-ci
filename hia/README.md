@@ -2,7 +2,7 @@
 
 This directory contains the current HIA implementation and its native build,
 contracts, Rust call boundaries and original-behavior tests. The combined patch
-candidate contains **16 compiled modules covering fourteen algorithm groups**.
+candidate contains **17 compiled modules covering fifteen algorithm groups**.
 Production selection remains the opt-in `hia-native` feature on Linux x86-64 GNU.
 The complete Codex rewrite, default release migration, required-platform
 qualification, whole-product performance and legacy retirement remain open.
@@ -32,6 +32,7 @@ complete workspace or a different source tree.
 | `patch_summary` | Success header, A/M/D group order, path index and continuation selection. | Rust executes each original `writeln!` separately with the actual `Path::display` and `Write` implementation. |
 | `patch_application` | Parser/effects/summary order, diagnostic choice, writer-error priority and committed-delta result selection. | Rust retains original typed errors, individual writer calls and the existing asynchronous effects future. |
 | `patch_standalone` | Standalone argument/stdin, diagnostic/exit, runtime/environment and application sequencing. | Rust performs the original OS, I/O, Tokio and process-exit callbacks; HIA selects their order and results. |
+| `uuid_find` | Complete fixed UUID byte-pattern scanning, match selection, count and span plan. | Rust validates the plan and copies native-selected substrings into owned strings. |
 
 The patch path composes the native parser, file-update planner, matcher,
 SourceFile owner, effect state machine, unified formatter, summary selector and
@@ -41,15 +42,21 @@ filesystem execution, symlink/sandbox enforcement, string allocation and the
 public writer's formatting/I/O remain host boundaries. The original Rust owners
 remain available to the default platform path and immutable parity tests.
 
-Fifteen native symbols are required in installed full Codex checks, including
-eight in apply_patch. Standalone apply_patch does not call the unified formatter;
-the full Codex verification path does. `utf8_boundaries` has a separate
-qualification entry. These are required checks, not claims that the new installed
-combination has already passed.
+Fifteen CLI-reachable native symbols are required in installed full Codex checks,
+including eight in apply_patch. Standalone apply_patch does not call the unified
+formatter; the full Codex verification path does. `utf8_boundaries` has a separate
+qualification entry. `find_uuids` is an exported library API with no production
+caller in the current full Codex CLI, so `codex_hia_uuid_find` is not a required
+CLI symbol. Its native library behavior is covered by
+[`test_native_uuid_find_caller.py`](tests/test_native_uuid_find_caller.py).
+The default reference executable must still contain none of all sixteen native
+symbols, including UUID. Installation reports distinguish both symbol scopes.
+These are required checks, not claims that the repaired installed combination
+has passed.
 
 ## Native interfaces
 
-The eight complete buffer contracts are normative:
+The nine complete buffer contracts are normative:
 
 - [SourceFile](source_file_buffer_contract.json): strict operations 0–7 and
   trusted-string counterparts 8–15; 64-byte request header, 40-byte result header
@@ -69,6 +76,10 @@ The eight complete buffer contracts are normative:
   result, no workspace, two entries and 25 explicit result-routing transitions.
 - [Patch standalone](patch_standalone_buffer_contract.json): 64-byte read-only
   continuation workspace and 64-byte result, with 17 selected host actions.
+
+- [UUID matching](uuid_find_buffer_contract.json): 32-byte read-only request,
+  64-byte result header and 16-byte byte-span rows; operation 0 queries capacity
+  and operation 1 emits the complete table.
 
 All integer fields in these buffer interfaces are little-endian u64. Their
 capacity, frame, range, UTF-8, error-priority and no-write rules are specified in
@@ -154,6 +165,14 @@ continuation is structural caller-owned state; it does not authenticate a prior
 writer result.
 
 ### String interfaces
+
+`find_uuids` uses HIA to search the complete input for the fixed
+8-4-4-4-12 ASCII hexadecimal pattern. It preserves case, duplicates and
+encounter order, selecting non-overlapping matches without word boundaries,
+version/variant checks or normalization. Raw calls accept arbitrary bytes;
+the public Rust input is a valid string. The adapter validates the returned
+spans and creates independent owned strings. Every error leaves the whole
+output and request unchanged; successful queries write only the header.
 
 `utf8_prefix` borrows at most four boundary bytes plus its fixed descriptor from
 a valid Rust string. `metric_tag` transports chunks of at most 1 MiB, uses a
@@ -257,6 +276,58 @@ fix command. The small compiler-chain controls described below do not replace
 the complete Codex owner gates.
 
 ## Qualification
+
+### Current seventeen-module UUID candidate
+
+The formal B1/B2/B3 build reproduced the fixed point, retained all sixteen
+prior module sources and 48 namespaced machine artifacts, and matched the
+three frozen UUID artifacts. The portable ABI gate ran 19,232 real calls,
+including 370 error/no-write cases and all 9,216 single-byte mutations.
+Its 128 independent interleavings used one worker. The 74-check UUID
+receipt gate admitted all seventeen modules. These results cover actual
+buffers up to 2,359,332 source bytes and a 1,048,656-byte output table;
+they do not claim simultaneous threads or invented maximum-size pointers.
+
+The earlier direct-rustc comparison compiled the complete unmodified
+a201 fifteen-file `utils/string` crate and complete 23-file locked
+`regex-lite` 0.1.8 crate. It passed all 26 original and 38 candidate tests
+with no omissions, plus actual workspace Clippy for the candidate library.
+The 9,609 public pairs returned 78,778 strings with 14,060 real native calls;
+owned results were observed after the source was overwritten and dropped.
+A separate complete-regex comparison checked every query/emit span plan
+in another 19,218 calls. These source-bound results remain historical
+direct-rustc evidence. They are not a new Cargo or installed-product result.
+
+Seventeen of the eighteen historical candidate crate files still match.
+The current Cargo build script additionally links `uuid_find`; the earlier
+direct-rustc commands linked it explicitly and did not execute that script.
+
+The integrated public gate captures real default/native `--lib --tests`
+Cargo graphs, binds the actual hashed artifacts and publication aliases,
+and compares the complete original crate with the actual native owner.
+That gate, current owner/consumer suites, strict lint/fix, installed binaries
+and final-source CI remain pending. The parent is the published standalone
+CLI repair `eb439d69`; neither that repair nor inherited results establish
+successful sixteen- or seventeen-module CI. Performance, default dispatch
+and retirement remain unqualified. Exact reports and input hashes are in
+`verification.json#uuid_find_increment`.
+
+Both initial `7c94ad70` native CI runs failed the installed full-Codex step.
+The inspected PR and push artifact reports each record successful `nm`, one
+definition of each of the fifteen required CLI symbols, and only
+`codex_hia_uuid_find` missing. The scope correction removes that library-only
+positive symbol requirement; it retains all sixteen default-binary absence
+assertions and all other symbol, dynamic-library and runtime checks. The
+initial failures remain recorded in
+`verification.json#uuid_installed_scope_repair_history`. The selected artifact
+members were CRC-checked; neither complete artifact ZIP was audited. This
+correction does not claim a successful rerun or promote any qualification.
+
+#### Inherited checkpoint text
+
+The following existing checkpoint sections are retained verbatim. Their
+uses of current or pending describe their original producing sources;
+they do not qualify this seventeen-module composition.
 
 ### Current sixteen-module standalone candidate
 
@@ -439,6 +510,27 @@ consumer suites, installed apply_patch and full Codex, strict lint and scoped
 fix/clean-diff. Its upload list includes the original snapshot's tracked hidden
 fixture. Uploaded reports and logs do not imply that unuploaded executable or
 rlib bytes were independently rehashed elsewhere.
+
+UUID component and public commands, after the native build:
+
+```bash
+python3 -B hia/tests/test_uuid_find_abi.py \
+  --producer "$PWD" --library-dir "$native_output" \
+  --report "$build_parent/uuid-abi.json"
+python3 -B hia/tests/test_build_receipt.py \
+  --artifacts "$native_output" --mutation-module uuid_find \
+  --rustc "$rustc_binary" --report "$build_parent/uuid-receipts.json"
+python3 -B hia/tests/test_native_uuid_find_caller.py \
+  --producer "$PWD" --original-repo "$original_a201_checkout" \
+  --library-dir "$native_output" --rustc "$rustc_binary" \
+  --work-dir "$build_parent/uuid-caller" \
+  --report "$build_parent/uuid-caller.json"
+```
+
+The public command requires clean producer and complete original checkouts,
+an external Cargo target, genuine locked dependencies and the existing
+admitted policy environment. It performs actual owner Cargo builds itself.
+Its reports do not become passing results merely by listing the command.
 
 Useful local commands, after the native build:
 

@@ -1,0 +1,250 @@
+{
+  "schema": "codex.hia.uuid-find-buffer-contract.v1",
+  "revision": 1,
+  "status": "Normative contract for the complete find_uuids candidate; production integration and Cargo qualification are separate gates.",
+  "module": "uuid_find",
+  "symbol": "codex_hia_uuid_find",
+  "target": "x86_64 Linux SysV, little-endian, 64-bit usize",
+  "entry": {
+    "signature": "u64 codex_hia_uuid_find(const u8* source, u64 source_len, u8* output, u64 output_capacity, u8* workspace, u64 workspace_len)",
+    "core_signature": "f0(source:readbuf,output:mutbuf,workspace:mutbuf)->u32",
+    "status_encoding": "Core u32 is zero extended to u64 by the fixed native buffer wrapper."
+  },
+  "source_identity": {
+    "reference_commit": "a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095",
+    "original_complete_lib": {
+      "relative": "src/lib.rs",
+      "git_blob": "f6a291bb2c93e115c89d15d3d82ce30b922cbda2",
+      "bytes": 6430,
+      "sha256": "5a48256f2f429170d845803602434bfbdf1fbd130e9fa99375b10074efff86c6"
+    },
+    "locked_regex": {
+      "name": "regex-lite",
+      "version": "0.1.8",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "8d942b98df5e658f56f20d592c7f868833fe38115e65c33003d8cd224b0155da"
+    },
+    "current_parent_head": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+    "notice": "These are immutable preimage identities, not a claim about a future integrated tree."
+  },
+  "semantics": {
+    "public_signature": "pub fn find_uuids(s: &str) -> Vec<String>",
+    "pattern": "[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}",
+    "width_bytes": 36,
+    "hyphen_offsets": [
+      8,
+      13,
+      18,
+      23
+    ],
+    "hex_byte_intervals": [
+      [
+        48,
+        57
+      ],
+      [
+        65,
+        70
+      ],
+      [
+        97,
+        102
+      ]
+    ],
+    "search": "Scan candidate byte positions in increasing order. A match emits its original [start,end) and resumes at end; a nonmatch advances by one byte. Return every selected match in encounter order.",
+    "no_other_constraints": [
+      "No word boundary or anchors.",
+      "No UUID version or variant check.",
+      "No case folding or normalization.",
+      "No deduplication.",
+      "No trimming or Unicode normalization."
+    ],
+    "raw_input": "Arbitrary bytes are accepted. This is an ASCII byte-pattern matcher, not a UTF-8 validator. In a valid Rust &str, non-ASCII bytes cannot satisfy the pattern, so every match is on UTF-8 boundaries and agrees with the complete regex-lite iterator.",
+    "ownership": "HIA borrows source synchronously and emits offsets. Rust copies the selected substrings to independent owned String values.",
+    "source_size": "No fixed total source-length limit. Every readable slice length representable by the ABI is supported subject to actual host memory and final output allocation."
+  },
+  "caller_preconditions": [
+    "All advertised ranges must be live, readable for source/workspace, and writable for output for the synchronous call. Zero-length ranges need not be dereferenced.",
+    "The ranges do not overlap. Source and workspace do not change during the call.",
+    "Advertised lengths are actual allocated capacities; dangling pointers, aliasing, concurrent mutation, or invented oversized capacities are outside the ABI contract.",
+    "Native retains no pointers and has no mutable global state."
+  ],
+  "workspace": {
+    "bytes_exact": 32,
+    "byte_order": "little-endian u64 words",
+    "fields": [
+      {
+        "offset": 0,
+        "name": "revision",
+        "required": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "allowed": [
+          0,
+          1
+        ]
+      },
+      {
+        "offset": 16,
+        "name": "reserved0",
+        "required": 0
+      },
+      {
+        "offset": 24,
+        "name": "reserved1",
+        "required": 0
+      }
+    ],
+    "mutation": "Never modified, including on success."
+  },
+  "operations": [
+    {
+      "number": 0,
+      "name": "query",
+      "minimum_output_bytes": 64,
+      "effect": "Scan the complete source and write only the 64-byte header. Bytes after the header remain unchanged regardless of capacity.",
+      "written_bytes": 64
+    },
+    {
+      "number": 1,
+      "name": "emit",
+      "minimum_output_bytes": 64,
+      "effect": "First scan counts matches without stores. Compute and check the full required capacity. Only then rescan and write all selected rows and the header.",
+      "written_bytes": "64 + 16 * match_count"
+    }
+  ],
+  "output": {
+    "header_bytes": 64,
+    "row_bytes": 16,
+    "fields": [
+      {
+        "offset": 0,
+        "name": "revision",
+        "value": 1
+      },
+      {
+        "offset": 8,
+        "name": "operation",
+        "value": "Echo requested operation."
+      },
+      {
+        "offset": 16,
+        "name": "source_length",
+        "value": "Actual source buffer length."
+      },
+      {
+        "offset": 24,
+        "name": "match_count",
+        "value": "Number of selected non-overlapping matches."
+      },
+      {
+        "offset": 32,
+        "name": "required_output_bytes",
+        "value": "64 + 16 * match_count, for emit regardless of requested operation."
+      },
+      {
+        "offset": 40,
+        "name": "row_offset",
+        "value": 64
+      },
+      {
+        "offset": 48,
+        "name": "written_bytes",
+        "value": "64 for query, required_output_bytes for emit."
+      },
+      {
+        "offset": 56,
+        "name": "reserved",
+        "value": 0
+      }
+    ],
+    "rows": [
+      {
+        "offset": "64 + 16 * i",
+        "name": "start",
+        "type": "u64 byte offset into source"
+      },
+      {
+        "offset": "72 + 16 * i",
+        "name": "end",
+        "type": "u64 exclusive byte offset into source"
+      }
+    ],
+    "row_invariants": [
+      "0 <= start < end <= source_length",
+      "end - start = 36",
+      "For i > 0, rows[i].start >= rows[i-1].end.",
+      "Each row selects the original exact bytes; duplicate strings can appear in different rows."
+    ],
+    "success_writes": "Exactly [0,written_bytes) may be modified. Output bytes at or beyond written_bytes remain unchanged."
+  },
+  "statuses": [
+    {
+      "value": 0,
+      "name": "OK"
+    },
+    {
+      "value": 4294967294,
+      "name": "SHORT",
+      "meaning": "Workspace shorter than 32, output shorter than 64, or emit output shorter than the final required bytes."
+    },
+    {
+      "value": 4294967295,
+      "name": "INVALID",
+      "meaning": "Workspace length is not exactly 32 after the minimum check; revision, operation or reserved fields invalid; or required-size arithmetic cannot be represented."
+    }
+  ],
+  "precedence": [
+    "1. If workspace_len < 32 or output_capacity < 64, return SHORT before any frame read.",
+    "2. If workspace_len != 32, return INVALID.",
+    "3. Validate revision=1, operation in {0,1}, both reserved words=0; otherwise INVALID.",
+    "4. Count matches in source without modifying any buffer. Check count <= (u64::MAX - 64) / 16, otherwise INVALID.",
+    "5. Compute required = 64 + count * 16. Query requires only its already-checked 64 bytes. Emit returns SHORT if output_capacity < required.",
+    "6. All returned failures precede all stores. A valid emit rescans the immutable source, then publishes its header; no error branch remains after any store."
+  ],
+  "error_atomicity": {
+    "source": "Unchanged for every outcome.",
+    "workspace": "Unchanged for every outcome.",
+    "output": "Entire advertised buffer unchanged on every nonzero return, including tail bytes beyond a nominal header or an insufficient partial row table.",
+    "outside_advertised_buffers": "Never accessed by any valid call.",
+    "semantic_errors": "There are no regex syntax or other semantic-error outcomes: the pattern is fixed and native matching accepts every source byte sequence."
+  },
+  "arithmetic_invariants": [
+    "Lengths and offsets use unsigned 64-bit usize on the pinned target. For n < 36 scan returns zero without any source load.",
+    "Otherwise limit = n - 36 is guarded. A candidate index i <= limit implies i + 36 <= n; all fixed-offset loads are below n.",
+    "Mismatch advances i + 1 <= n - 35; match advances i + 36 <= n. Every iteration advances strictly, so scans terminate.",
+    "Matches are disjoint intervals of 36 bytes, so count <= floor(n / 36) and count increments cannot overflow.",
+    "The explicit guard count <= floor((u64::MAX - 64) / 16) precedes multiplication and header addition. The sharper disjointness bound also implies representability for every representable source length.",
+    "During emission, row index k is smaller than the previously counted total. Offset 64 + 16*k and the two u64 stores lie within required. Immutable input makes count-only and emit rescans select the same intervals.",
+    "Source offset usize-to-u64 casts preserve all bits on the fixed target. The Rust adapter rejects unrepresentable words and malformed output plans rather than falling back."
+  ],
+  "implementation_boundary": {
+    "hia": [
+      "Full scan and earliest candidate selection.",
+      "All hexadecimal and hyphen checks.",
+      "Non-overlapping advancement and match count.",
+      "Required capacity and byte span plan."
+    ],
+    "rust": [
+      "Own/borrow input and allocate query/table/result buffers.",
+      "Encode the fixed operation frame.",
+      "Validate status, header consistency, ordered fixed-width in-bounds UTF-8 slices.",
+      "Copy native-selected spans into Vec<String>."
+    ],
+    "fallback": "None in the native feature path. The original complete Rust function remains byte-preserved under cfg(not(feature=\"hia-native\")) until a later separately authorized retirement."
+  },
+  "qualification_scope": {
+    "raw_abi_required": true,
+    "whole_original_crate_comparison_required": true,
+    "whole_original_regex_library_required": true,
+    "cargo_qualified": false,
+    "canonical_full_bootstrap_qualified": false,
+    "production_dispatch_migrated": false,
+    "global_default_changed": false,
+    "performance_closed": false,
+    "whole_codex_rewritten": false,
+    "legacy_retirement": false
+  }
+}
