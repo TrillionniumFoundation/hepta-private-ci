@@ -119,6 +119,26 @@ class CohortFirewallTests(unittest.TestCase):
                 ):
                     check_cohort(candidate, [self.old])
 
+    def test_noncanonical_task_ids_are_rejected_before_scoring(self):
+        for task_id in (
+            "",
+            " ",
+            "two words",
+            " leading",
+            "trailing ",
+            "x\\ny",
+            "a/b",
+            "a" * 129,
+            "🚫",
+            "\\t",
+        ):
+            with self.subTest(task_id=task_id):
+                candidate = copy.deepcopy(self.new)
+                candidate["splits"]["test"]["sources"][0]["task_id"] = task_id
+                with self.assertRaisesRegex(CohortContractError, "task_id"):
+                    check_cohort(candidate, [self.old])
+        self.assertEqual(check_cohort(self.new, [self.old])["status"], "pass")
+
     def test_candidate_task_key_must_not_alias_historical_cohort(self):
         candidate = copy.deepcopy(self.new)
         candidate["splits"]["dev"]["sources"][0]["task_id"] = self.old["splits"][
