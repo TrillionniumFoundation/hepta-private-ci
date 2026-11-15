@@ -3642,6 +3642,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "codex-hepta-cell-roles"
+version = "0.0.0"
+dependencies = [
+ "codex-hepta-bellman-operator",
+ "codex-hepta-control-plane",
+ "codex-hepta-intuition",
+ "codex-hepta-memory-retrieval",
+ "codex-hepta-ndu",
+ "codex-hepta-neuron",
+ "codex-hepta-plasticity",
+ "codex-hepta-types",
+]
+
+[[package]]
 name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
@@ -3859,6 +3873,7 @@ dependencies = [
 name = "codex-hepta-intelligence-eval"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-cell-roles",
  "codex-hepta-learning-ledger",
  "codex-hepta-types",
  "ed25519-dalek 2.2.0",
