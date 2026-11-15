@@ -1,0 +1,38 @@
+# What: give source-built macOS V8 fastbuild objects the same minimum
+# optimization already used by the upstream GCC fastbuild branch.
+# Scope: compile optimization only. No assertion, ABI, linker, or runtime flag changes.
+
+diff --git a/orig/v8-15.0.245.2/bazel/config/BUILD.bazel b/orig/v8-15.0.245.2/bazel/config/BUILD.bazel
+--- a/orig/v8-15.0.245.2/bazel/config/BUILD.bazel
++++ b/orig/v8-15.0.245.2/bazel/config/BUILD.bazel
+@@ -158,6 +158,14 @@
+     constraint_values = ["@platforms//os:macos"],
+ )
+-
++
++selects.config_setting_group(
++    name = "is_macos_fastbuild",
++    match_all = [
++        ":is_macos",
++        ":is_fastbuild",
++    ],
++)
++
+ config_setting(
+     name = "is_windows",
+     constraint_values = ["@platforms//os:windows"],
+diff --git a/orig/v8-15.0.245.2/bazel/defs.bzl b/orig/v8-15.0.245.2/bazel/defs.bzl
+--- a/orig/v8-15.0.245.2/bazel/defs.bzl
++++ b/orig/v8-15.0.245.2/bazel/defs.bzl
+@@ -185,6 +185,11 @@
+                 "-std=c++20",
+             ],
+         }) + select({
++            "@v8//bazel/config:is_macos_fastbuild": [
++                # Keep this embedding build minimally optimized without enabling
++                # the opt toolchain feature, which also disables assertions.
++                "-O1",
++            ],
+             "@v8//bazel/config:is_gcc_fastbuild": [
+                 # Non-debug builds without optimizations fail because
+                 # of recursive inlining of "always_inline" functions.

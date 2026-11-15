@@ -100,7 +100,10 @@ alias(
     }),
 )
 
-V8_COPTS = ["-std=c++20"]
+V8_COPTS = ["-std=c++20"] + select({
+    "@v8//bazel/config:is_macos_fastbuild": ["-O1"],
+    "//conditions:default": [],
+})
 
 V8_CUSTOM_LIBCXX_COPTS = select({
     ":use_rusty_v8_custom_libcxx": [
