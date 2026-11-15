@@ -99,6 +99,31 @@ fn retained_parent_does_not_follow_a_replacement_path() -> io::Result<()> {
 }
 
 #[test]
+fn replace_preserves_identity_for_short_and_counted_utf16_names() -> io::Result<()> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().join("state");
+    let directory = PrivateDirectory::open_or_create(&root)?;
+    for destination in ["x", "state 雪🦀.json"] {
+        let mut previous = directory.create_new(destination)?;
+        previous.write_all(b"old contents")?;
+        previous.sync_all()?;
+        drop(previous);
+
+        let mut replacement = directory.create_new("state.next")?;
+        replacement.write_all(b"new contents")?;
+        replacement.sync_all()?;
+        let before = snapshot_private_file(&replacement)?;
+        directory.replace("state.next", destination)?;
+        directory.sync_all()?;
+        let after = snapshot_private_file(&directory.open_read(destination)?)?;
+        assert!(before.same_file(&after));
+        assert_eq!(fs::read(root.join(destination))?, b"new contents");
+        assert!(!directory.entry_exists("state.next")?);
+    }
+    Ok(())
+}
+
+#[test]
 fn hardlinked_state_is_rejected_without_changing_contents() -> io::Result<()> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().join("state");

@@ -4,7 +4,6 @@ use std::ffi::OsStr;
 use std::ffi::c_void;
 use std::fs::File;
 use std::io;
-use std::mem::offset_of;
 use std::mem::size_of;
 use std::os::windows::ffi::OsStrExt;
 use std::os::windows::io::AsRawHandle;
@@ -30,12 +29,10 @@ use windows_sys::Win32::Storage::FileSystem::FILE_DISPOSITION_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_READ_ATTRIBUTES;
-use windows_sys::Win32::Storage::FileSystem::FILE_RENAME_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FileDispositionInfo;
-use windows_sys::Win32::Storage::FileSystem::FileRenameInfo;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::SetFileInformationByHandle;
 use windows_sys::Win32::System::IO::IO_STATUS_BLOCK;
@@ -46,6 +43,7 @@ const FILE_DIRECTORY_FILE: u32 = 0x0000_0001;
 const FILE_SYNCHRONOUS_IO_NONALERT: u32 = 0x0000_0020;
 const FILE_NON_DIRECTORY_FILE: u32 = 0x0000_0040;
 const SYNCHRONIZE_ACCESS: u32 = 0x0010_0000;
+const FILE_RENAME_INFORMATION_CLASS: i32 = 10;
 const STATUS_REPARSE_POINT_ENCOUNTERED: NTSTATUS = 0xC000_050B_u32 as i32;
 
 pub(super) enum Kind {
@@ -75,6 +73,16 @@ struct ObjectAttributes {
     security_quality_of_service: *const c_void,
 }
 
+// Native FileRenameInformation (class 10) uses a counted UTF-16 name
+// relative to the retained directory handle, without Win32 path conversion.
+#[repr(C)]
+struct FileRenameInformation {
+    replace_if_exists: u8,
+    root_directory: HANDLE,
+    file_name_length: u32,
+    file_name: [u16; 1],
+}
+
 #[link(name = "ntdll")]
 unsafe extern "system" {
     fn NtCreateFile(
@@ -89,6 +97,14 @@ unsafe extern "system" {
         create_options: u32,
         ea_buffer: *const c_void,
         ea_length: u32,
+    ) -> NTSTATUS;
+
+    fn NtSetInformationFile(
+        file_handle: HANDLE,
+        io_status_block: *mut IO_STATUS_BLOCK,
+        file_information: *const c_void,
+        length: u32,
+        file_information_class: i32,
     ) -> NTSTATUS;
 }
 
@@ -184,11 +200,6 @@ fn open(
         )
     };
     if status < 0 {
-        #[cfg(test)]
-        eprintln!(
-            "windows_private_fs diagnostic NtCreateFile ntstatus=0x{:08x}",
-            status as u32
-        );
         if status == STATUS_REPARSE_POINT_ENCOUNTERED {
             return Err(invalid_name("state path contains a reparse point"));
         }
@@ -206,40 +217,52 @@ fn open(
 
 pub(super) fn replace(directory: &File, source: &File, destination: &str) -> io::Result<()> {
     let name = child_name(destination)?;
-    let name_bytes = name.len() * size_of::<u16>();
-    let size =
-        (offset_of!(FILE_RENAME_INFO, FileName) + name_bytes).max(size_of::<FILE_RENAME_INFO>());
+    let name_bytes = name
+        .len()
+        .checked_mul(size_of::<u16>())
+        .ok_or_else(|| invalid_name("destination name is too long"))?;
+    let name_length =
+        u32::try_from(name_bytes).map_err(|_| invalid_name("destination name is too long"))?;
+    let size = size_of::<FileRenameInformation>()
+        .checked_add(name_bytes)
+        .ok_or_else(|| invalid_name("rename buffer is too large"))?;
+    let buffer_length =
+        u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?;
     let mut storage = vec![0_usize; size.div_ceil(size_of::<usize>())];
-    let info = storage.as_mut_ptr().cast::<FILE_RENAME_INFO>();
-    // SAFETY: the allocation is aligned for this pointer-containing struct,
-    // includes the complete variable name, and outlives the synchronous call.
-    unsafe {
-        // Assign fields separately so all alignment padding and the unused
-        // bytes of the BOOLEAN/flags union stay initialized to zero.
-        (*info).Anonymous.ReplaceIfExists = true;
-        (*info).RootDirectory = directory.as_raw_handle();
-        (*info).FileNameLength =
-            u32::try_from(name_bytes).map_err(|_| invalid_name("destination name is too long"))?;
+    let info = storage.as_mut_ptr().cast::<FileRenameInformation>();
+    let mut io_status = IO_STATUS_BLOCK::default();
+    // SAFETY: storage is aligned for the native header and includes its full
+    // size plus the counted name. Padding and trailing bytes stay initialized.
+    // Both validated handles and the buffers outlive the call. The source was
+    // opened with DELETE, SYNCHRONIZE and FILE_SYNCHRONOUS_IO_NONALERT, so this
+    // operation completes synchronously before any borrowed storage is freed.
+    let status = unsafe {
+        (*info).replace_if_exists = 1;
+        (*info).root_directory = directory.as_raw_handle();
+        (*info).file_name_length = name_length;
         ptr::copy_nonoverlapping(
             name.as_ptr(),
-            (&raw mut (*info).FileName).cast(),
+            (&raw mut (*info).file_name).cast(),
             name.len(),
         );
-        if SetFileInformationByHandle(
+        NtSetInformationFile(
             source.as_raw_handle(),
-            FileRenameInfo,
+            &mut io_status,
             storage.as_ptr().cast(),
-            u32::try_from(size).map_err(|_| invalid_name("rename buffer is too large"))?,
-        ) == 0
-        {
-            let error = io::Error::last_os_error();
-            #[cfg(test)]
-            eprintln!(
-                "windows_private_fs diagnostic FileRenameInfo win32={:?}",
-                error.raw_os_error()
-            );
-            return Err(error);
-        }
+            buffer_length,
+            FILE_RENAME_INFORMATION_CLASS,
+        )
+    };
+    if status < 0 {
+        #[cfg(test)]
+        eprintln!(
+            "windows_private_fs diagnostic NtSetInformationFile rename ntstatus=0x{:08x}",
+            status as u32
+        );
+        // SAFETY: converting a status value does not dereference any pointer.
+        return Err(io::Error::from_raw_os_error(
+            unsafe { RtlNtStatusToDosError(status) } as i32,
+        ));
     }
     Ok(())
 }
