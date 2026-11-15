@@ -10889,6 +10889,26 @@
         "path": "network-host-root-review/observations-v1/root-archive-verification.json",
         "bytes": 42578,
         "sha256": "ba12b7bd21c79f7b507b32e5c863215a0e3dacb50477ea78572fc63ea54c1d1d"
+      },
+      "consumer_metadata_manifest": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/manifest.json",
+        "bytes": 1849757,
+        "sha256": "217f0496e83d8c4179aee7814d4b80a3c0f45a966eb34710c3733e1b97f9416d"
+      },
+      "consumer_metadata_link_proof": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/link-proof.json",
+        "bytes": 2113995,
+        "sha256": "1d439072d3deb8aac212ee16eb2fabf06eda8530feb6f261b95018cdbf456880"
+      },
+      "consumer_metadata_copy_plan": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/copy-plan.json",
+        "bytes": 1404771,
+        "sha256": "7e1ce7f5028246fd8e297ab25b61b9b80686ab06257ccbd6a4accb3c2f3c1dc5"
+      },
+      "consumer_metadata_root_byte_check": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/root-byte-check.json",
+        "bytes": 1209,
+        "sha256": "16aa7ddfb13bb335951458c937b8d9687e1e147142c29345e5d6bade18eac9c2"
       }
     },
     "observations_archive": {
@@ -10941,7 +10961,104 @@
       "runtime_execution_during_freeze": false,
       "publication_revision": null,
       "publication_promotion_pending": true,
-      "scope": "Retained actual pre-maintenance compile/nm/run evidence and independently copied existing bytes. No fresh consumer was linked from copied paths; a separately authorized successor must qualify that operation."
+      "scope": "Retained actual pre-maintenance compile/nm/run evidence and independently copied existing bytes. No fresh consumer was linked from copied paths; a separately authorized successor must qualify that operation.",
+      "cargo_units": 234,
+      "build_script_linkage_records": 35,
+      "captured_link_search_directories": [
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/native-root-v1",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/native-root-v1",
+          "kind": "native"
+        },
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/target/debug/build/blake3-65cb2d83c1a7b85c/out",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/build/blake3-65cb2d83c1a7b85c/out",
+          "kind": "native"
+        },
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/target/debug/build/codex-execpolicy-5dca6ca7bae74ff4/out",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/build/codex-execpolicy-5dca6ca7bae74ff4/out",
+          "kind": "native"
+        },
+        {
+          "source": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/target/debug/deps",
+          "destination": "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps",
+          "kind": "dependency"
+        }
+      ],
+      "complete_native_files": 228,
+      "capture_linkage": [
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_prefix_match"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_prefix_admission"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_policy_summary"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_network_domains"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_allowed_prefixes"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_command_dispatch"
+        },
+        {
+          "capture": "lib",
+          "flag": "-l",
+          "value": "static=codex_hia_network_host"
+        }
+      ],
+      "resolved_named_static_library_records": 16,
+      "mapped_performance_compile_command_not_executed": [
+        "/home/qq/.rustup/toolchains/1.96.1-x86_64-unknown-linux-gnu/bin/rustc",
+        "--edition=2024",
+        "-C",
+        "opt-level=3",
+        "--extern",
+        "owner=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/evidence/network-host-public-v1-artifacts/libnative_execpolicy.rlib",
+        "-L",
+        "dependency=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps",
+        "-L",
+        "native=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/native-root-v1",
+        "--extern",
+        "serde=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libserde-816dfdce36d7bea6.rlib",
+        "--extern",
+        "serde_json=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libserde_json-7a352768cfad8961.rlib",
+        "--extern",
+        "anyhow=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libanyhow-5e4898099b49613e.rlib",
+        "--extern",
+        "multimap=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libmultimap-850b2c5308da4d49.rlib",
+        "--extern",
+        "codex_utils_absolute_path=/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/target/debug/deps/libcodex_utils_absolute_path-846c9e4cb9025266.rlib",
+        "/home/qq/codex-hia-work/9f0b-network-host-source-qualification-20261115/owner17-consumer-link-inputs-v1/files/codex/hia/tests/native_network_host_performance.rs",
+        "-o",
+        "<caller-owned-new-output>"
+      ],
+      "mapped_command_scope": "Exact recorded performance-consumer command only; two explicit -L flags. Four captured search directories are retained for separately admitted future consumers; this is not a new bundle-only link result.",
+      "external_platform_dependencies": "fixed rustc/sysroot/CRT and system dynamic libraries remain external platform inputs; this package does not contain them",
+      "root_independent_byte_check": {
+        "path": "network-host-root-review/observations-v1/consumer-metadata/root-byte-check.json",
+        "bytes": 1209,
+        "sha256": "16aa7ddfb13bb335951458c937b8d9687e1e147142c29345e5d6bade18eac9c2"
+      },
+      "root_all_original_copy_hash_size_mode_inode_and_original_mtime_checks": true,
+      "nested_empty_directories_preserved": true
     }
   },
   "source_artifact_record_scope": "The first16 source/artifact records remain byte-preserved history; their source/Core/object/text/archive/library identities equal the current full17 build. Embedded historical command paths are not new executions. The network_host record comes from the actual full17 build."
