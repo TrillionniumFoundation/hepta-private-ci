@@ -37,15 +37,17 @@ def sha(path):
 
 def original_sources():
     originals = {name: (SOURCE / f"{name}.rs").read_text() for name in PINNED}
-    for name, indent, count in [("policy", "    ", 2), ("execpolicycheck", "", 1)]:
+    for name, indent, native_count, default_count in [
+        ("policy", "    ", 3, 4), ("execpolicycheck", "", 1, 1),
+    ]:
         native = re.compile(
             rf'(?m)^{indent}#\[cfg\(feature = "hia-native"\)\]\n'
-            rf'{indent}(?:pub )?fn (?:is_match|from_matches|format_matches_json)\('
+            rf'{indent}(?:pub )?fn (?:is_match|from_matches|format_matches_json|compiled_network_domains)\('
             rf'[\s\S]*?^{indent}\}}\n'
         )
         originals[name], removed = native.subn("", originals[name])
         originals[name], attributes = re.subn(r'#\[cfg\(not\(feature = "hia-native"\)\)\]', "", originals[name])
-        if (removed, attributes) != (count, count):
+        if (removed, attributes) != (native_count, default_count):
             raise RuntimeError(f"{name}: original and native entry count changed")
     rule = originals["rule"]
     start = rule.index("#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]")

@@ -322,6 +322,25 @@ jobs:
             --report "$RUNNER_TEMP/hia-policy-summary.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-policy-summary.log"
 
+      - name: Verify complete network domain ABI and atomic errors
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_network_domains_abi.py \
+            --library "$RUNNER_TEMP/hia-native/network_domains.so" \
+            --report "$RUNNER_TEMP/hia-network-domains-abi.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-network-domains-abi.log"
+
+      - name: Compare complete network domain compilation with original public Rust
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_native_network_domains.py \
+            --library-dir "$RUNNER_TEMP/hia-native" \
+            --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
+            --report "$RUNNER_TEMP/hia-network-domains.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-network-domains.log"
+
       - name: Verify installed execution policy command
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -450,6 +469,15 @@ jobs:
             -E 'test(suite::exec_policy::)' \
             2>&1 | tee "$RUNNER_TEMP/hia-core-execpolicy.log"
 
+      - name: Test actual Core network domain consumer with HIA enabled
+        if: ${{ always() && steps.build.outcome == 'success' }}
+        working-directory: codex/codex-rs
+        run: |
+          set -euo pipefail
+          just test -p codex-core --features codex-execpolicy/hia-native --locked \
+            -E 'test(=config::network_proxy_spec::tests::environment_policy_replaces_soft_controller_allowlist_and_preserves_denials)' \
+            2>&1 | tee "$RUNNER_TEMP/hia-core-network-domains.log"
+
       - name: Verify installed full Codex executable
         if: ${{ always() && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
@@ -557,3 +585,12 @@ jobs:
             ${{ runner.temp }}/hia-policy-summary-artifacts/actual_cli_formatters.rs
             ${{ runner.temp }}/hia-policy-summary-artifacts/capture_rustc.py
             ${{ runner.temp }}/hia-policy-summary-artifacts/compiler-*.json
+            ${{ runner.temp }}/hia-network-domains-abi.json
+            ${{ runner.temp }}/hia-network-domains-abi.log
+            ${{ runner.temp }}/hia-network-domains.json
+            ${{ runner.temp }}/hia-network-domains.log
+            ${{ runner.temp }}/hia-core-network-domains.log
+            ${{ runner.temp }}/hia-network-domains-artifacts/*.stdout
+            ${{ runner.temp }}/hia-network-domains-artifacts/*.stderr
+            ${{ runner.temp }}/hia-network-domains-artifacts/capture_rustc.py
+            ${{ runner.temp }}/hia-network-domains-artifacts/compiler-*.json
