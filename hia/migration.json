@@ -80,17 +80,17 @@
     "borrowed_buffer_capacity": 1048576,
     "default_build": "Python B0 seed; native HIA B1/B2/B3 fixed point; B3 ELF; namespaced deterministic static archives.",
     "development_build": "--seed-only uses the Python direct machine emitter and does not perform the native compiler generations.",
-    "qualification_status": "nine_module_fixed_point_sourcefile_owner_and_admission_passed_current_cargo_installed_ci_performance_platform_gates_open",
+    "qualification_status": "ten_module_fixed_point_file_update_raw_abi_and_receipts_passed_complete_original_owner_and_consumer_gates_pending",
     "remaining_work": [
       "native host interfaces required by the capability matrix",
       "platform and architecture coverage required by Codex",
       "complete compiler and runtime ownership closure beyond the bootstrap/component profile"
     ],
     "native_compiler_generations_reproduced": true,
-    "qualification_scope": "Linux x86-64 GNU; nine B3 modules and seven opt-in production algorithm groups. Full SourceFile parse/line_texts/apply_replacements/into_contents behavior passed independent original-Rust and raw-ABI gates on the recorded snapshot. Nine-module Cargo, consumer and installed-executable CI remain pending; performance, all 15 complete capability migrations, default dispatch, retirement and other platforms remain open.",
+    "qualification_scope": "Linux x86-64 GNU; ten real B3 modules cover eight algorithm groups including the new file_update candidate. The current native build, file_update raw ABI, 60 receipt checks and 116 shared scalar/build-admission checks passed. Complete-original public file_update parity, current Cargo/consumers/installed executables, strict lint/fix and performance remain pending. All 15 complete capabilities, default dispatch, global migration and retirement remain open.",
     "compiler_generation_sha256": "76fe758bc49499046169a5b4798c31d57366344c23530b35bc489e4008639273",
     "complete_compiler_runtime_qualified": false,
-    "report": "hia/verification.json",
+    "report": "hia/verification.json#file_update_increment",
     "borrowed_buffer_capacity_scope": "Seed-wrapper/compiler profile, not the production input size."
   },
   "candidate_modules": [
@@ -145,7 +145,8 @@
           "link": "static=codex_hia_seek_sequence",
           "default_release_migrated": false
         }
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "utf8_boundaries",
@@ -193,7 +194,8 @@
         "production_dispatch": {
           "status": "pending"
         }
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "utf8_prefix",
@@ -237,7 +239,8 @@
           "link": "static=codex_hia_utf8_prefix",
           "default_release_migrated": false
         }
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "metric_tag",
@@ -294,7 +297,8 @@
           "link": "static=codex_hia_metric_tag",
           "default_release_migrated": false
         }
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "markdown_location",
@@ -351,7 +355,8 @@
           "link": "static=codex_hia_markdown_location",
           "default_release_migrated": false
         }
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "ascii_json_fragment",
@@ -408,7 +413,8 @@
           "link": "static=codex_hia_ascii_json_fragment",
           "default_release_migrated": false
         }
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "truncate",
@@ -420,7 +426,7 @@
         "truncate_middle_with_token_budget"
       ],
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_nine_module_integration_pending",
+      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_ten_module_integration_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -467,7 +473,8 @@
         "skipped": 0,
         "performance_qualified": false,
         "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197; nine-module integration has separate pending gates."
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "token_budget",
@@ -480,7 +487,7 @@
       ],
       "production_algorithm_group": "truncate",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_nine_module_integration_pending",
+      "qualification_status": "historical_eight_module_component_owner_and_exact_head_ci_passed_current_ten_module_integration_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -507,7 +514,8 @@
         "original_rust_comparisons": 229173,
         "performance_qualified": false,
         "checkpoint_scope": "Published eight-module 7fe65ae990187e6ff1130c791f902728b4e50197; nine-module integration has separate pending gates."
-      }
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
     },
     {
       "id": "source_file",
@@ -523,7 +531,7 @@
       ],
       "production_algorithm_group": "source_file",
       "implementation_status": "native_with_opt_in_production_caller",
-      "qualification_status": "complete_owner_original_rust_and_raw_abi_passed_current_cargo_installed_ci_performance_open",
+      "qualification_status": "historical_nine_module_owner_original_rust_and_raw_abi_passed_current_ten_module_integration_pending",
       "production_dispatch_migrated": false,
       "retire_legacy": false,
       "interface": {
@@ -570,6 +578,75 @@
         "artifact_generation": "B3",
         "current_local_component_gates": "passed",
         "current_cargo_and_installed_ci": "pending",
+        "performance_qualified": false
+      },
+      "qualification_checkpoint_scope": "Historical evidence recorded before the ten-module file_update candidate; it does not qualify this candidate's complete original public owner, Cargo consumers, installed executables, lint/fix or performance."
+    },
+    {
+      "id": "file_update",
+      "hia_source": "hia/file_update.hepta",
+      "source_path": "codex-rs/apply-patch/src/file_update.rs",
+      "source_blob": "b95270b799b31149bd19bf5825e4f68b1d97e954",
+      "source_functions": [
+        "derive_new_contents_from_chunks",
+        "compute_replacements",
+        "apply_replacements"
+      ],
+      "production_algorithm_group": "file_update",
+      "implementation_status": "native_opt_in_complete_computation_owner_candidate",
+      "qualification_status": "native_build_raw_abi_and_receipts_passed_complete_original_public_owner_and_current_consumers_pending",
+      "production_dispatch_migrated": false,
+      "retire_legacy": false,
+      "performance_qualified": false,
+      "interface": {
+        "entry": "codex_hia_file_update",
+        "profile": "borrowed-buffers-u32-v1",
+        "contract": "hia/file_update_buffer_contract.json",
+        "contract_sha256": "ba4ae185438fb19401fe92d0602c32c6f1d4e4891987937ad05cefb6f1f8be95",
+        "operations": {
+          "0/1": "strict LF parse query/emit",
+          "2/3": "explicit chunk planner/resume query/emit",
+          "4/5": "stable replacement permutation query/emit",
+          "6/7": "NormalizeToLf reverse-edit/render plan query/emit"
+        },
+        "success_return": 0,
+        "invalid_input_return": 4294967295,
+        "short_buffer_return": 4294967294,
+        "invalid_utf8_return": 4294967293,
+        "error_effect": "All nonzero returns leave output/source/workspace unchanged. Source/workspace are never written. Query writes only its fixed output header. Sort/render use admitted output memory as scratch after validation; successful emit may alter every byte before needed_bytes. Bytes after needed_bytes remain unchanged."
+      },
+      "behavior": [
+        "HIA selects context/full-pattern/retry searches and handles old-empty, EOF overlap and effective tail-sentinel semantics.",
+        "HIA controls Preserve context splitting, first-out-of-range break behavior and reached invalid-order preconditions.",
+        "HIA orders replacement events stably and performs overlapping NormalizeToLf edits in reverse using bounded ID scratch.",
+        "Rust transports native search requests to the existing HIA seek_sequence; Preserve rendering composes the existing HIA SourceFile.",
+        "Original filesystem, PathUri, sandbox/symlink policy, public error strings and TextDiff remain host boundaries."
+      ],
+      "tests": [
+        "hia/tests/test_file_update_abi.py",
+        "hia/tests/test_native_file_update_caller.py",
+        "hia/tests/file_update_oracle/driver.rs",
+        "hia/tests/file_update_oracle/corpus.py",
+        "hia/tests/file_update_oracle/cargo.py",
+        "hia/tests/file_update_oracle/identity.py",
+        "hia/tests/file_update_oracle/wire.py",
+        "hia/tests/test_build_receipt.py",
+        "hia/tests/test_installed_patch.py",
+        "hia/tests/test_installed_codex.py"
+      ],
+      "validation": {
+        "report": "hia/verification.json#file_update_increment",
+        "artifact_generation": "B3",
+        "build_passed": true,
+        "raw_abi_passed": true,
+        "raw_abi_native_calls": 2897,
+        "error_no_write_cases": 1381,
+        "concurrent_native_calls": 768,
+        "receipt_checks_passed": 60,
+        "shared_scalar_build_admission_checks_passed": 116,
+        "whole_original_public_oracle_passed": false,
+        "original_owner_tests_passed": false,
+        "current_cargo_installed_lint_fix_passed": false,
         "performance_qualified": false
       }
     }
@@ -776,7 +853,7 @@
         "line ending modes and file effects",
         "Unicode context matching and search ordering"
       ],
-      "next_implementation": "Qualify nine-module Cargo/installed dispatch and migrate remaining patch grammar, compute_replacements planning, NormalizeToLf path, filesystem effects and file-search owners.",
+      "next_implementation": "Qualify the new complete file_update computation candidate through the full original crate, real public filesystem results, actual consumers and installed executables; then migrate remaining patch grammar and filesystem/search owners. HIA matching and SourceFile remain composed components.",
       "candidate_modules": [
         "seek_sequence",
         "source_file"
@@ -2317,7 +2394,7 @@
     "feature_off_requires_artifacts": false,
     "unsupported_native_targets": "build_error",
     "runtime_shared_library_requirement": false,
-    "status": "current_nine_module_sourcefile_receipts_and_scalar_build_admission_passed",
+    "status": "current_ten_module_file_update_receipts_and_shared_build_admission_passed",
     "accepted_modules": [
       "seek_sequence",
       "utf8_boundaries",
@@ -2327,13 +2404,14 @@
       "ascii_json_fragment",
       "truncate",
       "token_budget",
-      "source_file"
+      "source_file",
+      "file_update"
     ],
-    "checks_passed": 58,
-    "scalar_build_admission_checks_passed": 115,
+    "checks_passed": 60,
+    "scalar_build_admission_checks_passed": 116,
     "shared_cargo_helper_changed": false,
-    "mutation_module": "source_file",
-    "typed_scalar_mutation_history": "Historical 56-check eight-module 7fe65ae result retained at hia/verification.json#native_optimization; not a current nine-module receipt count.",
-    "report": "hia/verification.json#source_file_increment"
+    "mutation_module": "file_update",
+    "typed_scalar_mutation_history": "Historical eight- and nine-module receipt/admission evidence remains scoped to those checkpoints. Current 60 checks mutate file_update; the separate 116-check gate retains typed scalar entry/ELF qualification.",
+    "report": "hia/verification.json#file_update_increment"
   }
 }
