@@ -8,6 +8,12 @@ mod hia_native_markdown;
 mod hia_native_metric;
 #[cfg(feature = "hia-native")]
 mod hia_native_truncate;
+// BEGIN HIA UUID FIND MODULE
+#[cfg(feature = "hia-native")]
+mod hia_native_uuid;
+#[cfg(feature = "hia-native")]
+pub use hia_native_uuid::find_uuids;
+// END HIA UUID FIND MODULE
 mod json;
 mod truncate;
 
@@ -92,6 +98,9 @@ pub fn sanitize_metric_tag_value(value: &str) -> String {
 
 /// Find all UUIDs in a string.
 #[allow(clippy::unwrap_used)]
+// BEGIN HIA UUID FIND ORIGINAL GUARD
+#[cfg(not(feature = "hia-native"))]
+// END HIA UUID FIND ORIGINAL GUARD
 pub fn find_uuids(s: &str) -> Vec<String> {
     static RE: std::sync::OnceLock<regex_lite::Regex> = std::sync::OnceLock::new();
     let re = RE.get_or_init(|| {
