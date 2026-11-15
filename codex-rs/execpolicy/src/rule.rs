@@ -160,6 +160,12 @@ pub struct NetworkRule {
     pub justification: Option<String>,
 }
 
+#[cfg(feature = "hia-native")]
+pub(crate) fn normalize_network_rule_host(raw: &str) -> Result<String> {
+    crate::hia_native_network_host::normalize(raw)
+}
+
+#[cfg(not(feature = "hia-native"))]
 pub(crate) fn normalize_network_rule_host(raw: &str) -> Result<String> {
     let mut host = raw.trim();
     if host.is_empty() {
