@@ -138,3 +138,21 @@ original nonzero `--locked` exit code is still returned and the checkout's lockf
 is restored. Triggers, job conditions, permissions and failure handling are
 unchanged. Both affected shell blocks pass `bash -n`, and both workflows parse.
 No Cargo resolution was launched for this message-classification change.
+
+## Historical MEM8 source-only gates V5 through V11
+
+The seven independent harnesses retain their original immutable source/capsule
+pins and exact old-branch trigger guards. Their common implementation and each
+version delta were reviewed. They format an isolated checkout, verify the entire
+base-plus-overlay tree, retain source/lock/tool identities and produce an
+uncommitted tree plus records. They do not push, update refs or run models/native
+tests. V6 and later additionally verify full golden caller JSON (only a derived
+Rust source count may differ) and exact named Python regression outcomes. V5
+remains explicitly the earlier, narrower historical operation.
+
+Each ordinary merge checks the fresh preview against its reviewed delta, retains
+all incoming bytes, validates each frozen capsule row and golden receipt pins,
+and parses Python, embedded Python and shell blocks. These are static integrity
+checks, not new source-gate or native qualification runs. No trigger is widened
+to main, pull requests or manual dispatch; retired branch names remain inert.
+Individual pins and counts are in `legacy-small/mem8-source-gates-v*.json`.
