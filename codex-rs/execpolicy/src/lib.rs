@@ -4,6 +4,8 @@ pub(crate) mod error;
 pub(crate) mod execpolicycheck;
 mod executable_name;
 #[cfg(feature = "hia-native")]
+mod hia_native_policy_summary;
+#[cfg(feature = "hia-native")]
 mod hia_native_prefix;
 pub(crate) mod parser;
 pub(crate) mod policy;
